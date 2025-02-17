@@ -1828,9 +1828,15 @@ def feedback_answer_get(request, id, **kwargs):
         it will redirect to feedaback_answer.html .
     """
 
+    feedback = Feedback.objects.get(id=id)
+
+    # check if the feedback start_date is not started yet
+    if feedback.start_date > datetime.date.today():
+        messages.info(request, _("Feedback not started yet"))
+        return redirect(feedback_list_view)
+
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
-    feedback = Feedback.objects.get(id=id)
     answer = Answer.objects.filter(feedback_id=feedback, employee_id=employee)
     question_template = feedback.question_template_id
     questions = question_template.question.all()

@@ -1,4 +1,11 @@
 {% load i18n %}
+{% if request.actual_ids and request.session.prev_path == request.path %}
+<script>
+  var ids =  {{request.session.hlv_selected_ids|safe}}
+  $("#{{selected_instances_key_id}}").attr("data-ids", JSON.stringify(ids));
+</script>
+{% endif %}
+
 <div class="d-flex justify-content-between mb-2">
     <div style="
         display: flex;
@@ -49,6 +56,7 @@
           0
         </span>)
       </div>
+      {% if quick_export %}
       <div
         id="export_{{view_id}}"
         class="oh-checkpoint-badge text-info d-none quick-bulk-action"
@@ -66,7 +74,8 @@
         0
       </span>)
       </div>
-      {% if bulk_path %}
+      {% endif %}
+      {% if bulk_path and bulk_update %}
       <div
         id="bulk_udate_{{view_id}}"
         class="oh-checkpoint-badge text-warning d-none quick-bulk-action"
@@ -79,7 +88,6 @@
         $('#bulk_update_get_form{{view_id}}').click()
         "
         >
-        <ion-icon style="font-size: 1rem; margin-right:0;" name="create"></ion-icon>
         <span class="label"
         {% comment %} style="display: none;" {% endcomment %}
         >
@@ -90,13 +98,64 @@
         </span>)
       </div>
       <form
-        hx-get="/{{bulk_path}}"
-        hx-target="#bulkUpdateModalBody{{view_id|safe}}">
-        <input type="hidden" name="instance_ids">
-        <button type="submit" id="bulk_update_get_form{{view_id}}" hidden>
-        </button>
+      hx-get="/{{bulk_path}}"
+      hx-target="#bulkUpdateModalBody{{view_id|safe}}">
+      <input type="hidden" name="instance_ids">
+      <button type="submit" id="bulk_update_get_form{{view_id}}" hidden>
+      </button>
+    </form>
+    {% endif %}
+    {% if filter_selected %}
+    <div
+      id="filter_selected_{{view_id}}"
+      class="oh-checkpoint-badge text-warning d-none quick-bulk-action"
+      style="cursor: pointer;
+      color:hsl(7.8deg 91% 60%) !important;"
+
+      onclick="
+      ids = $('#{{selected_instances_key_id}}').attr('data-ids');
+      $('#bulk_update_get_form{{view_id}}').closest('form').find('[name=instance_ids]').val(ids);
+      $('#bulk_update_get_form{{view_id}}').click();
+      $(this).find('[name=selected_ids]').val(ids);
+      $(this).find('[type=submit]').click()
+      "
+      >
+      <form style="display: inline;"
+       hx-post="{{request.path}}?show_all=false" hx-target="#{{view_id|safe}}"  hx-swap="outerHTML"
+      onsubmit="event.preventDefault()"
+      hx-on:submit="htmxLoadIndicator(this);">
+      <input type="hidden" name="selected_ids" value="{{request.sesssion.hlv_selected_ids}}">
+          <span class="label"
+          {% comment %} style="display: none;" {% endcomment %}
+          >
+          {% trans "Filter" %}
+        </span>
+        <button  hidden onclick="event.stopPropagation()" type="submit"></button>
       </form>
-      {% endif %}
+      (<span class="count_{{view_id}}">
+        0
+      </span>)
+    </div>
+    {% if request.session.hlv_selected_ids %}
+    <div
+      hx-get="{{request.path}}?show_all=true" hx-target="#{{view_id|safe}}"  hx-swap="outerHTML"
+      id="show_selected{{view_id}}"
+      class="oh-checkpoint-badge text-warning quick-bulk-action"
+      style="cursor: pointer;
+      color: hsl(203.16deg 91% 60%) !important;
+      "
+      >
+      <span class="label"
+      {% comment %} style="display: none;" {% endcomment %}
+      >
+        {% trans "Show All" %}
+      </span>
+      (<span class="">
+        {{request.actual_ids|length}}
+      </span>)
+    </div>
+    {% endif %}
+    {% endif %}
       {% for filter in stored_filters %}
       <div class="oh-hover-btn-container"
         hx-get="{{request.path}}?{{filter.urlencode}}"

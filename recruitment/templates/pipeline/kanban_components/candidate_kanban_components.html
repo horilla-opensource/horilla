@@ -153,7 +153,7 @@
                             </li>
                         {% endif %}
                     {% endif %}
-                    {% if onboarding|app_installed %}
+                    {% if "onboarding"|app_installed %}
                         {% if perms.recruitment.add_rejectedcandidate or request.user.employee_get in stage.stage_managers.all %}
                         <li class="oh-dropdown__item">
                             <a

@@ -961,3 +961,4 @@ from accessibility.accessibility import ACCESSBILITY_FEATURE
 ACCESSBILITY_FEATURE.append(("gender_chart", "Can view Gender Chart"))
 ACCESSBILITY_FEATURE.append(("department_chart", "Can view Department Chart"))
 ACCESSBILITY_FEATURE.append(("employees_chart", "Can view Employees Chart"))
+ACCESSBILITY_FEATURE.append(("birthday_view", "Can view Birthdays"))

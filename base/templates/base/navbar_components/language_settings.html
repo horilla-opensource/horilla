@@ -5,26 +5,31 @@
         <a href="#" class="oh-navbar__action-icons-link" title="Languages">
             <ion-icon name="globe-outline" class="oh-navbar__icon"></ion-icon>
         </a>
-        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
-            @click.outside="open = false" style="display:none; margin-top:95%;">
+        <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" @click.outside="open = false"
+            style="display:none; margin-top:95%; min-width:210px;">
             <ul class="oh-dropdown__items">
                 {% get_available_languages as LANGUAGES %}
                 {% for language in LANGUAGES %}
-                    <li class="oh-dropdown__item">
-                        <a href="{% url 'set_language' %}" class="oh-dropdown__link"
-                            onclick="event.preventDefault(); document.getElementById('language-form-{{ language.0 }}').submit();">
-                            <img src="{% static 'images/ui/' %}{{ language.0 }}.png" class="oh-dropdown__lang-icon" />{{ language.1 }}
-                            {% if language.0 == LANGUAGE_CODE %}
+                    {% with IMAGE_PATH='images/ui/'|add:language.0|add:'.png' %}
+                        <li class="oh-dropdown__item">
+                            <a href="{% url 'set_language' %}" class="oh-dropdown__link"
+                                onclick="event.preventDefault(); document.getElementById('language-form-{{ language.0 }}').submit();">
+                                <img src="{% static IMAGE_PATH %}"
+                                    onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ language.1|urlencode }}&background=random';"
+                                    class="oh-dropdown__lang-icon" />{{ language.1 }}
+                                {% if language.0 == LANGUAGE_CODE %}
                                 <ion-icon name="checkmark-circle-outline"
                                     style="position: relative; top: 3.3px; color: green; font-size: 1.2em;">
                                 </ion-icon>
-                            {% endif %}
-                        </a>
-                        <form id="language-form-{{ language.0 }}" action="{% url 'set_language' %}" method="post" style="display: none;">
-                            {% csrf_token %}
-                            <input type="hidden" name="language" value="{{ language.0 }}">
-                        </form>
-                    </li>
+                                {% endif %}
+                            </a>
+                            <form id="language-form-{{ language.0 }}" action="{% url 'set_language' %}" method="post"
+                                style="display: none;">
+                                {% csrf_token %}
+                                <input type="hidden" name="language" value="{{ language.0 }}">
+                            </form>
+                        </li>
+                    {% endwith %}
                 {% endfor %}
             </ul>
         </div>

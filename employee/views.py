@@ -175,9 +175,19 @@ filter_mapping = {
 }
 
 
-def _check_reporting_manager(request):
-    employee = request.user.employee_get
-    return employee.reporting_manager.exists()
+def _check_reporting_manager(request, *args, **kwargs):
+    if kwargs.get("obj_id"):
+        obj_id = kwargs["obj_id"]
+        emp = Employee.objects.get(id=obj_id)
+        re_manager = None
+        if emp.employee_work_info.reporting_manager_id != None:
+            re_manager = emp.employee_work_info.reporting_manager_id
+        employee = request.user.employee_get
+        if re_manager != None:
+            return re_manager == employee
+        else:
+            return False
+    return request.user.employee_get.reporting_manager.exists()
 
 
 # Create your views here.
@@ -419,7 +429,7 @@ def shift_tab(request, emp_id):
 
 
 @login_required
-@manager_can_enter("horilla_documents.view_documentrequests")
+@manager_can_enter("horilla_documents.view_documentrequest")
 def document_request_view(request):
     """
     This function is used to view documents requests of employees.
@@ -435,7 +445,7 @@ def document_request_view(request):
     documents = Document.objects.filter(document_request_id__isnull=False)
     documents = filtersubordinates(
         request=request,
-        perm="horilla_documents.view_documentrequests",
+        perm="horilla_documents.view_documentrequest",
         queryset=documents,
     )
     documents = group_by_queryset(
@@ -455,7 +465,7 @@ def document_request_view(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("horilla_documents.view_documentrequests")
+@manager_can_enter("horilla_documents.view_documentrequest")
 def document_filter_view(request):
     """
     This method is used to filter employee.
@@ -488,7 +498,7 @@ def document_filter_view(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("horilla_documents.add_documentrequests")
+@manager_can_enter("horilla_documents.add_documentrequest")
 def document_request_create(request):
     """
     This function is used to create document requests of an employee in employee requests view.
@@ -533,7 +543,7 @@ def document_request_create(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("horilla_documents.change_documentrequests")
+@manager_can_enter("horilla_documents.change_documentrequest")
 def document_request_update(request, id):
     """
     This function is used to update document requests of an employee in employee requests view.
@@ -2767,6 +2777,7 @@ def birthday():
 
 
 @login_required
+@enter_if_accessible(feature="birthday_view", perm="employee.view_employee")
 def get_employees_birthday(request):
     """
     Render all upcoming birthday employee details for the dashboard.

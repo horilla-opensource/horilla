@@ -256,9 +256,11 @@
     }
     setTimeout(() => {
       $(".oh-btn--view-active").click();
+      {% if apply_first_filter %}
       if (!$(".oh-btn--view-active").length) {
         $("#applyFilter").click()
       }
+      {% endif %}
     }, 100);
     $(".oh-btn--view").click(function (e) {
       e.preventDefault();

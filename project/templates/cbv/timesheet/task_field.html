@@ -1,0 +1,15 @@
+{% load i18n %}
+<label class="oh-label required-star" for="id_{{ form.task_id.title }}" title="{{ form.task_id.help_text|safe }}">
+    {% trans form.task_id.label %}
+</label>
+<div id="dynamic_field_task_id">
+    {{form.task_id}}
+</div>
+<script>
+    $(document).ready(function () {
+
+        $("select").on("select2:select", function (e) {
+            $(this).closest("select")[0].dispatchEvent(new Event("change"));
+        });
+    });
+</script>
