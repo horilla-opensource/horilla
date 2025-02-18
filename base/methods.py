@@ -552,6 +552,8 @@ def reload_queryset(fields):
         "Employee": {"is_active": True},
         "Candidate": {"is_active": True} if apps.is_installed("recruitment") else None,
     }
+    request = getattr(_thread_locals, "request")
+    selected_company = request.session.get("selected_company")
 
     for field in fields.values():
         if isinstance(field, ModelChoiceField):
@@ -559,6 +561,10 @@ def reload_queryset(fields):
             filter_criteria = model_filters.get(model_name)
             if filter_criteria is not None:
                 field.queryset = field.queryset.model.objects.filter(**filter_criteria)
+            elif selected_company and not selected_company == "all":
+                field.queryset = field.queryset.model.objects.filter(
+                    id=selected_company
+                )
             else:
                 field.queryset = field.queryset.model.objects.all()
 
