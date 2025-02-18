@@ -241,3 +241,28 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+
+
+if env("DATABASE_URL", default=None):
+    DATABASES = {
+        "default": env.db(),
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": env("DB_ENGINE", default="django.db.backends.sqlite3"),
+            "NAME": env(
+                "DB_NAME",
+                default=os.path.join(
+                    BASE_DIR,
+                    "TestDB_Horilla.sqlite3",
+                ),
+            ),
+            "USER": env("DB_USER", default=""),
+            "PASSWORD": env("DB_PASSWORD", default=""),
+            "HOST": env("DB_HOST", default=""),
+            "PORT": env("DB_PORT", default=""),
+        }
+    }
