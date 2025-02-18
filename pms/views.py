@@ -1662,8 +1662,11 @@ def feedback_list_search(request):
     requested_feedback_ids.extend(
         [i.id for i in Feedback.objects.filter(subordinate_id=employee_id)]
     )
-    requested_feedback = Feedback.objects.filter(pk__in=requested_feedback_ids).filter(
-        review_cycle__icontains=feedback
+    requested_feedback = Feedback.objects.filter(
+        pk__in=requested_feedback_ids,
+        review_cycle__icontains=feedback,
+        start_date__lte=datetime.date.today(),
+        end_date__gte=datetime.date.today(),
     )
     all_feedback = Feedback.objects.none()
     if request.user.has_perm("pms.view_feedback"):
@@ -1708,9 +1711,10 @@ def feedback_list_view(request):
     )
     # feedbacks to answer
     feedback_requested = Feedback.objects.filter(
-        Q(manager_id=employee) | Q(colleague_id=employee) | Q(subordinate_id=employee)
+        Q(manager_id=employee) | Q(colleague_id=employee) | Q(subordinate_id=employee),
+        start_date__lte=datetime.date.today(),
+        end_date__gte=datetime.date.today(),
     ).distinct()
-
     if user.has_perm("pms.view_feedback"):
         feedback_all = Feedback.objects.filter(archive=False)
     else:
@@ -1835,6 +1839,10 @@ def feedback_answer_get(request, id, **kwargs):
         messages.info(request, _("Feedback not started yet"))
         return redirect(feedback_list_view)
 
+    # check if the feedback end_date is not over
+    if feedback.end_date and feedback.end_date < datetime.date.today():
+        messages.info(request, _("Feedback is due"))
+        return redirect(feedback_list_view)
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
     answer = Answer.objects.filter(feedback_id=feedback, employee_id=employee)
