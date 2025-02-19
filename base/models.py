@@ -1707,7 +1707,7 @@ class CompanyLeaves(HorillaModel):
     )
     based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
     company_id = models.ForeignKey(Company, null=True, on_delete=models.PROTECT)
-    objects = HorillaCompanyManager(related_company_field="company_id")
+    objects = HorillaCompanyManager()
 
     class Meta:
         unique_together = ("based_on_week", "based_on_week_day")
