@@ -30,7 +30,7 @@ env = environ.Env(
         "django-insecure-j8op9)1q8$1&0^s&p*_0%d#pr@w9qj@1o=3#@d=a(^@9@zd@%j",
     ),
     ALLOWED_HOSTS=(list, ["*"]),
-    CSRF_TRUSTED_ORIGINS=(list, ["http://localhost:8000"]),
+    CSRF_TRUSTED_ORIGINS=(list, ["http://localhost:8080","http://127.0.0.1:8080"]),
 )
 
 env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
@@ -129,10 +129,11 @@ else:
                     "TestDB_Horilla.sqlite3",
                 ),
             ),
-            "USER": env("DB_USER", default=""),
-            "PASSWORD": env("DB_PASSWORD", default=""),
-            "HOST": env("DB_HOST", default=""),
-            "PORT": env("DB_PORT", default=""),
+            "NAME": env("DB_NAME", default="horilla"),
+            "USER": env("DB_USER", default="horilla"),
+            "PASSWORD": env("DB_PASSWORD", default="horilla"),
+            "HOST": env("DB_HOST", default="localhost"),
+            "PORT": env("DB_PORT", default="5432"),
         }
     }
 
@@ -186,7 +187,8 @@ MESSAGE_TAGS = {
 
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 
-LOGIN_URL = "/login"
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 
 SIMPLE_HISTORY_REVERT_DISABLED = True
@@ -260,9 +262,13 @@ else:
                     "TestDB_Horilla.sqlite3",
                 ),
             ),
-            "USER": env("DB_USER", default=""),
-            "PASSWORD": env("DB_PASSWORD", default=""),
-            "HOST": env("DB_HOST", default=""),
-            "PORT": env("DB_PORT", default=""),
+            "ENGINE": env("DB_ENGINE", default="django.db.backends.sqlite3"),
+            "NAME": env("DB_NAME", default="horilla"),
+            "USER": env("DB_USER", default="horilla"),
+            "PASSWORD": env("DB_PASSWORD", default="horilla"),
+            "HOST": env("DB_HOST", default="localhost"),
+            "PORT": env("DB_PORT", default="5432"),
         }
     }
+    
+    
