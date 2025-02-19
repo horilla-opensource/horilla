@@ -6,9 +6,11 @@
 class="oh-wrapper oh-main__topbar"
 x-data="{searchShow: false}"
 >
-<div class="oh-main__titlebar oh-main__titlebar--left">
-  <div class="oh-main__titlebar-title fw-bold mb-0 text-dark"  style="cursor:pointer;">{% trans "Recruitments" %}</div>
-</div>
+{% if perms.recruitment.add_recruitment %}
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <div class="oh-main__titlebar-title fw-bold mb-0 text-dark"  style="cursor:pointer;">{% trans "Recruitments" %}</div>
+  </div>
+{% endif %}
 
 <div class="oh-switch" style="width: 30px; margin-left:1200px;">
     <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Switch to Ongoing Recruitments' %}" {% else %} title="{% trans 'Switch to Closed Recruitments' %}" {% endif %} id="is_closed" >

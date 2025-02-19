@@ -1,181 +1,206 @@
-{% load basefilters %}
-{% load i18n %}{% load static %}
+{% load basefilters %} {% load i18n %}{% load static %}
 <style>
-    input:focus{
-      outline: .5px solid #7592aa5c !important;
-    }
-    input::not(:focus){
-      outline: none;
-    }
-    .oh-table__editable-input{
-      font-size: 1rem !important;
-    }
-  </style>
-  <div id="messages" class="oh-alert-container"></div>
-  <div class="oh-inner-sidebar-content">
-    <div
-      class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
-    >
-      <h2 class="oh-inner-sidebar-content__title">
-        {% trans "Group Permissions" %}
-      </h2>
-      <div class=" d-flex">
-          <div class="oh-input-group oh-input__search-group">
-            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
-              <input hx-get="{% url 'user-group-search' %}" hx-target="#permissionContainer" hx-trigger="keyup changed delay:.2s" type="text" id="permissionSearch" placeholder="Search" name="search" class="oh-input oh-input__icon" aria-label="Search Input">
-          </div>
-          {% if perms.auth.add_group %}
-          <button
-            style="margin-left: 10px;"
+  input:focus {
+    outline: 0.5px solid #7592aa5c !important;
+  }
+  input::not(:focus) {
+    outline: none;
+  }
+  .oh-table__editable-input {
+    font-size: 1rem !important;
+  }
+</style>
+<div id="messages" class="oh-alert-container"></div>
+<div class="oh-inner-sidebar-content">
+  <div
+    class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
+  >
+    <h2 class="oh-inner-sidebar-content__title">
+      {% trans "Group Permissions" %}
+    </h2>
+    <div class="d-flex">
+      <div class="oh-input-group oh-input__search-group">
+        <ion-icon
+          name="search-outline"
+          class="oh-input-group__icon oh-input-group__icon--left md hydrated"
+          role="img"
+          aria-label="search outline"
+        ></ion-icon>
+        <input
+          hx-get="{% url 'user-group-search' %}"
+          hx-target="#permissionContainer"
+          hx-trigger="keyup changed delay:.2s"
+          type="text"
+          id="permissionSearch"
+          placeholder="Search"
+          name="search"
+          class="oh-input oh-input__icon"
+          aria-label="Search Input"
+        />
+      </div>
+      {% if perms.auth.add_group %}
+        <button
+            style="margin-left: 10px"
             class="oh-btn oh-btn--secondary oh-btn--shadow"
             data-toggle="oh-modal-toggle"
             data-target="#Permissions"
-          >
+        >
             <ion-icon name="add-outline"></ion-icon>
             {% trans "Create" %}
-          </button>
-          {% endif %}
-      </div>
-    </div>
-  </div>
-  <div id="permissionContainer">
-    {% include "base/auth/group_lines.html" %}
-  </div>
-
-  <div
-    class="oh-modal"
-    id="Permissions"
-    role="dialog"
-    aria-labelledby="Permissions"
-    aria-hidden="true"
-  >
-    <div class="oh-modal__dialog" style="max-width: 880px">
-      <div class="oh-modal__dialog-header">
-        <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-          {% trans "Group Permissions" %}
-        </h2>
-        <button class="oh-modal__close" aria-label="Close">
-          <ion-icon name="close-outline"></ion-icon>
         </button>
-      </div>
-      <div class="oh-modal__dialog-body">
-        <form
-          hx-post='{% url "user-group-create" %}'
-          class="perm-form"
-          id="permissionForm"
-        >
-          {% include "base/auth/group_assign.html" %}
-        </form>
-      </div>
+      {% endif %}
     </div>
   </div>
+</div>
+<div id="permissionContainer">{% include "base/auth/group_lines.html" %}</div>
 
-  <div
-    class="oh-modal"
-    id="groupAssign"
-    role="dialog"
-    aria-labelledby="groupAssign"
-    aria-hidden="true"
-  >
-    <div class="oh-modal__dialog" >
-      <div class="oh-modal__dialog-header">
-        <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-          {% trans "Group Assign" %}
-        </h2>
-        <button class="oh-modal__close" aria-label="Close">
-          <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
-      <div class="oh-modal__dialog-body" id="groupAssignBody">
-
-      </div>
+<div
+  class="oh-modal"
+  id="Permissions"
+  role="dialog"
+  aria-labelledby="Permissions"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog" style="max-width: 880px">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+        {% trans "Group Permissions" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body">
+      <form
+        hx-post='{% url "user-group-create" %}'
+        class="oh-profile-section perm-form"
+        id="permissionForm"
+      >
+        {% include "base/auth/group_assign.html" %}
+      </form>
     </div>
   </div>
+</div>
 
-  <script>
-    function selectAllPermissions(elem) {
-      $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.row-permission').prop('checked',$(elem).is(':checked')).change()
-    }
+<div
+  class="oh-modal"
+  id="groupAssign"
+  role="dialog"
+  aria-labelledby="groupAssign"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+        {% trans "Group Assign" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="groupAssignBody"></div>
+  </div>
+</div>
 
-    function updateGroupPermissions(elem) {
-      var groupId = elem.attr("data-group-id");
-      var name = elem.attr("data-group-name")
-      var permissions = [];
-      var panel = elem.closest(".oh-general__tab-target.oh-profile-section")
-      panel.find("[type=checkbox][name=permissions]").each(function () {
-        if ($(this).is(":checked")) {
-          var permissionValue = $(this).val();
-          permissions.push(permissionValue);
-        }
-      });
-      $.ajax({
-        type: "post",
-        url: '{% url "update-group-permission" %}',
-        traditional: true,
-        data: {
-          csrfmiddlewaretoken: getCookie("csrftoken"),
-          permissions: permissions,
-          id: groupId,
-          name:name,
-        },
-        success: function (response) {
-          $("#messages").html(
-            $(`
+<script>
+  function selectAllPermissions(elem) {
+    $(elem)
+      .closest(".oh-sticky-table__thead")
+      .siblings(".oh-sticky-table__tbody")
+      .find(".row-permission")
+      .prop("checked", $(elem).is(":checked"))
+      .change();
+  }
+
+  function updateGroupPermissions(elem) {
+    var groupId = elem.attr("data-group-id");
+    var name = elem.attr("data-group-name");
+    var permissions = [];
+    var panel = elem.closest(".oh-general__tab-target.oh-profile-section");
+    panel.find("[type=checkbox][name=permissions]").each(function () {
+      if ($(this).is(":checked")) {
+        var permissionValue = $(this).val();
+        permissions.push(permissionValue);
+      }
+    });
+    $.ajax({
+      type: "post",
+      url: '{% url "update-group-permission" %}',
+      traditional: true,
+      data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+        permissions: permissions,
+        id: groupId,
+        name: name,
+      },
+      success: function (response) {
+        $("#messages").html(
+          $(`
             <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
               ${response.message}.
             </div>
           `)
-          );
-        },
-        error: function (response) {
-          $("#messages").html(
-            $(`
+        );
+      },
+      error: function (response) {
+        $("#messages").html(
+          $(`
             <div class="oh-alert oh-alert--animated oh-alert--danger">
               Sever error.
             </div>
           `)
-          );
-        },
-      });
-    }
-    function updateBadge(element=false) {
-      var panels = $(".panel");
-      $.each(panels, function (indexInArray, valueOfElement) {
-        var check = $(valueOfElement).find("[name=permissions]:checked").length;
-        $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
-        $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title",check + " Permissions");
+        );
+      },
+    });
+  }
+  function updateBadge(element = false) {
+    var panels = $(".panel");
+    $.each(panels, function (indexInArray, valueOfElement) {
+      var check = $(valueOfElement).find("[name=permissions]:checked").length;
+      $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+      $(valueOfElement)
+        .prev()
+        .find(".oh-badge.permission-badge")
+        .attr("title", check + " Permissions");
     });
 
-      var permissionLine = $(".oh-sticky-table__tr");
-      $.each(permissionLine, function(index,value){
-        var check = $(value).find("[name=permissions]:checked").length;
-        if (check === 4) {
-          $(value).find(".row-permission").prop("checked", true);
-        }
-      })
-
-      var permissionApps = $(".oh-sticky-table__tbody")
-      $.each(permissionApps, function(index,value){
-        var total_permission_count = $(value).find("[name=permissions]").length;
-        var checked_permission_count = $(value).find("[name=permissions]:checked").length
-        if (checked_permission_count===total_permission_count){
-          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",true);
-        } else {
-          $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked",false)
-        }
-      })
-
-    }
-    $(document).ready(function(){
-      updateBadge();
-        var timeout;
-        $("#permissionContainer [name=permissions]").on("change", function(e){
-            e.preventDefault();
-            clearTimeout(timeout);
-            timeout = setTimeout(function() {
-                updateBadge($(this));
-                updateGroupPermissions($(e.target));
-            }, 100);
-        })
+    var permissionLine = $(".oh-sticky-table__tr");
+    $.each(permissionLine, function (index, value) {
+      var check = $(value).find("[name=permissions]:checked").length;
+      if (check === 4) {
+        $(value).find(".row-permission").prop("checked", true);
+      }
     });
-  </script>
+
+    var permissionApps = $(".oh-sticky-table__tbody");
+    $.each(permissionApps, function (index, value) {
+      var total_permission_count = $(value).find("[name=permissions]").length;
+      var checked_permission_count = $(value).find(
+        "[name=permissions]:checked"
+      ).length;
+      if (checked_permission_count === total_permission_count) {
+        $(this)
+          .siblings(".oh-sticky-table__thead")
+          .find(".row-permission__select-all")
+          .prop("checked", true);
+      } else {
+        $(this)
+          .siblings(".oh-sticky-table__thead")
+          .find(".row-permission__select-all")
+          .prop("checked", false);
+      }
+    });
+  }
+  $(document).ready(function () {
+    updateBadge();
+    var timeout;
+    $("#permissionContainer [name=permissions]").on("change", function (e) {
+      e.preventDefault();
+      clearTimeout(timeout);
+      timeout = setTimeout(function () {
+        updateBadge($(this));
+        updateGroupPermissions($(e.target));
+      }, 100);
+    });
+  });
+</script>

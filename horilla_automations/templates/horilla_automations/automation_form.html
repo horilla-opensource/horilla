@@ -1,32 +1,39 @@
 <div id="formContainer">
-{% include "generic/horilla_form.html" %}
+    {% include "generic/horilla_form.html" %}
+
 </div>
 <script>
-  $("#{{view_id}} form button").click(function (e) {
-    const form = document.getElementById('multipleConditionForm');
-    const elements = form.elements;
-    const queryString = Array.from(elements)
-      .filter(element => element.name && !element.disabled)
-      .map(element => encodeURIComponent(element.name) + '=' + encodeURIComponent(element.value))
-      .join('&');
-      $("#{{view_id}} form [name=condition_querystring]").val(queryString);
-    html = $(".note-editable #multipleConditionForm").html()
-    $("#{{view_id}} form [name=condition_html]").val(html);
-  });
-  $("#dynamic_field_condition").parent().removeClass("col-md-6");
-  // summernote
-  $("#dynamic_field_condition textarea")
-    .summernote({
-      height: 100,
-      toolbar: false,
-    })
-    .summernote("code", getHtml());
-  {% if form.instance.pk %}
-  $("#id_mail_to").val({{form.instance.mail_to|safe}}).change()
-  $("#dynamic_field_condition .note-editable").html($("<form id='multipleConditionForm'></form>"));
-  $("#dynamic_field_condition .note-editable #multipleConditionForm").html($(`{{form.instance.condition_html|safe}}`))
-  $(".note-editable select").parent().find("span.select2").remove()
-  $(".note-editable select").parent().find(".select2-hidden-accessible").removeClass("select2-hidden-accessible")
-  $(".note-editable select").parent().find("select").select2();
-  {% endif %}
+
+    $(document).on('click', '.oh-accordion-header', function (event) {
+        $(this).closest('.oh-accordion').toggleClass('oh-accordion--show');
+    });
+
+    $("#{{view_id}} form button").click(function (e) {
+        const form = document.getElementById('multipleConditionForm');
+        const elements = form.elements;
+        const queryString = Array.from(elements)
+            .filter(element => element.name && !element.disabled)
+            .map(element => encodeURIComponent(element.name) + '=' + encodeURIComponent(element.value))
+            .join('&');
+        $("#{{view_id}} form [name=condition_querystring]").val(queryString);
+        html = $(".note-editable #multipleConditionForm").html()
+        $("#{{view_id}} form [name=condition_html]").val(html);
+    });
+
+    $("#dynamic_field_condition").parent().removeClass("col-md-6");
+    // summernote
+    $("#dynamic_field_condition textarea")
+        .summernote({
+            height: 100,
+            toolbar: false,
+        })
+        .summernote("code", getHtml());
+    {% if form.instance.pk %}
+        $("#id_mail_to").val({{ form.instance.mail_to | safe }}).change()
+        $("#dynamic_field_condition .note-editable").html($("<form id='multipleConditionForm'></form>"));
+        $("#dynamic_field_condition .note-editable #multipleConditionForm").html($(`{{form.instance.condition_html|safe}}`))
+        $(".note-editable select").parent().find("span.select2").remove()
+        $(".note-editable select").parent().find(".select2-hidden-accessible").removeClass("select2-hidden-accessible")
+        $(".note-editable select").parent().find("select").select2();
+    {% endif %}
 </script>

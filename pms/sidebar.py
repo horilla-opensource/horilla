@@ -40,7 +40,7 @@ SUBMENUS = [
     {
         "menu": trans("Period"),
         "redirect": reverse("period-view"),
-        "accessibility": "pms.sidebar.key_result_accessibility",
+        "accessibility": "pms.sidebar.period_accessibility",
     },
     {
         "menu": trans("Question Template"),
@@ -51,6 +51,12 @@ SUBMENUS = [
 
 
 def key_result_accessibility(request, submenu, user_perms, *args, **kwargs):
+    return request.user.has_perm("pms.view_keyresult") or is_reportingmanager(
+        request.user
+    )
+
+
+def period_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm("pms.view_period") or is_reportingmanager(request.user)
 
 

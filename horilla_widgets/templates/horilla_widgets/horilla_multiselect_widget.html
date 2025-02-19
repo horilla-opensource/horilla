@@ -118,7 +118,7 @@
     .select2{
       width: 100% !important;
     }
-    #slectContainer{{self.attrs.id}} .select2-container .select2-selection{
+    #selectContainer{{self.attrs.id}} .select2-container .select2-selection{
       padding: 5px !important;
       max-height: 70px !important;
       overflow: hidden;
@@ -138,7 +138,7 @@
       border-radius: 6px;
     }
   </style>
-  <div id="slectContainer{{self.attrs.id}}">
+  <div id="selectContainer{{self.attrs.id}}">
     <select name="{{field_name}}" id="{{self.attrs.id}}" {% if required  %}required{% endif %} class="w-100 oh-select oh-select2" multiple>
       {% for instance in queryset %}
       <option value="{{instance.id}}">{{instance}}</option>

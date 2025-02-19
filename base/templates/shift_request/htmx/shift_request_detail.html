@@ -87,9 +87,7 @@
       <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
           <span class="oh-timeoff-modal__stat-title">{% trans "Is permenent shift" %}</span>
           <span class="oh-timeoff-modal__stat-count">
-            {% if shift_request.is_permanent_shift == True %} {% trans "Yes" %}
-            {% else %} {% trans "No" %}
-            {% endif %}
+            {{shift_request.is_permanent_shift|yes_no}}
           </span>
       </div>
     </div>

@@ -17,6 +17,9 @@
           <li {% if instance.pk == object.pk %} class="active" {% endif %}>
             <a
               hx-get="{{object.get_profile_url}}?{{request.GET.urlencode}}"
+              {% if push_url %}
+              hx-push-url = "{{object.get_push_url}}"
+              {% endif %}
               hx-target="#{{view_id|safe}}"
               hx-swap="outerHTML"
              class="d-block">
@@ -80,6 +83,9 @@
           <a
 
           hx-get="{{previous_url}}?instance_ids={{instance_ids}}"
+          {% if push_url %}
+          hx-push-url = "{{object.get_push_url}}"
+          {% endif %}
           hx-target="#{{view_id|safe}}"
           hx-swap="outerHTML"
             title=""
@@ -96,6 +102,9 @@
           </a>
           <a
             hx-get="{{next_url}}?instance_ids={{instance_ids}}"
+            {% if push_url %}
+            hx-push-url = "{{object.get_push_url}}"
+            {% endif %}
             hx-target="#{{view_id|safe}}"
             hx-swap="outerHTML"
             title=""
@@ -165,10 +174,13 @@
           <div class="oh-profile__avatar">
             <img src="{{instance.get_avatar}}" class="oh-profile__image" />
           </div>
+          {% if instance|getattribute:"is_active" %}
           <span
             class="oh-profile__active-badge oh-profile__active-badge--secondary"
             title="Active"
+            style="background-color: limegreen;"
           ></span>
+          {% endif %}
         </div>
         <div class="oh-profile__info-container">
           <h1 class="oh-profile__info-name">{{instance}}</h1>

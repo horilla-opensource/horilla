@@ -1,0 +1,37 @@
+{% load basefilters i18n %}
+{% for project in projects %}
+  <div class="oh-user_permission-list_item perm-accordion exclude-accordion-style" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');$(this).next().find('.oh-general__tab-target').removeClass('d-none');">
+    <div class="oh-user_permission-list_profile">
+      <div class="oh-navbar__user-photo oh-user_permission--profile">
+        <img src="{{ project.get_avatar }}" class="oh-navbar__user-image" loading="lazy" />
+      </div>
+      <div class="oh-feedback-card__name-container ms-1"   hx-target="#genericModalBody" data-target="#genericModal" data-toggle="oh-modal-toggle" hx-get="{% url 'project-detailed-view' project.id %}">
+        <span class="oh-card__title oh-card__title--sm fw-bold me-1">{{ project.title }}</span>
+      </div>
+    </div>
+    <div class="d-flex d-flex-reverse">
+    <button
+    onclick = "event.stopPropagation();"
+    class="oh-btn "
+    title="{% trans 'View Project' %}"
+    hx-target="#genericModalBody"
+    data-target="#genericModal"
+    data-toggle="oh-modal-toggle"
+    hx-get="{% url 'project-detailed-view' project.id %}"
+
+    ><ion-icon
+    name="eye-outline"
+    role="img"
+      ></ion-icon
+      ></button>
+
+    <button class="oh-accordion-meta__btn oh-user_permssion-dropdownbtn"><ion-icon class="ms-2 oh-accordion-meta__btn-icon md hydrated" name="caret-down-outline" role="img" aria-label="caret down outline"></ion-icon></button>
+</div>
+  </div>
+  <div class="panel view-employees" id="panel{{ employee.id }}" data-user-id="{{ employee.id }}">
+    <div class="oh-general__tab-target oh-profile-section">
+            <div hx-get="{% url 'tasks-list-individual-view' %}?employee_id={{ employee.id }}&project_id={{ project.id }}" hx-trigger="load">
+            </div>
+    </div>
+  </div>
+{% endfor %}

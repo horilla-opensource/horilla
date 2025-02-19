@@ -1,4 +1,12 @@
 {% load static i18n %} {% load i18n %}
+{% if messages %}
+    <span hx-get="{%url 'asset-batch-number-search'%}" hx-target="#AssetBatchList" hx-trigger="load"></span>
+    <script>
+        setTimeout(function () {
+        $('.oh-modal__close').click()
+    }, 1000);
+    </script>
+{% endif %}
 <!-- start of messages -->
 {% if in_use_message %}
     <div class="oh-wrapper">
@@ -13,7 +21,7 @@
 
 <div class="oh-modal__dialog-header">
     <h5 class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">{% trans "Batch Number Update" %}</h5>
-    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close" hx-get="{%url 'asset-batch-number-search'%}" hx-target="#AssetBatchList">
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close">
       <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>

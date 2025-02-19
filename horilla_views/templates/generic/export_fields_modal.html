@@ -12,23 +12,27 @@
         <h2 class="oh-modal__dialog-title" id="exportModalLable{{view_id|safe}}">
           {% trans "Export" %} {{verbose_name}}
         </h2>
-        <button class="oh-modal__close" aria-label="Close">
+        <button onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" class="oh-modal__close" aria-label="Close">
           <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>
       <div class="oh-modal__dialog-body">
         <form
+          method="post"
+          action="/{{export_path}}"
           onsubmit="
-            event.preventDefault();
             const selectedFields = $('#{{view_id|safe}} input[name=selected_fields]:checked').map(function() {
                 return [[$(this).attr('data-label'),this.value]];
             }).get();
             selectedIds = $('#{{selected_instances_key_id}}').attr('data-ids');
-            window.location.href = '/{{export_path}}' + '?ids='+selectedIds + '&columns='+JSON.stringify(selectedFields);
-            event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');
+            $(this).find('[name=ids]').val(selectedIds);
+            $(this).find('[name=columns]').val(JSON.stringify(selectedFields));
           "
           id="candidateExportForm"
         >
+        {% csrf_token %}
+        <input type="hidden" name="ids" id="{{view_id}}ExportIds">
+        <input type="hidden" name="columns" id="{{view_id}}ExportColumns">
 
           <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-6">
@@ -99,6 +103,7 @@
 
           <div class="oh-modal__dialog-footer p-0 mt-3">
             <button
+              onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
               type="submit"
               class="oh-btn oh-btn--secondary oh-btn--shadow"
             >

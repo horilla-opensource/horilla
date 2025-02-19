@@ -10,7 +10,7 @@ from datetime import datetime
 import django
 from django.apps import apps
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
@@ -648,12 +648,16 @@ class RotatingShift(HorillaModel):
         related_name="shift1",
         on_delete=models.PROTECT,
         verbose_name=_("Shift 1"),
+        blank=True,
+        null=True,
     )
     shift2 = models.ForeignKey(
         EmployeeShift,
         related_name="shift2",
         on_delete=models.PROTECT,
         verbose_name=_("Shift 2"),
+        blank=True,
+        null=True,
     )
     additional_data = models.JSONField(
         default=dict,
@@ -674,8 +678,6 @@ class RotatingShift(HorillaModel):
         return str(self.name)
 
     def clean(self):
-        if self.shift1 == self.shift2:
-            raise ValidationError(_("Select different shift continuously"))
 
         additional_shifts = (
             self.additional_data.get("additional_shifts", [])
@@ -683,31 +685,51 @@ class RotatingShift(HorillaModel):
             else []
         )
 
-        if additional_shifts and str(self.shift2.id) == additional_shifts[0]:
+        if additional_shifts and self.shift1 == self.shift2:
             raise ValidationError(_("Select different shift continuously"))
 
-        if additional_shifts and str(self.shift1.id) == additional_shifts[-1]:
-            raise ValidationError(_("Select different shift continuously"))
+        #  ---------------- Removed the validation for same shifts to be continously added ----------------
 
-        for i in range(len(additional_shifts) - 1):
-            if additional_shifts[i] and additional_shifts[i + 1]:
-                if additional_shifts[i] == additional_shifts[i + 1]:
-                    raise ValidationError(_("Select different shift continuously"))
+        # if additional_shifts and str(self.shift2.id) == additional_shifts[0]:
+        #     raise ValidationError(_("Select different shift continuously"))
+
+        # if additional_shifts and str(self.shift1.id) == additional_shifts[-1]:
+        #     raise ValidationError(_("Select different shift continuously"))
+
+        # for i in range(len(additional_shifts) - 1):
+        #     if additional_shifts[i] and additional_shifts[i + 1]:
+        #         if additional_shifts[i] == additional_shifts[i + 1]:
+        #             raise ValidationError(_("Select different shift continuously"))
 
     def additional_shifts(self):
-        rotating_shift = RotatingShift.objects.get(id=self.pk)
-        additional_data = rotating_shift.additional_data
+        additional_data = self.additional_data
         if additional_data:
             additional_shift_ids = additional_data.get("additional_shifts")
             if additional_shift_ids:
-                additional_shifts = EmployeeShift.objects.filter(
-                    id__in=additional_shift_ids
-                )
+                unique_ids = set(additional_shift_ids)
+                shifts_dict = {
+                    shift.id: shift
+                    for shift in EmployeeShift.objects.filter(id__in=unique_ids)
+                }
+                additional_shifts = []
+                for shift_id in additional_shift_ids:
+                    if shift_id:
+                        additional_shifts.append(shifts_dict[int(shift_id)])
+                    else:
+                        additional_shifts.append(None)
             else:
                 additional_shifts = None
         else:
             additional_shifts = None
         return additional_shifts
+
+    def total_shifts(self):
+        total_shifts = []
+        total_shifts += [self.shift1, self.shift2]
+        if self.additional_shifts():
+            total_shifts += list(self.additional_shifts())
+
+        return total_shifts
 
 
 class RotatingShiftAssign(HorillaModel):
@@ -1385,7 +1407,12 @@ class MultipleApprovalCondition(HorillaModel):
             condition_id=self.pk
         ).order_by("sequence")
         for query in queryset:
-            employee = Employee.objects.get(id=query.employee_id)
+            emp_id = query.employee_id
+            employee = (
+                query.reporting_manager
+                if not emp_id
+                else Employee.objects.get(id=emp_id)
+            )
             managers.append(employee)
 
         return managers
@@ -1396,8 +1423,15 @@ class MultipleApprovalManagers(models.Model):
         MultipleApprovalCondition, on_delete=models.CASCADE
     )
     sequence = models.IntegerField(null=False, blank=False)
-    employee_id = models.IntegerField(null=False, blank=False)
+    employee_id = models.IntegerField(null=True, blank=True)
+    reporting_manager = models.CharField(max_length=100, null=True, blank=True)
     objects = models.Manager()
+
+    def get_manager(self):
+        manager = self.employee_id
+        if manager:
+            manager = self.reporting_manager.replace("_", " ").title()
+        return manager
 
 
 class DynamicPagination(models.Model):
@@ -1467,7 +1501,13 @@ class Announcement(HorillaModel):
     )
     department = models.ManyToManyField(Department, blank=True)
     job_position = models.ManyToManyField(JobPosition, blank=True)
+    company_id = models.ManyToManyField(
+        Company,
+        blank=True,
+        related_name="announcement",
+    )
     disable_comments = models.BooleanField(default=False)
+    objects = HorillaCompanyManager(related_company_field="company_id")
 
     def get_views(self):
         """
@@ -1637,7 +1677,6 @@ class Holidays(HorillaModel):
     company_id = models.ForeignKey(
         Company,
         null=True,
-        editable=False,
         on_delete=models.PROTECT,
         verbose_name=_("Company"),
     )
@@ -1646,16 +1685,28 @@ class Holidays(HorillaModel):
     def __str__(self):
         return self.name
 
+    def today_holidays(today=None) -> models.QuerySet:
+        """
+        Retrieve holidays that overlap with the given date (default is today).
+
+        Args:
+            today (date, optional): The date to check for holidays. Defaults to the current date.
+
+        Returns:
+            QuerySet: A queryset of `Holidays` instances where the given date falls between
+                    `start_date` and `end_date` (inclusive).
+        """
+        today = today or date.today()
+        return Holidays.objects.filter(start_date__lte=today, end_date__gte=today)
+
 
 class CompanyLeaves(HorillaModel):
     based_on_week = models.CharField(
         max_length=100, choices=WEEKS, blank=True, null=True
     )
     based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
-    company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
-    )
-    objects = HorillaCompanyManager(related_company_field="company_id")
+    company_id = models.ForeignKey(Company, null=True, on_delete=models.PROTECT)
+    objects = HorillaCompanyManager()
 
     class Meta:
         unique_together = ("based_on_week", "based_on_week_day")
@@ -1732,6 +1783,15 @@ class PenaltyAccounts(HorillaModel):
         ordering = ["-created_at"]
 
 
+class NotificationSound(models.Model):
+    from employee.models import Employee
+
+    employee = models.OneToOneField(
+        Employee, on_delete=models.CASCADE, related_name="notification_sound"
+    )
+    sound_enabled = models.BooleanField(default=False)
+
+
 @receiver(post_save, sender=PenaltyAccounts)
 def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
     """
@@ -1784,3 +1844,5 @@ class AllowedDomains(models.Model):
     domains = models.TextField(null=True, blank=True)
     class Meta:
         db_table = 'auth_allowed_domains'
+
+User.add_to_class("is_new_employee", models.BooleanField(default=False))

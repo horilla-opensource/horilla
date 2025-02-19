@@ -41,6 +41,7 @@ class MailSendThread(Thread):
                     "host": self.host,
                     "protocol": self.protocol,
                 },
+                request=self.request,
             )
             attachments = []
             for instance in record["instances"]:

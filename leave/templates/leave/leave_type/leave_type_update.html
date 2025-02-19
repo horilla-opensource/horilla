@@ -150,6 +150,16 @@
           <div class="col-sm-12 col-md-12">
               <div>
                   <div class="oh-input-group oh-label__info">
+                      <label for="id_carryforward_expire_in" class="oh-label">{% trans "Carryforward Expire In" %}</label>
+                      <span class=" oh-info me-3" id="expire_in_help" title="{% trans 'The count of carryforward expire period' %}"></span>
+                  </div>
+                      {{form.carryforward_expire_in}}
+                      {{form.carryforward_expire_in.errors}}
+              </div>
+          </div>
+          <div class="col-sm-12 col-md-12">
+              <div>
+                  <div class="oh-input-group oh-label__info">
                       <label for="id_carryforward_expire_period" class="oh-label">{% trans "Carryforward Expire Period" %}</label>
                       <span class=" oh-info me-3" id="expire_period_help" title="{% trans 'The time period for the expiration of carryforward leave.' %}"></span>
                   </div>
@@ -160,11 +170,11 @@
           <div class="col-sm-12 col-md-12">
               <div>
                   <div class="oh-input-group oh-label__info">
-                      <label for="id_carryforward_expire_in" class="oh-label">{% trans "Carryforward Expire In" %}</label>
-                      <span class=" oh-info me-3" id="expire_in_help" title="{% trans 'The count of carryforward expire period' %}"></span>
+                      <label for="id_carryforward_expire_date" class="oh-label">{% trans "Carryforward Expire Date" %}</label>
+                      <span class=" oh-info me-3" title="{% trans 'The date on which carryforward leave resets to 0. After this reset, the date will be updated to the next expiration period.' %}"></span>
                   </div>
-                      {{form.carryforward_expire_in}}
-                      {{form.carryforward_expire_in.errors}}
+                      {{form.carryforward_expire_date}}
+                      {{form.carryforward_expire_date.errors}}
               </div>
           </div>
           <div class="col-sm-12 col-md-12  col-lg-6">
@@ -250,37 +260,39 @@
     var icon = $("#id_icon");
     icon.show();
     var reset = $("#id_reset");
-    var reset_based_label = $("label[for='id_reset_based']");
+    var reset_based_label = $("label[for='id_reset_based']").closest(".oh-input-group");
     var reset_based = $("#id_reset_based");
-    var reset_based_span = $("#reset_based_id");
-    var reset_month_label = $("label[for='id_reset_month']");
+    var reset_based_span = $("#reset_based_id").closest(".oh-input-group");
+    var reset_month_label = $("label[for='id_reset_month']").closest(".oh-input-group");
     var reset_month = $("#id_reset_month");
-    var reset_day_label = $("label[for='id_reset_day']");
+    var reset_day_label = $("label[for='id_reset_day']").closest(".oh-input-group");
     var reset_day = $("#id_reset_day");
     var reset_weekend = $("#id_reset_weekend");
-    var reset_weekend_label = $("label[for='id_reset_weekend']");
+    var reset_weekend_label = $("label[for='id_reset_weekend']").closest(".oh-input-group");
     var carryforward_type = $("#id_carryforward_type");
-    var carryforward_max_label = $("label[for='id_carryforward_max']");
+    var carryforward_max_label = $("label[for='id_carryforward_max']").closest(".oh-input-group");
     var carryforward_max = $("#id_carryforward_max");
     var carryforward_expire_in_label = $(
       "label[for='id_carryforward_expire_in']"
-    );
+    ).closest(".oh-input-group");
     var carryforward_expire_in = $("#id_carryforward_expire_in");
     var carryforward_expire_period_label = $(
       "label[for='id_carryforward_expire_period']"
-    );
+    ).closest(".oh-input-group");
     var carryforward_expire_period = $("#id_carryforward_expire_period");
     var totalDaysContainer = $(".totalDaysContainer");
     var resetContainer = $(".resetContainer");
     var totalDays = $("#id_total_days");
     var limitLeave = $("#id_limit_leave");
+    var carryforward_expire_date_label = $("label[for='id_carryforward_expire_date']").closest(".oh-input-group");
+    var carryforward_expire_date = $("#id_carryforward_expire_date");
 
     var hiddenLabelsFields = $("[data-hidden]");
     for (let index = 0; index < hiddenLabelsFields.length; index++) {
       const element = hiddenLabelsFields[index];
       var id = $(element).attr("id");
       var label = $('label[for="' + id + '"]');
-      label.hide();
+      label.closest(".oh-input-group").hide();
     }
     //check initial state
 
@@ -391,8 +403,10 @@
           $('#expire_in_help').show(),
           carryforward_expire_in.show().prop("required", true),
           carryforward_expire_period_label.show(),
-          carryforward_expire_period.show().prop("required", true))
-        : (carryforward_expire_in_label.hide(),
+          carryforward_expire_period.show().prop("required", true),
+          carryforward_expire_date_label.closest("div").show(),
+          carryforward_expire_date.show().prop("required", true))
+        : (carryforward_expire_in_label.closest("div").hide(),
           $('#expire_period_help').hide(),
           $('#expire_in_help').hide(),
           $('#carry_max_help').hide(),
@@ -400,7 +414,11 @@
           carryforward_expire_in.val(""),
           carryforward_expire_period_label.hide(),
           carryforward_expire_period.hide().prop("required", false),
-          carryforward_expire_period.val(""));
+          carryforward_expire_period.val(""),
+          carryforward_expire_date_label.closest("div").hide(),
+          carryforward_expire_date.hide().prop("required", false),
+          carryforward_expire_date.val("")
+          );
     });
 
     // leave total days calculation

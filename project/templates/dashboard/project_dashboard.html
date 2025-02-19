@@ -1,0 +1,143 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static i18n %}
+{% load i18n %}
+
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper">
+        <div class="oh-dashboard row">
+            <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+                <div class="oh-dashboard__cards row">
+                    <!-- column -->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--success">
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Total Projects" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a href="{% url 'project-view' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{total_projects}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- column -->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--neutral">
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "New Projects" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a href="{% url 'project-view' %}?{{request.GET.urlencode}}&status=new" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{new_projects}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- column -->
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                        <div class="oh-card-dashboard oh-card-dashboard oh-card-dashboard--warning">
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title">{% trans "Projects in progress" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <a href="{% url 'project-view' %}?{{request.GET.urlencode}}&status=in_progress" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                    <span class="oh-card-dashboard__count">{{projects_in_progress}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- movable cards for charts -->
+                <div class="oh-dashboard__movable-cards row mt-4">
+                    <!-- chart -->
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title">{% trans "Project Status" %}</span>
+                                <span class="oh-card-dashboard__title float-end" id="projectStatusForward"><ion-icon name="caret-forward"></ion-icon></span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <canvas id="projectStatusCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- chart -->
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title">{% trans "Task Status" %}</span>
+                                <span class="oh-card-dashboard__title float-end" id="taskStatusForward"><ion-icon name="caret-forward"></ion-icon></span>
+
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <canvas id="taskStatusCanvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Right end column -->
+            <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
+                <!-- Dashboard events -->
+                <div class="oh-dashboard__events">
+                    <ul class="oh-dashboard__events-nav">
+                        <li class="oh-dashboard__events-nav-item oh-dabdshboard__events-nav-item--active" data-target="0">
+                        </li>
+                        <li class="oh-dashboard__events-nav-item" data-target="1"></li>
+                        <li class="oh-dashboard__events-nav-item" data-target="2"></li>
+                    </ul>
+                </div>
+                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mt-3">
+                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                        <span class="oh-card-dashboard__title"> {% trans "Projects due in this month" %}</span>
+                    </div>
+                    <div class="oh-card-dashboard__body">
+                        <div class="oh-sticky-table h-100" hx-get="{% url 'projects-due-in-this-month' %}" hx-trigger="load" style="border: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div
+        class="oh-modal"
+        id="ProjectModal"
+        role="dialog"
+        aria-labelledby="ProjectModal"
+        aria-hidden="true"
+        >
+        <div
+            class="oh-modal__dialog"
+            id="ProjectFormTarget"
+        ></div>
+    </div>
+    <div
+        class="oh-modal"
+        id="ProjectModalShow"
+        role="dialog"
+        aria-labelledby="ProjectModalShow"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+
+        >
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title">{% trans 'Projects' %}</h2>
+            <button type="button" class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
+                <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+            </button>
+
+        </div>
+        <div class="oh-modal__dialog-body" id="ProjectModalShowTarget">
+        </div>
+    </div>
+</main>
+<!-- Java script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'dashboard/projectChart.js' %}"></script>
+
+{% endblock content %}

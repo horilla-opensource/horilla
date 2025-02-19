@@ -235,6 +235,8 @@ LANGUAGES = (
     ("es", "Español"),
     ("fr", "France"),
     ("ar", "عربى"),
+    ("pt-br", "Português (Brasil)"),
+    ("zh-hans", "Simplified Chinese"),
 )
 
 LOCALE_PATHS = [
@@ -247,7 +249,7 @@ LOCALE_PATHS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "Asia/Kolkata"
+TIME_ZONE = env("TIME_ZONE", default="Asia/Kolkata")
 
 USE_I18N = True
 

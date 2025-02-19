@@ -216,10 +216,12 @@
             </table>
             <script>
               $(document).ready(function () {
+                attrAction =`{{header_attrs.action|safe}}`
+                if (!attrAction){
                 let thWidth = 0;
                 const widths = [];
 
-                $('.lastTd').each(function () {
+                $('#{{view_id}} .lastTd').each(function () {
                   widths.push(this.scrollWidth);
                   $(this).css('overflow', 'hidden');
                 });
@@ -229,8 +231,12 @@
                 if (widths.length) {
                   thWidth = widths[0];
                 }
+                if (!thWidth) {
+                  thWidth = 180
+                }
 
-                $('.lastTh').css("width", `${thWidth}px`);
+                $('#{{view_id}} .lastTh').css("width", `${thWidth}px`);
+              }
               });
             </script>
           </div>

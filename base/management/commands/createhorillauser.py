@@ -1,3 +1,7 @@
+"""
+Horilla management command to create a new user and associated employee.
+"""
+
 import uuid
 
 from django.contrib.auth.models import User
@@ -7,6 +11,10 @@ from employee.models import Employee
 
 
 class Command(BaseCommand):
+    """
+    Horilla management command to create a new user and associated employee.
+    """
+
     help = "Creates a new user"
 
     def add_arguments(self, parser):
@@ -33,31 +41,35 @@ class Command(BaseCommand):
             email = options["email"]
             phone = options["phone"]
 
-        adminuser = User.objects.filter(username=first_name).first()
-        if adminuser is not None:
-            self.stdout.write(self.style.WARNING('User "%s" already exist' % adminuser))
-        else:
-            try:
-                user = User.objects.create_superuser(
-                    username=username, email=email, password=password
-                )
-                employee = Employee()
-                employee.employee_user_id = user
-                employee.employee_first_name = first_name
-                employee.employee_last_name = last_name
-                employee.email = email
-                employee.phone = phone
-                employee.save()
-                bot = User.objects.filter(username="Horilla Bot").first()
-                if bot is None:
-                    User.objects.create_user(
-                        username="Horilla Bot",
-                        password=str(uuid.uuid4()),
-                    )
+        if User.objects.filter(username=username).exists():
+            self.stdout.write(
+                self.style.WARNING(f'User with username "{username}" already exists')
+            )
+            return
 
-                self.stdout.write(
-                    self.style.SUCCESS('Employee "%s" created successfully' % employee)
+        try:
+            user = User.objects.create_superuser(
+                username=username, email=email, password=password
+            )
+            employee = Employee()
+            employee.employee_user_id = user
+            employee.employee_first_name = first_name
+            employee.employee_last_name = last_name
+            employee.email = email
+            employee.phone = phone
+            employee.save()
+
+            bot = User.objects.filter(username="Horilla Bot").first()
+            if bot is None:
+                User.objects.create_user(
+                    username="Horilla Bot",
+                    password=str(uuid.uuid4()),
                 )
-            except Exception as e:
+
+            self.stdout.write(
+                self.style.SUCCESS(f'Employee "{employee}" created successfully')
+            )
+        except Exception as e:
+            if "user" in locals():
                 user.delete()
-                raise CommandError('Error creating user "%s": %s' % (username, e))
+            raise CommandError(f'Error creating user "{username}": {e}') from e

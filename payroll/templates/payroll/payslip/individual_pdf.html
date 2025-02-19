@@ -62,35 +62,50 @@
 			}
 		</style>
 		<div class="oh-payslip">
+			<table class="oh-payslip__table" style="width: 100%; border-collapse: collapse;border:1px solid white;">
+				<tr style="width:100%">
+					<td class="oh-payslip__user-detail" style="vertical-align: top; width: 20%;">
+						<img
+							src="{{protocol}}://{{host}}{{employee.employee_work_info.company_id.icon.url}}"
+							height="100"
+							width="100"
+							alt="Company Logo"
+						/>
+					</td>
+					<td style="text-align: left; vertical-align: left; width: 60%;">
+						<span style="font-size:25px;font-weight:500px;">{{employee.employee_work_info.company_id}}</span>
+					</td>
+				</tr>
+			</table>
+			<div style="font-size:13px;">
+				<p>{{employee.employee_work_info.company_id}}<br>
+				{{employee.employee_work_info.company_id.address}}<br>
+				{{employee.employee_work_info.company_id.country}}, {{employee.employee_work_info.company_id.state}}, {{employee.employee_work_info.company_id.city}}<br>
+				{{employee.employee_work_info.company_id.zip}}</p>
+			</div>
 			<div class="oh-payslip__header">
 				<div class="oh-payslip__header-left">
 					<h1
 						class="oh-payslip__title oh-payslip__title--h1"
-						style="font-size: 16px"
+						style="font-size: 22px"
 					>
-						{% trans "Payslip" %}
+						{% trans "Payslip" %} - {{employee}} - {{month_start_name}} to {{month_end_name}}.
 					</h1>
 					<h2 class="oh-payslip__title oh-payslip__title--h2">
+						<span class="oh-payslip__netpay-title">{% trans "Payslip Period :" %}</span> &nbsp
 						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_start_date}}</span> &nbsp
 						<span class="oh-payslip__title oh-payslip__title--h2">{% trans "to" %}</span> &nbsp
-						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_end_date}}</span>
+						<span class="oh-payslip__title oh-payslip__title--h2 dateformat_changer">{{formatted_end_date}}</span> &nbsp , &nbsp
+						<span class="oh-payslip__netpay-title">{% trans "Employee Net Pay :" %}</span> &nbsp
+						<span class="oh-payslip__netpay-amount">{{net_pay|floatformat:2|currency_symbol_position}}</span>
 					</h2>
 				</div>
 			</div>
 			<div class="oh-payslip__body">
 				<!-- Payslip Summary -->
 				<div class="oh-payslip__summary">
-					<div
-						class="oh-payslip__netpay"
-						style="font-size: 12px; font-weight: 700"
-					>
-						<span class="oh-payslip__netpay-title"
-							>{% trans "Employee Net Pay :" %}</span
-						>
-						<span class="oh-payslip__netpay-amount">{{net_pay|floatformat:2|currency_symbol_position}}</span>
-					</div>
 					<div class="oh-payslip__user-detail">
-						<h3 class="oh-payslip__employee-title">
+						<h3 class="oh-payslip__employee-title" style="font-size:18px;">
 							{% trans "Employee Details" %}
 						</h3>
 						<ul class="oh-payslip__employee-details">

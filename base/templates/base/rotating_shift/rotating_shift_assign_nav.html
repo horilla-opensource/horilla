@@ -1,187 +1,492 @@
-{% load basefilters %} {% load i18n %}
+{% load static basefilters %} {% load i18n %}
 
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-  <div class="oh-main__titlebar oh-main__titlebar--left">
-    <h1 class="oh-main__titlebar-title fw-bold">
-      {% trans "Rotating Shift Assign" %}
-    </h1>
-    <a
-      class="oh-main__titlebar-search-toggle"
-      role="button"
-      aria-label="Toggle Search"
-      @click="searchShow = !searchShow"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-main__titlebar-serach-icon"
-      ></ion-icon>
-    </a>
-  </div>
-  <form
-    hx-get='{% url "rotating-shift-assign-view" %}'
-    id="filterForm"
-    hx-target="#view-container"
-    class="d-flex"
-  >
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      {% if rshift_all %}
-        <div
-          class="oh-input-group oh-input__search-group"
-          :class="searchShow ? 'oh-input__search-group--show' : ''"
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">
+            {% trans "Rotating Shift Assign" %}
+        </h1>
+        <a
+            class="oh-main__titlebar-search-toggle"
+            role="button"
+            aria-label="Toggle Search"
+            @click="searchShow = !searchShow"
         >
-          <ion-icon
-            name="search-outline"
-            class="oh-input-group__icon oh-input-group__icon--left"
-          ></ion-icon>
-          <input
-            type="text"
-            name="search"
-            class="oh-input oh-input__icon"
-            aria-label="Search Input"
-            placeholder="{% trans 'Search' %}"
-            onkeyup="$('.filterButton')[0].click()"
-          />
-        </div>
-      {% endif %}
-      <div class="oh-main__titlebar-button-container">
-        {% if rshift_all %}
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-              <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-              <div id="filterCount"></div>
-            </button>
-            <div
-              class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-              x-show="open"
-              @click.outside="open = false"
-              style="display: none"
-            >
-              {% include 'base/rotating_shift/filters.html' %}
-            </div>
-          </div>
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
-              <ion-icon name="library-outline" class="mr-1"></ion-icon>{% trans "Group By" %}
-              <div id="filterCount"></div>
-            </button>
-            <div
-            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-            x-show="open"
-            @click.outside="open = false"
-            style="display: none"
-            >
-            <div class="oh-accordion">
-              <label>{% trans "Group By" %}</label>
-                <div class="row">
-                  <div class="col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                      <label class="oh-label">{% trans "Field" %}</label>
-                    </div>
-                  </div>
-                  <div class="col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                      <select
-                        class="oh-select mt-1 w-100"
-                        id="id_field"
-                        name="field"
-                        class="select2-selection select2-selection--single"
-                      >
-                        {% for field in gp_fields %}
-                        <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button
-              class="oh-btn oh-btn--dropdown oh-btn ml-2"
-              @click="open = !open"
-              @click.outside="open = false"
-              onclick="event.preventDefault()"
-            >
-              {% trans "Actions" %}
-            </button>
-            <div
-              class="oh-dropdown__menu oh-dropdown__menu--right"
-              x-show="open"
-              style="display: none"
-            >
-              <ul class="oh-dropdown__items">
-                {% if perms.base.change_rotatingshiftassign %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link"
-                      data-toggle="oh-modal-toggle"
-                      data-target="#objectCreateModal"
-                      hx-get="{% url 'rotating-shift-assign-info-export' %}"
-                      hx-target="#objectCreateModalTarget"
-                      >{% trans "Export" %}</a
-                    >
-                  </li>
-                {% endif %}
-                {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link"
-                      id="archiveRotatingShiftAssign"
-                      >{% trans "Archive" %}</a
-                    >
-                  </li>
-                {% endif %}
-                {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link"
-                      id="unArchiveRotatingShiftAssign"
-                      >{% trans "Un-Archive" %}</a
-                    >
-                  </li>
-                {% endif %}
-                {% if request.user|is_reportingmanager %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link oh-dropdown__link--danger"
-                      data-action="delete"
-                      id="deleteRotatingShiftAssign"
-                      >{% trans "Delete" %}</a
-                    >
-                  </li>
-                {% endif %}
-              </ul>
-            </div>
-          </div>
-        {% endif %}
-        {% if perms.base.add_rotatingshiftassign or request.user|is_reportingmanager %}
-          <div class="oh-btn-group ml-2">
-            <div class="oh-dropdown" x-data="{open: false}">
-              <button
-                class="oh-btn oh-btn--secondary oh-btn--shadow"
-                hx-get="{% url 'rotating-shift-assign-add' %}"
-                hx-target="#objectCreateModalTarget"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-              >
-                {% trans "Assign" %}
-              </button>
-            </div>
-          </div>
-        {% endif %}
-      </div>
+            <ion-icon
+                name="search-outline"
+                class="oh-main__titlebar-serach-icon"
+            ></ion-icon>
+        </a>
     </div>
-  </form>
+    <form
+        hx-get='{% url "rotating-shift-assign-view" %}'
+        id="filterForm"
+        hx-target="#view-container"
+        class="d-flex"
+    >
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            {% if rshift_all %}
+            <div
+                class="oh-input-group oh-input__search-group"
+                :class="searchShow ? 'oh-input__search-group--show' : ''"
+            >
+                <ion-icon
+                    name="search-outline"
+                    class="oh-input-group__icon oh-input-group__icon--left"
+                ></ion-icon>
+                <input
+                    type="text"
+                    name="search"
+                    class="oh-input oh-input__icon"
+                    aria-label="Search Input"
+                    placeholder="{% trans 'Search' %}"
+                    onkeyup="$('.filterButton')[0].click()"
+                />
+            </div>
+            {% endif %}
+            <div class="oh-main__titlebar-button-container">
+                {% if rshift_all %}
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button
+                        class="oh-btn ml-2"
+                        @click="open = !open"
+                        onclick="event.preventDefault()"
+                    >
+                        <ion-icon name="filter" class="mr-1"></ion-icon>
+                        {% trans "Filter" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none"
+                    >
+                        {% include 'base/rotating_shift/filters.html' %}
+                    </div>
+                </div>
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button
+                        class="oh-btn ml-2"
+                        @click="open = !open"
+                        onclick="event.preventDefault()"
+                    >
+                        <ion-icon name="library-outline" class="mr-1"></ion-icon
+                        >{% trans "Group By" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                        x-show="open"
+                        @click.outside="open = false"
+                        style="display: none"
+                    >
+                        <div class="oh-accordion">
+                            <label>{% trans "Group By" %}</label>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label"
+                                            >{% trans "Field" %}</label
+                                        >
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                    <div class="oh-input-group">
+                                        <select
+                                            class="oh-select mt-1 w-100"
+                                            id="id_field"
+                                            name="field"
+                                            class="select2-selection select2-selection--single"
+                                        >
+                                            {% for field in gp_fields %}
+                                            <option value="{{ field.0 }}">
+                                                {% trans field.1 %}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button
+                        class="oh-btn oh-btn--dropdown oh-btn ml-2"
+                        @click="open = !open"
+                        @click.outside="open = false"
+                        onclick="event.preventDefault()"
+                    >
+                        {% trans "Actions" %}
+                    </button>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right"
+                        x-show="open"
+                        style="display: none"
+                    >
+                        <ul class="oh-dropdown__items">
+                            <li class="oh-dropdown__item">
+                                <a
+                                    href="#"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#shiftImport"
+                                    class="oh-dropdown__link"
+                                    onclick="template_download(event)"
+                                    >{% trans "Import" %}</a
+                                >
+                            </li>
+                            {% if rshift_all %}
+                                {% if perms.base.change_rotatingshiftassign %}
+                                    <li class="oh-dropdown__item">
+                                        <a
+                                            href="#"
+                                            class="oh-dropdown__link"
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#objectCreateModal"
+                                            hx-get="{% url 'rotating-shift-assign-info-export' %}"
+                                            hx-target="#objectCreateModalTarget"
+                                            >{% trans "Export" %}</a
+                                        >
+                                    </li>
+                                {% endif %}
+                                {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
+                                    <li class="oh-dropdown__item">
+                                        <a
+                                            href="#"
+                                            class="oh-dropdown__link"
+                                            id="archiveRotatingShiftAssign"
+                                            >{% trans "Archive" %}</a
+                                        >
+                                    </li>
+                                {% endif %}
+                                {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
+                                    <li class="oh-dropdown__item">
+                                        <a
+                                            href="#"
+                                            class="oh-dropdown__link"
+                                            id="unArchiveRotatingShiftAssign"
+                                            >{% trans "Un-Archive" %}</a
+                                        >
+                                    </li>
+                                {% endif %}
+                                {% if request.user|is_reportingmanager %}
+                                    <li class="oh-dropdown__item">
+                                        <a
+                                            href="#"
+                                            class="oh-dropdown__link oh-dropdown__link--danger"
+                                            data-action="delete"
+                                            id="deleteRotatingShiftAssign"
+                                            >{% trans "Delete" %}</a
+                                        >
+                                    </li>
+                                {% endif %}
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                {% if perms.base.add_rotatingshiftassign or request.user|is_reportingmanager %}
+                    <div class="oh-btn-group ml-2">
+                        <div class="oh-dropdown" x-data="{open: false}">
+                            <button
+                                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                                hx-get="{% url 'rotating-shift-assign-add' %}"
+                                hx-target="#objectCreateModalTarget"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal"
+                            >
+                                {% trans "Assign" %}
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
 </section>
+
+<div
+    class="oh-modal"
+    id="shiftImport"
+    role="dialog"
+    aria-labelledby="shiftImport"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="shiftImportLavel">
+                {% trans "Import Rotating Shift" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div
+                class="oh-modal__dialog-body p-0 pt-2"
+                id="shiftImportModalBody"
+            >
+                <form
+                    action="#"
+                    id="shiftImportForm"
+                    enctype="multipart/form-data"
+                >
+                    <div
+                        class="oh-modal__dialog-body mr-5"
+                        id="uploading"
+                        style="display: none"
+                    >
+                        <div class="loader-container">
+                            <div class="loader"></div>
+                            <div class="loader-text">
+                                {% trans "Uploading..." %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="error-container" style="color: red"></div>
+
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="oh-dropdown__import-form">
+                            <label
+                                class="oh-dropdown__import-label"
+                                for="shiftImportFile"
+                            >
+                                <ion-icon
+                                    name="cloud-upload"
+                                    class="oh-dropdown__import-form-icon md hydrated"
+                                    role="img"
+                                    aria-label="cloud upload"
+                                ></ion-icon>
+                                <span class="oh-dropdown__import-form-title"
+                                    >{% trans "Upload a File" %}</span
+                                >
+                                <span class="oh-dropdown__import-form-text"
+                                    >{% trans "Drag and drop files here" %}
+                                  </span
+                                >
+                            </label>
+                            <input
+                                type="file"
+                                name="file"
+                                id="shiftImportFile"
+                            />
+                            <div class="d-inline float-end">
+                                <a
+                                    href="#"
+                                    style="
+                                        text-decoration: none;
+                                        display: inline-block;
+                                    "
+                                    class="oh-dropdown__link"
+                                    onclick="template_download(event)"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#shiftImport"
+                                >
+                                    <ion-icon
+                                        name="cloud-download-outline"
+                                        style="
+                                            font-size: 20px;
+                                            vertical-align: middle;
+                                        "
+                                    ></ion-icon>
+                                    <span>{% trans "Download Template" %}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex flex-row-reverse">
+                        <input
+                            type="submit"
+                            class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
+                            value="{% trans 'Upload' %}"
+                        />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-  $(document).ready(function(){
-    $('#id_field').on('change',function(){
-      $('.filterButton')[0].click();
-    })
-  });
+    $(document).ready(function () {
+        $("#id_field").on("change", function () {
+            $(".filterButton")[0].click();
+        });
+
+        var form = $("#shiftImportForm");
+        form.on("submit", function () {
+            event.preventDefault();
+            $(".oh-dropdown__import-form").css("display", "none");
+            $("#uploading").css("display", "block");
+            var formData = new FormData();
+
+            var fileInput = document.querySelector("#shiftImportFile");
+            formData.append("file", fileInput.files[0]);
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'rotating-shift-assign-info-import' %}",
+                dataType: "binary",
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+                xhrFields: {
+                    responseType: "blob",
+                },
+                success: function (response, textStatus, xhr) {
+                    var errorCount = xhr.getResponseHeader("X-Error-Count");
+                    if (
+                        typeof response === "object" &&
+                        response.type == "application/json"
+                    ) {
+                        var reader = new FileReader();
+
+                        reader.onload = function () {
+                            var json = JSON.parse(reader.result);
+
+                            if (json.success_count > 0) {
+                                Swal.fire({
+                                    text: `${json.success_count} Employees Imported Successfully`,
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                }).then(function () {
+                                    window.location.reload();
+                                });
+                            }
+                        };
+                        reader.readAsText(response);
+                        return;
+                    }
+                    if (!$(".file-xlsx-validation").length) {
+                        swal.fire({
+                            text: `You have ${errorCount} errors. Do you want to download the error list?`,
+                            icon: "error",
+                            showCancelButton: true,
+                            showDenyButton: true,
+                            confirmButtonText:
+                                "Download error list & Skip Import",
+                            denyButtonText:
+                                "Downlod error list & Continue Import",
+                            cancelButtonText: "Cancel",
+                            confirmButtonColor: "#d33",
+                            denyButtonColor: "#008000",
+                            customClass: {
+                                container: "custom-swal-container",
+                            },
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const file = new Blob([response], { type: "text/csv" });
+                                const url = URL.createObjectURL(file);
+                                const link = document.createElement("a");
+                                link.href = url;
+                                link.download = "ImportError.csv";
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                URL.revokeObjectURL(url);
+                                link.click();
+                                window.location.reload();
+                            } else if (result.isDenied) {
+                                formData.append("create_rotating_shift", true);
+                                $.ajax({
+                                    type: "POST",
+                                    url: "{% url 'rotating-shift-assign-info-import' %}",
+                                    dataType: "binary",
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    headers: {
+                                        "X-CSRFToken": getCookie("csrftoken"),
+                                    },
+                                    xhrFields: {
+                                        responseType: "blob",
+                                    },
+                                    success: function (
+                                        response,
+                                        textStatus,
+                                        xhr
+                                    ) {
+                                        Swal.fire({
+                                            text: `Rotating Shifts Imported Successfully`,
+                                            icon: "success",
+                                            showConfirmButton: false,
+                                            timer: 3000,
+                                            timerProgressBar: true,
+                                        }).then(function () {
+                                            const file = new Blob([response], { type: "text/csv" });
+                                            const url = URL.createObjectURL(file);
+                                            const link = document.createElement("a");
+                                            link.href = url;
+                                            link.download = "ImportError.csv";
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
+                                            URL.revokeObjectURL(url);
+                                            link.click();
+                                            window.location.reload();
+                                        });
+
+                                        return;
+                                    },
+                                });
+                            } else {
+                                $(".oh-dropdown__import-form").css(
+                                    "display",
+                                    "block"
+                                );
+                                $("#uploading").css("display", "none");
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error downloading file:", errorThrown);
+                },
+            });
+        });
+    });
+
+    function template_download(e) {
+        e.preventDefault();
+        var languageCode = null;
+        getCurrentLanguageCode(function (code) {
+            languageCode = code;
+            var confirmMessage = downloadMessages[languageCode];
+            Swal.fire({
+                text: confirmMessage,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#008000",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirm",
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{% static 'import_templates/shift_schedule_template.csv' %}",
+                        method: "GET",
+                        xhrFields: {
+                            responseType: "blob",
+                        },
+                        success: function (data) {
+                            var blob = new Blob([data], { type: "text/csv" });
+                            var link = $("<a>")
+                                .attr("href", window.URL.createObjectURL(blob))
+                                .attr("download", "shift_schedule_template.csv")
+                                .appendTo("body");
+                            link[0].click();
+                            link.remove();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Failed to download file:", error);
+                        },
+                    });
+                }
+            });
+        });
+    }
 </script>

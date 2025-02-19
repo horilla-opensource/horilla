@@ -432,7 +432,7 @@ class QuestionTemplate(HorillaModel):
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
-    objects = HorillaCompanyManager()
+    objects = HorillaCompanyManager("company_id")
 
     def __str__(self):
         return self.question_template
@@ -811,6 +811,7 @@ class EmployeeBonusPoint(HorillaModel):
         on_delete=models.CASCADE,
         related_name="employeebonuspoint_set",
     )
+    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.bonus_point}"

@@ -1205,7 +1205,6 @@ $("#attendanceAddToBatch").click(function (e) {
                 ids.push($(this).attr("id"));
             });
             var hxValue = JSON.stringify(ids);
-            console.log('ids',hxValue)
             $("#attendanceAddToBatchButton").attr("hx-vals", `{"ids":${hxValue}}`);
             $("#attendanceAddToBatchButton").click();
         }

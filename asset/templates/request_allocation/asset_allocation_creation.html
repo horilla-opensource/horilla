@@ -1,66 +1,62 @@
 {% load i18n %}
+{% if messages %}
+    <script>
+        setTimeout(function () {
+            $(".oh-modal__close").click();
+            reloadMessage();
+        }, 1000);
+    </script>
+    <span hx-get="{% url 'asset-request-allocation-view-search-filter' %}" hx-target="#asset_request_allocation_list"
+        hx-trigger="load"
+        hx-on-htmx-after-request="setTimeout(() => { $('#tab_2').addClass('oh-tabs__content--active'); }, 300);">
+    </span>
+{% endif %}
 <div class="oh-modal__dialog-header">
-  <button
-    type="button"
-    class="oh-modal__close"
-    data-dismiss="oh-modal"
-    aria-label="Close"
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
-  <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
-    <h5>{% trans "Asset Allocation" %}</h5>
-  </span>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
+        <h5>{% trans "Asset Allocation" %}</h5>
+    </span>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    hx-post="{%url 'asset-allocate-creation' %}"
-    hx-target="#objectCreateModalTarget"
-    hx-encoding="multipart/form-data"
-  >
-    {% csrf_token %}
-    <div class="oh-profile-section pt-0">
-      <div class="oh-input__group">
-        <label
-          class="oh-input__label"
-          for="{{asset_allocation_form.assigned_to_employee_id.id_for_label}}"
-          >{% trans "Assigned To" %}</label
-        >
-        {{asset_allocation_form.assigned_to_employee_id}}
-        {{asset_allocation_form.assigned_to_employee_id.errors}}
-      </div>
-      <div class="oh-input__group">
-        <label
-          class="oh-input__label"
-          for="{{asset_allocation_form.asset_id.id_for_label}}"
-          >{% trans "Asset" %}</label
-        >
-        {{asset_allocation_form.asset_id}}
-        {{asset_allocation_form.asset_id.errors}}
-      </div>
-      <div class="oh-input__group">
-        <label
-          class="oh-input__label"
-          for="{{asset_allocation_form.assigned_by_employee_id.id_for_label}}"
-          >{% trans "Assigned By" %}</label
-        >
-        {{asset_allocation_form.assigned_by_employee_id}}
-        {{asset_allocation_form.assigned_by_employee_id.errors}}
-      </div>
-      <div class="oh-input__group">
-        <label
-          class="oh-input__label"
-          for="{{asset_allocation_form.assign_images.id_for_label}}"
-          >{% trans "Assign Condition Images" %}</label
-        >
-        {{asset_allocation_form.assign_images}}
-        {{asset_allocation_form.assign_images.errors}}
-      </div>
-      <div class="oh-modal__dialog-footer p-0">
-        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-          {% trans "Save" %}
-        </button>
-      </div>
-    </div>
-  </form>
+    <form hx-post="{%url 'asset-allocate-creation' %}" hx-target="#objectCreateModalTarget"
+        hx-encoding="multipart/form-data">
+        {% csrf_token %}
+        <div class="oh-profile-section pt-0">
+            <div class="oh-input__group">
+                <label class="oh-input__label" for="{{asset_allocation_form.assigned_to_employee_id.id_for_label}}">
+                    {% trans "Assigned To" %}
+                </label>
+                {{asset_allocation_form.assigned_to_employee_id}}
+                {{asset_allocation_form.assigned_to_employee_id.errors}}
+            </div>
+            <div class="oh-input__group">
+                <label class="oh-input__label" for="{{asset_allocation_form.asset_id.id_for_label}}">
+                    {% trans "Asset" %}
+                </label>
+                {{asset_allocation_form.asset_id}}
+                {{asset_allocation_form.asset_id.errors}}
+            </div>
+            <div class="oh-input__group">
+                <label class="oh-input__label" for="{{asset_allocation_form.assigned_by_employee_id.id_for_label}}">
+                    {% trans "Assigned By" %}
+                </label>
+                {{asset_allocation_form.assigned_by_employee_id}}
+                {{asset_allocation_form.assigned_by_employee_id.errors}}
+            </div>
+            <div class="oh-input__group">
+                <label class="oh-input__label" for="{{asset_allocation_form.assign_images.id_for_label}}">
+                    {% trans "Assign Condition Images" %}
+                </label>
+                {{asset_allocation_form.assign_images}}
+                {{asset_allocation_form.assign_images.errors}}
+            </div>
+            <div class="oh-modal__dialog-footer p-0">
+                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                    {% trans "Save" %}
+                </button>
+            </div>
+        </div>
+    </form>
 </div>

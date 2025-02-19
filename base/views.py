@@ -14,6 +14,7 @@ from os import path
 from urllib.parse import parse_qs, unquote, urlencode
 
 import pandas as pd
+from dateutil import parser
 from django import forms
 from django.apps import apps
 from django.conf import settings
@@ -35,6 +36,8 @@ from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
+from accessibility.accessibility import ACCESSBILITY_FEATURE
+from accessibility.models import DefaultAccessibility
 from base.backends import ConfiguredEmailBackend
 from base.decorators import (
     shift_request_change_permission,
@@ -59,6 +62,7 @@ from base.forms import (
     AssignUserGroup,
     AuditTagForm,
     ChangePasswordForm,
+    ChangeUsernameForm,
     CompanyForm,
     CompanyLeaveForm,
     DepartmentForm,
@@ -107,6 +111,7 @@ from base.methods import (
     filtersubordinates,
     filtersubordinatesemployeemodel,
     format_date,
+    generate_colors,
     get_key_instances,
     is_reportingmanager,
     paginator_qry,
@@ -115,7 +120,6 @@ from base.methods import (
 from base.models import (
     WEEK_DAYS,
     WEEKS,
-    Announcement,
     AnnouncementExpire,
     BaserequestFile,
     BiometricAttendance,
@@ -146,13 +150,16 @@ from base.models import (
     AllowedDomains,
 )
 from employee.filters import EmployeeFilter
-from employee.forms import ActiontypeForm
+from employee.forms import ActiontypeForm, EmployeeGeneralSettingPrefixForm
 from employee.models import (
     Actiontype,
     DisciplinaryAction,
     Employee,
+    EmployeeGeneralSetting,
     EmployeeWorkInformation,
+    ProfileEditFeature,
 )
+from horilla import horilla_apps
 from horilla.decorators import (
     delete_permission,
     duplicate_permission,
@@ -167,6 +174,7 @@ from horilla.horilla_settings import (
     DB_INIT_PASSWORD,
     DYNAMIC_URL_PATTERNS,
     FILE_STORAGE,
+    NO_PERMISSION_MODALS,
 )
 from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
@@ -209,15 +217,15 @@ def initialize_database_condition():
     Returns:
         bool: True if the database needs to be initialized, False otherwise.
     """
-    initialize_database = not User.objects.exists()
-    if not initialize_database:
-        initialize_database = True
+    init_database = not User.objects.exists()
+    if not init_database:
+        init_database = True
         superusers = User.objects.filter(is_superuser=True)
         for user in superusers:
             if hasattr(user, "employee_get"):
-                initialize_database = False
+                init_database = False
                 break
-    return initialize_database
+    return init_database
 
 
 def load_demo_database(request):
@@ -273,9 +281,7 @@ def initialize_database(request):
     if initialize_database_condition():
         if request.method == "POST":
             password = request._post.get("password")
-            from horilla.horilla_settings import DB_INIT_PASSWORD as db_password
-
-            if db_password == password:
+            if DB_INIT_PASSWORD == password:
                 return redirect(initialize_database_user)
             else:
                 messages.warning(
@@ -550,45 +556,49 @@ def initialize_job_position_delete(request, obj_id):
 
 def login_user(request):
     """
-    This method is used render login template and authenticate user
+    Handles user login and authentication.
     """
     if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
-        next_url = request.GET.get("next")
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        next_url = request.GET.get("next", "/")
         query_params = request.GET.dict()
-        if "next" in query_params:
-            del query_params["next"]
+        query_params.pop("next", None)
+        params = urlencode(query_params)
 
-        params = f"{urlencode(query_params)}"
         user = authenticate(request, username=username, password=password)
-        if user is None:
+
+        if not user:
             user_object = User.objects.filter(username=username).first()
-            is_active = user_object.is_active if user_object else None
-            if is_active is True or is_active is None:
-                messages.error(request, _("Invalid username or password."))
+            if user_object and not user_object.is_active:
+                messages.warning(request, _("Access Denied: Your account is blocked."))
             else:
-                messages.warning(
-                    request,
-                    _("Access Denied: Your login credentials are currently blocked."),
-                )
-            return redirect("/login")
-        if user.employee_get.is_active == False:
+                messages.error(request, _("Invalid username or password."))
+            return redirect("login")
+
+        employee = getattr(user, "employee_get", None)
+        if employee is None:
+            messages.error(
+                request,
+                _("An employee related to this user's credentials does not exist."),
+            )
+            return redirect("login")
+        if not employee.is_active:
             messages.warning(
                 request,
                 _(
                     "This user is archived. Please contact the manager for more information."
                 ),
             )
-            return redirect("/login")
+            return redirect("login")
+
         login(request, user)
-        messages.success(request, _("Login Success"))
-        if next_url:
-            url = f"{next_url}"
-            if params:
-                url += f"?{params}"
-            return redirect(url)
-        return redirect("/")
+        messages.success(request, _("Login successful."))
+
+        if params:
+            next_url += f"?{params}"
+        return redirect(next_url)
+
     return render(
         request, "login.html", {"initialize_database": initialize_database_condition()}
     )
@@ -727,19 +737,53 @@ def change_password(request):
     user = request.user
     form = ChangePasswordForm(user=user)
     if request.method == "POST":
-        response = render(request, "base/auth/password_change.html", {"form": form})
         form = ChangePasswordForm(user, request.POST)
         if form.is_valid():
             new_password = form.cleaned_data["new_password"]
             user.set_password(new_password)
             user.save()
             user = authenticate(request, username=user.username, password=new_password)
+            if hasattr(user, "is_new_employee"):
+                user.is_new_employee = False
+                user.save()
             login(request, user)
             messages.success(request, _("Password changed successfully"))
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse("<script>window.location.href='/';</script>")
+        return render(request, "base/auth/password_change_form.html", {"form": form})
+
     return render(request, "base/auth/password_change.html", {"form": form})
+
+
+@login_required
+def change_username(request):
+    """
+    Handles the username change process for a logged-in user.
+
+    Args:
+        request (HttpRequest): The HTTP request object containing metadata about
+                               the request and user.
+
+    Returns:
+        HttpResponse: Renders the username change form if the request method is GET or
+                      the form is invalid. If the form is valid and the password is changed
+                      successfully, the page reloads with a success message.
+    """
+    user = request.user
+    form = ChangeUsernameForm(user=user, initial={"old_username": user.username})
+    if request.method == "POST":
+        form = ChangeUsernameForm(user, request.POST)
+        if form.is_valid():
+            new_username = form.cleaned_data["username"]
+            user.username = new_username
+            user.save()
+            if hasattr(user, "is_new_employee"):
+                user.is_new_employee = False
+                user.save()
+            messages.success(request, _("Username changed successfully"))
+            return HttpResponse("<script>window.location.href='/';</script>")
+        return render(request, "base/auth/username_change_form.html", {"form": form})
+
+    return render(request, "base/auth/username_change.html", {"form": form})
 
 
 def logout_user(request):
@@ -800,48 +844,6 @@ def home(request):
     }
 
     return render(request, "index.html", context)
-
-
-@login_required
-def announcement_list(request):
-    general_expire_date = (
-        AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
-    )
-    announcements = Announcement.objects.all()
-    announcements_to_update = []
-
-    for announcement in announcements.filter(expire_date__isnull=True):
-        announcement.expire_date = announcement.created_at + timedelta(
-            days=general_expire_date
-        )
-        announcements_to_update.append(announcement)
-
-    if announcements_to_update:
-        Announcement.objects.bulk_update(announcements_to_update, ["expire_date"])
-
-    announcements = announcements.filter(expire_date__gte=datetime.today().date())
-
-    if request.user.has_perm("base.view_announcement"):
-        announcement_list = announcements
-    else:
-        announcement_list = announcements.filter(
-            Q(employees=request.user.employee_get) | Q(employees__isnull=True)
-        )
-
-    announcement_list = announcement_list.prefetch_related(
-        "announcementview_set"
-    ).order_by("-created_at")
-    for announcement in announcement_list:
-        announcement.has_viewed = announcement.announcementview_set.filter(
-            user=request.user, viewed=True
-        ).exists()
-    instance_ids = json.dumps([instance.id for instance in announcement_list])
-    context = {
-        "announcements": announcement_list,
-        "general_expire_date": general_expire_date,
-        "instance_ids": instance_ids,
-    }
-    return render(request, "announcements_list.html", context)
 
 
 @login_required
@@ -938,6 +940,7 @@ def user_group_table(request):
     """
     permissions = []
     apps = APPS
+    no_permission_models = NO_PERMISSION_MODALS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -961,6 +964,7 @@ def user_group_table(request):
         {
             "permissions": permissions,
             "form": form,
+            "no_permission_models": no_permission_models,
         },
     )
 
@@ -1005,6 +1009,7 @@ def user_group(request):
     permissions = []
 
     apps = APPS
+    no_permission_models = NO_PERMISSION_MODALS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -1015,7 +1020,9 @@ def user_group(request):
                     "model_name": model._meta.model_name,
                 }
             )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+        permissions.append(
+            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
+        )
     groups = Group.objects.all()
     return render(
         request,
@@ -1024,6 +1031,7 @@ def user_group(request):
             "permissions": permissions,
             "form": form,
             "groups": paginator_qry(groups, request.GET.get("page")),
+            "no_permission_models": no_permission_models,
         },
     )
 
@@ -1037,6 +1045,7 @@ def user_group_search(request):
     permissions = []
 
     apps = APPS
+    no_permission_models = NO_PERMISSION_MODALS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -1059,6 +1068,7 @@ def user_group_search(request):
             "permissions": permissions,
             "form": form,
             "groups": paginator_qry(groups, request.GET.get("page")),
+            "no_permission_models": no_permission_models,
         },
     )
 
@@ -1253,6 +1263,9 @@ def object_duplicate(request, obj_id, **kwargs):
     template = kwargs["template"]
     original_object = model.objects.get(id=obj_id)
     form = form_class(instance=original_object)
+    search_words = (
+        form.get_template_language() if hasattr(form, "get_template_language") else None
+    )
     if request.method == "GET":
         for field_name, field in form.fields.items():
             if isinstance(field, forms.CharField):
@@ -1272,11 +1285,11 @@ def object_duplicate(request, obj_id, **kwargs):
             new_object.id = None
             new_object.save()
             return HttpResponse("<script>window.location.reload()</script>")
-
     context = {
         kwargs.get("form_name", "form"): form,
         "obj_id": obj_id,
         "duplicate": True,
+        "searchWords": search_words,
     }
     return render(request, template, context)
 
@@ -1295,9 +1308,11 @@ def add_remove_dynamic_fields(request, **kwargs):
             - model (Model): The Django model class used for `ModelChoiceField`.
             - form_class (Form): The Django form class to which dynamic fields will be added.
             - template (str): The template used to render the newly added field.
-            - empty_label (str, optional): The label to show for empty choices in a `ModelChoiceField`.
+            - empty_label (str, optional): The label to show for empty choices in
+                a `ModelChoiceField`.
             - field_name_pre (str): The prefix for the dynamically generated field names.
-            - field_type (str, optional): The type of field to add, either "character" or "model_choice".
+            - field_type (str, optional): The type of field to add, either "character"
+                or "model_choice".
 
     Returns:
         HttpResponse: Returns the HTML for the newly added field, rendered in the context of the
@@ -1373,6 +1388,25 @@ def mail_server_conf(request):
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_test_email(request):
     instance_id = request.GET.get("instance_id")
+    white_labelling = getattr(horilla_apps, "WHITE_LABELLING", False)
+    image_path = path.join(settings.STATIC_ROOT, "images/ui/horilla-logo.png")
+    company_name = "Horilla"
+
+    if white_labelling:
+        hq = Company.objects.filter(hq=True).last()
+        try:
+            company = (
+                request.user.employee_get.get_company()
+                if request.user.employee_get.get_company()
+                else hq
+            )
+        except:
+            company = hq
+
+        if company:
+            company_name = company.company
+            image_path = path.join(settings.MEDIA_ROOT, company.icon.name)
+
     form = DynamicMailTestForm()
     if request.method == "POST":
         form = DynamicMailTestForm(request.POST)
@@ -1381,26 +1415,26 @@ def mail_server_test_email(request):
             subject = _("Test mail from Horilla")
 
             # HTML content
-            html_content = """
+            html_content = f"""
             <html>
                 <body style="font-family: Arial, sans-serif; margin: 0; padding: 0;">
                     <table align="center" width="600" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
                         <tr>
                             <td align="center" bgcolor="#4CAF50" style="padding: 20px 0;">
-                                <h1 style="color: #ffffff; margin: 0;">Horilla</h1>
+                                <h1 style="color: #ffffff; margin: 0;">{company_name}</h1>
                             </td>
                         </tr>
                         <tr>
                             <td style="padding: 20px;">
                                 <h3 style="color: #4CAF50;">Email tested successfully</h3>
                                 <b><p style="font-size: 14px;">Hi,<br>
-                                    This email is being sent as part of mail sever testing from Horilla.</p></b>
+                                    This email is being sent as part of mail sever testing from {company_name}.</p></b>
                                 <img src="cid:unique_image_id" alt="Test Image" style="width: 200px; height: auto; margin: 20px 0;">
                             </td>
                         </tr>
                         <tr>
                             <td bgcolor="#f0f0f0" style="padding: 10px; text-align: center;">
-                                <p style="font-size: 12px; color: black;">&copy; 2024 Horilla, Inc.</p>
+                                <p style="font-size: 12px; color: black;">&copy; {datetime.today().year} {company_name}</p>
                             </td>
                         </tr>
                     </table>
@@ -1427,10 +1461,6 @@ def mail_server_test_email(request):
                 )
                 msg.attach_alternative(html_content, "text/html")
 
-                # Attach the image
-                image_path = path.join(
-                    settings.STATIC_ROOT, "images/ui/horilla-logo.png"
-                )
                 with open(image_path, "rb") as img:
                     msg_img = MIMEImage(img.read())
                     msg_img.add_header("Content-ID", "<unique_image_id>")
@@ -2900,6 +2930,197 @@ def rotating_shift_assign_export(request):
     )
 
 
+def normalize_list(lst):
+    return [None if pd.isna(x) else x for x in lst]
+
+
+@login_required
+@manager_can_enter("base.add_rotatingworktypeassign")
+def rotating_shift_assign_import(request):
+    if request.method == "POST":
+        rotating_shift_obj_list = []
+        employee_ids = []
+        rotating_shift_assign_list = []
+        error_list = []
+        new_dicts = {}
+        rotating_shifts = RotatingShift.objects.all()
+        shifts = EmployeeShift.objects.all()
+        file = request.FILES["file"]
+        file_extension = file.name.split(".")[-1].lower()
+        error = False
+        create_rotating_shift = True
+
+        existing_dicts = {
+            rot_shift.id: [
+                shift.employee_shift if shift else None
+                for shift in rot_shift.total_shifts()
+            ]
+            for rot_shift in rotating_shifts
+        }
+        data_frame = (
+            pd.read_csv(file) if file_extension == "csv" else pd.read_excel(file)
+        )
+        work_info_dicts = data_frame.to_dict("records")
+        try:
+            keys_list = list(work_info_dicts[0].keys())
+            error_dict = {key: [] for key in keys_list}
+        except:
+            messages.error(request, "something went wrong....")
+            data_frame = pd.DataFrame(
+                ["Please provide valid data"],
+                columns=["Title Error"],
+            )
+
+            error_count = 1
+            response = HttpResponse(content_type="text/csv")
+            response["Content-Disposition"] = 'attachment; filename="ImportError.csv"'
+
+            data_frame.to_csv(response, index=False)
+            response["X-Error-Count"] = error_count
+            return response
+
+        error_dict["Title Error"] = []
+        error_dict["Employee Error"] = []
+        error_dict["Date Error"] = []
+        if len(keys_list) > 4:
+            start_date = keys_list[3]
+            start_date = parser.parse(str(start_date), dayfirst=True).date()
+
+        for total_rows, row in enumerate(work_info_dicts, start=1):
+            employee_ids.append(row["Badge Id"])
+            current_list = list(row.values())[3:]
+            current_list = normalize_list(current_list)
+            if start_date < datetime.today().date():
+                error_dict["Date Error"] = "Start Date must be greater than today"
+
+            if current_list not in list(
+                existing_dicts.values()
+            ) and current_list not in list(new_dicts.values()):
+                if rotating_shifts.filter(name=row["Title"]).exists():
+                    row["Title Error"] = "Rotating Shift with this Title already exists"
+                    error = True
+                    error_list.append(row)
+                    continue
+
+                rotating_shift_obj = RotatingShift(
+                    name=row["Title"],
+                    shift1=shifts.filter(employee_shift=current_list[0]).first(),
+                    shift2=shifts.filter(employee_shift=current_list[1]).first(),
+                )
+                if current_list[2:]:
+                    additional_data = []
+                    for item in current_list[2:]:
+                        try:
+                            additional_data.append(
+                                shifts.filter(employee_shift=item).first().id
+                            )
+                        except:
+                            additional_data.append(None)
+
+                    rotating_shift_obj.additional_data = {
+                        "additional_shifts": additional_data
+                    }
+                    rotating_shift_obj.save()
+                new_dicts[rotating_shift_obj.id] = current_list
+
+                rotating_shift_obj_list.append(rotating_shift_obj)
+            else:
+                flag = True
+                for rot_shift_id, shift_list in existing_dicts.items():
+                    if shift_list == current_list:
+                        rotating_shift_obj = RotatingShift.objects.get(id=rot_shift_id)
+                        rotating_shift_obj_list.append(rotating_shift_obj)
+                        flag = False
+                        break
+                if flag:
+                    for rot_shift_id, shift_list in new_dicts.items():
+                        if shift_list == current_list:
+                            rotating_shift_obj = RotatingShift.objects.get(
+                                id=rot_shift_id
+                            )
+                            rotating_shift_obj_list.append(rotating_shift_obj)
+                            break
+
+        employee_list = Employee.objects.filter(badge_id__in=employee_ids)
+        r_shifts = RotatingShiftAssign.objects.all()
+        if start_date and employee_ids:
+            for employee, rshift in zip(employee_list, rotating_shift_obj_list):
+                if not r_shifts.filter(
+                    employee_id=employee, rotating_shift_id=rshift
+                ).exists():
+                    rot_shift_assign = RotatingShiftAssign()
+                    rot_shift_assign.employee_id = employee
+                    rot_shift_assign.rotating_shift_id = rshift
+                    rot_shift_assign.start_date = start_date
+                    rot_shift_assign.based_on = "after"
+                    rot_shift_assign.rotate_after_day = 1
+                    rot_shift_assign.next_change_date = start_date
+                    rot_shift_assign.next_shift = rshift.shift1
+                    rot_shift_assign.additional_data["next_shift_index"] = 1
+                    rotating_shift_assign_list.append(rot_shift_assign)
+                else:
+                    error_message = f"Rotating Shift with ID {rshift.name} is already assigned to employee {employee}"
+                    for row in work_info_dicts:
+                        if row["Badge Id"] == employee.badge_id:
+                            row["Employee Error"] = error_message
+                            error_list.append(row)
+                            break
+
+        create_rotating_shift = (
+            not error_list or request.POST.get("create_rotating_shift") == "true"
+        )
+
+        if create_rotating_shift:
+            if rotating_shift_assign_list:
+                RotatingShiftAssign.objects.bulk_create(rotating_shift_assign_list)
+
+        flg = set()
+        unique_error_list = []
+
+        for row in error_list:
+            badge_id = row["Badge Id"]
+            if badge_id not in flg:
+                unique_error_list.append(row)
+                flg.add(badge_id)
+
+        if unique_error_list:
+            for item in unique_error_list:
+                for key, value in error_dict.items():
+                    if key in item:
+                        value.append(item[key])
+                    else:
+                        try:
+                            value.append(None)
+                        except:
+                            pass
+
+            keys_to_remove = [
+                key
+                for key, value in error_dict.items()
+                if all(v is None for v in value)
+            ]
+
+            for key in keys_to_remove:
+                del error_dict[key]
+            data_frame = pd.DataFrame(error_dict, columns=error_dict.keys())
+            error_count = len(unique_error_list)
+
+            response = HttpResponse(content_type="text/csv")
+            response["Content-Disposition"] = 'attachment; filename="ImportError.csv"'
+
+            data_frame.to_csv(response, index=False)
+            response["X-Error-Count"] = error_count
+            return response
+
+        return JsonResponse(
+            {
+                "Success": "Employees Imported Succefully",
+                "success_count": len(employee_list),
+            }
+        )
+    return HttpResponse("")
+
+
 def rotating_shift_assign_redirect(request, obj_id, employee_id):
     request_copy = request.GET.copy()
     request_copy.pop("instances_ids", None)
@@ -3082,64 +3303,8 @@ def employee_permission_assign(request):
         ).distinct()
         context["show_assign"] = True
     permissions = []
-    horilla_apps = [
-        "base",
-        "recruitment",
-        "employee",
-        "leave",
-        "pms",
-        "onboarding",
-        "asset",
-        "attendance",
-        "payroll",
-        "auth",
-        "offboarding",
-        "horilla_documents",
-        "helpdesk",
-    ]
-    installed_apps = [app for app in settings.INSTALLED_APPS if app in horilla_apps]
-
-    no_permission_models = [
-        "historicalbonuspoint",
-        "assetreport",
-        "assetdocuments",
-        "returnimages",
-        "holiday",
-        "companyleave",
-        "historicalavailableleave",
-        "historicalleaverequest",
-        "historicalleaveallocationrequest",
-        "leaverequestconditionapproval",
-        "historicalcompensatoryleaverequest",
-        "employeepastleaverestrict",
-        "overrideleaverequests",
-        "historicalrotatingworktypeassign",
-        "employeeshiftday",
-        "historicalrotatingshiftassign",
-        "historicalworktyperequest",
-        "historicalshiftrequest",
-        "multipleapprovalmanagers",
-        "attachment",
-        "announcementview",
-        "emaillog",
-        "driverviewed",
-        "dashboardemployeecharts",
-        "attendanceallowedip",
-        "tracklatecomeearlyout",
-        "historicalcontract",
-        "overrideattendance",
-        "overrideleaverequest",
-        "overrideworkinfo",
-        "multiplecondition",
-        "historicalpayslip",
-        "reimbursementmultipleattachment",
-        "historicalcontract",
-        "overrideattendance",
-        "overrideleaverequest",
-        "workrecord",
-        "historicalticket",
-    ]
-    for app_name in installed_apps:
+    no_permission_models = NO_PERMISSION_MODALS
+    for app_name in APPS:
         app_models = []
         for model in get_models_in_app(app_name):
             if model._meta.model_name not in no_permission_models:
@@ -3153,6 +3318,7 @@ def employee_permission_assign(request):
             {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
         )
     context["permissions"] = permissions
+    context["no_permission_models"] = no_permission_models
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
@@ -3234,46 +3400,7 @@ def permission_table(request):
     apps = APPS
     form = AssignPermission()
 
-    no_permission_models = [
-        "historicalbonuspoint",
-        "assetreport",
-        "assetdocuments",
-        "returnimages",
-        "holiday",
-        "companyleave",
-        "historicalavailableleave",
-        "historicalleaverequest",
-        "historicalleaveallocationrequest",
-        "leaverequestconditionapproval",
-        "historicalcompensatoryleaverequest",
-        "employeepastleaverestrict",
-        "overrideleaverequests",
-        "historicalrotatingworktypeassign",
-        "employeeshiftday",
-        "historicalrotatingshiftassign",
-        "historicalworktyperequest",
-        "historicalshiftrequest",
-        "multipleapprovalmanagers",
-        "attachment",
-        "announcementview",
-        "emaillog",
-        "driverviewed",
-        "dashboardemployeecharts",
-        "attendanceallowedip",
-        "tracklatecomeearlyout",
-        "historicalcontract",
-        "overrideattendance",
-        "overrideleaverequest",
-        "overrideworkinfo",
-        "multiplecondition",
-        "historicalpayslip",
-        "reimbursementmultipleattachment",
-        "historicalcontract",
-        "overrideattendance",
-        "overrideleaverequest",
-        "workrecord",
-        "historicalticket",
-    ]
+    no_permission_models = NO_PERMISSION_MODALS
 
     for app_name in apps:
         app_models = []
@@ -3285,7 +3412,9 @@ def permission_table(request):
                         "model_name": model._meta.model_name,
                     }
                 )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+        permissions.append(
+            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
+        )
     if request.method == "POST":
         form = AssignPermission(request.POST)
         if form.is_valid():
@@ -3298,6 +3427,7 @@ def permission_table(request):
         {
             "permissions": permissions,
             "form": form,
+            "no_permission_models": no_permission_models,
         },
     )
 
@@ -3433,12 +3563,13 @@ def work_type_request_search(request):
 
 def handle_wtr_close_hx_url(request):
     employee = request.user.employee_get.id
-    HTTP_REFERER = request.META.get("HTTP_REFERER", None)
+    HTTP_REFERER = request.META.get("HTTP_REFERER", "")
     previous_data = unquote(request.GET.urlencode().replace("pd=", ""))
     close_hx_url = ""
     close_hx_target = ""
-    if "/" + "/".join(HTTP_REFERER.split("/")[3:]) == "/":
-        close_hx_url = f"{reverse('dashboard-work-type-request')}"
+
+    if HTTP_REFERER and "/" + "/".join(HTTP_REFERER.split("/")[3:]) == "/":
+        close_hx_url = reverse("dashboard-work-type-request")
         close_hx_target = "#WorkTypeRequestApproveBody"
     elif HTTP_REFERER and HTTP_REFERER.endswith("work-type-request-view/"):
         close_hx_url = f"/work-type-request-search?{previous_data}"
@@ -4956,11 +5087,25 @@ def general_settings(request):
         encashment_form = None
         currency_form = None
 
+    selected_company_id = request.session.get("selected_company")
+
+    if selected_company_id == "all" or not selected_company_id:
+        companies = Company.objects.all()
+    else:
+        companies = Company.objects.filter(id=selected_company_id)
+
+    # Fetch or create EmployeeGeneralSetting instance
+    prefix_instance = EmployeeGeneralSetting.objects.first()
+    prefix_form = EmployeeGeneralSettingPrefixForm(instance=prefix_instance)
     instance = AnnouncementExpire.objects.first()
     form = AnnouncementExpireForm(instance=instance)
     enabled_block_unblock = (
         AccountBlockUnblock.objects.exists()
         and AccountBlockUnblock.objects.first().is_enabled
+    )
+    enabled_profile_edit = (
+        ProfileEditFeature.objects.exists()
+        and ProfileEditFeature.objects.first().is_enabled
     )
     history_tracking_instance = HistoryTrackingFields.objects.first()
     history_fields_form_initial = {}
@@ -4994,6 +5139,10 @@ def general_settings(request):
             "history_fields_form": history_fields_form,
             "history_tracking_instance": history_tracking_instance,
             "enabled_block_unblock": enabled_block_unblock,
+            "enabled_profile_edit": enabled_profile_edit,
+            "prefix_form": prefix_form,
+            "companies": companies,
+            "selected_company_id": selected_company_id,
         },
     )
 
@@ -5019,33 +5168,49 @@ def save_date_format(request):
         else:
             user = request.user
             employee = user.employee_get
-
-            # Taking the company_name of the user
-            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-            # Employee workinformation will not exists if he/she chnged the company, So can't save the date format.
-            if info.exists():
-                for data in info:
-                    employee_company = data.company_id
-
-                company_name = Company.objects.filter(company=employee_company)
-                emp_company = company_name.first()
-
-                if emp_company is None:
-                    messages.warning(
-                        request, _("Please update the company field for the user.")
-                    )
-                else:
-                    # Save the selected format to the backend
-                    emp_company.date_format = selected_format
-                    emp_company.save()
+            if request.user.is_superuser:
+                selected_company = request.session.get("selected_company")
+                if selected_company == "all":
+                    all_companies = Company.objects.all()
+                    for cmp in all_companies:
+                        cmp.date_format = selected_format
+                        cmp.save()
                     messages.success(request, _("Date format saved successfully."))
-            else:
-                messages.warning(
-                    request, _("Date format cannot saved. You are not in the company.")
-                )
+                else:
+                    company = Company.objects.get(id=selected_company)
+                    company.date_format = selected_format
+                    company.save()
+                    messages.success(request, _("Date format saved successfully."))
 
-            # Return a JSON response indicating success
-            return JsonResponse({"success": True})
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
+            else:
+                # Taking the company_name of the user
+                info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                # Employee workinformation will not exists if he/she chnged the company, So can't save the date format.
+                if info.exists():
+                    for data in info:
+                        employee_company = data.company_id
+
+                    company_name = Company.objects.filter(company=employee_company)
+                    emp_company = company_name.first()
+
+                    if emp_company is None:
+                        messages.warning(
+                            request, _("Please update the company field for the user.")
+                        )
+                    else:
+                        # Save the selected format to the backend
+                        emp_company.date_format = selected_format
+                        emp_company.save()
+                        messages.success(request, _("Date format saved successfully."))
+                else:
+                    messages.warning(
+                        request,
+                        _("Date format cannot saved. You are not in the company."),
+                    )
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
     return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
@@ -5055,6 +5220,16 @@ def save_date_format(request):
 def get_date_format(request):
     user = request.user
     employee = user.employee_get
+
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all" and request.user.is_superuser:
+        company = Company.objects.get(id=selected_company)
+        date_format = company.date_format
+        if date_format:
+            date_format = date_format
+        else:
+            date_format = "MMM. D, YYYY"
+        return JsonResponse({"selected_format": date_format})
 
     # Taking the company_name of the user
     info = EmployeeWorkInformation.objects.filter(employee_id=employee)
@@ -5086,33 +5261,50 @@ def save_time_format(request):
         else:
             user = request.user
             employee = user.employee_get
-
-            # Taking the company_name of the user
-            info = EmployeeWorkInformation.objects.filter(employee_id=employee)
-            # Employee workinformation will not exists if he/she chnged the company, So can't save the time format.
-            if info.exists():
-                for data in info:
-                    employee_company = data.company_id
-
-                company_name = Company.objects.filter(company=employee_company)
-                emp_company = company_name.first()
-
-                if emp_company is None:
-                    messages.warning(
-                        request, _("Please update the company field for the user.")
-                    )
+            if request.user.is_superuser:
+                selected_company = request.session.get("selected_company")
+                if selected_company == "all":
+                    all_companies = Company.objects.all()
+                    for cmp in all_companies:
+                        cmp.time_format = selected_format
+                        cmp.save()
+                    messages.success(request, _("Date format saved successfully."))
                 else:
-                    # Save the selected format to the backend
-                    emp_company.time_format = selected_format
-                    emp_company.save()
-                    messages.success(request, _("Time format saved successfully."))
-            else:
-                messages.warning(
-                    request, _("Time format cannot saved. You are not in the company.")
-                )
+                    company = Company.objects.get(id=selected_company)
+                    company.time_format = selected_format
+                    company.save()
+                    messages.success(request, _("Date format saved successfully."))
 
-            # Return a JSON response indicating success
-            return JsonResponse({"success": True})
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
+            else:
+                # Taking the company_name of the user
+                info = EmployeeWorkInformation.objects.filter(employee_id=employee)
+                # Employee workinformation will not exists if he/she chnged the company, So can't save the time format.
+                if info.exists():
+                    for data in info:
+                        employee_company = data.company_id
+
+                    company_name = Company.objects.filter(company=employee_company)
+                    emp_company = company_name.first()
+
+                    if emp_company is None:
+                        messages.warning(
+                            request, _("Please update the company field for the user.")
+                        )
+                    else:
+                        # Save the selected format to the backend
+                        emp_company.time_format = selected_format
+                        emp_company.save()
+                        messages.success(request, _("Time format saved successfully."))
+                else:
+                    messages.warning(
+                        request,
+                        _("Time format cannot saved. You are not in the company."),
+                    )
+
+                # Return a JSON response indicating success
+                return JsonResponse({"success": True})
 
     # Return a JSON response for unsupported methods
     return JsonResponse({"error": False, "error": "Unsupported method"}, status=405)
@@ -5122,6 +5314,16 @@ def save_time_format(request):
 def get_time_format(request):
     user = request.user
     employee = user.employee_get
+
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all" and request.user.is_superuser:
+        company = Company.objects.get(id=selected_company)
+        time_format = company.time_format
+        if time_format:
+            time_format = time_format
+        else:
+            time_format = "hh:mm A"
+        return JsonResponse({"selected_format": time_format})
 
     # Taking the company_name of the user
     info = EmployeeWorkInformation.objects.filter(employee_id=employee)
@@ -5161,21 +5363,62 @@ def history_field_settings(request):
 
     return redirect(general_settings)
 
+@login_required
+@permission_required("horilla_audit.change_accountblockunblock")
 def enable_account_block_unblock(request):
     if request.method == "POST":
-        enabled = request.POST.get("enable_block_account")
-        if enabled == "on":
-            enabled = True
-        else:
-            enabled = False
-        if AccountBlockUnblock.objects.exists():
-            instance = AccountBlockUnblock.objects.first()
+        enabled = request.POST.get("enable_block_account") == "on"
+        instance = AccountBlockUnblock.objects.first()
+        if instance:
             instance.is_enabled = enabled
-            messages.success(request, _("Settings updated."))
             instance.save()
         else:
             AccountBlockUnblock.objects.create(is_enabled=enabled)
+        messages.success(
+            request,
+            _(
+                f"Account block/unblock setting has been {'enabled' if enabled else 'disabled'}."
+            ),
+        )
+        if request.META.get("HTTP_HX_REQUEST"):
+            return HttpResponse()
         return redirect(general_settings)
+    return HttpResponse(status=405)
+
+
+@login_required
+@permission_required("employee.change_employee")
+def enable_profile_edit_feature(request):
+
+    if request.method == "POST":
+        enabled = request.POST.get("enable_profile_edit") == "on"
+        instance = ProfileEditFeature.objects.first()
+        feature = DefaultAccessibility.objects.filter(feature="profile_edit").first()
+        if instance:
+            instance.is_enabled = enabled
+            instance.save()
+        else:
+            ProfileEditFeature.objects.create(is_enabled=enabled)
+
+        if enabled and not feature:
+            DefaultAccessibility.objects.create(
+                feature="profile_edit", filter={"feature": ["profile_edit"]}
+            )
+
+        if enabled:
+            if not any(item[0] == "profile_edit" for item in ACCESSBILITY_FEATURE):
+                ACCESSBILITY_FEATURE.append(("profile_edit", _("Profile Edit Access")))
+        else:
+            ACCESSBILITY_FEATURE.pop()
+
+        messages.success(
+            request,
+            _(f"Profile edit feature has been {'enabled' if enabled else 'disabled'}."),
+        )
+        if request.META.get("HTTP_HX_REQUEST"):
+            return HttpResponse()
+        return redirect(general_settings)
+    return HttpResponse(status=405)
 
 
 @login_required
@@ -5549,8 +5792,11 @@ def add_more_approval_managers(request):
     if managers_count:
         managers_count = int(managers_count) + 1
         field_name = f"multi_approval_manager_{managers_count}"
-        form.fields[field_name] = forms.ModelChoiceField(
-            queryset=Employee.objects.all(),
+        choices = [("reporting_manager_id", _("Reporting Manager"))] + [
+            (employee.pk, str(employee)) for employee in Employee.objects.all()
+        ]
+        form.fields[field_name] = forms.ChoiceField(
+            choices=choices,
             widget=forms.Select(
                 attrs={
                     "class": "oh-select oh-select-2 mb-3",
@@ -5605,28 +5851,31 @@ def multiple_level_approval_create(request):
         department = Department.objects.get(id=dept_id)
         instance = MultipleApprovalCondition()
         if form.is_valid():
+            instance.department = department
+            instance.condition_field = condition_field
+            instance.condition_operator = condition_operator
+            instance.company_id = company
             if condition_operator != "range":
-                instance.department = department
-                instance.condition_field = condition_field
-                instance.condition_operator = condition_operator
                 instance.condition_value = condition_value
-                instance.company_id = company
             else:
-                instance.department = department
-                instance.condition_field = condition_field
-                instance.condition_operator = condition_operator
                 instance.condition_start_value = condition_start_value
                 instance.condition_end_value = condition_end_value
-                instance.company_id = company
+
             instance.save()
             sequence = 0
             for emp_id in condition_approval_managers:
                 sequence += 1
-                employee_id = int(emp_id)
+                reporting_manager = None
+                try:
+                    employee_id = int(emp_id)
+                except:
+                    employee_id = None
+                    reporting_manager = emp_id
                 MultipleApprovalManagers.objects.create(
                     condition_id=instance,
                     sequence=sequence,
                     employee_id=employee_id,
+                    reporting_manager=reporting_manager,
                 )
             form = MultipleApproveConditionForm()
             messages.success(
@@ -5645,8 +5894,11 @@ def edit_approval_managers(form, managers):
             form.initial["multi_approval_manager"] = manager.employee_id
         else:
             field_name = f"multi_approval_manager_{i}"
-            form.fields[field_name] = forms.ModelChoiceField(
-                queryset=Employee.objects.all(),
+            choices = [("reporting_manager_id", _("Reporting Manager"))] + [
+                (employee.pk, str(employee)) for employee in Employee.objects.all()
+            ]
+            form.fields[field_name] = forms.ChoiceField(
+                choices=choices,
                 label=_("Approval Manager {}").format(i),
                 widget=forms.Select(attrs={"class": "oh-select oh-select-2 mb-3"}),
                 required=False,
@@ -5678,11 +5930,17 @@ def multiple_level_approval_edit(request, condition_id):
             for key, value in request.POST.items():
                 if key.startswith("multi_approval_manager"):
                     sequence += 1
-                    employee_id = int(value)
+                    reporting_manager = None
+                    try:
+                        employee_id = int(value)
+                    except:
+                        employee_id = None
+                        reporting_manager = value
                     MultipleApprovalManagers.objects.create(
                         condition_id=instance,
                         sequence=sequence,
                         employee_id=employee_id,
+                        reporting_manager=reporting_manager,
                     )
     selected_company = request.session.get("selected_company")
     if selected_company != "all":
@@ -6130,6 +6388,8 @@ def pagination_settings_view(request):
             if pagination_form.is_valid():
                 pagination_form.save()
                 messages.success(request, _("Default pagination updated."))
+    if request.META.get("HTTP_HX_REQUEST"):
+        return HttpResponse()
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -6246,7 +6506,7 @@ def driver_viewed_status(request):
 
 
 @login_required
-def employee_charts(request):
+def dashboard_components_toggle(request):
     """
     This function is used to create personalized dashboard charts for employees
     """
@@ -6452,8 +6712,7 @@ def activate_biometric_attendance(request):
 
 @login_required
 def get_horilla_installed_apps(request):
-    installed_apps = settings.INSTALLED_APPS
-    return JsonResponse({"installed_apps": installed_apps})
+    return JsonResponse({"installed_apps": APPS})
 
 
 def generate_error_report(error_list, error_data, file_name):
@@ -6500,6 +6759,25 @@ def generate_error_report(error_list, error_data, file_name):
 
 @login_required
 @hx_request_required
+def get_upcoming_holidays(request):
+    """
+    Retrieve and display a list of upcoming holidays for the current month and year.
+    """
+    today = timezone.localdate()
+    current_month = today.month
+    current_year = today.year
+    holidays = Holidays.objects.filter(
+        Q(start_date__month=current_month, start_date__year=current_year)
+        & Q(start_date__gte=today)
+    )
+    colors = generate_colors(len(holidays))
+    for i, holiday in enumerate(holidays):
+        holiday.background_color = colors[i]
+    return render(request, "holiday/upcoming_holidays.html", {"holidays": holidays})
+
+
+@login_required
+@hx_request_required
 @permission_required("base.add_holidays")
 def holiday_creation(request):
     """
@@ -6513,16 +6791,13 @@ def holiday_creation(request):
     POST : return holiday view template
     """
 
-    query_string = request.GET.urlencode()
-    if query_string.startswith("pd="):
-        previous_data = unquote(query_string[len("pd=") :])
-    else:
-        previous_data = unquote(query_string)
+    previous_data = request.GET.urlencode()
     form = HolidayForm()
     if request.method == "POST":
         form = HolidayForm(request.POST)
         if form.is_valid():
             form.save()
+            form = HolidayForm()
             messages.success(request, _("New holiday created successfully.."))
             if Holidays.objects.filter().count() == 1:
                 return HttpResponse("<script>window.location.reload();</script>")
@@ -6826,7 +7101,7 @@ def holiday_filter(request):
 @login_required
 @hx_request_required
 @permission_required("base.change_holidays")
-def holiday_update(request, id):
+def holiday_update(request, obj_id):
     """
     function used to update holiday.
 
@@ -6843,7 +7118,7 @@ def holiday_update(request, id):
         previous_data = unquote(query_string[len("pd=") :])
     else:
         previous_data = unquote(query_string)
-    holiday = Holidays.objects.get(id=id)
+    holiday = Holidays.objects.get(id=obj_id)
     form = HolidayForm(instance=holiday)
     if request.method == "POST":
         form = HolidayForm(request.POST, instance=holiday)
@@ -6853,14 +7128,14 @@ def holiday_update(request, id):
     return render(
         request,
         "holiday/holiday_update_form.html",
-        {"form": form, "id": id, "pd": previous_data},
+        {"form": form, "id": obj_id, "pd": previous_data},
     )
 
 
 @login_required
 @hx_request_required
 @permission_required("base.delete_holidays")
-def holiday_delete(request, id):
+def holiday_delete(request, obj_id):
     """
     function used to delete holiday.
 
@@ -6873,7 +7148,7 @@ def holiday_delete(request, id):
     """
     query_string = request.GET.urlencode()
     try:
-        Holidays.objects.get(id=id).delete()
+        Holidays.objects.get(id=obj_id).delete()
         messages.success(request, _("Holidays deleted successfully.."))
     except Holidays.DoesNotExist:
         messages.error(request, _("Holidays not found."))

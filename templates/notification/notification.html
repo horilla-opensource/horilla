@@ -1,63 +1,104 @@
-{% load basefilters %}
-{% load static %}
-{% load i18n %}
-{% load notifications_tags %}
-{% notifications_unread as unread_count %}
+{% load basefilters %} {% load static %} {% load i18n %}
+{% load notifications_tags %} {% notifications_unread as unread_count %}
 
 <div
-  class="oh-navbar__notifications"
-  id="notificationIcon"
-  x-data="{open: false}"
-  hx-get="{% url 'notifications' %}"
-  hx-target="#notificationContainer"
+    class="oh-navbar__notifications"
+    id="notificationIcon"
+    x-data="{open: false}"
+    hx-get="{% url 'notifications' %}"
+    hx-target="#notificationContainer"
 >
-    <a href="#" class="oh-navbar__notification-link" @click="open = !open" title="Notifications">
-      <ion-icon name="notifications-outline" class="oh-navbar__icon"></ion-icon>
-      <span class="oh-navbar__notification-beacon">
-        {% live_notify_badge %}
-      </span>
+    <a
+        href="#"
+        class="oh-navbar__notification-link"
+        @click="open = !open"
+        title="Notifications"
+    >
+        <ion-icon
+            name="notifications-outline"
+            class="oh-navbar__icon"
+        ></ion-icon>
+        <span class="oh-navbar__notification-beacon">
+            {% live_notify_badge %}
+        </span>
     </a>
 
-    <div id="showallnotificationbtn" class="oh-navbar__notification-tray"
-      x-data="{markRead: false, visible: true}"  x-show="open" style="display: none;"
-      @click.outside="open = false">
-      <div id="notificationContainer">
-        {% include 'notification/notification_items.html' %}
-      </div>
-      <div class="oh-navbar__notification-footer" x-show="visible">
-        <a
-        {% comment %} href="{% url 'notifications:all' %}" {% endcomment %}
-        id="viewallnotification"
-        data-target="#allNotifications"
-        hx-get="{% url 'all-notifications' %}"
-        hx-target="#allNotificationBody"
-         class="oh-navbar__notification-tray-link oh-activity-sidebar__open">{% trans "View all notifications" %}</a>
-      </div>
-      <div class="oh-navbar__notification-empty" x-show="!visible">
-        <img src="{% static 'images/ui/happy.svg' %}" alt="All caught up" width="50" height="50" loading="lazy" />
-        <span class="oh-navbar__notification-empty-title">{% trans "All caught up!" %}</span>
-        <span class="oh-navbar__notification-empty-desc">{% trans "You have no new notifications at the moment." %}</span>
-      </div>
+    <div
+        id="showallnotificationbtn"
+        class="oh-navbar__notification-tray"
+        x-data="{markRead: false, visible: true}"
+        x-show="open"
+        style="display: none"
+        @click.outside="open = false"
+    >
+        <div id="notificationContainer">
+            {% include 'notification/notification_items.html' %}
+        </div>
+        <div class="oh-navbar__notification-empty" x-show="!visible">
+            <img
+                src="{% static 'images/ui/happy.svg' %}"
+                alt="All caught up"
+                width="50"
+                height="50"
+                loading="lazy"
+            />
+            <span class="oh-navbar__notification-empty-title"
+                >{% trans "All caught up!" %}</span
+            >
+            <span class="oh-navbar__notification-empty-desc"
+                >{% trans "You have no new notifications at the moment." %}</span
+            >
+        </div>
     </div>
-  </div>
+</div>
 
-  <script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>
+<script>
+    var staticUrl = $("#statiUrl").attr("data-url");
+    var notification_sound = {{request.user.employee_get.notification_sound.sound_enabled|yesno:"true,false"}};
+    function fill_notification_badge(data) {
+        var badges = document.getElementsByClassName(notify_badge_class);
+        let previousUnreadCount = parseInt(localStorage.getItem('previousUnreadCount')) || 0;
+        if (notification_sound) {
+            if (
+                previousUnreadCount !== null &&
+                previousUnreadCount < data.unread_count
+            ) {
+                const audio = new Audio(
+                    `${staticUrl}static/audio/notification-sound.wav`
+                );
+                audio.play();
+            }
+        }
+
+        if (badges) {
+            for (var i = 0; i < badges.length; i++) {
+                badges[i].innerHTML = data.unread_count;
+            }
+        }
+        localStorage.setItem('previousUnreadCount', data.unread_count);
+    }
+
+</script>
+<script
+    src="{% static 'notifications/notify.js' %}"
+    type="text/javascript"
+></script>
 {% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
 <script>
-  function markAsRead(notificationId) {
-      fetch('/notifications/mark-as-read/' + notificationId + '/')
-          .then(response => {
-              if (response.ok) {
-                  // Reload the page to update the notifications
-                  location.reload();
-              } else {
-                  console.error('Failed to mark notification as read');
-              }
-          });
-  }
+    function markAsRead(notificationId) {
+        fetch("/notifications/mark-as-read/" + notificationId + "/").then(
+            (response) => {
+                if (response.ok) {
+                    // Reload the page to update the notifications
+                    location.reload();
+                } else {
+                    console.error("Failed to mark notification as read");
+                }
+            }
+        );
+    }
 
-  $("#viewallnotification").click(function () {
-    $("#showallnotificationbtn").toggle();
-  });
-
+    $("#viewallnotification").click(function () {
+        $("#showallnotificationbtn").toggle();
+    });
 </script>

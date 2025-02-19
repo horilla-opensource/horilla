@@ -1,18 +1,73 @@
-{% load i18n %}
-{% csrf_token %}
+{% load i18n %} {% csrf_token %}
 <div class="oh-inner-sidebar-content__header mt-4">
-    <h2 class="oh-inner-sidebar-content__title">{% trans 'Employee Account Block/Unblock' %}</h2>
+    <h2 class="oh-inner-sidebar-content__title">
+        {% trans 'Employee Account Restrictions' %}
+    </h2>
 </div>
-<form action="{% url 'enable-account-block-unblock' %}" method="post">
-    {% csrf_token %}
-  <div class="oh-label__info" for="enable_block_unblock">
-    <label class="oh-label" for="enable_block_unblock">{% trans "Restrict Login Account" %}</label>
-    <span class="oh-info mr-2" title="{% trans "By enabling this feature, you can block or unblock an employee's account." %}">
-    </span>
-  </div>
-  <div class="oh-switch p-3">
-    <input type="checkbox"class="oh-switch__checkbox" name="enable_block_account" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if enabled_block_unblock %} checked{% endif %} />
-  </div>
-  <input type="submit" hidden />
-</form>
+<div class="d-flex">
+    <div class="me-4">
+        <form
+            hx-post="{% url 'enable-account-block-unblock' %}"
+            hx-swap="none"
+            hx-trigger="change from:#enableBlockUnblock"
+            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 70);"
+        >
+            {% csrf_token %}
+            <div class="oh-label__info" for="enable_block_unblock">
+                <label class="oh-label" for="enable_block_unblock"
+                    >{% trans "Restrict Login Account" %}</label
+                >
+                <span
+                    class="oh-info mr-2"
+                    title="{% trans 'By enabling this feature, you can block or unblock an employee account.' %}"
+                >
+                </span>
+            </div>
+            <div class="oh-switch p-3">
+                <input
+                    type="checkbox"
+                    class="oh-switch__checkbox"
+                    name="enable_block_account"
+                    id="enableBlockUnblock"
+                    {% if enabled_block_unblock %}
+                    checked
+                    {% endif %}
+                />
+            </div>
+            <input type="submit" hidden />
+        </form>
+    </div>
+    <div>
+        <form
+            hx-post="{% url 'enable-profile-edit-feature' %}"
+            hx-swap="none"
+            hx-trigger="change from:#enableProfileEditUnblock"
+            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 70);"
+        >
+            {% csrf_token %}
+            <div class="oh-label__info" for="enable_block_unblock">
+                <label class="oh-label" for="enable_block_unblock"
+                    >{% trans "Restrict Profile Edit" %}</label
+                >
+                <span
+                    class="oh-info mr-2"
+                    title="{% trans 'By enabling this feature, you can restrict an employee from editing their profile.' %}"
+                >
+                </span>
+            </div>
+            <div class="oh-switch p-3">
+                <input
+                    type="checkbox"
+                    class="oh-switch__checkbox"
+                    name="enable_profile_edit"
+                    id="enableProfileEditUnblock"
+                    {% if enabled_profile_edit %}
+                    checked
+                    {% endif %}
+                />
+            </div>
+            <input type="submit" hidden />
+        </form>
+    </div>
+</div>
 <div class="oh-inner-sidebar-content__footer"></div>

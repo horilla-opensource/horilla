@@ -40,8 +40,8 @@
         {% if perms.base.delete_horillamailtemplate %}
           <h3 class="oh-faq-card__title d-flex justify-content-between "><span>{{ template.title }}</span>
             <div>
-            <a hx-get="{% url 'duplicate-mail-template' template.id %}" hx-target="#duplicateTemplateFormModal" data-toggle="oh-modal-toggle"
-              data-target="#duplicateTemplateModal" title="{% trans 'Duplicate' %}" style= "cursor: pointer;">
+            <a hx-get="{% url 'duplicate-mail-template' template.id %}" hx-target="#viewTemplateModalBody" data-toggle="oh-modal-toggle"
+              data-target="#viewTemplateModal" title="{% trans 'Duplicate' %}" style= "cursor: pointer;">
               <ion-icon name="copy-outline"></ion-icon>
             </a>
             <a href="{% url "delete-mail-template" %}?ids={{template.id}}" class="text-danger" style="cursor: pointer;"

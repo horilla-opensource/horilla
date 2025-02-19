@@ -14,6 +14,9 @@
 <div style="display: none">{{filter_dict}}</div>
 <script>
   function fieldLabel(value, field) {
+    if (`{{keys_to_remove|safe}}`.includes(field)) {
+      return ""
+    }
     fiedlElem = $(`#applyFilter`).closest(`form`).find(`[name=${field}]`);
     if (fiedlElem.is("select")) {
       // my conditions

@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n %} {% load horillafilters %}
 <div class="oh-sticky-table">
 	<div class="oh-sticky-table__table oh-table--sortable">
 		<div class="oh-sticky-table__thead">
@@ -17,11 +17,7 @@
 				<div class="oh-sticky-table__td">{{act.title}}</div>
 				<div class="oh-sticky-table__td">{{act.get_action_type_display}}</div>
 				<div class="oh-sticky-table__td">
-					{% if act.block_option %}
-						{% trans "Yes" %}
-					{% else %}
-						{% trans "No" %}
-					{% endif %}
+					{{act.block_option|yes_no}}
 				</div>
 				{% if perms.employee.change_actiontype or perms.employee.delete_actiontype %}
 					<div class="oh-sticky-table__td">

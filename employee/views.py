@@ -17,6 +17,7 @@ import json
 import operator
 import os
 import re
+import threading
 from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs
 
@@ -25,6 +26,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.db import models, transaction
 from django.db.models import F, ProtectedError
 from django.db.models.query import QuerySet
@@ -38,6 +40,9 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 from accessibility.decorators import enter_if_accessible
+from accessibility.methods import update_employee_accessibility_cache
+from accessibility.middlewares import ACCESSIBILITY_CACHE_USER_KEYS
+from accessibility.models import DefaultAccessibility
 from base.forms import ModelForm
 from base.methods import (
     choosesubordinates,
@@ -71,6 +76,7 @@ from employee.forms import (
     EmployeeBankDetailsUpdateForm,
     EmployeeExportExcelForm,
     EmployeeForm,
+    EmployeeGeneralSettingPrefixForm,
     EmployeeNoteForm,
     EmployeeTagForm,
     EmployeeWorkInformationForm,
@@ -89,6 +95,7 @@ from employee.methods.methods import (
     bulk_create_work_types,
     convert_nan,
     get_ordered_badge_ids,
+    set_initial_password,
 )
 from employee.models import (
     BonusPoint,
@@ -168,9 +175,19 @@ filter_mapping = {
 }
 
 
-def _check_reporting_manager(request):
-    employee = request.user.employee_get
-    return employee.reporting_manager.exists()
+def _check_reporting_manager(request, *args, **kwargs):
+    if kwargs.get("obj_id"):
+        obj_id = kwargs["obj_id"]
+        emp = Employee.objects.get(id=obj_id)
+        re_manager = None
+        if emp.employee_work_info.reporting_manager_id != None:
+            re_manager = emp.employee_work_info.reporting_manager_id
+        employee = request.user.employee_get
+        if re_manager != None:
+            return re_manager == employee
+        else:
+            return False
+    return request.user.employee_get.reporting_manager.exists()
 
 
 # Create your views here.
@@ -206,12 +223,17 @@ def employee_profile(request):
 
 
 @login_required
+@enter_if_accessible(
+    feature="profile_edit",
+    perm="employee.change_employee",
+)
 def self_info_update(request):
     """
     This method is used to update own profile of an employee.
     """
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
+    badge_id = employee.badge_id
     bank_form = EmployeeBankDetailsForm(
         instance=EmployeeBankDetails.objects.filter(employee_id=employee).first()
     )
@@ -223,6 +245,8 @@ def self_info_update(request):
             if form.is_valid():
                 instance = form.save(commit=False)
                 instance.employee_user_id = user
+                if instance.badge_id is None:
+                    instance.badge_id = badge_id
                 instance.save()
                 messages.success(request, _("Profile updated."))
         elif request.POST.get("any_other_code1") is not None:
@@ -241,6 +265,28 @@ def self_info_update(request):
             "bank_form": bank_form,
         },
     )
+
+
+def profile_edit_access(request, emp_id):
+    feature = request.GET.get("feature", None)
+    accessibility = DefaultAccessibility.objects.filter(feature=feature).first()
+    if accessibility:
+        employees = Employee.objects.filter(id=emp_id)
+
+        if employee := employees.first():
+            if employee in accessibility.employees.all():
+                accessibility.employees.remove(employee)
+            else:
+                accessibility.employees.add(employee)
+
+            user_cache_key = ACCESSIBILITY_CACHE_USER_KEYS.get(
+                employees.first().employee_user_id.id, None
+            )
+            if user_cache_key:
+                cache.delete(user_cache_key[-1])
+                update_employee_accessibility_cache(user_cache_key[-1], employee)
+
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -333,7 +379,7 @@ def about_tab(request, obj_id, **kwargs):
     )
     return render(
         request,
-        "tabs/personal-tab.html",
+        "tabs/personal_tab.html",
         {
             "employee": employee,
             "employee_leaves": employee_leaves,
@@ -383,7 +429,7 @@ def shift_tab(request, emp_id):
 
 
 @login_required
-@manager_can_enter("horilla_documents.view_documentrequests")
+@manager_can_enter("horilla_documents.view_documentrequest")
 def document_request_view(request):
     """
     This function is used to view documents requests of employees.
@@ -399,7 +445,7 @@ def document_request_view(request):
     documents = Document.objects.filter(document_request_id__isnull=False)
     documents = filtersubordinates(
         request=request,
-        perm="horilla_documents.view_documentrequests",
+        perm="horilla_documents.view_documentrequest",
         queryset=documents,
     )
     documents = group_by_queryset(
@@ -419,7 +465,7 @@ def document_request_view(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("horilla_documents.view_documentrequests")
+@manager_can_enter("horilla_documents.view_documentrequest")
 def document_filter_view(request):
     """
     This method is used to filter employee.
@@ -452,7 +498,7 @@ def document_filter_view(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("horilla_documents.add_documentrequests")
+@manager_can_enter("horilla_documents.add_documentrequest")
 def document_request_create(request):
     """
     This function is used to create document requests of an employee in employee requests view.
@@ -497,7 +543,7 @@ def document_request_create(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter("horilla_documents.change_documentrequests")
+@manager_can_enter("horilla_documents.change_documentrequest")
 def document_request_update(request, id):
     """
     This function is used to update document requests of an employee in employee requests view.
@@ -599,14 +645,10 @@ def update_document_title(request, id):
     if request.method == "POST":
         document.title = name
         document.save()
-
-        return JsonResponse(
-            {"success": True, "message": "Document title updated successfully"}
-        )
+        messages.success(request, _("Document title updated successfully"))
     else:
-        return JsonResponse(
-            {"success": False, "message": "Invalid request"}, status=400
-        )
+        messages.error(request, _("Invalid request"))
+    return HttpResponse("")
 
 
 @login_required
@@ -623,30 +665,40 @@ def document_delete(request, id):
     """
     try:
         document = Document.objects.filter(id=id)
-        # users can delete own documents
         if not request.user.has_perm("horilla_documents.delete_document"):
-            document = document.filter(employee_id__employee_user_id=request.user)
+            document = document.filter(
+                employee_id__employee_user_id=request.user
+            ).exclude(document_request_id__isnull=False)
         if document:
+            document_first = document.first()
             document.delete()
             messages.success(
                 request,
                 _(
-                    f"Document request {document.first()} for {document.first().employee_id} deleted successfully"
+                    f"Document request {document_first} for {document_first.employee_id} deleted successfully"
                 ),
             )
+            referrer = request.META.get("HTTP_REFERER", "")
+            referrer = "/" + "/".join(referrer.split("/")[3:])
+            if referrer.startswith("/employee/employee-view/") or referrer.endswith(
+                "/employee/employee-profile/"
+            ):
+                existing_documents = Document.objects.filter(
+                    employee_id=document_first.employee_id
+                )
+                if not existing_documents:
+                    return HttpResponse(
+                        f"""
+                            <span hx-get='/employee/document-tab/{document_first.employee_id.id}?employee_view=true'
+                            hx-target='#document_target' hx-trigger='load'></span>
+                        """
+                    )
+            return HttpResponse()
         else:
             messages.error(request, _("Document not found"))
-
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
-
-    if "HTTP_HX_TARGET" in request.META and request.META.get(
-        "HTTP_HX_TARGET"
-    ).startswith("document"):
-        clear_messages(request)
-        return HttpResponse()
-    else:
-        return HttpResponse("<script>window.location.reload();</script>")
+    return HttpResponse("<script>window.location.reload();</script>")
 
 
 @login_required
@@ -2461,6 +2513,7 @@ def work_info_import(request):
                 "employee_first_name", "employee_last_name", "email"
             )
         )
+        users = []
         for work_info in work_info_dicts:
             error = False
             try:
@@ -2555,8 +2608,14 @@ def work_info_import(request):
 
         if create_work_info or not error_lists:
             try:
-                bulk_create_user_import(success_lists)
-                total_count = bulk_create_employee_import(success_lists)
+                users = bulk_create_user_import(success_lists)
+                employees = bulk_create_employee_import(success_lists)
+                thread = threading.Thread(
+                    target=set_initial_password, args=(employees,)
+                )
+                thread.start()
+
+                total_count = len(employees)
                 bulk_create_department_import(success_lists)
                 bulk_create_job_position_import(success_lists)
                 bulk_create_job_role_import(success_lists)
@@ -2718,6 +2777,7 @@ def birthday():
 
 
 @login_required
+@enter_if_accessible(feature="birthday_view", perm="employee.view_employee")
 def get_employees_birthday(request):
     """
     Render all upcoming birthday employee details for the dashboard.
@@ -2787,7 +2847,7 @@ def dashboard(request):
 
 @login_required
 def total_employees_count(request):
-    employees = Employee.objects.filter().count()
+    employees = Employee.objects.all().count()
     return HttpResponse(employees)
 
 
@@ -3426,14 +3486,24 @@ def encashment_condition_create(request):
 @permission_required("employee.add_employeegeneralsetting")
 def initial_prefix(request):
     """
-    This method is used to set initial prefix
+    This method is used to set the initial prefix using a form.
     """
-    instance = EmployeeGeneralSetting.objects.first()
-    instance = instance if instance else EmployeeGeneralSetting()
-    instance.badge_id_prefix = request.POST["initial_prefix"]
-    instance.save()
-    messages.success(request, "Initial prefix update")
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    instance = EmployeeGeneralSetting.objects.first()  # Get the first instance or None
+    if not instance:
+        instance = EmployeeGeneralSetting()  # Create a new instance if none exists
+
+    if request.method == "POST":
+        form = EmployeeGeneralSettingPrefixForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Initial prefix updated successfully.")
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        else:
+            messages.error(request, "There was an error updating the prefix.")
+    else:
+        form = EmployeeGeneralSettingPrefixForm(instance=instance)
+
+    return render(request, "settings/settings.html", {"prefix_form": form})
 
 
 @login_required

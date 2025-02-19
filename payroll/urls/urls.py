@@ -76,6 +76,11 @@ urlpatterns = [
         kwargs={"model": Payslip},
     ),
     path(
+        "view-payslip-pdf/<int:payslip_id>/",
+        views.view_payslip_pdf,
+        name="view-payslip-pdf",
+    ),
+    path(
         "delete-payslip/<int:payslip_id>/", views.delete_payslip, name="delete-payslip"
     ),
     path(

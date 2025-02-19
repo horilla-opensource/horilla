@@ -9,7 +9,7 @@
                         <span class="oh-card-dashboard__title">{% trans 'Offline Employees' %}
                         </span>
                         <span class="float-end chart_close_button" role="button" data-chart="offline_employees"
-                            hx-post="{% url 'employee-charts' %}?chart_id=offline_employees" hx-target="#notInYetId"
+                            hx-post="{% url 'dashboard-components-toggle' %}?chart_id=offline_employees" hx-target="#notInYetId"
                             hx-swap="outerHTML">
                             <i class="material-icons fw-lighter fs-5">close</i>
                         </span>
@@ -29,7 +29,7 @@
                     <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                         <span class="oh-card-dashboard__title">{% trans 'Online Employees' %}</span>
                         <span class="float-end chart_close_button fs-5" role="button" data-chart="online_employees"
-                            hx-post="{% url 'employee-charts' %}?chart_id=online_employees" hx-target="#notoutYetId"
+                            hx-post="{% url 'dashboard-components-toggle' %}?chart_id=online_employees" hx-target="#notoutYetId"
                             hx-swap="outerHTML">
                             <i class="material-icons fw-lighter">close</i>
                         </span>
@@ -49,7 +49,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Overall Leave" %}</span>
                     <span class="float-end chart_close_button ms-3" role="button" data-chart="overall_leave_chart"
-                        hx-post="{% url 'employee-charts' %}?chart_id=overall_leave_chart" hx-target="#movable1"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=overall_leave_chart" hx-target="#movable1"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -74,7 +74,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Hired Candidates" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="hired_candidates"
-                        hx-post="{% url 'employee-charts' %}?chart_id=hired_candidates" hx-target="#movable2"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=hired_candidates" hx-target="#movable2"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -91,7 +91,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Candidates Started Onboarding" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="onboarding_candidates"
-                        hx-post="{% url 'employee-charts' %}?chart_id=onboarding_candidates" hx-target="#movable3"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=onboarding_candidates" hx-target="#movable3"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -110,7 +110,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Recruitment Analytics" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="recruitment_analytics"
-                        hx-post="{% url 'employee-charts' %}?chart_id=recruitment_analytics" hx-target="#movable8"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=recruitment_analytics" hx-target="#movable8"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -130,7 +130,7 @@
                     <div class="oh-card-dashboard__title mb-2">
                         {% trans "Attendance Analytics" %}
                         <span class="float-end chart_close_button " role="button" data-chart="attendance_analytic"
-                            hx-post="{% url 'employee-charts' %}?chart_id=attendance_analytic" hx-target="#movable4"
+                            hx-post="{% url 'dashboard-components-toggle' %}?chart_id=attendance_analytic" hx-target="#movable4"
                             hx-swap="outerHTML">
                             <i class="material-icons fw-lighter fs-5">close</i>
                         </span>
@@ -164,7 +164,7 @@
                     <div class="oh-card-dashboard__title mb-2">
                         {% trans "Hours Chart" %}
                         <span class="float-end chart_close_button " role="button" data-chart="hours_chart"
-                            hx-post="{% url 'employee-charts' %}?chart_id=hours_chart" hx-target="#pendingHours"
+                            hx-post="{% url 'dashboard-components-toggle' %}?chart_id=hours_chart" hx-target="#pendingHours"
                             hx-swap="outerHTML">
                             <i class="material-icons fw-lighter fs-5">close</i>
                         </span>
@@ -188,7 +188,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Employees Chart" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="employees_chart"
-                        hx-post="{% url 'employee-charts' %}?chart_id=employees_chart" hx-target="#movable5"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=employees_chart" hx-target="#movable5"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -207,7 +207,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="department_chart"
-                        hx-post="{% url 'employee-charts' %}?chart_id=department_chart" hx-target="#movable6"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=department_chart" hx-target="#movable6"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -226,7 +226,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Gender Chart" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="gender_chart"
-                        hx-post="{% url 'employee-charts' %}?chart_id=gender_chart" hx-target="#movable7"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=gender_chart" hx-target="#movable7"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -244,7 +244,7 @@
             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Objective Status" %}</span>
                 <span class="float-end chart_close_button " role="button" data-chart="objective_status"
-                    hx-post="{% url 'employee-charts' %}?chart_id=objective_status" hx-target="#movable9"
+                    hx-post="{% url 'dashboard-components-toggle' %}?chart_id=objective_status" hx-target="#movable9"
                     hx-swap="outerHTML">
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -262,7 +262,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Key Result Status" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="key_result_status"
-                        hx-post="{% url 'employee-charts' %}?chart_id=key_result_status" hx-target="#movable10"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=key_result_status" hx-target="#movable10"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -281,7 +281,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Feedback Status" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="feedback_status"
-                        hx-post="{% url 'employee-charts' %}?chart_id=feedback_status" hx-target="#movable11"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=feedback_status" hx-target="#movable11"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -303,7 +303,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Shift Requests To Approve" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="shift_request_approve"
-                        hx-post="{% url 'employee-charts' %}?chart_id=shift_request_approve"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=shift_request_approve"
                         hx-target="#shiftRequestApprove" hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -324,7 +324,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Work Type Requests To Approve" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="work_type_request_approve"
-                        hx-post="{% url 'employee-charts' %}?chart_id=work_type_request_approve"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=work_type_request_approve"
                         hx-target="#WorkTypeRequestApprove" hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -348,7 +348,7 @@
                         {% trans 'Overtime To Approve' %}
                     </span>
                     <span class="float-end chart_close_button " role="button" data-chart="overtime_approve"
-                        hx-post="{% url 'employee-charts' %}?chart_id=overtime_approve" hx-target="#OTApprove"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=overtime_approve" hx-target="#OTApprove"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -371,7 +371,7 @@
                         {% trans 'Attendance To Validate' %}
                     </span>
                     <span class="float-end chart_close_button " role="button" data-chart="attendance_validate"
-                        hx-post="{% url 'employee-charts' %}?chart_id=attendance_validate" hx-target="#AttendanceValidate"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=attendance_validate" hx-target="#AttendanceValidate"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -392,7 +392,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Leave Requests To Approve" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="leave_request_approve"
-                        hx-post="{% url 'employee-charts' %}?chart_id=leave_request_approve" hx-target="#LeaveApprove"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=leave_request_approve" hx-target="#LeaveApprove"
                         hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -413,7 +413,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Leave Allocation Request To Approve" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="leave_allocation_approve"
-                        hx-post="{% url 'employee-charts' %}?chart_id=leave_allocation_approve"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=leave_allocation_approve"
                         hx-target="#LeaveAllocationApprove" hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>
@@ -432,7 +432,7 @@
             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                 <span class="oh-card-dashboard__title">{% trans "Feedback To Answers" %}</span>
                 <span class="float-end chart_close_button " role="button" data-chart="feedback_answer"
-                    hx-post="{% url 'employee-charts' %}?chart_id=feedback_answer" hx-target="#feedbackAnswer"
+                    hx-post="{% url 'dashboard-components-toggle' %}?chart_id=feedback_answer" hx-target="#feedbackAnswer"
                     hx-swap="outerHTML">
                     <i class="material-icons fw-lighter fs-5">close</i>
                 </span>
@@ -452,7 +452,7 @@
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Asset Requests To Approve" %}</span>
                     <span class="float-end chart_close_button " role="button" data-chart="asset_request_approve"
-                        hx-post="{% url 'employee-charts' %}?chart_id=asset_request_approve"
+                        hx-post="{% url 'dashboard-components-toggle' %}?chart_id=asset_request_approve"
                         hx-target="#assetRequestApprove" hx-swap="outerHTML">
                         <i class="material-icons fw-lighter fs-5">close</i>
                     </span>

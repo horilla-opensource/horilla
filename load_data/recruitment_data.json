@@ -3,7 +3,7 @@
     "model": "recruitment.recruitment",
     "pk": 1,
     "fields": {
-      "created_at": "2024-05-22T08:48:40.136Z",
+      "created_at": "2024-12-22T08:48:40.136Z",
       "created_by": 1,
       "modified_by": 1,
       "title": "Recruitment Drive",
@@ -15,8 +15,8 @@
       "job_position_id": null,
       "vacancy": 15,
       "company_id": 1,
-      "start_date": "2024-05-01",
-      "end_date": "2024-05-31",
+      "start_date": "2024-12-01",
+      "end_date": "2024-12-30",
       "optional_profile_image": false,
       "optional_resume": false,
       "open_positions": [1, 2],
@@ -29,7 +29,7 @@
     "model": "recruitment.recruitment",
     "pk": 2,
     "fields": {
-      "created_at": "2024-05-22T08:55:43.899Z",
+      "created_at": "2024-12-22T08:55:43.899Z",
       "created_by": 1,
       "modified_by": 1,
       "title": "FutureForce Recruitment",
@@ -41,8 +41,8 @@
       "job_position_id": null,
       "vacancy": 10,
       "company_id": 1,
-      "start_date": "2024-01-01",
-      "end_date": "2024-06-30",
+      "start_date": "2024-12-01",
+      "end_date": "2024-12-30",
       "optional_profile_image": false,
       "optional_resume": false,
       "open_positions": [3],
@@ -55,7 +55,7 @@
     "model": "recruitment.recruitment",
     "pk": 3,
     "fields": {
-      "created_at": "2024-05-22T09:03:26.892Z",
+      "created_at": "2024-12-22T09:03:26.892Z",
       "created_by": 1,
       "modified_by": 1,
       "title": "Hiring Employees",
@@ -67,8 +67,8 @@
       "job_position_id": null,
       "vacancy": 5,
       "company_id": null,
-      "start_date": "2024-01-01",
-      "end_date": "2024-01-31",
+      "start_date": "2024-12-01",
+      "end_date": "2024-12-30",
       "optional_profile_image": false,
       "optional_resume": false,
       "open_positions": [1, 2, 4],
@@ -81,7 +81,7 @@
     "model": "recruitment.stage",
     "pk": 4,
     "fields": {
-      "created_at": "2024-05-22T09:15:46.474Z",
+      "created_at": "2024-12-22T09:15:46.474Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -96,7 +96,7 @@
     "model": "recruitment.stage",
     "pk": 5,
     "fields": {
-      "created_at": "2024-05-22T09:16:06.315Z",
+      "created_at": "2024-12-22T09:16:06.315Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -111,7 +111,7 @@
     "model": "recruitment.stage",
     "pk": 6,
     "fields": {
-      "created_at": "2024-05-22T09:16:23.112Z",
+      "created_at": "2024-12-22T09:16:23.112Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -126,7 +126,7 @@
     "model": "recruitment.stage",
     "pk": 7,
     "fields": {
-      "created_at": "2024-05-22T09:50:57.811Z",
+      "created_at": "2024-12-22T09:50:57.811Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -141,7 +141,7 @@
     "model": "recruitment.candidate",
     "pk": 1,
     "fields": {
-      "created_at": "2024-05-22T09:15:26.692Z",
+      "created_at": "2024-12-22T09:15:26.692Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -172,14 +172,14 @@
       "sequence": 0,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-06-21"
+      "last_updated": "2024-12-21"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 2,
     "fields": {
-      "created_at": "2024-05-22T09:17:20.896Z",
+      "created_at": "2024-12-22T09:17:20.896Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -210,14 +210,14 @@
       "sequence": 1,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 3,
     "fields": {
-      "created_at": "2024-05-22T09:18:12.908Z",
+      "created_at": "2024-12-22T09:18:12.908Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -248,14 +248,14 @@
       "sequence": 0,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 4,
     "fields": {
-      "created_at": "2024-05-22T09:19:04.142Z",
+      "created_at": "2024-12-22T09:19:04.142Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -286,14 +286,14 @@
       "sequence": 0,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 5,
     "fields": {
-      "created_at": "2024-05-22T09:27:04.406Z",
+      "created_at": "2024-12-22T09:27:04.406Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -324,14 +324,14 @@
       "sequence": 2,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 6,
     "fields": {
-      "created_at": "2024-05-22T09:28:20.410Z",
+      "created_at": "2024-12-22T09:28:20.410Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -362,14 +362,14 @@
       "sequence": 0,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 7,
     "fields": {
-      "created_at": "2024-05-22T09:29:03.806Z",
+      "created_at": "2024-12-22T09:29:03.806Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -396,18 +396,18 @@
       "start_onboard": true,
       "hired": true,
       "canceled": false,
-      "joining_date": "2024-05-15",
+      "joining_date": "2024-12-15",
       "sequence": 0,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-06-21"
+      "last_updated": "2024-12-21"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 8,
     "fields": {
-      "created_at": "2024-05-22T09:30:53.508Z",
+      "created_at": "2024-12-22T09:30:53.508Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -434,18 +434,18 @@
       "start_onboard": true,
       "hired": true,
       "canceled": false,
-      "joining_date": "2024-05-15",
+      "joining_date": "2024-12-15",
       "sequence": 2,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-06-21"
+      "last_updated": "2024-12-21"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 9,
     "fields": {
-      "created_at": "2024-05-22T09:32:33.155Z",
+      "created_at": "2024-12-22T09:32:33.155Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -472,18 +472,18 @@
       "start_onboard": true,
       "hired": true,
       "canceled": false,
-      "joining_date": "2024-05-15",
+      "joining_date": "2024-12-15",
       "sequence": 1,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 10,
     "fields": {
-      "created_at": "2024-05-22T09:35:18.587Z",
+      "created_at": "2024-12-22T09:35:18.587Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -510,18 +510,18 @@
       "start_onboard": false,
       "hired": true,
       "canceled": false,
-      "joining_date": "2024-04-17",
+      "joining_date": "2024-12-17",
       "sequence": 1,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 11,
     "fields": {
-      "created_at": "2024-05-22T09:39:58.366Z",
+      "created_at": "2024-12-22T09:39:58.366Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -548,18 +548,18 @@
       "start_onboard": false,
       "hired": true,
       "canceled": false,
-      "joining_date": "2024-04-17",
+      "joining_date": "2024-12-17",
       "sequence": 3,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 12,
     "fields": {
-      "created_at": "2024-05-22T09:41:43.261Z",
+      "created_at": "2024-12-22T09:41:43.261Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -590,14 +590,14 @@
       "sequence": 3,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 13,
     "fields": {
-      "created_at": "2024-05-22T09:42:23.436Z",
+      "created_at": "2024-12-22T09:42:23.436Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -628,14 +628,14 @@
       "sequence": 1,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 14,
     "fields": {
-      "created_at": "2024-05-22T09:43:13.951Z",
+      "created_at": "2024-12-22T09:43:13.951Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -666,14 +666,14 @@
       "sequence": 4,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 15,
     "fields": {
-      "created_at": "2024-05-22T09:44:42.216Z",
+      "created_at": "2024-12-22T09:44:42.216Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -704,14 +704,14 @@
       "sequence": 5,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 16,
     "fields": {
-      "created_at": "2024-05-22T09:45:16.185Z",
+      "created_at": "2024-12-22T09:45:16.185Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -742,14 +742,14 @@
       "sequence": 6,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidate",
     "pk": 17,
     "fields": {
-      "created_at": "2024-05-22T09:45:47.746Z",
+      "created_at": "2024-12-22T09:45:47.746Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -780,14 +780,14 @@
       "sequence": 7,
       "probation_end": null,
       "offer_letter_status": "not_sent",
-      "last_updated": "2024-05-22"
+      "last_updated": "2024-12-22"
     }
   },
   {
     "model": "recruitment.rejectreason",
     "pk": 1,
     "fields": {
-      "created_at": "2024-05-22T08:27:14.458Z",
+      "created_at": "2024-12-22T08:27:14.458Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -800,7 +800,7 @@
     "model": "recruitment.rejectreason",
     "pk": 2,
     "fields": {
-      "created_at": "2024-05-22T08:28:07.731Z",
+      "created_at": "2024-12-22T08:28:07.731Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -813,7 +813,7 @@
     "model": "recruitment.skillzone",
     "pk": 1,
     "fields": {
-      "created_at": "2024-05-22T10:10:06.363Z",
+      "created_at": "2024-12-22T10:10:06.363Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -826,7 +826,7 @@
     "model": "recruitment.skillzone",
     "pk": 2,
     "fields": {
-      "created_at": "2024-05-22T10:11:06.363Z",
+      "created_at": "2024-12-22T10:11:06.363Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -839,21 +839,21 @@
     "model": "recruitment.skillzonecandidate",
     "pk": 1,
     "fields": {
-      "created_at": "2024-05-22T10:10:37.109Z",
+      "created_at": "2024-12-22T10:10:37.109Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "skill_zone_id": 1,
       "candidate_id": 3,
       "reason": "better design knowledge",
-      "added_on": "2024-05-22"
+      "added_on": "2024-12-22"
     }
   },
   {
     "model": "recruitment.candidaterating",
     "pk": 1,
     "fields": {
-      "created_at": "2024-06-21T08:38:48.996Z",
+      "created_at": "2024-12-21T08:38:48.996Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -866,12 +866,12 @@
     "model": "recruitment.interviewschedule",
     "pk": 1,
     "fields": {
-      "created_at": "2024-05-22T09:59:26.359Z",
+      "created_at": "2024-12-22T09:59:26.359Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "candidate_id": 15,
-      "interview_date": "2024-05-24",
+      "interview_date": "2024-12-24",
       "interview_time": "10:30:00",
       "description": "",
       "completed": false,
@@ -882,7 +882,7 @@
     "model": "recruitment.surveytemplate",
     "pk": 1,
     "fields": {
-      "created_at": "2024-09-17T09:03:25.711Z",
+      "created_at": "2024-12-17T09:03:25.711Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -896,7 +896,7 @@
     "model": "recruitment.surveytemplate",
     "pk": 2,
     "fields": {
-      "created_at": "2024-10-15T04:08:07.657Z",
+      "created_at": "2024-12-15T04:08:07.657Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -910,7 +910,7 @@
     "model": "recruitment.surveytemplate",
     "pk": 3,
     "fields": {
-      "created_at": "2024-10-15T04:13:08.737Z",
+      "created_at": "2024-12-15T04:13:08.737Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -924,7 +924,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 1,
     "fields": {
-      "created_at": "2024-09-17T09:06:47.055Z",
+      "created_at": "2024-12-17T09:06:47.055Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -942,7 +942,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 2,
     "fields": {
-      "created_at": "2024-09-17T09:07:14.100Z",
+      "created_at": "2024-12-17T09:07:14.100Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -960,7 +960,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 3,
     "fields": {
-      "created_at": "2024-10-15T04:08:37.429Z",
+      "created_at": "2024-12-15T04:08:37.429Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -978,7 +978,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 4,
     "fields": {
-      "created_at": "2024-10-15T04:09:33.102Z",
+      "created_at": "2024-12-15T04:09:33.102Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -996,7 +996,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 5,
     "fields": {
-      "created_at": "2024-10-15T04:10:25.767Z",
+      "created_at": "2024-12-15T04:10:25.767Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1014,7 +1014,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 6,
     "fields": {
-      "created_at": "2024-10-15T04:10:47.869Z",
+      "created_at": "2024-12-15T04:10:47.869Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1032,7 +1032,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 7,
     "fields": {
-      "created_at": "2024-10-15T04:11:01.784Z",
+      "created_at": "2024-12-15T04:11:01.784Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1050,7 +1050,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 8,
     "fields": {
-      "created_at": "2024-10-15T04:11:20.757Z",
+      "created_at": "2024-12-15T04:11:20.757Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1068,7 +1068,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 9,
     "fields": {
-      "created_at": "2024-10-15T04:11:41.456Z",
+      "created_at": "2024-12-15T04:11:41.456Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1086,7 +1086,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 10,
     "fields": {
-      "created_at": "2024-10-15T04:13:39.132Z",
+      "created_at": "2024-12-15T04:13:39.132Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1104,7 +1104,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 11,
     "fields": {
-      "created_at": "2024-10-15T04:14:26.896Z",
+      "created_at": "2024-12-15T04:14:26.896Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1122,7 +1122,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 12,
     "fields": {
-      "created_at": "2024-10-15T04:15:18.850Z",
+      "created_at": "2024-12-15T04:15:18.850Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1140,7 +1140,7 @@
     "model": "recruitment.recruitmentsurvey",
     "pk": 13,
     "fields": {
-      "created_at": "2024-10-15T04:15:35.442Z",
+      "created_at": "2024-12-15T04:15:35.442Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,

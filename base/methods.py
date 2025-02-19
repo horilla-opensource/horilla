@@ -552,13 +552,19 @@ def reload_queryset(fields):
         "Employee": {"is_active": True},
         "Candidate": {"is_active": True} if apps.is_installed("recruitment") else None,
     }
+    request = getattr(_thread_locals, "request", None)
 
+    selected_company = request.session.get("selected_company") if request else None
     for field in fields.values():
         if isinstance(field, ModelChoiceField):
             model_name = field.queryset.model.__name__
             filter_criteria = model_filters.get(model_name)
             if filter_criteria is not None:
                 field.queryset = field.queryset.model.objects.filter(**filter_criteria)
+            elif selected_company and not selected_company == "all":
+                field.queryset = field.queryset.model.objects.filter(
+                    id=selected_company
+                )
             else:
                 field.queryset = field.queryset.model.objects.all()
 
@@ -856,6 +862,17 @@ def get_next_month_same_date(date_obj):
     total_days_in_month = calendar.monthrange(year, month)[1]
     day = min(day, total_days_in_month)
     return date(day=day, month=month, year=year)
+
+
+def get_subordinates(request):
+    """
+    This method is used to filter out subordinates queryset element.
+    """
+    user = request.user.employee_get
+    subordinates = Employee.objects.filter(
+        employee_work_info__reporting_manager_id=user
+    )
+    return subordinates
 
 
 def format_date(date_str):

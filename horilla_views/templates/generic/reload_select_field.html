@@ -1,23 +1,31 @@
 <div id="{{dynamic_id}}">
     {{field}}
-</dic>
-
+</div>
 <script>
-dynamic_value = $("#{{dynamic_id}} [name={{field.name}}]").val()
+  dynamic_value = {{field.initial|safe}}
+  $("#reload-field{{field.name}}{{view_id}}").find('input[name=dynamic_initial]').val({{field.initial|safe}})
+$("#{{dynamic_id}} [name={{field.name}}]").val(dynamic_value).change()
 if (dynamic_value != "dynamic_create"){
   $("#{{dynamic_id}} [name={{field.name}}]").change()
 }
 $("#{{dynamic_id}} [name={{field.name}}]").change(function (e) {
     values = $(this).val();
+    if (!values) {
+      values = ""
+    }
     if (values == "dynamic_create") {
-      $("#modalButton{{field_tuple.0}}").click()
+      $("#modalButton{{field.name}}").click()
     }else if (values.includes("dynamic_create")) {
       let index = values.indexOf("dynamic_create");
       values.splice(index, 1);
       $(this).val(values).change();
-      $("#{{request.GET.view_id}} #modalButton{{field.name}}").parent().find('input[name=dynamic_initial]').val(values)
-      $("#{{request.GET.view_id}} #reload-field{{field.name}}{{request.GET.view_id}}").find('input[name=dynamic_initial]').val(values)
-      $("#{{request.GET.view_id}} #modalButton{{field.name}}").click()
+      $("#modalButton{{field.name}}").parent().find('input[name=dynamic_initial]').val(values)
+      $("#reload-field{{field.name}}{{request.GET.view_id}}").find('input[name=dynamic_initial]').val(values)
+      $("#modalButton{{field.name}}").click()
+
+    }else {
+      $("#modalButton{{field.name}}").parent().find('input[name=dynamic_initial]').val(values)
+      $("#reload-field{{field.name}}{{view_id}}").find('input[name=dynamic_initial]').val(values)
 
     }
 });

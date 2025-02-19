@@ -196,7 +196,9 @@
                 </div>
             </div>
             <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
-                <div class="oh-dashboard__events" hx-get="{% url 'get-birthday' %}" hx-trigger="load"> </div>
+                {% if 'birthday_view'|feature_is_accessible:request or perms.employee.view_employee %}
+                    <div class="oh-dashboard__events" hx-get="{% url 'get-birthday' %}" hx-trigger="load"> </div>
+                {% endif %}
                 <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
                     <div style="display: flex;align-items:center;justify-content:space-between;margin-right:20px">
                         <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>

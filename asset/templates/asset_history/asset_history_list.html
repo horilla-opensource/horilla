@@ -28,7 +28,7 @@
 				</div>
 				<div class="oh-sticky-table__tbody">
 					{% for asset_assignement in asset_assignments %}
-						<div class="oh-sticky-table__tr" hx-get='{% url "asset-history-single-view" asset_assignement.id %}?requests_ids={{requests_ids}}' hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle", data-target= "#objectDetailsModal">
+						<div class="oh-sticky-table__tr" hx-get="{% url 'asset-history-single-view' asset_assignement.id %}?requests_ids={{requests_ids}}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle", data-target= "#objectDetailsModal">
 							<div class="oh-sticky-table__sd" data-cell-index="1">
 								<div class="oh-profile oh-profile--md">
 									<div class="oh-profile__avatar mr-1">

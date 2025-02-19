@@ -8,8 +8,10 @@ class LeaveConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
+        from horilla.horilla_settings import APPS
         from horilla.urls import urlpatterns
 
+        APPS.append("leave")
         urlpatterns.append(
             path("leave/", include("leave.urls")),
         )

@@ -10,7 +10,7 @@
       "first_name": "",
       "last_name": "",
       "email": "adam.luis@horilla.com",
-      "is_staff": false,
+      "is_staff": true,
       "is_active": true,
       "date_joined": "2024-05-21T11:22:30Z",
       "groups": [],

@@ -82,7 +82,7 @@
                                         >
                                             <ion-icon name="eye-outline"></ion-icon>
                                         </a>
-                                    {% if request.user|is_reportingmanager or perms.pms.view_employeekeyresult %}
+                                    {% if request.user.employee_get in emp_objective.objective_id.managers.all or emp_objective.employee_id == request.user.employee_get or perms.pms.view_employeekeyresult %}
                                         <a
                                             hx-get='{% url "objective-detailed-view-activity" emp_objective.id %}'
                                             hx-target="#activityContainer"
@@ -93,7 +93,7 @@
                                             <ion-icon name="newspaper-outline"></ion-icon>
                                         </a>
                                     {% endif %}
-                                    {% if request.user|is_reportingmanager or perms.pms.add_employeekeyresult %}
+                                    {% if request.user.employee_get in emp_objective.objective_id.managers.all or perms.pms.add_employeekeyresult %}
                                         <button  style="border-right:1px solid hsl(8, 77%, 56%)"
                                             class="oh-btn oh-btn--secondary-outline float-end"
                                             hx-get='{% url "employee-key-result-creation" emp_objective.id %}'
@@ -106,7 +106,7 @@
                                             <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
                                         </button>
                                     {% endif %}
-                                    {% if request.user|is_reportingmanager or perms.pms.add_employeeobjective %}
+                                    {% if request.user.employee_get in emp_objective.objective_id.managers.all or perms.pms.add_employeeobjective %}
 
                                     <div class="" onclick="event.stopPropagation()">
                                         <div class="oh-dropdown" x-data="{show: false}">
@@ -115,7 +115,7 @@
                                             </button>
                                             <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
                                                 <ul class="oh-dropdown__items">
-                                                {% if perms.pms.change_employeeobjective or request.user|is_reportingmanager %}
+                                                {% if perms.pms.change_employeeobjective or request.user.employee_get in emp_objective.objective_id.managers.all %}
                                                     <li class="oh-dropdown__item">
                                                         <a
                                                         class="fw-light"
@@ -146,7 +146,7 @@
                                                     {% endif %}
 
                                                 {% endif %}
-                                                {% if perms.pms.delete_employeeobjective or request.user|is_reportingmanager %}
+                                                {% if perms.pms.delete_employeeobjective or request.user.employee_get in emp_objective.objective_id.managers.all %}
                                                     <li class="oh-dropdown__item">
                                                         <a
                                                         class="fw-light"

@@ -1,11 +1,12 @@
 {% load i18n %}
-<form hx-post="{% url "user-group-assign" %}?group={{group_id}}" hx-target="#groupAssignBody" method="post">
+<form hx-post="{% url 'user-group-assign' %}?group={{group_id}}" hx-target="#groupAssignBody"
+    class="oh-profile-section">
     {{form.employee.errors}}
     {{form.employee}}
     <input type="hidden" name="group" value="{{group_id}}" id="{{group_id}}">
     <div class="d-flex flex-row-reverse">
         <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
-          {% trans "Save" %}
+            {% trans "Save" %}
         </button>
     </div>
 

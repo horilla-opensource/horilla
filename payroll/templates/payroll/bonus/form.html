@@ -1,8 +1,8 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-  <span class="oh-modal__dialog-title" id="createModalLabel"
-    >{% trans "Allowances" %}</span
-  >
+  <span class="oh-modal__dialog-title" id="createModalLabel">
+    {% trans "Allowances" %}
+  </span>
   <button type="button" class="oh-modal__close" aria-label="Close">
     <ion-icon name="close-outline"></ion-icon>
   </button>
@@ -10,12 +10,49 @@
 
 <div class="oh-modal__dialog-body">
   <form
+    method="post"
     hx-post="{% url 'add-bonus' %}?employee_id={{employee_id}}&payslip_id={{payslip_id}}"
     hx-target="#objectCreateModalTarget"
-    class="oh-profile-section"
+    class="oh-profile-section row"
   >
-    {{ form.as_p }}
-    <div class="oh-modal__dialog-footer p-0">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+      <label class="oh-label" for="id_title">{% trans "Title" %}</label>
+      {{ form.title }} {{ form.title.errors }}
+    </div>
+
+    {% if payslip_id is None %}
+      <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+        <label class="oh-label" for="id_date">{% trans "Date" %}</label>
+        {{ form.date }} {{ form.date.errors }}
+      </div>
+    {% endif %}
+
+    {{ form.employee_id }}
+
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+      <label class="oh-label" for="id_is_fixed">{% trans "Is Fixed" %}</label>
+      <div class="oh-switch">{{ form.is_fixed }} {{ form.is_fixed.errors }}</div>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6" id="amount_field">
+      <label class="oh-label" for="id_amount">{% trans "Amount" %}</label>
+      {{ form.amount }} {{ form.amount.errors }}
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6" id="based_on_field" style="display: none;">
+      <label class="oh-label" for="id_based_on">{% trans "Based On" %}</label>
+      {{ form.based_on }} {{ form.based_on.errors }}
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6" id="rate_field" style="display: none;">
+      <label class="oh-label" for="id_rate">{% trans "Rate" %}</label>
+      {{ form.rate }} {{ form.rate.errors }}
+    </div>
+
+    <div class="oh-modal__dialog-footer p-0 col-12">
       <button
         type="submit"
         class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
@@ -24,4 +61,27 @@
       </button>
     </div>
   </form>
-</div>
+
+  <script>
+    $(document).ready(function () {
+      const isFixedCheckbox = $("#id_is_fixed");
+
+      function toggleFields() {
+        if (isFixedCheckbox.is(":checked")) {
+          $("#amount_field").show().find("input").prop("disabled", false);
+          $("#rate_field").hide().find("input").prop("disabled", true);
+          $("#based_on_field").hide().find("select").prop("disabled", true);
+        } else {
+          $("#amount_field").hide().find("input").prop("disabled", true);
+          $("#rate_field").show().find("input").prop("disabled", false);
+          $("#based_on_field").show().find("select").prop("disabled", false);
+        }
+      }
+
+      toggleFields();
+
+      isFixedCheckbox.change(function () {
+        toggleFields();
+      });
+    });
+  </script>

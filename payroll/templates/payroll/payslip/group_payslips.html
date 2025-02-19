@@ -115,7 +115,7 @@
                 <div class="oh-sticky-table__td">
                   <div class="oh-btn-group">
                     <a href="{% url 'view-created-payslip' payslip.id %}" type="button" title="{% trans 'View' %}" class="oh-btn oh-btn--light-bkg w-50"> <ion-icon name="eye-outline"></ion-icon></a>
-                    <a href="{% url 'payslip-pdf' payslip.id %}" type="button" title="{% trans 'Download' %}" class="oh-btn oh-btn--light-bkg w-50"> <ion-icon name="download"></ion-icon></a>
+                    <a href="{% url 'view-payslip-pdf' payslip.id %}" type="button" title="{% trans 'Download' %}" class="oh-btn oh-btn--light-bkg w-50"> <ion-icon name="download"></ion-icon></a>
                     {% if perms.payroll.add_payslip %}
                     <a
                       hx-confirm="{% trans 'Do you want to sent the payslip by mail?' %}" hx-get="{% url "send-slip" %}?id={{payslip.id}}" hx-target="#payslips-table"

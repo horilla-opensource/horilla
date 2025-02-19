@@ -47,7 +47,7 @@
                             class="oh-sticky-table__tr"
                         >
                             <div class="oh-sticky-table__sd">
-                                {% if batch.created_by == request.user %}
+                                {% if batch.created_by == request.user or perms.attendance.change_attendancegeneralsetting %}
                                     <input name="title" value="{{batch.title}}"
                                     data-id = "{{batch.id}}"
                                     style = "width: -webkit-fill-available;"

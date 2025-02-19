@@ -131,7 +131,7 @@
                 </div>
 
                 <div class="oh-dashboard__movable-cards row mt-4">
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider" style = "cursor: default;">
                                 <span class="oh-card-dashboard__title" id="employee-previous" style = "cursor: pointer;"><ion-icon name="caret-back-outline"></ion-icon></span>
@@ -144,7 +144,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable" >
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6" >
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
                             <h6 class="ms-4 m-2 fw-bold">{% trans "Total Payslips Genarated :" %}  <b><span class="payslip-number"></span></b></h6>
                             {% if position == "prefix" %}
@@ -159,7 +159,7 @@
                         </div>
                     </div>
 
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
                         <form hx-get="{% url 'get-contribution-report' %}" hx-trigger="load, submit"  hx-target="#contributionReportContainer" class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" >
                             <div class="d-flex justify-content-between oh-card-dashboard__header oh-card-dashboard__header--divider" style = "cursor: default;">
                                 {% comment %} <span class="oh-card-dashboard__title" id="employee-previous" style = "cursor: pointer;"><ion-icon name="caret-back-outline"></ion-icon></span> {% endcomment %}
@@ -193,7 +193,7 @@
                             <button type="submit" hidden>
                         </form>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
                             <h4 class="ms-4 m-2 fw-bold text-danger">{% trans "Contracts ending " %}  <b><span class=""></span></b></h4>
                             <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expiring in " %} <b class="contract-number"></b></h6>
@@ -203,7 +203,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                                 <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>

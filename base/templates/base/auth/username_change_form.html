@@ -1,0 +1,94 @@
+{% load static %}{% load i18n %}
+<div class="oh-alert-container">
+  {% for message in messages %}
+  <div class="oh-alert oh-alert--animated {{ message.tags }}">
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+<style>
+  input[readonly] {
+    border: 1px solid #ccc;
+    background-color: #a1a1a14d;
+    color: #333;
+    cursor: not-allowed;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: none;
+  }
+</style>
+<main class="oh-auth">
+  <div class="oh-auth-card">
+    <h1
+      class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3"
+    >
+      {% trans "Change Username" %}
+    </h1>
+    <form
+      method="post"
+      class="oh-form-group"
+      hx-post="{% url 'change-username' %}"
+      hx-target="#form-container"
+    >
+      {% csrf_token %}
+      <div class="oh-input-group">
+        <label class="oh-label" for=""
+          >{% trans "Old  Username" %}</label
+        >
+        <div class="oh-password-input-container">
+          {{form.old_username}}
+        </div>
+      </div>
+      <div class="oh-input-group">
+        <label class="oh-label" for="username"
+          >{% trans "Username" %}</label
+        >
+        <div class="oh-password-input-container">
+          {{form.username}}
+        </div>
+      </div>
+      {{form.username.errors}}
+      <div class="oh-input-group">
+        <label class="oh-label" for="confirmPassword"
+          >{% trans "Password" %}</label
+        >
+        <div class="oh-password-input-container">
+          {{form.password}}
+          <button class="oh-btn oh-btn--transparent oh-password-input--toggle">
+            <ion-icon
+              class="oh-passowrd-input__show-icon"
+              title="{% trans 'Show Password' %}"
+              name="eye-outline"
+            ></ion-icon>
+            <ion-icon
+              class="oh-passowrd-input__hide-icon d-none"
+              title="{% trans 'Hide Password' %}"
+              name="eye-off-outline"
+            ></ion-icon>
+          </button>
+        </div>
+      </div>
+      {{form.password.errors}}
+
+      <button
+        type="submit"
+        class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+        role="button"
+      >
+        <ion-icon class="me-2" name="lock-closed-outline"></ion-icon>
+        {% trans "Update" %}
+      </button>
+      <small class="text-center"
+        ><a
+          href="{% url 'forgot-password' %}"
+          class="oh-link oh-link--secondary justify-content-center"
+          >{% trans "Forgot password" %}?</a
+        ></small
+      >
+    </form>
+  </div>
+  <img
+    src={% if white_label_company.icon %}"{{white_label_company.icon.url}}" {% else %} "{% static 'images/ui/auth-logo.png' %}" {% endif %}
+    alt="Horilla"
+  />
+</main>

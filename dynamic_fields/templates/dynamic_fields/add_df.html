@@ -1,0 +1,6 @@
+<div class="df-container">
+  <div class="oh-modal" id="dfModal{{ form.df_form_model_path }}" role="dialog" aria-labelledby="dfModal{{ form.df_form_model_path }}" aria-hidden="true">
+    <div class="oh-modal__dialog" id="dfModalBody{{ form.df_form_model_path }}"></div>
+  </div>
+  <span class="oh-checkpoint-badge text-success mb-2" role="button" onclick="$(this).closest('.df-container').find(`[id='dfModal{{ form.df_form_model_path }}']`).addClass('oh-modal--show')" hx-get="{% url 'add-dynamic-field' %}?df_model_path={{form.df_form_model_path}}" hx-target="[id='dfModalBody{{ form.df_form_model_path }}']">Add Field</span>
+</div>

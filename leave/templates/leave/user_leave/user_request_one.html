@@ -74,10 +74,21 @@
             <span class="oh-timeoff-modal__stat-count dateformat_changer">{{leave_request.start_date}}</span>
         </div>
         <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Start Date Breakdown" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.get_end_date_breakdown_display}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3">
+        <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "End Date" %}</span>
             <span class="oh-timeoff-modal__stat-count dateformat_changer">{{leave_request.end_date}}</span>
         </div>
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "End Date Breakdown" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{leave_request.get_end_date_breakdown_display}}</span>
+        </div>
     </div>
+
 
     <div class="oh-timeoff-modal__stats w-100 mt-3">
         <div class="oh-timeoff-modal__stat">
