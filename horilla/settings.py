@@ -14,6 +14,7 @@ import os
 from os.path import join
 from pathlib import Path
 
+from django.core.mail.backends.smtp import EmailBackend
 import environ
 from django.contrib.messages import constants as messages
 
@@ -271,4 +272,11 @@ else:
         }
     }
     
-    
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 32771  # Porta mapeada para SMTP
+EMAIL_USE_TLS = False  # Mailpit não usa TLS
+EMAIL_USE_SSL = False  # Mailpit não usa SSL
+EMAIL_HOST_USER = ''  # Mailpit não requer autenticação
+EMAIL_HOST_PASSWORD = ''  # Mailpit não requer autenticação
+DEFAULT_FROM_EMAIL = 'no-reply@example.com'  # Endereço padrão de envio
