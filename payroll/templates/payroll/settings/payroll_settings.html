@@ -44,6 +44,20 @@
           <span class="select2-selection--multiple w-25" >{{ currency_form.position }}</span>
         </div>
       </div>
+      <div class="col-sm-12 col-md-12 col-lg-3">
+        <div class="oh-input-group">
+          <div class="oh-label__info" for="company_id">
+            <label class="oh-label" for="company_id">{% trans "Company" %}</label>
+          </div>
+          <select name="company_id" id="id_company_id" class="oh-select oh-select-2 w-100">
+            {% for company in companies %}
+                <option value="{{ company.id }}" {% if company.id == selected_company_id %}selected{% endif %}>
+                    {{ company.company }}
+                </option>
+            {% endfor %}
+        </select>
+        </div>
+      </div>
       {% if perms.payroll.change_payrollsettings %}
         <div  class="d-flex align-items-end col-sm-12 col-md-12 col-lg-3">
           <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">{% trans 'Save Changes' %}</button>

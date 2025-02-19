@@ -160,8 +160,7 @@
 								{% if not employee.employee_user_id.is_superuser %}
 									<li class="oh-dropdown__item">
 										<form action="{% url 'employee-account-block-unblock' employee.id %}"
-											onsubmit="return confirm('{% trans " Do you really want to allow this employee to access
-											and log into this webpage?" %}');">
+											onsubmit="return confirm('{% trans " Do you really want to allow this employee to access and log into this webpage?" %}');">
 											{% csrf_token %}
 											<img src="{% static 'images/ui/unlock.png' %}" style="width: 30px; height: 27px;">
 											<button type="submit" style="  border: none; background: transparent;">

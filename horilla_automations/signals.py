@@ -40,12 +40,22 @@ def start_automation():
     """
     Automation signals
     """
+    from base.models import HorillaMailTemplate
     from horilla_automations.methods.methods import get_model_class, split_query_string
     from horilla_automations.models import MailAutomation
 
     @receiver(post_delete, sender=MailAutomation)
     @receiver(post_save, sender=MailAutomation)
-    def automation_pre_create(sender, instance, **kwargs):
+    def automation_signal(sender, instance, **kwargs):
+        """
+        signal method to handle automation post save
+        """
+        start_connection()
+        track_previous_instance()
+
+    @receiver(post_delete, sender=HorillaMailTemplate)
+    @receiver(post_save, sender=HorillaMailTemplate)
+    def template_signal(sender, instance, **kwargs):
         """
         signal method to handle automation post save
         """
@@ -81,10 +91,10 @@ def start_automation():
                         )
 
             previous_bulk_record = getattr(_thread_locals, "previous_bulk_record", None)
-            previous_queryset = None
+            previous_queryset_copy = []
             if previous_bulk_record:
-                previous_queryset = previous_bulk_record["queryset"]
-                previous_queryset_copy = previous_bulk_record["queryset_copy"]
+                previous_queryset = previous_bulk_record.get("queryset", None)
+                previous_queryset_copy = previous_bulk_record.get("queryset_copy", [])
 
             bulk_thread = threading.Thread(
                 target=_bulk_update_thread_handler,
@@ -355,6 +365,19 @@ def send_mail(request, automation, instance):
     tos = list(filter(None, tos))
     to = tos[:1]
     cc = tos[1:]
+    try:
+        also_sent_to = automation.also_sent_to.select_related(
+            "employee_work_info"
+        ).all()
+
+        if also_sent_to.exists():
+            cc.extend(
+                str(employee.get_mail())
+                for employee in also_sent_to
+                if employee.get_mail()
+            )
+    except Exception as e:
+        logger.error(e)
     email_backend = ConfiguredEmailBackend()
     display_email_name = email_backend.dynamic_from_email_with_display_name
     if request:
@@ -384,7 +407,9 @@ def send_mail(request, automation, instance):
             )
 
         template_bdy = template.Template(mail_template.body)
-        context = template.Context({"instance": mail_to_instance, "self": sender})
+        context = template.Context(
+            {"instance": mail_to_instance, "self": sender, "model_instance": instance}
+        )
         render_bdy = template_bdy.render(context)
 
         title_template = template.Template(automation.title)

@@ -3,7 +3,7 @@
     "model": "payroll.filingstatus",
     "pk": 1,
     "fields": {
-      "created_at": "2024-09-21T08:42:22.725Z",
+      "created_at": "2024-12-21T08:42:22.725Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -19,7 +19,7 @@
     "model": "payroll.filingstatus",
     "pk": 2,
     "fields": {
-      "created_at": "2024-09-21T08:42:28.019Z",
+      "created_at": "2024-12-21T08:42:28.019Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -35,7 +35,7 @@
     "model": "payroll.filingstatus",
     "pk": 3,
     "fields": {
-      "created_at": "2024-09-21T08:42:34.764Z",
+      "created_at": "2024-12-21T08:42:34.764Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -51,7 +51,7 @@
     "model": "payroll.filingstatus",
     "pk": 4,
     "fields": {
-      "created_at": "2024-09-21T08:42:40.096Z",
+      "created_at": "2024-12-21T08:42:40.096Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -67,7 +67,7 @@
     "model": "payroll.allowance",
     "pk": 1,
     "fields": {
-      "created_at": "2024-09-21T08:35:27.289Z",
+      "created_at": "2024-12-21T08:35:27.289Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -110,7 +110,7 @@
     "model": "payroll.allowance",
     "pk": 2,
     "fields": {
-      "created_at": "2024-09-21T08:36:39.003Z",
+      "created_at": "2024-12-21T08:36:39.003Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -153,7 +153,7 @@
     "model": "payroll.allowance",
     "pk": 3,
     "fields": {
-      "created_at": "2024-09-21T08:37:32.308Z",
+      "created_at": "2024-12-21T08:37:32.308Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -196,12 +196,12 @@
     "model": "payroll.allowance",
     "pk": 4,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.185Z",
+      "created_at": "2024-12-21T08:40:56.185Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Emergency Loan",
-      "one_time_date": "2024-01-10",
+      "one_time_date": "2024-12-10",
       "include_active_employees": false,
       "is_taxable": true,
       "is_condition_based": false,
@@ -239,7 +239,7 @@
     "model": "payroll.deduction",
     "pk": 1,
     "fields": {
-      "created_at": "2024-09-21T08:38:13.177Z",
+      "created_at": "2024-12-21T08:38:13.177Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -278,7 +278,7 @@
     "model": "payroll.deduction",
     "pk": 2,
     "fields": {
-      "created_at": "2024-09-21T08:38:56.869Z",
+      "created_at": "2024-12-21T08:38:56.869Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -317,7 +317,7 @@
     "model": "payroll.deduction",
     "pk": 3,
     "fields": {
-      "created_at": "2024-09-21T08:39:35.476Z",
+      "created_at": "2024-12-21T08:39:35.476Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -356,12 +356,12 @@
     "model": "payroll.deduction",
     "pk": 4,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.257Z",
+      "created_at": "2024-12-21T08:40:56.257Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "Emergency Loan - 2024-11-01",
-      "one_time_date": "2024-11-01",
+      "title": "Emergency Loan - 2024-12-01",
+      "one_time_date": "2024-12-01",
       "include_active_employees": false,
       "is_tax": false,
       "is_pretax": true,
@@ -395,7 +395,7 @@
     "model": "payroll.deduction",
     "pk": 5,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.311Z",
+      "created_at": "2024-12-21T08:40:56.311Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -434,7 +434,7 @@
     "model": "payroll.deduction",
     "pk": 6,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.359Z",
+      "created_at": "2024-12-21T08:40:56.359Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -473,7 +473,7 @@
     "model": "payroll.deduction",
     "pk": 7,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.407Z",
+      "created_at": "2024-12-21T08:40:56.407Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -512,7 +512,7 @@
     "model": "payroll.deduction",
     "pk": 8,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.455Z",
+      "created_at": "2024-12-21T08:40:56.455Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -551,7 +551,7 @@
     "model": "payroll.deduction",
     "pk": 9,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.506Z",
+      "created_at": "2024-12-21T08:40:56.506Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -590,7 +590,7 @@
     "model": "payroll.deduction",
     "pk": 10,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.557Z",
+      "created_at": "2024-12-21T08:40:56.557Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -629,7 +629,7 @@
     "model": "payroll.deduction",
     "pk": 11,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.608Z",
+      "created_at": "2024-12-21T08:40:56.608Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -668,7 +668,7 @@
     "model": "payroll.deduction",
     "pk": 12,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.657Z",
+      "created_at": "2024-12-21T08:40:56.657Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -707,7 +707,7 @@
     "model": "payroll.deduction",
     "pk": 13,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.708Z",
+      "created_at": "2024-12-21T08:40:56.708Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -746,12 +746,12 @@
     "model": "payroll.deduction",
     "pk": 14,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.758Z",
+      "created_at": "2024-12-21T08:40:56.758Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "Emergency Loan - 2025-09-01",
-      "one_time_date": "2025-09-01",
+      "title": "Emergency Loan - 2025-12-01",
+      "one_time_date": "2025-12-01",
       "include_active_employees": false,
       "is_tax": false,
       "is_pretax": true,
@@ -785,7 +785,7 @@
     "model": "payroll.deduction",
     "pk": 15,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.822Z",
+      "created_at": "2024-12-21T08:40:56.822Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -824,12 +824,12 @@
     "model": "payroll.deduction",
     "pk": 16,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.903Z",
+      "created_at": "2024-12-21T08:40:56.903Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "Emergency Loan - 2025-11-01",
-      "one_time_date": "2025-11-01",
+      "title": "Emergency Loan - 2025-12-01",
+      "one_time_date": "2025-12-01",
       "include_active_employees": false,
       "is_tax": false,
       "is_pretax": true,
@@ -863,7 +863,7 @@
     "model": "payroll.deduction",
     "pk": 17,
     "fields": {
-      "created_at": "2024-09-21T08:40:56.970Z",
+      "created_at": "2024-12-21T08:40:56.970Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -902,7 +902,7 @@
     "model": "payroll.deduction",
     "pk": 18,
     "fields": {
-      "created_at": "2024-09-21T08:40:57.023Z",
+      "created_at": "2024-12-21T08:40:57.023Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -941,7 +941,7 @@
     "model": "payroll.deduction",
     "pk": 19,
     "fields": {
-      "created_at": "2024-09-21T08:40:57.089Z",
+      "created_at": "2024-12-21T08:40:57.089Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -980,7 +980,7 @@
     "model": "payroll.deduction",
     "pk": 20,
     "fields": {
-      "created_at": "2024-09-21T08:40:57.139Z",
+      "created_at": "2024-12-21T08:40:57.139Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1019,7 +1019,7 @@
     "model": "payroll.deduction",
     "pk": 21,
     "fields": {
-      "created_at": "2024-09-21T08:40:57.185Z",
+      "created_at": "2024-12-21T08:40:57.185Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1063,14 +1063,14 @@
     "model": "payroll.reimbursement",
     "pk": 1,
     "fields": {
-      "created_at": "2024-09-21T08:42:06.139Z",
+      "created_at": "2024-12-21T08:42:06.139Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Reimbursment For Travel",
       "type": "reimbursement",
       "employee_id": 11,
-      "allowance_on": "2024-09-01",
+      "allowance_on": "2024-12-01",
       "attachment": "payroll/reimbursements/Passport_yHUaQ2e.pdf",
       "ad_to_encash": 0.0,
       "cfd_to_encash": 0.0,
@@ -1087,7 +1087,7 @@
     "model": "payroll.payrollsettings",
     "pk": 1,
     "fields": {
-      "created_at": "2024-09-21T07:16:03.794Z",
+      "created_at": "2024-12-21T07:16:03.794Z",
       "created_by": null,
       "modified_by": null,
       "is_active": true,
@@ -1100,7 +1100,7 @@
     "model": "payroll.taxbracket",
     "pk": 1,
     "fields": {
-      "created_at": "2024-09-21T08:44:26.050Z",
+      "created_at": "2024-12-21T08:44:26.050Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1114,7 +1114,7 @@
     "model": "payroll.taxbracket",
     "pk": 2,
     "fields": {
-      "created_at": "2024-09-21T08:44:36.408Z",
+      "created_at": "2024-12-21T08:44:36.408Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1128,7 +1128,7 @@
     "model": "payroll.taxbracket",
     "pk": 3,
     "fields": {
-      "created_at": "2024-09-21T08:44:45.023Z",
+      "created_at": "2024-12-21T08:44:45.023Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1142,7 +1142,7 @@
     "model": "payroll.taxbracket",
     "pk": 4,
     "fields": {
-      "created_at": "2024-09-21T08:45:07.251Z",
+      "created_at": "2024-12-21T08:45:07.251Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1156,7 +1156,7 @@
     "model": "payroll.taxbracket",
     "pk": 5,
     "fields": {
-      "created_at": "2024-09-21T08:45:28.220Z",
+      "created_at": "2024-12-21T08:45:28.220Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1170,7 +1170,7 @@
     "model": "payroll.taxbracket",
     "pk": 6,
     "fields": {
-      "created_at": "2024-09-21T08:45:42.610Z",
+      "created_at": "2024-12-21T08:45:42.610Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1184,7 +1184,7 @@
     "model": "payroll.taxbracket",
     "pk": 7,
     "fields": {
-      "created_at": "2024-09-21T08:45:58.234Z",
+      "created_at": "2024-12-21T08:45:58.234Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1198,7 +1198,7 @@
     "model": "payroll.taxbracket",
     "pk": 8,
     "fields": {
-      "created_at": "2024-09-21T08:46:40.497Z",
+      "created_at": "2024-12-21T08:46:40.497Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1212,7 +1212,7 @@
     "model": "payroll.taxbracket",
     "pk": 9,
     "fields": {
-      "created_at": "2024-09-21T08:46:49.039Z",
+      "created_at": "2024-12-21T08:46:49.039Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1226,7 +1226,7 @@
     "model": "payroll.taxbracket",
     "pk": 10,
     "fields": {
-      "created_at": "2024-09-21T08:46:59.265Z",
+      "created_at": "2024-12-21T08:46:59.265Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1240,7 +1240,7 @@
     "model": "payroll.taxbracket",
     "pk": 11,
     "fields": {
-      "created_at": "2024-09-21T08:47:12.204Z",
+      "created_at": "2024-12-21T08:47:12.204Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1254,7 +1254,7 @@
     "model": "payroll.taxbracket",
     "pk": 12,
     "fields": {
-      "created_at": "2024-09-21T08:47:26.068Z",
+      "created_at": "2024-12-21T08:47:26.068Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1268,7 +1268,7 @@
     "model": "payroll.taxbracket",
     "pk": 13,
     "fields": {
-      "created_at": "2024-09-21T08:47:40.309Z",
+      "created_at": "2024-12-21T08:47:40.309Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1282,7 +1282,7 @@
     "model": "payroll.taxbracket",
     "pk": 14,
     "fields": {
-      "created_at": "2024-09-21T08:47:48.308Z",
+      "created_at": "2024-12-21T08:47:48.308Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1296,7 +1296,7 @@
     "model": "payroll.taxbracket",
     "pk": 15,
     "fields": {
-      "created_at": "2024-09-21T08:48:13.578Z",
+      "created_at": "2024-12-21T08:48:13.578Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1310,7 +1310,7 @@
     "model": "payroll.taxbracket",
     "pk": 16,
     "fields": {
-      "created_at": "2024-09-21T08:48:22.948Z",
+      "created_at": "2024-12-21T08:48:22.948Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1324,7 +1324,7 @@
     "model": "payroll.taxbracket",
     "pk": 17,
     "fields": {
-      "created_at": "2024-09-21T08:48:38.104Z",
+      "created_at": "2024-12-21T08:48:38.104Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1338,7 +1338,7 @@
     "model": "payroll.taxbracket",
     "pk": 18,
     "fields": {
-      "created_at": "2024-09-21T08:48:52.625Z",
+      "created_at": "2024-12-21T08:48:52.625Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1352,7 +1352,7 @@
     "model": "payroll.taxbracket",
     "pk": 19,
     "fields": {
-      "created_at": "2024-09-21T08:49:09.192Z",
+      "created_at": "2024-12-21T08:49:09.192Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1366,7 +1366,7 @@
     "model": "payroll.taxbracket",
     "pk": 20,
     "fields": {
-      "created_at": "2024-09-21T08:49:23.918Z",
+      "created_at": "2024-12-21T08:49:23.918Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1380,7 +1380,7 @@
     "model": "payroll.taxbracket",
     "pk": 21,
     "fields": {
-      "created_at": "2024-09-21T08:49:32.982Z",
+      "created_at": "2024-12-21T08:49:32.982Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1394,7 +1394,7 @@
     "model": "payroll.taxbracket",
     "pk": 22,
     "fields": {
-      "created_at": "2024-09-21T08:49:55.138Z",
+      "created_at": "2024-12-21T08:49:55.138Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1408,7 +1408,7 @@
     "model": "payroll.taxbracket",
     "pk": 23,
     "fields": {
-      "created_at": "2024-09-21T08:50:07.112Z",
+      "created_at": "2024-12-21T08:50:07.112Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1422,7 +1422,7 @@
     "model": "payroll.taxbracket",
     "pk": 24,
     "fields": {
-      "created_at": "2024-09-21T08:50:16.831Z",
+      "created_at": "2024-12-21T08:50:16.831Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1436,7 +1436,7 @@
     "model": "payroll.taxbracket",
     "pk": 25,
     "fields": {
-      "created_at": "2024-09-21T08:50:44.001Z",
+      "created_at": "2024-12-21T08:50:44.001Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1450,7 +1450,7 @@
     "model": "payroll.taxbracket",
     "pk": 26,
     "fields": {
-      "created_at": "2024-09-21T08:50:56.700Z",
+      "created_at": "2024-12-21T08:50:56.700Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1464,7 +1464,7 @@
     "model": "payroll.taxbracket",
     "pk": 27,
     "fields": {
-      "created_at": "2024-09-21T08:51:10.920Z",
+      "created_at": "2024-12-21T08:51:10.920Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1478,7 +1478,7 @@
     "model": "payroll.taxbracket",
     "pk": 28,
     "fields": {
-      "created_at": "2024-09-21T08:51:25.104Z",
+      "created_at": "2024-12-21T08:51:25.104Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -1492,14 +1492,14 @@
     "model": "payroll.reimbursement",
     "pk": 1,
     "fields": {
-      "created_at": "2024-09-21T08:42:06.139Z",
+      "created_at": "2024-12-21T08:42:06.139Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
       "title": "Reimbursment For Travel",
       "type": "reimbursement",
       "employee_id": 11,
-      "allowance_on": "2024-09-01",
+      "allowance_on": "2024-12-01",
       "attachment": "payroll/reimbursements/Passport_yHUaQ2e.pdf",
       "ad_to_encash": 0.0,
       "cfd_to_encash": 0.0,
@@ -1591,6 +1591,33 @@
       "amount": 2500.0,
       "status": "requested",
       "description": "Software license for Sublime Text (1-year subscription for team development)."
+    }
+  },
+  {
+    "model": "payroll.loanaccount",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-12-12T09:45:26.097Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "type": "loan",
+      "title": "Medical Loan",
+      "employee_id": 18,
+      "loan_amount": 60000.0,
+      "provided_date": "2024-12-01",
+      "allowance_id": 5,
+      "description": "Loan for parents medical case",
+      "is_fixed": true,
+      "rate": 0.0,
+      "installment_amount": 5000.0,
+      "installments": 12,
+      "installment_start_date": "2025-01-01",
+      "apply_on": "end_of_month",
+      "settled": false,
+      "settled_date": null,
+      "asset_id": null,
+      "deduction_ids": [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
     }
   }
 ]

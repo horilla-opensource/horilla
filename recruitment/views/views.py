@@ -722,7 +722,7 @@ def recruitment_archive(request, rec_id):
 
 @login_required
 @hx_request_required
-@recruitment_manager_can_enter(perm="recruitment.change_stage")
+@manager_can_enter(perm="recruitment.change_stage")
 def stage_update_pipeline(request, stage_id):
     """
     This method is used to update stage from pipeline view
@@ -2239,7 +2239,7 @@ def skill_zone_delete(request, sz_id):
 
 
 @login_required
-@manager_can_enter(perm="recruitment.delete_skillzone")
+@manager_can_enter(perm="recruitment.change_skillzone")
 def skill_zone_archive(request, sz_id):
     """
     function used to archive or un-archive Skill zone.
@@ -2523,13 +2523,19 @@ def skill_zone_cand_delete(request, sz_cand_id):
 
 @login_required
 @hx_request_required
-@manager_can_enter(perm="recruitment.change_candidate")
 def to_skill_zone(request, cand_id):
     """
     This method is used to Add candidate into skill zone
     Args:
         cand_id : candidate instance id
     """
+    if not (
+        request.user.has_perm("recruitment.change_candidate")
+        or request.user.has_perm("recruitment.add_skillzonecandidate")
+    ):
+        messages.info(request, "You dont have permission.")
+        return HttpResponse("<script>window.location.reload()</script>")
+
     candidate = Candidate.objects.get(id=cand_id)
     template = "skill_zone_cand/to_skill_zone_form.html"
     form = ToSkillZoneForm(
@@ -3315,7 +3321,7 @@ def update_document_title(request, id):
 
 @login_required
 @hx_request_required
-@manager_can_enter("candidate.add_candidate")
+@manager_can_enter("recruitment.delete_candidatedocument")
 def document_delete(request, id):
     """
     Handle the deletion of a document, with permissions and error handling.
@@ -3418,7 +3424,7 @@ def view_file(request, id):
 
 @login_required
 @hx_request_required
-@manager_can_enter("candidate.add_candidate")
+@manager_can_enter("recruitment.change_candidatedocument")
 def document_approve(request, id):
     """
     This function used to view the approve uploaded document.
@@ -3442,7 +3448,7 @@ def document_approve(request, id):
 
 @login_required
 @hx_request_required
-@manager_can_enter("candidate.add_candidate")
+@manager_can_enter("recruitment.change_candidatedocument")
 def document_reject(request, id):
     """
     This function used to view the reject uploaded document.

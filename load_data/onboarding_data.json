@@ -3,7 +3,7 @@
       "model": "onboarding.onboardingstage",
       "pk": 1,
       "fields": {
-        "created_at": "2024-10-15T04:25:05.927Z",
+        "created_at": "2024-12-15T04:25:05.927Z",
         "created_by": null,
         "modified_by": 1,
         "is_active": true,
@@ -18,7 +18,7 @@
       "model": "onboarding.onboardingstage",
       "pk": 2,
       "fields": {
-        "created_at": "2024-10-15T04:25:05.946Z",
+        "created_at": "2024-12-15T04:25:05.946Z",
         "created_by": null,
         "modified_by": null,
         "is_active": true,
@@ -33,7 +33,7 @@
       "model": "onboarding.onboardingstage",
       "pk": 3,
       "fields": {
-        "created_at": "2024-10-15T04:25:05.959Z",
+        "created_at": "2024-12-15T04:25:05.959Z",
         "created_by": null,
         "modified_by": null,
         "is_active": true,
@@ -48,7 +48,7 @@
       "model": "onboarding.onboardingstage",
       "pk": 4,
       "fields": {
-        "created_at": "2024-10-15T04:27:30.582Z",
+        "created_at": "2024-12-15T04:27:30.582Z",
         "created_by": 1,
         "modified_by": 1,
         "is_active": true,
@@ -63,7 +63,7 @@
       "model": "onboarding.onboardingstage",
       "pk": 5,
       "fields": {
-        "created_at": "2024-10-15T04:27:47.767Z",
+        "created_at": "2024-12-15T04:27:47.767Z",
         "created_by": 1,
         "modified_by": 1,
         "is_active": true,
@@ -78,7 +78,7 @@
       "model": "onboarding.onboardingstage",
       "pk": 6,
       "fields": {
-        "created_at": "2024-10-15T04:28:04.122Z",
+        "created_at": "2024-12-15T04:28:04.122Z",
         "created_by": 1,
         "modified_by": 1,
         "is_active": true,
@@ -93,7 +93,7 @@
       "model": "onboarding.onboardingstage",
       "pk": 7,
       "fields": {
-        "created_at": "2024-10-15T04:28:32.569Z",
+        "created_at": "2024-12-15T04:28:32.569Z",
         "created_by": 1,
         "modified_by": 1,
         "is_active": true,

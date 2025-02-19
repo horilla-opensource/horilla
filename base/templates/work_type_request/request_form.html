@@ -1,57 +1,40 @@
 {% load i18n %}
 {% if messages %}
-  <div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-      <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-  <script>
-    setTimeout(function () {
-      $(".oh-modal__close").click();
-    }, 1000);
-  </script>
+    <script>
+        setTimeout(function () {
+            reloadMessage();
+            $(".oh-modal__close").click();
+        }, 1000);
+    </script>
+    {% if close_hx_url %}
+        <span hx-get="{{close_hx_url}}" hx-target="{{close_hx_target}}" hx-trigger="load"></span>
+    {% endif %}
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <span class="oh-modal__dialog-title" id="objectCreateModalLabel"
-    >{% trans "Work Type Request" %}</span
-  >
-  <button
-    class="oh-modal__close"
-    aria-label="Close"
-    {% if close_hx_url and messages %}
-      hx-get="{{close_hx_url}}"
-      hx-target="{{close_hx_target}}"
-    {% endif %}
-  >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{% trans "Work Type Request" %}</span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body" id="formBody">
-  <form
-    hx-post="{% url 'work-type-request' %}?{{pd}}"
-    hx-target="#objectCreateModalTarget"
-  >
-    {{form.as_p}}
-  </form>
+    <form hx-post="{% url 'work-type-request' %}?{{pd}}" hx-target="#objectCreateModalTarget">
+        {{form.as_p}}
+    </form>
 </div>
 <script>
-  function toggleFunctionWorkTypeRequestForm() {
-    if ($("#id_is_permanent_work_type").is(":checked")) {
-      $("#id_requested_till").parent().hide();
-    } else {
-      $("#id_requested_till").parent().show();
+    function toggleFunctionWorkTypeRequestForm() {
+        if ($("#id_is_permanent_work_type").is(":checked")) {
+            $("#id_requested_till").parent().hide();
+        } else {
+            $("#id_requested_till").parent().show();
+        }
     }
-  }
 
-  $(document).ready(function () {
-    $("[type=checkbox]").change(function (e) {
-      e.preventDefault();
-      toggleFunctionWorkTypeRequestForm();
+    $(document).ready(function () {
+        $("[type=checkbox]").change(function (e) {
+            e.preventDefault();
+            toggleFunctionWorkTypeRequestForm();
+        });
     });
-  });
-  toggleFunctionWorkTypeRequestForm();
+    toggleFunctionWorkTypeRequestForm();
 </script>

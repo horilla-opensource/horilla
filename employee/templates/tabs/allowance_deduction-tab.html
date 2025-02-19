@@ -56,10 +56,11 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    <div class="oh-sticky-table__th">{% trans "Date" %}</div>
                                     <div class="oh-sticky-table__th">{% trans "Is Taxable" %}</div>
                                     <div class="oh-sticky-table__th">{% trans "Is Condition Based" %}</div>
                                     <div class="oh-sticky-table__th">{% trans "Is Fixed" %}</div>
+                                    <div class="oh-sticky-table__th">{% trans "Rate" %}</div>
                                     <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
                                     <div class="oh-sticky-table__th">{% trans "Based On" %}</div>
                                     {% if perms.payroll.change_allowance or perms.payroll.delete_allowance %}
@@ -75,6 +76,9 @@
                                     <div class="oh-sticky-table__tr ui-sortable-handle">
                                         <div class="oh-sticky-table__td">{{allowance.title}}</div>
                                         <div class="oh-sticky-table__td">
+                                            {% if allowance.one_time_date %}{% trans "On" %} <span class="dateformat_changer">{{allowance.one_time_date}}</span>
+                                            {% else %}{% trans "All time allowance." %}{% endif %}</div>
+                                        <div class="oh-sticky-table__td">
                                             {{allowance.is_taxable|yes_no}}
                                         </div>
                                         <div class="oh-sticky-table__td">
@@ -84,12 +88,15 @@
                                             {{allowance.is_fixed|yes_no}}
                                         </div>
                                         <div class="oh-sticky-table__td">
-                                            {% if allowance.amount %}{{allowance.amount}}{% endif %}
+                                            {% if allowance.rate %}{{allowance.rate}}{% else %}-{% endif %}
+                                        </div>
+                                        <div class="oh-sticky-table__td">
+                                            {% if allowance.amount %}{{allowance.amount}}{% else %}-{% endif %}
                                         </div>
                                         <div class="oh-sticky-table__td">
                                             {% if allowance.get_based_on_display%}
                                                 {{allowance.get_based_on_display}}
-                                            {% endif %}
+                                            {% else %}-{% endif %}
                                         </div>
                                         {% if perms.payroll.change_allowance or perms.payroll.delete_allowance %}
                                             <div class="oh-sticky-table__td oh-sticky-table__right">

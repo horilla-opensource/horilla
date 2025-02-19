@@ -16,137 +16,147 @@
 	</div>
 </span>
 <div class="panel">
-	<div class="oh-sticky-table">
-		<div class="oh-sticky-table__table oh-table--sortable">
-			<div class="oh-sticky-table__thead">
-				<div class="oh-sticky-table__tr">
-					<div class="oh-sticky-table__th" style="width: 50px;" align="center">
-						<input type="checkbox" class="row-permission__select-all" id="id{{perm.app}}Permissions" onchange="selectAllPermissions(this)">
-					</div>
-					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-					<div class="oh-sticky-table__th" style="width: 80px;">
-						<div class="d-flex justify-content-center" title="{% trans "Can create" %}">
-						<ion-icon name="add-circle-outline"></ion-icon>
-						</div>
-					</div>
-					<div class="oh-sticky-table__th" style="width: 80px;">
-						<div class="d-flex justify-content-center" title="{% trans "Can view" %}">
-						<ion-icon name="eye-outline"></ion-icon>
-						</div>
-					</div>
-					<div class="oh-sticky-table__th" style="width: 80px;">
-						<div class="d-flex justify-content-center" title="{% trans "Can edit" %}">
-						<ion-icon name="create-outline"></ion-icon>
-						</div>
-					</div>
-					<div class="oh-sticky-table__th" style="width: 80px;">
-						<div class="d-flex justify-content-center" title="{% trans "Can delete" %}">
-						<ion-icon name="trash-outline"></ion-icon>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="oh-sticky-table__tbody">
-				{% for model in perm.app_models %}
-				<div class="oh-sticky-table__tr" draggable="true">
-					<div class="oh-sticky-table__sd" align="center" >
-						<input type="checkbox" id="id_{{perm.app}}{{model.model_name}}" class="row-permission" onchange="
-							$(this).closest('.oh-sticky-table__tr').find('[type=checkbox][name=permissions]').prop('checked',$(this).is(':checked')).change();
-						">
-					</div>
-					<div class="oh-sticky-table__td" >
-						<div class="oh-profile oh-profile--md">
-							<div class="oh-profile__avatar mr-1">
-								<img
-								src="https://ui-avatars.com/api/?name={{model.verbose_name}}&background=random"
-								class="oh-profile__image"
-								/>
-							</div>
-							<span class="oh-profile__name oh-text--dark"
-								>{{model.verbose_name}}</span
-							>
-						</div>
-					</div>
-					<div class="oh-sticky-table__td">
-						<div class="d-flex justify-content-center">
-							<div class="oh-switch">
-								<input
-									type="checkbox"
-									name="permissions"
-									value="add_{{model.model_name}}"
-									class="oh-switch__checkbox"
-									onchange="
-									if (!$(this).is(':checked')) {
-										$(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
-									}
-									"
-									data-group-id="{{group.id}}"
-									data-group-name="{{group.name}}"
-								/>
-							</div>
-						</div>
-					</div>
-					<div class="oh-sticky-table__td">
-						<div class="d-flex justify-content-center">
-							<div class="oh-switch">
-								<input
-									type="checkbox"
-									name="permissions"
-									value="view_{{model.model_name}}"
-									class="oh-switch__checkbox view-permission"
-									onchange="
-									if (!$(this).is(':checked')) {
-										$(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
-									}
-									"
-									data-group-id="{{group.id}}"
-									data-group-name="{{group.name}}"
-								/>
-							</div>
-						</div>
-					</div>
-					<div class="oh-sticky-table__td">
-						<div class="d-flex justify-content-center">
-							<div class="oh-switch">
-								<input
-									type="checkbox"
-									name="permissions"
-									value="change_{{model.model_name}}"
-									class="oh-switch__checkbox"
-									onchange="
-									if (!$(this).is(':checked')) {
-										$(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
-									}
-									"
-								data-group-id="{{group.id}}"
-								data-group-name="{{group.name}}"
-								/>
-							</div>
-						</div>
-					</div>
-					<div class="oh-sticky-table__td">
-						<div class="d-flex justify-content-center">
-							<div class="oh-switch">
-								<input
-									type="checkbox"
-									name="permissions"
-									value="delete_{{model.model_name}}"
-									class="oh-switch__checkbox"
-									onchange="
-									if (!$(this).is(':checked')) {
-										$(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
-									}
-									"
-									data-group-id="{{group.id}}"
-									data-group-name="{{group.name}}"
-								/>
-							</div>
-						</div>
-					</div>
-				</div>
-				{% endfor %}
-			</div>
-		</div>
-	</div>
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <!-- Table Head -->
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th" style="width: 50px;" align="center">
+                        <input type="checkbox" class="row-permission__select-all" id="id{{perm.app}}Permissions" onchange="selectAllPermissions(this)">
+                    </div>
+                    <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    <div class="oh-sticky-table__th" style="width: 80px;">
+                        <div class="d-flex justify-content-center" title="{% trans "Can create" %}">
+                            <ion-icon name="add-circle-outline"></ion-icon>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__th" style="width: 80px;">
+                        <div class="d-flex justify-content-center" title="{% trans "Can view" %}">
+                            <ion-icon name="eye-outline"></ion-icon>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__th" style="width: 80px;">
+                        <div class="d-flex justify-content-center" title="{% trans "Can edit" %}">
+                            <ion-icon name="create-outline"></ion-icon>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__th" style="width: 80px;">
+                        <div class="d-flex justify-content-center" title="{% trans "Can delete" %}">
+                            <ion-icon name="trash-outline"></ion-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Table Body -->
+            <div class="oh-sticky-table__tbody">
+                {% for model in perm.app_models %}
+                    {% if model.model_name not in no_permission_models %}
+                        <div class="oh-sticky-table__tr" draggable="true">
+                            <!-- Checkbox -->
+                            <div class="oh-sticky-table__sd" align="center">
+                                <input type="checkbox" id="id_{{perm.app}}{{model.model_name}}" class="row-permission" onchange="
+                                    $(this).closest('.oh-sticky-table__tr').find('[type=checkbox][name=permissions]').prop('checked',$(this).is(':checked')).change();
+                                ">
+                            </div>
+                            <!-- Model Info -->
+                            <div class="oh-sticky-table__td">
+                                <div class="oh-profile oh-profile--md">
+                                    <div class="oh-profile__avatar mr-1">
+                                        <img
+                                            src="https://ui-avatars.com/api/?name={{model.verbose_name}}&background=random"
+                                            class="oh-profile__image"
+                                        />
+                                    </div>
+                                    <span class="oh-profile__name oh-text--dark">
+                                        {{model.verbose_name}}
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Can Create -->
+                            <div class="oh-sticky-table__td" style="width: 80px;">
+                                <div class="d-flex justify-content-center">
+                                    <div class="oh-switch">
+                                        <input
+                                            type="checkbox"
+                                            name="permissions"
+                                            value="add_{{model.model_name}}"
+                                            class="oh-switch__checkbox"
+                                            onchange="
+                                                if (!$(this).is(':checked')) {
+                                                    $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                                                }
+                                            "
+                                            data-group-id="{{group.id}}"
+                                            data-group-name="{{group.name}}"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Can View -->
+                            <div class="oh-sticky-table__td" style="width: 80px;">
+                                <div class="d-flex justify-content-center">
+                                    <div class="oh-switch">
+                                        <input
+                                            type="checkbox"
+                                            name="permissions"
+                                            value="view_{{model.model_name}}"
+                                            class="oh-switch__checkbox view-permission"
+                                            onchange="
+                                                if (!$(this).is(':checked')) {
+                                                    $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                                                }
+                                            "
+                                            data-group-id="{{group.id}}"
+                                            data-group-name="{{group.name}}"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Can Edit -->
+                            <div class="oh-sticky-table__td" style="width: 80px;">
+                                <div class="d-flex justify-content-center">
+                                    <div class="oh-switch">
+                                        <input
+                                            type="checkbox"
+                                            name="permissions"
+                                            value="change_{{model.model_name}}"
+                                            class="oh-switch__checkbox"
+                                            onchange="
+                                                if (!$(this).is(':checked')) {
+                                                    $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                                                }
+                                            "
+                                            data-group-id="{{group.id}}"
+                                            data-group-name="{{group.name}}"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Can Delete -->
+                            <div class="oh-sticky-table__td" style="width: 80px;">
+                                <div class="d-flex justify-content-center">
+                                    <div class="oh-switch">
+                                        <input
+                                            type="checkbox"
+                                            name="permissions"
+                                            value="delete_{{model.model_name}}"
+                                            class="oh-switch__checkbox"
+                                            onchange="
+                                                if (!$(this).is(':checked')) {
+                                                    $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                                                }
+                                            "
+                                            data-group-id="{{group.id}}"
+                                            data-group-name="{{group.name}}"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
 {% endfor %}

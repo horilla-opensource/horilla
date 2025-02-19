@@ -45,11 +45,11 @@
 {% if comments %}
 	<ol class="oh-activity-sidebar__qa-list" role="list">
 		{% for comment in comments %}
-			<li class="oh-activity-sidebar__qa-item" id="commentCard{{comment.id}}">
+			<li class="oh-activity-sidebar__qa-item fade-me-out" id="commentCard{{comment.id}}">
 				<span class="oh-activity-sidebar__q">{{ comment.comment }}
 					{% if request.user.employee_get == comment.employee_id or perms.base.delete_worktyperequestcomment or request.user|is_reportingmanager %}
 						<span class="float-end" hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
-							hx-get="{% url 'worktype-request-delete-comment' comment.id %}" hx-swap="outerHTML"
+							hx-get="{% url 'worktype-request-delete-comment' comment.id %}" hx-swap="outerHTML swap:0.5s"
 							hx-target="#commentCard{{comment.id}}">
 							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated"
 								aria-label="close outline"></ion-icon>
@@ -103,7 +103,7 @@
 		<div class="oh-404">
 			<div class="">
 				<span class="oh-timeoff-title fw-bold" style="display: block">{% trans "There are no comments to show." %}</span>
-				<img style="display: block; width: 100px; margin: 20px auto" src="{% static "/images/ui/comment.png" %}"
+				<img style="display: block; width: 100px; margin: 20px auto" src="{% static '/images/ui/comment.png' %}"
 					class="" />
 			</div>
 		</div>

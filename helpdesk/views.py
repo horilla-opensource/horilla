@@ -108,7 +108,8 @@ def faq_category_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("The FAQ Category created successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            form = FAQCategoryForm()
+
     context = {
         "form": form,
     }
@@ -138,7 +139,7 @@ def faq_category_update(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, _("The FAQ category updated successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
+
     context = {
         "form": form,
         "faq_category": faq_category,
@@ -153,9 +154,10 @@ def faq_category_delete(request, id):
         faq = FAQCategory.objects.get(id=id)
         faq.delete()
         messages.success(request, _("The FAQ category has been deleted successfully."))
+        return HttpResponse("")
     except ProtectedError:
         messages.error(request, _("You cannot delete this FAQ category."))
-    return redirect(faq_category_view)
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -186,20 +188,20 @@ def faq_category_search(request):
 
 
 @login_required
-def faq_view(request, cat_id, **kwargs):
+def faq_view(request, obj_id, **kwargs):
     """
     This function is responsible for rendering the FAQ view.
 
     Parameters:
         request (HttpRequest): The HTTP request object.
-        cat_id (int): The id of the the faq category.
+        obj_id (int): The id of the the faq category.
     """
 
-    faqs = FAQ.objects.filter(category=cat_id)
+    faqs = FAQ.objects.filter(category=obj_id)
     context = {
         "faqs": faqs,
         "f": FAQFilter(request.GET),
-        "cat_id": cat_id,
+        "cat_id": obj_id,
         "create_tag_f": TagsForm(),
     }
 
@@ -209,7 +211,7 @@ def faq_view(request, cat_id, **kwargs):
 @login_required
 @hx_request_required
 @permission_required("helpdesk.add_faq")
-def create_faq(request, cat_id):
+def create_faq(request, obj_id):
     """
     This function is responsible for creating the FAQ.
 
@@ -221,16 +223,16 @@ def create_faq(request, cat_id):
     POST : return faq view
     """
 
-    form = FAQForm(initial={"category": cat_id})
+    form = FAQForm(initial={"category": obj_id})
     if request.method == "POST":
         form = FAQForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, _("The FAQ created successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
+
     context = {
         "form": form,
-        "cat_id": cat_id,
+        "cat_id": obj_id,
     }
     return render(request, "helpdesk/faq/faq_create.html", context)
 
@@ -238,7 +240,7 @@ def create_faq(request, cat_id):
 @login_required
 @hx_request_required
 @permission_required("helpdesk.change_faq")
-def faq_update(request, id):
+def faq_update(request, obj_id):
     """
     This function is responsible for updating the FAQ.
 
@@ -251,17 +253,17 @@ def faq_update(request, id):
     POST : return faq view
     """
 
-    faq = FAQ.objects.get(id=id)
+    faq = FAQ.objects.get(id=obj_id)
     form = FAQForm(instance=faq)
     if request.method == "POST":
         form = FAQForm(request.POST, instance=faq)
         if form.is_valid():
             form.save()
             messages.success(request, _("The FAQ updated successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
     context = {
         "form": form,
         "faq": faq,
+        "cat_id": faq.category.id,
     }
     return render(request, "helpdesk/faq/faq_create.html", context)
 
@@ -364,9 +366,10 @@ def faq_delete(request, id):
         messages.success(
             request, _('The FAQ "{}" has been deleted successfully.').format(faq)
         )
+        return HttpResponse("")
     except ProtectedError:
         messages.error(request, _("You cannot delete this FAQ."))
-    return redirect(faq_view, cat_id=cat_id)
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required

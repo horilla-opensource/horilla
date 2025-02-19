@@ -266,6 +266,7 @@ x-data="{searchShow: false}"
           data-target='#objectCreateModal'
           hx-get="{% url 'work-type-request' %}"
           hx-target='#objectCreateModalTarget'
+          hx-include="#filterForm"
         >
           <ion-icon name='add-sharp'></ion-icon> {% trans "Create" %}
         </button>

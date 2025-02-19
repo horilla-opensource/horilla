@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n %}{% load horillafilters %}
 <div class="oh-sticky-table">
 	<div class="oh-sticky-table__table oh-table--sortable">
 		<div class="oh-sticky-table__thead">
@@ -14,11 +14,7 @@
 			{% for tag in audittags %}
 				<div class="oh-sticky-table__tr" draggable="true" id="auditTagTr{{tag.id}}">
 					<div class="oh-sticky-table__td">{{tag}}</div>
-					{% if tag.highlight == True %}
-						<div class="oh-sticky-table__td">{% trans "Yes" %}</div>
-					{% else %}
-						<div class="oh-sticky-table__td">{% trans "No" %}</div>
-					{% endif %}
+					<div class="oh-sticky-table__td">{{tag.highlight|yes_no}}</div>
 					{% if perms.horilla_audit.delete_audittag or perms.horilla_audit.delete_audittag %}
 						<div class="oh-sticky-table__td">
 							<div class="oh-btn-group">

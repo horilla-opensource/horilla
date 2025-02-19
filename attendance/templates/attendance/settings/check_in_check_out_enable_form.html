@@ -1,0 +1,58 @@
+{% extends 'settings.html' %}{% block settings %}{% load static %}{% load widget_tweaks %}{% load i18n %}
+
+
+<div class="oh-inner-sidebar-content">
+    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+        <h2 class="oh-inner-sidebar-content__title">{% trans 'Enable Check In/Check out' %}</h2>
+    </div>
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Company' %}
+                    </div>
+                    <div class="oh-sticky-table__th">
+                        {% trans 'Check in/Check out' %}
+                    </div>
+                </div>
+            </div>
+            <div class="oh-sticky-table__tbody">
+                {% for att_setting in attendance_settings %}
+                <div class="oh-sticky-table__tr" draggable="true">
+                    <div class="oh-sticky-table__td">
+                        {% if att_setting.company_id %}
+                            {{att_setting.company_id}}
+                        {% else %}
+                            {% trans "All company" %}
+                        {% endif %}
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        <div class="oh-switch">
+                            <input type="hidden" name="setting_Id" value="{{att_setting.id}}"
+                                id="companyId{{att_setting.id}}">
+                            <input type="checkbox" name="isChecked" class="oh-switch__checkbox"
+                                {% if att_setting.enable_check_in %} checked {% endif %}
+                                {% if perms.attendance.change_attendancegeneralsetting %}
+                                    hx-post="{% url 'enable-disable-check-in' %}" hx-target="#attendance-activity-container" hx-trigger="change"
+                                    hx-include="#companyId{{att_setting.id}}" hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 200);"
+                                    {% if request.session.selected_company == 'all'  %}
+                                        {% if not att_setting.company_id %}
+                                            hx-swap="innerHTML"
+                                        {% else %}
+                                            hx-swap="none"
+                                        {% endif %}
+                                    {% else %}
+                                        hx-swap="innerHTML"
+                                    {% endif %}
+                                {% endif %}
+                            >
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

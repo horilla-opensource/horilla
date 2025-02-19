@@ -708,6 +708,7 @@ def email_send(request):
                 "host": host,
                 "protocol": protocol,
             },
+            request=request,
         )
         email = EmailMessage(
             subject=f"Hello {candidate.name}, Congratulations on your selection!",

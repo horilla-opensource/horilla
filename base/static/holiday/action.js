@@ -40,12 +40,6 @@ function makeListUnique(list) {
   return Array.from(new Set(list));
 }
 
-function createHolidayHxValue() {
-  var pd = $(".oh-pagination").attr("data-pd");
-  var hxValue = JSON.stringify(pd);
-  $("#holidayCreateButton").attr("hx-vals", `{"pd":${hxValue}}`);
-}
-
 tickHolidayCheckboxes();
 function makeHolidayListUnique(list) {
   return Array.from(new Set(list));
@@ -97,7 +91,7 @@ function tickHolidayCheckboxes() {
       $("#selectedShowHolidays").css("display", "inline-flex");
       $("#selectedShowHolidays").text(selectedCount + " -" + message);
     } else {
-      $("#unselectAllHolidays").css("display", "none  ");
+      $("#unselectAllHolidays").css("display", "none");
       $("#selectedShowHolidays").css("display", "none");
       $("#exportHolidays").css("display", "none");
     }

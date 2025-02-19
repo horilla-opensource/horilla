@@ -189,6 +189,7 @@ class LeaveType(HorillaModel):
     carryforward_expire_period = models.CharField(
         max_length=30, choices=TIME_PERIOD, null=True, blank=True
     )
+    carryforward_expire_date = models.DateField(null=True, blank=True)
     require_approval = models.CharField(
         max_length=30, choices=CHOICES, null=True, blank=True, default="yes"
     )
@@ -270,6 +271,17 @@ class LeaveType(HorillaModel):
 
         return reset_date
 
+    def set_expired_date(self, assigned_date):
+        period = self.carryforward_expire_in
+        if self.carryforward_expire_period == "day":
+            expired_date = assigned_date + relativedelta(days=period)
+        elif self.carryforward_expire_period == "month":
+            expired_date = assigned_date + relativedelta(months=period)
+        else:
+            expired_date = assigned_date + relativedelta(years=period)
+
+        return expired_date
+
     def clean(self, *args, **kwargs):
         if self.is_compensatory_leave:
             if LeaveType.objects.filter(is_compensatory_leave=True).count() >= 1:
@@ -283,6 +295,15 @@ class LeaveType(HorillaModel):
             self.carryforward_max = math.inf
         if self.pk and LeaveType.objects.get(id=self.pk).is_compensatory_leave:
             self.is_compensatory_leave = True
+
+        if (
+            self.carryforward_type == "carryforward expire"
+            and not self.carryforward_expire_date
+        ):
+            self.carryforward_expire_date = self.set_expired_date(
+                assigned_date=self.created_at
+            )
+
         super().save()
 
     def __str__(self):
@@ -479,11 +500,11 @@ class AvailableLeave(HorillaModel):
                 )
                 self.reset_date = reset_date
             # assigning expire date
-            if self.leave_type_id.carryforward_type == "carryforward expire":
-                expired_date = self.set_expired_date(
-                    assigned_date=self.assigned_date, available_leave=self
-                )
-                self.expired_date = expired_date
+        if self.leave_type_id.carryforward_type == "carryforward expire":
+            expiry_date = self.assigned_date
+            if self.leave_type_id.carryforward_expire_date:
+                expiry_date = self.leave_type_id.carryforward_expire_date
+            self.expired_date = expiry_date
 
         self.total_leave_days = max(self.available_days + self.carryforward_days, 0)
         self.carryforward_days = max(self.carryforward_days, 0)
@@ -578,6 +599,28 @@ class LeaveRequest(HorillaModel):
 
     def __str__(self):
         return f"{self.employee_id} | {self.leave_type_id} | {self.status}"
+
+    def employees_on_leave_today(today=None, status=None):
+        """
+        Retrieve employees who are on leave on a given date (default is today).
+
+        Args:
+            today (date, optional): The date to check. Defaults to the current date
+                                    in the server's local timezone.
+            status (str, optional): The status to filter leave requests. If None, no filtering by status is applied.
+
+        Returns:
+            QuerySet: A queryset of LeaveRequest instances where employees are on leave on the specified date.
+        """
+        today = date.today() if today is None else today
+        queryset = LeaveRequest.objects.filter(
+            start_date__lte=today, end_date__gte=today
+        )
+
+        if status is not None:
+            queryset = queryset.filter(status=status)
+
+        return queryset
 
     def get_penalties_count(self):
         """
@@ -722,6 +765,8 @@ class LeaveRequest(HorillaModel):
             managers = applicable_condition.approval_managers()
             for manager in managers:
                 sequence += 1
+                if not isinstance(manager, Employee):
+                    manager = getattr(self.employee_id.employee_work_info, manager)
                 LeaveRequestConditionApproval.objects.create(
                     sequence=sequence,
                     leave_request_id=self,
@@ -731,7 +776,7 @@ class LeaveRequest(HorillaModel):
     def clean(self):
         cleaned_data = super().clean()
         restricted_leave = RestrictLeave.objects.all()
-        leave_type_instance = LeaveType.objects.get(name=self.leave_type_id)
+        leave_type_instance = LeaveType.objects.get(id=self.leave_type_id.id)
 
         work_info = EmployeeWorkInformation.objects.filter(employee_id=self.employee_id)
         if work_info.exists():
@@ -878,20 +923,13 @@ class LeaveRequest(HorillaModel):
                 return True
 
     def delete(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-
         if self.status == "requested":
-            """
-            Override the delete method to update the leave clashes count of related leave requests.
-            """
-            leave_request = self
-
             super().delete(*args, **kwargs)
 
-            clash_thread = LeaveClashThread(leave_request)
-            clash_thread.start()
-
+            # Update the leave clashes count for all relevant leave requests
+            self.update_leave_clashes_count()
         else:
+            request = getattr(horilla_middlewares._thread_locals, "request", None)
             if request:
                 clear_messages(request)
                 messages.warning(
@@ -925,11 +963,16 @@ class LeaveRequest(HorillaModel):
             overlapping_requests = (
                 LeaveRequest.objects.exclude(id=self.id)
                 .filter(
-                    Q(
-                        employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                    (
+                        Q(
+                            employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                        )
+                        | Q(
+                            employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                        )
                     )
-                    | Q(
-                        employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                    & Q(
+                        employee_id__employee_work_info__company_id=self.employee_id.employee_work_info.company_id
                     ),
                     start_date__lte=self.end_date,
                     end_date__gte=self.start_date,

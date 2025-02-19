@@ -13,7 +13,7 @@
 <div class="oh-payslip" id="payslips-table">
   <div class="oh-payslip__header">
         <div class="oh-payslip__header-left"  style="min-width: 170px; height: 35px; border: 1px solid hsl(213,22%,84%); display:flex;">
-            <a href="{% url 'payslip-pdf' instance.id %}" type="button" title="{% trans 'Download' %}" class="oh-btn oh-btn--gray-bkg w-100" style="background-color: #dadada;"> <ion-icon name="download"></ion-icon></a>
+            <a href="{% url 'view-payslip-pdf' instance.id %}" type="button" title="{% trans 'Download' %}" class="oh-btn oh-btn--gray-bkg w-100" style="background-color: #dadada;"> <ion-icon name="download"></ion-icon></a>
           {% if perms.payroll.add_payslip %}
             <a
               hx-confirm="{% trans 'Do you want to sent the payslip by mail?' %}" hx-get="{% url "send-slip" %}?id={{instance.id}}&view=individual-payslip" hx-target="#payslips-table"

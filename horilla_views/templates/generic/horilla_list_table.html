@@ -335,6 +335,9 @@
             if (widths.length) {
               thWidth = widths[0];
             }
+            if (!thWidth) {
+              thWidth = 180
+            }
             $('#{{view_id}} .lastTh').css("width", `${thWidth}px`);
          }
     });
@@ -350,6 +353,7 @@
       {% endfor %}
     </div>
     {% endif %}
+    {% if not custom_empty_template %}
     <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
       <div align="center">
         <img src="{% static "images/ui/search.svg" %}" class="oh-404__image" alt="Page not found. 404.">
@@ -359,5 +363,20 @@
         </p>
       </div>
     </div>
+    {% else %}
+    {% include custom_empty_template %}
+    {% endif %}
+
   {% endif %}
+  <script>
+    setTimeout(() => {
+      $("#{{view_id}} [type=checkbox].list-table-row:checked").first().change();
+      $("#{{view_id}} [type=checkbox].list-table-row:checked").not().first().change();
+      var ids = JSON.parse($("#{{selected_instances_key_id}}").attr("data-ids"))
+      if (ids.length) {
+        $("#{{view_id}} .quick-bulk-action.d-none").removeClass("d-none");
+      }
+    }, 200);
+
+  </script>
 </div>

@@ -3,7 +3,7 @@ offboarding/sidebar.py
 """
 
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import resignation_request_enabled
 from offboarding.templatetags.offboarding_filter import (
@@ -11,18 +11,18 @@ from offboarding.templatetags.offboarding_filter import (
     is_offboarding_employee,
 )
 
-MENU = trans("Offboarding")
+MENU = _("Offboarding")
 IMG_SRC = "images/ui/exit-outline.svg"
 ACCESSIBILITY = "offboarding.sidebar.offboarding_accessibility"
 
 
 SUBMENUS = [
     {
-        "menu": trans("Exit Process"),
+        "menu": _("Exit Process"),
         "redirect": reverse("offboarding-pipeline"),
     },
     {
-        "menu": trans("Resignation Letters"),
+        "menu": _("Resignation Letters"),
         "redirect": reverse("resignation-request-view"),
         "accessibility": "offboarding.sidebar.resignation_letter_accessibility",
     },

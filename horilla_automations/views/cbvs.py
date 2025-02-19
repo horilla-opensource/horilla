@@ -162,6 +162,7 @@ class AutomationDetailedView(views.HorillaDetailedView):
         ("Model", "model"),
         ("Mail Templates", "mail_template"),
         ("Mail To", "get_mail_to_display"),
+        ("Mail Cc", "get_mail_cc_display"),
         ("Trigger", "trigger_display"),
     ]
     actions = [

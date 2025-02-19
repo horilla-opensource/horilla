@@ -63,6 +63,7 @@
                     <div data-cell-index="2" data-cell-title="{% trans 'Target Value' %}" class="oh-sticky-table__th">{% trans "Target Value" %}</div>
                     <div data-cell-index="3" data-cell-title="{% trans 'Duration' %}" class="oh-sticky-table__th">{% trans "Duration" %}</div>
                     <div data-cell-index="4" data-cell-title="{% trans 'Descrption' %}" class="oh-sticky-table__th">{% trans "Descrption" %}</div>
+                    <div data-cell-index="5" data-cell-title="{% trans 'Company' %}" class="oh-sticky-table__th">{% trans "Company" %}</div>
                     {% comment %} <div data-cell-index="5" data-cell-title="{% trans 'Is Active' %}" class="oh-sticky-table__th">{% trans "Is Active" %}</div> {% endcomment %}
 
                     <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
@@ -98,10 +99,9 @@
                 <div data-cell-index="4" class="oh-sticky-table__td">
                 {{kr.description}}
                 </div>
-                {% comment %} <div data-cell-index="5" class="oh-sticky-table__td">
-                {{kr.target_value}}
-                </div> {% endcomment %}
-
+                <div data-cell-index="5" class="oh-sticky-table__td">
+                {{kr.company_id}}
+                </div>
                 <div class="oh-sticky-table__td oh-sticky-table__right">
                 <div class="oh-btn-group">
                     <a

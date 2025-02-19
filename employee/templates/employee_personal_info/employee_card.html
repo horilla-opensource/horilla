@@ -85,6 +85,19 @@
                         <a href="{% url 'employee-view-update' emp.id %}" class="oh-dropdown__link">{% trans "Edit" %}</a>
                       </li>
                     {% endif %}
+                    {% if profile_edit_enabled %}
+                      {% if perms.employee.change_employee or request.user|check_manager:emp %}
+                        <li class="oh-dropdown__item">
+                          <a href="{% url 'profile-edit-access' emp.id %}?feature=profile_edit" class="oh-dropdown__link">
+                            {% if emp.profile_edit_accessibility.all %}
+                              {% trans "Revoke Profile Edit Access" %}
+                            {% else %}
+                              {% trans "Add Profile Edit Access" %}
+                            {% endif %}
+                          </a>
+                        </li>
+                      {% endif %}
+                    {% endif %}
                     {% if perms.employee.delete_employee %}
                       <li class="oh-dropdown__item">
                         {% if emp.is_active %}

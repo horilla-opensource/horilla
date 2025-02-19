@@ -14,6 +14,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
 from base.methods import eval_validate
+from horilla.signals import post_generic_delete, pre_generic_delete
 from horilla_views import models
 from horilla_views.cbv_methods import get_short_uuid, login_required, merge_dicts
 from horilla_views.forms import SavedFilterForm
@@ -71,7 +72,14 @@ class ReloadField(View):
         parent_form = getattr(module, class_name)()
 
         dynamic_cache = CACHE.get(request.session.session_key + "cbv" + reload_field)
+        onchange = CACHE.get(
+            request.session.session_key + "cbv" + reload_field + "onchange"
+        )
+        if not onchange:
+            onchange = ""
+
         model: models.HorillaModel = dynamic_cache["model"]
+        value = dynamic_cache.get("value", "")
 
         cache_field = dynamic_cache["dynamic_field"]
         if cache_field != reload_field:
@@ -87,6 +95,11 @@ class ReloadField(View):
         form_field = forms.ChoiceField
         if isinstance(field, forms.ModelMultipleChoiceField):
             form_field = forms.MultipleChoiceField
+            dynamic_initial = request.GET.get("dynamic_initial", [])
+            value = eval_validate(f"""[{dynamic_cache["value"]},{dynamic_initial}]""")
+        else:
+            if not value and self.request.GET.get("dynamic_initial"):
+                value = eval_validate(self.request.GET.get("dynamic_initial"))
 
         parent_form.fields[cache_field] = form_field(
             choices=choices,
@@ -96,11 +109,9 @@ class ReloadField(View):
         parent_form.fields[cache_field].widget.option_template_name = (
             "horilla_widgets/select_option.html",
         )
-        dynamic_initial = request.GET.get("dynamic_initial", [])
         parent_form.fields[cache_field].widget.attrs = field.widget.attrs
-        parent_form.fields[cache_field].initial = eval_validate(
-            f"""[{dynamic_cache["value"]},{dynamic_initial}]"""
-        )
+        parent_form.fields[cache_field].initial = value
+        parent_form.fields[cache_field].widget.attrs["onchange"] = onchange
 
         field = parent_form[cache_field]
         dynamic_id: str = get_short_uuid(4)
@@ -257,11 +268,16 @@ class LastAppliedFilter(View):
         """
         Get method
         """
-        CACHE.set(
-            self.request.session.session_key + "last-applied-filter",
-            self.request.GET,
-            timeout=600,
+
+        nav_path = self.request.GET.get(
+            "nav_url",
         )
+        if nav_path:
+            CACHE.set(
+                self.request.session.session_key + "last-applied-filter" + nav_path,
+                self.request.GET,
+                timeout=600,
+            )
         return HttpResponse("success")
 
 
@@ -505,21 +521,19 @@ class HorillaDeleteConfirmationView(View):
             model = type(obj)
             protected_model_count[model._meta.verbose_name_plural] += 1
         protected_model_count = dict(protected_model_count)
+        context = {
+            "model_map": merge_dicts(MODEL_MAP, PROTECTED_MODEL_MAP),
+            "dynamic_list_path": DYNAMIC_PATH_MAP,
+            "delete_object": delete_object,
+            "protected": protected,
+            "model_count_sum": sum(model_count.values()),
+            "related_objects_count": model_count,
+            "protected_objects_count": protected_model_count,
+        }
+        for key, value in self.get_context_data().items():
+            context[key] = value
 
-        return render(
-            self.request,
-            "generic/delete_confirmation.html",
-            {
-                "model_map": merge_dicts(MODEL_MAP, PROTECTED_MODEL_MAP),
-                "dynamic_list_path": DYNAMIC_PATH_MAP,
-                "delete_object": delete_object,
-                "protected": protected,
-                "model_count_sum": sum(model_count.values()),
-                "related_objects_count": model_count,
-                "protected_objects_count": protected_model_count,
-            }
-            | self.get_context_data(),
-        )
+        return render(self.request, "generic/delete_confirmation.html", context)
 
     def post(self, *args, **kwargs):
         """
@@ -538,8 +552,29 @@ class HorillaDeleteConfirmationView(View):
 
         def delete_callback(instance, protected=False):
             try:
-                instance.delete()
-                messages.success(self.request, f"Deleted {instance}")
+                if self.request.user.has_perm(
+                    f"{instance._meta.app_label}.delete_{instance._meta.model.__name__.lower()}"
+                ):
+                    pre_generic_delete.send(
+                        sender=instance._meta.model,
+                        instance=instance,
+                        args=args,
+                        view_instance=self,
+                        kwargs=kwargs,
+                    )
+                    instance.delete()
+                    post_generic_delete.send(
+                        sender=instance._meta.model,
+                        instance=instance,
+                        args=args,
+                        view_instance=self,
+                        kwargs=kwargs,
+                    )
+                    messages.success(self.request, f"Deleted {instance}")
+                else:
+                    messages.info(
+                        self.request, f"You don't have permission to delete {instance}"
+                    )
             except:
                 messages.error(self.request, f"Cannot delete : {instance}")
 

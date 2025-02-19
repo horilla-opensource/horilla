@@ -31,6 +31,10 @@
               <label class="oh-label">{% trans "Reject Reason" %}</label>
               {{f.form.rejected_candidate__reject_reason_id}}
             </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans 'Is Converted' %}?</label>
+              {{ f.form.converted }}
+            </div>
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">

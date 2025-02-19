@@ -42,6 +42,10 @@ class AccessibilityFilter(HorillaFilterSet):
         lookup_expr="in",
         label=_("Employee"),
     )
+    exluded_employees = django_filters.ModelMultipleChoiceFilter(
+        queryset=Employee.objects.all(),
+        label=_("Exclude Employees"),
+    )
 
     verbose_name = {
         "employee_work_info__job_position_id": _("Job Position"),
@@ -90,7 +94,7 @@ class AccessibilityFilter(HorillaFilterSet):
                     field_value = field_value[0]
 
                 if "__" in field:
-                    or_conditions.append(Q(**{f"{field}__id__in": field_value}))
+                    or_conditions.append(Q(**{f"{field}__id__in": [field_value]}))
                 else:
                     if isinstance(field_value, list):
                         or_conditions.append(Q(**{f"{field}__in": field_value}))
@@ -100,4 +104,7 @@ class AccessibilityFilter(HorillaFilterSet):
         if or_conditions:
             queryset = queryset.filter(reduce(lambda x, y: x | y, or_conditions))
 
+        excluded_employees = self.data.get("exluded_employees")
+        if excluded_employees:
+            queryset = queryset.exclude(pk__in=excluded_employees)
         return queryset

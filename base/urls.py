@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base import announcement, request_and_approve, views
 from base.forms import (
+    HolidayForm,
     MailTemplateForm,
     RotatingShiftAssignForm,
     RotatingShiftForm,
@@ -18,6 +19,7 @@ from base.models import (
     EmployeeShift,
     EmployeeShiftSchedule,
     EmployeeType,
+    Holidays,
     HorillaMailTemplate,
     JobPosition,
     JobRole,
@@ -35,7 +37,6 @@ from horilla_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
-    path("announcement-list", views.announcement_list, name="announcement-list"),
     path("initialize-database", views.initialize_database, name="initialize-database"),
     path("load-demo-database", views.load_demo_database, name="load-demo-database"),
     path(
@@ -92,6 +93,7 @@ urlpatterns = [
     ),
     path("reset-send-success", views.reset_send_success, name="reset-send-success"),
     path("change-password", views.change_password, name="change-password"),
+    path("change-username", views.change_username, name="change-username"),
     path("logout", views.logout_user, name="logout"),
     path("settings", views.common_settings, name="settings"),
     path(
@@ -510,6 +512,11 @@ urlpatterns = [
         name="rotating-shift-assign-info-export",
     ),
     path(
+        "rotating-shift-assign-info-import",
+        views.rotating_shift_assign_import,
+        name="rotating-shift-assign-info-import",
+    ),
+    path(
         "settings/rotating-shift-assign-update/<int:id>/",
         views.rotating_shift_assign_update,
         name="rotating-shift-assign-update",
@@ -745,6 +752,11 @@ urlpatterns = [
         name="enable-account-block-unblock",
     ),
     path(
+        "enable-profile-edit-feature",
+        views.enable_profile_edit_feature,
+        name="enable-profile-edit-feature",
+    ),
+    path(
         "rwork-individual-view/<int:instance_id>/",
         views.rotating_work_individual_view,
         name="rwork-individual-view",
@@ -919,7 +931,7 @@ urlpatterns = [
         views.pagination_settings_view,
         name="pagination-settings-view",
     ),
-    path("announcement/", announcement.announcement_view, name="announcement"),
+    path("announcement-list", announcement.announcement_list, name="announcement-list"),
     path(
         "create-announcement",
         announcement.create_announcement,
@@ -964,7 +976,11 @@ urlpatterns = [
         "announcement-viewed-by", announcement.viewed_by, name="announcement-viewed-by"
     ),
     path("driver-viewed", views.driver_viewed_status, name="driver-viewed"),
-    path("employee-charts", views.employee_charts, name="employee-charts"),
+    path(
+        "dashboard-components-toggle",
+        views.dashboard_components_toggle,
+        name="dashboard-components-toggle",
+    ),
     path("employee-chart-show", views.employee_chart_show, name="employee-chart-show"),
     path(
         "settings/enable-biometric-attendance/",
@@ -996,9 +1012,24 @@ urlpatterns = [
         "holidays-info-import", views.holidays_info_import, name="holidays-info-import"
     ),
     path("holiday-info-export", views.holiday_info_export, name="holiday-info-export"),
+    path(
+        "get-upcoming-holidays",
+        views.get_upcoming_holidays,
+        name="get-upcoming-holidays",
+    ),
     path("holiday-creation", views.holiday_creation, name="holiday-creation"),
-    path("holiday-update/<int:id>", views.holiday_update, name="holiday-update"),
-    path("holiday-delete/<int:id>", views.holiday_delete, name="holiday-delete"),
+    path("holiday-update/<int:obj_id>", views.holiday_update, name="holiday-update"),
+    path(
+        "duplicate-holiday/<int:obj_id>",
+        views.object_duplicate,
+        name="duplicate-holiday",
+        kwargs={
+            "model": Holidays,
+            "form": HolidayForm,
+            "template": "holiday/holiday_form.html",
+        },
+    ),
+    path("holiday-delete/<int:obj_id>", views.holiday_delete, name="holiday-delete"),
     path(
         "holidays-bulk-delete", views.bulk_holiday_delete, name="holidays-bulk-delete"
     ),

@@ -28,7 +28,7 @@
             {% endfor %}
           </span>
         </div>
-        {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey %}
+        {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
         <div class="oh-kanban-card__dots">
           <div class="oh-dropdown" x-data="{show: false}">
             <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title={% trans "Actions" %} onclick="event.stopPropagation()" >
@@ -51,7 +51,7 @@
                     >{% trans "Edit" %}
                   </a>
                 </li>
-                {% endif %} {% if perms.recruitment.change_recruitmentsurvey %}
+                {% endif %} {% if perms.recruitment.add_recruitmentsurvey %}
                 <li class="oh-dropdown__item">
                   <a
                     hx-get="{% url 'recruitment-survey-question-template-duplicate' question.id %}"

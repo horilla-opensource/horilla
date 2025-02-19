@@ -1,5 +1,5 @@
 """
-attendancefilters.py
+horilla_views/templatetags/generic_template_filters.py
 
 This module is used to write custom template filters.
 
