@@ -28,6 +28,7 @@ djangorestframework-simplejwt
 drf-yasg
 et-xmlfile
 google-api-python-client
+google-cloud-storage==3.0.0
 html5lib
 Jinja2
 idna
