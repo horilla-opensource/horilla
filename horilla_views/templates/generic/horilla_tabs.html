@@ -4,6 +4,7 @@
 {% comment %} {% include "attendance/attendance/attendance_nav.html" %} {% endcomment %}
 {% load i18n generic_template_filters %}
 <div id="{{view_id}}">
+  {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
   <div class="oh-tabs HTV">
     <script>
         $("#reloadMessagesButton").click()
@@ -89,6 +90,8 @@
       {% endfor %}
     </div>
   </div>
+
+
 
   <script>
     $("li.oh-tabs__tab").click(function (e) {
