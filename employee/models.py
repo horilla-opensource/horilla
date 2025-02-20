@@ -85,8 +85,8 @@ class Employee(models.Model):
         max_length=15,
     )
     address = models.TextField(max_length=200, blank=True, null=True)
-    country = models.CharField(max_length=30, blank=True, null=True)
-    state = models.CharField(max_length=30, null=True, blank=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
     zip = models.CharField(max_length=20, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)
