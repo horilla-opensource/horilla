@@ -1,11 +1,13 @@
 name: Deploy Horilla
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - '*'
+  workflow_dispatch:
+
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - '*'
 
 
 jobs:
