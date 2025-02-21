@@ -1,0 +1,37 @@
+name: Deploy Horilla
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '*'
+
+
+jobs:
+  deploy:
+    environment: dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Transfer code
+        run: |
+          rsync -avz --rsync-path="sudo -u root rsync" --exclude-from=.rsync_ignore . plane_vm@${{ secrets.SSH_HOST }}:~/data/horilla/
+      
+      - name: Build and run horilla
+        run: |
+          ssh -i ~/.ssh/id_rsa plane_vm@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ~/data/horilla
+          docker compose -f docker-compose-prod build 
+          docker compose -f docker-compose-dev.yml up -d
+          EOF
