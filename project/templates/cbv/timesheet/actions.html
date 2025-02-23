@@ -1,0 +1,58 @@
+{% load i18n %} {% load taskfilters %}
+{% if request.user|time_sheet_crud_perm:instance or perms.project.change_timesheet or perms.project.delete_timesheet %}
+    <div class="oh-btn-group" onclick="event.stopPropagation();event.preventDefault()">
+        <a
+            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+            data-toggle="oh-modal-toggle"
+            data-target="{% if request.task_id %}#addTimesheetModal{% else %}#genericModal{% endif %}"
+            hx-get="{% if request.task_id %}{% url 'update-time-sheet' instance.id %}?task_id={{ request.task_id }}{% else %}{% url 'update-time-sheet' instance.id %}{% endif %}"
+            hx-target="{% if request.task_id %}#addTimesheetModalBody{% else %}#genericModalBody{% endif %}"
+        >
+            <ion-icon
+            name="create-outline"
+            role="img"
+            class="md hydrated"
+            style="color: blue"
+            aria-label="create outline"
+            ></ion-icon>
+        </a>
+        {% if request.task_id %}
+            <a
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                hx-delete="{% url 'delete-time-sheet' instance.id %}?view=list&task_id={{ request.task_id }}&employee_id=request.user.employee_get.id"
+                hx-confirm="{% trans 'Do you want to delete this time sheet?' %}"
+                hx-target="#TaskTimesheetTarget"
+            >
+                <ion-icon
+                name="trash-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="trash outline"
+                ></ion-icon>
+            </a>
+        {% else %}
+            <a
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                href="{% url 'delete-time-sheet' instance.id %}?view=list"
+                onclick="confirm(`{% trans 'Do you want to delete this time sheet?' %}`)"
+            >
+                <ion-icon
+                name="trash-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="trash outline"
+                ></ion-icon>
+            </a>
+        {% endif %}
+    </div>
+{% else %}
+    <div class="oh-btn-group" onclick="event.stopPropagation();event.preventDefault()">
+    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-btn--disabled" >
+        <ion-icon name="create-outline" role="img" class="md hydrated" style="color: blue" aria-label="create outline" ></ion-icon>
+    </a>
+
+    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-btn--disabled">
+        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline" ></ion-icon>
+    </a>
+    </div>
+{% endif %}

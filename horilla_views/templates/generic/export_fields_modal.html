@@ -12,7 +12,7 @@
         <h2 class="oh-modal__dialog-title" id="exportModalLable{{view_id|safe}}">
           {% trans "Export" %} {{verbose_name}}
         </h2>
-        <button class="oh-modal__close" aria-label="Close">
+        <button onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" class="oh-modal__close" aria-label="Close">
           <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>

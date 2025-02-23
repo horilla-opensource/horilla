@@ -353,6 +353,7 @@
       {% endfor %}
     </div>
     {% endif %}
+    {% if not custom_empty_template %}
     <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
       <div align="center">
         <img src="{% static "images/ui/search.svg" %}" class="oh-404__image" alt="Page not found. 404.">
@@ -362,6 +363,10 @@
         </p>
       </div>
     </div>
+    {% else %}
+    {% include custom_empty_template %}
+    {% endif %}
+
   {% endif %}
   <script>
     setTimeout(() => {

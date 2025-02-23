@@ -1,0 +1,51 @@
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+<style>
+    .completed--dot {
+        background-color: yellowgreen;
+    }
+
+    .in-progress--dot {
+        background-color: orange;
+    }
+
+    .new--dot {
+        background-color: cyan;
+    }
+
+    .status-completed {
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .status-in_Progress {
+
+        border-left: 3.4px solid orange !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+</style>
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<div hx-get="{% url 'time-sheet-nav' %}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+
+
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+
+
+<div class="oh-wrapper" id="listContainer">
+    <div class="animated-background"></div>
+</div>
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+<script src="{% static 'time_sheet/time_sheet_action.js' %}"></script>
+{% endblock %}

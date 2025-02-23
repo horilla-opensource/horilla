@@ -94,7 +94,7 @@ class AccessibilityFilter(HorillaFilterSet):
                     field_value = field_value[0]
 
                 if "__" in field:
-                    or_conditions.append(Q(**{f"{field}__id__in": field_value}))
+                    or_conditions.append(Q(**{f"{field}__id__in": [field_value]}))
                 else:
                     if isinstance(field_value, list):
                         or_conditions.append(Q(**{f"{field}__in": field_value}))

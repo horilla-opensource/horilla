@@ -1,0 +1,66 @@
+{% load i18n %} {% load basefilters %}
+<form hx-get='{% url "filter-time-sheet" %}' hx-target="#TimeSheetList" id="timesheetForm">
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Time Sheet" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Project" %}</label>
+              {{f.form.project_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Status" %}</label>
+              {{f.form.status}}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Task" %}</label>
+              {{f.form.task}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Date" %}</label>
+              {{f.form.date}}
+            </div>
+          </div>
+          {% if perms.project.view_timesheet or request.user|is_reportingmanager %}
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Employee" %}</label>
+              {{f.form.employee_id}}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Start Date From" %}</label>
+              {{f.form.start_from}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Till End Date" %}</label>
+              {{f.form.end_till}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-dropdown__filter-footer">
+    <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">
+      {% trans "Filter" %}
+    </button>
+  </div>
+</form>

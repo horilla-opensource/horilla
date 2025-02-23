@@ -1,0 +1,51 @@
+{% load i18n %}
+{% load taskfilters %}
+<div onclick="event.stopPropagation();">
+    {% if request.user|task_crud_perm:instance or perms.project.view_task %}
+        <div class="oh-btn-group">
+            <a hx-get="{% url 'update-task-all' instance.id %}?instance_ids={{instance.ordered_ids}}"
+                hx-target='#genericModalBody' data-toggle='oh-modal-toggle' data-target="#genericModal" hx-swap='innerHTML'
+                class="oh-btn oh-btn--light-bkg w-100" title="Edit">
+                <ion-icon name="create-outline"></ion-icon>
+            </a>
+            {% if instance.is_active %}
+                <a href="{% url 'task-all-archive' instance.id %}"
+                    onclick="return confirm('{% trans 'Do you want to archive this task?' %}')"
+                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button" title="{% trans 'Archive' %}">
+                    <ion-icon name="archive"></ion-icon>
+                </a>
+            {% else %}
+                <a href="{% url 'task-all-archive' instance.id %}"
+                    onclick="return confirm('{% trans 'Do you want to un archive this task?' %}')"
+                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button" title="{% trans 'Un-Archive' %}">
+                    <ion-icon name="archive"></ion-icon>
+                </a>
+            {% endif %}
+            <form action="{% url 'delete-task' instance.id %}?task_all=true" method="post"
+                onsubmit="return confirm('{% trans "Do you want Delete this Task ?" %}')" style="display: contents">
+                {% csrf_token %}
+                <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg  w-100" title="{% trans 'Delete' %}">
+                    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                </button>
+            </form>
+
+
+        </div>
+    {% else %}
+        <div class="oh-btn-group">
+            <a href="#" class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled" title="Edit" aria-disabled="true">
+                <ion-icon name="create-outline"></ion-icon>
+            </a>
+
+            <button type="button" class="oh-btn oh-btn--danger-outline w-100 oh-btn--disabled" title="{% trans 'Delete' %}"
+                aria-disabled="true" disabled>
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+            </button>
+
+            <a href="#" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button oh-btn--disabled"
+                title="{% trans 'Archive' %}" aria-disabled="true">
+                <ion-icon name="archive"></ion-icon>
+            </a>
+        </div>
+    {% endif %}
+</div>
