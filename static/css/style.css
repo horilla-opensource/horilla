@@ -531,3 +531,50 @@ form label {
         position: unset;
     }
 }
+
+
+
+/* Checkbox classes safe radios */
+
+.custom-radio-container input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Novo estilo botões de rádio */
+.custom-radio-checkmark {
+    width: 18px;
+    height: 18px;
+    background-color: #eee;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+/* rádio selecionado */
+.custom-radio-container input[type="radio"]:checked + .custom-radio-checkmark {
+    background-color: red;
+    border-color: red;
+}
+
+/*  centro branco */
+.custom-radio-checkmark::after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-radio-container input[type="radio"]:checked + .custom-radio-checkmark::after {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: white;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
