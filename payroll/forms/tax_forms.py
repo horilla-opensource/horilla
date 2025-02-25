@@ -99,6 +99,7 @@ class FilingStatusForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         attrs: dict = self.fields["use_py"].widget.attrs
+        self.fields["python_code"].required = False
         attrs[
             "onchange"
         ] = """

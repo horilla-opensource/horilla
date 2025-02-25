@@ -1,31 +1,19 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
-  <span class="oh-modal__dialog-title" id="createModalLabel">
-    {% if department.id %}
-      {% trans "Update Department" %}
-    {% else %}
-      {% trans "Create Department" %}
-    {% endif %}
-  </span>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+	<span class="oh-modal__dialog-title" id="createModalLabel">
+		{% if department.id %} {% trans "Update" %}{% else %} {% trans "Create" %} {% endif %} {% trans "Department" %}
+	</span>
+	<button class="oh-modal__close" aria-label="Close">
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    {% if department.id %}
-      hx-post="{% url 'department-update' department.id %}"
-    {% else %}
-      hx-post="{% url 'department-creation' %}?dynamic={{dynamic}}"
-    {% endif %}
-    class="oh-profile-section"
-  >
-    {% csrf_token %} {{form.non_field_errors}}
-    {{form.as_p}}
-    <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
-          {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+	<form hx-post="{{ request.get_full_path }}" class="oh-profile-section">
+		{% csrf_token %} {{form.non_field_errors}} {{form.as_p}}
+		<div class="oh-modal__dialog-footer p-0 mt-3">
+			<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+				{% trans "Save" %}
+			</button>
+		</div>
+	</form>
 </div>

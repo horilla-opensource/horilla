@@ -197,7 +197,13 @@ class ModelForm(forms.ModelForm):
 
             if isinstance(
                 widget,
-                (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
+                (
+                    forms.NumberInput,
+                    forms.EmailInput,
+                    forms.TextInput,
+                    forms.FileInput,
+                    forms.URLInput,
+                ),
             ):
                 label = ""
                 if field.label is not None:

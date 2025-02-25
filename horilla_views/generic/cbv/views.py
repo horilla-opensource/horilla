@@ -51,6 +51,7 @@ class HorillaListView(ListView):
     context_object_name = "queryset"
     # column = [("Verbose Name","field_name","avatar_mapping")], opt: avatar_mapping
     columns: list = []
+    default_columns: list = []
     search_url: str = ""
     bulk_select_option: bool = True
     filter_selected: bool = True
@@ -97,7 +98,6 @@ class HorillaListView(ListView):
     records_per_page: int = 50
     export_fields: list = []
     verbose_name: str = ""
-
     bulk_update_fields: list = []
     bulk_template: str = "generic/bulk_form.html"
 
@@ -129,10 +129,22 @@ class HorillaListView(ListView):
 
         self.visible_column = self.columns.copy()
 
-        self.toggle_form = ToggleColumnForm(self.columns, hidden_fields)
-        for column in self.columns:
-            if column[1] in hidden_fields:
-                self.visible_column.remove(column)
+        if not existing_instance:
+            if not self.default_columns:
+                self.default_columns = self.columns
+            self.toggle_form = ToggleColumnForm(
+                self.columns, self.default_columns, hidden_fields
+            )
+            for column in self.columns:
+                if column not in self.default_columns:
+                    self.visible_column.remove(column)
+        else:
+            self.toggle_form = ToggleColumnForm(
+                self.columns, self.default_columns, hidden_fields
+            )
+            for column in self.columns:
+                if column[1] in hidden_fields:
+                    self.visible_column.remove(column)
 
     def bulk_update_accessibility(self) -> bool:
         """
