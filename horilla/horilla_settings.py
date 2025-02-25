@@ -123,7 +123,13 @@ if settings.env("AWS_ACCESS_KEY_ID", default=None):
     settings.DEFAULT_FILE_STORAGE = DEFAULT_FILE_STORAGE
     settings.AWS_S3_ADDRESSING_STYLE = AWS_S3_ADDRESSING_STYLE
 
+if settings.env("GOOGLE_APPLICATION_CREDENTIALS", default=None):
+    GS_BUCKET_NAME = settings.env("GS_BUCKET_NAME")
+    DEFAULT_FILE_STORAGE = settings.env("DEFAULT_FILE_STORAGE")
 
-if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" in INSTALLED_APPS:
+    settings.GS_BUCKET_NAME = GS_BUCKET_NAME
+    settings.DEFAULT_FILE_STORAGE = DEFAULT_FILE_STORAGE
+
+if (settings.env("GOOGLE_APPLICATION_CREDENTIALS", default=None) or settings.env("AWS_ACCESS_KEY_ID", default=None)) and "storages" in INSTALLED_APPS:
     settings.MEDIA_URL = f"{settings.env('MEDIA_URL')}/{settings.env('NAMESPACE')}/"
     settings.MEDIA_ROOT = f"{settings.env('MEDIA_ROOT')}/{settings.env('NAMESPACE')}/"
