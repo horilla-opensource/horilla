@@ -94,7 +94,18 @@
             </div>
               {% endif %}
           {% endfor %}
-      {% endif %}
+          <div class="justification-container">
+            <label for="justification{{ q.id }}" class="justification-label">
+                {% trans "Provide an observation or justification:" %}
+            </label>
+            <textarea 
+                name="justification{{ q.id }}" 
+                id="justification{{ q.id }}" 
+                class="justification-textarea" 
+                placeholder="{% trans 'Explain your choice...' %}">
+            </textarea>
+        </div>
+        {% endif %}
           {% if q.question_type == '5' %} <!--  question type Likert-->
           <div class="d-block">
             <span class="oh-label oh-label--question">{{forloop.counter}}. {{q.question}}</span>

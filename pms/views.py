@@ -1900,28 +1900,33 @@ def feedback_answer_post(request, id):
 
     if request.method == "POST":
         for question in questions:
-            if request.POST.get(f"answer{question.id}"):
-                answer = request.POST.get(f"answer{question.id}")
+            answer_value = request.POST.get(f"answer{question.id}")
+            justification_value = request.POST.get(f"justification{question.id}", "")  
+
+            if answer_value:
                 Answer.objects.get_or_create(
-                    answer={"answer": answer},
+                    answer={"answer": answer_value},
+                    justification=justification_value,  
                     question_id=question,
                     feedback_id=feedback,
                     employee_id=employee,
                 )
                 feedback.status = "On Track"
                 feedback.save()
+
         for key_result in feedback.employee_key_results_id.all():
-            if request.POST.get(f"key_result{key_result.id}"):
-                answer = request.POST.get(f"key_result{key_result.id}")
+            answer_value = request.POST.get(f"key_result{key_result.id}")
+            if answer_value:
                 KeyResultFeedback.objects.get_or_create(
-                    answer={"answer": answer},
+                    answer={"answer": answer_value},
                     key_result_id=key_result,
                     feedback_id=feedback,
                     employee_id=request.user.employee_get,
                 )
+
         messages.success(
             request,
-            _("Feedback %(review_cycle)s has been answered successfully!.")
+            _("Feedback %(review_cycle)s It was successfully answered!.")
             % {"review_cycle": feedback.review_cycle},
         )
         return redirect(feedback_list_view)
@@ -2032,7 +2037,7 @@ def feedback_detailed_view_status(request, id):
 @login_required
 def get_feedback_overview(request, obj_id):
     """
-    overview of feedback
+    Overview of feedback
     """
     feedback = Feedback.objects.filter(id=obj_id).first() if obj_id else None
     if feedback and check_permission_feedback_detailed_view(
@@ -2043,6 +2048,7 @@ def get_feedback_overview(request, obj_id):
         feedback_answers = feedback.feedback_answer.all()
         kr_feedbacks = feedback.feedback_key_result.all()
         feedback_overview = {}
+
         for question in questions:
             answer_list = []
             for answer in feedback_answers:
@@ -2050,19 +2056,21 @@ def get_feedback_overview(request, obj_id):
                     answer_list.append(
                         {
                             answer.employee_id: [
-                                answer.answer,
+                                answer.answer,  
                                 {"type": answer.question_id.question_type},
+                                {"justification": answer.justification if answer.justification else _("No observation available")}
                             ]
                         }
                     )
             feedback_overview[question] = answer_list
+
         for kr_feedback in kr_feedbacks:
             answer_list = []
             answer_list.append(
                 {kr_feedback.employee_id: [kr_feedback.answer, {"type": "6"}]}
             )
             feedback_overview[
-                f"Feedback about keyresult: {kr_feedback.key_result_id.key_result_id}"
+                _("Feedback about keyresult: {keyresult}").format(keyresult=kr_feedback.key_result_id.key_result_id)
             ] = answer_list
 
         return render(
@@ -2070,6 +2078,29 @@ def get_feedback_overview(request, obj_id):
             "feedback/feedback_overview.html",
             context={"feedback_overview": feedback_overview},
         )
+
+@login_required
+def get_feedback_answers(request, feedback_id):
+    """
+    "Return the feedback responses with justification."
+    
+    """
+    answers = Answer.objects.filter(feedback_id=feedback_id)
+
+    answer_list = []
+    for answer in answers:
+        answer_data = answer.answer  # JSONField 
+
+        
+        selected_option = answer_data.get("selected_option", "N/A") if isinstance(answer_data, dict) else _("Error")
+
+        answer_list.append({
+            "question": answer.question_id.question,
+            "selected_option": selected_option,
+            "justification": answer.justification if answer.justification else _("No observation available")
+        })
+
+    return JsonResponse({"answers": answer_list})
 
 
 @login_required

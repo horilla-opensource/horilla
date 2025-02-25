@@ -39,20 +39,26 @@
             </div>
           </div>
         {% endif %}
-        {% if answer.question_id.question_type == '4' %} <!--question type =  Multi-choices-->
-          <div class="d-block">
+        {% if answer.question_id.question_type == '4' %} <!-- question type = Multi-choices -->
+        <div class="d-block">
             <ul class="oh-questions mt-2">
-              <li class="oh-questions__answer">
-                <div class="oh-radio">
-                  <input type="radio" class="oh-radio" id="answer1" name="answer{{q.id}}" value="{{option.option_a}}"
-                    checked />
-                  <span class="oh-radio__checkmark"></span>
-                  <label class="oh-label" for="answer1"> {{answer.answer.answer}}</label>
+                <li class="oh-questions__answer">
+                    <div class="oh-radio">
+                        <input type="radio" class="oh-radio" id="answer1" name="answer{{q.id}}" value="{{option.option_a}}" checked />
+                        {% comment %} <span class="oh-radio__checkmark"></span> WE DON'T NEED CHECKBOXES IN THE VIEWS, ONLY THE ANSWERS {% endcomment %}
+                        <label class="oh-label" for="answer1"> {{ answer.answer.answer }}</label>
+                    </div>
+                </li>
+            </ul>            
+            <!-- Exibir a justificativa se houver -->
+            {% if answer.justification %}
+                <div class="mt-2 containerAnswerJust" >
+                    <strong>Observation:</strong>
+                    <p>{{ answer.justification }}</p>
                 </div>
-              </li>
-            </ul>
-          </div>
-        {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}    
         {% if answer.question_id.question_type == '5' %} <!--question type =  Likert-->
           <div class="d-block">
             <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
