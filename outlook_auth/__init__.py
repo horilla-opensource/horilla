@@ -3,8 +3,8 @@ outlook_auth/__init__.py
 """
 
 from django.conf import settings
-from outlook_auth import scheduler as _scheduler
 
+from outlook_auth import scheduler as _scheduler
 
 settings.OUTLOOK_SCOPES = ["https://outlook.office.com/SMTP.Send"]
 

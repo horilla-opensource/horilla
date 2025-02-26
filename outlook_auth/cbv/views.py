@@ -3,14 +3,15 @@ outlook_auth/cbv.py
 
 """
 
-from django.http import HttpResponse
 from django.contrib import messages
+from django.http import HttpResponse
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from horilla_views.generic.cbv import views
+from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required, permission_required
-from outlook_auth import models, filters, forms
+from horilla_views.generic.cbv import views
+from outlook_auth import filters, forms, models
 
 
 @method_decorator(login_required, name="dispatch")
@@ -68,6 +69,7 @@ class ServerList(views.HorillaListView):
             style = "width:298px !important"
         """,
     }
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(

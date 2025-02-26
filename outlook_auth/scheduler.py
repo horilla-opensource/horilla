@@ -3,7 +3,9 @@ outlook_auth/scheduler.py
 
 """
 
-import sys, logging
+import logging
+import sys
+
 from apscheduler.schedulers.background import BackgroundScheduler
 
 logger = logging.getLogger(__name__)
@@ -13,8 +15,8 @@ def refresh_outlook_auth_token():
     """
     scheduler method to refresh token
     """
-    from outlook_auth.views import refresh_outlook_token
     from outlook_auth.models import AzureApi
+    from outlook_auth.views import refresh_outlook_token
 
     apis = AzureApi.objects.filter(token__isnull=False)
     for api in apis:
@@ -38,4 +40,3 @@ if not any(
         id="refresh_outlook_auth_token",
     )
     scheduler.start()
-

@@ -130,6 +130,9 @@ if settings.env("GOOGLE_APPLICATION_CREDENTIALS", default=None):
     settings.GS_BUCKET_NAME = GS_BUCKET_NAME
     settings.DEFAULT_FILE_STORAGE = DEFAULT_FILE_STORAGE
 
-if (settings.env("GOOGLE_APPLICATION_CREDENTIALS", default=None) or settings.env("AWS_ACCESS_KEY_ID", default=None)) and "storages" in INSTALLED_APPS:
+if (
+    settings.env("GOOGLE_APPLICATION_CREDENTIALS", default=None)
+    or settings.env("AWS_ACCESS_KEY_ID", default=None)
+) and "storages" in INSTALLED_APPS:
     settings.MEDIA_URL = f"{settings.env('MEDIA_URL')}/{settings.env('NAMESPACE')}/"
     settings.MEDIA_ROOT = f"{settings.env('MEDIA_ROOT')}/{settings.env('NAMESPACE')}/"

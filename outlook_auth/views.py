@@ -2,17 +2,16 @@
 outlook_auth/views.py
 """
 
-from requests_oauthlib import OAuth2Session
 from datetime import datetime
-from django.http import HttpResponseRedirect
-from django.utils.translation import gettext_lazy as _
+
 from django.contrib import messages
-from django.shortcuts import redirect, render
 from django.core.cache import cache
-from horilla.decorators import (
-    login_required,
-    permission_required,
-)
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.utils.translation import gettext_lazy as _
+from requests_oauthlib import OAuth2Session
+
+from horilla.decorators import login_required, permission_required
 from outlook_auth import models
 
 

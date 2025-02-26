@@ -1,13 +1,13 @@
 import logging
-from django.db import models
-from django.db import connection
-from django.core.management.base import BaseCommand
-from django.db.backends.base.schema import BaseDatabaseSchemaEditor
+
 from django.contrib.contenttypes.models import ContentType
+from django.core.management.base import BaseCommand
+from django.db import connection, models
+from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 from simple_history.models import HistoricalRecords
+
 from dynamic_fields.methods import column_exists
 from dynamic_fields.models import DynamicField
-
 
 logger = logging.getLogger(__name__)
 

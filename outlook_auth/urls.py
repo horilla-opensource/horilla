@@ -3,9 +3,9 @@ outlook_auth/urls.py
 """
 
 from django.urls import path
+
 from outlook_auth import views
 from outlook_auth.cbv import views as cbv
-
 
 urlpatterns = [
     path("login/", views.outlook_login, name="outlook_login"),

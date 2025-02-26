@@ -4,8 +4,10 @@ outlook_auth/backeds.py
 
 import base64
 import logging
+
 from django.core.mail import EmailMessage
 from django.core.mail.backends.smtp import EmailBackend
+
 from base.models import EmailLog
 from horilla.horilla_middlewares import _thread_locals
 from outlook_auth import models

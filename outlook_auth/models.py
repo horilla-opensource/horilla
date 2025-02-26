@@ -5,11 +5,10 @@ outlook_auth/models.py
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from base.models import Company
 
+from base.models import Company
 from horilla_views.cbv_methods import render_template
 from outlook_auth.methods import sec_to_hm
-
 
 # Create your models here.
 

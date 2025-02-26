@@ -3,6 +3,7 @@ outlook_auth/filters.py
 """
 
 import django_filters
+
 from outlook_auth import models
 
 

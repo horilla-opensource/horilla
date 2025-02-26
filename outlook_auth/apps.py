@@ -6,7 +6,7 @@ class OutlookAuthConfig(AppConfig):
     name = "outlook_auth"
 
     def ready(self):
-        from horilla.urls import urlpatterns,path,include
+        from horilla.urls import include, path, urlpatterns
 
         urlpatterns.append(
             path("outlook/", include("outlook_auth.urls")),
