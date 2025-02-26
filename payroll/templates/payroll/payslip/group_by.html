@@ -163,7 +163,7 @@
                                           <button type='submit' title="{% trans 'Download' %}" class="oh-btn oh-btn--light-bkg w-100"> <ion-icon name="download"></ion-icon></button>
                                         </form>
                                         {% if perms.payroll.add_payslip %}
-                                          <button hx-confirm="{% trans 'Do you want to sent the payslip by mail?' %}" hx-get="{% url "send-slip" %}?id={{payslip.id}}" hx-target="#payslips-table"
+                                          <button hx-confirm="{% trans 'Do you want to send the payslip by mail?' %}" hx-get="{% url "send-slip" %}?id={{payslip.id}}" hx-target="#payslips-table"
                                                   title="{% trans 'Send via mail' %}" type="button" {% if payslip.sent_to_employee %}class="oh-btn sent-to-employee w-50"{% else %}class="oh-btn oh-btn--light-bkg w-50"{% endif %}>
                                             <ion-icon name="mail-outline"></ion-icon>
                                           </button>
