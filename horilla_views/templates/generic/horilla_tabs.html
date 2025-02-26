@@ -15,10 +15,16 @@
       <li
         class="oh-tabs__tab d-flex {% if forloop.counter == 1 and not active_target %} oh-tabs__tab--active {% endif %}"
         data-target="#{{view_id}}{{forloop.counter}}"
-        hx-get="{{tab.url}}?{{request.GET.urlencode}}"
-        hx-target="#{{view_id}}{{forloop.counter}}"
-        hx-trigger="load"
-        onclick="switchTab(event)"
+        {% comment %} hx-get="{{tab.url}}?{{request.GET.urlencode}}"
+        hx-target="#{{view_id}}{{forloop.counter}}" {% endcomment %}
+        onclick="
+        switchTab(event);
+        if (!this.dataset.processed) {
+            htmx.ajax('GET', '{{tab.url}}?{{request.GET.urlencode}}', {target: '#{{view_id}}{{forloop.counter}}'});
+            this.setAttribute('hx-disable', '[true]');
+            this.dataset.processed = 'true';
+        }
+        "
       >
         {{tab.title}}
         <div class="d-flex">
