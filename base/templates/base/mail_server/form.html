@@ -1,3 +1,19 @@
-<form hx-post="{% url "mail-server-create-update" %}?instance_id={{instance.id}}">
-    {{form.as_p}}
-</form>
+{% load i18n %}
+<div class="oh-modal__dialog-header pb-0">
+    <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+        <h2 class="oh-modal__dialog-title" id="objectCreateModalLabel">
+            {% trans "Mail Server" %}
+        </h2>
+    </span>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close"
+        data-toggle="oh-modal-toggle">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <form hx-post="{{ request.get_full_path }}"
+        hx-target="{% if instance.id %} #objectUpdateModalTarget{% else %} #objectCreateModalTarget {% endif %}"
+        >
+        {{form.as_p}}
+    </form>
+</div>
