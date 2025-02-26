@@ -2253,56 +2253,55 @@ def question_view(request, id):
 @manager_can_enter(perm="pms.change_question")
 def question_update(request, temp_id, q_id):
     """
-    This view is used to  update  question object.
-    Args:
-        id (int): primarykey of question
-        temp_id (int): primarykey of question_template
-    Returns:
-        it will redirect to  question_template_detailed_view.
+    Updates a question object via AJAX request.
 
+    Args:
+        temp_id (int): Primary key of the question template.
+        q_id (int): Primary key of the question.
+
+    Returns:
+        JsonResponse:
+            - {"success": True, "message": "Question updated successfully."} (if update is successful)
+            - {"success": False, "errors": {...}} (if form validation fails)
+            - {"success": False, "message": "Question not found."} (if the question does not exist)
+            - {"success": False, "message": "Invalid request method."} (if method is not POST)
     """
     if request.method == "POST":
-        question = Question.objects.get(id=q_id)
+        try:
+            question = Question.objects.get(id=q_id)
+        except Question.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Question not found."}, status=404)
+
         form = QuestionForm(request.POST, instance=question)
         if form.is_valid():
             question_type = form.cleaned_data["question_type"]
-            if question_type == "4":
-                # if question is Multi-choices
+            
+            if question_type == "4":  # Multi-choice question
                 option_a = form.cleaned_data["option_a"]
                 option_b = form.cleaned_data["option_b"]
                 option_c = form.cleaned_data["option_c"]
                 option_d = form.cleaned_data["option_d"]
-                options, created = QuestionOptions.objects.get_or_create(
-                    question_id=question
-                )
+                
+                options, created = QuestionOptions.objects.get_or_create(question_id=question)
                 options.option_a = option_a
                 options.option_b = option_b
                 options.option_c = option_c
                 options.option_d = option_d
                 options.save()
-                form.save()
-                messages.info(request, _("Question updated successfully."))
-                return redirect(question_template_detailed_view, temp_id)
+
             else:
-                form.save()
                 question_options = QuestionOptions.objects.filter(question_id=question)
-                if question_options:
+                if question_options.exists():
                     question_options.delete()
-                messages.info(request, _("Question updated successfully."))
-                return redirect(question_template_detailed_view, temp_id)
+
+            form.save()
+
+            return JsonResponse({"success": True, "message": "Question updated successfully."})
+
         else:
-            # Form submission had errors
-            messages.error(
-                request,
-                "\n".join(
-                    [
-                        f"{field}: {error}"
-                        for field, errors in form.errors.items()
-                        for error in errors
-                    ]
-                ),
-            )
-            return redirect(question_template_detailed_view, temp_id)
+            return JsonResponse({"success": False, "errors": form.errors}, status=400)
+
+    return JsonResponse({"success": False, "message": "Invalid request method."}, status=405)
 
 
 @login_required
