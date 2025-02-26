@@ -27,27 +27,38 @@
                                         </div>
                                     </div>
                                     <div class="oh-sticky-table__tbody">
-                                        {% for answer in answers %}
-                                        {% for key,value in answer.items %}
-                                            <div class="oh-sticky-table__tr" draggable="true">
-                                                <div class="oh-sticky-table__td">
-                                                    <div class="oh-profile oh-profile--md">
-                                                        <div class="oh-profile__avatar mr-1">
-                                                            <img
-                                                            src="{{key.get_avatar}}"
-                                                            class="oh-profile__image"
-                                                            alt=""
-                                                            />
+                                      {% for answer in answers %}
+                                                {% for key,value in answer.items %}
+                                                    <div class="oh-sticky-table__tr" draggable="true">
+                                                      {% comment %} Employee {% endcomment %}
+                                                        <div class="oh-sticky-table__td">
+                                                            <div class="oh-profile oh-profile--md">
+                                                                <div class="oh-profile__avatar mr-1">
+                                                                    <img
+                                                                    src="{{key.get_avatar}}"
+                                                                    class="oh-profile__image"
+                                                                    alt=""
+                                                                    />
+                                                                </div>
+                                                                    <span class="oh-profile__name oh-text--dark">{{key}}</span>
+                                                              </div>
+                                                          </div>
+                                                          <!-- Answer -->
+                                                          <div class="oh-sticky-table__td">
+                                                              {% if value.1.type == '1' %}
+                                                                  <span class="oh-activity-sidebar__a">{{ value.0.answer}}</span>
+                                                                  {% endif %}
+                                                            {% comment %} Observations {% endcomment %}
+                                                            <div class="oh-sticky-table__td">
+                                                              {% if value.2.justification %}
+                                                                  <span >{{ value.2.justification }}</span>
+                                                              {% else %}
+                                                                  <span class="text-muted">{% trans "No observation provided." %}</span>
+                                                              {% endif %}
+                                                          </div>
                                                         </div>
-                                                            <span class="oh-profile__name oh-text--dark">{{key}}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="oh-sticky-table__td">
-                                                    {% if value.1.type == '1' %}
-                                                        <span class="oh-activity-sidebar__a">{{ value.0.answer}}</span>
-                                                        {% endif %}
-
                                                         {% if value.1.type == '2' %}
+
                                                         <div class="d-block mb-0">
                                                             <div class="oh-rate">
                                                             <input type="radio" id="star5" value="5" disabled {% if value.0.answer == '5' %} checked {% endif %} />

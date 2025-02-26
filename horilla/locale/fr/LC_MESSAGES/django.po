@@ -30217,3 +30217,18 @@ msgstr ""
 
 #~ msgid "Date requested until"
 #~ msgstr "Demandée Date Jusqu'au"
+
+msgid "No observation provided."
+msgstr "Aucune observation fournie."
+
+msgid "Provide an observation or justification:"
+msgstr "Fournissez une observation ou une justification :"
+
+msgid "Explain your choice..."
+msgstr "Expliquez votre choix..."
+
+msgid "No observation available"
+msgstr "Aucune observation disponible."
+
+msgid "Error"
+msgstr "Erreur."

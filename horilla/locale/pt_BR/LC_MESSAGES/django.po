@@ -25608,3 +25608,18 @@ msgstr "Progresso"
 
 #~ msgid "individual"
 #~ msgstr "Creation"
+
+msgid "No observation provided."
+msgstr "Sem observação fornecida."
+
+msgid "Provide an observation or justification:"
+msgstr "Forneça uma observação ou justificativa:"
+
+msgid "Explain your choice..."
+msgstr "Explique sua escolha..."
+
+msgid "No observation available"
+msgstr "Nenhuma observação disponível."
+
+msgid "Error"
+msgstr "Erro."
