@@ -471,7 +471,7 @@ urlpatterns = [
         name="skill-zone-cand-delete",
     ),
     path("get-template/<int:obj_id>/", get_template, name="get-template"),
-    path("get-mail-preview/<int:obj_id>/", get_mail_preview, name="get-mail-preview"),
+    path("get-mail-preview/", get_mail_preview, name="get-mail-preview"),
     path("get-template-hint/", get_template_hint, name="get-template-hint"),
     path(
         "create-candidate-rating/<int:cand_id>/",

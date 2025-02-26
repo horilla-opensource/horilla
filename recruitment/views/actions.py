@@ -443,7 +443,7 @@ def get_template_hint(request, obj_id=None):
 
 
 @login_required
-def get_mail_preview(request, obj_id=None):
+def get_mail_preview(request):
     """
     This method is used to return the mail template
     """

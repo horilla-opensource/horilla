@@ -176,13 +176,13 @@
     });
   });
 
+
   function previewMail(){
-    var id = $('#template').val();
     var body = $('#ack-form-{{cand.id}} [name="body"]').val()
-      if (id.length) {
+    if (body && body.trim() !== '') {
         $.ajax({
           type: "get",
-          url: `/recruitment/get-mail-preview/${id}/`,
+          url: `/recruitment/get-mail-preview/`,
           data: { "candidate_id": "{{cand.id}}", "body":body },
           dataType: "Json",
           success: function (response) {

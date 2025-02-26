@@ -57,6 +57,9 @@
       <textarea hidden data-summernote name="body" required class="oh-input w-100" id="body" cols="30"
         rows="2"></textarea>
     </div>
+    <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
+      {% trans "Hint: Type '{' to get sender or receiver data" %}
+    </div>
     <div class="form-group mt-2">
       <label for="template_attachments">
         <h6>{% trans "Template as Attachment" %}</h6>
@@ -147,23 +150,25 @@
   function previewMail(){
     var id = $('#template').val();
     var body = $('#ack-form-{{employee.id}} [name="body"]').val()
-      if (id.length) {
-        $.ajax({
-          type: "get",
-          url: `/employee/get-mail-preview/${employee.id}/`,
-          data: {"body":body },
-          dataType: "Json",
-          success: function (response) {
-            $('#ack-form-{{employee.id}} [class="note-editable"]').addClass('d-none')
-            $('#previewDiv').html(response.body)
-            $('#previewDiv').removeClass('d-none')
-          }
-        });
-      }
+    if (body && body.trim() !== '') {
+      $.ajax({
+        type: "get",
+        url: "{% url 'get-employee-mail-preview' %}" ,
+        data: {"body":body,"emp_id":{{employee.id}} },
+        dataType: "Json",
+        success: function (response) {
+          $('#ack-form-{{employee.id}} [class="note-editable"]').addClass('d-none')
+          $('#previewDiv').html(response.body)
+          $('#previewDiv').removeClass('d-none')
+        }
+      });
+    }
+
   }
 
   function viewMail(){
     $('.note-editable').removeClass('d-none')
     $('#previewDiv').addClass('d-none')
   }
+  initializeSummernote({{employee.id}},{{ searchWords|safe }});
 </script>
