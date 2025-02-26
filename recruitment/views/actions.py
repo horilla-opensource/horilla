@@ -404,12 +404,51 @@ def get_template(request, obj_id=None):
     """
     This method is used to return the mail template
     """
+    body = ""
     if obj_id:
         body = HorillaMailTemplate.objects.get(id=obj_id).body
         template_bdy = template.Template(body)
     if request.GET.get("word"):
         word = request.GET.get("word")
         template_bdy = template.Template("{{" + word + "}}")
+    candidate_id = request.GET.get("candidate_id")
+    if candidate_id:
+        candidate_obj = Candidate.objects.get(id=candidate_id)
+        context = template.Context(
+            {"instance": candidate_obj, "self": request.user.employee_get}
+        )
+        # body = template_bdy.render(context) or " "
+    return JsonResponse({"body": body})
+
+
+@login_required
+def get_template_hint(request, obj_id=None):
+    """
+    This method is used to return the mail template
+    """
+    if obj_id:
+        body = HorillaMailTemplate.objects.get(id=obj_id).body
+        template_bdy = template.Template(body)
+    if request.GET.get("word"):
+        word = request.GET.get("word")
+        template_bdy = template.Template("{{" + word + "}}")
+    candidate_id = request.GET.get("candidate_id")
+    if candidate_id:
+        candidate_obj = Candidate.objects.get(id=candidate_id)
+        context = template.Context(
+            {"instance": candidate_obj, "self": request.user.employee_get}
+        )
+        body = template_bdy.render(context) or " "
+    return JsonResponse({"body": body})
+
+
+@login_required
+def get_mail_preview(request, obj_id=None):
+    """
+    This method is used to return the mail template
+    """
+    body = request.GET.get("body")
+    template_bdy = template.Template(body)
     candidate_id = request.GET.get("candidate_id")
     if candidate_id:
         candidate_obj = Candidate.objects.get(id=candidate_id)

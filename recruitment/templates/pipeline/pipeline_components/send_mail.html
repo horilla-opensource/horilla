@@ -156,6 +156,9 @@
     }
   };
   $(document).ready(function () {
+    $(".note-dropzone").after('<button id="viewButton" background: #fefefe; border: solid #bfbaba 1px; border-radius: 10px; margin: 5px 2px 2px 2px; onclick="event.preventDefault();viewMail()">View</button>');
+    $("#viewButton").after('<button id="previewButton" background: #fefefe; border: solid #bfbaba 1px; border-radius: 10px; margin: 5px 2px 2px 2px; onclick="event.preventDefault();previewMail()">Preview</button>');
+    $('.note-toolbar').after('<div class = "note-editable d-none" id ="previewDiv"> </div>')
     $("#template").change(function (e) {
       var id = $(this).val();
       if (id.length) {
@@ -172,6 +175,29 @@
       }
     });
   });
+
+  function previewMail(){
+    var id = $('#template').val();
+    var body = $('#ack-form-{{cand.id}} [name="body"]').val()
+      if (id.length) {
+        $.ajax({
+          type: "get",
+          url: `/recruitment/get-mail-preview/${id}/`,
+          data: { "candidate_id": "{{cand.id}}", "body":body },
+          dataType: "Json",
+          success: function (response) {
+            $('#ack-form-{{cand.id}} [class="note-editable"]').addClass('d-none')
+            $('#previewDiv').html(response.body)
+            $('#previewDiv').removeClass('d-none')
+          }
+        });
+      }
+  }
+
+  function viewMail(){
+    $('.note-editable').removeClass('d-none')
+    $('#previewDiv').addClass('d-none')
+  }
 </script>
 <script>
 
