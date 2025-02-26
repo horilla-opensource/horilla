@@ -23,7 +23,7 @@
     $("#{{view_id}}Form [name={{field_tuple.0}}]").val({{form.initial|get_item:field_tuple.0|safe}}).change()
   </script>
 
-  <form 
+  <form
     hidden
     id="modalButton{{field_tuple.0}}Form"
     hx-get="/dynamic-path-{{field_tuple.0}}-{{request.session.session_key}}?dynamic_field={{field_tuple.0}}"
@@ -50,7 +50,7 @@
     </button>
   </form>
   <script class="dynamic_{{field_tuple.0}}_scripts">
-    $("#{{view_id}}Form [name={{field_tuple.0}}]").change(function (e) { 
+    $("#{{view_id}}Form [name={{field_tuple.0}}]").change(function (e) {
       values = $(this).val();
       if (!values) {
         values = ""
@@ -70,12 +70,11 @@
         $("#reload-field{{field_tuple.0}}{{view_id}}").find('input[name=dynamic_initial]').val(values)
       }
     });
-    $("#reload-field{{field_tuple.0}}{{view_id}}").submit(function (e) { 
+    $("#reload-field{{field_tuple.0}}{{view_id}}").submit(function (e) {
       e.preventDefault();
-      $(this).find("[name=dynamic_initial]").val();    
+      $(this).find("[name=dynamic_initial]").val();
     });
   </script>
   </div>
   {% endfor %}
 </div>
-

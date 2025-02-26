@@ -1971,9 +1971,7 @@ def send_acknowledgement(request):
     candidates = Candidate.objects.filter(id__in=candidate_ids)
 
     other_attachments = request.FILES.getlist("other_attachments")
-    attachments = [
-        (file.name, file.read(), file.content_type) for file in other_attachments
-    ]
+
     if candidate_id:
         candidate_obj = Candidate.objects.filter(id=candidate_id)
     else:
@@ -1982,6 +1980,9 @@ def send_acknowledgement(request):
 
     template_attachment_ids = request.POST.getlist("template_attachments")
     for candidate in candidates:
+        attachments = [
+            (file.name, file.read(), file.content_type) for file in other_attachments
+        ]
         bodys = list(
             HorillaMailTemplate.objects.filter(
                 id__in=template_attachment_ids

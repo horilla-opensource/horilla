@@ -577,9 +577,6 @@ form label {
     transform: translate(-50%, -50%);
 }
 
-
-
-
 .justification-container,
 .containerAnswerJust {
     margin-top: 20px;
@@ -631,3 +628,4 @@ form label {
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
     outline: none;
 }
+

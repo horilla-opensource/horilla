@@ -110,16 +110,25 @@
 													>
 												{% endif %}
 											</div>
+											{% if perms.base.view_dynamicemailconfiguration and not "outlook_auth"|app_installed %}
 											<div class="oh-input-group">
-												{% if perms.base.view_dynamicemailconfiguration %}
-													<a
-														id="date"
-														href="{% url 'mail-server-conf' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Mail Server" %}</a
-													>
-												{% endif %}
+												<a
+													id="date"
+													href="{% url 'mail-server-conf' %}"
+													class="oh-inner-sidebar__link oh-dropdown__link"
+													>{% trans "Mail Server" %}</a
+												>
 											</div>
+											{% else %}
+											<div class="oh-input-group">
+													<a
+													id="date"
+													href="{% url 'outlook_view_records' %}"
+													class="oh-inner-sidebar__link oh-dropdown__link"
+													>{% trans "Outlook Mail" %}</a
+												>
+											</div>
+										{% endif %}
 											<div class="oh-input-group">
 												{% if perms.horilla_backup.view_googledrivebackup %}
 													<a

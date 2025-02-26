@@ -16,6 +16,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 from base.backends import ConfiguredEmailBackend
+from base.forms import MailTemplateForm
 from base.methods import export_data, generate_pdf
 from base.models import HorillaMailTemplate
 from employee.filters import EmployeeFilter
@@ -83,12 +84,16 @@ def send_mail(request, emp_id=None):
     if emp_id:
         employee = Employee.objects.get(id=emp_id)
     employees = Employee.objects.all()
-
     templates = HorillaMailTemplate.objects.all()
     return render(
         request,
         "employee/send_mail.html",
-        {"employee": employee, "templates": templates, "employees": employees},
+        {
+            "employee": employee,
+            "templates": templates,
+            "employees": employees,
+            "searchWords": MailTemplateForm().get_employee_template_language(),
+        },
     )
 
 
@@ -168,15 +173,23 @@ def get_template(request, emp_id):
     This method is used to return the mail template
     """
     body = HorillaMailTemplate.objects.get(id=emp_id).body
-    instance_id = request.GET.get("instance_id")
-    if instance_id:
-        instance = Employee.objects.get(id=instance_id)
-        template_bdy = template.Template(body)
-        context = template.Context(
-            {"instance": instance, "self": request.user.employee_get}
-        )
-        body = template_bdy.render(context)
+    return JsonResponse({"body": body})
 
+
+@login_required
+def get_mail_preview(request):
+    """
+    This method is used to return the mail template
+    """
+    body = request.GET.get("body")
+    template_bdy = template.Template(body)
+    emp_id = request.GET.get("emp_id")
+    if emp_id:
+        employee = Employee.objects.get(id=emp_id)
+        context = template.Context(
+            {"instance": employee, "self": request.user.employee_get}
+        )
+        body = template_bdy.render(context) or " "
     return JsonResponse({"body": body})
 
 
