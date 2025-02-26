@@ -43,7 +43,7 @@
       <label for="template">
         <h6>{% trans "Template" %}</h6>
       </label>
-      <select name="template" class="w-100 oh-select" id="template">
+      <select name="template" class="w-100 oh-select" id="template" onchange="templateChange($(this))">
         <option value="">----</option>
         {% for template in templates %}
         <option value="{{template.id}}">{{template.title}}</option>
@@ -121,23 +121,49 @@
   };
 
   $(document).ready(function () {
-    $("#template").change(function (e) {
-      var id = $(this).val();
-      if (id.length) {
-        $.ajax({
-          type: "get",
-          url: `/employee/get-template/${id}/`,
-          data: { "instance_id": "{{employee.id}}" },
-          dataType: "Json",
-          success: function (response) {
-            $('#ack-form-{{employee.id}} [name="body"]').html(response.body).change()
-            $('#ack-form-{{employee.id}} [class="note-editable"]').html(response.body)
-          }
-        });
-      }
-    });
+    $(".note-dropzone").after('<button id="viewButton" background: #fefefe; border: solid #bfbaba 1px; border-radius: 10px; margin: 5px 2px 2px 2px; onclick="event.preventDefault();viewMail()">View</button>');
+    $("#viewButton").after('<button id="previewButton" background: #fefefe; border: solid #bfbaba 1px; border-radius: 10px; margin: 5px 2px 2px 2px; onclick="event.preventDefault();previewMail()">Preview</button>');
+    $('.note-toolbar').after('<div class = "note-editable d-none" id ="previewDiv"> </div>')
+
     var selectedIds = JSON.parse($("#selectedInstances").attr("data-ids"));
     $("#employees[name=employees]select[multiple]").val(selectedIds).change()
 
   });
+  function templateChange(e) {
+    var id = e.val();
+    if (id.length) {
+      $.ajax({
+        type: "get",
+        url: `/employee/get-template/${id}/`,
+        data: { "instance_id": "{{employee.id}}" },
+        dataType: "Json",
+        success: function (response) {
+          $('#ack-form-{{employee.id}} [name="body"]').html(response.body).change()
+          $('#ack-form-{{employee.id}} [class="note-editable"]').html(response.body)
+        }
+      });
+    }
+  };
+  function previewMail(){
+    var id = $('#template').val();
+    var body = $('#ack-form-{{employee.id}} [name="body"]').val()
+      if (id.length) {
+        $.ajax({
+          type: "get",
+          url: `/employee/get-mail-preview/${employee.id}/`,
+          data: {"body":body },
+          dataType: "Json",
+          success: function (response) {
+            $('#ack-form-{{employee.id}} [class="note-editable"]').addClass('d-none')
+            $('#previewDiv').html(response.body)
+            $('#previewDiv').removeClass('d-none')
+          }
+        });
+      }
+  }
+
+  function viewMail(){
+    $('.note-editable').removeClass('d-none')
+    $('#previewDiv').addClass('d-none')
+  }
 </script>

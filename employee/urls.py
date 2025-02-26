@@ -259,6 +259,11 @@ urlpatterns = [
         not_in_out_dashboard.get_template,
         name="get-template-employee",
     ),
+    path(
+        "get-mail-preview/<int:emp_id>/",
+        not_in_out_dashboard.get_mail_preview,
+        name="get-mail-preview",
+    ),
     path("view-policies/", policies.view_policies, name="view-policies"),
     path("search-policies", policies.search_policies, name="search-policies"),
     path("create-policy", policies.create_policy, name="create-policy"),

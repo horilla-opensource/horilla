@@ -168,15 +168,23 @@ def get_template(request, emp_id):
     This method is used to return the mail template
     """
     body = HorillaMailTemplate.objects.get(id=emp_id).body
-    instance_id = request.GET.get("instance_id")
-    if instance_id:
-        instance = Employee.objects.get(id=instance_id)
-        template_bdy = template.Template(body)
-        context = template.Context(
-            {"instance": instance, "self": request.user.employee_get}
-        )
-        body = template_bdy.render(context)
+    return JsonResponse({"body": body})
 
+
+@login_required
+def get_mail_preview(request, emp_id=None):
+    """
+    This method is used to return the mail template
+    """
+    body = request.GET.get("body")
+    template_bdy = template.Template(body)
+    # candidate_id = request.GET.get("candidate_id")
+    if emp_id:
+        employee = Employee.objects.get(id=emp_id)
+        context = template.Context(
+            {"instance": employee, "self": request.user.employee_get}
+        )
+        body = template_bdy.render(context) or " "
     return JsonResponse({"body": body})
 
 
