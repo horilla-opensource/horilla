@@ -179,7 +179,6 @@ class Employee(models.Model):
         """
         work_info = getattr(self, "employee_work_info", None)
         work_email = getattr(work_info, "email", None)
-        
         return work_email if work_email is not None else self.email
 
     def get_email(self):

@@ -22807,7 +22807,7 @@ msgstr "تصدير كشوف المرتبات"
 #: .\payroll\templates\payroll\payslip\group_payslips.html:122
 #: .\payroll\templates\payroll\payslip\individual_payslip.html:19
 #: .\payroll\templates\payroll\payslip\payslip_table.html:170
-msgid "Do you want to sent the payslip by mail?"
+msgid "Do you want to send the payslip by mail?"
 msgstr ""
 
 #: .\payroll\templates\payroll\payslip\group_by.html:167

@@ -56,45 +56,45 @@
             </div>
           </div>
           {% endif %}
-          {% if q.question_type == '4' %}  <!--  question type Multi-choices-->
-            <span class="oh-label oh-label--question">{{forloop.counter}}. {{q.question}}</span>
-          {% for option in options %}  <!-- looping multi-choice options -->
-          {% if option.question_id.id == q.id %}
-          <div class="d-block">
-            <div class="oh-questions mt-2">
-              <div class="oh-questions__answer" style="display: inline-block; margin-right: 10px;">
-                <div class="oh-radio" style="display: inline-block; margin-right: 5px;">
-                  <input type="radio" class="oh-radio" id="answer1" name="answer{{q.id}}" value="{{option.option_a}}" />
-                  <span class="oh-radio__checkmark"></span>
-                  <label class="oh-label" for="answer1">{{option.option_a}}</label>
+          {% if q.question_type == '4' %}  <!--  question type Multi-choices -->
+          <span class="oh-label oh-label--question">{{ forloop.counter }}. {{ q.question }}</span>
+          {% for option in options %}  <!-- Looping multi-choice options -->
+              {% if option.question_id.id == q.id %}
+              <div class="d-block">
+                <div class="oh-questions mt-2">
+                    <div class="oh-questions__answer" style="display: inline-block; margin-right: 10px;">
+                        <label class="custom-radio-container">
+                            <input type="radio" name="answer{{ q.id }}" value="{{ option.option_a }}" />
+                            <span class="custom-radio-checkmark"></span>
+                            {{ option.option_a }}
+                        </label>
+                    </div>
+                    <div class="oh-questions__answer" style="display: inline-block; margin-right: 10px;">
+                        <label class="custom-radio-container">
+                            <input type="radio" name="answer{{ q.id }}" value="{{ option.option_b }}" />
+                            <span class="custom-radio-checkmark"></span>
+                            {{ option.option_b }}
+                        </label>
+                    </div>
+                    <div class="oh-questions__answer" style="display: inline-block; margin-right: 10px;">
+                        <label class="custom-radio-container">
+                            <input type="radio" name="answer{{ q.id }}" value="{{ option.option_c }}" />
+                            <span class="custom-radio-checkmark"></span>
+                            {{ option.option_c }}
+                        </label>
+                    </div>
+                    <div class="oh-questions__answer" style="display: inline-block; margin-right: 10px;">
+                        <label class="custom-radio-container">
+                            <input type="radio" name="answer{{ q.id }}" value="{{ option.option_d }}" />
+                            <span class="custom-radio-checkmark"></span>
+                            {{ option.option_d }}
+                        </label>
+                    </div>
                 </div>
-              </div>
-              <div class="oh-questions__answer" style="display: inline-block; margin-right: 10px;">
-                <div class="oh-radio" style="display: inline-block; margin-right: 5px;">
-                  <input type="radio" class="oh-radio__input" id="answer2" name="answer{{q.id}}" value="{{option.option_b}}" />
-                  <span class="oh-radio__checkmark"></span>
-                  <label class="oh-label" for="answer2">{{option.option_b}}</label>
-                </div>
-              </div>
-              <div class="oh-questions__answer" style="display: inline-block; margin-right: 10px;">
-                <div class="oh-radio" style="display: inline-block; margin-right: 5px;">
-                  <input type="radio" class="oh-radio__input" id="answer3" name="answer{{q.id}}" value="{{option.option_c}}" />
-                  <span class="oh-radio__checkmark"></span>
-                  <label class="oh-label" for="answer3">{{option.option_c}}</label>
-                </div>
-              </div>
-              <div class="oh-questions__answer" style="display: inline-block; margin-right: 10px;">
-                <div class="oh-radio" style="display: inline-block; margin-right: 5px;">
-                  <input type="radio" class="oh-radio__input" id="answer4" name="answer{{q.id}}" value="{{option.option_d}}" />
-                  <span class="oh-radio__checkmark"></span>
-                  <label class="oh-label" for="answer4">{{option.option_d}}</label>
-                </div>
-              </div>
             </div>
-          </div>
-          {% endif %}
+              {% endif %}
           {% endfor %}
-          {% endif %}
+      {% endif %}
           {% if q.question_type == '5' %} <!--  question type Likert-->
           <div class="d-block">
             <span class="oh-label oh-label--question">{{forloop.counter}}. {{q.question}}</span>

@@ -1,0 +1,17 @@
+{% load i18n %}
+{% if messages %}
+    <span hx-get="{% url 'question-template-hx-view' %}" hx-trigger="load" hx-target="#questionTemplateList"
+        hx-on-htmx-after-request="setTimeout(() => {$('.oh-modal__close').click();}, 250);"></span>
+{% endif %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="addObjectModalLabel">{% trans "Question Template" %}</span>
+    <button type="button" class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <form hx-post="{{request.get_full_path}}"
+        hx-target="{% if form.instance.id %}#objectUpdateModalTarget{% else %}#objectCreateModalTarget{% endif %}">
+        {% csrf_token %} {{form.as_p}}
+    </form>
+</div>
