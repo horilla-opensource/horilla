@@ -22,9 +22,8 @@ INSTALLED_APPS.append("offboarding")
 INSTALLED_APPS.append("project")
 INSTALLED_APPS.append("horilla_backup")
 
-if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" not in INSTALLED_APPS:
+if settings.AWS_ACCESS_KEY_ID and "storages" not in INSTALLED_APPS:
     INSTALLED_APPS.append("storages")
-
 
 AUDITLOG_INCLUDE_ALL_MODELS = True
 

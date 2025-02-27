@@ -1,0 +1,8 @@
+Dockerfile*
+docker-compose*
+staticfiles
+docker.md
+.git*
+.pre-commit-config.y*
+*.md
+LICENSE

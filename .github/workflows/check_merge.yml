@@ -1,0 +1,29 @@
+name: Check Merge
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  check_dockerfile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Horilla dev
+        run: |
+          docker build .
+
+  check_dockerfile_dev:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build Horilla prod
+      run: |
+        docker build -f Dockerfile.dev .

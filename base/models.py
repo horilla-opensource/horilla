@@ -5,7 +5,7 @@ This module is used to register django models
 """
 
 import ipaddress
-from datetime import datetime
+from datetime import datetime,date
 
 import django
 from django.apps import apps

@@ -10,7 +10,7 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from horilla import settings
-from horilla.settings import BASE_DIR, TEMPLATES
+from horilla.settings import BASE_DIR, TEMPLATES, LOGIN_URL
 
 logger = logging.getLogger(__name__)
 
@@ -224,7 +224,7 @@ def login_required(view_func):
         if path == "" or path == "/":
             request.session["title"] = "Dashboard".upper()
         if not request.user.is_authenticated:
-            login_url = reverse("login")
+            login_url = LOGIN_URL
             params = urlencode(request.GET)
             url = f"{login_url}?next={request.path}"
             if params:

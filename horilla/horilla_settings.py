@@ -9,10 +9,7 @@ DB_INIT_PASSWORD: str
 The password used for database setup and initialization. This password is a
 48-character alphanumeric string generated using a UUID to ensure high entropy and security.
 """
-DB_INIT_PASSWORD = settings.env(
-    "DB_INIT_PASSWORD", default="d3f6a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d"
-)
-
+DB_INIT_PASSWORD = settings.DB_INIT_PASSWORD
 
 HORILLA_DATE_FORMATS = {
     "DD/MM/YY": "%d/%m/%y",
@@ -107,23 +104,3 @@ NO_PERMISSION_MODALS = [
     "resume",
     "recruitmentmailtemplate",
 ]
-
-if settings.env("AWS_ACCESS_KEY_ID", default=None):
-    AWS_ACCESS_KEY_ID = settings.env("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = settings.env("AWS_SECRET_ACCESS_KEY")
-    AWS_STORAGE_BUCKET_NAME = settings.env("AWS_STORAGE_BUCKET_NAME")
-    AWS_S3_REGION_NAME = settings.env("AWS_S3_REGION_NAME")
-    DEFAULT_FILE_STORAGE = settings.env("DEFAULT_FILE_STORAGE")
-    AWS_S3_ADDRESSING_STYLE = settings.env("AWS_S3_ADDRESSING_STYLE")
-
-    settings.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
-    settings.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
-    settings.AWS_STORAGE_BUCKET_NAME = AWS_STORAGE_BUCKET_NAME
-    settings.AWS_S3_REGION_NAME = AWS_S3_REGION_NAME
-    settings.DEFAULT_FILE_STORAGE = DEFAULT_FILE_STORAGE
-    settings.AWS_S3_ADDRESSING_STYLE = AWS_S3_ADDRESSING_STYLE
-
-
-if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" in INSTALLED_APPS:
-    settings.MEDIA_URL = f"{settings.env('MEDIA_URL')}/{settings.env('NAMESPACE')}/"
-    settings.MEDIA_ROOT = f"{settings.env('MEDIA_ROOT')}/{settings.env('NAMESPACE')}/"

@@ -1,39 +1,26 @@
-name: Deploy Horilla
+name: Build and Push Horilla
 
 on:
-  workflow_dispatch:
-
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - '*'
+  push:
+    branches: [master]
 
 
 jobs:
   deploy:
-    environment: dev
+
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up SSH key
+      - name: Install Heroku CLI # <- IMPORTANT!!! Make sure the cli is installed before using the action
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          curl https://cli-assets.heroku.com/install.sh | sh
 
-      - name: Transfer code
-        run: |
-          rsync -avz --rsync-path="sudo -u root rsync" --exclude-from=.rsync_ignore . plane_vm@${{ secrets.SSH_HOST }}:~/data/horilla/
-      
-      - name: Build and run horilla
-        run: |
-          ssh -i ~/.ssh/id_rsa plane_vm@${{ secrets.SSH_HOST }} << 'EOF'
-          cd ~/data/horilla
-          docker compose -f docker-compose-prod build 
-          docker compose -f docker-compose-dev.yml up -d
-          EOF
+      - uses: akhileshns/heroku-deploy@v3.14.15 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
+          usedocker: true

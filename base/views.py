@@ -797,7 +797,7 @@ def logout_user(request):
         <script>
             localStorage.clear();
         </script>
-        <meta http-equiv="refresh" content="0;url=/login">
+        <meta http-equiv="refresh" content="0;url=https://www.keitaro.com">
     """
 
     return response

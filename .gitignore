@@ -148,3 +148,5 @@ whoosh_index/
 
 #VSCode
 .vscode/
+
+.env.app.prod

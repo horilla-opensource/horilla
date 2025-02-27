@@ -137,7 +137,7 @@ country_arr = [
     "Lithuania",
     "Luxembourg",
     "Macau",
-    "Macedonia, Former Yugoslav Republic of",
+    "Macedonia",
     "Madagascar",
     "Malawi",
     "Malaysia",

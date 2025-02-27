@@ -1,24 +1,33 @@
-FROM python:3.13.1-slim
+# Builder stage for docker image to build python reqs
+FROM python:3.12.9-slim AS builder
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
-    python3-dev \
-    curl
-
-WORKDIR /app/
+WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install -r requirements.txt
+RUN pip wheel --wheel-dir=/wheels --no-cache-dir -r requirements.txt
+
+# Main Docker Image
+FROM python:3.12.9-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+
+COPY --from=builder /wheels /wheels
+COPY --from=builder /app /app
+
+RUN pip install --no-index --find-links=/wheels -r requirements.txt && \
+    rm -rf /wheels
 
 COPY . .
 
-RUN chmod +x /app/entrypoint.sh
-
 EXPOSE 8000
 
-CMD ["python3", "manage.py", "runserver"]
+CMD ["gunicorn", "horilla.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2", "--access-logfile", "-", "--error-logfile", "-"]

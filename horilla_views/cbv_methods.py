@@ -156,7 +156,7 @@ def login_required(view_func):
         if path == "" or path == "/":
             request.session["title"] = "Dashboard".upper()
         if not request.user.is_authenticated:
-            login_url = reverse("login")
+            login_url = settings.LOGIN_URL
             params = urlencode(request.GET)
             url = f"{login_url}?next={request.path}"
             if params:

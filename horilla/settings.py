@@ -13,8 +13,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from os.path import join
 from pathlib import Path
+from urllib.parse import urlparse
 
-import environ
 from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,28 +23,59 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-env = environ.Env(
-    DEBUG=(bool, True),
-    SECRET_KEY=(
-        str,
-        "django-insecure-j8op9)1q8$1&0^s&p*_0%d#pr@w9qj@1o=3#@d=a(^@9@zd@%j",
-    ),
-    ALLOWED_HOSTS=(list, ["*"]),
-    CSRF_TRUSTED_ORIGINS=(list, ["http://localhost:8000"]),
-)
+# General settings
+DEBUG=os.getenv("DEBUG", "false")
+SECRET_KEY=os.getenv("SECRET_KEY", "django-insecure-j8op9)1q8$1&0^s&p*_0%d#pr@w9qj@1o=3#@d=a(^@9@zd@%j")
+ALLOWED_HOSTS=(os.getenv("ALLOWED_HOSTS", "*")).split()
+CSRF_TRUSTED_ORIGINS=(os.getenv("CSRF_TRUSTED_ORIGINS", "http://localhost:8000")).split()
+TIME_ZONE=os.getenv("TIME_ZONE", "Europe/Stockholm")
 
-env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
+# Database credentials
+DATABASE_URL=os.getenv("DATABASE_URL", "postgres://horilla:password@localhost:5432/horilla_main")
+DB_INIT_PASSWORD=os.getenv("DB_INIT_PASSWORD", "d3f6a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d")
+DATABASES = {
+    "default": {
+        "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.postgresql"),
+        "NAME": urlparse(DATABASE_URL).path[1:],
+        "USER": urlparse(DATABASE_URL).username,
+        "PASSWORD": urlparse(DATABASE_URL).password,
+        "HOST": urlparse(DATABASE_URL).hostname,
+        "PORT": urlparse(DATABASE_URL).port,
+    }
+}
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY")
+# Google authentication settings
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': os.getenv("GOOGLE_OAUTH_CLIENT_ID", "client_id"),
+            'secret': os.getenv("GOOGLE_OAUTH_SECRET", "secret"),
+        },
+        'SCOPE': ['openid', 'email', 'profile'],
+        'AUTH_PARAMS': {'access_type': 'offline', 'prompt': 'select_account',},
+    }
+}
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
+# Storage configuration
+STORAGES = {
+    "default": {
+        "BACKEND": os.getenv("STORAGE_BACKEND", "django.core.files.storage.FileSystemStorage"),
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"
+    },
+}
 
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+# Aws settings
+AWS_ACCESS_KEY_ID=os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY=os.getenv("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME=os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_REGION_NAME=os.getenv("AWS_S3_REGION_NAME")
+AWS_S3_ADDRESSING_STYLE=os.getenv("AWS_S3_ADDRESSING_STYLE")
+NAMESPACE=os.getenv("NAMESPACE", "private")
+
 
 # Application definition
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -74,10 +105,9 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google"
 ]
+
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
-
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -116,32 +146,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "horilla.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-if env("DATABASE_URL", default=None):
-    DATABASES = {
-        "default": env.db(),
-    }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": env("DB_ENGINE", default="django.db.backends.sqlite3"),
-            "NAME": env(
-                "DB_NAME",
-                default=os.path.join(
-                    BASE_DIR,
-                    "TestDB_Horilla.sqlite3",
-                ),
-            ),
-            "USER": env("DB_USER", default=""),
-            "PASSWORD": env("DB_PASSWORD", default=""),
-            "HOST": env("DB_HOST", default=""),
-            "PORT": env("DB_PORT", default=""),
-        }
-    }
-
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -160,7 +164,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
@@ -171,15 +174,12 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
-
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 MESSAGE_TAGS = {
     messages.DEBUG: "oh-alert--warning",
@@ -189,23 +189,9 @@ MESSAGE_TAGS = {
     messages.ERROR: "oh-alert--danger",
 }
 
-
-CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
-
-LOGIN_URL = "/login"
+LOGIN_URL = os.getenv("LOGIN_URL", "/login")
 
 SITE_ID = 1
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id': 'client_id',
-            'secret': 'secret',
-        },
-        'SCOPE': ['openid', 'email', 'profile'],
-        'AUTH_PARAMS': {'access_type': 'offline', 'prompt': 'select_account',},
-    }
-}
 
 SOCIALACCOUNT_ADAPTER = "horilla.social_adapter.SocialAccountAdapter"
 
@@ -217,7 +203,6 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SIMPLE_HISTORY_REVERT_DISABLED = True
-
 
 DJANGO_NOTIFICATIONS_CONFIG = {
     "USE_JSONFIELD": True,
@@ -243,13 +228,10 @@ LOCALE_PATHS = [
     join(BASE_DIR, "horilla", "locale"),
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = env("TIME_ZONE", default="Asia/Kolkata")
 
 USE_I18N = True
 

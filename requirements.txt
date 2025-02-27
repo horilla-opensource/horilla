@@ -23,6 +23,7 @@ django-mathfilters
 django-model-utils
 django-simple-history
 django-widget-tweaks
+django-storages[s3]
 djangorestframework
 djangorestframework-simplejwt
 drf-yasg

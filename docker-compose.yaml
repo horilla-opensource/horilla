@@ -2,20 +2,26 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: rebuild
+          path: .
     ports:
       - "127.0.0.1:8000:8000"
     restart: unless-stopped
     env_file:
       - .env.app.local
-    command: ./entrypoint.sh
+    volumes:
+      - static-files:/app/staticfiles
+      - media-files:/app/media
     depends_on:
       db:
         condition: service_healthy
         required: true
       migrations:
         condition: service_completed_successfully
-        required: false
+        required: true
     healthcheck:
       test: ["CMD", "curl", "http://127.0.0.1:8000"]
       interval: 20s
@@ -26,24 +32,27 @@ services:
   nginx:
     image: nginx:alpine
     container_name: nginx
-    profiles:
-      - local
     ports:
       - "80:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d
+      - static-files:/app/staticfiles
     depends_on:
       - app
 
   db:
     image: postgres:17.2
-    env_file:
-      - .env.db.local
+    environment:                                                                                                                                                                    
+       POSTGRES_DB: horilla
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "127.0.0.1:5432:5432"
+      - "5432:5432"
     restart: unless-stopped
     volumes:
-      - horilla-data:/var/lib/postgresql/data
+      - horilla-data:/var/lib/postgresql/pgdata
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
@@ -55,15 +64,59 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: rebuild
+          path: .
     depends_on:
       db:
         condition: service_healthy
         required: true
-    profiles:
-      - migrate
     env_file:
       - .env.app.local
     entrypoint: ["/app/run_migrations.sh"]
 
+  create_staticfiles:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+      migrations:
+        condition: service_completed_successfully
+        required: true
+    volumes:
+      - static-files:/app/staticfiles
+    env_file:
+      - .env.app.local
+    entrypoint: ["/app/create_staticfiles.sh"]
+    
+  create_admin_user:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - action: rebuild
+          path: create_admin_user.sh
+    depends_on:
+      db:
+        condition: service_healthy
+        required: true
+      migrations:
+        condition: service_completed_successfully
+        required: true
+    env_file:
+      - .env.app.local
+    entrypoint: ["/app/create_admin_user.sh"]
+
 volumes:
   horilla-data:
+  static-files:
+  media-files:
