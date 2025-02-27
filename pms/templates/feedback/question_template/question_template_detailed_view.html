@@ -4,26 +4,17 @@
 {% load basefilters %}
 {% block content %}
 
-<!--start of messages -->
 
-<!-- end of messages -->
-
-
-<style>
-    #id_question_template_error{
-
-    }
-</style>
 <div class="oh-wrapper">
     <div id="questionView" style="overflow-y: auto; overflow-x: hidden; max-height: 450px; margin-top: 50px; border:1px solid hsl(213,22%,84%);">
 
         {% include 'feedback/question/question_all.html' %}
 
     </div>
-    <!--  -->
+
     <div>
     {% if perms.pms.add_question or request.user|filtersubordinates %}
-        <form action="{% url 'question-creation' id=question_template.id %}"  method="post">
+        <form action="{% url 'question-creation' id=question_template.id %}" id = "question_create_form" method="post">
             {% csrf_token %}
             <div class="row my-4">
                 <div class="col-12 col-sm-12 col-md-12 col-lg-12">
@@ -105,13 +96,13 @@
             </div>
         </form>
     {% endif %}
-</div>
+    </div>
 
 </div>
 
 <script>
 $(document).ready(function () {
-    $('form').on('submit',function(e){
+    $('#question_create_form').on('submit',function(e){
     e.preventDefault()
     var questionValue = $("#questionCreationFormCol #id_question").val()
 
