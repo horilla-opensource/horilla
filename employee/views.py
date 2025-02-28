@@ -1353,11 +1353,11 @@ def employee_view_update(request, obj_id, **kwargs):
         work_info_history = True
 
     employee = Employee.objects.filter(id=obj_id).first()
-    all_employees = Employee.objects.get_all()
+    all_employees = Employee.objects.entire()
     emp = all_employees.filter(id=obj_id).first()
     if employee is None:
         employee = emp
-        all_work_info = EmployeeWorkInformation.objects.get_all()
+        all_work_info = EmployeeWorkInformation.objects.entire()
         cmpny = Company.objects.get(id=company)
         work = all_work_info.filter(employee_id=employee).first()
         if company != "all":
