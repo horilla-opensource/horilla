@@ -100,6 +100,7 @@ class HorillaListView(ListView):
     verbose_name: str = ""
     bulk_update_fields: list = []
     bulk_template: str = "generic/bulk_form.html"
+    records_count_in_tab: bool = True
 
     header_attrs: dict = {}
 
@@ -197,6 +198,7 @@ class HorillaListView(ListView):
                 f"""
                 <script id="{script_id}">
                     $("#{script_id}").closest(".oh-modal--show").removeClass("oh-modal--show");
+                    $("#{self.selected_instances_key_id}").attr("data-ids", "[]");
                     $(".reload-record").click()
                     $("#reloadMessagesButton").click()
                 </script>
@@ -321,6 +323,7 @@ class HorillaListView(ListView):
         context["model_name"] = self.verbose_name
         context["export_fields"] = self.export_fields
         context["custom_empty_template"] = self.custom_empty_template
+        context["records_count_in_tab"] = self.records_count_in_tab
         referrer = self.request.GET.get("referrer", "")
         if referrer:
             # Remove the protocol and domain part
