@@ -27,6 +27,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import F, ProtectedError
 from django.db.models.query import QuerySet
@@ -3173,48 +3174,57 @@ def bonus_points_tab(request, emp_id):
 
     """
     employee_obj = Employee.objects.get(id=emp_id)
-    points = BonusPoint.objects.get(employee_id=emp_id)
-    if apps.is_installed("payroll"):
-        Reimbursement = get_horilla_model_class(
-            app_label="payroll", model="reimbursement"
-        )
-        requested_bonus_points = Reimbursement.objects.filter(
-            employee_id=emp_id, type="bonus_encashment", status="requested"
-        )
-    else:
-        requested_bonus_points = QuerySet().none()
-    trackings = points.tracking()
-    activity_list = []
-    for history in trackings:
-        activity_list.append(
-            {
-                "type": history["type"],
-                "date": history["pair"][0].history_date,
-                "points": history["pair"][0].points - history["pair"][1].points,
-                "user": getattr(
-                    User.objects.filter(id=history["pair"][0].history_user_id).first(),
-                    "employee_get",
-                    None,
-                ),
-                "reason": history["pair"][0].reason,
-            }
-        )
-    for requested in requested_bonus_points:
-        activity_list.append(
-            {
-                "type": "requested",
-                "date": requested.created_at,
-                "points": requested.bonus_to_encash,
-                "user": employee_obj.employee_user_id,
-                "reason": "Redeemed points",
-            }
-        )
-    activity_list = sorted(activity_list, key=lambda x: x["date"], reverse=True)
-    context = {
-        "employee": employee_obj,
-        "points": points,
-        "activity_list": activity_list,
-    }
+    try:
+        points = BonusPoint.objects.get(employee_id=emp_id)
+        if apps.is_installed("payroll"):
+            Reimbursement = get_horilla_model_class(
+                app_label="payroll", model="reimbursement"
+            )
+            requested_bonus_points = Reimbursement.objects.filter(
+                employee_id=emp_id, type="bonus_encashment", status="requested"
+            )
+        else:
+            requested_bonus_points = QuerySet().none()
+        trackings = points.tracking()
+        activity_list = []
+        for history in trackings:
+            activity_list.append(
+                {
+                    "type": history["type"],
+                    "date": history["pair"][0].history_date,
+                    "points": history["pair"][0].points - history["pair"][1].points,
+                    "user": getattr(
+                        User.objects.filter(
+                            id=history["pair"][0].history_user_id
+                        ).first(),
+                        "employee_get",
+                        None,
+                    ),
+                    "reason": history["pair"][0].reason,
+                }
+            )
+        for requested in requested_bonus_points:
+            activity_list.append(
+                {
+                    "type": "requested",
+                    "date": requested.created_at,
+                    "points": requested.bonus_to_encash,
+                    "user": employee_obj.employee_user_id,
+                    "reason": "Redeemed points",
+                }
+            )
+        activity_list = sorted(activity_list, key=lambda x: x["date"], reverse=True)
+        context = {
+            "employee": employee_obj,
+            "points": points,
+            "activity_list": activity_list,
+        }
+    except ObjectDoesNotExist:
+        context = {
+            "employee": employee_obj,
+            "points": None,
+            "activity_list": [],
+        }
     return render(
         request,
         "tabs/bonus_points.html",
@@ -3531,13 +3541,16 @@ def employee_get_mail_log(request):
     employee_id = request.GET["emp_id"]
     employee = Employee.objects.get(id=employee_id)
     tracked_mails = EmailLog.objects.filter(to__icontains=employee.email)
-    if employee.employee_work_info and employee.employee_work_info.email:
-        tracked_mails = tracked_mails | EmailLog.objects.filter(
-            to__icontains=employee.employee_work_info.email
-        )
-    tracked_mails = tracked_mails.order_by("-created_at")
+    try:
+        if employee.employee_work_info and employee.employee_work_info.email:
+            tracked_mails = tracked_mails | EmailLog.objects.filter(
+                to__icontains=employee.employee_work_info.email
+            )
+        tracked_mails = tracked_mails.order_by("-created_at")
 
-    return render(request, "tabs/mail_log.html", {"tracked_mails": tracked_mails})
+        return render(request, "tabs/mail_log.html", {"tracked_mails": tracked_mails})
+    except ObjectDoesNotExist:
+        return render(request, "tabs/mail_log.html", {"tracked_mails": []})
 
 
 @login_required
