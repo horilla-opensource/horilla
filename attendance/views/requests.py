@@ -427,6 +427,7 @@ def validate_attendance_request(request, attendance_id):
         other_dict = first_dict
         first_dict = empty_data
     else:
+        print(attendance.requested_data)
         other_dict = json.loads(attendance.requested_data)
     requests_ids_json = request.GET.get("requests_ids")
     previous_instance_id = next_instance_id = attendance.pk
