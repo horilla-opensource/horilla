@@ -6763,11 +6763,9 @@ def get_upcoming_holidays(request):
     Retrieve and display a list of upcoming holidays for the current month and year.
     """
     today = timezone.localdate()
-    current_month = today.month
     current_year = today.year
     holidays = Holidays.objects.filter(
-        Q(start_date__month=current_month, start_date__year=current_year)
-        & Q(start_date__gte=today)
+        start_date__year=current_year, start_date__gte=today
     )
     colors = generate_colors(len(holidays))
     for i, holiday in enumerate(holidays):

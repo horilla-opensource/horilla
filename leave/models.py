@@ -2,24 +2,19 @@ import calendar
 import logging
 import math
 import operator
-import threading
 from datetime import date, datetime, timedelta
 
 from dateutil.relativedelta import relativedelta
 from django.apps import apps
-from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db import models
-from django.db.models import Q
-from django.db.models.signals import post_save, pre_save
-from django.dispatch import receiver
+from django.db.models import Q, Sum
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
-from base.methods import get_date_range
 from base.models import (
     Company,
     CompanyLeaves,
@@ -31,12 +26,10 @@ from base.models import (
 )
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import horilla_middlewares
-from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.methods import calculate_requested_days
-from leave.threading import LeaveClashThread
 
 logger = logging.getLogger(__name__)
 
@@ -339,9 +332,6 @@ class CompanyLeave(HorillaModel):
 
     def __str__(self):
         return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
-
-
-from django.db.models import Sum
 
 
 class AvailableLeave(HorillaModel):
@@ -1242,93 +1232,94 @@ if apps.is_installed("attendance"):
         Class to override Attendance model save method
         """
 
+        pass
         # Additional fields and methods specific to AnotherModel
-        @receiver(pre_save, sender=LeaveRequest)
-        def leaverequest_pre_save(sender, instance, **_kwargs):
-            """
-            Overriding LeaveRequest model save method
-            """
-            WorkRecords = get_horilla_model_class(
-                app_label="attendance", model="workrecords"
-            )
-            if (
-                instance.start_date == instance.end_date
-                and instance.end_date_breakdown != instance.start_date_breakdown
-            ):
-                instance.end_date_breakdown = instance.start_date_breakdown
-                super(LeaveRequest, instance).save()
+        # @receiver(pre_save, sender=LeaveRequest)
+        # def leaverequest_pre_save(sender, instance, **_kwargs):
+        #     """
+        #     Overriding LeaveRequest model save method
+        #     """
+        #     WorkRecords = get_horilla_model_class(
+        #         app_label="attendance", model="workrecords"
+        #     )
+        #     if (
+        #         instance.start_date == instance.end_date
+        #         and instance.end_date_breakdown != instance.start_date_breakdown
+        #     ):
+        #         instance.end_date_breakdown = instance.start_date_breakdown
+        #         super(LeaveRequest, instance).save()
 
-            period_dates = get_date_range(instance.start_date, instance.end_date)
-            if instance.status == "approved":
-                for date in period_dates:
-                    try:
-                        work_entry = (
-                            WorkRecords.objects.filter(
-                                date=date,
-                                employee_id=instance.employee_id,
-                            )
-                            if WorkRecords.objects.filter(
-                                date=date,
-                                employee_id=instance.employee_id,
-                            ).exists()
-                            else WorkRecords()
-                        )
-                        work_entry.employee_id = instance.employee_id
-                        work_entry.is_leave_record = True
-                        work_entry.day_percentage = (
-                            0.50
-                            if instance.start_date == date
-                            and instance.start_date_breakdown == "first_half"
-                            or instance.end_date == date
-                            and instance.end_date_breakdown == "second_half"
-                            else 0.00
-                        )
-                        status = (
-                            "CONF"
-                            if instance.start_date == date
-                            and instance.start_date_breakdown == "first_half"
-                            or instance.end_date == date
-                            and instance.end_date_breakdown == "second_half"
-                            else "ABS"
-                        )
-                        work_entry.work_record_type = status
-                        work_entry.date = date
-                        work_entry.message = (
-                            "Absent"
-                            if status == "ABS"
-                            else _("Half day Attendance need to validate")
-                        )
-                        work_entry.save()
-                    except:
-                        pass
+        #     period_dates = get_date_range(instance.start_date, instance.end_date)
+        #     if instance.status == "approved":
+        #         for date in period_dates:
+        #             try:
+        #                 work_entry = (
+        #                     WorkRecords.objects.filter(
+        #                         date=date,
+        #                         employee_id=instance.employee_id,
+        #                     )
+        #                     if WorkRecords.objects.filter(
+        #                         date=date,
+        #                         employee_id=instance.employee_id,
+        #                     ).exists()
+        #                     else WorkRecords()
+        #                 )
+        #                 work_entry.employee_id = instance.employee_id
+        #                 work_entry.is_leave_record = True
+        #                 work_entry.day_percentage = (
+        #                     0.50
+        #                     if instance.start_date == date
+        #                     and instance.start_date_breakdown == "first_half"
+        #                     or instance.end_date == date
+        #                     and instance.end_date_breakdown == "second_half"
+        #                     else 0.00
+        #                 )
+        #                 status = (
+        #                     "CONF"
+        #                     if instance.start_date == date
+        #                     and instance.start_date_breakdown == "first_half"
+        #                     or instance.end_date == date
+        #                     and instance.end_date_breakdown == "second_half"
+        #                     else "ABS"
+        #                 )
+        #                 work_entry.work_record_type = status
+        #                 work_entry.date = date
+        #                 work_entry.message = (
+        #                     "Absent"
+        #                     if status == "ABS"
+        #                     else _("Half day Attendance need to validate")
+        #                 )
+        #                 work_entry.save()
+        #             except:
+        #                 pass
 
-            else:
-                for date in period_dates:
-                    WorkRecords.objects.filter(
-                        is_leave_record=True,
-                        date=date,
-                        employee_id=instance.employee_id,
-                    ).delete()
+        #     else:
+        #         for date in period_dates:
+        #             WorkRecords.objects.filter(
+        #                 is_leave_record=True,
+        #                 date=date,
+        #                 employee_id=instance.employee_id,
+        #             ).delete()
 
 
-@receiver(post_save, sender=LeaveRequest)
-def update_available(sender, instance, **kwargs):
-    """
-    post save method to update the available leaves
-    """
+# @receiver(post_save, sender=LeaveRequest)
+# def update_available(sender, instance, **kwargs):
+#     """
+#     post save method to update the available leaves
+#     """
 
-    _sender = sender
+#     _sender = sender
 
-    def update_leaves():
-        try:
-            if instance.leave_type_id:
-                available_leaves = instance.employee_id.available_leave.filter(
-                    leave_type_id=instance.leave_type_id
-                )
-                for assigned in available_leaves:
-                    assigned.save()
-        except Exception as e:
-            pass
+#     def update_leaves():
+#         try:
+#             if instance.leave_type_id:
+#                 available_leaves = instance.employee_id.available_leave.filter(
+#                     leave_type_id=instance.leave_type_id
+#                 )
+#                 for assigned in available_leaves:
+#                     assigned.save()
+#         except Exception as e:
+#             pass
 
-    thread = threading.Thread(target=update_leaves)
-    thread.start()
+#     thread = threading.Thread(target=update_leaves)
+#     thread.start()

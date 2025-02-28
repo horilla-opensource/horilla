@@ -283,6 +283,7 @@
   <script>
     reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
     reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+    {% if records_count_in_tab %}
     var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
     var badge = $(`#badge-${tabId}`);
     var count = "{{queryset.paginator.count}}";
@@ -290,6 +291,7 @@
     var title = count + " " + label;
     badge.html(count);
     badge.attr("title", title);
+    {% endif %}
   </script>
   {% if bulk_select_option %}
   <script>

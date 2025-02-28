@@ -14,14 +14,11 @@ from django.contrib import messages
 from django.contrib.auth.models import AbstractUser, User
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
-from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
@@ -1791,55 +1788,6 @@ class NotificationSound(models.Model):
         Employee, on_delete=models.CASCADE, related_name="notification_sound"
     )
     sound_enabled = models.BooleanField(default=False)
-
-
-@receiver(post_save, sender=PenaltyAccounts)
-def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
-    """
-    This is post save method, used to create deduction and cut availabl leave days"""
-    # only work when creating
-    if created:
-        penalty_amount = instance.penalty_amount
-        if apps.is_installed("payroll") and penalty_amount:
-            Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
-            penalty = Deduction()
-            if instance.late_early_id:
-                penalty.title = f"{instance.late_early_id.get_type_display()} penalty"
-                penalty.one_time_date = (
-                    instance.late_early_id.attendance_id.attendance_date
-                )
-            elif instance.leave_request_id:
-                penalty.title = f"Leave penalty {instance.leave_request_id.end_date}"
-                penalty.one_time_date = instance.leave_request_id.end_date
-            else:
-                penalty.title = f"Penalty on {datetime.today()}"
-                penalty.one_time_date = datetime.today()
-            penalty.include_active_employees = False
-            penalty.is_fixed = True
-            penalty.amount = instance.penalty_amount
-            penalty.only_show_under_employee = True
-            penalty.save()
-            penalty.include_active_employees = False
-            penalty.specific_employees.add(instance.employee_id)
-            penalty.save()
-
-        if (
-            apps.is_installed("leave")
-            and instance.leave_type_id
-            and instance.minus_leaves
-        ):
-            available = instance.employee_id.available_leave.filter(
-                leave_type_id=instance.leave_type_id
-            ).first()
-            unit = round(instance.minus_leaves * 2) / 2
-            if not instance.deduct_from_carry_forward:
-                available.available_days = max(0, (available.available_days - unit))
-            else:
-                available.carryforward_days = max(
-                    0, (available.carryforward_days - unit)
-                )
-
-            available.save()
 
 
 User.add_to_class("is_new_employee", models.BooleanField(default=False))
