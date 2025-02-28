@@ -447,7 +447,7 @@ def get_mail_preview(request):
     """
     This method is used to return the mail template preview as an HTTP response.
     """
-    body = request.GET.get("body")
+    body = request.POST.get("body")
     candidate_id = request.GET.get("candidate_id")
 
     if not body:

@@ -1,7 +1,8 @@
 {% load i18n %}
-<button hidden id="previewHxButton" hx-get="{% url 'get-mail-preview' %}?candidate_id={{cand.id}}" hx-target="#preview"
+<button hidden id="previewHxButton" hx-post="{% url 'get-mail-preview' %}?candidate_id={{cand.id}}" hx-target="#preview"
     hx-include="#writeField"
-    hx-on-htmx-before-request="if (!$('#template').val()) { event.preventDefault(); }"></button>
+    hx-on-htmx-before-request="if (!$('#template').val()) { event.preventDefault(); }">
+</button>
 <div id="ack-message-{{cand.id}}"></div>
 
 <div class="oh-modal__dialog-header">
