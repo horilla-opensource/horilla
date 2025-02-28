@@ -1212,6 +1212,7 @@ class HorillaProfileView(DetailView):
         self.toggle_form = ToggleColumnForm(
             self.tabs_list,
             hidden_tabs,
+            hidden_fields=[],
         )
         for column in self.tabs_list:
             if column[1] in hidden_tabs:

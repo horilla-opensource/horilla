@@ -3,115 +3,107 @@
 {% load basefilters %}
 {% load i18n %}
 <div class="row">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12">
-            <div class="oh-card p-4" x-data="{showQuestions: true}">
-                  <div class="oh-card__header mb-0 ">
-                        <a href="#" class="oh-link oh-link--secondary" x-show="showQuestions"
-                              @click="showQuestions = false" style="margin-left: 19px;">
-                              <ion-icon class="me-2" name="eye-off-outline"></ion-icon>
-                              {% trans "Hide Questions" %}
-                        </a>
-                        <a href="#" class="oh-link oh-link--secondary" x-show="!showQuestions"
-                              @click="showQuestions = true" style="margin-left: 19px;" >
-                              <ion-icon class="me-2" name="eye-outline"></ion-icon>
-                              {% trans "Show Questions" %}
-                        </a>
-                  </div>
-
-                  <div class="oh-card__body" x-show="showQuestions">
-                        <!--  start of all question formset  -->
-                        <div class="row d-flex justify-content-between align-items-center">
-                              {% for form in form_list %}
-                              <form action="{% url 'question-update' temp_id=question_template.id q_id=form.instance.id %}"
-                                    method="post">
-                                    {% csrf_token %}
-                                    <!-- looping formset to individual form  -->
-                                    <div class="oh-item oh-item--border-bottom oh-section-edit position-relative"
-                                          id="questionParent{{form.instance.id}}">
-                                          <div class="row">
-                                                <div class="col-sm-12 col-md-12 col-lg-3">
-
-                                                      <label class="oh-label text-muted fw-bold fw-bold">{% trans "Question Type" %}
-                                                            </label>
-                                                            {% render_field form.question_type disabled='disabled' %}
-
-                                                </div>
-
-                                                <div class="col-sm-12 col-md-12 col-lg-9">
-                                                      <label class="oh-label text-muted fw-bold" for="id_question">{% trans "Question" %}</label>
-                                                      {% render_field form.question disabled='disabled' %}
-                                                </div>
-                                                <div x-data="{showAnswers: true}" class="oh-link__expanded d-none">
-                                                      <a href="#" class="oh-link oh-link--secondary mt-3"
-                                                            @click="showAnswers = !showAnswers" x-show="!showAnswers">
-                                                            {% trans "Show Options" %}
-                                                            <ion-icon class="ms-1" name="caret-down-outline"></ion-icon>
-                                                      </a>
-                                                      <a href="#" class="oh-link oh-link--secondary mt-3"
-                                                            @click="showAnswers = !showAnswers" x-show="showAnswers">
-                                                            {% trans "Hide Options" %}
-                                                            <ion-icon class="ms-1" name="caret-up-outline"></ion-icon>
-                                                      </a>
-                                                      <div class="mt-3" x-show="showAnswers">
-                                                            <div class="row">
-                                                                  <div class="col-12 col-sm-12 col-md-6 col-lg-3">
-                                                                        <label
-                                                                              class="oh-label d-block text-muted fw-bold" for="id_option_a">{% trans "Option" %}
-                                                                              1</label>
-                                                                        {% render_field form.option_a disabled='disabled' %}
-                                                                  </div>
-                                                                  <div class="col-12 col-sm-12 col-md-6 col-lg-3">
-                                                                        <label
-                                                                              class="oh-label d-block text-muted fw-bold" for="id_option_b">{% trans "Option" %}
-                                                                              2</label>
-                                                                        {% render_field form.option_b disabled='disabled' %}
-                                                                  </div>
-                                                                  <div class="col-12 col-sm-12 col-md-6 col-lg-3">
-                                                                        <label
-                                                                              class="oh-label d-block text-muted fw-bold" for="id_option_c">{% trans "Option" %}
-                                                                              3</label>
-                                                                        {% render_field form.option_c disabled='disabled' %}
-                                                                  </div>
-                                                                  <div class="col-12 col-sm-12 col-md-6 col-lg-3">
-                                                                        <label
-                                                                              class="oh-label d-block text-muted fw-bold" for="id_option_d">{% trans "Option" %}
-                                                                              4</label>
-                                                                        {% render_field form.option_d disabled='disabled' %}
-                                                                  </div>
-                                                            </div>
-                                                      </div>
-                                                </div>
-                                          </div>
-                                          {% if perms.pms.change_question or request.user|filtersubordinates %}
-                                                <a href="#"
-                                                class="oh-btn oh-btn--light oh-btn--section-edit position-absolute"
-                                                role="button" style="top: 25px; right: 15px;"
-                                                data-target=".oh-section-edit">
-                                                <ion-icon name="create-outline" class="me-2"></ion-icon>
-                                                {% trans "Edit" %}
-                                                </a>
-                                          {% endif %}
-                                          <div class="oh-list__actions d-none">
-                                                <!-- delete object form  -->
-                                                {% csrf_token %}
-                                                {% if perms.pms.delete_question or request.user|filtersubordinates %}
-                                                      <a type="submit" href="{% url 'question-delete' id=form.instance.id %}"
-                                                            class="float-end oh-btn oh-btn--danger-link  deleteRow" onclick="return confirm('{% trans "Do you want to delete the question?" %}')">{% trans "Delete" %}</a>
-                                                {% endif %}
-                                                <a href="#"
-                                                      class="oh-btn oh-btn--light me-2 oh-section-edit--cancel">{% trans "Cancel" %}</a>
-
-                                                <button type="submit" class="oh-btn oh-btn--secondary d-inline-flex me-2"
-                                                      data-id-save="updateQuestion">{% trans "Save" %}</button>
-                                          </div>
-                                    </div>
-                              </form>
-                              {% endfor %}
-                        </div>
-                  </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="oh-card p-4" x-data="{showQuestions: true}">
+            <div class="oh-card__header mb-0 ">
+                <a href="#" class="oh-link oh-link--secondary" x-show="showQuestions" @click="showQuestions = false"
+                    style="margin-left: 19px;">
+                    <ion-icon class="me-2" name="eye-off-outline"></ion-icon>
+                    {% trans "Hide Questions" %}
+                </a>
+                <a href="#" class="oh-link oh-link--secondary" x-show="!showQuestions" @click="showQuestions = true"
+                    style="margin-left: 19px;">
+                    <ion-icon class="me-2" name="eye-outline"></ion-icon>
+                    {% trans "Show Questions" %}
+                </a>
             </div>
-      </div>
+
+            <div class="oh-card__body" x-show="showQuestions">
+                <!--  start of all question formset  -->
+                <div class="row d-flex justify-content-between align-items-center">
+                    {% for form in form_list %}
+                        <form action="{% url 'question-update' temp_id=question_template.id q_id=form.instance.id %}"
+                            method="post" id="pmsQuestion{{form.instance.id}}">
+                            {% csrf_token %}
+                            <!-- looping formset to individual form  -->
+                            <div class="oh-item oh-item--border-bottom oh-section-edit position-relative"
+                                id="questionParent{{form.instance.id}}">
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-3">
+
+                                        <label class="oh-label text-muted fw-bold fw-bold">{% trans "Question Type" %}
+                                        </label>
+                                        {% render_field form.question_type disabled='disabled' %}
+
+                                    </div>
+
+                                    <div class="col-sm-12 col-md-12 col-lg-9">
+                                        <label class="oh-label text-muted fw-bold" for="id_question">{% trans "Question" %}</label>
+                                        {% render_field form.question disabled='disabled' %}
+                                    </div>
+                                    <div x-data="{showAnswers: true}" class="oh-link__expanded d-none">
+                                        <a href="#" class="oh-link oh-link--secondary mt-3"
+                                            @click="showAnswers = !showAnswers" x-show="!showAnswers">
+                                            {% trans "Show Options" %}
+                                            <ion-icon class="ms-1" name="caret-down-outline"></ion-icon>
+                                        </a>
+                                        <a href="#" class="oh-link oh-link--secondary mt-3"
+                                            @click="showAnswers = !showAnswers" x-show="showAnswers">
+                                            {% trans "Hide Options" %}
+                                            <ion-icon class="ms-1" name="caret-up-outline"></ion-icon>
+                                        </a>
+                                        <div class="mt-3" x-show="showAnswers">
+                                            <div class="row">
+                                                <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+                                                    <label class="oh-label d-block text-muted fw-bold" for="id_option_a">{% trans "Option" %} 1</label>
+                                                    {% render_field form.option_a disabled='disabled' %}
+                                                </div>
+                                                <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+                                                    <label class="oh-label d-block text-muted fw-bold" for="id_option_b">{% trans "Option" %} 2</label>
+                                                    {% render_field form.option_b disabled='disabled' %}
+                                                </div>
+                                                <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+                                                    <label class="oh-label d-block text-muted fw-bold" for="id_option_c">{% trans "Option" %} 3</label>
+                                                    {% render_field form.option_c disabled='disabled' %}
+                                                </div>
+                                                <div class="col-12 col-sm-12 col-md-6 col-lg-3">
+                                                    <label class="oh-label d-block text-muted fw-bold" for="id_option_d">{% trans "Option" %} 4</label>
+                                                    {% render_field form.option_d disabled='disabled' %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if perms.pms.change_question or request.user|filtersubordinates %}
+                                    <a href="#" class="oh-btn oh-btn--light oh-btn--section-edit position-absolute"
+                                        role="button" style="top: 25px; right: 15px;" data-target=".oh-section-edit">
+                                        <ion-icon name="create-outline" class="me-2"></ion-icon>
+                                        {% trans "Edit" %}
+                                    </a>
+                                {% endif %}
+                                <div class="oh-list__actions d-none">
+                                    <!-- delete object form  -->
+                                    {% csrf_token %}
+                                    {% if perms.pms.delete_question or request.user|filtersubordinates %}
+                                        <a hx-confirm="{% trans 'Do you want to delete the question?' %}"
+                                            hx-post="{% url 'question-delete' id=form.instance.id %}"
+                                            hx-target="#pmsQuestion{{form.instance.id}}"
+                                            hx-swap="outerHTML"
+                                            class="float-end oh-btn oh-btn--danger-link  deleteRow"
+                                            >{% trans "Delete" %}
+                                        </a>
+                                    {% endif %}
+                                    <a href="#" class="oh-btn oh-btn--light me-2 oh-section-edit--cancel">{% trans "Cancel" %}</a>
+                                    <button type="submit" class="oh-btn oh-btn--secondary d-inline-flex me-2"
+                                        data-id-save="updateQuestion">{% trans "Save" %}
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-
 <!-- end of  new section with individual form -->

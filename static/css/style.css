@@ -532,8 +532,6 @@ form label {
     }
 }
 
-/* Checkbox classes safe radios */
-
 .custom-radio-container input[type="radio"] {
     position: absolute;
     opacity: 0;

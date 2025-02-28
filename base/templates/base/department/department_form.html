@@ -8,7 +8,7 @@
 	</button>
 </div>
 <div class="oh-modal__dialog-body">
-	<form hx-post="{{ request.get_full_path }}" class="oh-profile-section">
+	<form hx-post="{{ request.get_full_path }}" hx-target="{% if department.id %}#objectUpdateModalTarget{% else %}#objectCreateModalTarget{% endif %}" class="oh-profile-section">
 		{% csrf_token %} {{form.non_field_errors}} {{form.as_p}}
 		<div class="oh-modal__dialog-footer p-0 mt-3">
 			<button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
