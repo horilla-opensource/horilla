@@ -515,14 +515,14 @@ def calculate_pre_tax_deduction(*_args, **kwargs):
         include_active_employees=True, is_pretax=True, is_tax=False
     ).exclude(exclude_employees=employee)
 
-    deductions = specific_deductions | conditional_deduction | active_employee_deduction
+    deductions = (specific_deductions | conditional_deduction | active_employee_deduction).distinct()
     deductions = (
         deductions.exclude(one_time_date__lt=start_date)
         .exclude(one_time_date__gt=end_date)
         .exclude(update_compensation__isnull=False)
     )
     # Installment deductions
-    installments = deductions.filter(is_installment=True)
+    installments = deductions.filter(is_installment=True).distinct()
 
     pre_tax_deductions = []
     pre_tax_deductions_amt = []
@@ -622,14 +622,14 @@ def calculate_post_tax_deduction(*_args, **kwargs):
     active_employee_deduction = models.Deduction.objects.filter(
         include_active_employees=True, is_pretax=False, is_tax=False
     ).exclude(exclude_employees=employee)
-    deductions = specific_deductions | conditional_deduction | active_employee_deduction
+    deductions = (specific_deductions | conditional_deduction | active_employee_deduction).distinct()
     deductions = (
         deductions.exclude(one_time_date__lt=start_date)
         .exclude(one_time_date__gt=end_date)
         .exclude(update_compensation__isnull=False)
     )
     # Installment deductions
-    installments = deductions.filter(is_installment=True)
+    installments = deductions.filter(is_installment=True).distinct()
 
     post_tax_deductions = []
     post_tax_deductions_amt = []
