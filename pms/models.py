@@ -687,7 +687,9 @@ class AnonymousFeedback(models.Model):
 class Answer(models.Model):
     """feedback answer model"""
 
-    answer = models.JSONField(max_length=200, null=True, blank=True)
+    answer = models.JSONField(null=True, blank=True)
+    justification = models.TextField(null=True, blank=True)  # New field for Observations
+
     question_id = models.ForeignKey(
         Question,
         on_delete=models.DO_NOTHING,
