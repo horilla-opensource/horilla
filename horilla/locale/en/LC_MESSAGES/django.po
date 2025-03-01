@@ -27038,3 +27038,19 @@ msgstr ""
 
 #~ msgid "individual"
 #~ msgstr "Creation"
+
+msgid "No observation provided."
+msgstr "No observation provided."
+
+msgid "Provide an observation or justification:"
+msgstr "Provide an observation or justification:"
+
+msgid "Explain your choice..."
+msgstr "Explain your choice..."
+
+msgid "No observation available"
+msgstr "No observation available."
+
+msgid "Error"
+msgstr "Error."
+

@@ -27356,3 +27356,20 @@ msgstr ""
 
 #~ msgid "Search in : Job Role"
 #~ msgstr "البحث في : الدور الوظيفي"
+
+msgid "No observation provided."
+msgstr "لم يتم تقديم ملاحظة."
+
+msgid "Provide an observation or justification:"
+msgstr "يرجى تقديم ملاحظة أو مبرر:"
+
+msgid "Explain your choice..."
+msgstr "اشرح اختيارك..."
+
+msgid "No observation available"
+msgstr "لا توجد ملاحظة متاحة."
+
+msgid "Error"
+msgstr "خطأ."
+
+
