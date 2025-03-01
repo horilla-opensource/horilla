@@ -191,6 +191,25 @@ class EmployeeForm(ModelForm):
         context = {"form": self}
         return render_to_string("employee/create_form/personal_info_as_p.html", context)
 
+    def clean(self):
+        super().clean()
+        email = self.cleaned_data["email"]
+        all_employees = Employee.objects.entire()
+        exit_employee = all_employees.filter(email=email).first()
+
+        if exit_employee:
+            company_id = getattr(
+                getattr(exit_employee, "employee_work_info", None), "company_id", None
+            )
+            if company_id:
+                error_message = _(
+                    "Employee with this Email already exists in company {}"
+                ).format(company_id)
+            else:
+                error_message = _(f"Employee with this Email already exists")
+
+            raise forms.ValidationError({"email": error_message})
+
     def get_next_badge_id(self):
         """
         This method is used to generate badge id
@@ -248,7 +267,7 @@ class EmployeeForm(ModelForm):
         """
         badge_id = self.cleaned_data["badge_id"]
         if badge_id:
-            all_employees = Employee.objects.get_all()
+            all_employees = Employee.objects.entire()
             queryset = all_employees.filter(badge_id=badge_id).exclude(
                 pk=self.instance.pk if self.instance else None
             )
@@ -663,7 +682,7 @@ class BonusPointRedeemForm(ModelForm):
         available_points = BonusPoint.objects.filter(
             employee_id=self.instance.employee_id
         ).first()
-        if available_points.points < cleaned_data["points"]:
+        if not available_points or available_points.points < cleaned_data["points"]:
             raise forms.ValidationError({"points": "Not enough bonus points to redeem"})
         if cleaned_data["points"] <= 0:
             raise forms.ValidationError(

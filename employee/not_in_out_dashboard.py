@@ -207,9 +207,6 @@ def send_mail_to_employee(request):
     employees = Employee.objects.filter(id__in=employee_ids)
 
     other_attachments = request.FILES.getlist("other_attachments")
-    attachments = [
-        (file.name, file.read(), file.content_type) for file in other_attachments
-    ]
 
     if employee_id:
         employee_obj = Employee.objects.filter(id=employee_id)
@@ -224,6 +221,9 @@ def send_mail_to_employee(request):
                 id__in=template_attachment_ids
             ).values_list("body", flat=True)
         )
+        attachments = [
+            (file.name, file.read(), file.content_type) for file in other_attachments
+        ]
         for html in bodys:
             # due to not having solid template we first need to pass the context
             template_bdy = template.Template(html)

@@ -1,18 +1,38 @@
-{% load i18n %} {% load attendancefilters %} {% include "filter_tags.html" %}
+{% load i18n %}
+{% load attendancefilters %}
+{% include "filter_tags.html" %}
 <div class="d-flex justify-content-between m-2 ms-0">
     <div class="d-flex justify-content-between">
-        <button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#exportRecords" onclick="window.location.href = `{% url 'work-record-export' %}?month={{leave_dates.0.month}}&year={{leave_dates.0.year}}&{{request.POST.urlencode}}`">
-            <ion-icon name="download-outline" class="mr-1 md hydrated" role="img" aria-label="download"></ion-icon>{% trans "Export" %}
+        <button
+            class="oh-btn oh-btn--secondary"
+            data-toggle="oh-modal-toggle"
+            data-target="#exportRecords"
+            onclick="
+                window.location.href = `{% url 'work-record-export' %}?month={{leave_dates.0.month}}&
+                year={{leave_dates.0.year}}&
+                {{request.POST.urlencode}}`
+            "
+        >
+            <ion-icon
+                name="download-outline"
+                class="mr-1 md hydrated"
+                role="img"
+                aria-label="download"
+            ></ion-icon>
+            {% trans "Export" %}
         </button>
-        <div class="oh-dropdown" x-data="{open: false}">
+
+        <div class="oh-dropdown" x-data="{ open: false }">
             <button
                 class="oh-btn ml-2"
                 @click="open = !open"
                 onclick="event.preventDefault()"
             >
-                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                <ion-icon name="filter" class="mr-1"></ion-icon>
+                {% trans "Filter" %}
                 <div id="filterCount"></div>
             </button>
+
             <div
                 class="oh-dropdown__menu oh-dropdown__filter p-4"
                 x-show="open"
@@ -36,102 +56,150 @@
             </div>
         </div>
     </div>
+
     <div class="d-flex flex-row-reverse m-2">
-        <span class="" style="margin-left: 10px;">
-            <span class="oh-dot oh-dot--small me-1" style="background-color:#ed4c4c"></span>
+        <span class="" style="margin-left: 10px">
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: #ed4c4c"
+            ></span>
             {% trans "Conflict" %}
         </span>
-        <span class="me-3" style="margin-left: 10px;">
-            <span class="oh-dot oh-dot--small me-1" style="background-color:#a8b1ff"></span>
-            {% trans "Expected Working" %}
-        </span>
-        <span class="me-3" style="margin-left: 10px;">
-            <span class="oh-dot oh-dot--small me-1" style="background-color:#808080"></span>
+        <span class="me-3" style="margin-left: 10px">
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: #a8b1ff"
+            ></span>
             {% trans "Absent" %}
         </span>
-        <span class="me-3" style="margin-left: 10px;">
-            <span class="oh-dot oh-dot--small me-1" style="background-color:#c65d0f"></span>
+        <span class="me-3" style="margin-left: 10px">
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: #808080"
+            ></span>
+            {% trans "Leave" %}
+        </span>
+        <span class="me-3" style="margin-left: 10px">
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: #c65d0f"
+            ></span>
             {% trans "On leave, But attendance exist" %}
         </span>
-        <span class="me-3" style="margin-left: 10px;">
-            <span class="oh-dot oh-dot--small me-1" style="background-color:#dfdf52"></span>
+        <span class="me-3" style="margin-left: 10px">
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: #dfdf52"
+            ></span>
             {% trans "Half Day Present" %}
         </span>
-        <span class="me-3" style="margin-left: 10px;">
-            <span class="oh-dot oh-dot--small me-1" style="background-color:#38c338"></span>
+        <span class="me-3" style="margin-left: 10px">
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: #38c338"
+            ></span>
             {% trans "Present" %}
         </span>
     </div>
 </div>
+
 <div class="oh-sticky-table">
     <table>
         <thead>
             <tr>
-                <th class="oh-sticky-table__th header">{% trans "Employee" %}</th>
+                <th class="oh-sticky-table__th header">
+                    {% trans "Employee" %}
+                </th>
                 {% for day in current_month_dates_list %}
-                <th class="oh-sticky-table__th {% if day in leave_dates %}holiday {% else %}header{% endif %}">{{ day.day }}</th>
+                    <th
+                        class="oh-sticky-table__th
+                        {% if day in leave_dates %}holiday {% else %}header{% endif %}"
+                    >
+                        {{ day.day }}
+                    </th>
                 {% endfor %}
             </tr>
         </thead>
-        {% for employee_data in data %}
-        <tr>
-            <td style="width:12%"><a style="text-decoration:none;" href ="{% url 'employee-view-individual' employee_data.employee.id %}">{{ employee_data.employee }}</a></td>
 
-            {% for date in current_month_dates_list %}
-                {% with work_record=employee_data.work_record|get_item:forloop.counter0 %}
-
-                <td class="days {% if date in leave_dates %}holiday{% endif %}"
-                style="text-align:center; cursor:default;
-                    {% if work_record == 'EW' and date <= current_date and not date in leave_dates %}
-                        background-color: #a8b1ff; color: #fff
-                    {% elif work_record %}
-                        {% if work_record.work_record_type == 'CONF' %}background-color: #ed4c4c; color: #fff
-                        {% elif work_record.is_leave_record and work_record.work_record_type == 'FDP' %}background-color: #c65d0f; color: #fff
-                        {% elif work_record.work_record_type == 'FDP' %}background-color: #38c338;  color: #fff
-                        {% elif work_record.work_record_type == 'HDP' %}background-color: #dfdf52;
-                        {% elif work_record.work_record_type == 'ABS' %}background-color: #808080; color: #fff
-                        {% endif %}
-                    {% endif %}
-                "
-                >
-                    {% if work_record == 'EW' and date <= current_date and not date in leave_dates %}
-                        EW
-                    {% elif work_record %}
-                    <div title="{{work_record.title_message}}" role="button" class="fw-bold"
-                        onclick="{% if work_record.work_record_type == 'ABS' %}
-                            window.location.href=`{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&from_date={{work_record.date|date:'Y-m-d'}}&to_date={{work_record.date|date:'Y-m-d'}}`;
-                        {% else %}
-                            {% if work_record.work_record_type == 'CONF' %}
-                                localStorage.setItem('activeTabAttendance','#tab_1')
-                            {% else %}
-                                localStorage.setItem('activeTabAttendance','#tab_2')
-                            {% endif %}
-                            window.location.href=`{% url 'attendance-view' %}?employee_id={{work_record.employee_id.id}}&attendance_date={{work_record.date|date:'Y-m-d'}}`
-                        {% endif %}"
+        {% for employee, work_records in data %}
+            <tr>
+                <td style="width: 12%">
+                    <a
+                        style="text-decoration: none"
+                        href="{% url 'employee-view-individual' employee.id %}"
                     >
-
-                    <a class="text-decoration-none">
-                            {% if work_record.work_record_type == 'CONF' %}!
-                            {% elif work_record.work_record_type == 'FDP' %} P
-                            {% elif work_record.work_record_type == 'HDP' %} HP
-                            {% elif work_record.work_record_type == 'ABS' %} A
-                            {% endif %}
-                        </a>
-                    </div>
-                    {% endif %}
+                        {{ employee }}
+                    </a>
                 </td>
 
-                {% endwith %}
-            {% endfor %}
-        </tr>
+                {% for work_record in work_records %}
+                    {% with day=current_month_dates_list|get_item:forloop.counter0 %}
+                    <td
+                        class="days {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates %}holiday{% endif %}"
+                        style="text-align:center; cursor:default;
+                        {% if work_record %}
+                            {% if work_record.work_record_type == 'CONF' %}
+                                background-color: #ed4c4c; color: #fff;
+                            {% elif work_record.is_leave_record and work_record.work_record_type == 'FDP' %}
+                                background-color: #c65d0f; color: #fff;
+                            {% elif work_record.work_record_type == 'FDP' %}
+                                background-color: #38c338; color: #fff;
+                            {% elif work_record.work_record_type == 'HDP' %}
+                                background-color: #dfdf52;
+                            {% elif work_record.work_record_type == 'ABS' %}
+                                background-color: #808080; color: #fff;
+                            {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}
+                                background-color: #a8b1ff; color: #fff;
+                            {% endif %}
+                        {% endif %}
+                    "
+                    >
+                        {% if work_record %}
+                            <div
+                                {% if work_record.title_message %}
+                                    title="{{work_record.title_message}}"
+                                {% endif %}
+                                class="fw-bold"
+                                onclick="
+                                    {% if work_record.work_record_type == 'ABS' %}
+                                        window.location.href = `{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&
+                                        from_date={{work_record.date|date:'Y-m-d'}}&
+                                        to_date={{work_record.date|date:'Y-m-d'}}`;
+                                    {% elif work_record.work_record_type != 'DFT' %}
+                                        {% if work_record.work_record_type == 'CONF' %}
+                                            localStorage.setItem('activeTabAttendance', '#tab_1');
+                                        {% else %}
+                                            localStorage.setItem('activeTabAttendance', '#tab_2');
+                                        {% endif %}
+                                        window.location.href = `{% url 'attendance-view' %}?employee_id={{work_record.employee_id.id}}&
+                                        attendance_date={{work_record.date|date:'Y-m-d'}}`;
+                                    {% endif %}
+                                "
+                            >
+                                <a class="text-decoration-none" role="button">
+                                    {% if work_record.work_record_type == 'CONF' %} !
+                                    {% elif work_record.work_record_type == 'FDP' %} P
+                                    {% elif work_record.work_record_type == 'HDP' %} HP
+                                    {% elif work_record.work_record_type == 'ABS' %} L
+                                    {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}
+                                        <span class="fw-light" style="cursor: default">A</span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        {% endif %}
+                    </td>
+                    {% endwith %}
+                {% endfor %}
+            </tr>
         {% endfor %}
     </table>
 </div>
+
 <div class="oh-pagination">
     <span class="oh-pagination__page">
-        {% trans "Page" %} {{ data.number }} {% trans "of" %}
-        {{ data.paginator.num_pages }}.
+        {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
     </span>
+
     <nav class="oh-pagination__nav">
         <div class="oh-pagination__input-container me-3">
             <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
@@ -144,65 +212,66 @@
                 hx-target="#workRecordTable"
                 min="1"
             />
-            <span class="oh-pagination__label"
-                >{% trans "of" %} {{data.paginator.num_pages}}</span
-            >
+            <span class="oh-pagination__label">
+                {% trans "of" %} {{data.paginator.num_pages}}
+            </span>
         </div>
+
         <ul class="oh-pagination__items">
             {% if data.has_previous %}
-            <li class="oh-pagination__item oh-pagination__item--wide">
-                <a
-                    hx-target="#workRecordTable"
-                    hx-get="{% url 'work-records-change-month' %}?{{pd}}&page=1"
-                    class="oh-pagination__link"
-                    >{% trans "First" %}</a
-                >
-            </li>
-            <li class="oh-pagination__item oh-pagination__item--wide">
-                <a
-                    hx-target="#workRecordTable"
-                    hx-get="{% url 'work-records-change-month' %}?{{pd}}&page={{ data.previous_page_number }}"
-                    class="oh-pagination__link"
-                    >{% trans "Previous" %}</a
-                >
-            </li>
-            {% endif %} {% if data.has_next %}
-            <li class="oh-pagination__item oh-pagination__item--wide">
-                <a
-                    hx-target="#workRecordTable"
-                    hx-get="{% url 'work-records-change-month' %}?{{pd}}&page={{ data.next_page_number }}"
-                    class="oh-pagination__link"
-                    >{% trans "Next" %}</a
-                >
-            </li>
-            <li class="oh-pagination__item oh-pagination__item--wide">
-                <a
-                    hx-target="#workRecordTable"
-                    hx-get="{% url 'work-records-change-month' %}?{{pd}}&page={{ data.paginator.num_pages }}"
-                    class="oh-pagination__link"
-                    >{% trans "Last" %}</a
-                >
-            </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#workRecordTable"
+                        hx-get="{% url 'work-records-change-month' %}?{{pd}}&page=1"
+                        class="oh-pagination__link"
+                    >{% trans "First" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#workRecordTable"
+                        hx-get="{% url 'work-records-change-month' %}?{{pd}}&page={{ data.previous_page_number }}"
+                        class="oh-pagination__link"
+                    >{% trans "Previous" %}</a>
+                </li>
+            {% endif %}
+
+            {% if data.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#workRecordTable"
+                        hx-get="{% url 'work-records-change-month' %}?{{pd}}&page={{ data.next_page_number }}"
+                        class="oh-pagination__link"
+                    >{% trans "Next" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a
+                        hx-target="#workRecordTable"
+                        hx-get="{% url 'work-records-change-month' %}?{{pd}}&page={{ data.paginator.num_pages }}"
+                        class="oh-pagination__link"
+                    >{% trans "Last" %}</a>
+                </li>
             {% endif %}
         </ul>
     </nav>
 </div>
+
 <span data-hx-vals="{{pd}}"></span>
+
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         $(document).on("htmx:afterSettle", function () {
             var hxVals = $("[data-hx-vals]").data("hx-vals");
             var queryParams = {};
             var pairs = hxVals.split("&");
 
-            pairs.forEach(function(pair) {
+            pairs.forEach(function (pair) {
                 var [key, value] = pair.split("=");
-                if (key != "month"){
+                if (key != "month") {
                     queryParams[key] = value;
                 }
             });
 
             $("#monthYearField").attr("hx-vals", JSON.stringify(queryParams));
-        })
-    })
+        });
+    });
 </script>

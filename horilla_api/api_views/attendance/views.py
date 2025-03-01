@@ -23,8 +23,8 @@ from attendance.views.dashboard import (
 from attendance.views.views import *
 from base.backends import ConfiguredEmailBackend
 from base.methods import generate_pdf, is_reportingmanager
+from base.models import HorillaMailTemplate
 from employee.filters import EmployeeFilter
-from recruitment.models import RecruitmentMailTemplate
 
 from ...api_decorators.base.decorators import (
     manager_permission_required,
@@ -827,7 +827,7 @@ class MailTemplateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        instances = RecruitmentMailTemplate.objects.all()
+        instances = HorillaMailTemplate.objects.all()
         serializer = MailTemplateSerializer(instances, many=True)
         return Response(serializer.data, status=200)
 
@@ -846,7 +846,7 @@ class ConvertedMailTemplateConvert(APIView):
         template_id = request.data.get("template_id", None)
         employee_id = request.data.get("employee_id", None)
         employee = Employee.objects.filter(id=employee_id).first()
-        bdy = RecruitmentMailTemplate.objects.filter(id=template_id).first()
+        bdy = HorillaMailTemplate.objects.filter(id=template_id).first()
         template_bdy = template.Template(bdy.body)
         context = template.Context(
             {"instance": employee, "self": request.user.employee_get}
@@ -878,7 +878,7 @@ class OfflineEmployeeMailsend(APIView):
         employee = Employee.objects.get(id=employee_id)
         template_attachment_ids = request.POST.getlist("template_attachments")
         bodys = list(
-            RecruitmentMailTemplate.objects.filter(
+            HorillaMailTemplate.objects.filter(
                 id__in=template_attachment_ids
             ).values_list("body", flat=True)
         )

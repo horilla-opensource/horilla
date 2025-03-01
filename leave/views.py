@@ -2648,7 +2648,7 @@ def dashboard(request):
         "rejected": rejected,
         "next_holiday": next_holiday,
         "dashboard": "dashboard",
-        "today": today,
+        "today": today.strftime("%Y-%m-%d"),
         "first_day": today.replace(day=1).strftime("%Y-%m-%d"),
         "last_day": date(
             today.year, today.month, calendar.monthrange(today.year, today.month)[1]
