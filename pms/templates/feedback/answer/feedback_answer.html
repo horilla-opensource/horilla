@@ -94,7 +94,6 @@
             </div>
               {% endif %}
           {% endfor %}
-
           <div class="justification-container">
             <label for="justification{{ q.id }}" class="justification-label">
                 {% trans "Provide an observation or justification:" %}
@@ -107,10 +106,7 @@
             </textarea>
         </div>
         {% endif %}
-
-      {% endif %}
-
-          {% if q.question_type == '5' %} <!--  question type Likert-->
+        {% if q.question_type == '5' %} <!--  question type Likert-->
           <div class="d-block">
             <span class="oh-label oh-label--question">{{forloop.counter}}. {{q.question}}</span>
             <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
@@ -136,28 +132,18 @@
               </div>
             </div>
           </div>
-
-
           {% endif %}
-
-
-
-        {% endfor %}
-
+        {% endfor %}        
       </div>
-      {% if feedback.employee_key_results_id.all %}
 
+      {% if feedback.employee_key_results_id.all %}
       <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold ml-3 mb-3 mt-3">
           {% trans "Key Result" %}
         </h1>
       </div>
-
       <div class="">
         <div class="oh-card ">
-
-
-
           {% for key_result in feedback.employee_key_results_id.all %}
           <div class="d-block">
             <span class="oh-label oh-label--question">{{forloop.counter}}. {{key_result.key_result}}</span>
