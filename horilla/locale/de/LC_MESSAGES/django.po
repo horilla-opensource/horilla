@@ -29834,3 +29834,18 @@ msgstr ""
 
 #~ msgid "s Bank Info"
 #~ msgstr "s Bank Daten"
+
+msgid "No observation provided."
+msgstr "Keine Beobachtung angegeben."
+
+msgid "Provide an observation or justification:"
+msgstr "Geben Sie eine Beobachtung oder Begründung an:"
+
+msgid "Explain your choice..."
+msgstr "Erklären Sie Ihre Wahl..."
+
+msgid "No observation available"
+msgstr "Keine Beobachtung verfügbar."
+
+msgid "Error"
+msgstr "Fehler."
