@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.models import Group
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
@@ -80,7 +81,6 @@ urlpatterns = [
         name="initialize-job-position-delete",
     ),
     path("404", views.custom404, name="404"),
-    path("login/", views.login_user, name="login"),
     path(
         "forgot-password",
         views.HorillaPasswordResetView.as_view(),
@@ -1067,3 +1067,6 @@ urlpatterns = [
     path("save-domains", views.save_domains, name="save-domains",),
     path('api/domains/', get_domains, name='get_domains'),
 ]
+
+if not eval(os.getenv('DISABLE_LOGIN', False)):
+    urlpatterns.insert(0, path("login/", views.login_user, name="login"))
