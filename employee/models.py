@@ -175,7 +175,7 @@ class Employee(models.Model):
 
     def get_mail(self):
         """
-        This method is used to return the shift of the employee
+        Returns the employee's email, preferring the work info email if available.
         """
         work_info = getattr(self, "employee_work_info", None)
         work_email = getattr(work_info, "email", None)
