@@ -30,4 +30,4 @@ COPY . .
 
 EXPOSE 8000
 
-CMD ["gunicorn", "horilla.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--threads", "2", "--access-logfile", "-", "--error-logfile", "-"]
+CMD ["gunicorn", "horilla.wsgi:application", "--bind", "0.0.0.0:8000", "--access-logfile", "-", "--error-logfile", "-"]
