@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from django.apps import apps
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
@@ -108,4 +109,3 @@ def create_installments(sender, instance, created, **kwargs):
                         installments.append(installment)
 
                 instance.deduction_ids.add(*installments)
-
