@@ -140,7 +140,6 @@ class CompanyMiddleware:
                     "loanaccount",
                     "payslip",
                     "reimbursement",
-                    "workrecord",
                 ],
                 "helpdesk": ["ticket"],
                 "offboarding": ["offboarding"],

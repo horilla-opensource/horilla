@@ -25,6 +25,7 @@ class RecruitmentConfig(AppConfig):
 
         from horilla.horilla_settings import APPS
         from horilla.urls import urlpatterns
+        from recruitment import signals
 
         APPS.append("recruitment")
         urlpatterns.append(

@@ -1183,3 +1183,12 @@ class EmployeeBonusPointForm(MF):
             if employee:
                 self.fields["employee_id"].queryset = employee
                 self.initial["employee_id"] = employee.first()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        bonus_point = cleaned_data.get("bonus_point")
+        if bonus_point <= 0:
+            raise forms.ValidationError(
+                {"bonus_point": _("Point should be greater than zero.")}
+            )
+        return cleaned_data

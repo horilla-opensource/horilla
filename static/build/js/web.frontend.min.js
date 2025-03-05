@@ -4219,8 +4219,8 @@ var LoadLayout = /*#__PURE__*/function () {
   }, {
     key: "loadHeader",
     value: function loadHeader() {
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()("#sidebar").load("./../../templates/sidebar.html");
-      jquery__WEBPACK_IMPORTED_MODULE_0___default()("#mainNav").load("./../../templates/navbar.html");
+      // jquery__WEBPACK_IMPORTED_MODULE_0___default()("#sidebar").load("./../../templates/sidebar.html");
+      // jquery__WEBPACK_IMPORTED_MODULE_0___default()("#mainNav").load("./../../templates/navbar.html");
     }
   }]);
   return LoadLayout;

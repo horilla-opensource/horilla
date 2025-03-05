@@ -16,10 +16,10 @@ class LoadLayout {
   /**
    *  Loads header from the templates.
    */
-  loadHeader() {
-    $("#sidebar").load("./../../templates/sidebar.html");
-    $("#mainNav").load("./../../templates/navbar.html");
-  }
+  // loadHeader() {
+  //   $("#sidebar").load("./../../templates/sidebar.html");
+  //   $("#mainNav").load("./../../templates/navbar.html");
+  // }
 
 }
 
