@@ -315,6 +315,11 @@ class DeductionForm(forms.ModelForm):
         return table_html
 
     def save(self, commit: bool = ...) -> Any:
+        specific_employees = self.data.getlist("specific_employees")
+        include_all = self.data.get("include_active_employees")
+        condition_based = self.data.get("is_condition_based")
+        if not specific_employees and not include_all and not condition_based:
+            self.instance.include_active_employees = True
         super().save(commit)
         other_conditions = self.data.getlist("other_conditions")
         other_fields = self.data.getlist("other_fields")

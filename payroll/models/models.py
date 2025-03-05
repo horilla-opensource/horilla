@@ -1331,13 +1331,6 @@ class Deduction(HorillaModel):
 
     def save(self):
         super().save()
-        if (
-            not self.include_active_employees
-            and not self.specific_employees.first()
-            and not self.is_condition_based
-        ):
-            self.include_active_employees = True
-            super().save()
 
 
 class Payslip(HorillaModel):
