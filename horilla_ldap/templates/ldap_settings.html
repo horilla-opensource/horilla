@@ -1,0 +1,8 @@
+{% extends 'settings.html' %} {% load i18n %} {% block settings %}
+{% load static %}
+    <h2 class="oh-inner-sidebar-content__title mb-3">{% trans "LDAP Configuration" %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+    </form>
+{% endblock settings %}
