@@ -38,7 +38,7 @@ class MailSendThread(Thread):
                 "payroll/mail_templates/default.html",
                 {
                     "record": record,
-                    "host": self.host,
+                    "host": self.host,  # Here we have to put the ip of the ec2
                     "protocol": self.protocol,
                 },
                 request=self.request,
