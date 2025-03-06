@@ -1,7 +1,12 @@
-
+from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
-from django.db.models.signals import post_save, m2m_changed
-from recruitment.models import CandidateDocument, CandidateDocumentRequest, Recruitment, Stage
+
+from recruitment.models import (
+    CandidateDocument,
+    CandidateDocumentRequest,
+    Recruitment,
+    Stage,
+)
 
 
 @receiver(post_save, sender=Recruitment)
@@ -44,4 +49,3 @@ def candidate_document_create(instance):
         )
         document.title = f"Upload {instance.title}"
         document.save()
-

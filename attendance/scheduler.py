@@ -1,7 +1,7 @@
 import datetime
 import sys
-from apscheduler.schedulers.background import BackgroundScheduler
 
+from apscheduler.schedulers.background import BackgroundScheduler
 
 today = datetime.datetime.today()
 
@@ -22,7 +22,11 @@ def create_work_record(date=today):
                 WorkRecords.objects.get_or_create(
                     employee_id=employee,
                     date=date,
-                    defaults={"work_record_type": "DFT", "shift_id": shift, "message": ""},
+                    defaults={
+                        "work_record_type": "DFT",
+                        "shift_id": shift,
+                        "message": "",
+                    },
                 )
             except:
                 pass
