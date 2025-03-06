@@ -2203,12 +2203,12 @@ def feedback_status(request):
 @manager_can_enter(perm="pms.add_question")
 def question_creation(request, id):
     """
-    This view is used to  create  question object.
+    This view is used to create a question object.
     Args:
-        id(int) : primarykey of the question template.
+        id(int): primary key of the question template.
 
     Returns:
-        it will redirect to  question_template_detailed_view.
+        Redirects to question_template_detailed_view.
     """
     if request.method == "POST":
         form = QuestionForm(request.POST)
@@ -2216,56 +2216,65 @@ def question_creation(request, id):
         feedback_ongoing = Feedback.objects.filter(
             question_template_id=question_template
         ).first()
+        
         if feedback_ongoing:
             messages.info(request, _("Question template is used in feedback."))
             return redirect(question_template_detailed_view, id)
+        
         if form.is_valid():
             obj_question = form.save(commit=False)
             obj_question.template_id = question_template
             obj_question.save()
 
+            # if num: 4 - "Multi-Choices":
             if obj_question.question_type == "4":
-                # checking the question type is multichoice
-                option_a = request.POST.get("option_a")
-                option_b = request.POST.get("option_b")
-                option_c = request.POST.get("option_c")
-                option_d = request.POST.get("option_d")
-                QuestionOptions(
-                    question_id=obj_question,
-                    option_a=option_a,
-                    option_b=option_b,
-                    option_c=option_c,
-                    option_d=option_d,
-                ).save()
-                messages.success(request, _("Question created successfully."))
-                return redirect(question_template_detailed_view, id)
+                options_json = request.POST.get("options_json", "[]")
+                options = [opt.strip() for opt in json.loads(options_json) if opt.strip()]  # Remove espaços vazios
+
+                if any(options):  # Need 1 vallid
+                    QuestionOptions.objects.create(
+                        question_id=obj_question,
+                        option_a=options[0] if len(options) > 0 else None,
+                        option_b=options[1] if len(options) > 1 else None,
+                        option_c=options[2] if len(options) > 2 else None,
+                        option_d=options[3] if len(options) > 3 else None,
+                    )
+            else:
+                # If not "Multi-Choices", remove any existing options[]
+                QuestionOptions.objects.filter(question_id=obj_question).delete()
+
             messages.success(request, _("Question created successfully."))
             return redirect(question_template_detailed_view, id)
-        else:
-            messages.error(request, _("Error occurred during question creation!"))
-            return redirect(question_template_detailed_view, id)
-
+        
+        messages.error(request, _("Error occurred during question creation!"))
+        return redirect(question_template_detailed_view, id)
 
 @login_required
 def question_view(request, id):
     """
-    This view is used to  view  question object.
+    This view is used to view question object.
     Args:
         id(int) : primarykey of the question template.
     Returns:
-        it will redirect to  question_template_detailed_view.
+        it will redirect to question_template_detailed_view.
     """
     question_template = QuestionTemplate.objects.get(id=id)
     question_formset = modelformset_factory(Question, form=QuestionForm, extra=0)
 
     questions = question_template.question.all()
     formset = question_formset(queryset=questions)
-    options = []
     question_types = ["text", "ratings", "boolean", "Multi-choices", "likert"]
+
+    options = []
 
     for question in questions:
         question_options = QuestionOptions.objects.filter(question_id=question)
-        options.extend(question_options)
+        filtered_options = [
+            opt for opt in question_options
+            if any([opt.option_a, opt.option_b, opt.option_c, opt.option_d])  # Apenas adiciona opções preenchidas
+        ]
+        options.extend(filtered_options)
+
     context = {
         "question_template": question_template,
         "questions": questions,
@@ -2280,49 +2289,47 @@ def question_view(request, id):
     )
 
 
+
 @login_required
 @manager_can_enter(perm="pms.change_question")
 def question_update(request, temp_id, q_id):
     """
-    This view is used to  update  question object.
+    This view is used to update a question object.
     Args:
-        id (int): primarykey of question
-        temp_id (int): primarykey of question_template
+        temp_id (int): primary key of question_template
+        q_id (int): primary key of question
     Returns:
-        it will redirect to  question_template_detailed_view.
-
+        Redirects to question_template_detailed_view.
     """
     if request.method == "POST":
         question = Question.objects.get(id=q_id)
         form = QuestionForm(request.POST, instance=question)
+        
         if form.is_valid():
             question_type = form.cleaned_data["question_type"]
+
             if question_type == "4":
-                # if question is Multi-choices
-                option_a = form.cleaned_data["option_a"]
-                option_b = form.cleaned_data["option_b"]
-                option_c = form.cleaned_data["option_c"]
-                option_d = form.cleaned_data["option_d"]
-                options, created = QuestionOptions.objects.get_or_create(
-                    question_id=question
-                )
-                options.option_a = option_a
-                options.option_b = option_b
-                options.option_c = option_c
-                options.option_d = option_d
+                options_json = request.POST.get("options_json", "[]")
+                new_options = [opt.strip() for opt in json.loads(options_json) if opt.strip()]  #Strip 
+                
+                # Update or new options
+                options, created = QuestionOptions.objects.get_or_create(question_id=question)
+                options.option_a = new_options[0] if len(new_options) > 0 else None
+                options.option_b = new_options[1] if len(new_options) > 1 else None
+                options.option_c = new_options[2] if len(new_options) > 2 else None
+                options.option_d = new_options[3] if len(new_options) > 3 else None
                 options.save()
-                form.save()
-                messages.info(request, _("Question updated successfully."))
-                return redirect(question_template_detailed_view, temp_id)
+
             else:
+                
+                QuestionOptions.objects.filter(question_id=question).delete()
                 form.save()
-                question_options = QuestionOptions.objects.filter(question_id=question)
-                if question_options:
-                    question_options.delete()
-                messages.info(request, _("Question updated successfully."))
-                return redirect(question_template_detailed_view, temp_id)
+
+            messages.info(request, _("Question updated successfully."))
+            return redirect(question_template_detailed_view, temp_id)
+
         else:
-            # Form submission had errors
+            # ERROR message
             messages.error(
                 request,
                 "\n".join(

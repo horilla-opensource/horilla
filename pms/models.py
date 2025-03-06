@@ -464,9 +464,8 @@ class Question(HorillaModel):
     def __str__(self):
         return self.question
 
-
 class QuestionOptions(HorillaModel):
-    """options for question"""
+    """Options for question"""
 
     question_id = models.ForeignKey(
         Question,
@@ -481,6 +480,17 @@ class QuestionOptions(HorillaModel):
     option_d = models.CharField(max_length=250, null=True, blank=True)
     objects = HorillaCompanyManager("question_id__template_id__company_id")
 
+    def save(self, *args, **kwargs):
+        """Remove valores vazios antes de salvar no banco"""
+        for field in ["option_a", "option_b", "option_c", "option_d"]:
+            valor = getattr(self, field)
+            if valor:
+                valor = valor.strip()
+                setattr(self, field, valor if valor else None)
+            else:
+                setattr(self, field, None)  # if are empty = None ":D" later will help me
+
+        super().save(*args, **kwargs)
 
 class Feedback(HorillaModel):
     """feedback model for creating feedback"""
