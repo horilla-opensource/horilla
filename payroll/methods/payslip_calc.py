@@ -813,10 +813,11 @@ def calculate_based_on_gross_pay(*_args, **kwargs):
     """
 
     component = kwargs["component"]
+    day_dict = kwargs["day_dict"]
     gross_pay = calculate_gross_pay(**kwargs)
     rate = component.rate
     amount = gross_pay["gross_pay"] * rate / 100
-    amount = compute_limit(component, amount)
+    amount = compute_limit(component, amount,day_dict)
     return amount
 
 
