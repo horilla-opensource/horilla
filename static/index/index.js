@@ -404,7 +404,7 @@ window.confirm = function (message) {
         if (result.isConfirmed) {
             var path = event.target["htmx-internal-data"]?.path;
             var verb = event.target["htmx-internal-data"]?.verb;
-            var hxTarget = $(event.target).attr("hx-target");
+            var hxTarget = handleHtmxTarget(event, path, verb)
             var hxVals = $(event.target).attr("hx-vals")
                 ? JSON.parse($(event.target).attr("hx-vals"))
                 : {};
@@ -485,6 +485,39 @@ window.confirm = function (message) {
         }
     });
 };
+
+function handleHtmxTarget(event, path , verb){
+    var targetElement;
+    var hxTarget = $(event.target).attr("hx-target");
+    if (hxTarget) {
+        if (hxTarget === "this") {
+            targetElement = $(event.target);
+        } else if (hxTarget.startsWith("closest ")) {
+            var selector = hxTarget.replace("closest ", "").trim();
+            targetElement = $(event.target).closest(selector);
+        } else if (hxTarget.startsWith("find ")) {
+            var selector = hxTarget.replace("find ", "").trim();
+            targetElement = $(event.target).find(selector).first();
+        } else if (hxTarget === "next") {
+            targetElement = $(event.target).next();
+        } else if (hxTarget.startsWith("next ")) {
+            var selector = hxTarget.replace("next ", "").trim();
+            targetElement = $(event.target).nextAll(selector).first();
+        } else if (hxTarget === "previous") {
+            targetElement = $(event.target).prev();
+        } else if (hxTarget.startsWith("previous ")) {
+            var selector = hxTarget.replace("previous ", "").trim();
+            targetElement = $(event.target).prevAll(selector).first();
+        } else {
+            targetElement = $(hxTarget);
+        }
+        hxTarget = targetElement.length ? targetElement[0] : null;
+
+    } else if (path && verb) {
+        hxTarget = event.target;
+    }
+    return hxTarget
+}
 
 var excludeIds = "#employeeSearch";
 // To exclude more elements, add their IDs (prefixed with '#') or class names (prefixed with '.'), separated by commas to 'excludeIds'.
