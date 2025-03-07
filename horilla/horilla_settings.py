@@ -115,6 +115,7 @@ if settings.env("AWS_ACCESS_KEY_ID", default=None):
     AWS_S3_REGION_NAME = settings.env("AWS_S3_REGION_NAME")
     DEFAULT_FILE_STORAGE = settings.env("DEFAULT_FILE_STORAGE")
     AWS_S3_ADDRESSING_STYLE = settings.env("AWS_S3_ADDRESSING_STYLE")
+    AWS_S3_ENDPOINT_URL = settings.env("AWS_S3_ENDPOINT_URL", default=None)
 
     settings.AWS_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
     settings.AWS_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
@@ -122,6 +123,7 @@ if settings.env("AWS_ACCESS_KEY_ID", default=None):
     settings.AWS_S3_REGION_NAME = AWS_S3_REGION_NAME
     settings.DEFAULT_FILE_STORAGE = DEFAULT_FILE_STORAGE
     settings.AWS_S3_ADDRESSING_STYLE = AWS_S3_ADDRESSING_STYLE
+    settings.AWS_S3_ENDPOINT_URL = AWS_S3_ENDPOINT_URL
 
 
 if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" in INSTALLED_APPS:
