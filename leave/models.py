@@ -296,6 +296,8 @@ class LeaveType(HorillaModel):
             self.carryforward_expire_date = self.set_expired_date(
                 assigned_date=self.created_at
             )
+        elif self.carryforward_type != "carryforward expire":
+            self.carryforward_expire_date = None
 
         super().save()
 
