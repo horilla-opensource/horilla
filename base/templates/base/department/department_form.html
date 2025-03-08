@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
 	<span class="oh-modal__dialog-title" id="createModalLabel">
-		{% if department.id %} {% trans "Update" %}{% else %} {% trans "Create" %} {% endif %} {% trans "Department" %}
+		{% if department.id %} {% trans "Update" %}{% else %} {% trans "Create" %} {% endif %} {{form.verbose_name}}
 	</span>
 	<button class="oh-modal__close" aria-label="Close">
 		<ion-icon name="close-outline"></ion-icon>
