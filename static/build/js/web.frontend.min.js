@@ -3465,7 +3465,6 @@ var Generic = /*#__PURE__*/function () {
     value: function sidebarToggle(e) {
       e.preventDefault();
       var sidebarContainer = jquery__WEBPACK_IMPORTED_MODULE_0___default()(".oh-wrapper-main");
-      console.log(sidebarContainer.hasClass("oh-wrapper-main--closed"));
       if (sidebarContainer.hasClass("oh-wrapper-main--closed")) {
         sidebarContainer.removeClass("oh-wrapper-main--closed");
       } else {
@@ -4090,7 +4089,6 @@ var Kanban = /*#__PURE__*/function () {
     key: "showKanbanCardGroup",
     value: function showKanbanCardGroup(e) {
       e.stopPropagation();
-      console.log("hello");
       var clickedEl = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e.target).closest(".oh-kanban-group__add-card");
       if (clickedEl.length > 0) {
         clickedEl.parents(".oh-kanban-group").find(".oh-kanban__add-card-container").removeClass("d-none");
@@ -4485,8 +4483,8 @@ var Specifics = /*#__PURE__*/function () {
       jquery__WEBPACK_IMPORTED_MODULE_0___default()(".oh-select--qa-change").each(function (item, element) {
         var targetDiv = element.closest(".oh-section-edit");
         var optionDiv = targetDiv.querySelector(".oh-link__expanded");
-        var selectedValue = element.options[element.selectedIndex].text;
-        if (selectedValue == "Multi-choices") {
+        var selectedValue = element.options[element.selectedIndex].value;
+        if (selectedValue == "4") {
           optionDiv.classList.remove("d-none");
         } else {
           optionDiv.classList.add("d-none");
@@ -4496,7 +4494,7 @@ var Specifics = /*#__PURE__*/function () {
         var data = e.params.data;
         var targetDiv = e.target.closest(".oh-section-edit");
         var optionDiv = targetDiv.querySelector(".oh-link__expanded");
-        if (data.text == "Multi-choices") {
+        if (data.id == "4") {
           optionDiv.classList.remove("d-none");
         } else {
           optionDiv.classList.add("d-none");
@@ -4937,7 +4935,6 @@ var Tabs = /*#__PURE__*/function (_Tables) {
     key: "addConfigTab",
     value: function addConfigTab(e) {
       e.preventDefault();
-      console.log('Hello');
       var formEl = e.target.closest("form");
       var tabTitle = formEl[formEl.dataset.title].value;
       var targetEl = e.target.closest(".oh-tabs__new-tab-config");

@@ -3,13 +3,12 @@
 import threading
 
 from django.apps import apps
-from django.db.models.signals import post_migrate, pre_save, post_save, pre_delete
+from django.db.models.signals import post_migrate, post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
 from horilla.methods import get_horilla_model_class
 from leave.models import LeaveRequest
-
 
 if apps.is_installed("attendance"):
 
