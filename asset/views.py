@@ -704,7 +704,7 @@ def asset_request_reject(request, req_id):
         found or already rejected
     """
     asset_request = AssetRequest.objects.get(id=req_id)
-    # asset_request.asset_request_status = "Rejected"
+    asset_request.asset_request_status = "Rejected"
     asset_request.save()
     messages.info(request, _("Asset request has been rejected."))
     notify.send(
