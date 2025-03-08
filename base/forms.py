@@ -251,6 +251,18 @@ class ModelForm(forms.ModelForm):
             except:
                 pass
 
+    def verbose_name(self):
+        """
+        Returns the verbose name of the model associated with the form.
+        Provides fallback values if no model or verbose name is defined.
+        """
+        if hasattr(self, "_meta") and hasattr(self._meta, "model"):
+            model = self._meta.model
+            if hasattr(model._meta, "verbose_name") and model._meta.verbose_name:
+                return model._meta.verbose_name
+            return model.__name__
+        return ""
+
 
 class Form(forms.Form):
     """
@@ -490,20 +502,21 @@ class JobPositionMultiForm(ModelForm):
     JobPosition model's form
     """
 
-    department_id = HorillaMultiSelectField(queryset=Department.objects.all())
+    department_id = HorillaMultiSelectField(
+        queryset=Department.objects.all(),
+        label=JobPosition._meta.get_field("department_id").verbose_name,
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "oh-select oh-select2 w-100",
+                "style": "height:45px;",
+            }
+        ),
+    )
 
     class Meta:
         model = JobPosition
         fields = "__all__"
         exclude = ["department_id", "is_active"]
-        widgets = {
-            "department_id": forms.SelectMultiple(
-                attrs={
-                    "class": "oh-select oh-select2 w-100",
-                    "style": "height:45px;",
-                }
-            ),
-        }
 
     def clean(self):
         """

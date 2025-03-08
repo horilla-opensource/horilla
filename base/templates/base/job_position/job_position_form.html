@@ -1,49 +1,35 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
-  <span class="oh-modal__dialog-title" id="editModal1ModalLabel"
-    >
-    {% if job_position.id %}
-      {% trans "Update Job Position" %}
-    {% else %}
-      {% trans "Create Job Position" %}
-    {% endif %}
-  </span>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <span class="oh-modal__dialog-title" id="editModal1ModalLabel">
+        {% if job_position.id %} {% trans "Update" %} {% else %} {% trans "Create" %} {% endif %} {{form.verbose_name}}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    {% if job_position.id %}
-      hx-post="{% url 'job-position-update' job_position.id %}"
-    {% else %}
-      hx-post="{% url 'job-position-creation' %}?dynamic={{dynamic}}"
-    {% endif %}
-    {% if dynamic%}
-      hx-target="#dynamicCreateModalBody"
-    {% else %}
-      hx-target="#jobPositionForm"
-    {% endif %}
-    class="oh-profile-section">
-    {% csrf_token %}
-    <div class="oh-inner-sidebar-content__body">
-      <div class="oh-input-group mb-2">
-        <label class="mb-1" for="id_{{form.department_id.name}}">
-          {% trans "Department:" %}
-        </label>
-        {{form.department_id}} {{form.department_id.errors}}
-      </div>
-      <div class="oh-input-group mb-2">
-        <label class="mb-1" for="id_{{form.job_position.name}}">
-          {% trans "Job Position:" %}
-        </label>
-        {{form.job_position}} {{form.job_position.errors}}
-      </div>
-    </div>
-    <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
-          {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form hx-post="{{ request.get_full_path }}"
+        hx-target="{% if dynamic %}#dynamicCreateModalBody{% else %}#jobPositionForm{% endif %}"
+        class="oh-profile-section">
+        {% csrf_token %}
+        <div class="oh-inner-sidebar-content__body">
+            <div class="oh-input-group mb-2">
+                <label class="mb-1" for="id_{{form.department_id.name}}">
+                    {{ form.department_id.label }}
+                </label>
+                {{form.department_id}} {{form.department_id.errors}}
+            </div>
+            <div class="oh-input-group mb-2">
+                <label class="mb-1" for="id_{{form.job_position.name}}">
+                    {{ form.job_position.label }}
+                </label>
+                {{form.job_position}} {{form.job_position.errors}}
+            </div>
+        </div>
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>
