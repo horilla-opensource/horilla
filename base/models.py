@@ -174,7 +174,9 @@ class JobRole(HorillaModel):
     job_position_id = models.ForeignKey(
         JobPosition, on_delete=models.PROTECT, verbose_name=_("Job Position")
     )
-    job_role = models.CharField(max_length=50, blank=False, null=True)
+    job_role = models.CharField(
+        max_length=50, blank=False, null=True, verbose_name=_("Job Role")
+    )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager("job_position_id__department_id__company_id")
@@ -1490,6 +1492,8 @@ class Announcement(HorillaModel):
 
     from employee.models import Employee
 
+    model_employee = Employee
+
     title = models.CharField(max_length=100)
     description = models.TextField(null=True)
     attachments = models.ManyToManyField(
@@ -1507,6 +1511,9 @@ class Announcement(HorillaModel):
         related_name="announcement",
     )
     disable_comments = models.BooleanField(default=False)
+    filtered_employees = models.ManyToManyField(
+        Employee, related_name="announcement_filtered_employees", editable=False
+    )
     objects = HorillaCompanyManager(related_company_field="company_id")
 
     def get_views(self):
