@@ -1,291 +1,255 @@
 {% load static %}
 {% load i18n horillafilters %}
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
 {% endif %}
 {% include 'filter_tags.html' %}
 {% if not request.GET.dashboard %}
-    <div
-      class="oh-checkpoint-badge text-success mb-2"
-      id="selectAllPayslip"
-      style="cursor: pointer"
-    >
-      {% trans "Select All Payslips" %}
+    <div class="oh-checkpoint-badge text-success mb-2" id="selectAllPayslip" style="cursor: pointer">
+        {% trans "Select All Payslips" %}
     </div>
-    <div
-      class="oh-checkpoint-badge text-secondary mb-2"
-      id="unselectAllPayslip"
-      style="cursor: pointer;display:none;"
-    >
-      {% trans "Unselect All Payslips" %}
+    <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllPayslip" style="cursor: pointer;display:none;">
+        {% trans "Unselect All Payslips" %}
     </div>
-    <div
-      class="oh-checkpoint-badge text-info mb-2"
-      id="exportPayslips"
-      style="cursor: pointer;display:none;"
-    >
-      {% trans "Export Payslips" %}
+    <div class="oh-checkpoint-badge text-info mb-2" id="exportPayslips" style="cursor: pointer;display:none;">
+        {% trans "Export Payslips" %}
     </div>
     <div class="oh-checkpoint-badge text-danger mb-2" id="selectedSlipShow"></div>
 {% endif %}
 {% if payslips %}
-<!-- start of column toggle -->
-<div class="oh-table_sticky--wrapper">
-  <div class="oh-sticky-dropdown--header">
-    <div class="oh-dropdown" x-data="{open: false}">
-      <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-        role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-      <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-      <ul class="oh-dropdown__items" id="payslipCells">
-      </ul>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- end of column toggle -->
-<div id="payslip-column-table" data-table-name="payslip_column_tab">
-  <div class="oh-sticky-table">
-      <div class="oh-sticky-table__table oh-table--sortable">
-        <div class="oh-sticky-table__thead">
-          <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__th" style="width:10px;">
-              <div class="centered-div">
-                <input
-                  type="checkbox"
-                  class="all-payslip oh-input oh-input__checkbox"
-                  id = "Allpayslip"
-                  title="{% trans 'Select All' %}"
-                />
-              </div>
+    <!-- start of column toggle -->
+    <div class="oh-table_sticky--wrapper">
+        <div class="oh-sticky-dropdown--header">
+            <div class="oh-dropdown" x-data="{open: false}">
+                <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+                        role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+                <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+                    <ul class="oh-dropdown__items" id="payslipCells">
+                    </ul>
+                </div>
             </div>
-            <div
-              class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=employee_id"
-              hx-target="#payslips-table"
-            >{% trans "Employee" %}</div>
-            <div data-cell-index="1" data-cell-title='{% trans "Start Date" %}'
-              class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=start_date"
-              hx-target="#payslips-table"
-            >{% trans "Start Date" %}</div>
-            <div data-cell-index="2" data-cell-title='{% trans "End Date" %}'
-              class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
-              hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=end_date"
-              hx-target="#payslips-table"
-            >{% trans "End Date" %}</div>
-            <div data-cell-index="4" data-cell-title='{% trans "Batch" %}' class="oh-sticky-table__th">{% trans "Batch" %}</div>
-            <div data-cell-index="5" data-cell-title='{% trans "Gross Pay" %}'
-            class="oh-sticky-table__th {% if request.sort_option.order == '-gross_pay' %}arrow-up {% elif request.sort_option.order == 'gross_pay' %}arrow-down {% else %}arrow-up-down {% endif %}"
-            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=gross_pay"
-            hx-target="#payslips-table"
-            >{% trans "Gross Pay" %}</div>
-            <div data-cell-index="6" data-cell-title='{% trans "Deduction" %}'
-            class="oh-sticky-table__th {% if request.sort_option.order == '-deduction' %}arrow-up {% elif request.sort_option.order == 'deduction' %}arrow-down {% else %}arrow-up-down {% endif %}"
-            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=deduction"
-            hx-target="#payslips-table"
-            >{% trans "Deduction" %}</div>
-            <div data-cell-index="7" data-cell-title='{% trans "Net Pay" %}'
-            class="oh-sticky-table__th {% if request.sort_option.order == '-net_pay' %}arrow-up {% elif request.sort_option.order == 'net_pay' %}arrow-down {% else %}arrow-up-down {% endif %}"
-            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=net_pay"
-            hx-target="#payslips-table"
-            >{% trans "Net Pay" %}</div>
-            <div data-cell-index="3" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
-            <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 251px !important;">{% trans "Actions" %}</div>
-          </div>
         </div>
-      <div class="oh-sticky-table__tbody">
-        {% for payslip in payslips %}
-        <a class="oh-sticky-table__tr" draggable="true" href="{% url 'view-created-payslip' payslip.id %}" style="text-decoration: none;">
-          <div class="oh-sticky-table__sd {% if payslip.status == "review_ongoing" %}row-status--orange {% elif payslip.status == "confirmed" %} row-status--blue {% elif payslip.status == "paid" %} row-status--yellow {% elif payslip.status == "draft" %} row-status--gray{% endif %}">
-              <div class="centered-div">
-                <input
-                  type="checkbox"
-                  id="{{payslip.id}}"
-                  value="{{payslip.id}}"
-                  onchange="highlightRow($(this))"
-                  class="oh-input payslip-checkbox oh-input__checkbox all-payslip-row"
-                />
-              </div>
-          </div>
-          <div class="oh-sticky-table__td">
-            <div class="oh-profile oh-profile--md">
-              <div class="oh-profile__avatar mr-1">
-                <img
-                  src="{{payslip.employee_id.get_avatar}}"
-                  class="oh-profile__image"
-                  alt="Mary Magdalene"
-                />
-              </div>
-              <span class="oh-profile__name oh-text--dark">{{payslip.employee_id}}</span>
-            </div>
-          </div>
-          <div data-cell-index="1" class="oh-sticky-table__td dateformat_changer">
-            {{payslip.start_date}}
-          </div>
-          <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">
-            {{payslip.end_date}}
-          </div>
-          <div data-cell-index="4" class="oh-sticky-table__td">
-            {{payslip.group_name}}
-          </div>
-          <div data-cell-index="5" class="oh-sticky-table__td">
-            {{payslip.gross_pay|floatformat:2|currency_symbol_position}}
-          </div>
-          <div data-cell-index="6" class="oh-sticky-table__td">
-            {{payslip.deduction|floatformat:2|currency_symbol_position}}
-          </div>
-          <div data-cell-index="7" class="oh-sticky-table__td">
-            {{payslip.net_pay|floatformat:2|currency_symbol_position}}
-          </div>
-          {% if perms.payroll.change_payslip %}
-            <div data-cell-index="3" class="oh-sticky-table__td" onclick="event.preventDefault();">
-              <select name="status" data-instance-id="{{payslip.id}}" hx-trigger="change" hx-post="{% url 'payslip-status-update' payslip.id %}"
-                      hx-target="#payslips-table" hx-vals='{"view":"table"}'
-                      style="color: hsl(0,0%,11%); background-color: transparent; border: none; height: 100%; border: 1px solid transparent;">
-                {% for opt in payslip.status_choices %}
-                <option value="{{opt.0}}"{% if opt.0 == payslip.status %}selected{% endif %}>{{opt.1}}</option>
-                {% endfor %}
-              </select>
-            </div>
-          {% else %}
-            <div data-cell-index="3" class="oh-sticky-table__td">
-              {{payslip.get_status_display}}
-            </div>
-          {% endif %}
-            <div class="oh-sticky-table__td oh-sticky-table__right"style="width: 251px !important;">
-            <div class="oh-btn-group">
-              <form action="{% url 'view-payslip-pdf' payslip.id %}" method='post' class="w-100">
-                {% csrf_token %}
-                <button type='submit' title="{% trans 'Download' %}" class="oh-btn oh-btn--light-bkg w-100"> <ion-icon name="download"></ion-icon></button>
-              </form>
-              {% if perms.payroll.add_payslip %}
-                <button hx-confirm="{% trans 'Do you want to send the payslip by mail?' %}" hx-get="{% url 'send-slip' %}?id={{payslip.id}}" hx-target="#payslips-table"
-                        title="{% trans 'Send via mail' %}" type="button" {% if payslip.sent_to_employee %}class="oh-btn sent-to-employee w-50"{% else %}class="oh-btn oh-btn--light-bkg w-50"{% endif %}>
-                  <ion-icon name="mail-outline"></ion-icon>
-                </button>
-              {% endif %}
-              {% if perms.payroll.delete_payslip %}
-                <button hx-confirm="{% trans 'Are you sure you want to delete this payslip?' %}" hx-post="{% url 'delete-payslip' payslip.id %}"
-                        hx-target="#payslips-table" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" title="{% trans 'Remove' %}"
-                      >
-                  <ion-icon name="trash-outline"></ion-icon>
-                </button>
-              {% endif %}
-            </div>
-          </div>
-        </a>
-        {% endfor %}
-      </div>
     </div>
-  </div>
-  <div class="oh-pagination">
-      <span
-        class="oh-pagination__page"
-        >
-        {% trans "Page" %} {{ payslips.number }} {% trans "of" %} {{ payslips.paginator.num_pages }}.
-        </span
-      >
-      <nav class="oh-pagination__nav">
-        <div class="oh-pagination__input-container me-3">
-          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-          <input
-            type="number"
-            name="page"
-            class="oh-pagination__input"
-            value="{{payslips.number}}"
-            hx-get="{% url 'filter-payslip' %}?{{pd}}"
-            hx-target="#payslips-table"
-            min="1"
-          />
-          <span class="oh-pagination__label">{% trans "of" %} {{payslips.paginator.num_pages}}</span>
+    <!-- end of column toggle -->
+    <div id="payslip-column-table" data-table-name="payslip_column_tab">
+        <div class="oh-sticky-table">
+            <div class="oh-sticky-table__table oh-table--sortable">
+                <div class="oh-sticky-table__thead">
+                    <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__th" style="width:10px;">
+                            <div class="centered-div">
+                                <input type="checkbox" class="all-payslip oh-input oh-input__checkbox" id="Allpayslip"
+                                    title="{% trans 'Select All' %}" />
+                            </div>
+                        </div>
+                        <div class="oh-sticky-table__th {% if request.sort_option.order == '-employee_id' %}arrow-up {% elif request.sort_option.order == 'employee_id' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=employee_id" hx-target="#payslips-table">{% trans "Employee" %}</div>
+                        <div data-cell-index="1" data-cell-title='{% trans "Start Date" %}'
+                            class="oh-sticky-table__th {% if request.sort_option.order == '-start_date' %}arrow-up {% elif request.sort_option.order == 'start_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=start_date" hx-target="#payslips-table">{% trans "Start Date" %}</div>
+                        <div data-cell-index="2" data-cell-title='{% trans "End Date" %}'
+                            class="oh-sticky-table__th {% if request.sort_option.order == '-end_date' %}arrow-up {% elif request.sort_option.order == 'end_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=end_date" hx-target="#payslips-table">{% trans "End Date" %}</div>
+                        <div data-cell-index="4" data-cell-title='{% trans "Batch" %}' class="oh-sticky-table__th">{% trans "Batch" %}</div>
+                        <div data-cell-index="5" data-cell-title='{% trans "Gross Pay" %}'
+                            class="oh-sticky-table__th {% if request.sort_option.order == '-gross_pay' %}arrow-up {% elif request.sort_option.order == 'gross_pay' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=gross_pay" hx-target="#payslips-table">{% trans "Gross Pay" %}</div>
+                        <div data-cell-index="6" data-cell-title='{% trans "Deduction" %}'
+                            class="oh-sticky-table__th {% if request.sort_option.order == '-deduction' %}arrow-up {% elif request.sort_option.order == 'deduction' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=deduction" hx-target="#payslips-table">{% trans "Deduction" %}</div>
+                        <div data-cell-index="7" data-cell-title='{% trans "Net Pay" %}'
+                            class="oh-sticky-table__th {% if request.sort_option.order == '-net_pay' %}arrow-up {% elif request.sort_option.order == 'net_pay' %}arrow-down {% else %}arrow-up-down {% endif %}"
+                            hx-get="{% url 'filter-payslip' %}?{{pd}}&sortby=net_pay" hx-target="#payslips-table">{% trans "Net Pay" %}</div>
+                        <div data-cell-index="3" data-cell-title='{% trans "Status" %}' class="oh-sticky-table__th">{% trans "Status" %}</div>
+                        <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 251px !important;">{% trans "Actions" %}</div>
+                    </div>
+                </div>
+                <div class="oh-sticky-table__tbody">
+                    {% for payslip in payslips %}
+                        <a class="oh-sticky-table__tr" draggable="true" href="{% url 'view-created-payslip' payslip.id %}"
+                            style="text-decoration: none;">
+                            <div class="oh-sticky-table__sd {% if payslip.status == "review_ongoing" %}row-status--orange {% elif payslip.status == "confirmed" %} row-status--blue {% elif payslip.status == "paid" %} row-status--yellow {% elif payslip.status == "draft" %} row-status--gray{% endif %}">
+                                <div class="centered-div">
+                                    <input type="checkbox" id="{{payslip.id}}" value="{{payslip.id}}"
+                                        onchange="highlightRow($(this))"
+                                        class="oh-input payslip-checkbox oh-input__checkbox all-payslip-row" />
+                                </div>
+                            </div>
+                            <div class="oh-sticky-table__td">
+                                <div class="oh-profile oh-profile--md">
+                                    <div class="oh-profile__avatar mr-1">
+                                        <img src="{{payslip.employee_id.get_avatar}}" class="oh-profile__image"
+                                            alt="Mary Magdalene" />
+                                    </div>
+                                    <span class="oh-profile__name oh-text--dark">{{payslip.employee_id}}</span>
+                                </div>
+                            </div>
+                            <div data-cell-index="1" class="oh-sticky-table__td dateformat_changer">
+                                {{payslip.start_date}}
+                            </div>
+                            <div data-cell-index="2" class="oh-sticky-table__td dateformat_changer">
+                                {{payslip.end_date}}
+                            </div>
+                            <div data-cell-index="4" class="oh-sticky-table__td">
+                                {{payslip.group_name}}
+                            </div>
+                            <div data-cell-index="5" class="oh-sticky-table__td">
+                                {{payslip.gross_pay|floatformat:2|currency_symbol_position}}
+                            </div>
+                            <div data-cell-index="6" class="oh-sticky-table__td">
+                                {{payslip.deduction|floatformat:2|currency_symbol_position}}
+                            </div>
+                            <div data-cell-index="7" class="oh-sticky-table__td">
+                                {{payslip.net_pay|floatformat:2|currency_symbol_position}}
+                            </div>
+                            {% if perms.payroll.change_payslip %}
+                                <div data-cell-index="3" class="oh-sticky-table__td" onclick="event.preventDefault();">
+                                    <select name="status" data-instance-id="{{payslip.id}}" hx-trigger="change"
+                                        hx-post="{% url 'payslip-status-update' payslip.id %}" hx-target="#payslips-table"
+                                        hx-vals='{"view":"table"}'
+                                        style="color: hsl(0,0%,11%); background-color: transparent; border: none; height: 100%; border: 1px solid transparent;">
+                                        {% for opt in payslip.status_choices %}
+                                            <option value="{{opt.0}}" {% if opt.0 == payslip.status %}selected{% endif %}>{{opt.1}}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% else %}
+                                <div data-cell-index="3" class="oh-sticky-table__td">
+                                    {{payslip.get_status_display}}
+                                </div>
+                            {% endif %}
+                            <div class="oh-sticky-table__td oh-sticky-table__right" style="width: 251px !important;">
+                                <div class="oh-btn-group">
+                                    <form action="{% url 'view-payslip-pdf' payslip.id %}" method='post' class="w-100">
+                                        {% csrf_token %}
+                                        <button type='submit' title="{% trans 'Download' %}"
+                                            class="oh-btn oh-btn--light-bkg w-100"> <ion-icon
+                                                name="download"></ion-icon></button>
+                                    </form>
+                                    {% if perms.payroll.add_payslip %}
+                                        <button hx-confirm="{% trans 'Do you want to send the payslip by mail?' %}"
+                                            hx-get="{% url 'send-slip' %}?id={{payslip.id}}" hx-target="#payslips-table"
+                                            title="{% trans 'Send via mail' %}" type="button" {% if payslip.sent_to_employee %}class="oh-btn sent-to-employee w-50" {% else %}class="oh-btn oh-btn--light-bkg w-50" {% endif %}>
+                                            <ion-icon name="mail-outline"></ion-icon>
+                                        </button>
+                                    {% endif %}
+                                    {% if perms.payroll.delete_payslip %}
+                                        <button hx-confirm="{% trans 'Are you sure you want to delete this payslip?' %}"
+                                            hx-post="{% url 'delete-payslip' payslip.id %}" hx-target="#payslips-table"
+                                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
+                                            title="{% trans 'Remove' %}">
+                                            <ion-icon name="trash-outline"></ion-icon>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-        <ul class="oh-pagination__items">
-          {% if payslips.has_previous %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payslips-table' hx-get="{% url 'filter-payslip' %}?{{pd}}&page=1" class="oh-pagination__link" >{% trans "First" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payslips-table' hx-get="{% url 'filter-payslip' %}?{{pd}}&page={{ payslips.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-          </li>
-          {% endif %}
-          {% if payslips.has_next %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payslips-table' hx-get="{% url 'filter-payslip' %}?{{pd}}&page={{ payslips.next_page_number }}" class="oh-pagination__link" >{% trans "Next" %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target='#payslips-table' hx-get="{% url 'filter-payslip' %}?{{pd}}&page={{ payslips.paginator.num_pages }}" class="oh-pagination__link" >{% trans "Last" %}</a>
-          </li>
-          {% endif %}
-        </ul>
-      </nav>
-  </div>
-</div>
+        <div class="oh-pagination">
+            <span class="oh-pagination__page">
+                {% trans "Page" %} {{ payslips.number }} {% trans "of" %} {{ payslips.paginator.num_pages }}.
+            </span>
+            <nav class="oh-pagination__nav">
+                <div class="oh-pagination__input-container me-3">
+                    <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                    <input type="number" name="page" class="oh-pagination__input" value="{{payslips.number}}"
+                        hx-get="{% url 'filter-payslip' %}?{{pd}}" hx-target="#payslips-table" min="1" />
+                    <span class="oh-pagination__label">{% trans "of" %} {{payslips.paginator.num_pages}}</span>
+                </div>
+                <ul class="oh-pagination__items">
+                    {% if payslips.has_previous %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a hx-target='#payslips-table' hx-get="{% url 'filter-payslip' %}?{{pd}}&page=1"
+                                class="oh-pagination__link">{% trans "First" %}</a>
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a hx-target='#payslips-table'
+                                hx-get="{% url 'filter-payslip' %}?{{pd}}&page={{ payslips.previous_page_number }}"
+                                class="oh-pagination__link">{% trans "Previous" %}</a>
+                        </li>
+                    {% endif %}
+                    {% if payslips.has_next %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a hx-target='#payslips-table'
+                                hx-get="{% url 'filter-payslip' %}?{{pd}}&page={{ payslips.next_page_number }}"
+                                class="oh-pagination__link">{% trans "Next" %}</a>
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a hx-target='#payslips-table'
+                                hx-get="{% url 'filter-payslip' %}?{{pd}}&page={{ payslips.paginator.num_pages }}"
+                                class="oh-pagination__link">{% trans "Last" %}</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
 {% else %}
-  <!-- start of empty page -->
-  <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;" >
-    <img
-      style="width: 150px; height: 150px"
-      src="{% static 'images/ui/no-results.png' %}"
-      class="oh-404__image mb-4"
-    />
-    <h5 class="oh-404__subtitle">
-      {% trans "No search result found!" %}
-    </h5>
-  </div>
-  <!-- end of empty page -->
+    <!-- start of empty page -->
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+        <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}" class="oh-404__image mb-4" />
+        <h5 class="oh-404__subtitle">
+            {% trans "No search result found!" %}
+        </h5>
+    </div>
+    <!-- end of empty page -->
 {% endif %}
 <script src="{% static 'payroll/action.js' %}"></script>
 <script>
-  $("[name=update_selected]").change(function (e) {
-    updateBulkStatus($(this));
-    e.preventDefault();
-  });
+    $("[name=update_selected]").change(function (e) {
+        updateBulkStatus($(this));
+        e.preventDefault();
+    });
 
-  $("#Allpayslip").click(function (e) {
-    var is_checked = $(this).is(":checked");
-    if (is_checked) {
-      $(".all-payslip-row").prop("checked", true).closest(".oh-sticky-table__tr")
-      .addClass("highlight-selected");
-    } else {
-      $(".all-payslip-row").prop("checked", false).closest(".oh-sticky-table__tr")
-      .removeClass("highlight-selected");;
+    $("#Allpayslip").click(function (e) {
+        var is_checked = $(this).is(":checked");
+        if (is_checked) {
+            $(".all-payslip-row").prop("checked", true).closest(".oh-sticky-table__tr")
+                .addClass("highlight-selected");
+        } else {
+            $(".all-payslip-row").prop("checked", false).closest(".oh-sticky-table__tr")
+                .removeClass("highlight-selected");;
+        }
+        addingPayslipIds();
+    });
+
+    $(document).ready(function () {
+        tickPayslipCheckboxes();
+        $("#selectAllPayslip").click(function () {
+            selectAllPayslip();
+        });
+
+        $("#unselectAllPayslip").click(function () {
+            unselectAllPayslip();
+        });
+
+        $("#exportPayslips").click(function (e) {
+            exportPayslips();
+        });
+        $(".all-payslip-row").change(function () {
+            if ($(".all-payslip").is(":checked")) {
+                $(".all-payslip").prop("checked", false);
+            }
+            addingPayslipIds();
+        });
+    });
+    // toggle columns //
+    toggleColumns("payslip_column_tab", "payslipCells")
+    localStoragepayslipCells = localStorage.getItem("payslip_column_tab")
+    if (!localStoragepayslipCells) {
+        $("#payslipCells").find("[type=checkbox]").prop("checked", true)
     }
-    addingPayslipIds();
-  });
-
-  $(document).ready(function () {
-    tickPayslipCheckboxes();
-    $("#selectAllPayslip").click(function () {
-      selectAllPayslip();
-    });
-
-    $("#unselectAllPayslip").click(function () {
-      unselectAllPayslip();
-    });
-
-    $("#exportPayslips").click(function (e) {
-      exportPayslips();
-    });
-    $(".all-payslip-row").change(function () {
-      if ($(".all-payslip").is(":checked")) {
-        $(".all-payslip").prop("checked", false);
-      }
-      addingPayslipIds();
-    });
-  });
-  // toggle columns //
-  toggleColumns("payslip_column_tab","payslipCells")
-  localStoragepayslipCells = localStorage.getItem("payslip_column_tab")
-  if (!localStoragepayslipCells) {
-    $("#payslipCells").find("[type=checkbox]").prop("checked",true)
-  }
-  $("[type=checkbox]").change()
+    $("[type=checkbox]").change()
 </script>
