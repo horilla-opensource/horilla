@@ -20,6 +20,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import never_cache
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, Side
 from openpyxl.utils import get_column_letter
@@ -996,6 +997,7 @@ def view_individual_payslip(request, employee_id, start_date, end_date):
 
 
 @login_required
+@never_cache
 def view_payslip(request):
     """
     This method is used to render the template for viewing a payslip.
