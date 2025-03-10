@@ -578,7 +578,8 @@ class JobRoleForm(ModelForm):
         super().__init__(*args, **kwargs)
         if not self.instance.pk:
             self.fields["job_position_id"] = forms.ModelMultipleChoiceField(
-                queryset=self.fields["job_position_id"].queryset
+                queryset=self.fields["job_position_id"].queryset,
+                label=JobRole._meta.get_field("job_position_id").verbose_name,
             )
             attrs = self.fields["job_position_id"].widget.attrs
             attrs["class"] = "oh-select oh-select2 w-100"
