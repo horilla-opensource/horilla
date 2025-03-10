@@ -813,9 +813,11 @@ def calculate_based_on_gross_pay(*_args, **kwargs):
     """
 
     component = kwargs["component"]
+    day_dict = kwargs["day_dict"]
     gross_pay = calculate_gross_pay(**kwargs)
     rate = component.rate
     amount = gross_pay["gross_pay"] * rate / 100
+    amount = compute_limit(component, amount,day_dict)
     return amount
 
 
@@ -836,10 +838,12 @@ def calculate_based_on_taxable_gross_pay(*_args, **kwargs):
 
     """
     component = kwargs["component"]
+    day_dict = kwargs["day_dict"]
     taxable_gross_pay = calculate_taxable_gross_pay(**kwargs)
     taxable_gross_pay = taxable_gross_pay["taxable_gross_pay"]
     rate = component.rate
     amount = taxable_gross_pay * rate / 100
+    amount = compute_limit(component, amount,day_dict)
     return amount
 
 
@@ -857,8 +861,6 @@ def calculate_based_on_net_pay(component, net_pay, day_dict):
     """
     rate = float(component.rate)
     amount = net_pay * rate / 100
-    amount = compute_limit(component, amount, day_dict)
-
     amount = compute_limit(component, amount, day_dict)
     return amount
 
@@ -894,9 +896,7 @@ def calculate_based_on_attendance(*_args, **kwargs):
         attendance_validated=True,
     ).count()
     amount = count * component.per_attendance_fixed_amount
-
     amount = compute_limit(component, amount, day_dict)
-
     return amount
 
 
