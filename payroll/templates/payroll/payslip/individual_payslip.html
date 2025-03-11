@@ -16,7 +16,7 @@
             <a href="{% url 'view-payslip-pdf' instance.id %}" type="button" title="{% trans 'Download' %}" class="oh-btn oh-btn--gray-bkg w-100" style="background-color: #dadada;"> <ion-icon name="download"></ion-icon></a>
           {% if perms.payroll.add_payslip %}
             <a
-              hx-confirm="{% trans 'Do you want to sent the payslip by mail?' %}" hx-get="{% url "send-slip" %}?id={{instance.id}}&view=individual-payslip" hx-target="#payslips-table"
+              hx-confirm="{% trans 'Do you want to send the payslip by mail?' %}" hx-get="{% url "send-slip" %}?id={{instance.id}}&view=individual-payslip" hx-target="#payslips-table"
               title="{% trans 'Send via mail' %}" {% if payslip.sent_to_employee %}class="oh-btn sent-to-employee w-100"{% else %}class="oh-btn oh-btn--light-bkg w-100"{% endif %}> <ion-icon name="mail-outline"></ion-icon></a>
           {% endif %}
         </div>

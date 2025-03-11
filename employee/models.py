@@ -85,8 +85,8 @@ class Employee(models.Model):
         max_length=15,
     )
     address = models.TextField(max_length=200, blank=True, null=True)
-    country = models.CharField(max_length=30, blank=True, null=True)
-    state = models.CharField(max_length=30, null=True, blank=True)
+    country = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
     zip = models.CharField(max_length=20, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)
@@ -177,7 +177,9 @@ class Employee(models.Model):
         """
         This method is used to return the shift of the employee
         """
-        return getattr(getattr(self, "employee_work_info", None), "email", self.email)
+        work_info = getattr(self, "employee_work_info", None)
+        work_email = getattr(work_info, "email", None)
+        return work_email if work_email is not None else self.email
 
     def get_email(self):
         return self.get_mail()

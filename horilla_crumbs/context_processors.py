@@ -151,6 +151,7 @@ sidebar_urls = [
     "user-accessibility",
     "asset-batch-view",
     "task-all",
+    "gdrive",
 ]
 remove_urls = [
     "feedback-detailed-view",

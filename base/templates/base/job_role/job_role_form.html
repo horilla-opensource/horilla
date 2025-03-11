@@ -1,46 +1,31 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
-  <span class="oh-modal__dialog-title" id="confirmModalLabel"
-    >
-    {% if job_role.id %}
-      {% trans "Update Job Role" %}
-    {% else %}
-      {% trans "Create Job Role" %}
-    {% endif %}
-  </span>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <span class="oh-modal__dialog-title" id="confirmModalLabel">
+        {% if job_role.id %} {% trans "Update" %} {% else %} {% trans "Create" %} {% endif %} {{form.verbose_name}}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    {% if job_role.id %}
-      hx-post="{% url 'job-role-update' job_role.id %}"
-    {% else %}
-      hx-post="{% url 'job-role-create' %}?dynamic={{dynamic}}"
-    {% endif %}
-    {% if dynamic %}
-      hx-target="#dynamicCreateModalBody"
-    {% else %}
-      hx-target="#jobRoleForm"
-    {%endif%}
-    class="oh-profile-section"
-    >
-    {% csrf_token %} {{form.non_field_errors}}
-    <div class="oh-inner-sidebar-content__body">
-      <div class="oh-input-group mb-2">
-        <label class="mb-1"> {% trans "Job Position:" %} </label>
-        {{form.job_position_id.errors}} {{form.job_position_id}}
-      </div>
-      <div class="oh-input-group mb-2">
-        <label class="mb-1"> {% trans "Job Role:" %} </label>
-        {{form.job_role.errors}} {{form.job_role}}
-      </div>
-    </div>
-    <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form hx-post="{{ request.get_full_path }}"
+        hx-target=" {% if dynamic %} #dynamicCreateModalBody {% else %} #jobRoleForm {%endif%}"
+        class="oh-profile-section">
+        {% csrf_token %} {{form.non_field_errors}}
+        <div class="oh-inner-sidebar-content__body">
+            <div class="oh-input-group mb-2">
+                <label class="mb-1"> {{form.job_position_id.label}} </label>
+                {{form.job_position_id.errors}} {{form.job_position_id}}
+            </div>
+            <div class="oh-input-group mb-2">
+                <label class="mb-1"> {{form.job_role.label}} </label>
+                {{form.job_role.errors}} {{form.job_role}}
+            </div>
+        </div>
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>

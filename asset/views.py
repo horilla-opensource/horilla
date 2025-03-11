@@ -355,7 +355,8 @@ def asset_list(request, cat_id):
     context = {}
     asset_under = ""
     asset_filtered = AssetFilter(request.GET)
-    asset_list = asset_filtered.qs
+
+    asset_list = asset_filtered.qs.filter(asset_category_id = cat_id)
 
     paginator = Paginator(asset_list, get_pagination())
     page_number = request.GET.get("page")
@@ -704,7 +705,7 @@ def asset_request_reject(request, req_id):
         found or already rejected
     """
     asset_request = AssetRequest.objects.get(id=req_id)
-    # asset_request.asset_request_status = "Rejected"
+    asset_request.asset_request_status = "Rejected"
     asset_request.save()
     messages.info(request, _("Asset request has been rejected."))
     notify.send(

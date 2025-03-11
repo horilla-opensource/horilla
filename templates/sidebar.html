@@ -1,5 +1,6 @@
 {% load static %} {% load i18n %} {% load horillafilters  %}
 {% load basefilters %}
+{% verbatim %}
 <script>
   function activeNav(id) {
     const navElement = $(`#${id}`);
@@ -33,20 +34,24 @@ function initializeSummernote(candId,searchWords,) {
                 }));
             },
             content: function(item) {
-                var word = searchWords[item];
-                if (preloadedData[word]) {
-                    $("[name='body']").summernote('insertText', preloadedData[word]);
-                    $('.note-hint-popover').hide();
-                } else {
-                    preloadData(word,candId,preloadedData, function() {
-                      $("[name='body']").summernote('insertText',preloadedData[word]);
+              var word = searchWords[item];
+              var insertText = `{{${word}}}`; // Correct string formatting
+
+              if (preloadedData[word]) {
+                  $("[name='body']").summernote('pasteHTML', insertText); // Use pasteHTML instead
+                  $('.note-hint-popover').hide();
+              } else {
+                  preloadData(word, candId, preloadedData, function() {
+                      $("[name='body']").summernote('pasteHTML', insertText);
+                      $('.note-hint-popover').hide();
                   });
-                }
-            }
+              }
+          }
         }
     });
 }
 </script>
+{% endverbatim %}
 <div
   class="oh-sidebar"
   style="position: -webkit-sticky; position: sticky; top: 0;height:100vh; overflow-x:hidden;"

@@ -2,19 +2,16 @@
 forms.py
 """
 
-from datetime import date
 from typing import Any
 
 from django import forms
 from django.forms import widgets
 from django.template.loader import render_to_string
-from django.utils.translation import gettext_lazy as trans
+from django.utils.translation import gettext_lazy as _
 
-from base.forms import Form
-from base.methods import reload_queryset
+from base.forms import Form, ModelForm
 from employee.forms import MultipleFileField
 from employee.models import Employee
-from horilla import horilla_middlewares
 from payroll.context_processors import get_active_employees
 from payroll.models.models import (
     Contract,
@@ -25,72 +22,12 @@ from payroll.models.models import (
 )
 
 
-class ModelForm(forms.ModelForm):
-    """
-    ModelForm override for additional style
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        reload_queryset(self.fields)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        for _, field in self.fields.items():
-            widget = field.widget
-
-            if isinstance(widget, (forms.DateInput)):
-                field.initial = date.today()
-
-            if isinstance(widget, (forms.DateInput)):
-                field.widget.attrs.update({"class": "oh-input oh-calendar-input w-100"})
-            elif isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-            ):
-                label = trans(field.label)
-                field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": label}
-                )
-            elif isinstance(widget, (forms.Select,)):
-                field.widget.attrs.update(
-                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
-                )
-            elif isinstance(widget, (forms.Textarea)):
-                label = trans(field.label)
-                field.widget.attrs.update(
-                    {
-                        "class": "oh-input w-100",
-                        "placeholder": label,
-                        "rows": 2,
-                        "cols": 40,
-                    }
-                )
-            elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
-            ):
-                field.widget.attrs.update({"class": "oh-switch__checkbox"})
-
-            try:
-                self.fields["employee_id"].initial = request.user.employee_get
-            except:
-                pass
-
-            try:
-                self.fields["company_id"].initial = (
-                    request.user.employee_get.get_company
-                )
-            except:
-                pass
-
-
 class ContractForm(ModelForm):
     """
     ContactForm
     """
 
-    verbose_name = trans("Contract")
+    verbose_name = _("Contract")
     contract_start_date = forms.DateField()
     contract_end_date = forms.DateField(required=False)
 
@@ -154,6 +91,9 @@ class ContractForm(ModelForm):
         return table_html
 
     def get_dynamic_hx_post_url(self, instance):
+        """
+        Render the url for contract status update through hx request
+        """
         return f"/payroll/update-contract-status/{instance.pk}"
 
 
@@ -179,6 +119,10 @@ class reimbursementCommentForm(ModelForm):
     verbose_name = "Add Comment"
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = ReimbursementrequestComment
         fields = "__all__"
 

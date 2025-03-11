@@ -17,8 +17,8 @@
 						<div class="oh-sticky-table__td">
 							<div class="oh-btn-group">
 								{% if perms.base.change_department %}
-									<a hx-get="{% url 'department-update' dep.id %}" hx-target="#departmentEditForm"
-										data-toggle="oh-modal-toggle" data-target="#departmentEditModal" type="button"
+									<a hx-get="{% url 'department-update' dep.id %}" hx-target="#objectUpdateModalTarget"
+										data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" type="button"
 										class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
 										<ion-icon name="create-outline"></ion-icon></a>
 								{% endif %}

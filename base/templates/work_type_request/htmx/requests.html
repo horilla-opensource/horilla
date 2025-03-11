@@ -126,8 +126,8 @@
                                 {% if request.user.employee_get ==  work_type_request.employee_id or perms.base.change_worktyperequest or request.user|is_reportingmanager %}
                                     {% if work_type_request.approved == False and not work_type_request.canceled %}
                                         <a hx-get="{% url 'work-type-request-update' work_type_request.id %}"
-                                            hx-target='#workTypeRequestUpdateModalBody' data-toggle="oh-modal-toggle"
-                                            data-target='#workTypeRequestUpdateModal' class="oh-btn oh-btn--light-bkg w-50"
+                                            hx-target='#objectUpdateModalTarget' data-toggle="oh-modal-toggle"
+                                            data-target='#objectUpdateModal' class="oh-btn oh-btn--light-bkg w-50"
                                             title="{% trans 'Edit' %}">
                                             <ion-icon name="create-outline"></ion-icon>
                                         </a>

@@ -12,8 +12,6 @@ from django.apps import apps
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import post_save, pre_delete, pre_save
-from django.dispatch import receiver
 from django.http import QueryDict
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -453,89 +451,90 @@ if apps.is_installed("attendance"):
         Class to override Attendance model save method
         """
 
+        pass
         # Additional fields and methods specific to AnotherModel
-        @receiver(post_save, sender=Attendance)
-        def attendance_post_save(sender, instance, **kwargs):
-            """
-            Overriding Attendance model save method
-            """
-            if instance.first_save:
-                min_hour_second = strtime_seconds(instance.minimum_hour)
-                at_work_second = strtime_seconds(instance.attendance_worked_hour)
+        # @receiver(post_save, sender=Attendance)
+        # def attendance_post_save(sender, instance, **kwargs):
+        #     """
+        #     Overriding Attendance model save method
+        #     """
+        #     if instance.first_save:
+        #         min_hour_second = strtime_seconds(instance.minimum_hour)
+        #         at_work_second = strtime_seconds(instance.attendance_worked_hour)
 
-                status = "FDP" if instance.at_work_second >= min_hour_second else "HDP"
+        #         status = "FDP" if instance.at_work_second >= min_hour_second else "HDP"
 
-                status = "CONF" if instance.attendance_validated is False else status
-                message = (
-                    _("Validate the attendance") if status == "CONF" else _("Validated")
-                )
+        #         status = "CONF" if instance.attendance_validated is False else status
+        #         message = (
+        #             _("Validate the attendance") if status == "CONF" else _("Validated")
+        #         )
 
-                message = (
-                    _("Incomplete minimum hour")
-                    if status == "HDP" and min_hour_second > at_work_second
-                    else message
-                )
-                work_record = WorkRecord.objects.filter(
-                    date=instance.attendance_date,
-                    is_attendance_record=True,
-                    employee_id=instance.employee_id,
-                )
-                work_record = (
-                    WorkRecord()
-                    if not WorkRecord.objects.filter(
-                        date=instance.attendance_date,
-                        employee_id=instance.employee_id,
-                    ).exists()
-                    else WorkRecord.objects.filter(
-                        date=instance.attendance_date,
-                        employee_id=instance.employee_id,
-                    ).first()
-                )
-                work_record.employee_id = instance.employee_id
-                work_record.date = instance.attendance_date
-                work_record.at_work = instance.attendance_worked_hour
-                work_record.min_hour = instance.minimum_hour
-                work_record.min_hour_second = min_hour_second
-                work_record.at_work_second = at_work_second
-                work_record.work_record_type = status
-                work_record.message = message
-                work_record.is_attendance_record = True
-                if instance.attendance_validated:
-                    work_record.day_percentage = (
-                        1.00 if at_work_second > min_hour_second / 2 else 0.50
-                    )
-                work_record.save()
+        #         message = (
+        #             _("Incomplete minimum hour")
+        #             if status == "HDP" and min_hour_second > at_work_second
+        #             else message
+        #         )
+        #         work_record = WorkRecord.objects.filter(
+        #             date=instance.attendance_date,
+        #             is_attendance_record=True,
+        #             employee_id=instance.employee_id,
+        #         )
+        #         work_record = (
+        #             WorkRecord()
+        #             if not WorkRecord.objects.filter(
+        #                 date=instance.attendance_date,
+        #                 employee_id=instance.employee_id,
+        #             ).exists()
+        #             else WorkRecord.objects.filter(
+        #                 date=instance.attendance_date,
+        #                 employee_id=instance.employee_id,
+        #             ).first()
+        #         )
+        #         work_record.employee_id = instance.employee_id
+        #         work_record.date = instance.attendance_date
+        #         work_record.at_work = instance.attendance_worked_hour
+        #         work_record.min_hour = instance.minimum_hour
+        #         work_record.min_hour_second = min_hour_second
+        #         work_record.at_work_second = at_work_second
+        #         work_record.work_record_type = status
+        #         work_record.message = message
+        #         work_record.is_attendance_record = True
+        #         if instance.attendance_validated:
+        #             work_record.day_percentage = (
+        #                 1.00 if at_work_second > min_hour_second / 2 else 0.50
+        #             )
+        #         work_record.save()
 
-                if status == "HDP" and work_record.is_leave_record:
-                    message = _("Half day leave")
+        #         if status == "HDP" and work_record.is_leave_record:
+        #             message = _("Half day leave")
 
-                if status == "FDP":
-                    message = _("Present")
+        #         if status == "FDP":
+        #             message = _("Present")
 
-                work_record.message = message
-                work_record.save()
+        #         work_record.message = message
+        #         work_record.save()
 
-                message = work_record.message
-                status = work_record.work_record_type
-                if not instance.attendance_clock_out:
-                    status = "FDP"
-                    message = _("Currently working")
-                work_record.message = message
-                work_record.work_record_type = status
-                work_record.save()
+        #         message = work_record.message
+        #         status = work_record.work_record_type
+        #         if not instance.attendance_clock_out:
+        #             status = "FDP"
+        #             message = _("Currently working")
+        #         work_record.message = message
+        #         work_record.work_record_type = status
+        #         work_record.save()
 
-    @receiver(pre_delete, sender=Attendance)
-    def attendance_pre_delete(sender, instance, **_kwargs):
-        """
-        Overriding Attendance model delete method
-        """
-        # Perform any actions before deleting the instance
-        # ...
-        WorkRecord.objects.filter(
-            employee_id=instance.employee_id,
-            is_attendance_record=True,
-            date=instance.attendance_date,
-        ).delete()
+    # @receiver(pre_delete, sender=Attendance)
+    # def attendance_pre_delete(sender, instance, **_kwargs):
+    #     """
+    #     Overriding Attendance model delete method
+    #     """
+    #     # Perform any actions before deleting the instance
+    #     # ...
+    #     WorkRecord.objects.filter(
+    #         employee_id=instance.employee_id,
+    #         is_attendance_record=True,
+    #         date=instance.attendance_date,
+    #     ).delete()
 
 
 if apps.is_installed("leave"):
@@ -546,72 +545,73 @@ if apps.is_installed("leave"):
         Class to override Attendance model save method
         """
 
+        pass
         # Additional fields and methods specific to AnotherModel
-        @receiver(pre_save, sender=LeaveRequest)
-        def leaverequest_pre_save(sender, instance, **_kwargs):
-            """
-            Overriding LeaveRequest model save method
-            """
-            if (
-                instance.start_date == instance.end_date
-                and instance.end_date_breakdown != instance.start_date_breakdown
-            ):
-                instance.end_date_breakdown = instance.start_date_breakdown
-                super(LeaveRequest, instance).save()
+        # @receiver(pre_save, sender=LeaveRequest)
+        # def leaverequest_pre_save(sender, instance, **_kwargs):
+        #     """
+        #     Overriding LeaveRequest model save method
+        #     """
+        #     if (
+        #         instance.start_date == instance.end_date
+        #         and instance.end_date_breakdown != instance.start_date_breakdown
+        #     ):
+        #         instance.end_date_breakdown = instance.start_date_breakdown
+        #         super(LeaveRequest, instance).save()
 
-            period_dates = get_date_range(instance.start_date, instance.end_date)
-            if instance.status == "approved":
-                for date in period_dates:
-                    try:
-                        work_entry = (
-                            WorkRecord.objects.filter(
-                                date=date,
-                                employee_id=instance.employee_id,
-                            )
-                            if WorkRecord.objects.filter(
-                                date=date,
-                                employee_id=instance.employee_id,
-                            ).exists()
-                            else WorkRecord()
-                        )
-                        work_entry.employee_id = instance.employee_id
-                        work_entry.is_leave_record = True
-                        work_entry.day_percentage = (
-                            0.50
-                            if instance.start_date == date
-                            and instance.start_date_breakdown == "first_half"
-                            or instance.end_date == date
-                            and instance.end_date_breakdown == "second_half"
-                            else 0.00
-                        )
-                        # scheduler task to validate the conflict entry for half day if they
-                        # take half day leave is when they mark the attendance.
-                        status = (
-                            "CONF"
-                            if instance.start_date == date
-                            and instance.start_date_breakdown == "first_half"
-                            or instance.end_date == date
-                            and instance.end_date_breakdown == "second_half"
-                            else "ABS"
-                        )
-                        work_entry.work_record_type = status
-                        work_entry.date = date
-                        work_entry.message = (
-                            "Absent"
-                            if status == "ABS"
-                            else _("Half day Attendance need to validate")
-                        )
-                        work_entry.save()
-                    except:
-                        pass
+        #     period_dates = get_date_range(instance.start_date, instance.end_date)
+        #     if instance.status == "approved":
+        #         for date in period_dates:
+        #             try:
+        #                 work_entry = (
+        #                     WorkRecord.objects.filter(
+        #                         date=date,
+        #                         employee_id=instance.employee_id,
+        #                     )
+        #                     if WorkRecord.objects.filter(
+        #                         date=date,
+        #                         employee_id=instance.employee_id,
+        #                     ).exists()
+        #                     else WorkRecord()
+        #                 )
+        #                 work_entry.employee_id = instance.employee_id
+        #                 work_entry.is_leave_record = True
+        #                 work_entry.day_percentage = (
+        #                     0.50
+        #                     if instance.start_date == date
+        #                     and instance.start_date_breakdown == "first_half"
+        #                     or instance.end_date == date
+        #                     and instance.end_date_breakdown == "second_half"
+        #                     else 0.00
+        #                 )
+        #                 # scheduler task to validate the conflict entry for half day if they
+        #                 # take half day leave is when they mark the attendance.
+        #                 status = (
+        #                     "CONF"
+        #                     if instance.start_date == date
+        #                     and instance.start_date_breakdown == "first_half"
+        #                     or instance.end_date == date
+        #                     and instance.end_date_breakdown == "second_half"
+        #                     else "ABS"
+        #                 )
+        #                 work_entry.work_record_type = status
+        #                 work_entry.date = date
+        #                 work_entry.message = (
+        #                     "Absent"
+        #                     if status == "ABS"
+        #                     else _("Half day Attendance need to validate")
+        #                 )
+        #                 work_entry.save()
+        #             except:
+        #                 pass
 
-            else:
-                for date in period_dates:
-                    WorkRecord.objects.filter(
-                        is_leave_record=True,
-                        date=date,
-                        employee_id=instance.employee_id,
-                    ).delete()
+        #     else:
+        #         for date in period_dates:
+        #             WorkRecord.objects.filter(
+        #                 is_leave_record=True,
+        #                 date=date,
+        #                 employee_id=instance.employee_id,
+        #             ).delete()
 
 
 # class OverrideWorkInfo(EmployeeWorkInformation):
@@ -619,28 +619,27 @@ if apps.is_installed("leave"):
 #     This class is to override the Model default methods
 #     """
 
-
-@receiver(pre_save, sender=EmployeeWorkInformation)
-def employeeworkinformation_pre_save(sender, instance, **_kwargs):
-    """
-    This method is used to override the save method for EmployeeWorkInformation Model
-    """
-    active_employee = (
-        instance.employee_id if instance.employee_id.is_active == True else None
-    )
-    if active_employee is not None:
-        contract_exists = active_employee.contract_set.exists()
-        if not contract_exists:
-            contract = Contract()
-            contract.contract_name = f"{active_employee}'s Contract"
-            contract.employee_id = active_employee
-            contract.contract_start_date = (
-                instance.date_joining if instance.date_joining else datetime.today()
-            )
-            contract.wage = (
-                instance.basic_salary if instance.basic_salary is not None else 0
-            )
-            contract.save()
+# @receiver(pre_save, sender=EmployeeWorkInformation)
+# def employeeworkinformation_pre_save(sender, instance, **_kwargs):
+#     """
+#     This method is used to override the save method for EmployeeWorkInformation Model
+#     """
+#     active_employee = (
+#         instance.employee_id if instance.employee_id.is_active == True else None
+#     )
+#     if active_employee is not None:
+#         contract_exists = active_employee.contract_set.exists()
+#         if not contract_exists:
+#             contract = Contract()
+#             contract.contract_name = f"{active_employee}'s Contract"
+#             contract.employee_id = active_employee
+#             contract.contract_start_date = (
+#                 instance.date_joining if instance.date_joining else datetime.today()
+#             )
+#             contract.wage = (
+#                 instance.basic_salary if instance.basic_salary is not None else 0
+#             )
+#             contract.save()
 
 
 # Create your models here.
@@ -1570,102 +1569,6 @@ class LoanAccount(HorillaModel):
         super().save(*args, **kwargs)
 
 
-def _create_deductions(instance, amount, date):
-    installment = Deduction()
-    installment.title = f"{instance.title} - {date}"
-    installment.include_active_employees = False
-    installment.amount = amount
-    installment.is_fixed = True
-    installment.one_time_date = date
-    installment.only_show_under_employee = True
-    installment.is_installment = True
-    installment.save()
-    installment.include_active_employees = False
-    installment.specific_employees.add(instance.employee_id)
-    installment.save()
-
-    return installment
-
-
-@receiver(post_save, sender=LoanAccount)
-def create_installments(sender, instance, created, **kwargs):
-    """
-    Post save method for loan account
-    """
-    installments = []
-    asset = True
-    if apps.is_installed("asset"):
-        asset = True if instance.asset_id is None else False
-
-    if created and asset and instance.type != "fine":
-        loan = Allowance()
-        loan.amount = instance.loan_amount
-        loan.title = instance.title
-        loan.include_active_employees = False
-        loan.amount = instance.loan_amount
-        loan.only_show_under_employee = True
-        loan.is_fixed = True
-        loan.one_time_date = instance.provided_date
-        loan.is_loan = True
-        loan.save()
-        loan.include_active_employees = False
-        loan.specific_employees.add(instance.employee_id)
-        loan.save()
-        instance.allowance_id = loan
-        super(LoanAccount, instance).save()
-    else:
-        deductions = instance.deduction_ids.values_list("id", flat=True)
-        payslips_with_deductions = Payslip.objects.filter(
-            installment_ids__in=deductions
-        )
-        balance_deduction = [
-            deduction_id
-            for deduction_id in deductions
-            if not payslips_with_deductions.filter(
-                installment_ids=deduction_id
-            ).exists()
-        ]
-        installment_dict = instance.get_installments()
-
-        if not payslips_with_deductions and not instance.settled:
-            Deduction.objects.filter(id__in=deductions).delete()
-            for (
-                installment_date,
-                installment_amount,
-            ) in installment_dict.items():
-                installment = _create_deductions(
-                    instance, installment_amount, installment_date
-                )
-
-                installments.append(installment)
-
-            instance.deduction_ids.add(*installments)
-            return
-
-        if instance.settled:
-            Deduction.objects.filter(id__in=balance_deduction).delete()
-
-        else:
-            if not balance_deduction:
-                for (
-                    installment_date,
-                    installment_amount,
-                ) in installment_dict.items():
-                    if not Deduction.objects.filter(
-                        one_time_date=installment_date,
-                        specific_employees=instance.employee_id,
-                        is_installment=True,
-                        title=instance.title,
-                    ).exists():
-                        installment = _create_deductions(
-                            instance, installment_amount, installment_date
-                        )
-
-                        installments.append(installment)
-
-                instance.deduction_ids.add(*installments)
-
-
 class ReimbursementMultipleAttachment(models.Model):
     """
     ReimbursementMultipleAttachement Model
@@ -1885,14 +1788,6 @@ class Reimbursement(HorillaModel):
 
     def __str__(self):
         return f"{self.title}"
-
-
-# changing status canceled to reject for existing reimbursement
-try:
-    if Reimbursement.objects.filter(status="canceled").exists():
-        Reimbursement.objects.filter(status="canceled").update(status="rejected")
-except:
-    pass
 
 
 class ReimbursementFile(models.Model):

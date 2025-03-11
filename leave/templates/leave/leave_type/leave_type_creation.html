@@ -266,7 +266,6 @@
 
 <script>
     $(document).ready(function () {
-
         var reset = $("#id_reset");
         var reset_based_label = $("label[for='id_reset_based']");
         var reset_based_span = $("#reset_based_id");
@@ -280,11 +279,17 @@
         var carryforward_type = $("#id_carryforward_type");
         var carryforward_max_label = $("label[for='id_carryforward_max']");
         var carryforward_max = $("#id_carryforward_max");
-        var carryforward_expire_in_label = $("label[for='id_carryforward_expire_in']");
+        var carryforward_expire_in_label = $(
+            "label[for='id_carryforward_expire_in']"
+        );
         var carryforward_expire_in = $("#id_carryforward_expire_in");
-        var carryforward_expire_date_label = $("label[for='id_carryforward_expire_date']");
+        var carryforward_expire_date_label = $(
+            "label[for='id_carryforward_expire_date']"
+        );
         var carryforward_expire_date = $("#id_carryforward_expire_date");
-        var carryforward_expire_period_label = $("label[for='id_carryforward_expire_period']");
+        var carryforward_expire_period_label = $(
+            "label[for='id_carryforward_expire_period']"
+        );
         var carryforward_expire_period = $("#id_carryforward_expire_period");
         var totalDaysContainer = $(".totalDaysContainer");
         var resetContainer = $(".resetContainer");
@@ -293,184 +298,228 @@
 
         //Making all fields which are not needed first was hidden and not required
         reset_based_label.hide();
-        reset_based.hide().prop('required', false);
-        reset_based_span.hide()
+        reset_based.hide().prop("required", false);
+        reset_based_span.hide();
         reset_month_label.hide();
-        reset_month.hide().prop('required', false);
+        reset_month.hide().prop("required", false);
         reset_day_label.hide();
-        reset_day.hide().prop('required', false);
-        reset_weekend.hide().prop('required', false);;
+        reset_day.hide().prop("required", false);
+        reset_weekend.hide().prop("required", false);
         reset_weekend_label.hide();
         carryforward_max_label.hide();
-        carryforward_max.hide().prop('required', false);
+        carryforward_max.hide().prop("required", false);
         carryforward_expire_in_label.hide();
-        carryforward_expire_in.hide().prop('required', false);
+        carryforward_expire_in.hide().prop("required", false);
         carryforward_expire_period_label.hide();
-        carryforward_expire_period.hide().prop('required', false);
+        carryforward_expire_period.hide().prop("required", false);
         carryforward_expire_date_label.closest("div").hide();
-        carryforward_expire_date.hide().prop('required', false);
+        carryforward_expire_date.hide().prop("required", false);
+
+        // clear the values of date inputs
+        $("[type=date]").each(function () {
+            $(this).val("");
+        });
 
         // Check value of reset change field and trigger action
         reset.change(function () {
-            (this.checked) ? (reset_based.show().prop('required', true), reset_based_label.show()) : (reset_based_label.hide(), reset_based.hide().prop('required', false), reset_based.val('')),reset_based_span.show()
-            reset_based.is(':hidden') ? (reset_month_label.hide(), reset_month.hide().prop('required', false), reset_month.val(''), reset_day_label.hide(), reset_day.val(''), reset_day.hide().prop('required', false), reset_weekend_label.hide(),reset_based_span.hide(), reset_weekend.hide().prop('required', false), reset_weekend.val('')) : ""
+            this.checked
+                ? (reset_based.show().prop("required", true),
+                  reset_based_label.show())
+                : (reset_based_label.hide(),
+                  reset_based.hide().prop("required", false),
+                  reset_based.val("")),
+                reset_based_span.show();
+            reset_based.is(":hidden")
+                ? (reset_month_label.hide(),
+                  reset_month.hide().prop("required", false),
+                  reset_month.val(""),
+                  reset_day_label.hide(),
+                  reset_day.val(""),
+                  reset_day.hide().prop("required", false),
+                  reset_weekend_label.hide(),
+                  reset_based_span.hide(),
+                  reset_weekend.hide().prop("required", false),
+                  reset_weekend.val(""))
+                : "";
         });
 
-        limitLeave.change(function (){
-            (this.checked) ? (totalDaysContainer.show(), resetContainer.show()) : (totalDaysContainer.hide(), resetContainer.hide())
-        })
+        limitLeave.change(function () {
+            this.checked
+                ? (totalDaysContainer.show(), resetContainer.show())
+                : (totalDaysContainer.hide(), resetContainer.hide());
+        });
 
         // Check value of boolean change field and trigger action
         reset_based.change(function (e) {
             var value = $(this).val();
-            if (value == 'weekly') {
-                reset_weekend.show().prop('required', true);
+            if (value == "weekly") {
+                reset_weekend.show().prop("required", true);
                 reset_weekend_label.show();
-                reset_month.hide().prop('required', false);
-                reset_month_label.hide()
-                reset_month.val('')
-                reset_day.hide().prop('required', false);
-                reset_day_label.hide()
-                reset_day.val('')
+                reset_month.hide().prop("required", false);
+                reset_month_label.hide();
+                reset_month.val("");
+                reset_day.hide().prop("required", false);
+                reset_day_label.hide();
+                reset_day.val("");
             } else {
-                reset_weekend_label.hide()
-                reset_weekend.hide().prop('required', false);
-                reset_weekend.val('')
+                reset_weekend_label.hide();
+                reset_weekend.hide().prop("required", false);
+                reset_weekend.val("");
             }
-            if (value == 'yearly') {
-                reset_weekend_label.hide()
-                reset_weekend.hide().prop('required', false);
-                reset_weekend.val('')
-                reset_month_label.show()
-                reset_month.show().prop('required', true);
-                reset_day.show().prop('required', true);
-                reset_day_label.show()
+            if (value == "yearly") {
+                reset_weekend_label.hide();
+                reset_weekend.hide().prop("required", false);
+                reset_weekend.val("");
+                reset_month_label.show();
+                reset_month.show().prop("required", true);
+                reset_day.show().prop("required", true);
+                reset_day_label.show();
             }
-            if (value == 'monthly') {
-                reset_day.show().prop('required', true);
-                reset_day_label.show()
-                reset_month.hide().prop('required', false);
-                reset_month_label.hide()
-                reset_month.val('')
+            if (value == "monthly") {
+                reset_day.show().prop("required", true);
+                reset_day_label.show();
+                reset_month.hide().prop("required", false);
+                reset_month_label.hide();
+                reset_month.val("");
             }
-            if (value == '') {
-                reset_month.hide().prop('required', false);
-                reset_month_label.hide()
-                reset_month.val('')
-                reset_day.hide().prop('required', false);
-                reset_day_label.hide()
-                reset_day.val('')
+            if (value == "") {
+                reset_month.hide().prop("required", false);
+                reset_month_label.hide();
+                reset_month.val("");
+                reset_day.hide().prop("required", false);
+                reset_day_label.hide();
+                reset_day.val("");
             }
         });
 
         carryforward_type.change(function () {
-            (this.value == 'carryforward' || this.value == 'carryforward expire') ? (carryforward_max_label.show().prop("title","Leave the field empty for unlimitted carryforward"), carryforward_max.show()) : (carryforward_max_label.hide(), carryforward_max.hide().prop('required', false), carryforward_max.val(''));
-            this.value == 'carryforward expire' ?
-                (carryforward_expire_in_label.show(), carryforward_expire_in.show().prop('required', true), carryforward_expire_period_label.show(), carryforward_expire_period.show().prop('required', true), carryforward_expire_date.show().prop('required', true), carryforward_expire_date_label.closest("div").show()):
-                (carryforward_expire_in_label.hide(), carryforward_expire_in.hide().prop('required', false), carryforward_expire_in.val(''), carryforward_expire_period_label.hide(), carryforward_expire_period.hide().prop('required', false), carryforward_expire_period.val(''),carryforward_expire_date.hide().prop('required', false), carryforward_expire_date_label.closest("div").hide());
-        })
+            this.value == "carryforward" || this.value == "carryforward expire"
+                ? (carryforward_max_label
+                      .show()
+                      .prop(
+                          "title",
+                          "Leave the field empty for unlimitted carryforward"
+                      ),
+                  carryforward_max.show())
+                : (carryforward_max_label.hide(),
+                  carryforward_max.hide().prop("required", false),
+                  carryforward_max.val(""));
+            this.value == "carryforward expire"
+                ? (carryforward_expire_in_label.show(),
+                  carryforward_expire_in.show().prop("required", true),
+                  carryforward_expire_period_label.show(),
+                  carryforward_expire_period.show().prop("required", true),
+                  carryforward_expire_date.show().prop("required", true),
+                  carryforward_expire_date_label.closest("div").show())
+                : (carryforward_expire_in_label.hide(),
+                  carryforward_expire_in.hide().prop("required", false),
+                  carryforward_expire_in.val(""),
+                  carryforward_expire_period_label.hide(),
+                  carryforward_expire_period.hide().prop("required", false),
+                  carryforward_expire_period.val(""),
+                  carryforward_expire_date.hide().prop("required", false),
+                  carryforward_expire_date_label.closest("div").hide());
+        });
 
         function toggleFields() {
             if ($("#id_reset").is(":checked")) {
                 $("#id_carryforward_type").parent().show();
                 if ($("#id_carryforward_type").val() == "carryforward") {
                     $("#id_carryforward_max").parent().show();
+                } else if (
+                    $("#id_carryforward_type").val() == "carryforward expire"
+                ) {
+                    $(
+                        "#id_carryforward_max,#id_carryforward_expire_in,#id_carryforward_expire_period"
+                    )
+                        .parent()
+                        .show();
                 }
-                else if ($("#id_carryforward_type").val() == "carryforward expire") {
-                    $("#id_carryforward_max,#id_carryforward_expire_in,#id_carryforward_expire_period").parent().show();
-                }
-            }else{
+            } else {
                 $("#id_carryforward_type,#id_carryforward_max").parent().hide();
-                $("#id_carryforward_max,#id_carryforward_expire_in,#id_carryforward_expire_period").parent().hide();
+                $(
+                    "#id_carryforward_max,#id_carryforward_expire_in,#id_carryforward_expire_period"
+                )
+                    .parent()
+                    .hide();
             }
         }
 
-       $("select,input[type=checkbox]").change(function (e) {
-        toggleFields()
-        //check the yes or no fields
+        $("select,input[type=checkbox]").change(function (e) {
+            toggleFields();
         });
 
-        toggleFields()
+        toggleFields();
 
         // leave total days calculation
-        $('#id_period_in, #id_count').change(function () {
-            const month = 30
-            const year = 365
-            const day = 1
-            var totalDays = 0
-            var unit = $('#id_period_in').val();
-            var count = $('#id_count').val();
+        $("#id_period_in, #id_count").change(function () {
+            const month = 30;
+            const year = 365;
+            const day = 1;
+            var totalDays = 0;
+            var unit = $("#id_period_in").val();
+            var count = $("#id_count").val();
 
-            if (unit == 'day') {
-                totalDays = day * count
-            } else if (unit == 'month') {
-                totalDays = month * count
-            } else if (unit == 'year') {
-                totalDays = year * count
+            if (unit == "day") {
+                totalDays = day * count;
+            } else if (unit == "month") {
+                totalDays = month * count;
+            } else if (unit == "year") {
+                totalDays = year * count;
             }
-            $('#id_total_days').val(totalDays);
+            $("#id_total_days").val(totalDays);
         });
-
     });
 
-    function checkYesOrNoFields(){
-
-        if ($('#id_approval').is(":checked")) {
-            $('#id_require_approval').val('yes');
+    //check the yes or no fields
+    function checkYesOrNoFields() {
+        if ($("#id_approval").is(":checked")) {
+            $("#id_require_approval").val("yes");
+        } else {
+            $("#id_require_approval").val("no");
         }
-        else{
-            $('#id_require_approval').val('no') ;
+        if ($("#id_attachment").is(":checked")) {
+            $("#id_require_attachment").val("yes");
+        } else {
+            $("#id_require_attachment").val("no");
         }
-        if ($('#id_attachment').is(":checked")) {
-            $('#id_require_attachment').val('yes');
+        if ($("#id_exclude_comp_leave").is(":checked")) {
+            $("#id_exclude_company_leave").val("yes");
+        } else {
+            $("#id_exclude_company_leave").val("no");
         }
-        else{
-            $('#id_require_attachment').val('no');
-        }
-        if ($('#id_exclude_comp_leave').is(":checked")) {
-            $('#id_exclude_company_leave').val('yes');
-        }
-        else{
-            $('#id_exclude_company_leave').val('no')
-        }
-        if ($('#id_exclude_public_leave').is(":checked")) {
-            $('#id_exclude_holiday').val('yes');
-        }
-        else{
-            $('#id_exclude_holiday').val('no');
+        if ($("#id_exclude_public_leave").is(":checked")) {
+            $("#id_exclude_holiday").val("yes");
+        } else {
+            $("#id_exclude_holiday").val("no");
         }
     }
 
-    $('.yesOrNo').change(function(){
-        checkYesOrNoFields()
-    })
-
-    $(document).ready(function() {
-    // Select All Employees Functionality
-    $('#select-all-employees').change(function() {
-        var isChecked = $(this).prop('checked');
-
-
-        if ($('#id_employee_id').is('select')) {
-
-            $('#id_employee_id option').prop('selected', isChecked);
-        }
-
-        else if ($('#id_employee_id input[type="checkbox"]').length > 0) {
-
-            $('#id_employee_id input[type="checkbox"]').each(function() {
-
-                $(this).prop('checked', false);
-
-                if (isChecked) {
-                    $(this).prop('checked', true);
-                }
-            });
-        }
-
-        $('#id_employee_id').trigger('change');
+    $(".yesOrNo").change(function () {
+        checkYesOrNoFields();
     });
-});
+
+    $(document).ready(function () {
+        // Select All Employees Functionality
+        $("#select-all-employees").change(function () {
+            var isChecked = $(this).prop("checked");
+
+            if ($("#id_employee_id").is("select")) {
+                $("#id_employee_id option").prop("selected", isChecked);
+            } else if ($('#id_employee_id input[type="checkbox"]').length > 0) {
+                $('#id_employee_id input[type="checkbox"]').each(function () {
+                    $(this).prop("checked", false);
+
+                    if (isChecked) {
+                        $(this).prop("checked", true);
+                    }
+                });
+            }
+
+            $("#id_employee_id").trigger("change");
+        });
+    });
+
 
 </script>
 

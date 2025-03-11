@@ -1,66 +1,83 @@
 {% load i18n %}
 {% load static %}
 <style>
-  .alert {
-    position: relative;
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 1rem;
-    border: 1px solid transparent;
-    border-radius: 0.25rem;
-}
+    .alert {
+        position: relative;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+        border: 1px solid transparent;
+        border-radius: 0.25rem;
+    }
 
-.alert-warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border-color: #ffeeba;
-}
+    .alert-warning {
+        color: #856404;
+        background-color: #fff3cd;
+        border-color: #ffeeba;
+    }
 </style>
 
 {% if primary_mail_not_exist %}
-  <div class="alert alert-warning" role="alert">
-    {% trans "Primary mail is not configured! " %}<img id="blink" src="{% static 'images/ui/email.png' %}" width="24" height="24">
-  </div>
-  <script type="text/javascript">
-    var blink =
-        document.getElementById('blink');
+    <div class="alert alert-warning" role="alert">
+        {% trans "Primary mail is not configured! " %}<img id="blink" src="{% static 'images/ui/email.png' %}" width="24"
+            height="24">
+    </div>
+    <script type="text/javascript">
+        var blink =
+            document.getElementById('blink');
 
-    setInterval(function () {
-        blink.style.opacity =
-        (blink.style.opacity == 0 ? 1 : 0);
-    }, 800);
-  </script>
+        setInterval(function () {
+            blink.style.opacity =
+                (blink.style.opacity == 0 ? 1 : 0);
+        }, 800);
+    </script>
 {% endif %}
 <div class="oh-sticky-table">
-  <div class="oh-sticky-table__table oh-table--sortable">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th" style="width: 350px;">
-          {% trans 'Host User' %}
-        </div>
-        <div class="oh-sticky-table__th">
-          {% trans 'Host' %}
-        </div>
-        <div class="oh-sticky-table__th">
-          {% trans 'Company' %}
-        </div>
-        <div class="oh-sticky-table__th"></div>
-      </div>
-    </div>
-    <div class="oh-sticky-table__tbody">
-      {% for server in mail_servers %}
-        <div class="oh-sticky-table__tr {% if server.is_primary %} highlight-selected {% endif %}" draggable="true">
-          <div class="oh-sticky-table__td">{{ server.username }}</div>
-          <div class="oh-sticky-table__td">{{ server.host }}</div>
-          <div class="oh-sticky-table__td">{{ server.company_id }}</div>
-          <div class="oh-sticky-table__td">
-            <div class="oh-btn-group">
-              <a hx-get="{% url 'mail-server-create-update' %}?instance_id={{ server.id }}" onclick="event.stopPropagation()" hx-target="#mailServerModalBody" data-toggle="oh-modal-toggle" data-target="#mailServerModal" class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon></a>
-              <a hx-get="{% url 'mail-server-test-email' %}?instance_id={{ server.id }}" onclick="event.stopPropagation()" hx-target="#mailServerModalBody" data-toggle="oh-modal-toggle" data-target="#mailServerModal" class="oh-btn oh-btn--light-bkg w-100" title="Test email"><ion-icon name="mail-unread-outline" role="img" class="md hydrated" aria-label="at-circle-outline"></ion-icon></a>
-              <a onclick="event.stopPropagation()" hx-confirm="{% trans 'Do you want to delete this mail server configuration?' %}" hx-post="{% url 'mail-server-delete' %}?ids={{ server.id }}" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-target="#objectDetailsModalTarget" type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="Remove"><ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon></a>
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th" style="width: 350px;">
+                    {% trans 'Host User' %}
+                </div>
+                <div class="oh-sticky-table__th">
+                    {% trans 'Host' %}
+                </div>
+                <div class="oh-sticky-table__th">
+                    {% trans 'Company' %}
+                </div>
+                <div class="oh-sticky-table__th"></div>
             </div>
-          </div>
         </div>
-      {% endfor %}
+        <div class="oh-sticky-table__tbody">
+            {% for server in mail_servers %}
+                <div class="oh-sticky-table__tr {% if server.is_primary %} highlight-selected {% endif %}" draggable="true">
+                    <div class="oh-sticky-table__td">{{ server.username }}</div>
+                    <div class="oh-sticky-table__td">{{ server.host }}</div>
+                    <div class="oh-sticky-table__td">{{ server.company_id }}</div>
+                    <div class="oh-sticky-table__td">
+                        <div class="oh-btn-group">
+                            <a hx-get="{% url 'mail-server-create-update' %}?instance_id={{ server.id }}"
+                                onclick="event.stopPropagation()" hx-target="#objectUpdateModalTarget"
+                                data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}">
+                                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                            </a>
+                            <a hx-get="{% url 'mail-server-test-email' %}?instance_id={{ server.id }}"
+                                onclick="event.stopPropagation()" hx-target="#mailServerModalBody"
+                                data-toggle="oh-modal-toggle" data-target="#mailServerModal"
+                                class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Test email' %}">
+                                <ion-icon name="mail-unread-outline" role="img" class="md hydrated" aria-label="at-circle-outline"></ion-icon>
+                            </a>
+                            <a onclick="event.stopPropagation()"
+                                hx-confirm="{% trans 'Do you want to delete this mail server configuration?' %}"
+                                hx-post="{% url 'mail-server-delete' %}?ids={{ server.id }}" data-toggle="oh-modal-toggle"
+                                data-target="#objectDetailsModal" hx-target="#objectDetailsModalTarget" type="submit"
+                                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}">
+                                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
     </div>
-  </div>
 </div>
