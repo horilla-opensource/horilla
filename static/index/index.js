@@ -324,7 +324,7 @@ function checkSequence(element) {
 
     if (
         stageOrder.indexOf(parseInt(stageId)) !=
-            stageOrder.indexOf(parseInt(preStageId)) + 1 &&
+        stageOrder.indexOf(parseInt(preStageId)) + 1 &&
         stage.type != "cancelled"
     ) {
         Swal.fire({
@@ -486,7 +486,7 @@ window.confirm = function (message) {
     });
 };
 
-function handleHtmxTarget(event, path , verb){
+function handleHtmxTarget(event, path, verb) {
     var targetElement;
     var hxTarget = $(event.target).attr("hx-target");
     if (hxTarget) {
@@ -567,6 +567,12 @@ $(document).on("htmx:beforeRequest", function (event, data) {
         ) {
             target.html(`<div class="animated-background"></div>`);
         }
+    }
+});
+
+$(document).on('click', '.select2-selection__choice__remove', function (event) {
+    if ($('[role="tooltip"]:visible').length) {
+        $('[role="tooltip"]').hide();
     }
 });
 
