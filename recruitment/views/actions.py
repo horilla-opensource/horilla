@@ -404,6 +404,28 @@ def get_template(request, obj_id=None):
     """
     This method is used to return the mail template
     """
+    body = ""
+    if obj_id:
+        body = HorillaMailTemplate.objects.get(id=obj_id).body
+        template_bdy = template.Template(body)
+    if request.GET.get("word"):
+        word = request.GET.get("word")
+        template_bdy = template.Template("{{" + word + "}}")
+    candidate_id = request.GET.get("candidate_id")
+    if candidate_id:
+        candidate_obj = Candidate.objects.get(id=candidate_id)
+        context = template.Context(
+            {"instance": candidate_obj, "self": request.user.employee_get}
+        )
+        # body = template_bdy.render(context) or " "
+    return JsonResponse({"body": body})
+
+
+@login_required
+def get_template_hint(request, obj_id=None):
+    """
+    This method is used to return the mail template
+    """
     if obj_id:
         body = HorillaMailTemplate.objects.get(id=obj_id).body
         template_bdy = template.Template(body)
@@ -418,3 +440,31 @@ def get_template(request, obj_id=None):
         )
         body = template_bdy.render(context) or " "
     return JsonResponse({"body": body})
+
+
+@login_required
+def get_mail_preview(request):
+    """
+    This method is used to return the mail template preview as an HTTP response.
+    """
+    body = request.POST.get("body")
+    candidate_id = request.GET.get("candidate_id")
+
+    if not body:
+        return HttpResponse("No body provided", status=400)
+
+    template_bdy = template.Template(body)
+    context = {}
+
+    if candidate_id:
+        try:
+            candidate_obj = Candidate.objects.get(id=candidate_id)
+            context = {"instance": candidate_obj, "self": request.user.employee_get}
+        except Candidate.DoesNotExist:
+            return HttpResponse("Candidate not found", status=404)
+
+    rendered_body = template_bdy.render(template.Context(context)) or " "
+
+    textarea_field = f'<div class="oh-input oh-input--textarea" style="border: solid .1px #dbd7d7;">{rendered_body}</div>'
+
+    return HttpResponse(textarea_field, content_type="text/html")

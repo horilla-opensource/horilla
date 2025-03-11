@@ -14,8 +14,6 @@ from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import post_save, pre_delete
-from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -31,7 +29,7 @@ from attendance.methods.utils import (
 )
 from base.horilla_company_manager import HorillaCompanyManager
 from base.methods import is_company_leave, is_holiday
-from base.models import Company, EmployeeShift, EmployeeShiftDay, Holidays, WorkType
+from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from employee.models import Employee
 from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
@@ -118,7 +116,6 @@ class Attendance(HorillaModel):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.first_save = True
 
     status = [
         ("create_request", _("Create Request")),
@@ -415,7 +412,6 @@ class Attendance(HorillaModel):
         attendance_account.overtime = format_time(total_ot_seconds)
         attendance_account.save()
         super().save(*args, **kwargs)
-        self.first_save = False
 
     def serialize(self):
         """
@@ -912,125 +908,6 @@ class AttendanceGeneralSetting(HorillaModel):
     objects = HorillaCompanyManager()
 
 
-if apps.is_installed("leave") and apps.is_installed("payroll"):
-
-    class PenaltyAccount(HorillaModel):
-        """
-        LateComeEarlyOutPenaltyAccount
-        """
-
-        employee_id = models.ForeignKey(
-            Employee,
-            on_delete=models.PROTECT,
-            related_name="penalty_set",
-            editable=False,
-            verbose_name="Employee",
-            null=True,
-        )
-        late_early_id = models.ForeignKey(
-            AttendanceLateComeEarlyOut,
-            on_delete=models.CASCADE,
-            null=True,
-            editable=False,
-        )
-        leave_request_id = models.ForeignKey(
-            "leave.LeaveRequest", null=True, on_delete=models.CASCADE, editable=False
-        )
-        leave_type_id = models.ForeignKey(
-            "leave.LeaveType",
-            on_delete=models.DO_NOTHING,
-            blank=True,
-            null=True,
-            verbose_name="Leave type",
-        )
-        minus_leaves = models.FloatField(default=0.0, null=True)
-        deduct_from_carry_forward = models.BooleanField(default=False)
-        penalty_amount = models.FloatField(default=0.0, null=True)
-
-        def clean(self) -> None:
-            super().clean()
-            if not self.leave_type_id and self.minus_leaves:
-                raise ValidationError(
-                    {"leave_type_id": _("Specify the leave type to deduct the leave.")}
-                )
-            if self.leave_type_id and not self.minus_leaves:
-                raise ValidationError(
-                    {
-                        "minus_leaves": _(
-                            "If a leave type is chosen for a penalty, minus leaves are required."
-                        )
-                    }
-                )
-            if not self.minus_leaves and not self.penalty_amount:
-                raise ValidationError(
-                    {
-                        "leave_type_id": _(
-                            "Either minus leaves or a penalty amount is required"
-                        )
-                    }
-                )
-
-            if (
-                self.minus_leaves or self.deduct_from_carry_forward
-            ) and not self.leave_type_id:
-                raise ValidationError({"leave_type_id": _("Leave type is required")})
-            return
-
-        class Meta:
-            ordering = ["-created_at"]
-
-    @receiver(post_save, sender=PenaltyAccount)
-    def create_initial_stage(sender, instance, created, **kwargs):
-        """
-        This is post save method, used to create initial stage for the recruitment
-        """
-        # only work when creating
-        if created:
-            penalty_amount = instance.penalty_amount
-            if penalty_amount:
-                Deduction = get_horilla_model_class(
-                    app_label="payroll", model="deduction"
-                )
-                penalty = Deduction()
-                if instance.late_early_id:
-                    penalty.title = (
-                        f"{instance.late_early_id.get_type_display()} penalty"
-                    )
-                    penalty.one_time_date = (
-                        instance.late_early_id.attendance_id.attendance_date
-                    )
-                elif instance.leave_request_id:
-                    penalty.title = (
-                        f"Leave penalty {instance.leave_request_id.end_date}"
-                    )
-                    penalty.one_time_date = instance.leave_request_id.end_date
-                else:
-                    penalty.title = f"Penalty on {datetime.today()}"
-                    penalty.one_time_date = datetime.today()
-                penalty.include_active_employees = False
-                penalty.is_fixed = True
-                penalty.amount = instance.penalty_amount
-                penalty.only_show_under_employee = True
-                penalty.save()
-                penalty.include_active_employees = False
-                penalty.specific_employees.add(instance.employee_id)
-                penalty.save()
-
-            if instance.leave_type_id and instance.minus_leaves:
-                available = instance.employee_id.available_leave.filter(
-                    leave_type_id=instance.leave_type_id
-                ).first()
-                unit = round(instance.minus_leaves * 2) / 2
-                if not instance.deduct_from_carry_forward:
-                    available.available_days = max(0, (available.available_days - unit))
-                else:
-                    available.carryforward_days = max(
-                        0, (available.carryforward_days - unit)
-                    )
-
-                available.save()
-
-
 class WorkRecords(models.Model):
     """
     WorkRecord Model
@@ -1048,7 +925,7 @@ class WorkRecords(models.Model):
     record_name = models.CharField(max_length=250, null=True, blank=True)
     work_record_type = models.CharField(max_length=5, null=True, choices=choices)
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
+        Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
     )
     date = models.DateField(null=True, blank=True)
     at_work = models.CharField(
@@ -1074,30 +951,29 @@ class WorkRecords(models.Model):
     note = models.TextField(max_length=255)
     message = models.CharField(max_length=30, null=True, blank=True)
     is_attendance_record = models.BooleanField(default=False)
+    attendance_id = models.ForeignKey(
+        Attendance, on_delete=models.PROTECT, blank=True, null=True
+    )
     is_leave_record = models.BooleanField(default=False)
+    if apps.is_installed("leave"):
+        leave_request_id = models.ForeignKey(
+            "leave.LeaveRequest",
+            on_delete=models.PROTECT,
+            blank=True,
+            null=True,
+        )
+    shift_id = models.ForeignKey(
+        EmployeeShift, on_delete=models.PROTECT, blank=True, null=True
+    )
     day_percentage = models.FloatField(default=0)
     last_update = models.DateTimeField(null=True, blank=True)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def title_message(self):
         title_message = self.message
-        if title_message == "Absent":
+        if title_message == "Leave":
             if apps.is_installed("leave"):
-                LeaveRequest = get_horilla_model_class(
-                    app_label="leave", model="leaverequest"
-                )
-                leave_type = (
-                    LeaveRequest.objects.filter(
-                        employee_id=self.employee_id,
-                        end_date__gte=self.date,
-                        start_date__lte=self.date,
-                    )
-                    .first()
-                    .leave_type_id
-                    if LeaveRequest.objects.exists()
-                    else None
-                )
-                title_message += f" | {leave_type}"
+                title_message += f" | {self.leave_request_id.leave_type_id}"
         return title_message
 
     def save(self, *args, **kwargs):
@@ -1114,96 +990,10 @@ class WorkRecords(models.Model):
         return (
             self.record_name
             if self.record_name is not None
-            else f"{self.work_record_type}-{self.date}"
+            else f"{self.work_record_type}-{self.date}-{self.employee_id}"
         )
 
-
-class OverrideAttendances(Attendance):
-    """
-    Class to override Attendance model save method
-    """
-
-    # Additional fields and methods specific to AnotherModel
-    @receiver(post_save, sender=Attendance)
-    def attendance_post_save(sender, instance, **kwargs):
-        """
-        Overriding Attendance model save method
-        """
-        if instance.first_save:
-            min_hour_second = strtime_seconds(instance.minimum_hour)
-            at_work_second = strtime_seconds(instance.attendance_worked_hour)
-
-            status = "FDP" if instance.at_work_second >= min_hour_second else "HDP"
-
-            status = "CONF" if instance.attendance_validated is False else status
-            message = (
-                _("Validate the attendance") if status == "CONF" else _("Validated")
-            )
-
-            message = (
-                _("Incomplete minimum hour")
-                if status == "HDP" and min_hour_second > at_work_second
-                else message
-            )
-            work_record = WorkRecords.objects.filter(
-                date=instance.attendance_date,
-                is_attendance_record=True,
-                employee_id=instance.employee_id,
-            )
-            work_record = (
-                WorkRecords()
-                if not WorkRecords.objects.filter(
-                    date=instance.attendance_date,
-                    employee_id=instance.employee_id,
-                ).exists()
-                else WorkRecords.objects.filter(
-                    date=instance.attendance_date,
-                    employee_id=instance.employee_id,
-                ).first()
-            )
-            work_record.employee_id = instance.employee_id
-            work_record.date = instance.attendance_date
-            work_record.at_work = instance.attendance_worked_hour
-            work_record.min_hour = instance.minimum_hour
-            work_record.min_hour_second = min_hour_second
-            work_record.at_work_second = at_work_second
-            work_record.work_record_type = status
-            work_record.message = message
-            work_record.is_attendance_record = True
-            if instance.attendance_validated:
-                work_record.day_percentage = (
-                    1.00 if at_work_second > min_hour_second / 2 else 0.50
-                )
-            work_record.save()
-
-            if status == "HDP" and work_record.is_leave_record:
-                message = _("Half day leave")
-            elif status == "FDP" and work_record.is_leave_record:
-                message = _("An approved leave exists")
-            elif status == "FDP":
-                message = _("Present")
-
-            work_record.message = message
-            work_record.save()
-
-            message = work_record.message
-            status = work_record.work_record_type
-            if not instance.attendance_clock_out:
-                status = "FDP"
-                message = _("Currently working")
-            work_record.message = message
-            work_record.work_record_type = status
-            work_record.save()
-
-    @receiver(pre_delete, sender=Attendance)
-    def attendance_pre_delete(sender, instance, **_kwargs):
-        """
-        Overriding Attendance model delete method
-        """
-        # Perform any actions before deleting the instance
-        # ...
-        WorkRecords.objects.filter(
-            employee_id=instance.employee_id,
-            is_attendance_record=True,
-            date=instance.attendance_date,
-        ).delete()
+    class Meta:
+        verbose_name = _("Work Record")
+        verbose_name_plural = _("Work Records")
+        # unique_together = ['date', 'employee_id']

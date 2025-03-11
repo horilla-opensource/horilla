@@ -51,6 +51,7 @@ class HorillaListView(ListView):
     context_object_name = "queryset"
     # column = [("Verbose Name","field_name","avatar_mapping")], opt: avatar_mapping
     columns: list = []
+    default_columns: list = []
     search_url: str = ""
     bulk_select_option: bool = True
     filter_selected: bool = True
@@ -97,9 +98,9 @@ class HorillaListView(ListView):
     records_per_page: int = 50
     export_fields: list = []
     verbose_name: str = ""
-
     bulk_update_fields: list = []
     bulk_template: str = "generic/bulk_form.html"
+    records_count_in_tab: bool = True
 
     header_attrs: dict = {}
 
@@ -129,10 +130,22 @@ class HorillaListView(ListView):
 
         self.visible_column = self.columns.copy()
 
-        self.toggle_form = ToggleColumnForm(self.columns, hidden_fields)
-        for column in self.columns:
-            if column[1] in hidden_fields:
-                self.visible_column.remove(column)
+        if not existing_instance:
+            if not self.default_columns:
+                self.default_columns = self.columns
+            self.toggle_form = ToggleColumnForm(
+                self.columns, self.default_columns, hidden_fields
+            )
+            for column in self.columns:
+                if column not in self.default_columns:
+                    self.visible_column.remove(column)
+        else:
+            self.toggle_form = ToggleColumnForm(
+                self.columns, self.default_columns, hidden_fields
+            )
+            for column in self.columns:
+                if column[1] in hidden_fields:
+                    self.visible_column.remove(column)
 
     def bulk_update_accessibility(self) -> bool:
         """
@@ -149,15 +162,13 @@ class HorillaListView(ListView):
 
         if not self.bulk_update_accessibility():
             return HttpResponse("You dont have permission")
+        ids = eval_validate(request.POST.get("instance_ids", "[]"))
         form = self.get_bulk_form()
-        form.verbose_name = (
-            form.verbose_name
-            + f" ({len((eval_validate(request.GET.get('instance_ids','[]'))))} {_('Records')})"
-        )
+        form.verbose_name = form.verbose_name + f" ({len((ids))} {_('Records')})"
         return render(
             request,
             self.bulk_template,
-            {"form": form, "post_bulk_path": self.post_bulk_path},
+            {"form": form, "post_bulk_path": self.post_bulk_path, "instance_ids": ids},
         )
 
     def handle_bulk_submission(self, request: HttpRequest) -> HttpRequest:
@@ -167,7 +178,7 @@ class HorillaListView(ListView):
         if not self.bulk_update_accessibility():
             return HttpResponse("You dont have permission")
 
-        instance_ids = request.GET.get("instance_ids", "[]")
+        instance_ids = request.POST.get("instance_ids", "[]")
         instance_ids = eval_validate(instance_ids)
         form = DynamicBulkUpdateForm(
             request.POST,
@@ -185,6 +196,7 @@ class HorillaListView(ListView):
                 f"""
                 <script id="{script_id}">
                     $("#{script_id}").closest(".oh-modal--show").removeClass("oh-modal--show");
+                    $("#{self.selected_instances_key_id}").attr("data-ids", "[]");
                     $(".reload-record").click()
                     $("#reloadMessagesButton").click()
                 </script>
@@ -309,6 +321,7 @@ class HorillaListView(ListView):
         context["model_name"] = self.verbose_name
         context["export_fields"] = self.export_fields
         context["custom_empty_template"] = self.custom_empty_template
+        context["records_count_in_tab"] = self.records_count_in_tab
         referrer = self.request.GET.get("referrer", "")
         if referrer:
             # Remove the protocol and domain part
@@ -1200,6 +1213,7 @@ class HorillaProfileView(DetailView):
         self.toggle_form = ToggleColumnForm(
             self.tabs_list,
             hidden_tabs,
+            hidden_fields=[],
         )
         for column in self.tabs_list:
             if column[1] in hidden_tabs:

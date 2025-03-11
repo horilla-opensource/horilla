@@ -1469,13 +1469,13 @@ def leave_assign(request):
                 for leave_type in leave_types:
                     assignment_key = (leave_type.id, employee.id)
                     if assignment_key not in existing_assignments:
-                        new_assignments.append(
-                            AvailableLeave(
-                                leave_type_id=leave_type,
-                                employee_id=employee,
-                                available_days=leave_type.total_days,
-                            )
+                        new_assignment = AvailableLeave(
+                            leave_type_id=leave_type,
+                            employee_id=employee,
+                            available_days=leave_type.total_days,
                         )
+                        new_assignments.append(new_assignment)
+                        new_assignment.pre_save_processing()
                         success_messages.add(employee.employee_user_id)
                     else:
                         info_messages.add(employee.employee_user_id)
@@ -2648,7 +2648,7 @@ def dashboard(request):
         "rejected": rejected,
         "next_holiday": next_holiday,
         "dashboard": "dashboard",
-        "today": today,
+        "today": today.strftime("%Y-%m-%d"),
         "first_day": today.replace(day=1).strftime("%Y-%m-%d"),
         "last_day": date(
             today.year, today.month, calendar.monthrange(today.year, today.month)[1]

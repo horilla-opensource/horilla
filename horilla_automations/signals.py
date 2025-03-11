@@ -6,6 +6,7 @@ horilla_automation/signals.py
 import copy
 import logging
 import threading
+import time
 import types
 
 from django import template
@@ -351,13 +352,23 @@ def send_mail(request, automation, instance):
     from horilla_views.templatetags.generic_template_filters import getattribute
 
     mail_template = automation.mail_template
-    pk = getattribute(instance, automation.mail_details)
+    if instance.pk:
+        # refreshing instance due to m2m fields are not loading here some times
+        time.sleep(0.1)
+        instance = instance._meta.model.objects.get(pk=instance.pk)
+    pk_or_text = getattribute(instance, automation.mail_details)
     model_class = get_model_class(automation.model)
     model_class = get_related_field_model(model_class, automation.mail_details)
-    mail_to_instance = model_class.objects.filter(pk=pk).first()
+    context_instance = None
+    if isinstance(pk_or_text, int):
+        context_instance = model_class.objects.filter(pk=pk_or_text).first()
+    else:
+        # if text field then the template or body will the text content
+        pass
+
     tos = []
     for mapping in eval_validate(automation.mail_to):
-        result = getattribute(mail_to_instance, mapping)
+        result = getattribute(instance, mapping)
         if isinstance(result, list):
             tos = tos + result
             continue
@@ -388,27 +399,34 @@ def send_mail(request, automation, instance):
         except:
             logger.error(Exception)
 
-    if mail_to_instance and request and tos:
+    if pk_or_text and request and tos:
         attachments = []
         try:
             sender = request.user.employee_get
         except:
             sender = None
-        for template_attachment in automation.template_attachments.all():
-            template_bdy = template.Template(template_attachment.body)
-            context = template.Context({"instance": mail_to_instance, "self": sender})
-            render_bdy = template_bdy.render(context)
-            attachments.append(
-                (
-                    "Document",
-                    generate_pdf(render_bdy, {}, path=False, title="Document").content,
-                    "application/pdf",
+        if context_instance:
+            for template_attachment in automation.template_attachments.all():
+                template_bdy = template.Template(template_attachment.body)
+                context = template.Context(
+                    {"instance": context_instance, "self": sender}
                 )
-            )
+                render_bdy = template_bdy.render(context)
+                attachments.append(
+                    (
+                        "Document",
+                        generate_pdf(
+                            render_bdy, {}, path=False, title="Document"
+                        ).content,
+                        "application/pdf",
+                    )
+                )
 
-        template_bdy = template.Template(mail_template.body)
+            template_bdy = template.Template(mail_template.body)
+        else:
+            template_bdy = template.Template(pk_or_text)
         context = template.Context(
-            {"instance": mail_to_instance, "self": sender, "model_instance": instance}
+            {"instance": context_instance, "self": sender, "model_instance": instance}
         )
         render_bdy = template_bdy.render(context)
 

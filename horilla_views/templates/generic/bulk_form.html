@@ -1,4 +1,5 @@
 <form hx-post="/{{post_bulk_path}}?{{request.GET.urlencode}}" method="post" hx-swap="outerHTML" hx-encoding="multipart/form-data">
+    <input type="hidden" name="instance_ids" value="{{instance_ids|safe}}">
     {% csrf_token %}
     {% include "generic/form.html" %}
 </form>
