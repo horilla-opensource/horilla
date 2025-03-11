@@ -4,7 +4,6 @@ Description: Configuration for the 'asset' app.
 """
 
 from django.apps import AppConfig
-from horilla.horilla_settings import APP_URLS
 
 
 class AssetConfig(AppConfig):
@@ -22,9 +21,9 @@ class AssetConfig(AppConfig):
 
     def ready(self):
         from django.urls import include, path
-
         from horilla.horilla_settings import APPS
         from horilla.urls import urlpatterns
+        from horilla.horilla_settings import APP_URLS
 
         APPS.append("asset")
         urlpatterns.append(
