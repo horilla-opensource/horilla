@@ -162,15 +162,13 @@ class HorillaListView(ListView):
 
         if not self.bulk_update_accessibility():
             return HttpResponse("You dont have permission")
+        ids = eval_validate(request.POST.get("instance_ids", "[]"))
         form = self.get_bulk_form()
-        form.verbose_name = (
-            form.verbose_name
-            + f" ({len((eval_validate(request.GET.get('instance_ids','[]'))))} {_('Records')})"
-        )
+        form.verbose_name = form.verbose_name + f" ({len((ids))} {_('Records')})"
         return render(
             request,
             self.bulk_template,
-            {"form": form, "post_bulk_path": self.post_bulk_path},
+            {"form": form, "post_bulk_path": self.post_bulk_path, "instance_ids": ids},
         )
 
     def handle_bulk_submission(self, request: HttpRequest) -> HttpRequest:
@@ -180,7 +178,7 @@ class HorillaListView(ListView):
         if not self.bulk_update_accessibility():
             return HttpResponse("You dont have permission")
 
-        instance_ids = request.GET.get("instance_ids", "[]")
+        instance_ids = request.POST.get("instance_ids", "[]")
         instance_ids = eval_validate(instance_ids)
         form = DynamicBulkUpdateForm(
             request.POST,
