@@ -795,6 +795,16 @@ class Policy(HorillaModel):
         super().delete(*args, **kwargs)
         self.attachments.all().delete()
 
+class AIPolicy(HorillaModel):
+    """
+    this model is used to store policies in a AI friendly format for easier RAG
+    """
+    policy_text = models.TextField()
+    is_active = models.BooleanField(default=True)
+    company_id = models.ForeignKey(Company, blank=True, null=True, verbose_name=_("Company"), on_delete=models.CASCADE)
+
+    objects = HorillaCompanyManager("company_id")
+
 
 class BonusPoint(HorillaModel):
     """

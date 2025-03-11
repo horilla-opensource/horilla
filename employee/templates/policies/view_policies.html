@@ -4,6 +4,14 @@
 {% load static %}
   {% include 'policies/nav.html' %}
   <div class="oh-wrapper" id="policyContainer">
+  <h2>
+      Ai Generated Policy
+  </h2>
+  <textarea>
+      {{ ai_policy.policy_text }}
+  </textarea>
+
+
     {% if policies %}
       	{% include 'policies/records.html' %}
     {% else %}
