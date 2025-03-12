@@ -1,0 +1,152 @@
+{% load i18n %} {% load static %}
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="createTitle">
+        {% trans "AI Assistant" %}
+    </h2>
+    <button type="button" class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<style>
+    #chatboxid {
+        max-width: 800px;
+        margin: 0 auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #chatbox {
+        height: 500px;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: #55555557;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .user-message, .bot-message {
+        padding: 8px;
+        background-color: #fff;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        max-width: 70%;
+        display: flex;
+        align-items: center;
+    }
+
+    .user-message {
+        color: #ff3b38;
+        align-self: flex-end;
+    }
+
+    .bot-message {
+        color: #333;
+        align-self: flex-start;
+    }
+
+    .input-fields {
+        display: flex;
+        gap: 10px;
+    }
+
+    input[type="text"] {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #333;
+    }
+
+    button[type="submit"] {
+        padding: 10px 20px;
+        background-color: #ff3b38;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #e2322e;
+    }
+
+    .my-indicator {
+        display: none;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #ff3b38;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin .5s linear infinite;
+    }
+
+    .htmx-request .my-indicator {
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Icon styles */
+    .message-icon {
+        margin-right: 10px;
+        font-size: 1.2em;
+    }
+</style>
+
+<div class="oh-modal__dialog-body">
+    <div class="oh-modal__dialog-body" style="padding: 0">
+        <div id="chatboxid">
+            <div id="chatbox">
+                {% for message in messages %}
+                    <div class="d-flex flex-column">
+                        <div class="user-message">
+                            <i class="material-icons mt-2">person</i>{{ message.user_message }}
+                        </div>
+                        <div class="bot-message">
+                            <i class="material-icons mt-2">smart_toy</i> {{ message.bot_message }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <form hx-post="{% url 'chat_view' %}" hx-target="#objectDetailsModalTarget" hx-swap="innerHTML">
+                {% csrf_token %}
+                <div class="input-fields">
+                    <input type="text" name="message" placeholder="Type your message...">
+                    <button type="submit">
+                        Send
+                    </button>
+                    <div class="my-indicator"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to scroll to the bottom of the chatbox
+    function scrollToBottom() {
+        const chatbox = document.getElementById('chatbox');
+        chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    // Scroll to the bottom when the page loads
+    document.addEventListener('DOMContentLoaded', scrollToBottom);
+
+    // Scroll to the bottom when a new message is received
+    document.body.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.target.id === 'objectDetailsModalTarget') {
+            scrollToBottom();
+        }
+    });
+</script>

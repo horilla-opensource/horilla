@@ -4,9 +4,10 @@ models.py
 This module is used to register models for employee app
 
 """
-
+import os
 from datetime import date, datetime, timedelta
 
+import requests
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import Permission, User
@@ -794,6 +795,33 @@ class Policy(HorillaModel):
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
         self.attachments.all().delete()
+
+
+    def __str__(self) -> str:
+        return f"{self.title}"
+
+    def save(self, *args, **kwargs):
+        from chatbot.piplines import build_policies_summarization_and_refining
+
+        super().save(*args, **kwargs)
+
+        # call the api to get all the policies and create the AI policy
+        build_policies_summarization_and_refining()
+
+
+
+
+
+
+class AIPolicy(HorillaModel):
+    """
+    this model is used to store policies in a AI friendly format for easier RAG
+    """
+    policy_text = models.TextField()
+    is_active = models.BooleanField(default=True)
+    company_id = models.ForeignKey(Company, blank=True, null=True, verbose_name=_("Company"), on_delete=models.CASCADE)
+
+    objects = HorillaCompanyManager("company_id")
 
 
 class BonusPoint(HorillaModel):

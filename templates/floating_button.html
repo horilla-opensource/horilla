@@ -110,6 +110,18 @@
 </style>
 
 <div class="inner-fabs">
+<div id="fab10" class="fab round" data-tooltip="Ai Assistant">
+            <a
+            class="text-light"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectDetailsModal"
+            hx-get="{% url 'chat_view' %}"
+            hx-target="#objectDetailsModalTarget"
+        >
+            <i class="material-icons mt-2">smart_toy</i>
+        </a>
+
+</div>
     <div id="fab9" class="fab round" data-tooltip="Dashboard Charts">
         <a
             class="text-light"
