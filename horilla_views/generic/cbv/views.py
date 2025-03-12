@@ -3,6 +3,7 @@ horilla/generic/views.py
 """
 
 import json
+import logging
 from typing import Any
 from urllib.parse import parse_qs
 
@@ -33,6 +34,8 @@ from horilla_views.cbv_methods import (  # update_initial_cache,
 )
 from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
 from horilla_views.templatetags.generic_template_filters import getattribute
+
+logger = logging.getLogger(__name__)
 
 
 @method_decorator(hx_request_required, name="dispatch")
@@ -570,8 +573,26 @@ class HorillaDetailedView(DetailView):
     action_method: list = []
     actions: list = []
     cols: dict = {}
+    instance = None
+    empty_template = None
 
     ids_key: str = "instance_ids"
+
+    def get_object(self, queryset=None):
+        try:
+            self.instance = super().get_object(queryset)
+        except Exception as e:
+            logger.error(f"Error getting object: {e}")
+        return self.instance
+
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+        if not self.instance and self.empty_template:
+            return render(request, self.empty_template, context=self.get_context_data())
+        elif not self.instance:
+            messages.info(request, "No record found...")
+            return HttpResponse("<script>window.location.reload()</script>")
+        return response
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -584,6 +605,8 @@ class HorillaDetailedView(DetailView):
         instance_ids = self.request.session.get(
             f"ordered_ids_{self.model.__name__.lower()}", []
         )
+        if not context.get("object", False):
+            return context
 
         pk = context["object"].pk
         # if instance_ids:
