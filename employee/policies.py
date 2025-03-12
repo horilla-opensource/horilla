@@ -28,7 +28,7 @@ from employee.models import (
     DisciplinaryAction,
     Employee,
     Policy,
-    PolicyMultipleFile, AIPolicy,
+    PolicyMultipleFile
 )
 from horilla.decorators import hx_request_required, login_required, permission_required
 from notifications.signals import notify
@@ -40,13 +40,12 @@ def view_policies(request):
     Method is used render template to view all the policy records
     """
     policies = Policy.objects.all()
-    ai_policy = AIPolicy.objects.filter(is_active=True).first()
     if not request.user.has_perm("employee.view_policy"):
         policies = policies.filter(is_visible_to_all=True)
     return render(
         request,
         "policies/view_policies.html",
-        {"policies": paginator_qry(policies, request.GET.get("page")), 'ai_policy': ai_policy},
+        {"policies": paginator_qry(policies, request.GET.get("page"))},
     )
 
 

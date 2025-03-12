@@ -12,38 +12,36 @@
     #chatboxid {
         max-width: 800px;
         margin: 0 auto;
-        padding: 20px;
-        background-color: #444;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     #chatbox {
-        height: 400px;
+        height: 500px;
         overflow-y: auto;
         padding: 10px;
-        background-color: #555;
+        background-color: #55555557;
         border-radius: 8px;
         margin-bottom: 20px;
     }
 
-    .user-message {
-        color: #ff3b38;
+    .user-message, .bot-message {
         padding: 8px;
         background-color: #fff;
         border-radius: 5px;
         margin-bottom: 10px;
         max-width: 70%;
+        display: flex;
+        align-items: center;
+    }
+
+    .user-message {
+        color: #ff3b38;
         align-self: flex-end;
     }
 
     .bot-message {
         color: #333;
-        padding: 8px;
-        background-color: #fff;
-        border-radius: 5px;
-        margin-bottom: 10px;
-        max-width: 70%;
         align-self: flex-start;
     }
 
@@ -97,6 +95,12 @@
             transform: rotate(360deg);
         }
     }
+
+    /* Icon styles */
+    .message-icon {
+        margin-right: 10px;
+        font-size: 1.2em;
+    }
 </style>
 
 <div class="oh-modal__dialog-body">
@@ -105,8 +109,12 @@
             <div id="chatbox">
                 {% for message in messages %}
                     <div class="d-flex flex-column">
-                        <div class="user-message">{{ message.user_message }}</div>
-                        <div class="bot-message">{{ message.bot_message }}</div>
+                        <div class="user-message">
+                            <i class="material-icons mt-2">person</i>{{ message.user_message }}
+                        </div>
+                        <div class="bot-message">
+                            <i class="material-icons mt-2">smart_toy</i> {{ message.bot_message }}
+                        </div>
                     </div>
                 {% endfor %}
             </div>
