@@ -5,6 +5,7 @@ This module is used to write views related to the survey features
 """
 
 import json
+import os
 from datetime import datetime
 from uuid import uuid4
 
@@ -167,6 +168,9 @@ def candidate_survey(request):
                     {"form": form, "candidate": candidate},
                 )
             attachment_path = f"recruitment_attachment/{attachment.name}"
+            attachment_dir = os.path.dirname(default_storage.path(attachment_path))
+            if not os.path.exists(attachment_dir):
+                os.makedirs(attachment_dir)
             with default_storage.open(attachment_path, "wb+") as destination:
                 for chunk in attachment.chunks():
                     destination.write(chunk)
