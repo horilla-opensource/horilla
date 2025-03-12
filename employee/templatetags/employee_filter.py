@@ -12,3 +12,8 @@ def add_days(value, days):
         return value + timedelta(days=days)
     else:
         return None
+
+
+@register.filter(name="edit_accessibility")
+def edit_accessibility(emp):
+    return emp.default_accessibility.filter(feature="profile_edit").exists()
