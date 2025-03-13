@@ -48,68 +48,74 @@ def get_total_days(start_date, end_date):
 
 def get_leaves(employee, start_date, end_date):
     """
-    This method is used to return all the leaves taken by the employee
-    between the period.
+    This method returns all the leaves taken by the employee
+    between the given period.
 
     Args:
         employee (obj): Employee model instance
-        start_date (obj): the start date from the data needed
-        end_date (obj): the end date till the date needed
+        start_date (obj): Start date of the range
+        end_date (obj): End date of the range
     """
     if apps.is_installed("leave"):
         approved_leaves = employee.leaverequest_set.filter(status="approved")
     else:
         approved_leaves = None
-    paid_leave = 0
-    unpaid_leave = 0
-    paid_half = 0
-    unpaid_half = 0
+
+    paid_leave = 0.0
+    unpaid_leave = 0.0
+    paid_half = 0.0
+    unpaid_half = 0.0
+
     paid_leave_dates = []
     unpaid_leave_dates = []
     company_leave_dates = get_working_days(start_date, end_date)["company_leave_dates"]
 
     if approved_leaves and approved_leaves.exists():
         for instance in approved_leaves:
+            leave_dates = [
+                date
+                for date in instance.requested_dates()
+                if start_date <= date <= end_date
+            ]
+            total_leave_days = len(leave_dates)
+
             if instance.leave_type_id.payment == "paid":
-                # if the taken leave is paid
-                # for the start date
-                all_the_paid_leave_taken_dates = instance.requested_dates()
-                paid_leave_dates = paid_leave_dates + [
-                    date
-                    for date in all_the_paid_leave_taken_dates
-                    if start_date <= date <= end_date
-                ]
-            else:
-                # if the taken leave is unpaid
-                # for the start date
-                all_unpaid_leave_taken_dates = instance.requested_dates()
-                unpaid_leave_dates = unpaid_leave_dates + [
-                    date
-                    for date in all_unpaid_leave_taken_dates
-                    if start_date <= date <= end_date
-                ]
+                paid_leave_dates.extend(leave_dates)
+                paid_leave += total_leave_days
+
+            elif instance.leave_type_id.payment == "unpaid":
+                unpaid_leave_dates.extend(leave_dates)
+                unpaid_leave += total_leave_days
+
+            elif instance.leave_type_id.payment == "partial":
+                percentage = instance.leave_type_id.partial_payment_percentage or 0.0
+                paid_days = (total_leave_days * (percentage / 100))
+                unpaid_days = total_leave_days - paid_days
+
+                paid_leave += paid_days
+                unpaid_leave += unpaid_days
+
+                paid_leave_dates.extend(leave_dates[:int(paid_days)])  # Approximate allocation
+                unpaid_leave_dates.extend(leave_dates[int(paid_days):])
 
     half_day_data = find_half_day_leaves()
-
     unpaid_half = half_day_data["half_unpaid_leaves"]
     paid_half = half_day_data["half_paid_leaves"]
 
     paid_leave_dates = list(set(paid_leave_dates) - set(company_leave_dates))
     unpaid_leave_dates = list(set(unpaid_leave_dates) - set(company_leave_dates))
-    paid_leave = len(paid_leave_dates) - paid_half
-    unpaid_leave = len(unpaid_leave_dates) - unpaid_half
+
+    paid_leave = (len(paid_leave_dates) - paid_half) + paid_leave
+    unpaid_leave = (len(unpaid_leave_dates) - unpaid_half) + unpaid_leave
 
     return {
-        "paid_leave": paid_leave,
-        "unpaid_leaves": unpaid_leave,
-        "total_leaves": paid_leave + unpaid_leave,
-        # List of paid leave date between range
+        "paid_leave": round(paid_leave, 2),
+        "unpaid_leaves": round(unpaid_leave, 2),
+        "total_leaves": round(paid_leave + unpaid_leave, 2),
         "paid_leave_dates": paid_leave_dates,
-        # List of un paid date between range
         "unpaid_leave_dates": unpaid_leave_dates,
         "leave_dates": unpaid_leave_dates + paid_leave_dates,
     }
-
 
 if apps.is_installed("attendance"):
 
