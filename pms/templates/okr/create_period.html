@@ -55,6 +55,7 @@
   </section>
 </form>
 <script>
+    const current_company_id = "{{request.session.selected_company}}";
     $(document).ready(function (e) {
     function getCookie(name) {
       let cookieValue = null;
@@ -79,7 +80,7 @@
       $.ajax({
         type:"post",
         url:"create-period",
-        data:formData,
+        data:formData+`&company_id=${current_company_id}`,
         beforeSend: function () {
           $(".errorlist").remove();
         },
