@@ -2134,7 +2134,7 @@ def get_collegues(request):
             elif request.GET.get("data") == "keyresults":
                 employees_queryset = EmployeeKeyResult.objects.filter(
                     employee_objective_id__employee_id=employee
-                ).values_list("id", "key_result_id__title")
+                )
             # Convert QuerySets to a list
             employees = [(employee.id, employee) for employee in employees_queryset]
             context = {"employees": employees}
