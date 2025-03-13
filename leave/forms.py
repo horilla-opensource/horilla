@@ -187,6 +187,17 @@ class LeaveTypeForm(ConditionForm):
             "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Conditionally show the partial_payment_percentage field based on the payment type
+        if 'payment' in self.data:
+            payment_type = self.data.get('payment')
+            if payment_type != 'partial':
+                self.fields['partial_payment_percentage'].widget = forms.HiddenInput()
+        elif self.instance.pk:
+            if self.instance.payment != 'partial':
+                self.fields['partial_payment_percentage'].widget = forms.HiddenInput()
+
     def clean(self):
         cleaned_data = super().clean()
         if "employee_id" in self.errors:
@@ -213,10 +224,6 @@ class LeaveTypeForm(ConditionForm):
                     employee_id=employee,
                     available_days=leave_type.total_days,
                 ).save()
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
 
 class UpdateLeaveTypeForm(ConditionForm):
 

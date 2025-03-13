@@ -108,7 +108,7 @@ DAYS = [
 
 TIME_PERIOD = [("day", _("Day")), ("month", _("Month")), ("year", _("Year"))]
 
-PAYMENT = [("paid", _("Paid")), ("unpaid", _("Unpaid"))]
+PAYMENT = [("paid", _("Paid")), ("unpaid", _("Unpaid")), ('partial', _('Partial'))]
 
 CARRYFORWARD_TYPE = [
     ("no carryforward", _("No Carry Forward")),
@@ -157,6 +157,7 @@ class LeaveType(HorillaModel):
     name = models.CharField(max_length=30, null=False)
     color = models.CharField(null=True, max_length=30)
     payment = models.CharField(max_length=30, choices=PAYMENT, default="unpaid")
+    partial_payment_percentage = models.FloatField(null=True, blank=True) # paid partially by x% on the employee
     count = models.FloatField(null=True, default=1)
     period_in = models.CharField(max_length=30, choices=TIME_PERIOD, default="day")
     limit_leave = models.BooleanField(default=True)
