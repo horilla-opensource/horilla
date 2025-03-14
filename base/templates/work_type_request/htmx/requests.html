@@ -422,7 +422,7 @@
         });
     });
     // toggle columns //
-    toggleColumns("work-type-request-table", "workTypeRequestCells");
+    toggleColumns("work_type_request_tab", "workTypeRequestCells");
     localStorageWorkTypeReqCells = localStorage.getItem("work_type_request_tab");
     if (!localStorageWorkTypeReqCells) {
         $("#workTypeRequestCells").find("[type=checkbox]").prop("checked", true);
