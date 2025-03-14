@@ -19,6 +19,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
+from django.core.validators import MinLengthValidator, RegexValidator
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import (
@@ -63,6 +64,10 @@ class Employee(models.Model):
         ("married", trans("Married")),
         ("divorced", trans("Divorced")),
     )
+    RELIGION_CHOICES = [
+        ('Muslim', trans('Muslim')),
+        ('Christian', trans('Christian')),
+    ]
     badge_id = models.CharField(max_length=50, null=True, blank=True)
     employee_user_id = models.OneToOneField(
         User,
@@ -110,6 +115,42 @@ class Employee(models.Model):
     )
     is_directly_converted = models.BooleanField(
         default=False, null=True, blank=True, editable=False
+    )
+    
+    national_id = models.CharField(
+        max_length=14,
+        validators=[
+            MinLengthValidator(10),
+            RegexValidator(r'^\d+$', 'Only numeric values are allowed.')
+        ],
+        unique=True,
+        blank=False,
+        null=True
+    )
+    
+    religion = models.CharField(
+        max_length=10, 
+        choices=RELIGION_CHOICES, 
+        default='Muslim'
+    )
+    
+    triple_number = models.CharField(
+        max_length=50,
+        validators=[RegexValidator(r'^\d+$', 'Only numeric values are allowed.')],
+        blank=True,
+        null=True
+    )
+
+    military_status = models.CharField(
+        max_length=50,
+        blank=True, 
+        null=True
+    )
+
+    education = models.CharField(
+        max_length=100,
+        blank=True, 
+        null=True
     )
     objects = HorillaCompanyManager(
         related_company_field="employee_work_info__company_id"
@@ -646,6 +687,25 @@ class EmployeeWorkInformation(models.Model):
         bases=[
             HorillaAuditInfo,
         ],
+    )
+    insurance_number = models.CharField(
+        max_length=20,
+        validators=[RegexValidator(r'^\d+$', 'Only numeric values are allowed.')],
+        blank=True,
+        null=True
+    )
+
+    payment_method = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True
+    )
+
+    insurance_fee = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True, 
+        null=True
     )
     objects = HorillaCompanyManager()
 

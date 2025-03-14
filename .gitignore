@@ -148,3 +148,5 @@ whoosh_index/
 
 #VSCode
 .vscode/
+
+TestDB_Horilla.sqlite3

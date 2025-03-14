@@ -317,6 +317,9 @@ class EmployeeWorkInformationForm(ModelForm):
             "tags",
             "basic_salary",
             "salary_hour",
+            "insurance_number",
+            "insurance_fee",
+            "payment_method",
         )
         exclude = ("employee_id",)
 

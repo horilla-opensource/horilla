@@ -59,6 +59,23 @@
                         {{form.phone}} {{form.phone.errors}}
                     </div>
                 </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label d-block" for="national_id"
+                            >{% trans "National ID" %}</label
+                        >
+                        {{form.national_id}} {{form.national_id.errors}}
+                    </div>
+
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label d-block" for="education"
+                            >{% trans "Education" %}</label
+                        >
+                        {{form.education}} {{form.education.errors}}
+                    </div>
+                </div>
+
                 <div class="row" data-select2-id="select2-data-46-nz80">
                     <div
                         class="col-12 col-sm-12 col-md-12 col-lg-6"
@@ -197,6 +214,29 @@
                             >{% trans "Children" %}</label
                         >
                         {{form.children}} {{form.children.errors}}
+                    </div>
+
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label d-block" for="religion"
+                            >{% trans "Relogion" %}</label
+                        >
+                        {{form.religion}} {{form.religion.errors}}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label d-block" for="military_status"
+                            >{% trans "Militry Status" %}</label
+                        >
+                        {{form.military_status}} {{form.military_status.errors}}
+                    </div>
+
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label d-block" for="triple_number"
+                            >{% trans "Triple Number" %}</label
+                        >
+                        {{form.triple_number}} {{form.triple_number.errors}}
                     </div>
                 </div>
                 <hr class="mt-5 mb-3" />
