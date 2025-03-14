@@ -317,6 +317,8 @@ class DeductionForm(forms.ModelForm):
     def save(self, commit: bool = ...) -> Any:
         amount = self.data.get('amount')
         self.instance.amount = amount
+        if self.data.get('update_compensation') == 'net_pay':
+            self.instance.based_on = 'net_deductions'
         super().save(commit)
         other_conditions = self.data.getlist("other_conditions")
         other_fields = self.data.getlist("other_fields")

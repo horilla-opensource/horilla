@@ -557,7 +557,7 @@ def calculate_employer_contribution(data):
                     if object:
                         amount = pay_head_data.get(object.based_on)
                         employer_contribution_amount = (
-                            amount * object.employer_rate
+                            amount[0].get('amount') * object.employer_rate
                         ) / 100
                         deduction["based_on"] = object.based_on
                         deduction["employer_contribution_amount"] = (
