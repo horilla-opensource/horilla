@@ -32,8 +32,8 @@ function toggleColumns(tableId, fieldContainer) {
     }
     let selectButtons = $(`
     <div class="oh-dropdown_btn-header">
-    <button onclick="$(this).parent().parent().find('[type=checkbox]').prop('checked',true).change()" class="oh-btn oh-btn--success-outline">Select All Rows</button>
-    <button onclick="$(this).parent().parent().find('[type=checkbox]').prop('checked',false).change()" class="oh-btn oh-btn--primary-outline">Unselect All Rows</button>
+    <button onclick="$(this).parent().parent().find('[type=checkbox]').prop('checked',true).change()" class="oh-btn oh-btn--success-outline">Select All Columns</button>
+    <button onclick="$(this).parent().parent().find('[type=checkbox]').prop('checked',false).change()" class="oh-btn oh-btn--primary-outline">Unselect All Columns</button>
     </div>
     `)
     $(`#${fieldContainer}`).parent().prepend(selectButtons)
