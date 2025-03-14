@@ -315,6 +315,8 @@ class DeductionForm(forms.ModelForm):
         return table_html
 
     def save(self, commit: bool = ...) -> Any:
+        amount = self.data.get('amount')
+        self.instance.amount = amount
         super().save(commit)
         other_conditions = self.data.getlist("other_conditions")
         other_fields = self.data.getlist("other_fields")
