@@ -34,20 +34,26 @@
         </div>
       </div>
     {% endif %}
-
-    {% if answer.question_id.question_type == '4' %}
-      <div class="d-block">
-        <ul class="oh-questions mt-2">
-          <li class="oh-questions__answer">
-            <div class="oh-radio">
-              <input type="radio" class="oh-radio  " id="answer1" name="answer{{q.id}}" value="{{option.option_a}}"
-                checked />
-              <span class="oh-radio__checkmark"></span>
-              <label class="oh-label" for="answer1"> {{answer.answer.answer}}</label>
+        {% if answer.question_id.question_type == '4' %}
+        <div class="d-block">
+            <ul class="oh-questions mt-2">
+                <li class="oh-questions__answer">
+                    <div class="oh-radio">
+                        <label class="oh-label">{{ answer.answer.answer }}</label>
+                    </div>
+                </li>
+            </ul>
+            <div class="justification-container mt-2">
+                <strong>{% trans "Observations" %}:</strong>
+                <p class="justification-text">
+                    {% if answer.justification and answer.justification|length > 0 %}
+                        {{ answer.justification }}
+                    {% else %}
+                        {% trans "No observation provided." %}
+                    {% endif %}
+                </p>
             </div>
-          </li>
-        </ul>
-      </div>
+        </div>
     {% endif %}
 
     {% if answer.question_id.question_type == '5' %}
