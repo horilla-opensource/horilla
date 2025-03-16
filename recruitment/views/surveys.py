@@ -371,7 +371,9 @@ def application_form(request):
             resume = request.FILES.get("resume")
             if resume:
                 resume_path = f"recruitment/resume/{resume.name}"
-
+                attachment_dir = os.path.dirname(default_storage.path(resume_path))
+                if not os.path.exists(attachment_dir):
+                    os.makedirs(attachment_dir)
                 with default_storage.open(resume_path, "wb+") as destination:
                     for chunk in resume.chunks():
                         destination.write(chunk)
