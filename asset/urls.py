@@ -49,8 +49,8 @@ urlpatterns = [
         kwargs={
             "model": AssetCategory,
             "form": AssetCategoryForm,
-            "form_name": "asset_category_form",
-            "template": "category/asset_category_creation.html",
+            "form_name": "form",
+            "template": "category/asset_category_form.html",
         },
     ),
     path(
