@@ -1,6 +1,6 @@
 {% load i18n %} {% load widget_tweaks %}
 <div class="oh-modal__dialog-header pb-0">
-    <span class="oh-modal__dialog-title" id="uploadFileModalLabel">{% trans "Upload File" %}</span>
+    <span class="oh-modal__dialog-title" id="uploadFileModalLabel">{% trans "Upload" %} {{form.verbose_name}}</span>
     <button class="oh-modal__close--custom" aria-label="Close"
         onclick="event.stopPropagation();event.preventDefault();$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
         <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
@@ -43,7 +43,7 @@
             <div class="col-12 col-sm-12 col-md-4 col-lg-6">
                 <div class="oh-input__group">
                     <label class="oh-input__label" for="{{form.expiry_date.id_for_label}}">
-                        {% trans "Expiry Date" %}
+                        {{ form.expiry_date.label }}
                     </label>
                     {{ form.expiry_date }}
                     {{ form.expiry_date.errors }}

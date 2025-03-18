@@ -980,11 +980,16 @@ def zk_employees_fetch(device):
     conn.enable_device()
     users = conn.get_users()
     fingers = conn.get_templates()
+
+    bio_employees = BiometricEmployees.objects.filter(device_id=device)
+    bio_lookup = {bio.user_id: bio for bio in bio_employees}
+
     employees = []
     for user in users:
         user_id = user.user_id
         uid = user.uid
-        bio_id = BiometricEmployees.objects.filter(user_id=user_id).first()
+        bio_id = bio_lookup.get(user_id)
+
         if bio_id:
             employee = bio_id.employee_id
             employee_work_info = EmployeeWorkInformation.objects.filter(
