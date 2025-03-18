@@ -1215,6 +1215,12 @@ class DynamicEmailConfiguration(HorillaModel):
     is_primary = models.BooleanField(
         default=False, verbose_name=_("Primary Mail Server")
     )
+    use_dynamic_display_name = models.BooleanField(
+        default=True,
+        help_text=_(
+            "By enabling this the display name will take from who triggered the mail"
+        ),
+    )
 
     timeout = models.SmallIntegerField(
         null=True, verbose_name=_("Email Send Timeout (seconds)")
