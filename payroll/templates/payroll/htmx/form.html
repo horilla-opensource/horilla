@@ -4,6 +4,8 @@
 <script>
     $(document).ready(function () {
         function conditionalVisibility() {
+    console.log("______________form.ht========")
+
           if (!$("#id_is_condition_based").is(":checked")) {
             $("#id_field, #id_value, #id_condition").hide();
             $("[for='id_field'], [for='id_value'], [for='id_condition']").hide();

@@ -1,0 +1,52 @@
+{% load i18n %}
+{% if perms.payroll.change_reimbursement %}
+<div id="requestCard{{ instance.id }}" onclick="event.stopPropagation()">
+    <form
+        action="{% url 'approve-reimbursements' %}"
+    >
+    <input type="hidden" name="ids" value="{{ instance.id }}" />
+    <input type="hidden" name="status" />
+    <input type="hidden" name="amount" default="0" min="0" />
+    <div class="oh-btn-group" onclick="event.stopPropagation()">
+        {% if instance.status == 'requested' %}
+            <button
+                type="button"
+                title="{% trans 'Approve' %}"
+                onclick="reimbursementConfirm('Do You really want to approve the request?','#requestCard{{ instance.id }}',true);$('#requestCard{{ instance.id }} [name=status]').val('approved')"
+                class="oh-btn oh-btn--success w-100"
+            >
+                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+            </button>
+        {% else %}
+                <button
+                    title="{% trans 'Approve' %}"
+                    type="button"
+                    class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                >
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </button>
+        {% endif %}
+        {% if instance.status != 'rejected' %}
+            <button
+                type="button"
+                onclick="$('#requestCard{{ instance.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#requestCard{{ instance.id }}');$('#requestCard{{ instance.id }} [name=status]').val('canceled')"
+                class="oh-btn oh-btn--danger w-100"
+            >
+            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+
+            </button>
+        {% else %}
+            <button class="oh-btn oh-btn--danger w-100" disabled onclick="event.preventDefault();">
+                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+            </button>
+        {% endif %}
+            <input
+                type="submit"
+                hidden
+                id="requestCard{{ instance.id }}Button"
+            />
+    </div>
+
+</form>
+</div>
+{% endif %}

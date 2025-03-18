@@ -1,0 +1,20 @@
+{% load i18n %}
+{% if perms.attendance.delete_attendanceactivity %}
+<div class="detail-view" style="width: 100%;" onclick="event.stopPropagation()">
+<button class="oh-btn oh-btn-group oh-btn--secondary"
+    hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+    hx-post="{% url 'attendance-activity-delete' instance.id %}?instances_ids={{request.GET.instance_ids}}"
+    hx-target="#genericModalBody" style="width:100%;"
+    title="{% trans 'Delete' %}"
+    data-toggle="oh-modal-toggle">
+<ion-icon class="me-1" name="trash-outline"></ion-icon>
+</button>
+</div>
+{% endif %}
+{% if request.GET.deleted %}
+<script>
+    $("#reloadMessagesButton").click()
+    $('.reload-record').click();
+</script>
+{% endif %}
+

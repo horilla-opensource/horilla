@@ -16,6 +16,8 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.http import JsonResponse
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 
@@ -32,10 +34,12 @@ from base.models import (
 )
 from employee.methods.duration_methods import format_time, strtime_seconds
 from horilla import horilla_middlewares
+from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_views.cbv_methods import render_template
 
 # create your model
 
@@ -114,6 +118,12 @@ class Employee(models.Model):
         related_company_field="employee_work_info__company_id"
     )
 
+    def get_contact(self):
+        """
+        to get contact no of candidates
+        """
+        return self.phone
+
     def get_image(self):
         """
         This method is used to return the profile image path of the employee
@@ -161,6 +171,24 @@ class Employee(models.Model):
             getattr(self, "employee_work_info", None), "job_position_id", None
         )
 
+    def diff_cell(self):
+        request = getattr(_thread_locals, "request", None)
+        if (
+            request
+            and hasattr(request, "user")
+            and hasattr(request.user, "employee_get")
+        ):
+            if (
+                hasattr(self, "employee_work_info")
+                and self.employee_work_info.reporting_manager_id
+                == request.user.employee_get
+            ):
+                return 'style="color: inherit; text-decoration: none; background-color: hsl(38.08deg 100% 50% / 8%);"'
+            else:
+                return ""
+        else:
+            return ""
+
     def get_department(self):
         """
         This method is used to return the department of the employee
@@ -175,7 +203,8 @@ class Employee(models.Model):
 
     def get_mail(self):
         """
-        This method is used to return the shift of the employee
+        This method is used to return the employee's email, checking work email first
+        then falling back to personal email.
         """
         work_info = getattr(self, "employee_work_info", None)
         work_email = getattr(work_info, "email", None)
@@ -244,7 +273,20 @@ class Employee(models.Model):
             ).exists()
         ):
             status = _("On a break")
-        return status
+        # return status
+        return f'<span class="oh-recruitment_tag" style="font-size: 0.5rem; color: red;">{status}</span>'
+
+    from django.http import JsonResponse
+
+    def send_mail_button(self):
+        """
+        View to return the HTML for the send mail button.
+        """
+
+        return render_template(
+            path="cbv/dashboard/offline_action.html",
+            context={"instance": self},
+        )
 
     def get_forecasted_at_work(self):
         """
@@ -289,6 +331,16 @@ class Employee(models.Model):
             }
         else:
             return {}
+
+    def get_custom_forecasted_info_col(self):
+        forecasted_info = self.get_forecasted_at_work()
+        forecasted_at_work = forecasted_info.get("forecasted_at_work")
+        forecasted_pending_hours = forecasted_info.get("forecasted_pending_hours")
+
+        return f"""
+                <span class="oh-recuritment_tag" style="font-size: .5rem;">At work {forecasted_at_work}</span>
+                <span class="oh-recuritment_tag" style="font-size: .5rem;">Pending {forecasted_pending_hours}</span>
+            """
 
     def get_today_attendance(self):
         """
@@ -353,28 +405,28 @@ class Employee(models.Model):
                         "field_name": "reporting_manager_id",
                     }
                 )
-            if recruitment_manager_query.exists():
+            if recruitment_manager_query and recruitment_manager_query.exists():
                 related_models.append(
                     {
                         "verbose_name": _("Recruitment manager"),
                         "field_name": "recruitment_managers",
                     }
                 )
-            if recruitment_stage_query.exists():
+            if recruitment_stage_query and recruitment_stage_query.exists():
                 related_models.append(
                     {
                         "verbose_name": _("Recruitment stage manager"),
                         "field_name": "recruitment_stage_managers",
                     }
                 )
-            if onboarding_stage_query.exists():
+            if onboarding_stage_query and onboarding_stage_query.exists():
                 related_models.append(
                     {
                         "verbose_name": _("Onboarding stage manager"),
                         "field_name": "onboarding_stage_manager",
                     }
                 )
-            if onboarding_task_query.exists():
+            if onboarding_task_query and onboarding_task_query.exists():
                 related_models.append(
                     {
                         "verbose_name": _("Onboarding task manager"),
@@ -405,6 +457,68 @@ class Employee(models.Model):
         )
         badge_id = (f"({self.badge_id})") if self.badge_id is not None else ""
         return f"{self.employee_first_name} {last_name} {badge_id}"
+
+    def employee_name_with_badge_id(self):
+
+        last_name = (
+            self.employee_last_name if self.employee_last_name is not None else ""
+        )
+        badge_id = (f"({self.badge_id})") if self.badge_id is not None else ""
+        return f"{self.employee_first_name} {last_name} {badge_id}"
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("employee-view-update", kwargs={"obj_id": self.pk})
+        return url
+
+    def get_archive_url(self):
+        """
+        This method to get archive  url
+        """
+        url = reverse_lazy("employee-archive", kwargs={"obj_id": self.pk})
+        return url
+
+    def get_individual_url(self):
+        """
+        This method to get individual  url
+        """
+        url = reverse_lazy("employee-view-individual", kwargs={"obj_id": self.pk})
+        return url
+
+    def get_profile_url(self):
+        """
+        This method to get individual  url
+        """
+        url = reverse_lazy("profile-new", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete  url
+        """
+        url = reverse_lazy("generic-delete")
+        return url
+
+    def employee_actions(self):
+        """
+        This method for get custom column for actions.
+        """
+
+        return render_template(
+            path="cbv/employees_view/employee_actions.html",
+            context={"instance": self},
+        )
+
+    def archive_status(self):
+        """
+        archive status
+        """
+        if self.is_active:
+            return "Archive"
+        else:
+            return "Un-Archive"
 
     def check_online(self):
         """
@@ -543,6 +657,32 @@ class EmployeeTag(HorillaModel):
     def __str__(self) -> str:
         return f"{self.title}"
 
+    def color_span(self):
+        """
+        to return color into correct format
+        """
+        return (
+            '<span style="height: 25px; width: 25px; '
+            'background-color: {}; border-radius: 50%; display: inline-block;"></span>'
+        ).format(self.color)
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("employee-tag-update-form", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        url = reverse_lazy("employee-tag-delete", kwargs={"obj_id": self.pk})
+        return url
+
+    def get_instance_id(self):
+        return self.id
+
 
 class EmployeeWorkInformation(models.Model):
     """
@@ -658,6 +798,52 @@ class EmployeeWorkInformation(models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.skip_history = False
+
+    def calculate_progress(self):
+        fields_to_focus = [
+            "job_position_id",
+            "department_id",
+            "work_type_id",
+            "employee_type_id",
+            "job_role_id",
+            "reporting_manager_id",
+            "company_id",
+            "location",
+            "email",
+            "mobile",
+            "shift_id",
+            "date_joining",
+            "contract_end_date",
+            "basic_salary",
+            "salary_hour",
+        ]
+
+        completed_field_count = sum(
+            1 for field_name in fields_to_focus if getattr(self, field_name) is not None
+        )
+        total_fields = len(fields_to_focus)
+        percent = (
+            (completed_field_count / total_fields) * 100 if total_fields > 0 else 0
+        )
+        return round(percent, 1)
+
+    def progress_col(self):
+        """
+        This method for get custome coloumn for progress.
+        """
+
+        return render_template(
+            path="cbv/dashboard/progress.html",
+            context={"instance": self},
+        )
+
+    def get_edit_url(self):
+        """
+        To get edit url
+        """
+
+        url = reverse("update-emp-workinfo", kwargs={"pk": self.pk})
+        return url
 
     def tracking(self):
         """
@@ -876,12 +1062,46 @@ class Actiontype(HorillaModel):
         help_text="If is enabled, employees log in will be blocked based on period of suspension or dismissal.",
     )
 
-    def __str__(self) -> str:
-        return f"{self.title}"
-
     class Meta:
         verbose_name = _("Action Type")
         verbose_name_plural = _("Action Types")
+
+    def __str__(self) -> str:
+        return f"{self.title}"
+
+    def get_block_option(self):
+        """
+        To get block option
+        """
+        if self.block_option:
+            return "Yes"
+        return "No"
+
+    def get_action_type_display(self):
+        """
+        Display action type
+        """
+        return dict(self.choice_actions).get(self.action_type)
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("update-action-type", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        url = reverse_lazy("generic-delete")
+        return url
+
+    def get_instance_id(self):
+        """
+        To get instance in list view
+        """
+        return self.id
 
 
 class DisciplinaryAction(HorillaModel):
@@ -912,6 +1132,97 @@ class DisciplinaryAction(HorillaModel):
 
     class Meta:
         ordering = ["-id"]
+
+    def employee_column(self):
+        """
+        This method for get custom column for employee.
+        """
+
+        return render_template(
+            path="cbv/disciplinary_actions/employee_col.html",
+            context={"instance": self},
+        )
+
+    def action_taken_col(self):
+        """
+        This method for get custom column for employee.
+        """
+
+        return render_template(
+            path="cbv/disciplinary_actions/action_taken.html",
+            context={"instance": self},
+        )
+
+    def block_option_col(self):
+        """
+        block option column
+        """
+        if self.action.block_option:
+            return "Yes"
+        else:
+            return "No"
+
+    def action_date_col(self):
+        """
+        This method for get custom column for action date.
+        """
+
+        return render_template(
+            path="cbv/disciplinary_actions/action_date.html",
+            context={"instance": self},
+        )
+
+    def get_avatar(self):
+        """
+        Method will retun the api to the avatar or path to the profile image
+        """
+        url = f"https://ui-avatars.com/api/?name={self.action}&background=random"
+        return url
+
+    def attachments_col(self):
+        """
+        This method for get custom column for attachments.
+        """
+
+        return render_template(
+            path="cbv/disciplinary_actions/attachments.html",
+            context={"instance": self},
+        )
+
+    def actions(self):
+        """
+        This method for get custom column for actions.
+        """
+
+        return render_template(
+            path="cbv/disciplinary_actions/actions.html",
+            context={"instance": self},
+        )
+
+    def detail_actions(self):
+        """
+        This method for get custom column for actions.
+        """
+
+        return render_template(
+            path="cbv/disciplinary_actions/detail_action.html",
+            context={"instance": self},
+        )
+
+    def employee_detail(self):
+        """
+        interviewer in detail view
+        """
+        employees = self.employee_id.all()
+        employee_names_string = "<br>".join([str(employee) for employee in employees])
+        return employee_names_string
+
+    def dis_action_detail_view(self):
+        """
+        detail view
+        """
+        url = reverse("disciplinary-actions-detail-view", kwargs={"pk": self.pk})
+        return url
 
 
 class EmployeeGeneralSetting(HorillaModel):

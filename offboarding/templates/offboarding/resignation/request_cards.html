@@ -1,5 +1,16 @@
 {% load i18n %} {% load static %}
 {% include 'filter_tags.html' %}
+<style>
+  .resign-status {
+	background: #73bbe12b;
+	font-size: 0.8rem;
+	padding: 4px 8px;
+	border-radius: 10px;
+	margin-bottom: 6px;
+	font-weight: 600;
+	color: #357579;
+	}
+</style>
 {% if perms.offboarding.view_resignationletter %}
 <div class="d-flex flex-row-reverse oh-wrapper">
   <span class="mb-3" onclick="$('[name=status]').val('rejected').change();  $('.filterButton').click()"

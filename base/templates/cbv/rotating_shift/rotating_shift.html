@@ -1,0 +1,338 @@
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<style>
+    .approved--dot {
+        background-color: yellowgreen;
+    }
+
+    .canceled--dot {
+        background-color: red;
+    }
+
+    .approved-True {
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .canceled-True {
+
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .employee {
+        background-color: yellowgreen;
+    }
+</style>
+
+<div hx-get="{% url 'rotating-shift-request-nav' %}" hx-trigger="load"></div>
+
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+{% include "generic/components.html" %}
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+<div class="oh-wrapper"  id="listContainer">
+    <div class="animated-background"></div>
+</div>
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+</div>
+
+<div
+    class="oh-modal"
+    id="shiftImport"
+    role="dialog"
+    aria-labelledby="shiftImport"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="shiftImportLavel">
+                {% trans "Import Rotating Shift" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div
+                class="oh-modal__dialog-body p-0 pt-2"
+                id="shiftImportModalBody"
+            >
+                <form
+                    action="#"
+                    id="shiftImportForm"
+                    enctype="multipart/form-data"
+                >
+                    <div
+                        class="oh-modal__dialog-body mr-5"
+                        id="uploading"
+                        style="display: none"
+                    >
+                        <div class="loader-container">
+                            <div class="loader"></div>
+                            <div class="loader-text">
+                                {% trans "Uploading..." %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="error-container" style="color: red"></div>
+
+                    <div class="modal-body">
+                        {% csrf_token %}
+                        <div class="oh-dropdown__import-form">
+                            <label
+                                class="oh-dropdown__import-label"
+                                for="shiftImportFile"
+                            >
+                                <ion-icon
+                                    name="cloud-upload"
+                                    class="oh-dropdown__import-form-icon md hydrated"
+                                    role="img"
+                                    aria-label="cloud upload"
+                                ></ion-icon>
+                                <span class="oh-dropdown__import-form-title"
+                                    >{% trans "Upload a File" %}</span
+                                >
+                                <span class="oh-dropdown__import-form-text"
+                                    >{% trans "Drag and drop files here" %}
+                                  </span
+                                >
+                            </label>
+                            <input
+                                type="file"
+                                name="file"
+                                id="shiftImportFile"
+                            />
+                            <div class="d-inline float-end">
+                                <a
+                                    href="#"
+                                    style="
+                                        text-decoration: none;
+                                        display: inline-block;
+                                    "
+                                    class="oh-dropdown__link"
+                                    onclick="template_download(event)"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#shiftImport"
+                                >
+                                    <ion-icon
+                                        name="cloud-download-outline"
+                                        style="
+                                            font-size: 20px;
+                                            vertical-align: middle;
+                                        "
+                                    ></ion-icon>
+                                    <span>{% trans "Download Template" %}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex flex-row-reverse">
+                        <input
+                            type="submit"
+                            class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
+                            value="{% trans 'Upload' %}"
+                        />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'cbv/shift_request/shift_request_bulk_actions.js' %}"></script>
+<script src="{% static 'basedOn.js' %}"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#id_field").on("change", function () {
+            $(".filterButton")[0].click();
+        });
+
+        var form = $("#shiftImportForm");
+        form.on("submit", function () {
+            event.preventDefault();
+            $(".oh-dropdown__import-form").css("display", "none");
+            $("#uploading").css("display", "block");
+            var formData = new FormData();
+
+            var fileInput = document.querySelector("#shiftImportFile");
+            formData.append("file", fileInput.files[0]);
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'rotating-shift-assign-info-import' %}",
+                dataType: "binary",
+                data: formData,
+                processData: false,
+                contentType: false,
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+                xhrFields: {
+                    responseType: "blob",
+                },
+                success: function (response, textStatus, xhr) {
+                    var errorCount = xhr.getResponseHeader("X-Error-Count");
+                    if (
+                        typeof response === "object" &&
+                        response.type == "application/json"
+                    ) {
+                        var reader = new FileReader();
+
+                        reader.onload = function () {
+                            var json = JSON.parse(reader.result);
+
+                            if (json.success_count > 0) {
+                                Swal.fire({
+                                    text: `${json.success_count} Employees Imported Successfully`,
+                                    icon: "success",
+                                    showConfirmButton: false,
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                }).then(function () {
+                                    window.location.reload();
+                                });
+                            }
+                        };
+                        reader.readAsText(response);
+                        return;
+                    }
+                    if (!$(".file-xlsx-validation").length) {
+                        swal.fire({
+                            text: `You have ${errorCount} errors. Do you want to download the error list?`,
+                            icon: "error",
+                            showCancelButton: true,
+                            showDenyButton: true,
+                            confirmButtonText:
+                                "Download error list & Skip Import",
+                            denyButtonText:
+                                "Downlod error list & Continue Import",
+                            cancelButtonText: "Cancel",
+                            confirmButtonColor: "#d33",
+                            denyButtonColor: "#008000",
+                            customClass: {
+                                container: "custom-swal-container",
+                            },
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const file = new Blob([response], { type: "text/csv" });
+                                const url = URL.createObjectURL(file);
+                                const link = document.createElement("a");
+                                link.href = url;
+                                link.download = "ImportError.csv";
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                URL.revokeObjectURL(url);
+                                link.click();
+                                window.location.reload();
+                            } else if (result.isDenied) {
+                                formData.append("create_rotating_shift", true);
+                                $.ajax({
+                                    type: "POST",
+                                    url: "{% url 'rotating-shift-assign-info-import' %}",
+                                    dataType: "binary",
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    headers: {
+                                        "X-CSRFToken": getCookie("csrftoken"),
+                                    },
+                                    xhrFields: {
+                                        responseType: "blob",
+                                    },
+                                    success: function (
+                                        response,
+                                        textStatus,
+                                        xhr
+                                    ) {
+                                        Swal.fire({
+                                            text: `Rotating Shifts Imported Successfully`,
+                                            icon: "success",
+                                            showConfirmButton: false,
+                                            timer: 3000,
+                                            timerProgressBar: true,
+                                        }).then(function () {
+                                            const file = new Blob([response], { type: "text/csv" });
+                                            const url = URL.createObjectURL(file);
+                                            const link = document.createElement("a");
+                                            link.href = url;
+                                            link.download = "ImportError.csv";
+                                            document.body.appendChild(link);
+                                            link.click();
+                                            document.body.removeChild(link);
+                                            URL.revokeObjectURL(url);
+                                            link.click();
+                                            window.location.reload();
+                                        });
+
+                                        return;
+                                    },
+                                });
+                            } else {
+                                $(".oh-dropdown__import-form").css(
+                                    "display",
+                                    "block"
+                                );
+                                $("#uploading").css("display", "none");
+                            }
+                        });
+                    }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error downloading file:", errorThrown);
+                },
+            });
+        });
+    });
+
+    function template_download(e) {
+        e.preventDefault();
+        var languageCode = null;
+        getCurrentLanguageCode(function (code) {
+            languageCode = code;
+            var confirmMessage = downloadMessages[languageCode];
+            Swal.fire({
+                text: confirmMessage,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#008000",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirm",
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{% static 'import_templates/shift_schedule_template.csv' %}",
+                        method: "GET",
+                        xhrFields: {
+                            responseType: "blob",
+                        },
+                        success: function (data) {
+                            var blob = new Blob([data], { type: "text/csv" });
+                            var link = $("<a>")
+                                .attr("href", window.URL.createObjectURL(blob))
+                                .attr("download", "shift_schedule_template.csv")
+                                .appendTo("body");
+                            link[0].click();
+                            link.remove();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Failed to download file:", error);
+                        },
+                    });
+                }
+            });
+        });
+    }
+</script>
+
+
+{% endblock content %}

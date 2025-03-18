@@ -1,0 +1,11 @@
+{% load i18n %}
+
+    {% if instance.based_on_week != None %}
+        {% for week in weeks %}
+            {% if week.0 == instance.based_on_week %}
+                {{week.1}}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        {% trans "All" %}
+    {% endif %}

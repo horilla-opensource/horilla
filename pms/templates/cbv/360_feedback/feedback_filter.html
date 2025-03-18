@@ -1,0 +1,91 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Feedback" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.review_cycle.id_for_label}}">{% trans "Feedback Title" %}</label>
+              {{feedback_filter_form.review_cycle}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.status.id_for_label}}">{% trans "Status" %} </label>
+              {{feedback_filter_form.status}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+              {{feedback_filter_form.employee_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.manager_id.id_for_label}}">{% trans "Manager" %} </label>
+              {{feedback_filter_form.manager_id}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.colleague_id.id_for_label}}">{% trans "Colleague" %} </label>
+              {{feedback_filter_form.colleague_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
+              {{feedback_filter_form.start_date}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.subordinate_id.id_for_label}}">{% trans "Subordinate" %}</label>
+              {{feedback_filter_form.subordinate_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
+              {{feedback_filter_form.end_date}}
+            </div>
+
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.archive.id_for_label}}">{% trans "Archive" %}</label>
+              {{feedback_filter_form.archive}}
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group fil">
+              <a id="filtertoday" class="oh-btn oh-btn--secondary oh-btn--small w-100" onclick="updateHiddenInput('today')">{% trans "Today" %} </a>
+              <input type="hidden" name="created_at_date_range">
+            </div>
+
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group fil">
+              <a id="filteryesterday" class="oh-btn oh-btn--secondary oh-btn--small w-100" onclick="updateHiddenInput('yesterday')">{% trans "Yesterday" %}</a>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group fil">
+              <a id="filterweek" class="oh-btn oh-btn--secondary oh-btn--small w-100" onclick="updateHiddenInput('week')">{% trans "This Week" %}</a>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group fil">
+              <a id="filtermonth" class="oh-btn oh-btn--secondary oh-btn--small w-100" onclick="updateHiddenInput('month')">{% trans "This Month" %}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  

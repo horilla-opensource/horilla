@@ -1,4 +1,20 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %}{% load static %}
+<style>
+	.alert {
+		position: relative;
+		padding: 0.75rem 1.25rem;
+		margin-bottom: 1rem;
+		border: 1px solid transparent;
+		border-radius: 0.25rem;
+	}
+
+	.alert-warning {
+		color: #856404;
+		background-color: #fff3cd;
+		border-color: #ffeeba;
+	}
+</style>
+{% include "generic/components.html" %}
 <div class="oh-inner-sidebar-content">
 	{% if perms.base.view_dynamicemailconfiguration %}
 		<div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">

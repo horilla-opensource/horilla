@@ -10,11 +10,12 @@ from django.db.models import Q
 from django_filters import FilterSet
 
 from base.methods import reload_queryset
+from horilla.filters import HorillaFilterSet
 
-from .models import Asset, AssetAssignment, AssetCategory, AssetRequest
+from .models import Asset, AssetAssignment, AssetCategory, AssetLot, AssetRequest
 
 
-class CustomFilterSet(FilterSet):
+class CustomFilterSet(HorillaFilterSet):
     """
     Custom FilterSet class that applies specific CSS classes to filter
     widgets.
@@ -373,3 +374,14 @@ class AssetHistoryReGroup:
         ("assigned_date", "Assigned Date"),
         ("return_date", "Return Date"),
     ]
+
+
+class AssetBatchNoFilter(FilterSet):
+
+    search = django_filters.CharFilter(field_name="lot_number", lookup_expr="icontains")
+
+    class Meta:
+        model = AssetLot
+        fields = [
+            "lot_number",
+        ]

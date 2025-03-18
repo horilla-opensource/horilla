@@ -1,0 +1,10 @@
+{% load i18n %}
+<div class="oh-timeoff-modal__stat">
+    {% if instance.calculate_daily_leave_amount %}
+        <span class="oh-timeoff-modal__stat-title">{% trans "Calculate Leave Amount" %}</span>
+        <span class="oh-timeoff-modal__stat-count">{{instance.calculate_daily_leave_amount|yesno|capfirst}}</span>
+    {% else %}
+        <span class="oh-timeoff-modal__stat-title">{% trans "Deduction Amount For One Leave" %}</span>
+        <span class="oh-timeoff-modal__stat-count">{{instance.deduction_for_one_leave_amount}}</span>
+    {% endif %}
+</div>

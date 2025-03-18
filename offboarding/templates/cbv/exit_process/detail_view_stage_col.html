@@ -1,0 +1,17 @@
+{% load i18n offboarding_filter %}
+<div class="oh-timeoff-modal__stat">
+    <span class="oh-timeoff-modal__stat-count">
+        {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager %}
+            <form id="stage_change" hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
+            hx-target="#offboardingBody{{employee.stage_id.offboarding_id.id}}">
+                {{ stage_forms|individual_view_stages:employee.stage_id }}
+                <input type="submit" hidden />
+            </form>
+        {% else %}
+            <span class="oh-timeoff-modal__stat-count">
+                {{employee.stage_id}}
+            </span>
+        {% endif %}
+    </span>
+</div>
+</div>

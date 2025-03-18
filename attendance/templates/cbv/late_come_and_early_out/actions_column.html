@@ -1,0 +1,33 @@
+{% load i18n %}{% load basefilters %}
+
+{% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or perms.attendance.delete_attendancelatecomeearlyout %}
+                <div onclick="event.stopPropagation();">
+                  <div class="oh-btn-group">
+                    {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
+                    <button
+                      data-toggle="oh-modal-toggle"
+                      data-target="#penaltyModal"
+                      hx-target="#penaltyModalBody"
+                      hx-get="{% url "cut-penalty" instance.id %}"
+                      type='submit'
+                      class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50"
+                      title="{% trans 'Penalty' %}">
+                      <ion-icon name="information-circle-outline"></ion-icon>
+                    </button>
+                    {% endif %}
+                    {% if perms.attendance.delete_attendancelatecomeearlyout  %}
+                      <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
+                            hx-post="{% url 'late-come-early-out-delete' instance.id  %}"
+                            hx-target="#late-container"
+                            onclick="event.stopPropagation()"
+                            class="w-50"
+                        >
+                        {% csrf_token %}
+                        <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}">
+                          <ion-icon name="trash-outline"></ion-icon>
+                        </button>
+                      </form>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endif %}

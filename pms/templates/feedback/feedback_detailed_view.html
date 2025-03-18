@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% block content %}
+{% include 'generic/components.html' %}
 {% load static i18n %}
 {% load i18n %}
 {% load basefilters %}
@@ -120,9 +121,9 @@
                         <button
                           data-toggle="oh-modal-toggle"
                           class="oh-btn oh-btn--light-bkg w-100"
-                          data-target="#feedbackModalPopup"
-                          hx-get="{% url 'feedback-update' id=feedback.id %}"
-                          hx-target="#feedbackModalTarget">
+                          data-target="#genericModal"
+                          hx-get="{% url 'feedback-update' feedback.id %}"
+                          hx-target="#genericModalBody">
                           <ion-icon name="create-outline" class="me-1" ></ion-icon>
                         </button>
                       </div>
@@ -510,7 +511,15 @@
   });
 
   function get_collegues(element) {
-      var employee_id = $(element).val();
+
+        if (typeof element === 'object')
+        {
+            var employee_id = $(element).val();
+        }
+        else {
+          var employee_id = element
+        }
+
 
       // Check if the employee_id is valid
       if (employee_id) {

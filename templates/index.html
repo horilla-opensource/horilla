@@ -68,6 +68,7 @@
         </div>
     {% endif %}
     <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hx-swap="afterend" hidden hx-target="#reloadMessages"></button>
+    {% include "generic/components.html" %}
 
     <div class="oh-wrapper-main" :class="!sidebarOpen ? 'oh-wrapper-main--closed' : ''" x-data="{sidebarOpen: true}"
         @load.window="

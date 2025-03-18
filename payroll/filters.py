@@ -11,11 +11,12 @@ import uuid
 
 import django_filters
 from django import forms
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from base.filters import FilterSet
 from employee.models import Employee
-from horilla.filters import filter_by_name
+from horilla.filters import HorillaFilterSet, filter_by_name
 from payroll.models.models import (
     Allowance,
     Contract,
@@ -23,11 +24,12 @@ from payroll.models.models import (
     FilingStatus,
     LoanAccount,
     Payslip,
+    PayslipAutoGenerate,
     Reimbursement,
 )
 
 
-class ContractFilter(FilterSet):
+class ContractFilter(HorillaFilterSet):
     """
     Filter set class for Contract model
 
@@ -123,7 +125,7 @@ class ContractFilter(FilterSet):
         return queryset
 
 
-class AllowanceFilter(FilterSet):
+class AllowanceFilter(HorillaFilterSet):
     """
     Filter set class for Allowance model.
     """
@@ -172,7 +174,7 @@ class AllowanceFilter(FilterSet):
         return queryset.distinct()
 
 
-class DeductionFilter(FilterSet):
+class DeductionFilter(HorillaFilterSet):
     """
     Filter set class for Deduction model.
     """
@@ -221,7 +223,7 @@ class DeductionFilter(FilterSet):
         return queryset.distinct()
 
 
-class PayslipFilter(FilterSet):
+class PayslipFilter(HorillaFilterSet):
     """
     Filter set class for payslip model.
     """
@@ -272,6 +274,10 @@ class PayslipFilter(FilterSet):
     net_pay__lte = django_filters.NumberFilter(field_name="net_pay", lookup_expr="lte")
     net_pay__gte = django_filters.NumberFilter(field_name="net_pay", lookup_expr="gte")
 
+    department_id = django_filters.CharFilter(
+        field_name="employee_id__employee_work_info__department_id",
+        lookup_expr="icontains",
+    )
     department = django_filters.CharFilter(
         field_name="employee_id__employee_work_info__department_id__department",
         lookup_expr="icontains",
@@ -306,17 +312,25 @@ class PayslipFilter(FilterSet):
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
-class LoanAccountFilter(FilterSet):
+class LoanAccountFilter(HorillaFilterSet):
     """
     LoanAccountFilter
     """
 
-    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+    # search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+    search = django_filters.CharFilter(method="filter_by_search")
     search_employee = django_filters.CharFilter(method=filter_by_name)
     provided_date = django_filters.DateFilter(
         widget=forms.DateInput(attrs={"type": "date"}),
         field_name="provided_date",
     )
+
+    def filter_by_search(self, queryset, name, value):
+        return queryset.filter(
+            Q(title__icontains=value)
+            | Q(employee_id__employee_first_name__icontains=value)
+            | Q(employee_id__employee_last_name__icontains=value)
+        )
 
     class Meta:
         model = LoanAccount
@@ -333,12 +347,13 @@ class LoanAccountFilter(FilterSet):
         ]
 
 
-class ReimbursementFilter(FilterSet):
+class ReimbursementFilter(HorillaFilterSet):
     """
     ReimbursementFilter
     """
 
-    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+    # search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+    search = django_filters.CharFilter(method="search_method")
 
     class Meta:
         model = Reimbursement
@@ -352,6 +367,16 @@ class ReimbursementFilter(FilterSet):
             "employee_id__employee_work_info__job_position_id",
             "employee_id__employee_work_info__reporting_manager_id",
         ]
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search employees and objective
+        """
+
+        return (
+            (queryset.filter(employee_id__employee_first_name__icontains=value))
+            | queryset.filter(title__icontains=value)
+        ).distinct()
 
 
 class ContractReGroup:
@@ -396,3 +421,19 @@ class PayslipReGroup:
         ("employee_id__employee_work_info__job_role_id", _("Job Role")),
         ("employee_id__employee_work_info__company_id", _("Company")),
     ]
+
+
+class PayslipAutoGenerateFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = PayslipAutoGenerate
+        fields = ["company_id"]
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search employees and objective
+        """
+
+        return ((queryset.filter(company_id__company__icontains=value))).distinct()

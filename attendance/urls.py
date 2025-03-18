@@ -13,12 +13,157 @@ import attendance.views.penalty
 import attendance.views.requests
 import attendance.views.search
 import base
+from attendance.cbv import (
+    attendance_activity,
+    attendance_request,
+    attendance_tab,
+    attendances,
+    break_point,
+    check_in_check_out,
+    dashboard,
+    dashboard_offline_online,
+    grace_time,
+    hour_account,
+    late_come_and_early_out,
+    my_attendances,
+)
 from base.forms import AttendanceAllowedIPForm
 from base.models import AttendanceAllowedIP
 
 from .views import views
 
 urlpatterns = [
+    path(
+        "individual-panlty-list-view/<int:pk>/",
+        attendances.PenaltyAccountListView.as_view(),
+        name="individual-panlty-list-view",
+    ),
+    path(
+        "attendance-activity-view/",
+        attendance_activity.AttendanceActivityView.as_view(),
+        name="attendance-activity-view",
+    ),
+    path(
+        "attendance-activity-search/",
+        attendance_activity.AttendanceActivityListView.as_view(),
+        name="attendance-activity-search",
+    ),
+    path(
+        "attendance-nav-view/",
+        attendance_activity.AttendanceActivityNavView.as_view(),
+        name="attendance-nav-view",
+    ),
+    path(
+        "attendance-bulk-export/",
+        attendance_activity.AttendanceBulkExport.as_view(),
+        name="attendance-bulk-export",
+    ),
+    path(
+        "attendance-activity-single-view/<int:pk>/",
+        attendance_activity.AttendanceDetailView.as_view(),
+        name="attendance-activity-single-view",
+    ),
+    # path(
+    #     "activity-attendance-delete/<int:obj_id>",
+    #     attendance_activity.AttendanceActivityDeleteView.as_view(),
+    #     name="activity-attendance-delete",
+    # ),
+    path(
+        "attendance-view/",
+        attendances.AttendancesView.as_view(),
+        name="attendance-view",
+    ),
+    path(
+        "attendances-list-view/",
+        attendances.AttendancesListView.as_view(),
+        name="attendances-list-view",
+    ),
+    path(
+        "attendances-tab-view/",
+        attendances.AttendancesTabView.as_view(),
+        name="attendances-tab-view",
+    ),
+    path(
+        "attendances-navbar-view/",
+        attendances.AttendancesNavView.as_view(),
+        name="attendances-navbar-view",
+    ),
+    path(
+        "attendences-navbar-export/",
+        attendances.AttendancesExportNav.as_view(),
+        name="attendences-navbar-export",
+    ),
+    path(
+        "validate-attendance-tab/",
+        attendances.ValidateAttendancesList.as_view(),
+        name="validate-attendance-tab",
+    ),
+    path(
+        "validate-attendance-individual-tab/<int:pk>/",
+        attendances.ValidateAttendancesIndividualTabView.as_view(),
+        name="validate-attendance-individual-tab",
+    ),
+    path(
+        "ot-attendance-tab/",
+        attendances.OTAttendancesList.as_view(),
+        name="ot-attendance-tab",
+    ),
+    path(
+        "validated-attendance-tab/",
+        attendances.ValidatedAttendancesList.as_view(),
+        name="validated-attendance-tab",
+    ),
+    path(
+        "validate-detail-view/<int:pk>",
+        attendances.ValidateDetailView.as_view(),
+        name="validate-detail-view",
+    ),
+    path(
+        "individual-validate-detail-view/<int:pk>",
+        attendances.ValidateAttendancesIndividualDetailView.as_view(),
+        name="individual-validate-detail-view",
+    ),
+    path(
+        "ot-detail-view/<int:pk>",
+        attendances.OtDetailView.as_view(),
+        name="ot-detail-view",
+    ),
+    path(
+        "validated-detail-view/<int:pk>",
+        attendances.ValidatedDetailView.as_view(),
+        name="validated-detail-view",
+    ),
+    path(
+        "attendance-create",
+        attendances.AttendancesFormView.as_view(),
+        name="attendance-create",
+    ),
+    path(
+        "break-point-list/",
+        break_point.BreakPointList.as_view(),
+        name="break-point-list",
+    ),
+    path(
+        "break-point-navbar/",
+        break_point.BreakPointNavView.as_view(),
+        name="break-point-navbar",
+    ),
+    path(
+        "break-point-create-form/",
+        break_point.BreakPointCreateForm.as_view(),
+        name="break-point-create-form",
+    ),
+    path(
+        "break-point-update-form/<int:pk>/",
+        break_point.BreakPointCreateForm.as_view(),
+        name="break-point-update-form",
+    ),
+    # path("attendance-create", views.attendance_create, name="attendance-create"),
+    path(
+        "update-shift-details",
+        views.form_shift_dynamic_data,
+        name="update-shift-details",
+    ),
     path(
         "profile-attendance-tab",
         views.profile_attendance_tab,
@@ -38,17 +183,22 @@ urlpatterns = [
     path(
         "attendance-info-export", views.attendance_export, name="attendance-info-export"
     ),
-    path("attendance-view/", views.attendance_view, name="attendance-view"),
+    # path("attendance-view/", views.attendance_view, name="attendance-view"),
     path(
         "attendance-search",
         attendance.views.search.attendance_search,
         name="attendance-search",
     ),
     path(
-        "attendance-update/<int:obj_id>/",
-        views.attendance_update,
+        "attendance-update/<int:pk>/",
+        attendances.AttendanceUpdateFormView.as_view(),
         name="attendance-update",
     ),
+    # path(
+    #     "attendance-update/<int:obj_id>/",
+    #     views.attendance_update,
+    #     name="attendance-update",
+    # ),
     path(
         "attendance-delete/<int:obj_id>/",
         views.attendance_delete,
@@ -59,9 +209,14 @@ urlpatterns = [
         views.attendance_bulk_delete,
         name="attendance-bulk-delete",
     ),
+    # path(
+    #     "attendance-overtime-create",
+    #     views.attendance_overtime_create,
+    #     name="attendance-overtime-create",
+    # ),
     path(
         "attendance-overtime-create",
-        views.attendance_overtime_create,
+        hour_account.HourAccountFormView.as_view(),
         name="attendance-overtime-create",
     ),
     path(
@@ -69,19 +224,24 @@ urlpatterns = [
         views.attendance_account_export,
         name="attendance-account-info-export",
     ),
+    # path(
+    #     "attendance-overtime-view/",
+    #     views.attendance_overtime_view,
+    #     name="attendance-overtime-view",
+    # ),
+    # path(
+    #     "attendance-overtime-search",
+    #     attendance.views.search.attendance_overtime_search,
+    #     name="attendance-ot-search",
+    # ),
+    # path(
+    #     "attendance-overtime-update/<int:obj_id>/",
+    #     views.attendance_overtime_update,
+    #     name="attendance-overtime-update",
+    # ),
     path(
-        "attendance-overtime-view/",
-        views.attendance_overtime_view,
-        name="attendance-overtime-view",
-    ),
-    path(
-        "attendance-overtime-search",
-        attendance.views.search.attendance_overtime_search,
-        name="attendance-ot-search",
-    ),
-    path(
-        "attendance-overtime-update/<int:obj_id>/",
-        views.attendance_overtime_update,
+        "attendance-overtime-update/<int:pk>/",
+        hour_account.HourAccountFormView.as_view(),
         name="attendance-overtime-update",
     ),
     path(
@@ -89,21 +249,21 @@ urlpatterns = [
         views.attendance_overtime_delete,
         name="attendance-overtime-delete",
     ),
-    path(
-        "attendance-activity-view/",
-        views.attendance_activity_view,
-        name="attendance-activity-view",
-    ),
-    path(
-        "attendance-activity-single-view/<int:obj_id>/",
-        views.activity_single_view,
-        name="attendance-activity-single-view",
-    ),
-    path(
-        "attendance-activity-search",
-        attendance.views.search.attendance_activity_search,
-        name="attendance-activity-search",
-    ),
+    # path(
+    #     "attendance-activity-view/",
+    #     views.attendance_activity_view,
+    #     name="attendance-activity-view",
+    # ),
+    # path(
+    #     "attendance-activity-single-view/<int:obj_id>/",
+    #     views.activity_single_view,
+    #     name="attendance-activity-single-view",
+    # ),
+    # path(
+    #     "attendance-activity-search",
+    #     attendance.views.search.attendance_activity_search,
+    #     name="attendance-activity-search",
+    # ),
     path(
         "attendance-activity-delete/<int:obj_id>/",
         views.attendance_activity_delete,
@@ -129,7 +289,7 @@ urlpatterns = [
         views.attendance_activity_export,
         name="attendance-activity-info-export",
     ),
-    path("view-my-attendance/", views.view_my_attendance, name="view-my-attendance"),
+    # path("view-my-attendance/", views.view_my_attendance, name="view-my-attendance"),
     path(
         "filter-own-attendance",
         attendance.views.search.filter_own_attendance,
@@ -147,21 +307,21 @@ urlpatterns = [
         views.on_time_view,
         name="on-time-view",
     ),
-    path(
-        "late-come-early-out-view/",
-        views.late_come_early_out_view,
-        name="late-come-early-out-view",
-    ),
-    path(
-        "late-in-early-out-single-view/<int:obj_id>/",
-        views.late_in_early_out_single_view,
-        name="late-in-early-out-single-view",
-    ),
-    path(
-        "late-come-early-out-search",
-        attendance.views.search.late_come_early_out_search,
-        name="late-come-early-out-search",
-    ),
+    # path(
+    #     "late-come-early-out-view/",
+    #     views.late_come_early_out_view,
+    #     name="late-come-early-out-view",
+    # ),
+    # path(
+    #     "late-in-early-out-single-view/<int:obj_id>/",
+    #     views.late_in_early_out_single_view,
+    #     name="late-in-early-out-single-view",
+    # ),
+    # path(
+    #     "late-come-early-out-search",
+    #     attendance.views.search.late_come_early_out_search,
+    #     name="late-come-early-out-search",
+    # ),
     path(
         "late-come-early-out-delete/<int:obj_id>/",
         views.late_come_early_out_delete,
@@ -255,15 +415,25 @@ urlpatterns = [
         attendance.views.requests.request_attendance,
         name="request-attendance",
     ),
-    path(
-        "request-attendance-view/",
-        attendance.views.requests.request_attendance_view,
-        name="request-attendance-view",
-    ),
+    # path(
+    #     "request-attendance-view/",
+    #     attendance.views.requests.request_attendance_view,
+    #     name="request-attendance-view",
+    # ),
     path(
         "request-attendance/<int:attendance_id>/",
         attendance.views.requests.attendance_request_changes,
         name="attendance-change",
+    ),
+    path(
+        "not-in-yet/",
+        dashboard_offline_online.DashboardOfflineEmployees.as_view(),
+        name="not-in-yet",
+    ),
+    path(
+        "not-out-yet/",
+        dashboard_offline_online.DashboardOnlineEmployees.as_view(),
+        name="not-out-yet",
     ),
     path(
         "validate-attendance-request/<int:attendance_id>/",
@@ -305,10 +475,25 @@ urlpatterns = [
         attendance.views.requests.bulk_approve_attendance_request,
         name="bulk-approve-attendance-request",
     ),
+    # path(
+    #     "request-new-attendance",
+    #     attendance.views.requests.request_new,
+    #     name="request-new-attendance",
+    # ),
     path(
         "request-new-attendance",
-        attendance.views.requests.request_new,
+        attendance_request.NewAttendanceRequestFormView.as_view(),
         name="request-new-attendance",
+    ),
+    path(
+        "request-bulk-attendance",
+        attendance_request.BulkAttendanceRequestFormView.as_view(),
+        name="request-bulk-attendance",
+    ),
+    path(
+        "update-attendance-request/<int:pk>/",
+        attendance_request.UpdateAttendanceRequestFormView.as_view(),
+        name="update-attendance-request",
     ),
     path(
         "create-batch-attendance",
@@ -346,6 +531,16 @@ urlpatterns = [
         "user-request-one-view/<int:id>",
         views.user_request_one_view,
         name="user-request-one-view",
+    ),
+    #    path(
+    #     "get-attendance-activities/<int:obj_id>",
+    #     views.get_attendance_activities,
+    #     name="get-attendance-activities",
+    # ),
+    path(
+        "get-attendance-activities/<int:pk>",
+        attendances.AttendanceDetailActivityList.as_view(),
+        name="get-attendance-activities",
     ),
     path(
         "get-attendance-activities/<int:obj_id>",
@@ -446,9 +641,109 @@ urlpatterns = [
         name="get-employee-shift",
     ),
     path(
+        "view-my-attendance/",
+        my_attendances.MyAttendances.as_view(),
+        name="view-my-attendance",
+    ),
+    path(
+        "my-attendance-list/",
+        my_attendances.MyAttendanceList.as_view(),
+        name="my-attendance-list",
+    ),
+    path(
+        "my-attendance-nav/",
+        my_attendances.MyAttendancestNav.as_view(),
+        name="my-attendance-nav",
+    ),
+    path(
+        "my-attendance-detail/<int:pk>/",
+        my_attendances.MyAttendancesDetailView.as_view(),
+        name="my-attendance-detail",
+    ),
+    path(
+        "attendance-overtime-view/",
+        hour_account.HourAccount.as_view(),
+        name="attendance-overtime-view",
+    ),
+    path(
+        "attendance-overtime-search",
+        hour_account.HourAccountList.as_view(),
+        name="attendance-ot-search",
+    ),
+    path(
+        "attendance-overtime-individual-tab/<int:pk>/",
+        attendance_tab.HourAccountIndividualTabView.as_view(),
+        name="attendance-overtime-individual-tab",
+    ),
+    path(
+        "all-attendances-individual-tab/<int:pk>/",
+        attendance_tab.AllAttendancesList.as_view(),
+        name="all-attendances-individual-tab",
+    ),
+    path(
+        "hour-account-nav/",
+        hour_account.HourAccountNav.as_view(),
+        name="hour-account-nav",
+    ),
+    path(
+        "hour-account-export/",
+        hour_account.HourExportView.as_view(),
+        name="hour-account-export",
+    ),
+    path(
+        "hour-account-detail-view/<int:pk>/",
+        hour_account.HourAccountDetailView.as_view(),
+        name="hour-account-detail-view",
+    ),
+    path(
+        "late-come-early-out-view/",
+        late_come_and_early_out.LateComeAndEarlyOut.as_view(),
+        name="late-come-early-out-view",
+    ),
+    path(
+        "late-come-early-out-search/",
+        late_come_and_early_out.LateComeAndEarlyOutList.as_view(),
+        name="late-come-early-out-search",
+    ),
+    path(
+        "late-come-and-early-out-nav/",
+        late_come_and_early_out.LateComeAndEarlyOutListNav.as_view(),
+        name="late-come-and-early-out-nav",
+    ),
+    path(
+        "late-come-and-early-out-export/",
+        late_come_and_early_out.LateEarlyExportView.as_view(),
+        name="late-come-and-early-out-export",
+    ),
+    path(
         "cut-penalty/<int:instance_id>/",
         attendance.views.penalty.cut_available_leave,
         name="cut-penalty",
+    ),
+    # path(
+    #     "dashboard-overtime-approve",
+    #     attendance.views.dashboard.dashboard_overtime_approve,
+    #     name="dashboard-overtime-approve",
+    # ),
+    path(
+        "dashboard-overtime-approve",
+        dashboard.DashboardaAttendanceOT.as_view(),
+        name="dashboard-overtime-approve",
+    ),
+    # path(
+    #     "dashboard-attendance-validate",
+    #     attendance.views.dashboard.dashboard_attendance_validate,
+    #     name="dashboard-attendance-validate",
+    # ),
+    path(
+        "dashboard-attendance-validate",
+        dashboard.DashboardAttendanceToValidate.as_view(),
+        name="dashboard-attendance-validate",
+    ),
+    path(
+        "dashboard-on-break",
+        dashboard.DashboardOnBreak.as_view(),
+        name="dashboard-on-break",
     ),
     path(
         "attendance-settings-view/",
@@ -526,5 +821,90 @@ urlpatterns = [
             "field_type": "character",
             "field_name_pre": "ip_address",
         },
+    ),
+    path(
+        "late-in-early-out-single-view/<int:pk>/",
+        late_come_and_early_out.LateComeEarlyOutDetailView.as_view(),
+        name="late-in-early-out-single-view",
+    ),
+    path(
+        "request-attendance-view/",
+        attendance_request.AttendancesRequestView.as_view(),
+        name="request-attendance-view",
+    ),
+    path(
+        "attendance-request-tab/",
+        attendance_request.AttendancesRequestTabView.as_view(),
+        name="attendance-request-tab",
+    ),
+    path(
+        "attendance-request-list/",
+        attendance_request.AttendancesRequestListView.as_view(),
+        name="attendance-request-list",
+    ),
+    path(
+        "attendance-request-list-tab/",
+        attendance_request.AttendanceRequestListTab.as_view(),
+        name="attendance-request-list-tab",
+    ),
+    path(
+        "attendance-request-individual-tab/<int:pk>/",
+        attendance_tab.RequestedAttendanceIndividualView.as_view(),
+        name="attendance-request-individual-tab",
+    ),
+    path(
+        "attendance-list-tab/",
+        attendance_request.AttendanceListTab.as_view(),
+        name="attendance-list-tab",
+    ),
+    path(
+        "attendance-request-nav/",
+        attendance_request.AttendanceRequestNav.as_view(),
+        name="attendance-request-nav",
+    ),
+    path(
+        "attendances-tab-detail-view/<int:pk>",
+        attendance_request.AttendanceListTabDetailView.as_view(),
+        name="attendances-tab-detail-view",
+    ),
+    path(
+        "default-grace-time-list",
+        grace_time.DefaultGraceTimeList.as_view(),
+        name="default-grace-time-list",
+    ),
+    path(
+        "default-grace-time-nav",
+        grace_time.DefaultGraceTimeNav.as_view(),
+        name="default-grace-time-nav",
+    ),
+    path(
+        "grace-time-nav",
+        grace_time.GraceTimeNav.as_view(),
+        name="grace-time-nav",
+    ),
+    path(
+        "grace-time-create/",
+        grace_time.GraceTimeFormView.as_view(),
+        name="grace-time-create",
+    ),
+    path(
+        "grace-time-update/<int:pk>/",
+        grace_time.GraceTimeFormView.as_view(),
+        name="grace-time-update",
+    ),
+    path(
+        "grace-time-list",
+        grace_time.GraceTimeList.as_view(),
+        name="grace-time-list",
+    ),
+    path(
+        "check-in-check-out-list",
+        check_in_check_out.CheckInCheckOutListView.as_view(),
+        name="check-in-check-out-list",
+    ),
+    path(
+        "check-in-check-out-nav",
+        check_in_check_out.CheckInCheckOutNavBar.as_view(),
+        name="check-in-check-out-nav",
     ),
 ]

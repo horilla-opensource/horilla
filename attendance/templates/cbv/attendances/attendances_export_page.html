@@ -1,0 +1,187 @@
+{% load static %} {% load i18n %}
+<div class="oh-modal__dialog-header">
+<h2 class="oh-modal__dialog-title m-0" id="attendanceExportLavel">
+  {% trans "Export Attendances" %}
+</h2>
+<button class="oh-modal__close" aria-label="Close">
+  <ion-icon name="close-outline"></ion-icon>
+</button>
+</div>
+<div class="oh-modal__dialog-body" id="attendanceExportModalBody">
+  <form
+    action="{%url 'attendance-info-export' %}"
+    method="get"
+    onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+    id="attendanceExportForm"
+    class="oh-profile-section pt-2"
+  >
+    {% csrf_token %}
+    <div class="oh-dropdown__filter-body" id="export_attendance_form">
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">
+                  <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            {% for field in export_form.selected_fields %}
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label"> {{ field }} </label>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Work Info" %}</div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Employee" %}</label>
+                {{export.form.employee_id}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Department" %}</label>
+                {{export.form.employee_id__employee_work_info__department_id}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Shift" %}</label>
+                {{export.form.shift_id}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Reporting Manager" %}</label>
+                {{export.form.employee_id__employee_work_info__reporting_manager_id}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Company" %}</label>
+                {{export.form.employee_id__employee_work_info__company_id}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Job Position" %}</label>
+                {{export.form.employee_id__employee_work_info__job_position_id}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Work Type" %}</label>
+                {{export.form.work_type_id}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Work Location" %}</label>
+                {{export.form.employee_id__employee_work_info__location}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Attendance" %}</div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Attendance Date" %}</label>
+                {{export.form.attendance_date}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "In Time" %}</label>
+                {{export.form.attendance_clock_in}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Validated?" %}</label>
+                {{export.form.attendance_validated}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Min Hour" %}</label>
+                {{export.form.minimum_hour}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Out Time" %}</label>
+                {{export.form.attendance_clock_out}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "OT Approved?" %}</label>
+                {{export.form.attendance_overtime_approve}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+        <div class="oh-accordion-body">
+          <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Attendance From" %}</label>
+                {{export.form.attendance_date__gte}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "In From" %}</label>
+                {{export.form.attendance_clock_in__gte}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Out From" %}</label>
+                {{export.form.attendance_clock_out__gte}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label"
+                  >{% trans "At Work Greater or Equal" %}</label
+                >
+                {{export.form.at_work_second__gte}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label"
+                  >{% trans "OT Greater or Equal" %}</label
+                >
+                {{export.form.overtime_second__gte}}
+              </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6">
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Attendance Till" %}</label>
+                {{export.form.attendance_date__lte}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "In Till" %}</label>
+                {{export.form.attendance_clock_in__lte}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label">{% trans "Out Till" %}</label>
+                {{export.form.attendance_clock_out__lte}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label"
+                  >{% trans "At Work Less Than or Equal" %}</label
+                >
+                {{export.form.at_work_second__lte}}
+              </div>
+              <div class="oh-input-group">
+                <label class="oh-label"
+                  >{% trans "OT Less Than or Equal" %}</label
+                >
+                {{export.form.overtime_second__lte}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="oh-modal__dialog-footer p-0 pt-4">
+      <button class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Export" %}
+      </button>
+    </div>
+  </form>
+</div>

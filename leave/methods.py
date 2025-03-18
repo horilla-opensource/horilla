@@ -177,6 +177,7 @@ def filter_conditional_leave_request(request):
         multiple_approval_requests = LeaveRequestConditionApproval.objects.filter(
             manager_id=approval_manager
         )
+
     else:
         multiple_approval_requests = None
     for instance in multiple_approval_requests:

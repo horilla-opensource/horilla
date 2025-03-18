@@ -31,9 +31,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import F, ProtectedError
 from django.db.models.query import QuerySet
-from django.forms import DateInput, Select
+from django.forms import DateInput, HiddenInput, Select
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as __
@@ -300,80 +301,80 @@ def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
-    employee = Employee.objects.get(id=obj_id)
-    employee_leaves = (
-        employee.available_leave.all() if apps.is_installed("leave") else None
-    )
-    enabled_block_unblock = (
-        AccountBlockUnblock.objects.exists()
-        and AccountBlockUnblock.objects.first().is_enabled
-    )
-    # Retrieve the filtered employees from the session
-    filtered_employee_ids = request.session.get("filtered_employees", [])
-    filtered_employees = Employee.objects.filter(id__in=filtered_employee_ids)
+    # employee = Employee.objects.get(id=obj_id)
+    # employee_leaves = (
+    #     employee.available_leave.all() if apps.is_installed("leave") else None
+    # )
+    # enabled_block_unblock = (
+    #     AccountBlockUnblock.objects.exists()
+    #     and AccountBlockUnblock.objects.first().is_enabled
+    # )
+    # # Retrieve the filtered employees from the session
+    # filtered_employee_ids = request.session.get("filtered_employees", [])
+    # filtered_employees = Employee.objects.filter(id__in=filtered_employee_ids)
 
-    request_ids_str = json.dumps(
-        [
-            instance.id
-            for instance in paginator_qry(
-                filtered_employees, request.GET.get("page")
-            ).object_list
-        ]
-    )
+    # request_ids_str = json.dumps(
+    #     [
+    #         instance.id
+    #         for instance in paginator_qry(
+    #             filtered_employees, request.GET.get("page")
+    #         ).object_list
+    #     ]
+    # )
 
-    # Convert the string to an actual list of integers
-    requests_ids = (
-        ast.literal_eval(request_ids_str)
-        if isinstance(request_ids_str, str)
-        else request_ids_str
-    )
+    # # Convert the string to an actual list of integers
+    # requests_ids = (
+    #     ast.literal_eval(request_ids_str)
+    #     if isinstance(request_ids_str, str)
+    #     else request_ids_str
+    # )
 
-    employee_id = employee.id
-    previous_id = None
-    next_id = None
+    # employee_id = employee.id
+    # previous_id = None
+    # next_id = None
 
-    for index, req_id in enumerate(requests_ids):
-        if req_id == employee_id:
+    # for index, req_id in enumerate(requests_ids):
+    #     if req_id == employee_id:
 
-            if index == len(requests_ids) - 1:
-                next_id = None
-            else:
-                next_id = requests_ids[index + 1]
-            if index == 0:
-                previous_id = None
-            else:
-                previous_id = requests_ids[index - 1]
-            break
+    #         if index == len(requests_ids) - 1:
+    #             next_id = None
+    #         else:
+    #             next_id = requests_ids[index + 1]
+    #         if index == 0:
+    #             previous_id = None
+    #         else:
+    #             previous_id = requests_ids[index - 1]
+    #         break
 
-    context = {
-        "employee": employee,
-        "previous": previous_id,
-        "next": next_id,
-        "requests_ids": requests_ids,
-        "current_date": date.today(),
-        "leave_request_ids": json.dumps([]),
-        "enabled_block_unblock": enabled_block_unblock,
-    }
-    # if the requesting user opens own data
-    if request.user.employee_get == employee:
-        context["user_leaves"] = employee_leaves
-    else:
-        context["employee_leaves"] = employee_leaves
+    # context = {
+    #     "employee": employee,
+    #     "previous": previous_id,
+    #     "next": next_id,
+    #     "requests_ids": requests_ids,
+    #     "current_date": date.today(),
+    #     "leave_request_ids": json.dumps([]),
+    #     "enabled_block_unblock": enabled_block_unblock,
+    # }
+    # # if the requesting user opens own data
+    # if request.user.employee_get == employee:
+    #     context["user_leaves"] = employee_leaves
+    # else:
+    #     context["employee_leaves"] = employee_leaves
 
     return render(
         request,
         "employee/view/individual.html",
-        context,
+        # context,
     )
 
 
 @login_required
 @hx_request_required
-def about_tab(request, obj_id, **kwargs):
+def about_tab(request, pk, **kwargs):
     """
     This method is used to view profile of an employee.
     """
-    employee = Employee.objects.get(id=obj_id)
+    employee = Employee.objects.get(id=pk)
     contracts = employee.contract_set.all() if apps.is_installed("payroll") else None
     employee_leaves = (
         employee.available_leave.all() if apps.is_installed("leave") else None
@@ -391,8 +392,113 @@ def about_tab(request, obj_id, **kwargs):
 
 @login_required
 @hx_request_required
+def allowances_deductions_tab(request, pk):
+    """
+    Retrieve and render the allowances and deductions applicable to an employee.
+
+    This view function retrieves the active contract, basic pay, allowances, and
+    deductions for a specified employee. It filters allowances and deductions
+    based on various conditions, including specific employee assignments and
+    condition-based rules. The results are then rendered in the allowance and
+    deduction tab template.
+    """
+    employee = Employee.objects.get(id=pk)
+    active_contracts = (
+        employee.contract_set.filter(contract_status="active").first()
+        if apps.is_installed("payroll")
+        else None
+    )
+    basic_pay = active_contracts.wage if active_contracts else None
+    employee_allowances = []
+    employee_deductions = []
+    if basic_pay:
+        # Find the applicable allowances for the employee
+        Allowance = get_horilla_model_class(app_label="payroll", model="allowance")
+        specific_allowances = Allowance.objects.filter(specific_employees=employee)
+        conditional_allowances = Allowance.objects.filter(
+            is_condition_based=True
+        ).exclude(exclude_employees=employee)
+        active_employees = Allowance.objects.filter(
+            include_active_employees=True
+        ).exclude(exclude_employees=employee)
+        allowances = specific_allowances | conditional_allowances | active_employees
+        for allowance in allowances:
+            if allowance.is_condition_based:
+                condition_field = allowance.field
+                condition_operator = allowance.condition
+                condition_value = allowance.value.lower().replace(" ", "_")
+                employee_value = dynamic_attr(employee, condition_field)
+                # employee_value = 0
+                operator_func = operator_mapping.get(condition_operator)
+                if employee_value is not None:
+                    condition_value = type(employee_value)(condition_value)
+                    if operator_func(employee_value, condition_value):
+                        employee_allowances.append(allowance)
+            else:
+                employee_allowances.append(allowance)
+            for allowance in employee_allowances:
+                operator_func = operator_mapping.get(allowance.if_condition)
+                condition_value = basic_pay if allowance.if_choice == "basic_pay" else 0
+                if not operator_func(condition_value, allowance.if_amount):
+                    employee_allowances.remove(allowance)
+
+        # Find the applicable deductions for the employee
+        Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
+        specific_deductions = Deduction.objects.filter(
+            specific_employees=employee, is_pretax=True, is_tax=False
+        )
+        conditional_deduction = Deduction.objects.filter(
+            is_condition_based=True, is_pretax=True, is_tax=False
+        ).exclude(exclude_employees=employee)
+        active_employee_deduction = Deduction.objects.filter(
+            include_active_employees=True, is_pretax=True, is_tax=False
+        ).exclude(exclude_employees=employee)
+        deductions = (
+            specific_deductions | conditional_deduction | active_employee_deduction
+        )
+        employee_deductions = list(set(deductions))
+        for deduction in deductions:
+            if deduction.is_condition_based:
+                condition_field = deduction.field
+                condition_operator = deduction.condition
+                condition_value = deduction.value.lower().replace(" ", "_")
+                employee_value = dynamic_attr(employee, condition_field)
+                operator_func = operator_mapping.get(condition_operator)
+
+                if (
+                    employee_value is not None
+                    and not operator_func(
+                        employee_value, type(employee_value)(condition_value)
+                    )
+                    or employee_value is None
+                ):
+                    employee_deductions.remove(deduction)
+    allowance_ids = (
+        json.dumps([instance.id for instance in employee_allowances])
+        if employee_allowances
+        else None
+    )
+    deduction_ids = (
+        json.dumps([instance.id for instance in employee_deductions])
+        if employee_deductions
+        else None
+    )
+    context = {
+        "active_contracts": active_contracts,
+        "basic_pay": basic_pay,
+        "allowances": employee_allowances if employee_allowances else None,
+        "allowance_ids": allowance_ids,
+        "deductions": employee_deductions if employee_deductions else None,
+        "deduction_ids": deduction_ids,
+        "employee": employee,
+    }
+    return render(request, "tabs/allowance_deduction-tab.html", context=context)
+
+
+@login_required
+@hx_request_required
 @owner_can_enter("perms.employee.view_employee", Employee)
-def shift_tab(request, emp_id):
+def shift_tab(request, pk):
     """
     This function is used to view shift tab of an employee in employee individual & profile view.
 
@@ -402,16 +508,16 @@ def shift_tab(request, emp_id):
 
     Returns: return shift-tab template
     """
-    employee = Employee.objects.get(id=emp_id)
-    work_type_requests = WorkTypeRequest.objects.filter(employee_id=emp_id)
+    employee = Employee.objects.get(id=pk)
+    work_type_requests = WorkTypeRequest.objects.filter(employee_id=pk)
     work_type_requests_ids = json.dumps(
         [instance.id for instance in work_type_requests]
     )
-    rshift_assign = RotatingShiftAssign.objects.filter(employee_id=emp_id)
+    rshift_assign = RotatingShiftAssign.objects.filter(employee_id=pk)
     rshift_assign_ids = json.dumps([instance.id for instance in rshift_assign])
-    rwork_type_assign = RotatingWorkTypeAssign.objects.filter(employee_id=emp_id)
+    rwork_type_assign = RotatingWorkTypeAssign.objects.filter(employee_id=pk)
     rwork_type_assign_ids = json.dumps([instance.id for instance in rwork_type_assign])
-    shift_requests = ShiftRequest.objects.filter(employee_id=emp_id)
+    shift_requests = ShiftRequest.objects.filter(employee_id=pk)
     shift_requests_ids = json.dumps([instance.id for instance in shift_requests])
 
     context = {
@@ -423,7 +529,7 @@ def shift_tab(request, emp_id):
         "rwork_type_assign_ids": rwork_type_assign_ids,
         "shift_data": shift_requests,
         "shift_requests_ids": shift_requests_ids,
-        "emp_id": emp_id,
+        "emp_id": pk,
         "employee": employee,
     }
     return render(request, "tabs/shift-tab.html", context=context)
@@ -579,7 +685,7 @@ def document_request_update(request, id):
 @login_required
 @hx_request_required
 @owner_can_enter("horilla_documents.view_document", Employee)
-def document_tab(request, emp_id):
+def document_tab(request, pk):
     """
     This function is used to view documents tab of an employee in employee individual
     & profile view.
@@ -592,12 +698,12 @@ def document_tab(request, emp_id):
     """
 
     form = DocumentUpdateForm(request.POST, request.FILES)
-    documents = Document.objects.filter(employee_id=emp_id)
+    documents = Document.objects.filter(employee_id=pk)
 
     context = {
         "documents": documents,
         "form": form,
-        "emp_id": emp_id,
+        "emp_id": pk,
     }
     return render(request, "tabs/document_tab.html", context=context)
 
@@ -629,6 +735,23 @@ def document_create(request, emp_id):
         "emp_id": emp_id,
     }
     return render(request, "tabs/htmx/document_create_form.html", context=context)
+
+
+def get_notify_field(request):
+    expiry_date = request.GET.get("expiry_date")
+    form = DocumentForm()
+    if not expiry_date:
+        form.fields["notify_before"].widget = HiddenInput()
+        form.fields["notify_before"].label = ""
+    notify_field_html = render_to_string(
+        "cbv/document/notify_field.html",
+        {
+            "form": form,
+            "field_name": "notify_before",
+            "field": form.fields["notify_before"],
+        },
+    )
+    return HttpResponse(notify_field_html)
 
 
 @login_required
@@ -1879,7 +2002,7 @@ def employee_delete(request, obj_id):
         error_message = _("- {}.".format(model_names_str))
         error_message = str(error_message)
         request.session["error_message"] = error_message
-        return redirect(employee_view)
+        return redirect(reverse("employee-view") + "?error_message=true")
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", f"/view={view}"))
 
 
@@ -1979,7 +2102,7 @@ def employee_archive(request, obj_id):
                     count = count + 1
             if count == 1:
                 messages.error(request, _("You can't archive the last superuser."))
-                return HttpResponse("<script>$('#filterEmployee').click();</script>")
+                return HttpResponse("<script>$('#applyFilter').click();</script>")
 
         result = employee.get_archive_condition()
         if result:
@@ -1993,7 +2116,7 @@ def employee_archive(request, obj_id):
         if key not in request.META.keys():
             return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         else:
-            return HttpResponse("<script>$('#filterEmployee').click();</script>")
+            return HttpResponse("<script>$('#applyFilter').click();</script>")
     else:
         return render(
             request,
@@ -2456,6 +2579,7 @@ def work_info_import(request):
             "Salary Hour",
         ]
     )
+
     error_data = {
         "Badge id": [],
         "First Name": [],
@@ -3014,7 +3138,7 @@ def employee_select_filter(request):
 @login_required
 @hx_request_required
 @manager_can_enter(perm="employee.view_employeenote")
-def note_tab(request, emp_id):
+def note_tab(request, pk):
     """
     This function is used to view note tab of an employee in employee individual
     & profile view.
@@ -3026,13 +3150,34 @@ def note_tab(request, emp_id):
     Returns: return note-tab template
 
     """
-    employee_obj = Employee.objects.get(id=emp_id)
-    notes = EmployeeNote.objects.filter(employee_id=emp_id).order_by("-id")
+    employee_obj = Employee.objects.get(id=pk)
+    notes = EmployeeNote.objects.filter(employee_id=pk).order_by("-id")
 
     return render(
         request,
-        "tabs/note_tab.html",
+        "tabs/main_note_tab.html",
         {"employee": employee_obj, "notes": notes},
+    )
+
+
+def history_tab(request, pk):
+    """
+    This function is used to view history tab of an employee in employee individual
+    & profile view.
+
+    Parameters:
+    request (HttpRequest): The HTTP request object.
+    emp_id (int): The id of the employee.
+
+    Returns: return history template
+
+    """
+    employee_obj = Employee.objects.get(id=pk)
+
+    return render(
+        request,
+        "tabs/history.html",
+        {"employee": employee_obj},
     )
 
 
@@ -3041,7 +3186,8 @@ def note_tab(request, emp_id):
 @manager_can_enter(perm="employee.add_employeenote")
 def add_note(request, emp_id=None):
     """
-    This method renders template component to add candidate remark
+    Handles the addition of a note to a specific employee, including file attachments.
+    Saves the note and redirects to the employee's note tab upon successful submission.
     """
 
     form = EmployeeNoteForm(initial={"employee_id": emp_id})
@@ -3161,7 +3307,7 @@ def delete_employee_note_file(request, note_file_id):
 @login_required
 @hx_request_required
 @owner_can_enter("employee.view_bonuspoint", Employee)
-def bonus_points_tab(request, emp_id):
+def bonus_points_tab(request, pk):
     """
     This function is used to view Bonus Points tab of an employee in employee individual
     & profile view.
@@ -3534,12 +3680,11 @@ def first_last_badge(request):
 @login_required
 @hx_request_required
 @manager_can_enter("employee.view_employee")
-def employee_get_mail_log(request):
+def employee_get_mail_log(request, pk):
     """
     This method is used to track mails sent along with the status
     """
-    employee_id = request.GET["emp_id"]
-    employee = Employee.objects.get(id=employee_id)
+    employee = Employee.objects.get(id=pk)
     tracked_mails = EmailLog.objects.filter(to__icontains=employee.email)
     try:
         if employee.employee_work_info and employee.employee_work_info.email:
@@ -3563,7 +3708,44 @@ def get_job_positions(request):
         if department_id
         else []
     )
-    return JsonResponse({"job_positions": dict(job_positions)})
+    job_id = (
+        request.GET.get("job_id") or job_positions.first()[0] if job_positions else None
+    )
+
+    job_roles = (
+        JobRole.objects.filter(job_position_id=job_id).values_list("id", "job_role")
+        if job_id
+        else []
+    )
+    return JsonResponse(
+        {"job_positions": dict(job_positions), "job_roles": dict(job_roles)}
+    )
+
+
+@login_required
+def get_job_positions_hx(request):
+    department_id = request.GET.get("department_id")
+    job_position_id = request.GET.get("job_position_id")
+    form = EmployeeWorkInformationUpdateForm()
+    if department_id:
+        job_positions = JobPosition.objects.filter(department_id=department_id)
+        form.fields["job_position_id"].queryset = job_positions
+        if job_position_id:
+            form.fields["job_position_id"].initial = job_position_id
+        else:
+            form.fields["job_position_id"].initial = (
+                form.fields["job_position_id"].queryset.first().id
+            )
+
+    job_position_field_html = render_to_string(
+        "cbv/dashboard/job_position_field.html",
+        {
+            "form": form,
+            "field_name": "job_position_id",
+            "field": form.fields["job_position_id"],
+        },
+    )
+    return HttpResponse(job_position_field_html)
 
 
 @login_required
@@ -3575,11 +3757,89 @@ def get_job_roles(request):
     JobRole model for job roles that match the provided job_position_id, and
     returns the results as a JSON response.
     """
-    job_id = request.GET.get("job_id")
-    job_roles = JobRole.objects.filter(job_position_id=job_id).values_list(
-        "id", "job_role"
+
+    job_position_id = request.GET.get("job_position_id")
+    job_position = JobPosition.objects.filter(id=job_position_id).first()
+    department = job_position.department_id if job_position else None
+    job_roles = (
+        JobRole.objects.filter(job_position_id=job_position_id).values_list(
+            "id", "job_role"
+        )
+        if job_position
+        else []
     )
-    return JsonResponse({"job_roles": dict(job_roles)})
+    all_departments = Department.objects.values_list("id", "department")
+    return JsonResponse(
+        {
+            "department_id": department.id if department else None,
+            "department_name": department.department if department else None,
+            "job_roles": dict(job_roles),
+            "departments": dict(all_departments),
+        }
+    )
+
+
+@login_required
+def get_position_department(request):
+    """
+    Retrieve job position and department associated with a specific job roles.
+
+    This view function extracts the job_id from the GET request, queries the
+    JobRole model for job roles that match the provided job_position_id, and
+    returns the results as a JSON response.
+    """
+
+    job_role_id = request.GET.get("job_role_id")
+    job_role = JobRole.objects.filter(id=job_role_id).first()
+    job_position = job_role.job_position_id if job_role else None
+    department = job_role.job_position_id.department_id if job_role else None
+
+    all_departments = Department.objects.values_list("id", "department")
+    all_job_position = (
+        JobPosition.objects.filter(department_id=department.id).values_list(
+            "id", "job_position"
+        )
+        if department
+        else []
+    )
+    return JsonResponse(
+        {
+            "job_position_id": job_position.id if job_position else None,
+            "job_position_name": job_position.job_position if job_position else None,
+            "job_positions": dict(all_job_position),
+            "departments": dict(all_departments),
+            "department_id": department.id if department else None,
+            "department_name": department.department if department else None,
+        }
+    )
+
+
+@login_required
+def get_job_roles_hx(request):
+    """
+    Retrieve job roles associated with a specific job position.
+
+    This view function extracts the job_id from the GET request, queries the
+    JobRole model for job roles that match the provided job_position_id, and
+    returns the results as a JSON response.
+    """
+    job_position_id = request.GET.get("job_position_id")
+    job_role_id = request.GET.get("job_role_id")
+    form = EmployeeWorkInformationUpdateForm()
+    if job_position_id:
+        job_role = JobRole.objects.filter(job_position_id=job_position_id)
+        form.fields["job_role_id"].queryset = job_role
+        if job_role_id:
+            form.fields["job_role_id"].initial = job_role_id
+    job_role_field_html = render_to_string(
+        "cbv/dashboard/job_role_field.html",
+        {
+            "form": form,
+            "field_name": "job_role_id",
+            "field": form.fields["job_role_id"],
+        },
+    )
+    return HttpResponse(job_role_field_html)
 
 
 @login_required

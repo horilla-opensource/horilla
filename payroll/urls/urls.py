@@ -6,6 +6,7 @@ This module is used to map url pattern or request path with view functions
 
 from django.urls import include, path
 
+from payroll.cbv import contracts, dashboard, payslip_automation
 from payroll.models.models import Contract, Payslip
 from payroll.views import views
 
@@ -45,14 +46,14 @@ urlpatterns = [
         views.contract_delete,
         name="delete-contract-modal",
     ),
-    path("view-contract/", views.contract_view, name="view-contract"),
+    # path("view-contract/", views.contract_view, name="view-contract"),
     path(
         "single-contract-view/<int:contract_id>/",
         views.view_single_contract,
         name="single-contract-view",
     ),
     path("payslip-pdf/<int:id>", views.payslip_pdf, name="payslip-pdf"),
-    path("contract-filter", views.contract_filter, name="contract-filter"),
+    # path("contract-filter", views.contract_filter, name="contract-filter"),
     path("settings", views.settings, name="payroll-settings"),
     path(
         "payslip-status-update/<int:payslip_id>/",
@@ -103,15 +104,30 @@ urlpatterns = [
         views.payslip_details,
         name="dashboard-payslip-details",
     ),
+    # path(
+    #     "dashboard-department-chart",
+    #     views.dashboard_department_chart,
+    #     name="dashboard-department-chart",
+    # ),
     path(
         "dashboard-department-chart",
-        views.dashboard_department_chart,
+        dashboard.DashboardDepartmentPayslip.as_view(),
         name="dashboard-department-chart",
     ),
+    # path(
+    #     "dashboard-contract-ending",
+    #     views.contract_ending,
+    #     name="dashboard-contract-ending",
+    # ),
     path(
         "dashboard-contract-ending",
-        views.contract_ending,
+        dashboard.DashboardContractList.as_view(),
         name="dashboard-contract-ending",
+    ),
+    path(
+        "dashboard-contract-expired",
+        dashboard.DashboardContractListExpired.as_view(),
+        name="dashboard-contract-expired",
     ),
     path(
         "dashboard-export/",
@@ -171,6 +187,19 @@ urlpatterns = [
         views.initial_notice_period,
         name="initial-notice-period",
     ),
+    path("view-contract/", contracts.ContractsView.as_view(), name="view-contract"),
+    path("contract-filter/", contracts.ContractsList.as_view(), name="contract-filter"),
+    path("contracts-nav/", contracts.ContractsNav.as_view(), name="contracts-nav"),
+    path(
+        "contracts-export/",
+        contracts.ContractsExportView.as_view(),
+        name="contracts-export",
+    ),
+    path(
+        "contracts-detail-view/<int:pk>/",
+        contracts.ContractsDetailView.as_view(),
+        name="contracts-detail-view",
+    ),
     # ===========================Auto payslip generate================================
     path(
         "auto-payslip-settings-view/",
@@ -196,5 +225,30 @@ urlpatterns = [
         "activate-auto-payslip-generate",
         views.activate_auto_payslip_generate,
         name="activate-auto-payslip-generate",
+    ),
+    path(
+        "pay-slip-automation-list",
+        payslip_automation.PaySlipAutomationListView.as_view(),
+        name="pay-slip-automation-list",
+    ),
+    path(
+        "pay-slip-automation-nav",
+        payslip_automation.PaySlipAutomationNav.as_view(),
+        name="pay-slip-automation-nav",
+    ),
+    path(
+        "pay-slip-automation-create",
+        payslip_automation.PaySlipAutomationFormView.as_view(),
+        name="pay-slip-automation-create",
+    ),
+    path(
+        "pay-slip-automation-update/<int:pk>/",
+        payslip_automation.PaySlipAutomationFormView.as_view(),
+        name="pay-slip-automation-update",
+    ),
+    path(
+        "pay-slip-automation-delete/<int:auto_id>/",
+        payslip_automation.DeleteAutoPayslipView.as_view(),
+        name="pay-slip-automation-delete",
     ),
 ]

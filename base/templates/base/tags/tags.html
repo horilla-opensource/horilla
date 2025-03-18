@@ -1,16 +1,20 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %}
 {% load static %}
+{% include "generic/components.html" %}
+<meta name="csrf-token" content="{{ csrf_token }}">
 
 <!-- ******************* HISTORY TAGS ******************* -->
 
 <div class="oh-inner-sidebar-content">
   {% if perms.horilla_audit.view_audittag %}
-  <div
+{% comment %} <div
     class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
   >
-    <h2 class="oh-inner-sidebar-content__title">{% trans "History Tags" %}</h2>
+    <h2 class="oh-inner-sidebar-content__title">{% trans "o/s" %}</h2> {% endcomment %}
     {% if perms.horilla_audit.add_audittag %}
-    	<button
+      <div hx-get="{% url "audit-tag-navbar" %}" hx-trigger="load">
+      </div>
+    	{% comment %} <button
     	  class="oh-btn oh-btn--secondary oh-btn--shadow"
     	  data-toggle="oh-modal-toggle"
     	  data-target="#audittagModal"
@@ -19,12 +23,27 @@
     		>
     	  <ion-icon name="add-outline" class="me-1"></ion-icon>
     	  {% trans "Create" %}
-    	</button>
+    	</button> {% endcomment %}
     {% endif %}
   </div>
-  {% if audittags %}
-  	{% include 'base/audit_tag/audit_tag_view.html' %}
-  {% else %}
+  {% comment %} {% if audittags %}  {% endcomment %}
+    <div
+      class="oh-checkpoint-badge mb-2"
+      id="selectedInstances"
+      data-ids="[]"
+      data-clicked=""
+      style="display: none"
+    ></div>
+      <div class="oh-wrapper"
+      id="listContainer">
+        <div class="animated-background">
+      </div>
+    </div>
+
+{% endif %}
+
+  	{% comment %} {% include 'base/audit_tag/audit_tag_view.html' %}  {% endcomment %}
+  {% comment %} {% else %}
   <div
     style="
       display: flex;
@@ -49,8 +68,9 @@
       {% trans "There is no history tags at this moment." %}
     </h5>
   </div>
-  {% endif %} {% endif %}
-</div>
+  {% endif %} {% endif %} {% endcomment %}
+{% comment %} {% endif %}
+</div> {% endcomment %}
 
 <!-- start of create modal -->
 <div
@@ -75,5 +95,8 @@
   <div class="oh-modal__dialog" id="audittagEditForm"></div>
 </div>
 <!-- end of edit modal -->
+
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+
 
 {% endblock settings %}

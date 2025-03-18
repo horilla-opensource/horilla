@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -16,6 +17,7 @@ from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_views.cbv_methods import render_template
 from notifications.signals import notify
 
 # Create your models here.
@@ -137,6 +139,32 @@ class OffboardingEmployee(HorillaModel):
     def __str__(self) -> str:
         return self.employee_id.get_full_name()
 
+    def detail_subtitle(self):
+        """
+        Return subtitle containing both department and job position information.
+        """
+        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+
+    def detail_view_stage_custom(self):
+        """
+        This method for get custom column for stage in detail view.
+        """
+        from offboarding.forms import StageSelectForm
+
+        employee = OffboardingEmployee.objects.get(id=self.pk)
+        stage_forms = {}
+        stage_forms[str(employee.stage_id.offboarding_id.id)] = StageSelectForm(
+            offboarding=employee.stage_id.offboarding_id
+        )
+        return render_template(
+            path="cbv/exit_process/detail_view_stage_col.html",
+            context={
+                "instance": self,
+                "employee": employee,
+                "stage_forms": stage_forms,
+            },
+        )
+
 
 class ResignationLetter(HorillaModel):
     """
@@ -161,6 +189,76 @@ class ResignationLetter(HorillaModel):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
+    def get_status(self):
+        """
+        Display status
+        """
+        return dict(self.statuses).get(self.status)
+
+    def option_column(self):
+        """
+        This method for get custome coloumn .
+        """
+
+        return render_template(
+            path="cbv/resignation/options.html",
+            context={"instance": self},
+        )
+
+    def actions_column(self):
+        """
+        This method for get custome coloumn .
+        """
+
+        return render_template(
+            path="cbv/resignation/actions.html",
+            context={"instance": self},
+        )
+
+    def description_col(self):
+        """
+        This method for get custome column .
+        """
+
+        return render_template(
+            path="cbv/resignation/description.html",
+            context={"instance": self},
+        )
+
+    def detail_description_col(self):
+        """
+        This method for get custome column .
+        """
+
+        return render_template(
+            path="cbv/resignation/detail_description.html",
+            context={"instance": self},
+        )
+
+    def resgnation_subtitle(self):
+        """
+        Detail view subtitle
+        """
+
+        return f"""{self.employee_id.employee_work_info.department_id } /
+          { self.employee_id.employee_work_info.job_position_id}"""
+
+    def get_detail_url(self):
+        """
+        Detail view url
+        """
+        url = reverse_lazy("resignation-requests-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def get_detail_tab_url(self):
+        """
+        Detail view url
+        """
+        url = reverse_lazy(
+            "tab-resignation-requests-detail-view", kwargs={"pk": self.pk}
+        )
+        return url
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

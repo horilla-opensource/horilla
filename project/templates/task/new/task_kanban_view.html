@@ -14,8 +14,8 @@
 {% include "filter_tags.html" %}
 
 {% if stages %}
-    <div class="oh-tabs oh-card mt-3 mb-3">
-        <div class="oh-kanban ui-sortable" id="projectStages" style="border: none;">
+    <div class="oh-tabs oh-card" style="margin-top: 5px">
+        <div class="oh-kanban ui-sortable" id="projectStages">
             {% for stage in stages %}
                 <div class="oh-kanban__section ml-2 stage" id="projectStage{{stage.id}}" style="opacity: 1;"
                     data-stage-id="{{stage.id}}" data-sequence="{{stage.sequence}}" data-project-id="{{project.id}}">

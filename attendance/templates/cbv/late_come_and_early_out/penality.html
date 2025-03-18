@@ -1,0 +1,7 @@
+
+
+{% if instance.get_penalties_count %}
+<div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{instance.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 150px;" onclick="event.stopPropagation();">Penalties :{{instance.get_penalties_count}}</div>
+{% else %}
+<div class="" style="background-color: rgba(144, 238, 144, 0.036); border: 2px solid rgb(144, 238, 144); border-radius: 18px; padding: 10px;  width: 150px;" align="center">No Penalties</div>
+{% endif %}

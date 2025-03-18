@@ -56,7 +56,7 @@ class TimeSheetNavView(HorillaNavView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("time-sheet-list")
+        self.search_url = reverse("project-list-view")
         url = f"{reverse('personal-time-sheet-view',kwargs={'emp_id': self.request.user.employee_get.id})}"
         self.actions = [
             {

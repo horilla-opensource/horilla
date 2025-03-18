@@ -1,0 +1,54 @@
+{% extends "index.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+<style>
+    .canceled--dot {
+        background-color: red;
+    }
+
+    .requested--dot {
+        background-color: orange;
+    }
+
+    .approved--dot {
+        background-color: green;
+    }
+
+
+    .approved-True {
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .canceled-True {
+
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .requested-False-False {
+
+        border-left: 3.4px solid orange !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+</style>
+<div hx-get="{% url 'work-nav-view' %}" hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+
+<div class="oh-wrapper" id="listContainer">
+    <div class="animated-background"></div>
+</div>
+
+<div class="oh-activity-sidebar" id="worktypeactivitySidebar" style="z-index:1000;">
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+</div>
+
+<script src="{% static 'cbv/work_type_request/work_request_bulk_action.js' %}"></script>
+
+{% endblock content %}

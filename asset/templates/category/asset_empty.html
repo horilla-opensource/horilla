@@ -31,7 +31,7 @@
 </div>
 {% endif %}
 <!-- end of messages -->
-
+{% include "generic/components.html" %}
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -73,9 +73,9 @@
                         <div>
                             <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow"
                                 data-toggle="oh-modal-toggle"
-                                data-target="#objectCreateModal"
+                                data-target="#genericModal"
                                 hx-get="{%url 'asset-category-creation' %}"
-                                hx-target="#objectCreateModalTarget">
+                                hx-target="#genericModalBody">
                                 <ion-icon name="add-outline"></ion-icon>
                                 {% trans "Create" %}
                             </a>

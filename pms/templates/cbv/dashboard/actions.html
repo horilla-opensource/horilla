@@ -1,0 +1,35 @@
+{% load i18n %}
+<div class="oh-btn-group">
+    <button
+        class="oh-btn oh-btn--light-bkg w-50"
+        title="{% trans 'Edit' %}"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        hx-get='{% url "employee-key-result-update" instance.id %}'
+        hx-target="#genericModalBody"
+    >
+        <ion-icon name="create-outline"></ion-icon>
+    </button>
+    <form
+        hx-post='{% url "delete-employee-keyresult" instance.id %}?dashboard=True'
+        class="w-50"
+        hx-target = "#empObjTr{{instance.id}}"
+        hx-swap="innerHTML"
+        hx-confirm="{% trans 'Are you sure you want to delete this Key result?' %}"
+        onclick="event.stopPropagation()" >
+        <input type="hidden" name="dashboard" value="True">
+        {% csrf_token %}
+        <button
+            type="submit"
+            class="oh-btn oh-btn--light-bkg w-100"
+            title="{% trans 'Delete' %}"
+        >
+            <ion-icon
+                class="me-1 md hydrated"
+                name="trash-outline"
+                role="img"
+                aria-label="trash outline"
+            ></ion-icon>
+        </button>
+    </form>
+</div>

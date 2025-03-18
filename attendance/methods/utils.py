@@ -551,6 +551,14 @@ def parse_time(time_str):
     return None
 
 
+def parse_datetime(date_str, time_str):
+    return (
+        datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+        if date_str and time_str
+        else None
+    )
+
+
 def parse_date(date_str, error_key, activity):
     try:
         return pd.to_datetime(date_str).date()

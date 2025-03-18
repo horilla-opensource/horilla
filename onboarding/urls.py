@@ -7,23 +7,45 @@ This module is used to map url path with view methods.
 from django.urls import path
 
 from onboarding import views
+from onboarding.cbv import dashboard, onboarding_candidates, onboarding_view, pipeline
+from recruitment.cbv import candidates
 from recruitment.models import Candidate
 
 urlpatterns = [
-    path("stage-creation/<str:obj_id>", views.stage_creation, name="stage-creation"),
     path(
-        "stage-update/<int:stage_id>/<int:recruitment_id>",
-        views.stage_update,
+        "stage-creation/<int:obj_id>/",
+        onboarding_view.StageCreateForm.as_view(),
+        name="stage-creation",
+    ),
+    path(
+        "stage-update/<int:pk>/<int:obj_id>/",
+        onboarding_view.StageCreateForm.as_view(),
         name="stage-update",
     ),
-    path("stage-delete/<int:stage_id>", views.stage_delete, name="stage-delete"),
-    path("task-creation", views.task_creation, name="task-creation"),
-    path("task-delete/<int:task_id>", views.task_delete, name="task-delete"),
     path(
-        "task-update/<int:task_id>/",
-        views.task_update,
+        "task-creation/<int:obj_id>/",
+        onboarding_view.TaskCreateForm.as_view(),
+        name="task-creation",
+    ),
+    path(
+        "task-update/<int:pk>/",
+        onboarding_view.TaskUpdateFormView.as_view(),
         name="task-update",
     ),
+    # path("stage-creation/<str:obj_id>", views.stage_creation, name="stage-creation"),
+    # path(
+    #     "stage-update/<int:stage_id>/<int:recruitment_id>",
+    #     views.stage_update,
+    #     name="stage-update",
+    # ),
+    path("stage-delete/<int:stage_id>", views.stage_delete, name="stage-delete"),
+    # path("task-creation", views.task_creation, name="task-creation"),
+    path("task-delete/<int:task_id>", views.task_delete, name="task-delete"),
+    # path(
+    #     "task-update/<int:task_id>/",
+    #     views.task_update,
+    #     name="task-update",
+    # ),
     path("candidate-creation", views.candidate_creation, name="candidate-creation"),
     path(
         "candidate-update/<int:obj_id>", views.candidate_update, name="candidate-update"
@@ -31,13 +53,18 @@ urlpatterns = [
     path(
         "candidate-delete/<int:obj_id>", views.candidate_delete, name="candidate-delete"
     ),
+    # path(
+    #     "candidate-single-view/<int:id>",
+    #     views.candidates_single_view,
+    #     name="candidate-single-view",
+    #     kwargs={"model": Candidate},
+    # ),
     path(
-        "candidate-single-view/<int:id>",
-        views.candidates_single_view,
+        "candidate-single-view/<int:pk>",
+        onboarding_view.OnboardingCandidateDetailView.as_view(),
         name="candidate-single-view",
-        kwargs={"model": Candidate},
     ),
-    path("candidates-view/", views.candidates_view, name="candidates-view"),
+    # path("candidates-view/", views.candidates_view, name="candidates-view"),
     path(
         "hired-candidates-view",
         views.hired_candidate_view,
@@ -125,10 +152,20 @@ urlpatterns = [
     path(
         "update-probotion-end", views.update_probation_end, name="update-probotion-end"
     ),
-    path("task-report-onboarding", views.task_report, name="task-report-onboarding"),
+    # path("task-report-onboarding", views.task_report, name="task-report-onboarding"),
+    path(
+        "task-report-onboarding",
+        dashboard.MyOnboardingTaskList.as_view(),
+        name="task-report-onboarding",
+    ),
+    # path(
+    #     "candidate-tasks-status",
+    #     views.candidate_tasks_status,
+    #     name="candidate-tasks-status",
+    # ),
     path(
         "candidate-tasks-status",
-        views.candidate_tasks_status,
+        dashboard.MyOnboardingCandidatesSingleView.as_view(),
         name="candidate-tasks-status",
     ),
     path("change-task-status", views.change_task_status, name="change-task-status"),
@@ -137,11 +174,11 @@ urlpatterns = [
         views.update_offer_letter_status,
         name="update-offer-letter-status",
     ),
-    path(
-        "add-to-rejected-candidates",
-        views.add_to_rejected_candidates,
-        name="add-to-rejected-candidates",
-    ),
+    # path(
+    #     "add-to-rejected-candidates",
+    #     views.add_to_rejected_candidates,
+    #     name="add-to-rejected-candidates",
+    # ),
     path(
         "candidate-select-filter-onboarding",
         views.candidate_select_filter,
@@ -149,6 +186,21 @@ urlpatterns = [
     ),
     path(
         "candidate-select/", views.candidate_select, name="candidate-select-onboarding"
+    ),
+    path(
+        "candidates-view/",
+        onboarding_candidates.OnboardingCandidatesView.as_view(),
+        name="candidates-view",
+    ),
+    path(
+        "onboarding-candidates-list/",
+        onboarding_candidates.OnboardingCandidatesList.as_view(),
+        name="onboarding-candidates-list",
+    ),
+    path(
+        "onboarding-candidates-nav/",
+        onboarding_candidates.OnboardingCandidatesNav.as_view(),
+        name="onboarding-candidates-nav",
     ),
     path(
         "offer-letter-bulk-status-update/",
@@ -160,4 +212,45 @@ urlpatterns = [
         views.onboarding_candidate_bulk_delete,
         name="onboarding-candidate-bulk-delete",
     ),
+    path(
+        "cbv-change-stage/<int:pk>/",
+        pipeline.ChangeStage.as_view(),
+        name="onboarding-cbv-change-stage",
+    ),
+    path(
+        "cbv-pipeline/", pipeline.PipelineView.as_view(), name="cbv-pipeline-onboarding"
+    ),
+    path(
+        "cbv-pipeline-nav/",
+        pipeline.PipelineNav.as_view(),
+        name="cbv-pipeline-nav-onboarding",
+    ),
+    path(
+        "cbv-pipeline-tab/",
+        pipeline.RecruitmentTabView.as_view(),
+        name="cbv-pipeline-tab-onboarding",
+    ),
+    path(
+        "get-stages/<int:recruitment_id>/",
+        pipeline.CandidatePipeline.as_view(),
+        name="get-stages-onboarding",
+    ),
+    path(
+        "assign-task-pipeline/<int:task_id>/<int:cand_id>/",
+        pipeline.AssignTask.as_view(),
+        name="assign-task-pipeline",
+    ),
+    path(
+        "assign-task-pipeline/<int:task_id>/<int:cand_id>/<int:cand_task_id>/",
+        pipeline.AssignTask.as_view(),
+        name="assign-task-pipeline",
+    ),
+    # path("candidate-lists-cbv/<int:stage_id>/",pipeline.CandidateList.as_view(),name='candidate-lists-cbv'),
+    # path("candidate-lists-cbv/<int:stage_id>/<int:rec_id>/",pipeline.CandidateList.as_view(),name='candidate-lists-cbv'),
+    path(
+        "candidate-lists-cbv/",
+        pipeline.CandidateList.as_view(),
+        name="candidate-lists-cbv-onboarding",
+    ),
+    # path("cbv-change-stage/<int:pk>/",pipeline.ChangeStage.as_view(),name="cbv-change-stage")
 ]

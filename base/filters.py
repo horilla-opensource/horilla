@@ -7,22 +7,37 @@ import uuid
 
 import django_filters
 from django import forms
+from django.db.models import Q
 from django.utils.translation import gettext as __
-from django_filters import CharFilter, DateFilter, FilterSet, NumberFilter, filters
+from django_filters import CharFilter, DateFilter, FilterSet, filters
 
 from base.models import (
+    Announcement,
+    AnnouncementView,
+    Company,
     CompanyLeaves,
+    Department,
+    DynamicEmailConfiguration,
+    EmailLog,
+    EmployeeShift,
+    EmployeeShiftSchedule,
+    EmployeeType,
     Holidays,
+    JobPosition,
+    MultipleApprovalCondition,
     PenaltyAccounts,
+    RotatingShift,
     RotatingShiftAssign,
+    RotatingWorkType,
     RotatingWorkTypeAssign,
     ShiftRequest,
+    WorkType,
     WorkTypeRequest,
 )
-from horilla.filters import FilterSet, filter_by_name
+from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
 
 
-class ShiftRequestFilter(FilterSet):
+class ShiftRequestFilter(HorillaFilterSet):
     """
     Custom filter for Shift Requests.
     """
@@ -41,6 +56,10 @@ class ShiftRequestFilter(FilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     search = CharFilter(method=filter_by_name)
+
+    requested = django_filters.BooleanFilter(
+        method="filter_requested", label="Requested?"
+    )
 
     class Meta:
         """
@@ -77,8 +96,16 @@ class ShiftRequestFilter(FilterSet):
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
+    def filter_requested(self, queryset, name, value):
+        """
+        Filters the queryset to return entries where 'approved' is False and 'canceled' is False.
+        """
+        if value:
+            return queryset.filter(approved=False, canceled=False)
+        return queryset
 
-class WorkTypeRequestFilter(FilterSet):
+
+class WorkTypeRequestFilter(HorillaFilterSet):
     """
     Custom filter for Work Type Requests.
     """
@@ -95,6 +122,9 @@ class WorkTypeRequestFilter(FilterSet):
         field_name="requested_till",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    requested = django_filters.BooleanFilter(
+        method="filter_by_requested", label="Requested"
     )
     search = CharFilter(method=filter_by_name)
 
@@ -132,8 +162,16 @@ class WorkTypeRequestFilter(FilterSet):
         for field in self.form.fields.keys():
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
+    def filter_by_requested(self, queryset, name, value):
+        """
+        Filters the queryset to return entries where 'approved' is False and 'canceled' is False.
+        """
+        if value:
+            return queryset.filter(approved=False, canceled=False)
+        return queryset
 
-class RotatingShiftAssignFilters(FilterSet):
+
+class RotatingShiftAssignFilters(HorillaFilterSet):
     """
     Custom filter for Rotating Shift Assign.
     """
@@ -177,7 +215,7 @@ class RotatingShiftAssignFilters(FilterSet):
         ]
 
 
-class RotatingWorkTypeAssignFilter(FilterSet):
+class RotatingWorkTypeAssignFilter(HorillaFilterSet):
     """
     Custom filter for Rotating Work Type Assign.
     """
@@ -285,7 +323,185 @@ class RotatingShiftRequestReGroup:
     ]
 
 
-class HolidayFilter(FilterSet):
+class MultipleApprovalConditionFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = MultipleApprovalCondition
+        fields = [
+            "department",
+        ]
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search department
+        """
+
+        return (queryset.filter(department__department__icontains=value)).distinct()
+
+
+class EmployeeShiftFilter(FilterSet):
+
+    search = django_filters.CharFilter(
+        field_name="employee_shift", lookup_expr="icontains"
+    )
+
+    class Meta:
+        model = EmployeeShift
+        fields = [
+            "employee_shift",
+        ]
+
+
+class EmployeeShiftScheduleFilter(FilterSet):
+
+    search = django_filters.CharFilter(field_name="day__day", lookup_expr="icontains")
+
+    class Meta:
+        model = EmployeeShiftSchedule
+        fields = []
+
+
+class RotatingShiftFilter(HorillaFilterSet):
+
+    # search = django_filters.CharFilter(
+    #     field_name="name", lookup_expr="icontains"
+    # )
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = RotatingShift
+        fields = ["name", "shift1", "shift2"]
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search employees and objective
+        """
+
+        return (
+            queryset.filter(name__icontains=value)
+            | queryset.filter(shift1__employee_shift__icontains=value)
+            | queryset.filter(shift2__employee_shift__icontains=value)
+        ).distinct()
+
+
+class DepartmentViewFilter(HorillaFilterSet):
+    search = django_filters.CharFilter(method="filter_by_all_fields")
+
+    class Meta:
+        model = Department
+        fields = [
+            "department",
+        ]
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(department__icontains=value)
+            | Q(job_position__job_position__icontains=value)
+        ).distinct()
+
+
+class WorkTypeFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(field_name="work_type", lookup_expr="icontains")
+
+    class Meta:
+        model = WorkType
+        fields = [
+            "work_type",
+        ]
+
+
+class RotatingWorkTypeFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(method="search_method")
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search employees and objective
+        """
+
+        return (
+            queryset.filter(name__icontains=value)
+            | queryset.filter(work_type1__work_type__icontains=value)
+            | queryset.filter(work_type2__work_type__icontains=value)
+        ).distinct()
+
+    class Meta:
+        model = RotatingWorkType
+        fields = ["name", "work_type1", "work_type2"]
+
+
+class EmployeeTypeFilter(FilterSet):
+
+    search = django_filters.CharFilter(
+        field_name="employee_type", lookup_expr="icontains"
+    )
+
+    class Meta:
+        model = EmployeeType
+        fields = [
+            "employee_type",
+        ]
+
+
+class JobRoleFilter(HorillaFilterSet):
+    search = django_filters.CharFilter(method="filter_by_all_fields")
+
+    class Meta:
+        model = JobPosition
+        fields = [
+            "job_position",
+        ]
+
+    def filter_by_all_fields(self, queryset, name, value):
+        return queryset.filter(
+            Q(job_position__icontains=value) | Q(jobrole__job_role__icontains=value)
+        ).distinct()
+
+
+class CompanyFilter(FilterSet):
+
+    search = CharFilter(method="search_method")
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search company and objective
+        """
+
+        return (
+            queryset.filter(company__icontains=value)
+            | queryset.filter(hq__icontains=value)
+            | queryset.filter(address__icontains=value)
+            | queryset.filter(country__icontains=value)
+            | queryset.filter(state__icontains=value)
+            | queryset.filter(city__icontains=value)
+            | queryset.filter(zip__icontains=value)
+        ).distinct()
+
+    class Meta:
+        model = Company
+        fields = ["company", "hq", "address", "country", "state", "city", "zip"]
+
+
+class MailServerFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = DynamicEmailConfiguration
+        fields = ["username"]
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to mail server
+        """
+
+        return ((queryset.filter(username__icontains=value))).distinct()
+
+
+class HolidayFilter(HorillaFilterSet):
     """
     Filter class for Holidays model.
 
@@ -332,7 +548,7 @@ class HolidayFilter(FilterSet):
             self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
 
 
-class CompanyLeaveFilter(FilterSet):
+class CompanyLeaveFilter(HorillaFilterSet):
     """
     Filter class for CompanyLeaves model.
 
@@ -395,4 +611,33 @@ class PenaltyFilter(FilterSet):
 
     class Meta:
         model = PenaltyAccounts
+        fields = "__all__"
+
+
+class MailLogFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(field_name="subject", lookup_expr="icontains")
+
+    class Meta:
+        model = EmailLog
+        fields = "__all__"
+
+
+class AnnouncementFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+
+    class Meta:
+        model = Announcement
+        fields = "__all__"
+
+
+class AnnouncementViewFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(
+        field_name="announcement", lookup_expr="icontains"
+    )
+
+    class Meta:
+        model = AnnouncementView
         fields = "__all__"

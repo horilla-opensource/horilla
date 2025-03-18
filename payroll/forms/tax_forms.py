@@ -21,6 +21,12 @@ from payroll.models.tax_models import TaxBracket
 class FilingStatusForm(ModelForm):
     """Form for creating and updating filing status."""
 
+    cols = {
+        "filing_status": 12,
+        "based_on": 12,
+        "description": 12,
+    }
+
     class Meta:
         """Meta options for the form."""
 
@@ -53,6 +59,8 @@ class FilingStatusForm(ModelForm):
 
 class TaxBracketForm(ModelForm):
     """Form for creating and updating tax bracket."""
+
+    cols = {"min_income": 12, "max_income": 12, "tax_rate": 12}
 
     class Meta:
         """Meta options for the form."""

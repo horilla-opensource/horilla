@@ -389,14 +389,16 @@ def remove_recruitment_manager(request, mid, rid):
     )
     recruitment_queryset = Recruitment.objects.all()
     previous_data = request.GET.urlencode()
-    return render(
-        request,
-        "recruitment/recruitment_component.html",
-        {
-            "data": paginator_qry(recruitment_queryset, request.GET.get("page")),
-            "pd": previous_data,
-        },
-    )
+    return HttpResponse("<script> $('#applyFilter').click();</script>")
+
+    # return render(
+    #     request,
+    #     "recruitment/recruitment_component.html",
+    #     {
+    #         "data": paginator_qry(recruitment_queryset, request.GET.get("page")),
+    #         "pd": previous_data,
+    #     },
+    # )
 
 
 @login_required

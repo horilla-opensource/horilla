@@ -404,13 +404,52 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
         """
 
         model = EmployeeWorkInformation
-        fields = "__all__"
-        exclude = ("employee_id",)
+        # fields = "__all__"
+        fields = [
+            "department_id",
+            "job_position_id",
+            "job_role_id",
+            "work_type_id",
+            "employee_type_id",
+            "reporting_manager_id",
+            "company_id",
+            "tags",
+            "location",
+            "email",
+            "mobile",
+            "shift_id",
+            "date_joining",
+            "contract_end_date",
+            "basic_salary",
+            "salary_hour",
+        ]
+        exclude = ("employee_id", "experience", "additional_info")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
             "contract_end_date": DateInput(attrs={"type": "date"}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["department_id"].widget.attrs.update(
+            {
+                "hx-target": "#id_job_position_id_parent_div",
+                "hx-include": "#id_job_position_id",
+                "hx-trigger": "change,load",
+                "hx-swap": "innerHTML",
+                "hx-get": "/employee/get-job-positions-hx",
+            }
+        )
+        self.fields["job_position_id"].widget.attrs.update(
+            {
+                "hx-target": "#id_job_role_id_parent_div",
+                "hx-include": "#id_job_role_id",
+                "hx-trigger": "change,load",
+                "hx-swap": "innerHTML",
+                "hx-get": "/employee/get-job-roles-hx",
+            }
+        )
 
     def as_p(self, *args, **kwargs):
         context = {"form": self}
@@ -638,6 +677,8 @@ class PolicyForm(ModelForm):
     PolicyForm
     """
 
+    cols = {"title": 12, "body": 12, "is_visible_to_all": 12, "company_id": 12}
+
     class Meta:
         model = Policy
         fields = "__all__"
@@ -738,6 +779,9 @@ class DisciplinaryActionForm(ModelForm):
 
 
 class ActiontypeForm(ModelForm):
+
+    cols = {"title": 12, "action_type": 12}
+
     class Meta:
         model = Actiontype
         fields = "__all__"

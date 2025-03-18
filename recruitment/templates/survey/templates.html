@@ -40,7 +40,7 @@
               <ion-icon name="add-circle-outline"></ion-icon>
             </button>
             <button
-              hx-get="{% url 'survey-template-create' %}?title={{template.title}}"
+              hx-get="{% url 'survey-template-update' %}?title={{template.title}}"
               hx-target="#templateModalBody"
               data-toggle="oh-modal-toggle"
               data-target="#templateModal"

@@ -631,6 +631,7 @@ def reload_queryset(fields):
 
 
 def check_manager(employee, instance):
+
     try:
         if isinstance(instance, Employee):
             return instance.employee_work_info.reporting_manager_id == employee

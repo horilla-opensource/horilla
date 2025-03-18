@@ -5,17 +5,21 @@ This module is used to register models for onboarding app
 
 """
 
+from ast import literal_eval
 from datetime import datetime
+from urllib.parse import urlencode
 
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_views.cbv_methods import render_template
 from recruitment.models import Candidate, Recruitment
 
 
@@ -86,6 +90,16 @@ class OnboardingTask(HorillaModel):
 
     objects = HorillaCompanyManager("stage_id__recruitment_id__company_id")
 
+    def get_detail_url(self):
+        """
+        To get edit url
+        """
+        query_params = {
+            "task_id": self.pk,
+        }
+        url = reverse("candidate-tasks-status")
+        return f"{url}?{urlencode(query_params)}"
+
     def __str__(self):
         return f"{self.task_title}"
 
@@ -99,7 +113,10 @@ class CandidateStage(HorillaModel):
         Candidate, on_delete=models.PROTECT, related_name="onboarding_stage"
     )
     onboarding_stage_id = models.ForeignKey(
-        OnboardingStage, on_delete=models.PROTECT, related_name="candidate"
+        OnboardingStage,
+        on_delete=models.PROTECT,
+        related_name="candidate",
+        verbose_name=_("Stage"),
     )
     onboarding_end_date = models.DateField(blank=True, null=True)
     sequence = models.IntegerField(null=True, default=0)
@@ -120,6 +137,23 @@ class CandidateStage(HorillaModel):
         cans_tasks = self.candidate_id.candidate_task
         completed_tasks = cans_tasks.filter(status="done")
         return f"{completed_tasks.count()}/{cans_tasks.count()}"
+
+    def __getattribute__(self, name):
+        if name.startswith("get_") and name.endswith("_task"):
+            task_id = literal_eval(name[4:-5])
+            task = CandidateTask.objects.filter(
+                onboarding_task_id__id=task_id,
+                candidate_id=self.candidate_id,
+                stage_id=self.onboarding_stage_id,
+            ).first()
+
+            return render_template(
+                "cbv/pipeline/onboarding/tasks.html",
+                {"instance": self, "task": task, "task_id": task_id},
+            )
+        value = super().__getattribute__(name)
+
+        return value
 
     class Meta:
         """
@@ -166,6 +200,16 @@ class CandidateTask(HorillaModel):
 
     def __str__(self):
         return f"{self.candidate_id}|{self.onboarding_task_id}"
+
+    def status_col(self):
+        """
+        This method for get custom column for status.
+        """
+
+        return render_template(
+            path="cbv/dashboard/status.html",
+            context={"instance": self},
+        )
 
     class Meta:
         """

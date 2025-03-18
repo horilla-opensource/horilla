@@ -5,6 +5,7 @@ Used to register models
 
 import calendar
 import logging
+import re
 from datetime import date, datetime, timedelta
 
 from django import forms
@@ -13,7 +14,9 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.http import QueryDict
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -30,8 +33,10 @@ from base.models import (
 from employee.methods.duration_methods import strtime_seconds
 from employee.models import BonusPoint, Employee, EmployeeWorkInformation
 from horilla import horilla_middlewares
+from horilla.horilla_middlewares import _thread_locals
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_views.cbv_methods import render_template
 
 logger = logging.getLogger(__name__)
 
@@ -269,6 +274,104 @@ class Contract(HorillaModel):
     )
 
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+    def get_wage_type_display(self):
+        """
+        Display wage type
+        """
+        return dict(self.WAGE_CHOICES).get(self.wage_type)
+
+    def get_pay_frequency_display(self):
+        """
+        Display pay frequency
+        """
+        return dict(self.PAY_FREQUENCY_CHOICES).get(self.pay_frequency)
+
+    def get_status_display(self):
+        """
+        Display status
+        """
+        return dict(self.CONTRACT_STATUS_CHOICES).get(self.contract_status)
+
+    def status_col(self):
+        """
+        status column
+        """
+        return render_template(
+            path="cbv/contracts/status.html",
+            context={"instance": self},
+        )
+
+    def detail_action(self):
+        """
+        Detail actions
+        """
+        return render_template(
+            path="cbv/contracts/detail_action.html",
+            context={"instance": self},
+        )
+
+    def note_col(self):
+        """
+        Note column
+        """
+        return render_template(
+            path="cbv/contracts/note.html",
+            context={"instance": self},
+        )
+
+    def document_col(self):
+        """
+        Document column
+        """
+        return render_template(
+            path="cbv/contracts/document.html",
+            context={"instance": self},
+        )
+
+    def actions_col(self):
+        """
+        actions column
+        """
+        return render_template(
+            path="cbv/contracts/actions.html",
+            context={"instance": self},
+        )
+
+    def cal_leave_amount(self):
+        """
+        Action column for Calculate Leave Amount
+        """
+        return render_template(
+            path="cbv/contracts/cal_leave_amount.html",
+            context={"instance": self},
+        )
+
+    def conract_subtitle(self):
+        """
+        Detail view subtitle
+        """
+
+        return f"""{self.employee_id.employee_work_info.department_id } /
+          { self.employee_id.employee_work_info.job_position_id}"""
+
+    def contracts_detail(self):
+        """
+        detail view
+        """
+
+        url = reverse("contracts-detail-view", kwargs={"pk": self.pk})
+
+        return url
+
+    def deduct_leave_from_basic_pay_col(self):
+        """
+        Deduct leave from basic pay column
+        """
+        if self.deduct_leave_from_basic_pay:
+            return "Yes"
+        else:
+            return "No"
 
     def __str__(self) -> str:
         return f"{self.contract_name} -{self.contract_start_date} - {self.contract_end_date}"
@@ -959,6 +1062,175 @@ class Allowance(HorillaModel):
         ]
         verbose_name = _("Allowance")
 
+    def get_specific_employees(self):
+        """
+        Get all specific employees separated by commas.
+        """
+
+        employees = self.specific_employees.all()
+        employee_names_string = "<br>".join([str(employee) for employee in employees])
+        return employee_names_string
+
+    def get_exclude_employees(self):
+        """
+        Get all specific employees separated by commas.
+        """
+
+        return ", ".join([str(employee) for employee in self.exclude_employees.all()])
+
+    def get_is_taxable_display(self):
+        """
+        method to return is taxable or not
+        """
+        return "Yes" if self.is_taxable else "No"
+
+    def get_is_condition_based(self):
+        """
+        method to return is condition based or not
+        """
+        return "Yes" if self.is_condition_based else "No"
+
+    def get_is_fixed(self):
+        """
+        method to return is fixed
+        """
+        return "Yes" if self.is_fixed else "No"
+
+    def get_based_on_display(self):
+        """
+        method to return get based on field
+        """
+        return dict(self.based_on_choice).get(self.based_on)
+
+    def allowance_detail_view(self):
+        """
+        detail view
+        """
+
+        url = reverse("allowance-detail-view", kwargs={"pk": self.pk})
+
+        return url
+
+    def get_delete_url(self):
+        """
+        to get the delete url for card action delete
+        """
+
+        url = reverse_lazy("generic-delete")
+
+        return url
+
+    def get_update_url(self):
+        """
+        to get the update url for card action update
+        """
+
+        url = reverse("update-allowance", kwargs={"allowance_id": self.pk})
+        return url
+
+    def get_allowance_actions(self):
+        """
+        This method to get allowance actions
+        """
+
+        return render_template(
+            path="cbv/allowance_deduction/allowance_action.html",
+            context={"instance": self},
+        )
+
+    def get_avatar(self):
+        """
+        Method will return the API URL for the avatar or the path to the profile image.
+        """
+        sanitized_title = re.sub(r"[^a-zA-Z0-9\s]", "", self.title)
+        sanitized_title = sanitized_title.replace(" ", "+")
+        url = f"https://ui-avatars.com/api/?name={sanitized_title}&background=random"
+        return url
+
+    def one_time_date_display(self):
+        """
+        method to return one time field
+        """
+        if self.one_time_date:
+            return f'On <span class="dateformat_changer">{self.one_time_date}</span>'
+        else:
+            return "No"
+
+    def get_field_display(self):
+        """
+        get field choice dict if based on condition
+        """
+        return dict(FIELD_CHOICE).get(self.field)
+
+    def get_condition_display(self):
+        """
+        get condition choice dict if based on condition
+        """
+        return dict(CONDITION_CHOICE).get(self.condition)
+
+    def condition_based_display(self):
+        """
+        method to return condition if condition based
+        """
+        if self.is_condition_based:
+            condition_display = self.get_condition_display()
+            return f"{self.get_field_display()} {condition_display} {self.value}"
+        else:
+            return "No"
+
+    def based_on_amount(self):
+        """
+        custome template for retrieve amount
+        """
+        return render_template(
+            path="cbv/allowance_deduction/allowance/custom_amount.html",
+            context={"instance": self},
+        )
+
+    def cust_allowance_max_limit(self):
+        """
+        custom template to retrive allowance max limit
+        """
+        return render_template(
+            path="cbv/allowance_deduction/allowance/max_limit_col.html",
+            context={"instance": self},
+        )
+
+    def get_if_choice_display(self):
+        """
+        for allowance eligibility
+        """
+        return (
+            dict(self.if_condition_choice).get(self.if_choice, self.if_choice)
+            if self.if_choice
+            else ""
+        )
+
+    def get_if_condition_display(self):
+        """
+        for allowance eligibility
+        """
+        return (
+            dict(IF_CONDITION_CHOICE).get(self.if_condition, self.if_condition)
+            if self.if_condition
+            else ""
+        )
+
+    def allowance_eligibility(self):
+        """
+        for allowance eligibility
+        """
+        return f'{_("If")} {self.get_if_choice_display()} {self.get_if_condition_display()} {self.if_amount}'
+
+    def allowance_detail_actions(self):
+        """
+        custom template to retrive detail view actions
+        """
+        return render_template(
+            path="cbv/allowance_deduction/allowance/detail_view_actions.html",
+            context={"instance": self},
+        )
+
     def reset_based_on(self):
         """Reset the this fields when is_fixed attribute is true"""
         attributes_to_reset = [
@@ -1257,6 +1529,161 @@ class Deduction(HorillaModel):
         payslip = Payslip.objects.filter(installment_ids=self).first()
         return payslip
 
+    def get_is_pretax_display(self):
+        return "Yes" if self.is_pretax else "No"
+
+    def get_is_condition_based_display(self):
+        return "Yes" if self.is_condition_based else "No"
+
+    def get_is_fixed_display(self):
+        return "Yes" if self.is_fixed else "No"
+
+    def get_based_on_display(self):
+        """
+        Display work type
+        """
+        return dict(self.based_on_choice).get(self.based_on)
+
+    def get_field_display(self):
+        """
+        Field column
+        """
+        return dict(FIELD_CHOICE).get(self.field)
+
+    def get_condition_display(self):
+        """
+        condition display column
+        """
+        return dict(CONDITION_CHOICE).get(self.condition)
+
+    def condition_bsed_col(self):
+        """
+        Condition based column
+        """
+        if self.is_condition_based:
+            return f"{self.get_field_display()} {self.get_condition_display()} {self.value}"
+        else:
+            return "No"
+
+    def deduct_actions(self):
+        """
+        This method for get custom coloumn .
+        """
+
+        return render_template(
+            path="cbv/allowance_deduction/deductions/deductions_actions.html",
+            context={"instance": self},
+        )
+
+    def deduct_detail_actions(self):
+        """
+        This method for get custom coloumn .
+        """
+
+        return render_template(
+            path="cbv/allowance_deduction/deductions/detail_view_actions.html",
+            context={"instance": self},
+        )
+
+    def deduction_eligibility(self):
+        """
+        Deduction eligibility column
+        """
+        return f"{self.get_if_choice_display()} {self.get_if_condition_display()} {self.if_amount}"
+
+    def has_maximum_limit_col(self):
+        """
+        This method for get custom coloumn .
+        """
+
+        return render_template(
+            path="cbv/allowance_deduction/deductions/has_maximum_limit.html",
+            context={"instance": self},
+        )
+
+    def amount_col(self):
+        """
+        This method for get custom coloumn for amount .
+        """
+
+        return render_template(
+            path="cbv/allowance_deduction/deductions/amount.html",
+            context={"instance": self},
+        )
+
+    def get_avatar(self):
+        """
+        Method will return the API URL for the avatar or the path to the profile image.
+        """
+        sanitized_title = re.sub(r"[^a-zA-Z0-9\s]", "", self.title)
+        sanitized_title = sanitized_title.replace(" ", "+")
+        url = f"https://ui-avatars.com/api/?name={sanitized_title}&background=random"
+        return url
+
+    def deduction_detail_view(self):
+        """
+        detail view
+        """
+        url = reverse("deduction-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        detail view
+        """
+        # url = reverse("delete-deduction", kwargs={"deduction_id": self.pk})
+        url = reverse_lazy("generic-delete")
+
+        return url
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("update-deduction", kwargs={"deduction_id": self.pk})
+        return url
+
+    def specific_employees_col(self):
+        """
+        Specific Employees
+        """
+        employees = self.specific_employees.all()
+        employee_names_string = "<br>".join([str(employee) for employee in employees])
+        return employee_names_string
+
+    def excluded_employees_col(self):
+        """
+        Excluded employees
+        """
+        employees = self.exclude_employees.all()
+        employee_names_string = "<br>".join([str(employee) for employee in employees])
+        return employee_names_string
+
+    def tax_col(self):
+        if self.is_tax:
+            title = _("Tax")
+            count = "Yes" if self.is_tax else "No"
+        else:
+            title = _("Pretax")
+            count = "Yes" if self.is_pretax else "No"
+        count = count.capitalize()
+
+        return f"""
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{title}</span>
+            <span class="oh-timeoff-modal__stat-count">{count}</span>
+        </div>
+        """
+
+    def get_one_time_deduction(self):
+        """
+        One time deduction column
+        """
+        if self.one_time_date:
+            return f"On <span class='dateformat_changer'> {self.one_time_date}</span> "
+        else:
+            return "No"
+
     def clean(self):
         super().clean()
 
@@ -1381,6 +1808,70 @@ class Payslip(HorillaModel):
 
     def __str__(self) -> str:
         return f"Payslip for {self.employee_id} - Period: {self.start_date} to {self.end_date}"
+
+    def get_status(self):
+        """
+        Display status
+        """
+        return dict(self.status_choices).get(self.status)
+
+    def get_download_url(self):
+        """
+        This method to get download url
+        """
+        return render_template(
+            path="cbv/payslip/payslip_download_tab.html",
+            context={"instance": self},
+        )
+
+    def gross_pay_display(self):
+        """
+        gross pay
+        """
+        gross_pay = self.gross_pay
+        return f"Rs {gross_pay:.2f}"
+
+    def deduction_display(self):
+        """
+        deduction
+        """
+        deduction = self.deduction
+        return f"Rs {deduction:.2f}"
+
+    def net_pay_display(self):
+        """
+        net pay
+        """
+        net_pay = self.net_pay
+        return f"Rs {net_pay:.2f}"
+
+    def custom_status_col(self):
+        """
+        custom status coloumn
+        """
+
+        return render_template(
+            path="cbv/payslip/payslip_status_col.html",
+            context={"instance": self},
+        )
+
+    def custom_actions_col(self):
+        """
+        custom actions coloumn
+        """
+
+        return render_template(
+            path="cbv/payslip/payslip_actions.html",
+            context={"instance": self},
+        )
+
+    def get_individual_payslip(self):
+        """
+        This method to get individual payslip
+        """
+
+        url = reverse_lazy("view-created-payslip", kwargs={"payslip_id": self.pk})
+        return url
 
     def clean(self):
         super().clean()
@@ -1511,6 +2002,75 @@ class LoanAccount(HorillaModel):
     def __str__(self):
         return f"{self.title} - {self.employee_id}"
 
+    def installment_paid(self):
+        installment_paid = Payslip.objects.filter(
+            installment_ids__in=self.deduction_ids.all()
+        ).count()
+        return installment_paid
+
+    def total_installments(self):
+        return self.installments
+
+    def loan_actions(self):
+        """
+        This method for get loan actions.
+        """
+
+        return render_template(
+            path="cbv/loan/loan_actions.html",
+            context={"instance": self},
+        )
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        base_url = reverse_lazy("delete-loan")
+        message = "Do you want to delete this record?"
+        loan_id = self.pk
+        url = f"{base_url}?ids={loan_id}"
+        return f"'{url}'" + "," + f"'{message}'"
+
+    # def delete_url(self):
+    #     """
+    #     Edit url
+    #     """
+
+    #     return reverse("delete-loan", kwargs={"pk": self.pk})
+
+    def edit_url(self):
+        """
+        Edit url
+        """
+        return reverse("loan-edit-form", kwargs={"pk": self.pk})
+
+    def progress_bar_col(self):
+        """
+        This method for get progress bar col.
+        """
+
+        return render_template(
+            path="cbv/loan/loan_card.html",
+            context={
+                "instance": self,
+                "total_installments": self.total_installments,
+                "installment_paid": self.installment_paid,
+            },
+        )
+
+    def loan_detail_view(self):
+        """
+        for detail view of page
+        """
+        url = reverse("loan-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def detail_subtitle(self):
+        """
+        Return subtitle containing both department and job position information.
+        """
+        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+
     def get_installments(self):
         """
         Method to calculate installment schedule for the loan.
@@ -1557,7 +2117,9 @@ class LoanAccount(HorillaModel):
         ).count()
         if not installment_paid:
             return 0
-        return (installment_paid / total_installments) * 100
+        ratio = (installment_paid / total_installments) * 100
+
+        return ratio
 
     def save(self, *args, **kwargs):
 
@@ -1789,6 +2351,93 @@ class Reimbursement(HorillaModel):
     def __str__(self):
         return f"{self.title}"
 
+    def get_status_display(self):
+        """
+        Display status types
+        """
+        return dict(self.status_types).get(self.status)
+
+    def comment_col(self):
+        """
+        This method for get custom coloumn .
+        """
+
+        return render_template(
+            path="cbv/reimbursements/comment.html",
+            context={"instance": self},
+        )
+
+    def options_col(self):
+        """
+        This method for get custom coloumn .
+        """
+
+        return render_template(
+            path="cbv/reimbursements/options.html",
+            context={"instance": self},
+        )
+
+    def actions_col(self):
+        """
+        This method for get custom coloumn .
+        """
+
+        return render_template(
+            path="cbv/reimbursements/actions.html",
+            context={"instance": self},
+        )
+
+    def amount_col(self):
+        """
+        This method for get custom column for amount .
+        """
+
+        return render_template(
+            path="cbv/reimbursements/amount.html",
+            context={"instance": self},
+        )
+
+    def attachments_col(self):
+        """
+        This method for get custom column for attachment .
+        """
+
+        return render_template(
+            path="cbv/reimbursements/attachments.html",
+            context={"instance": self},
+        )
+
+    def detail_action_col(self):
+        """
+        This method for get custom column for actions in detail .
+        """
+
+        return render_template(
+            path="cbv/reimbursements/detail_actions.html",
+            context={"instance": self},
+        )
+
+    def reimbursements_detail_view(self):
+        """
+        for detail view of reimbursements
+        """
+        url = reverse("detail-view-reimbursement", kwargs={"pk": self.pk})
+        return url
+
+    def leave_encash_detail_view(self):
+        """
+        for detail view of leave encashments.
+        """
+        url = reverse("detail-view-leave-encashment", kwargs={"pk": self.pk})
+        return url
+
+    def bonus_encash_detail_view(self):
+        """
+        for detail view of bonus encashments.
+        """
+        url = reverse("detail-view-bonus-encashment", kwargs={"pk": self.pk})
+        return url
+
 
 class ReimbursementFile(models.Model):
     file = models.FileField(upload_to="payroll/request_files")
@@ -1889,6 +2538,42 @@ class PayslipAutoGenerate(models.Model):
     company_id = models.OneToOneField(
         Company, on_delete=models.CASCADE, null=True, blank=True, verbose_name="Company"
     )
+
+    def get_generate_day_display(self):
+        """
+        Display work type
+        """
+        return dict(DAYS).get(self.generate_day)
+
+    def get_company(self):
+        if self.company_id:
+            return self.company_id
+        return "All company"
+
+    def is_active_col(self):
+        """
+        is active column
+        """
+        return render_template(
+            path="cbv/settings/is_active_col.html", context={"instance": self}
+        )
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("pay-slip-automation-update", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        url = reverse_lazy("delete-auto-payslip", kwargs={"auto_id": self.pk})
+        return url
+
+    def get_instance_id(self):
+        return self.id
 
     def clean(self):
         # Unique condition checking for all company

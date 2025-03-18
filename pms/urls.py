@@ -3,26 +3,129 @@ from django.urls import path
 from base.views import object_delete
 from horilla_audit.methods import history_tracking
 from pms import cbvs
+from pms.cbv import (
+    dashboard,
+    feedback,
+    key_result,
+    meetings,
+    objectives,
+    period,
+    question_template,
+)
 
 from . import models, views
 
 urlpatterns = [
-    # objectives
-    path("objective-list-view/", views.objective_list_view, name="objective-list-view"),
-    path("objective-creation/", views.objective_creation, name="objective-creation"),
     path(
-        "objective-update/<int:obj_id>", views.objective_update, name="objective-update"
+        "individual-performance-tab-list/<int:pk>/",
+        feedback.PerformanceTab.as_view(),
+        name="individual-performance-tab-list",
     ),
-    path("add-assignees/<int:obj_id>", views.add_assignees, name="add-assignees"),
-    # key results
-    path("view-key-result/", views.view_key_result, name="view-key-result"),
-    path("filter-key-result/", views.filter_key_result, name="filter-key-result"),
-    path("create-key-result/", views.kr_create_or_update, name="create-key-result"),
+    path("feedback-view/", feedback.FeedbackViewPage.as_view(), name="feedback-view"),
     path(
-        "update-key-result/<int:kr_id>",
-        views.kr_create_or_update,
+        "feedback-list-page/",
+        feedback.FeedbackListView.as_view(),
+        name="feedback-list-page",
+    ),
+    path(
+        "feedback-generic-tab/",
+        feedback.FeedbackGenericTabView.as_view(),
+        name="feedback-generic-tab",
+    ),
+    path(
+        "self-feedback-tab/",
+        feedback.SelfFeedbacktab.as_view(),
+        name="self-feedback-tab",
+    ),
+    path(
+        "requested-feedback-tab/",
+        feedback.RequestedFeedbackTab.as_view(),
+        name="requested-feedback-tab",
+    ),
+    path(
+        "all-feedback-tab/", feedback.AllFeedbackTab.as_view(), name="all-feedback-tab"
+    ),
+    path(
+        "anonymous-feedback-tab/",
+        feedback.AnonymousFeedbackTab.as_view(),
+        name="anonymous-feedback-tab",
+    ),
+    path(
+        "feedback-nav-view/",
+        feedback.FeedbacknavView.as_view(),
+        name="feedback-nav-view",
+    ),
+    # objectives
+    # path("objective-list-view/", views.objective_list_view, name="objective-list-view"),
+    # path("objective-creation/", views.objective_creation, name="objective-creation"),
+    path(
+        "objective-creation/",
+        objectives.CreateObjectiveFormView.as_view(),
+        name="objective-creation",
+    ),
+    path(
+        "objective-update/<int:pk>",
+        objectives.CreateObjectiveFormView.as_view(),
+        name="objective-update",
+    ),
+    # path(
+    #     "objective-update/<int:obj_id>", views.objective_update, name="objective-update"
+    # ),
+    # path("add-assignees/<int:obj_id>", views.add_assignees, name="add-assignees"),
+    path(
+        "add-assignees/<int:pk>",
+        objectives.AddAssigneesFormView.as_view(),
+        name="add-assignees",
+    ),
+    # key results
+    path(
+        "view-key-result/",
+        key_result.KeyResultViewPage.as_view(),
+        name="view-key-result",
+    ),
+    path(
+        "filter-key-result/",
+        key_result.KeyResultsListView.as_view(),
+        name="filter-key-result",
+    ),
+    path(
+        "key-result-detail-view/<int:pk>/",
+        key_result.KeyResultsDetailedView.as_view(),
+        name="key-result-detail-view",
+    ),
+    path(
+        "key-result-navbar/",
+        key_result.KeyResultNavView.as_view(),
+        name="key-result-navbar",
+    ),
+    path(
+        "key-result-card-view/",
+        key_result.KeyResultCardView.as_view(),
+        name="key-result-card-view",
+    ),
+    path(
+        "create-key-result/",
+        key_result.KeyResultFormView.as_view(),
+        name="create-key-result",
+    ),
+    path(
+        "update-key-result/<int:pk>/",
+        key_result.KeyResultFormView.as_view(),
         name="update-key-result",
     ),
+    path(
+        "key-result-delete/<int:key_id>/",
+        key_result.DeleteKeyResults.as_view(),
+        name="key-result-delete",
+    ),
+    # path("view-key-result/", views.view_key_result, name="view-key-result"),
+    # path("filter-key-result/", views.filter_key_result, name="filter-key-result"),
+    # path("create-key-result/", views.kr_create_or_update, name="create-key-result"),
+    # path(
+    #     "update-key-result/<int:kr_id>",
+    #     views.kr_create_or_update,
+    #     name="update-key-result",
+    # ),
     path(
         "delete-key-result/<int:obj_id>/",
         object_delete,
@@ -102,9 +205,14 @@ urlpatterns = [
         views.kr_table_view,
         name="kr-table-view",
     ),
+    # path(
+    #     "key-result-view",
+    #     views.key_result_view,
+    #     name="key-result-view",
+    # ),
     path(
         "key-result-view",
-        views.key_result_view,
+        dashboard.KeyResultStatus.as_view(),
         name="key-result-view",
     ),
     path(
@@ -120,7 +228,7 @@ urlpatterns = [
     path(
         "key-result-update/<int:id>", views.key_result_update, name="key-result-update"
     ),
-    path("feedback-view/", views.feedback_list_view, name="feedback-view"),
+    # path("feedback-view/", views.feedback_list_view, name="feedback-view"),
     path(
         "feedback-list-search", views.feedback_list_search, name="feedback-list-search"
     ),
@@ -130,7 +238,12 @@ urlpatterns = [
     #     views.feedback_creation_ajax,
     #     name="feedback-creation-ajax",
     # ),
-    path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
+    path(
+        "feedback-update/<int:pk>/",
+        feedback.FeedbackUpdateFormView.as_view(),
+        name="feedback-update",
+    ),
+    # path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
     path("feedback-delete/<int:id>", views.feedback_delete, name="feedback-delete"),
     path("feedback-archive/<int:id>", views.feedback_archive, name="feedback-archive"),
     path("get-collegues", views.get_collegues, name="get-collegues"),
@@ -183,30 +296,40 @@ urlpatterns = [
         name="question-update",
     ),
     path("question-delete/<int:id>", views.question_delete, name="question-delete"),
+    # path(
+    #     "question-template-creation",
+    #     views.question_template_creation,
+    #     name="question-template-creation",
+    # ),
     path(
         "question-template-creation",
-        views.question_template_creation,
+        question_template.QuestionTemplateFormView.as_view(),
         name="question-template-creation",
     ),
-    path(
-        "question-template-view/",
-        views.question_template_view,
-        name="question-template-view",
-    ),
-    path(
-        "question-template-hx-view",
-        views.question_template_hx_view,
-        name="question-template-hx-view",
-    ),
+    # path(
+    #     "question-template-view/",
+    #     views.question_template_view,
+    #     name="question-template-view",
+    # ),
+    # path(
+    #     "question-template-hx-view",
+    #     views.question_template_hx_view,
+    #     name="question-template-hx-view",
+    # ),
     path(
         "question-template-detailed-view/<int:template_id>",
         views.question_template_detailed_view,
         name="question-template-detailed-view",
         kwargs={"model": models.QuestionTemplate},
     ),
+    # path(
+    #     "question-template-update/<int:template_id>/",
+    #     views.question_template_update,
+    #     name="question-template-update",
+    # ),
     path(
-        "question-template-update/<int:template_id>/",
-        views.question_template_update,
+        "question-template-update/<int:pk>/",
+        question_template.QuestionTemplateFormView.as_view(),
         name="question-template-update",
     ),
     path(
@@ -214,13 +337,22 @@ urlpatterns = [
         views.question_template_delete,
         name="question-template-delete",
     ),
-    path("period-create", views.period_create, name="period-create"),
-    path("period-view", views.period_view, name="period-view"),
-    path("period-hx-view", views.period_hx_view, name="period-hx-view"),
+    # path("period-create", views.period_create, name="period-create"),
+    path("period-create", period.PeriodFormView.as_view(), name="period-create"),
+    # path("period-view/", views.period_view, name="period-view"),
+    # path("period-hx-view", views.period_hx_view, name="period-hx-view"),
     path("period-delete/<int:period_id>", views.period_delete, name="period-delete"),
-    path("period-update/<int:period_id>", views.period_update, name="period-update"),
+    # path("period-update/<int:period_id>", views.period_update, name="period-update"),
+    path(
+        "period-update/<int:pk>", period.PeriodFormView.as_view(), name="period-update"
+    ),
     path("period-change", views.period_change, name="period-change"),
     path("dashboard-view", views.dashboard_view, name="dashboard-view"),
+    path(
+        "dashboard-risk-objectives",
+        dashboard.DasboardObjectivesRisk.as_view(),
+        name="dashboard-risk-objectives",
+    ),
     path(
         "dashboard-objective-status",
         views.dashboard_objective_status,
@@ -271,14 +403,24 @@ urlpatterns = [
         views.objective_select_filter,
         name="objective-select-filter",
     ),
+    # path(
+    #     "add-anonymous-feedback",
+    #     views.anonymous_feedback_add,
+    #     name="add-anonymous-feedback",
+    # ),
     path(
         "add-anonymous-feedback",
-        views.anonymous_feedback_add,
+        feedback.AddAnonymousFeedbackForm.as_view(),
         name="add-anonymous-feedback",
     ),
+    # path(
+    #     "edit-anonymous-feedback/<int:obj_id>/",
+    #     views.edit_anonymous_feedback,
+    #     name="edit-anonymous-feedback",
+    # ),
     path(
-        "edit-anonymous-feedback/<int:obj_id>/",
-        views.edit_anonymous_feedback,
+        "edit-anonymous-feedback/<int:pk>/",
+        feedback.AddAnonymousFeedbackForm.as_view(),
         name="edit-anonymous-feedback",
     ),
     path(
@@ -296,21 +438,36 @@ urlpatterns = [
         views.view_single_anonymous_feedback,
         name="single-anonymous-feedback-view",
     ),
+    # path(
+    #     "view-employee-objective/<int:emp_obj_id>/",
+    #     views.view_employee_objective,
+    #     name="view-employee-objective",
+    # ),
     path(
-        "view-employee-objective/<int:emp_obj_id>/",
-        views.view_employee_objective,
+        "view-employee-objective/<int:pk>/",
+        objectives.EmployeeObjectiveDetailView.as_view(),
         name="view-employee-objective",
     ),
+    # path(
+    #     "create-employee-objective/",
+    #     views.create_employee_objective,
+    #     name="create-employee-objective",
+    # ),
     path(
         "create-employee-objective/",
-        views.create_employee_objective,
+        objectives.CreateEmployeeObjectiveForm.as_view(),
         name="create-employee-objective",
     ),
     path(
-        "update-employee-objective/<int:emp_obj_id>/",
-        views.update_employee_objective,
+        "update-employee-objective/<int:pk>/",
+        objectives.CreateEmployeeObjectiveForm.as_view(),
         name="update-employee-objective",
     ),
+    # path(
+    #     "update-employee-objective/<int:emp_obj_id>/",
+    #     views.update_employee_objective,
+    #     name="update-employee-objective",
+    # ),
     path(
         "archive-employee-objective/<int:emp_obj_id>/",
         views.archive_employee_objective,
@@ -326,14 +483,24 @@ urlpatterns = [
         views.change_employee_objective_status,
         name="change-employee-objective-status",
     ),
+    # path(
+    #     "employee-key-result-creation/<int:emp_obj_id>",
+    #     views.employee_keyresult_creation,
+    #     name="employee-key-result-creation",
+    # ),
     path(
         "employee-key-result-creation/<int:emp_obj_id>",
-        views.employee_keyresult_creation,
+        objectives.CreateEmployeeKeyResultFormView.as_view(),
         name="employee-key-result-creation",
     ),
+    # path(
+    #     "employee-key-result-update/<int:kr_id>",
+    #     views.employee_keyresult_update,
+    #     name="employee-key-result-update",
+    # ),
     path(
-        "employee-key-result-update/<int:kr_id>",
-        views.employee_keyresult_update,
+        "employee-key-result-update/<int:pk>/",
+        objectives.CreateEmployeeKeyResultFormView.as_view(),
         name="employee-key-result-update",
     ),
     path(
@@ -351,16 +518,26 @@ urlpatterns = [
         views.key_result_current_value_update,
         name="key-result-current-value-update",
     ),
+    # path(
+    #     "view-meetings",
+    #     views.view_meetings,
+    #     name="view-meetings",
+    # ),
+    # path(
+    #     "create-meeting",
+    #     views.create_meetings,
+    #     name="create-meeting",
+    # ),
     path("get-keyresult-data", views.get_keyresult_data, name="get-keyresult-data"),
     path(
-        "view-meetings/",
-        views.view_meetings,
-        name="view-meetings",
+        "create-meeting",
+        meetings.MeetingsFormView.as_view(),
+        name="create-meeting",
     ),
     path(
-        "create-meeting",
-        views.create_meetings,
-        name="create-meeting",
+        "update-meeting/<int:pk>/",
+        meetings.MeetingsFormView.as_view(),
+        name="update-meeting",
     ),
     path(
         "meetings-delete/<int:obj_id>/",
@@ -378,9 +555,14 @@ urlpatterns = [
         views.filter_meetings,
         name="filter-meeting",
     ),
+    # path(
+    #     "add-response/<int:id>/",
+    #     views.add_response,
+    #     name="add-response",
+    # ),
     path(
-        "add-response/<int:obj_id>/",
-        views.add_response,
+        "add-response/<int:id>/",
+        meetings.MeetingResponseFormView.as_view(),
         name="add-response",
     ),
     path(
@@ -418,10 +600,88 @@ urlpatterns = [
         views.meeting_employee_remove,
         name="meeting-employee-remove",
     ),
-    path("performance-tab/<int:emp_id>", views.performance_tab, name="performance-tab"),
+    path(
+        "objective-list-view/",
+        objectives.ObjectivesView.as_view(),
+        name="objective-list-view",
+    ),
+    path(
+        "list-objectives-view/",
+        objectives.ObjectivesList.as_view(),
+        name="list-objectives-view",
+    ),
+    path(
+        "tab-objectives-view/",
+        objectives.ObjectivesTab.as_view(),
+        name="tab-objectives-view",
+    ),
+    path(
+        "nav-objectives-view/",
+        objectives.ObjectivesNav.as_view(),
+        name="nav-objectives-view",
+    ),
+    path(
+        "my-objectives-view-tab/",
+        objectives.MyObjectives.as_view(),
+        name="my-objectives-view-tab",
+    ),
+    path(
+        "all-objectives-view-tab/",
+        objectives.AllObjectives.as_view(),
+        name="all-objectives-view-tab",
+    ),
+    path("view-meetings/", meetings.MeetingsView.as_view(), name="view-meetings"),
+    path("meetings-list/", meetings.MeetingsList.as_view(), name="meetings-list"),
+    path("meetings-nav/", meetings.MeetingsNav.as_view(), name="meetings-nav"),
+    path(
+        "meetings-detail-view/<int:pk>/",
+        meetings.MeetingsDetailedView.as_view(),
+        name="meetings-detail-view",
+    ),
+    path(
+        "question-template-view/",
+        question_template.QuestionTemplateView.as_view(),
+        name="question-template-view",
+    ),
+    path(
+        "question-template-hx-view/",
+        question_template.QuestionTemplateList.as_view(),
+        name="question-template-hx-view",
+    ),
+    path(
+        "nav-question-template/",
+        question_template.QuestionTemplateNav.as_view(),
+        name="nav-question-template",
+    ),
+    path(
+        "period-view/",
+        period.PeriodView.as_view(),
+        name="period-view",
+    ),
+    path(
+        "period-hx-view/",
+        period.PeriodList.as_view(),
+        name="period-hx-view",
+    ),
+    path(
+        "nav-period/",
+        period.PeriodNav.as_view(),
+        name="nav-period",
+    ),
+    path(
+        "period-detail-view/<int:pk>/",
+        period.PeriodDetailView.as_view(),
+        name="period-detail-view",
+    ),
+    path("performance-tab/<int:pk>", views.performance_tab, name="performance-tab"),
+    # path(
+    #     "dashboard-feedback-answer",
+    #     views.dashboard_feedback_answer,
+    #     name="dashboard-feedback-answer",
+    # ),
     path(
         "dashboard-feedback-answer",
-        views.dashboard_feedback_answer,
+        dashboard.DashboardFeedbackView.as_view(),
         name="dashboard-feedback-answer",
     ),
     # ===========bonus point setting============

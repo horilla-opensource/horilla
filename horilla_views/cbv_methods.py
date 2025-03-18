@@ -28,7 +28,7 @@ from django.urls import reverse
 from django.utils.functional import lazy
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
 
 from horilla import settings
 from horilla.horilla_middlewares import _thread_locals
@@ -210,7 +210,7 @@ def check_feature_enabled(function, feature_name, model_class: models.Model):
         enabled = getattr(general_setting, feature_name, False)
         if enabled:
             return function(self, request, *args, **kwargs)
-        messages.info(request, _trans("Feature is not enabled on the settings"))
+        messages.info(request, _("Feature is not enabled on the settings"))
         previous_url = request.META.get("HTTP_REFERER", "/")
         key = "HTTP_HX_REQUEST"
         if key in request.META.keys():

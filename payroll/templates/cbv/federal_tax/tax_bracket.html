@@ -1,0 +1,32 @@
+{% if not form_instance %}
+<span
+  class="oh-span__class"
+  data-toggle="oh-modal-toggle"
+  data-target="#filingStatus{{filing_status_id}}"
+  hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status_id %}"
+  hx-trigger="load"
+  hx-target="#taxbracketList{{filing_status_id}}"
+  onclick="$(`[data-target='#filingStatus{{filing_status_id}}']`).addClass('oh-accordion-meta__header--show');$('#filingStatus{{filing_status_id}}').removeClass('d-none')"
+></span>
+<span hx-get="{% url 'tax-bracket-create' filing_status_id=filing_status_id %}"
+      onclick="event.stopPropagation()"
+      hx-target="#objectCreateModalTarget"
+      hx-trigger="load"
+></span>
+{% else %}
+<script>
+$(document).ready(function(e) {
+  $("#objectUpdateModal").toggleClass("oh-modal--show");
+});
+</script>
+<span
+  class="oh-span__class"
+  data-toggle="oh-modal-toggle"
+  data-target="#filingStatus{{filing_status_id}}"
+  hx-get="{%url 'tax-bracket-list' filing_status_id=filing_status_id %}"
+  hx-trigger="load"
+  hx-target="#taxbracketList{{filing_status_id}}"
+  onclick="$(`[data-target='#filingStatus{{filing_status_id}}']`).addClass('oh-accordion-meta__header--show');$('#filingStatus{{filing_status_id}}').removeClass('d-none')"
+></span>
+
+{% endif %}

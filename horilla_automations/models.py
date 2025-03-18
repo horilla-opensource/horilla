@@ -1,6 +1,6 @@
 from django.db import models
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
 
 from base.methods import eval_validate
 from base.models import HorillaMailTemplate
@@ -11,13 +11,13 @@ from horilla_views.cbv_methods import render_template
 MODEL_CHOICES = []
 
 CONDITIONS = [
-    ("equal", _trans("Equal (==)")),
-    ("notequal", _trans("Not Equal (!=)")),
-    ("lt", _trans("Less Than (<)")),
-    ("gt", _trans("Greater Than (>)")),
-    ("le", _trans("Less Than or Equal To (<=)")),
-    ("ge", _trans("Greater Than or Equal To (>=)")),
-    ("icontains", _trans("Contains")),
+    ("equal", _("Equal (==)")),
+    ("notequal", _("Not Equal (!=)")),
+    ("lt", _("Less Than (<)")),
+    ("gt", _("Greater Than (>)")),
+    ("le", _("Less Than or Equal To (<=)")),
+    ("ge", _("Greater Than or Equal To (>=)")),
+    ("icontains", _("Contains")),
 ]
 
 
@@ -37,8 +37,8 @@ class MailAutomation(HorillaModel):
     mail_to = models.TextField(verbose_name="Mail to")
     mail_details = models.CharField(
         max_length=250,
-        help_text=_trans(
-            "Fill mail template details(reciever/instance, `self` will be the person who trigger the automation), `As template` option will sent instead of the mail template"
+        help_text=_(
+            "Fill mail template details(reciever/instance, `self` will be the person who trigger the automation)"
         ),
     )
     mail_detail_choice = models.TextField(default="", editable=False)
@@ -51,7 +51,7 @@ class MailAutomation(HorillaModel):
     also_sent_to = models.ManyToManyField(
         Employee,
         blank=True,
-        verbose_name=_trans("Also Send to"),
+        verbose_name=_("Also Send to"),
     )
     template_attachments = models.ManyToManyField(
         HorillaMailTemplate,

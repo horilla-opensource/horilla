@@ -9,11 +9,13 @@ import requests
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.db import models
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
 from employee.models import Employee
 from horilla.models import HorillaModel
+from horilla_views.cbv_methods import render_template
 
 
 def validate_schedule_time_format(value):
@@ -86,6 +88,129 @@ class BiometricDevices(HorillaModel):
 
     def __str__(self):
         return f"{self.name} - {self.machine_type}"
+
+    def get_card_details(self):
+        """
+        return card details based on machine type
+        """
+
+        if self.machine_type in ["zk", "cosec"]:
+            return f"Machine IP : {self.machine_ip}<br>Port No : {self.port}"
+        elif self.machine_type == "anviz":
+            return f"API Url : {self.api_url}"
+        else:
+            return ""
+
+    def render_live_capture_html(self):
+        """
+        live capture button
+        """
+        checked_attribute = "checked" if self.is_live else ""
+        activate_label = "Activate live capture mode"
+        activate_title = "Activate" if not self.is_live else "Deactivate"
+
+        if self.machine_type in ["zk", "cosec"]:
+            html = f"""
+            <td>
+                  <span class="oh-kanban-card__subtitle d-block">{activate_label}</span>
+                </td>
+                <td>
+                <div class="oh-switch">
+                    <input type="checkbox"
+                        class="style-widget oh-switch__checkbox is-live-activate"
+                        title="{activate_title}"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#BiometricDeviceTestModal"
+                        name="is_live"
+                        {checked_attribute}
+                        hx-trigger="change"
+                        hx-get="/biometric/biometric-device-live-capture?deviceId=d9ab2bc7-01d5-4005-897f-01f35198d743&amp;search=&amp;machine_type=&amp;is_scheduler=unknown&amp;is_active=unknown&amp;is_live=unknown&amp;page=1&amp;view=card"
+                        hx-target="#BiometricDeviceTestFormTarget" />
+                </div>
+                </td>
+                """
+            return html
+        else:
+            return ""
+
+    def render_actions_html(self):
+        """
+        actions buttons
+        """
+
+        margin_style = (
+            "style='margin-top:0px;'" if self.machine_type in ["anviz", "cosec"] else ""
+        )
+
+        test_url = reverse("biometric-device-test", args=[self.id])
+        unschedule_url = reverse("biometric-device-unschedule", args=[self.id])
+        schedule_url = reverse("biometric-device-schedule", args=[self.id])
+        employees_url = reverse("biometric-device-employees", args=[self.id])
+
+        html = f"""
+        <div class="d-block oh-kanban-card__biometric-actions" {margin_style} style="display: flex; gap: 10px; ">
+            <a href="#" hx-get="{test_url}" data-toggle="oh-modal-toggle"
+                data-target="#BiometricDeviceTestModal" hx-target="#BiometricDeviceTestFormTarget"
+                class="oh-checkpoint-badge text-success mr-2" style="border: 2px solid #28a745; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #28a745;">Test
+            </a>
+            {"<a hx-confirm='Do you want to unschedule the device attendance fetching?'"
+              f" hx-post='{unschedule_url}'"
+              " hx-target='#biometricDeviceList' class='oh-checkpoint-badge text-info ' style='border: 2px solid #17a2b8; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #17a2b8;'>Unschedule</a>"
+              if self.is_scheduler else
+              "<a href='#' class='oh-checkpoint-badge text-info' hx-get='" + schedule_url + "'"
+              " data-toggle='oh-modal-toggle' data-target='#BiometricDeviceModal'"
+              " hx-target='#BiometricDeviceFormTarget' style='border: 2px solid #17a2b8; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #17a2b8;'>Schedule</a>"}
+            {"<a href='" + employees_url + "' class='oh-checkpoint-badge text-secondary bio-user-list ml-4' style='border: 2px solid #6c757d; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #6c757d;'>Employee</a>"
+              if self.machine_type in ["zk", "cosec"] else ""}
+        </div>
+
+        """
+
+        return html
+
+    def archive_status(self):
+        """
+        archive status
+        """
+        if self.is_active:
+            return "Archive"
+        else:
+            return "Un-Archive"
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("biometric-device-edit", kwargs={"device_id": self.pk})
+        return url
+
+    def get_archive_url(self):
+        """
+        This method to get archive url
+        """
+        url = reverse_lazy("biometric-device-archive", kwargs={"device_id": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        url = reverse_lazy("biometric-device-delete", kwargs={"device_id": self.pk})
+        return url
+
+    def get_machine_type(self):
+        """
+        return machine type from choices
+        """
+
+        return dict(self.BIO_DEVICE_TYPE).get(self.machine_type)
+
+    def get_avatar(self):
+        """
+        Method will retun the api to the avatar or path to the profile image
+        """
+        url = f"https://ui-avatars.com/api/?name={self.name}&background=random"
+        return url
 
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)

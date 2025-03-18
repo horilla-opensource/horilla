@@ -8,11 +8,40 @@ from django.urls import path
 
 from base.views import object_delete, object_duplicate
 from employee import not_in_out_dashboard, policies, views
+from employee.cbv import (
+    action_type,
+    disciplinary_actions,
+    document_request,
+    employee_profile,
+    employee_tags,
+    employees,
+    policy_cbv,
+)
 from employee.forms import DisciplinaryActionForm
 from employee.models import DisciplinaryAction, Employee, EmployeeTag
 from horilla_documents.models import DocumentRequest
 
 urlpatterns = [
+    path(
+        "employee-tag-list/",
+        employee_tags.EmployeeTagListView.as_view(),
+        name="employee-tag-list",
+    ),
+    path(
+        "employee-tag-create-form/",
+        employee_tags.EmployeeTagCreateForm.as_view(),
+        name="employee-tag-create-form",
+    ),
+    path(
+        "employee-tag-update-form/<int:pk>/",
+        employee_tags.EmployeeTagCreateForm.as_view(),
+        name="employee-tag-update-form",
+    ),
+    path(
+        "employee-tag-navbar/",
+        employee_tags.EmployeetagNavView.as_view(),
+        name="employee-tag-navbar",
+    ),
     path("get-language-code/", views.get_language_code, name="get-language-code"),
     path("employee-profile/", views.employee_profile, name="employee-profile"),
     path(
@@ -21,6 +50,12 @@ urlpatterns = [
         name="employee-view-individual",
         kwargs={"model": Employee},
     ),
+    # path(
+    #     "employee-profile/<int:obj_id>",
+    #     views.employee_view_individual,
+    #     name="employee-profile",
+    #     kwargs={"model": Employee},
+    # ),
     path("edit-profile", views.self_info_update, name="edit-profile"),
     path(
         "profile-edit-access/<int:emp_id>/",
@@ -52,7 +87,7 @@ urlpatterns = [
         views.employee_profile_bank_details,
         name="employee-profile-bank-update",
     ),
-    path("employee-view/", views.employee_view, name="employee-view"),
+    # path("employee-view/", views.employee_view, name="employee-view"),
     path("employee-view-new", views.employee_view_new, name="employee-view-new"),
     path(
         "employee-view-update/<int:obj_id>/",
@@ -190,7 +225,7 @@ urlpatterns = [
         name="dashboard-employee-department",
     ),
     path("employee-widget-filter", views.widget_filter, name="employee-widget-filter"),
-    path("note-tab/<int:emp_id>", views.note_tab, name="note-tab"),
+    path("note-tab/<int:pk>", views.note_tab, name="note-tab"),
     path("add-employee-note/<int:emp_id>/", views.add_note, name="add-employee-note"),
     path("add-employee-note-post", views.add_note, name="add-employee-note-post"),
     path(
@@ -213,17 +248,27 @@ urlpatterns = [
         views.employee_note_delete,
         name="employee-note-delete",
     ),
+    path(
+        "allowances-deductions-tab/<int:emp_id>",
+        views.allowances_deductions_tab,
+        name="allowances-deductions-tab",
+    ),
+    path("shift-tab/<int:pk>", views.shift_tab, name="shift-tab"),
+    # path(
+    #     "about-tab/<int:obj_id>",
+    #     views.about_tab,
+    #     name="about-tab",
+    #     kwargs={"model": Employee},
+    # ),
     path("shift-tab/<int:emp_id>", views.shift_tab, name="shift-tab"),
     path(
-        "about-tab/<int:obj_id>",
+        "about-tab/<int:pk>",
         views.about_tab,
         name="about-tab",
         kwargs={"model": Employee},
     ),
-    path("document-tab/<int:emp_id>", views.document_tab, name="document-tab"),
-    path(
-        "bonus-points-tab/<int:emp_id>", views.bonus_points_tab, name="bonus-points-tab"
-    ),
+    path("document-tab/<int:pk>", views.document_tab, name="document-tab"),
+    path("bonus-points-tab/<int:pk>", views.bonus_points_tab, name="bonus-points-tab"),
     path(
         "add-bonus-points/<int:emp_id>", views.add_bonus_points, name="add-bonus-points"
     ),
@@ -234,8 +279,8 @@ urlpatterns = [
         views.employee_select_filter,
         name="employee-select-filter",
     ),
-    path("not-in-yet/", not_in_out_dashboard.not_in_yet, name="not-in-yet"),
-    path("not-out-yet/", not_in_out_dashboard.not_out_yet, name="not-out-yet"),
+    # path("not-in-yet/", not_in_out_dashboard.not_in_yet, name="not-in-yet"),
+    # path("not-out-yet/", not_in_out_dashboard.not_out_yet, name="not-out-yet"),
     path(
         "send-mail/<int:emp_id>/",
         not_in_out_dashboard.send_mail,
@@ -266,7 +311,13 @@ urlpatterns = [
     ),
     path("view-policies/", policies.view_policies, name="view-policies"),
     path("search-policies", policies.search_policies, name="search-policies"),
-    path("create-policy", policies.create_policy, name="create-policy"),
+    # path("create-policy", policies.create_policy, name="create-policy"),
+    path("create-policy", policy_cbv.PolicyFormView.as_view(), name="create-policy"),
+    path(
+        "create-policy/<int:pk>/",
+        policy_cbv.PolicyFormView.as_view(),
+        name="create-policy",
+    ),
     path("view-policy", policies.view_policy, name="view-policy"),
     path(
         "add-attachment-policy", policies.add_attachment, name="add-attachment-policy"
@@ -281,9 +332,25 @@ urlpatterns = [
         policies.get_attachments,
         name="get-attachments-policy",
     ),
-    path("file-upload/<int:id>", views.file_upload, name="file-upload"),
+    path(
+        "file-upload/<int:pk>/",
+        document_request.DocumentUploadForm.as_view(),
+        name="file-upload",
+    ),
+    # path("file-upload/<int:id>", views.file_upload, name="file-upload"),
     path("view-file/<int:id>", views.view_file, name="view-file"),
-    path("document-create/<int:emp_id>", views.document_create, name="document-create"),
+    path("document-create", views.document_create, name="document-create"),
+    path(
+        "get-notify-field/",
+        views.get_notify_field,
+        name="get-notify-field",
+    ),
+    path(
+        "document-create/<int:emp_id>",
+        document_request.DocumentCreateForm.as_view(),
+        name="document-create",
+    ),
+    # path("document-create/<int:emp_id>", views.document_create, name="document-create"),
     path(
         "update-document-title/<int:id>",
         views.update_document_title,
@@ -298,7 +365,12 @@ urlpatterns = [
     path(
         "document-bulk-reject", views.document_bulk_reject, name="document-bulk-reject"
     ),
-    path("document-reject/<int:id>", views.document_reject, name="document-reject"),
+    path(
+        "document-reject/<int:pk>/",
+        document_request.DocumentRejectform.as_view(),
+        name="document-reject",
+    ),
+    # path("document-reject/<int:id>", views.document_reject, name="document-reject"),
     path(
         "document-request-view/",
         views.document_request_view,
@@ -311,14 +383,24 @@ urlpatterns = [
     ),
     path(
         "document-request-create",
-        views.document_request_create,
+        document_request.DocumentRequestCreateForm.as_view(),
         name="document-request-create",
     ),
+    # path(
+    #     "document-request-create",
+    #     views.document_request_create,
+    #     name="document-request-create",
+    # ),
     path(
-        "document-request-update/<int:id>",
-        views.document_request_update,
+        "document-request-update/<int:pk>/",
+        document_request.DocumentRequestCreateForm.as_view(),
         name="document-request-update",
     ),
+    # path(
+    #     "document-request-update/<int:id>",
+    #     views.document_request_update,
+    #     name="document-request-update",
+    # ),
     path(
         "document-request-delete/<int:obj_id>/",
         object_delete,
@@ -335,25 +417,60 @@ urlpatterns = [
     ),
     path("organisation-chart/", views.organisation_chart, name="organisation-chart"),
     path("delete-policies", policies.delete_policies, name="delete-policies"),
+    # path(
+    #     "disciplinary-actions/",
+    #     policies.disciplinary_actions,
+    #     name="disciplinary-actions",
+    # ),
+    # path(
+    #     "duplicate-disciplinary-actions/<int:obj_id>/",
+    #     object_duplicate,
+    #     name="duplicate-disciplinary-actions",
+    #     kwargs={
+    #         "model": DisciplinaryAction,
+    #         "form": DisciplinaryActionForm,
+    #         "template": "disciplinary_actions/form.html",
+    #     },
+    # ),
     path(
-        "disciplinary-actions/",
-        policies.disciplinary_actions,
-        name="disciplinary-actions",
-    ),
-    path(
-        "duplicate-disciplinary-actions/<int:obj_id>/",
-        object_duplicate,
+        "duplicate-disciplinary-actions/<int:pk>/",
+        disciplinary_actions.DisciplinaryActionsFormDuplicate.as_view(),
         name="duplicate-disciplinary-actions",
-        kwargs={
-            "model": DisciplinaryAction,
-            "form": DisciplinaryActionForm,
-            "template": "disciplinary_actions/form.html",
-        },
     ),
-    path("create-actions", policies.create_actions, name="create-actions"),
+    # path("create-actions", policies.create_actions, name="create-actions"),
     path(
-        "update-actions/<int:action_id>/",
-        policies.update_actions,
+        "create-actions",
+        disciplinary_actions.DisciplinaryActionsFormView.as_view(),
+        name="create-actions",
+    ),
+    path(
+        "action-type-list",
+        action_type.ActionTypeListView.as_view(),
+        name="action-type-list",
+    ),
+    path(
+        "action-type-nav",
+        action_type.ActionTypeNav.as_view(),
+        name="action-type-nav",
+    ),
+    path(
+        "create-action-type",
+        action_type.ActionTypeFormView.as_view(),
+        name="create-action-type",
+    ),
+    path(
+        "update-action-type/<int:pk>/",
+        action_type.ActionTypeFormView.as_view(),
+        name="update-action-type",
+    ),
+    # path(
+    #     "update-actions/<int:action_id>/",
+    #     policies.update_actions,
+    #     name="update-actions",
+    # ),
+    path(
+        "update-actions/<int:pk>/",
+        disciplinary_actions.DisciplinaryActionsFormView.as_view(),
         name="update-actions",
     ),
     path(
@@ -405,8 +522,42 @@ urlpatterns = [
         views.get_manager_in,
         name="get-manager-in",
     ),
+    path("employee-view/", employees.EmployeesView.as_view(), name="employee-view"),
+    path("employees-list/", employees.EmployeesList.as_view(), name="employees-list"),
+    path("employees-nav/", employees.EmployeeNav.as_view(), name="employees-nav"),
+    path("employees-export/", employees.ExportView.as_view(), name="employees-export"),
+    path("employees-card/", employees.EmployeeCard.as_view(), name="employees-card"),
+    path(
+        "disciplinary-actions/",
+        disciplinary_actions.DisciplinaryActionsView.as_view(),
+        name="disciplinary-actions",
+    ),
+    path(
+        "disciplinary-actions-list/",
+        disciplinary_actions.DisciplinaryActionsList.as_view(),
+        name="disciplinary-actions-list",
+    ),
+    path(
+        "disciplinary-actions-nav/",
+        disciplinary_actions.DisciplinaryActionsNav.as_view(),
+        name="disciplinary-actions-nav",
+    ),
+    path(
+        "disciplinary-actions-detail-view/<int:pk>/",
+        disciplinary_actions.DisciplinaryActionsDetailView.as_view(),
+        name="disciplinary-actions-detail-view",
+    ),
     path("get-job-positions", views.get_job_positions, name="get-job-positions"),
+    path(
+        "get-job-positions-hx", views.get_job_positions_hx, name="get-job-positions-hx"
+    ),
     path("get-job-roles", views.get_job_roles, name="get-job-roles"),
+    path(
+        "get-job-position-department",
+        views.get_position_department,
+        name="get-job-position-department",
+    ),
+    path("get-job-roles-hx", views.get_job_roles_hx, name="get-job-roles-hx"),
     path("employee-tag-view/", views.employee_tag_view, name="employee-tag-view"),
     path("employee-tag-create", views.employee_tag_create, name="employee-tag-create"),
     path(
@@ -418,6 +569,24 @@ urlpatterns = [
         "employee-tag-delete/<int:obj_id>/",
         object_delete,
         name="employee-tag-delete",
-        kwargs={"model": EmployeeTag, "HttpResponse": True},
+        kwargs={
+            "model": EmployeeTag,
+            "HttpResponse": "<script>$('#reloadMessagesButton').click()</script>",
+        },
+    ),
+    path(
+        "profile/employee/employee-view/<int:pk>/",
+        employee_profile.EmployeeProfileView.as_view(),
+        name="profile-new",
+    ),
+    path(
+        "employee-profile/<int:pk>/",
+        employee_profile.EmployeeProfileView.as_view(),
+        name="employee-profile",
+    ),
+    path(
+        "assign-group-user/",
+        employee_profile.GroupAssignView.as_view(),
+        name="assign-group-user",
     ),
 ]

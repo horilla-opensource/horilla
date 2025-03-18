@@ -130,24 +130,35 @@
 
     function toggleReimbursmentType(element) {
         if (element.val() == 'reimbursement') {
-          $('#reimbursementModalBody [name=attachment]').parent().show()
-          $('#reimbursementModalBody [name=attachment]').attr("required",true)
+          $('#genericModalBody [name=attachment]').parent().show()
+          $('#genericModalBody [name=attachment]').attr("required",true)
 
-            $('#reimbursementModalBody [name=leave_type_id]').parent().hide().attr("required",false)
-            $('#reimbursementModalBody [name=cfd_to_encash]').parent().hide().attr("required",false)
-            $('#reimbursementModalBody [name=ad_to_encash]').parent().hide().attr("required",false)
-            $('#reimbursementModalBody [name=amount]').parent().show().attr("required",true)
-            $('#reimbursementModalBody #availableTable').hide().attr("required",false)
+            $('#genericModalBody [name=leave_type_id]').parent().parent().hide().attr("required",false)
+            $('#genericModalBody [name=cfd_to_encash]').parent().parent().hide().attr("required",false)
+            $('#genericModalBody [name=ad_to_encash]').parent().parent().hide().attr("required",false)
+            $('#genericModalBody [name=amount]').parent().parent().show().attr("required",true)
+            $('#genericModalBody #availableTable').hide().attr("required",false)
 
         } else if(element.val() == 'leave_encashment') {
-          $('#reimbursementModalBody [name=attachment]').parent().hide()
-          $('#reimbursementModalBody [name=attachment]').attr("required",false)
-            $('#reimbursementModalBody [name=leave_type_id]').parent().show().attr("required",true)
-            $('#reimbursementModalBody [name=cfd_to_encash]').parent().show().attr("required",true)
-            $('#reimbursementModalBody [name=ad_to_encash]').parent().show().attr("required",true)
-            $('#reimbursementModalBody [name=amount]').parent().hide().attr("required",false)
-            $('#reimbursementModalBody #availableTable').show().attr("required",true)
+          $('#genericModalBody [name=attachment]').parent().hide()
+          $('#genericModalBody [name=attachment]').attr("required",false)
+            $('#genericModalBody [name=leave_type_id]').parent().parent().show().attr("required",true)
+            $('#genericModalBody [name=cfd_to_encash]').parent().parent().show().attr("required",true)
+            $('#genericModalBody [name=ad_to_encash]').parent().parent().show().attr("required",true)
+            $('#genericModalBody [name=amount]').parent().parent().hide().attr("required",false)
+            $('#genericModalBody #availableTable').show().attr("required",true)
 
+
+        }
+        else if(element.val() == 'bonus_encashment') {
+          $('#genericModalBody [name=attachment]').parent().hide()
+          $('#genericModalBody [name=attachment]').attr("required",false)
+          $('#genericModalBody [name=leave_type_id]').parent().parent().hide().attr("required",false)
+          $('#genericModalBody [name=cfd_to_encash]').parent().parent().hide().attr("required",false)
+          $('#genericModalBody [name=ad_to_encash]').parent().parent().hide().attr("required",false)
+          $('#genericModalBody [name=amount]').parent().parent().hide().attr("required",false)
+          $('#genericModalBody #availableTable').hide().attr("required",false)
+          $('#genericModalBody [name=bonus_to_encash]').parent().parent().show().attr("required",true)
 
         }
     }

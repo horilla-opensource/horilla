@@ -17,9 +17,9 @@
       <div
         class="oh-kanban-card"
         data-toggle="oh-modal-toggle"
-        data-target="#objectDetailsModal"
-        hx-get="{% url 'single-survey-view' question.id %}?instances_ids={{requests_ids}}"
-        hx-target="#objectDetailsModalTarget"
+        data-target="#genericModal"
+        hx-get="{% url 'single-survey-view' question.id %}?instance_ids={{requests_ids}}"
+        hx-target="#genericModalBody"
       >
         <div class="oh-kanban-card__details">
           <span class="oh-kanban-card__title">{{question}}</span>
@@ -45,8 +45,8 @@
                   <a
                     hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
                     data-toggle="oh-modal-toggle"
-                    data-target="#updateSurvey"
-                    hx-target="#updateSurveyModalBody"
+                    data-target="#genericModal"
+                    hx-target="#genericModalBody"
                     class="oh-dropdown__link"
                     >{% trans "Edit" %}
                   </a>
@@ -56,8 +56,8 @@
                   <a
                     hx-get="{% url 'recruitment-survey-question-template-duplicate' question.id %}"
                     data-toggle="oh-modal-toggle"
-                    data-target="#addSurvey"
-                    hx-target="#addSurveyModalBody"
+                    data-target="#genericModal"
+                    hx-target="#genericModalBody"
                     class="oh-dropdown__link"
                     >{% trans "Duplicate" %}
                   </a>

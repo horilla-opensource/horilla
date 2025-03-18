@@ -6,6 +6,7 @@ This module is used to bind url patterns with django views that related to feder
 
 from django.urls import path
 
+from payroll.cbv import federal_tax
 from payroll.views import tax_views
 
 urlpatterns = [
@@ -13,15 +14,25 @@ urlpatterns = [
         "filing-status-view/", tax_views.filing_status_view, name="filing-status-view"
     ),
     path(
-        "create-filing-status",
-        tax_views.create_filing_status,
+        "create-filing-status/",
+        federal_tax.FederalTaxFormView.as_view(),
         name="create-filing-status",
     ),
+    # path(
+    #     "create-filing-status",
+    #     tax_views.create_filing_status,
+    #     name="create-filing-status",
+    # ),
     path(
-        "filing-status-update/<int:filing_status_id>",
-        tax_views.update_filing_status,
+        "filing-status-update/<int:pk>/",
+        federal_tax.FederalTaxFormView.as_view(),
         name="filing-status-update",
     ),
+    # path(
+    #     "filing-status-update/<int:filing_status_id>",
+    #     tax_views.update_filing_status,
+    #     name="filing-status-update",
+    # ),
     path(
         "filing-status-delete/<int:filing_status_id>",
         tax_views.filing_status_delete,
@@ -39,14 +50,24 @@ urlpatterns = [
     ),
     path(
         "tax-bracket-create/<int:filing_status_id>",
-        tax_views.create_tax_bracket,
+        federal_tax.TaxBracketCreateForm.as_view(),
         name="tax-bracket-create",
     ),
+    # path(
+    #     "tax-bracket-create/<int:filing_status_id>",
+    #     tax_views.create_tax_bracket,
+    #     name="tax-bracket-create",
+    # ),
     path(
-        "tax-bracket-update/<int:tax_bracket_id>/",
-        tax_views.update_tax_bracket,
+        "tax-bracket-update/<int:pk>/",
+        federal_tax.TaxBracketCreateForm.as_view(),
         name="tax-bracket-update",
     ),
+    # path(
+    #     "tax-bracket-update/<int:tax_bracket_id>/",
+    #     tax_views.update_tax_bracket,
+    #     name="tax-bracket-update",
+    # ),
     path(
         "tax-bracket-delete/<int:tax_bracket_id>/",
         tax_views.delete_tax_bracket,

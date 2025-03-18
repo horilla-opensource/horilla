@@ -11,10 +11,28 @@
 <!-- End of Navigation -->
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <div class="oh-wrapper">
-        <div class="d-none mt-5">
-
+        <div class="d-none mt-5" id="back_button" style="width: 10%">
+            <a href="{% url 'dashboard-view' %}" class="oh-btn oh-btn--secondary oh-btn--shadow ms-3">
+                <ion-icon class="me-2 md hydrated" name="arrow-back-outline" role="img"
+                    aria-label="arrow-back-outline"></ion-icon>{% trans "Back" %}</a>
         </div>
+
+        <br>
+        <br>
+
+        <div id="employeeKeyRes" class="d-none oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">
+                Employee Key Results
+            </h1>
+        </div>
+
         <div class="oh-dashboard row" id="dashboard">
+            <form hidden hx-get="{% url 'key-result-view' %}" hx-target="#dashboard" hx-swap="innerHTML" id="dashboardKeyresult">
+                <input type="text" name="status">
+                <input type="text" name="archive" value="false">
+                <input type="text" name="field" value="employee_objective_id__employee_id">
+                <button type="submit"></button>
+            </form>
             <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
                 <div class="oh-dashboard__cards row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
@@ -137,7 +155,12 @@
                         <span class="oh-card-dashboard__title"> {% trans "Objectives At-Risk" %}</span>
                     </div>
                     <div class="oh-card-dashboard__body">
-                        {% if okr_at_risk %}
+                        <div class="oh-wrapper" hx-get="{% url "dashboard-risk-objectives" %}"
+                                        hx-trigger="load" id="dashboard_objectives">
+                                        <div class="animated-background">
+                                        </div>
+                                        </div>
+                        {% comment %} {% if okr_at_risk %}
                             <ul class="oh-card-dashboard__user-list">
                             {% for okr in okr_at_risk %}
                                 <li class="oh-card-dashboard__user-item">
@@ -162,7 +185,7 @@
                             </ul>
                         {% else %}
                             <h6 style="font-size:16px; text-align:left;" class="oh-404__subtitle" >{% trans "No OKRs are currently At-Risk." %}</h6>
-                        {% endif %}
+                        {% endif %} {% endcomment %}
                     </div>
                 </div>
             </div>

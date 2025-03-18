@@ -1,5 +1,6 @@
 {% load static %}
 {% load horillafilters %}
+{% include 'generic/components.html' %}
 <style>
     .round {
         border-radius: 50%;
@@ -152,9 +153,9 @@
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
-            hx-get="{% url 'create-reimbursement' %}"
-            hx-target="#objectCreateModalTarget"
+            data-target="#genericModal"
+            hx-get="{% url 'reimbursement-create' %}"
+            hx-target="#genericModalBody"
         >
             <i class="material-icons mt-2">paid</i>
         </a>
@@ -176,7 +177,7 @@
             class="text-light"
             data-toggle="oh-modal-toggle"
             data-target="#objectCreateModal"
-            hx-get="{% url 'shift-request' %}?emp_id={{request.user.employee_get.id}}"
+            hx-get="{% url 'shift-request' %}"
             hx-target="#objectCreateModalTarget"
         >
             <i class="material-icons mt-2">history</i>
@@ -187,13 +188,13 @@
             <a
                 class="text-light"
                 data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
+                data-target="#genericModal"
                 {% if perms.leave.create_leaverequest %}
                     hx-get="{% url 'request-creation' %}"
                 {% else %}
                     hx-get="{% url 'leave-request-create' %}"
                 {% endif %}
-                hx-target="#objectCreateModalTarget"
+                hx-target="#genericModalBody"
             >
                 <span class="material-symbols-outlined mt-2">
                 calendar_add_on
@@ -206,9 +207,9 @@
         <a
             class="text-light"
             data-toggle="oh-modal-toggle"
-            data-target="#objectCreateModal"
+            data-target="#genericModal"
             hx-get="{% url 'request-new-attendance' %}"
-            hx-target="#objectCreateModalTarget"
+            hx-target="#genericModalBody"
         >
             <span class="material-symbols-outlined mt-2">
                 person_add

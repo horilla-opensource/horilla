@@ -136,7 +136,7 @@
     function actionTypeChange(selectElement) {
         var selectedActiontype = selectElement.val();
         var parentForm = selectElement.parents().closest("form");
-        if (selectedActiontype !== "create" && selectedActiontype) {
+        if (selectedActiontype !== "dynamic_create" && selectedActiontype) {
             $.ajax({
                 type: "post",
                 url: "{% url 'action-type-details' %}",

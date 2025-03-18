@@ -1,13 +1,13 @@
 {% load i18n %}
 <form
-    hx-post='{% url "create-interview-schedule" %}'
+    hx-post="{% url 'create-interview-schedule' %}"
     hx-target="#createTarget"
     hx-encoding="multipart/form-data"
     id="skillform"
 >
     {{form.as_p}}
 </form>
-<script>
+<!-- <script>
     $("#skillform .col-md-6").toggleClass("col-md-6");
 
     $('[name=candidate_id]').change(function(){
@@ -43,4 +43,4 @@
         });
     });
 
-</script>
+</script> -->

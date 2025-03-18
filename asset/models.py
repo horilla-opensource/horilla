@@ -7,12 +7,15 @@ within an Asset Management System.
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse, reverse_lazy
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
 from employee.models import Employee
 from horilla.models import HorillaModel
+from horilla_views.cbv_methods import render_template
 
 
 class AssetCategory(HorillaModel):
@@ -72,6 +75,49 @@ class AssetLot(HorillaModel):
     def __str__(self):
         return f"{self.lot_number}"
 
+    def actions(self):
+        """
+        This method for get custom column for action.
+        """
+
+        return render_template(
+            path="cbv/asset_batch_no/actions.html",
+            context={"instance": self},
+        )
+
+    def asset_batch_detail(self):
+        """
+        detail view
+        """
+
+        url = reverse("asset-batch-detail-view", kwargs={"pk": self.pk})
+
+        return url
+
+    def assets_column(self):
+        """
+        This method for get custom column for action.
+        """
+
+        return render_template(
+            path="cbv/asset_batch_no/assets_col.html",
+            context={"instance": self},
+        )
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("asset-batch-update", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        url = reverse_lazy("asset-batch-number-delete", kwargs={"batch_id": self.pk})
+        return url
+
 
 class Asset(HorillaModel):
     """
@@ -130,6 +176,36 @@ class Asset(HorillaModel):
 
     def __str__(self):
         return f"{self.asset_name}-{self.asset_tracking_id}"
+
+    def get_status_display(self):
+        """
+        Display status
+        """
+        return dict(self.ASSET_STATUS).get(self.asset_status)
+
+    def detail_view_action(self):
+        """
+        This method for get custome coloumn .
+        """
+
+        return render_template(
+            path="cbv/asset_category/detail_view_action.html",
+            context={"instance": self},
+        )
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("asset-update", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        url = reverse_lazy("asset-delete", kwargs={"asset_id": self.pk})
+        return url
 
     def clean(self):
         existing_asset = Asset.objects.filter(
@@ -270,6 +346,162 @@ class AssetAssignment(HorillaModel):
     def __str__(self):
         return f"{self.assigned_to_employee_id} --- {self.asset_id} --- {self.return_status}"
 
+    def get_avatar(self):
+        """
+        Method will retun the api to the avatar or path to the profile image
+        """
+        url = f"https://ui-avatars.com/api/?name={self.asset_id}&background=random"
+        return url
+
+    def asset_detail_view(self):
+        """
+        for detail view of page
+        """
+        url = reverse("asset-history-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def assign_condition_img(self):
+        """
+        This method for get custome coloumn .
+        """
+
+        return render_template(
+            path="cbv/asset_history/assign_condition.html",
+            context={"instance": self},
+        )
+
+    def return_condition_img(self):
+        """
+        This method for get custome coloumn .
+        """
+
+        return render_template(
+            path="cbv/asset_history/return_condition.html",
+            context={"instance": self},
+        )
+
+    def asset_action(self):
+        """
+        This method for get custom column for asset tab action.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/asset_actions.html",
+            context={"instance": self},
+        )
+
+    def return_status_col(self):
+        """
+        This method for get custom column for return date.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/return_status.html",
+            context={"instance": self},
+        )
+
+    def allocation_action(self):
+        """
+        This method for get custom column for asset allocation tab actions.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/asset_allocation_action.html",
+            context={"instance": self},
+        )
+
+    def asset_detail_action(self):
+        """
+        This method for get custom column for asset detail  actions.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/asset_detail_action.html",
+            context={"instance": self},
+        )
+
+    def asset_allocation_detail_action(self):
+        """
+        This method for get custom column for asset detail  actions.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/detail_action_asset_allocation.html",
+            context={"instance": self},
+        )
+
+    def get_avatar(self):
+        """
+        Method will retun the api to the avatar or path to the question template
+        """
+        url = f"https://ui-avatars.com/api/?name={self.asset_id.asset_name}&background=random"
+        return url
+
+    def detail_view_asset(self):
+        """
+        detail view
+        """
+
+        url = reverse("asset-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def detail_view_asset_allocation(self):
+        """
+        detail view
+        """
+
+        url = reverse("asset-allocation-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def asset_detail_status(self):
+        """
+        Asset tab detail status
+        """
+
+        return (
+            '<span class="link-primary">Requested to return</span>'
+            if self.return_request
+            else '<span style = "color : yellowgreen;">In use</span>'
+        )
+
+    def detail_status(self):
+        """
+        Asset allocation  tab detail status
+        """
+        if self.return_date:
+            status = '<span style = "color : red;" >Returned</span>'
+        elif self.return_request:
+            status = '<span class="link-primary">Requested to return</span>'
+        else:
+            status = '<span style = "color : yellowgreen;" >Allocated</span>'
+        return status
+
+    def asset_allocation_detail_subtitle(self):
+        """
+        Return subtitle containing both department and job position information.
+        """
+        return f"{self.assigned_to_employee_id.employee_work_info.department_id} / {self.assigned_to_employee_id.employee_work_info.job_position_id}"
+
+    def status_display(self):
+        status = self.asset_id.asset_status
+        color_class = "oh-dot--warning"  # Adjust based on your status
+        return format_html(
+            '<span class="oh-dot oh-dot--small me-1 oh-dot--color {color_class}"></span>'
+            '<span class="link-warning">{status}</span>',
+            color_class=color_class,
+            status=status,
+        )
+
+    def assigned_date_display(self):
+        date_col = self.assigned_date
+        color_class = "oh-dot--success"  # Adjust based on your status
+        return format_html(
+            '<span class="oh-dot oh-dot--small me-1 oh-dot--color {color_class}"></span>'
+            '<span class="link-success dateformat_changer">{date_col}</span>',
+            color_class=color_class,
+            date_col=date_col,
+        )
+
 
 class AssetRequest(HorillaModel):
     """
@@ -309,6 +541,49 @@ class AssetRequest(HorillaModel):
         ordering = ["-id"]
         verbose_name = _("Asset Request")
         verbose_name_plural = _("Asset Requests")
+
+    def status_col(self):
+        """
+        This method for get custom coloumn for status.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/status.html",
+            context={"instance": self},
+        )
+
+    def action_col(self):
+        """
+        This method for get custom coloumn for action.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/asset_request_action.html",
+            context={"instance": self},
+        )
+
+    def detail_action_col(self):
+        """
+        This method for get custom coloumn for detail action.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/asset_request_detail_action.html",
+            context={"instance": self},
+        )
+
+    def asset_request_detail_subtitle(self):
+        """
+        Return subtitle containing both department and job position information.
+        """
+        return f"{self.requested_employee_id.employee_work_info.department_id} / {self.requested_employee_id.employee_work_info.job_position_id}"
+
+    def detail_view_asset_request(self):
+        """
+        detail view
+        """
+        url = reverse("asset-request-detail-view", kwargs={"pk": self.pk})
+        return url
 
     def status_html_class(self):
         COLOR_CLASS = {

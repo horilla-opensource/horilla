@@ -1,0 +1,22 @@
+{% load i18n %}
+{% load basefilters %}
+
+{% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition or request.user|is_reportingmanager %}
+    <div onclick="event.stopPropagation();">
+        <div class="oh-btn-group">
+            {% if request.user|is_reportingmanager or perms.base.change_multipleapprovalcondition %}
+                <button title="{% trans 'Edit' %}" class="oh-btn oh-btn--light-bkg w-100" data-toggle="oh-modal-toggle"
+                    data-target="#genericModal" hx-target="#genericModalBody"
+                    hx-get="{% url 'multiple-level-approval-edit' instance.id %}?instance_ids={{instance.ordered_ids }}">
+                    <ion-icon name="create-outline"></ion-icon>
+                </button>
+            {% endif %}
+            {% if request.user|is_reportingmanager or perms.base.delete_multipleapprovalcondition %}
+                <a hx-confirm="{% trans 'Are you sure you want to delete ?' %}" hx-get={% url "multiple-level-approval-delete" instance.id %}
+                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" id="delete-link" title="{% trans 'Delete' %}" hx-target="#multipleApproveCondition">
+                    <ion-icon name="trash-outline"></ion-icon>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}

@@ -1,0 +1,40 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Objective" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for=""
+                            >{% trans "Managers" %}</label
+                        >
+                        {{form.managers}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="">{% trans "Key Result" %}</label>
+                        {{form.employee_objective__key_result_id}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="">{% trans "Assignees" %}</label>
+                        {{form.assignees}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="">{% trans "Duration" %} </label>
+                        {{form.duration}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for=""
+                            >{% trans "Is Archived" %}</label
+                        >
+                        {{form.archive}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

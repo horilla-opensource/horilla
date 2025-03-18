@@ -1,0 +1,82 @@
+{% load i18n %}
+{% load static %}
+{% load horillafilters %}
+<style>
+       .onboarding-task-status{
+         padding: 20px;
+         margin-top: 5px;
+         font-weight: 700;
+       }
+       .onboarding-task-status--ongoing{
+         border-left: solid 4px yellow;
+         background-color: rgba(255, 255, 0, 0.113);
+       }
+       .onboarding-task-status--stuck{
+         border-left: solid 4px rgb(255, 60, 0);
+         background-color: rgb(255, 60, 0,0.113);
+       }
+       .onboarding-task-status--todo, .onboarding-task-status--None{
+         border-left: solid 4px rgb(205, 205, 205);
+         background-color: rgba(205,205,205,0.113);
+       }
+       .onboarding-task-status--done{
+         border-left: solid 4px rgb(154, 205, 50);
+         background-color: rgba(154, 205, 50,0.113);
+       }
+       .onboarding-task-status--scheduled{
+         border-left: solid 4px rgb(0, 255, 255);
+         background-color: rgb(0, 255, 255,0.133);
+       }
+       .oh-sticky-table__tr:hover {
+         background-color: #fff
+       }
+</style>
+     <div class="oh-sticky-table">
+       <div class="oh-sticky-table__table oh-table--sortable">
+         <div class="oh-sticky-table__thead">
+             <div class="oh-sticky-table__tr">
+                 <div class="oh-sticky-table__th"></div>
+             </div>
+         </div>
+         <div class="oh-sticky-table__tbody">
+          {% if candidate.candidate_task.exists %}
+           {% for task in candidate.candidate_task.all %}
+             <div class="oh-sticky-table__tr">
+               <div class="oh-sticky-table__td">
+                 <div class="oh-sticky-table__sd d-flex justify-content-between" style="width: 500px;overflow: hidden;">
+                   <div class="oh-profile oh-profile--md">
+                     <span class="oh-profile__name oh-text--dark">{{ task.onboarding_task_id.task_title }}</span>
+                   </div>
+                   <span class="oh-recuritment_tag  {% if task.status == 'done' %} done-task {% elif task.status == 'scheduled' %} scheduled-task{% elif task.status == 'ongoing' %} ongoing-task{% elif task.status == 'stuck' %} dd stuck-task {% elif task.status == 'todo' %} todo-task{% endif %}">
+                     <select hx-swap="none" hx-get="{% url 'change-task-status' %}?task_id={{task.id}}"
+                     name="status"
+                     style="width: 150px;"
+                     id="task_status{{task.id}}">
+                         {% for status in task.choice %}
+                         <option value="{{status.0}}"
+                         {% if status.0 == task.status %}
+                         selected
+                         {% endif %}
+                         >{{status.1}}</option>
+                         {% endfor %}
+                     </select>
+                   </span>
+                 </div>
+               </div>
+             </div>
+           {% endfor %}
+           {% else %}
+           <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
+            <div align="center">
+              <img src="{% static "images/ui/project/task.png" %}" class="oh-404__image" alt="Page not found. 404.">
+              <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "There are no tasks assigned for this candidate." %}</h5>
+            </div>
+          </div>
+       {% endif %}
+   </div>
+</div>
+</div>
+     </div>
+    </div>
+    </div>
+</div>

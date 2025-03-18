@@ -13,6 +13,7 @@ from django.template.loader import render_to_string
 
 from base.forms import ModelForm
 from employee.forms import MultipleFileField
+from employee.models import Employee
 from horilla import horilla_middlewares
 from notifications.signals import notify
 from offboarding.models import (
@@ -33,6 +34,8 @@ class OffboardingForm(ModelForm):
     """
 
     verbose_name = "Offboarding"
+
+    cols = {"title": 12, "description": 12, "managers": 12, "status": 12}
 
     class Meta:
         model = Offboarding
@@ -55,10 +58,12 @@ class OffboardingStageForm(ModelForm):
 
     verbose_name = "Stage"
 
+    cols = {"title": 12, "type": 12, "managers": 12}
+
     class Meta:
         model = OffboardingStage
         fields = "__all__"
-        exclude = ["offboarding_id", "is_active"]
+        exclude = ["is_active"]
 
     def as_p(self):
         """
@@ -189,6 +194,7 @@ class TaskForm(ModelForm):
         queryset=OffboardingEmployee.objects.all(),
         required=False,
     )
+    cols = {"title": 12, "managers": 12, "stage_id": 12, "tasks_to": 12}
 
     class Meta:
         model = OffboardingTask
@@ -233,6 +239,14 @@ class ResignationLetterForm(ModelForm):
     Resignation Letter
     """
 
+    cols = {
+        "employee_id": 12,
+        "title": 12,
+        "description": 12,
+        "planned_to_leave_on": 12,
+        "status": 12,
+    }
+
     description = forms.CharField(
         widget=forms.Textarea(attrs={"data-summernote": "", "style": "display:none;"}),
         label="Description",
@@ -261,17 +275,22 @@ class ResignationLetterForm(ModelForm):
         if self.instance.pk:
             exclude.append("employee_id")
             self.verbose_name = (
-                self.instance.employee_id.get_full_name() + " Resignation Letter"
+                self.instance.employee_id.get_full_name() + "'s Resignation Letter"
             )
 
         request = getattr(horilla_middlewares._thread_locals, "request", None)
-
         if request and not request.user.has_perm("offboarding.add_offboardingemployee"):
             exclude = exclude + [
                 "employee_id",
                 "status",
             ]
             self.instance.employee_id = request.user.employee_get
+        if request and request.user.has_perm("offboarding.add_offboardingemployee"):
+            if request.GET.get("emp_id"):
+                emp_id = request.GET.get("emp_id")
+                self.fields["employee_id"].queryset = Employee.objects.filter(id=emp_id)
+                self.fields["employee_id"].initial = emp_id
+
         exclude = list(set(exclude))
         for field in exclude:
             del self.fields[field]

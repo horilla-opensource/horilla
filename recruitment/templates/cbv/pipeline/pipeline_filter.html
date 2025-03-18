@@ -1,0 +1,171 @@
+{% load i18n %} {% load static %}
+<div class="oh-dropdown__filter-body">
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans 'Recruitment' %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{form.recruitment_managers.id_for_label}}"
+              >{% trans 'Managers' %}</label
+            >
+            {{ form.recruitment_managers }}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{form.start_date.id_for_label}}"
+              >{% trans 'Start Date' %}</label
+            >
+            {{ form.start_date }}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{form.start_from.id_for_label}}"
+              >{% trans 'Start Date From' %}</label
+            >
+            {{ form.start_from }}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{form.closed.id_for_label}}"
+              >{% trans 'Is Closed' %}</label
+            >
+            {{ form.closed }}
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{form.company_id.id_for_label}}"
+              >{% trans 'Company' %}</label
+            >
+            {{ form.company_id }}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{form.end_date.id_for_label}}"
+              >{% trans 'End Date' %}</label
+            >
+            {{ form.end_date }}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{form.end_till.id_for_label}}"
+              >{% trans 'Till End Date' %}</label
+            >
+            {{ form.end_till }}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{form.is_published.id_for_label}}"
+              >{% trans 'Is Published' %}</label
+            >
+            {{ form.is_published }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans 'Stage' %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Recruitment' %}</label>
+            {{ stage_filter_obj.form.recruitment_id }}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Stage Type' %}</label>
+            {{ stage_filter_obj.form.stage_type }}
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Stage Managers' %}</label>
+            {{ stage_filter_obj.form.stage_managers }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans 'Candidates' %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Country' %}</label>
+            <select
+              name="country"
+              class="oh-select-2 w-100 country"
+              id="country"
+            ></select>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans 'Reject Reason' %}</label>
+              {{ candidate_filter_obj.form.rejected_candidate__reject_reason_id }}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans 'Is Hired' %}</label>
+              {{ candidate_filter_obj.form.hired }}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans 'Gender' %}</label>
+              {{ candidate_filter_obj.form.gender }}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans 'Job Position' %}</label>
+              {{ candidate_filter_obj.form.job_position_id }}
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'State' %}</label>
+            <select
+              name="state"
+              class="oh-select-2 w-100 country"
+              id="state"
+            ></select>
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Offer Status' %}</label>
+            {{ candidate_filter_obj.form.offer_letter_status }}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Is Canceled' %}</label>
+            {{ candidate_filter_obj.form.canceled }}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Rating' %}</label>
+            {{ candidate_filter_obj.form.candidate_rating__rating }}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Department' %}</label>
+            {{ candidate_filter_obj.form.job_position_id__department_id }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{% static '/base/filter.js' %}"></script>
+<script>
+  {% include "country.js" %}
+</script>

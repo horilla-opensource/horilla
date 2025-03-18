@@ -808,6 +808,20 @@ def search_resignation_request(request):
 
 
 @login_required
+@hx_request_required
+@check_feature_enabled("resignation_request")
+def resignation_tab(request, pk):
+
+    letters = ResignationLetter.objects.filter(employee_id=pk)
+    employee = Employee.objects.get(id=pk)
+    return render(
+        request,
+        "cbv/resignation/resignation_tab.html",
+        {"letters": letters, "employee": employee},
+    )
+
+
+@login_required
 @check_feature_enabled("resignation_request")
 def delete_resignation_request(request):
     """
@@ -821,7 +835,7 @@ def delete_resignation_request(request):
     ):
         return redirect("/employee/employee-profile/")
     else:
-        return redirect(request_view)
+        return redirect("resignation-request-view")
 
 
 @login_required
@@ -909,7 +923,8 @@ def update_status(request):
                 redirect="#",
                 icon="information",
             )
-    return redirect(request_view)
+    # return redirect(request_view)
+    return redirect(reverse("resignation-request-view"))
 
 
 @login_required

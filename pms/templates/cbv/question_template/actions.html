@@ -1,0 +1,46 @@
+{% load i18n %}
+{% load basefilters %}
+<style>
+    .oh-btn--danger-outline {
+        background-color: hsl(0, 0%, 97.5%) !important;
+    }
+</style>
+{% if perms.pms.change_questiontemplate or perms.pms.delete_questiontemplate or request.user|filtersubordinates %}
+        <div >
+          <div class="oh-btn-group"  onclick="event.stopPropagation()">
+            {% if perms.pms.change_questiontemplate or request.user|filtersubordinates %}
+            <a
+              class="oh-btn oh-btn--light-bkg w-100"
+              data-toggle="oh-modal-toggle"
+              data-target="#genericModal"
+              hx-get="{% url 'question-template-update'  pk=instance.id %}?instance_ids={{instance.ordered_ids}}"
+              title="{% trans 'Update' %}"
+              hx-target="#genericModalBody"
+            >
+              <ion-icon
+                name="create-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="create outline"
+              ></ion-icon
+            ></a>
+            {% endif %}
+             {% if perms.pms.delete_questiontemplate or request.user|filtersubordinates %}
+            <a
+              class="oh-btn oh-btn--danger-outline w-100"
+              title="{% trans 'Delete' %}"
+              hx-confirm="{% trans 'Do you want to delete this question template?' %}"
+              hx-get="{% url 'question-template-delete' template_id=instance.id %}"
+              hx-target="#questionTemplateList"
+            >
+              <ion-icon
+                name="trash-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="trash outline"
+              ></ion-icon>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}

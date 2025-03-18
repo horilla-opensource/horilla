@@ -149,6 +149,7 @@ def manager_can_enter(function, perm):
     do not have permission also checks, has reporting manager.
     """
 
+    @wraps(function)
     def _function(request, *args, **kwargs):
         leave_perm = [
             "leave.view_leaverequest",
@@ -215,6 +216,7 @@ def is_recruitment_manager(function, perm):
 
 
 def login_required(view_func):
+    @wraps(view_func)
     def wrapped_view(request, *args, **kwargs):
         path = request.path
         res = path.split("/", 2)[1].capitalize().replace("-", " ").upper()
@@ -253,6 +255,7 @@ def login_required(view_func):
 
 
 def hx_request_required(view_func):
+    @wraps(view_func)
     def wrapped_view(request, *args, **kwargs):
         key = "HTTP_HX_REQUEST"
         if key not in request.META.keys():

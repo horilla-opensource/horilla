@@ -1,4 +1,7 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %} {% load static %}
+{% include "generic/components.html" %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+
 <div class="oh-inner-sidebar-content">
     {% if perms.base.view_department %}
         <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">

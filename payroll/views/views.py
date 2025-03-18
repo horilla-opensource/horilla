@@ -123,7 +123,7 @@ def contract_update(request, contract_id, **kwargs):
         if contract_form.is_valid():
             contract_form.save()
             messages.success(request, _("Contract updated"))
-            return redirect(contract_view)
+            return redirect(reverse("view-contract"))
     return render(
         request,
         "payroll/common/form.html",
@@ -469,7 +469,7 @@ def update_payslip_status(request, payslip_id):
     if view:
         from .component_views import filter_payslip
 
-        return redirect(filter_payslip)
+        return redirect(reverse("payslip-list"))
     data = payslip.pay_head_data
     data["employee"] = payslip.employee_id
     data["payslip"] = payslip
@@ -664,7 +664,7 @@ def delete_payslip(request, payslip_id):
         messages.error(request, _("Something went wrong"))
     if not Payslip.objects.filter():
         return HttpResponse("<script>window.location.reload()</script>")
-    return redirect(filter_payslip)
+    return redirect(reverse("payslip-list"))
 
 
 @login_required
@@ -1921,8 +1921,10 @@ def delete_auto_payslip(request, auto_id):
 
     """
     try:
+        count = PayslipAutoGenerate.objects.count()
         auto_payslip = PayslipAutoGenerate.objects.get(id=auto_id)
         if not auto_payslip.auto_generate:
+            delete_error = False
             company = (
                 auto_payslip.company_id if auto_payslip.company_id else "All company"
             )
@@ -1931,8 +1933,28 @@ def delete_auto_payslip(request, auto_id):
                 request, _(f"Payslip auto generate for {company} deleted successfully.")
             )
         else:
+            delete_error = True
             messages.info(request, _(f"Active 'Payslip auto generate' cannot delete."))
-        return HttpResponse("<script>window.location.reload();</script>")
     except PayslipAutoGenerate.DoesNotExist:
+        delete_error = True
         messages.error(request, _("Payslip auto generate not found."))
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    if delete_error or count == 1:
+        print("==============================================")
+        return HttpResponse("<script>$('.reload-record').click();</script>")
+    return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
+
+@login_required
+def payroll_tab(request, pk, **kwargs):
+    """
+    method for rendering payroll tab
+    """
+
+    employee = Employee.objects.get(id=pk)
+    return render(
+        request,
+        "tabs/payroll-tab.html",
+        {
+            "employee": employee,
+        },
+    )

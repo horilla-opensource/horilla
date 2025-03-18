@@ -1,4 +1,8 @@
-{% extends 'settings.html' %} {% load i18n %} {% block settings %}{% load static %}
+{% extends 'settings.html' %}
+{% load i18n %}
+{% block settings %}
+{% load static %}
+{% include "generic/components.html" %}
 <div id="ohMessages"></div>
 
 <div class="oh-inner-sidebar-content" id="attendanceValidationConditions">
@@ -14,8 +18,9 @@
             </button>
         {% endif %}
     </div>
-    {% if condition %}
-    <div class="oh-sticky-table">
+</div>
+    {% comment %} {% if condition %} {% endcomment %}
+    {% comment %} <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
             <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
@@ -35,12 +40,26 @@
                         <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                     {% endif %}
                 </div>
-            </div>
-            <div class="oh-sticky-table__tbody">
-                {% if condition != None %}
-                    <div class="oh-sticky-table__tr" draggable="true">
+            </div> {% endcomment %}
+            {% comment %} <div class="oh-sticky-table__tbody"> {% endcomment %}
+            {% comment %} {% if condition != None %} {% endcomment %}
+                <div
+                class="oh-checkpoint-badge mb-2"
+                id="selectedInstances"
+                data-ids="[]"
+                data-clicked=""
+                style="display: none"
+              ></div>
+                <div class="oh-wrapper" hx-get="{% url "break-point-list" %}?{{request.GET.urlencode}}"
+                  hx-trigger="load" id="listContainer">
+                  <div class="animated-background">
+                </div>
+              </div>
+                    {% comment %} <div class="oh-sticky-table__tr" draggable="true">
                         <div class="oh-sticky-table__td">{{ condition.validation_at_work }}</div>
                         <div class="oh-sticky-table__td">{{ condition.minimum_overtime_to_approve }}</div>
+                        <div class="oh-sticky-table__td">{{ condition.overtime_cutoff }}</div> {% endcomment %}
+                        {% comment %} {% if perms.attendance.change_attendancevalidationcondition %}
                         <div class="oh-sticky-table__td">{{ condition.overtime_cutoff }}</div>
                         <div class="oh-sticky-table__td">{{ condition.auto_approve_ot|yesno:"Yes,No" }}</div>
                         {% if perms.attendance.change_attendancevalidationcondition %}
@@ -49,17 +68,18 @@
                                     hx-target="#objectUpdateModalTarget" type="button" class="oh-btn oh-btn--info"
                                     data-toggle="oh-modal-toggle" data-target="#objectUpdateModal">{% trans 'Edit' %}</a>
                             </div>
-                        {% endif %}
-                    </div>
-                {% endif %}
-            </div>
+                        {% endif %} {% endcomment %}
+                    {% comment %} </div> {% endcomment %}
+                {% comment %} {% endif %} {% endcomment %}
+                    {% comment %} </div> {% endcomment %}
+            {% comment %}
         </div>
-    </div>
-    {% else %}
+    </div> {% endcomment %}
+    {% comment %} {% else %}
     <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
         <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);"
             src="{% static 'images/ui/conditions.png' %}" class="" alt="Page not found. 404." />
         <h5 class="oh-404__subtitle">{% trans "There is no attendance conditions at this moment." %}</h5>
-    </div>
-    {% endif %}
+    </div> {% endcomment %}
+    {% comment %} {% endif %} {% endcomment %}
 {% endblock %}

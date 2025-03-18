@@ -33,7 +33,7 @@
                 {% endif %}
                 {% if perms.recruitment.change_surveytemplate %}
                 <li class="oh-dropdown__item">
-                  <a hx-get="{% url 'survey-template-create' %}?title={{grouper.grouper}}" hx-target="#templateModalBody" data-toggle="oh-modal-toggle" data-target="#templateModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                  <a hx-get="{% url 'survey-template-create' %}?title={{grouper.grouper}}" hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
                 </li>
                 {% endif %}
                 {% if perms.recruitment.delete_surveytemplate %}
@@ -65,10 +65,10 @@
               {% for question in grouper.list %}
               <div
                 class="oh-sticky-table__tr oh-multiple-table-sort__movable"
-                data-target="#objectDetailsModal"
+                data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
-                hx-get="{% url 'single-survey-view' question.id %}?instances_ids={{requests_ids}}"
-                hx-target="#objectDetailsModalTarget"
+                hx-get="{% url 'single-survey-view' question.id %}?instance_ids={{requests_ids}}"
+                hx-target="#genericModalBody"
               >
                 <div class="oh-sticky-table__sd">
                   <div class="oh-profile oh-profile--md">
@@ -91,8 +91,8 @@
                         <button
                           hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
                           data-toggle="oh-modal-toggle"
-                          data-target="#updateSurvey"
-                          hx-target="#updateSurveyModalBody"
+                          data-target="#genericModal"
+                          hx-target="#genericModalBody"
                             class="oh-btn oh-btn--light-bkg w-100"
                             title="{% trans 'Edit' %}"
                           >

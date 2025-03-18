@@ -4,7 +4,7 @@
     {{ field }}
   {% endif %}
 {% endfor %}
-<div class="oh-general__tab-target oh-profile-section" id="personal">
+<div class="oh-general__tab-target oh-profile-section" id="{% if id %}{{id}}{% else %}personal{% endif %}">
   <div class="oh-profile-section__card">
     <div class="row">
       <div class="col-12">{{form.non_field_errors}}</div>

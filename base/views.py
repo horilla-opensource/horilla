@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime, timedelta
 from email.mime.image import MIMEImage
 from os import path
-from urllib.parse import parse_qs, unquote, urlencode
+from urllib.parse import parse_qs, unquote, urlencode, urlparse
 
 import pandas as pd
 from dateutil import parser
@@ -22,9 +22,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
+from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMultiAlternatives
 from django.core.management import call_command
+from django.core.validators import validate_ipv46_address
 from django.db.models import ProtectedError, Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -137,6 +139,7 @@ from base.models import (
     JobRole,
     MultipleApprovalCondition,
     MultipleApprovalManagers,
+    PenaltyAccounts,
     RotatingShift,
     RotatingWorkType,
     RotatingWorkTypeAssign,
@@ -1189,6 +1192,7 @@ def object_delete(request, obj_id, **kwargs):
     redirect_path = kwargs.get("redirect_path")
     delete_error = False
     try:
+        count = model.objects.count()
         instance = model.objects.get(id=obj_id)
         instance.delete()
         messages.success(
@@ -1218,18 +1222,16 @@ def object_delete(request, obj_id, **kwargs):
             return redirect(redirect_path)
         else:
             return HttpResponse("<script>window.location.reload()</script>")
-
     if redirect_path:
         previous_data = request.GET.urlencode()
         redirect_path = redirect_path + "?" + previous_data
         return redirect(redirect_path)
     elif kwargs.get("HttpResponse"):
-        if delete_error:
-            return_part = "<script>window.location.reload()</script>"
-        elif kwargs.get("HttpResponse") is True:
-            return_part = ""
-        else:
-            return_part = kwargs.get("HttpResponse")
+        return_part = (
+            "<script>$('.reload-record').click();</script>"
+            if delete_error or count == 1
+            else kwargs.get("HttpResponse")
+        )
         return HttpResponse(f"{return_part}")
     else:
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -1294,7 +1296,6 @@ def object_duplicate(request, obj_id, **kwargs):
 
 @login_required
 @hx_request_required
-@duplicate_permission()
 def add_remove_dynamic_fields(request, **kwargs):
     """
     Handles the dynamic addition and removal of form fields in a Django form.
@@ -1325,6 +1326,7 @@ def add_remove_dynamic_fields(request, **kwargs):
         field_name_pre = kwargs["field_name_pre"]
         field_type = kwargs.get("field_type")
         hx_target = request.META.get("HTTP_HX_TARGET")
+
         if hx_target:
             field_counts = int(hx_target.split("_")[-1]) + 1
             next_hx_target = f"{hx_target.rsplit('_', 1)[0]}_{field_counts}"
@@ -1346,7 +1348,7 @@ def add_remove_dynamic_fields(request, **kwargs):
                     queryset=model.objects.all(),
                     widget=forms.Select(
                         attrs={
-                            "class": "oh-select oh-select-2 mb-3",
+                            "class": "oh-select oh-select-2 mb-3 w-100",
                             "name": field_name,
                             "id": f"id_{field_name}",
                         }
@@ -1354,12 +1356,14 @@ def add_remove_dynamic_fields(request, **kwargs):
                     required=False,
                     empty_label=empty_label,
                 )
+
             context = {
                 "field_counts": field_counts,
                 "field_html": form[field_name].as_widget(),
                 "current_hx_target": hx_target,
                 "next_hx_target": next_hx_target,
             }
+
             field_html = render_to_string(template, context)
             return HttpResponse(field_html)
     return HttpResponse()
@@ -1465,7 +1469,6 @@ def mail_server_test_email(request):
                     msg.attach(msg_img)
 
                 msg.send()
-
             except Exception as e:
                 messages.error(request, " ".join([_("Something went wrong :"), str(e)]))
                 return HttpResponse("<script>window.location.reload()</script>")
@@ -2275,6 +2278,9 @@ def rotating_work_type_assign_redirect(request, obj_id=None, employee_id=None):
     request_copy.pop("instances_ids", None)
     previous_data = request_copy.urlencode()
     hx_target = request.META.get("HTTP_HX_TARGET", None)
+    hx_current_url = request.META.get("HTTP_HX_CURRENT_URL", None)
+    parsed_url = urlparse(hx_current_url)
+    hx_current_path = parsed_url.path.lstrip("/")
     if hx_target and hx_target == "view-container":
         return redirect(f"/rotating-work-type-assign-view?{previous_data}")
     elif hx_target and hx_target == "objectDetailsModalTarget":
@@ -2291,6 +2297,33 @@ def rotating_work_type_assign_redirect(request, obj_id=None, employee_id=None):
         return redirect(url + params)
     elif hx_target and hx_target == "shift_target" and employee_id:
         return redirect(f"/employee/shift-tab/{employee_id}")
+
+    elif hx_target and hx_target == "genericModalBody":
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if obj_id in instances_list:
+            instances_list.remove(obj_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), obj_id
+        )
+
+        return redirect(
+            f"/work-rotating-detail-view/{next_instance}/?{previous_data}&instances_ids={instances_list}&deleted=True"
+        )
+
+    elif hx_target and hx_target == "rotating-work-container":
+        if hx_current_path == "employee/rotating-work-type-assign/":
+            rwork_type_requests = RotatingWorkTypeAssign.objects.all()
+            previous_data = request.GET.urlencode()
+            if rwork_type_requests.exists():
+                return redirect(f"/rotating-list-view?is_active=True&{previous_data}")
+            else:
+                return HttpResponse("<script>window.location.reload()</script>")
+        else:
+            return redirect(
+                f"/employee-rotating-work-tab-list/{employee_id}?deleted=True"
+            )
+
     elif hx_target:
         return HttpResponse("<script>window.location.reload()</script>")
     else:
@@ -2331,9 +2364,13 @@ def rotating_work_type_assign_bulk_archive(request):
     """
     This method is used to archive/un-archive bulk rotating work type assigns.
     """
-    ids = json.loads(request.POST["ids"])
-    is_active = request.POST.get("is_active") != "false"
-    message = _("un-archived") if is_active else _("archived")
+    ids = request.POST["ids"]
+    ids = json.loads(ids)
+    is_active = True
+    message = _("un-archived")
+    if request.GET.get("is_active") == "False":
+        is_active = False
+        message = _("archived")
     count = 0
 
     for id in ids:
@@ -2361,6 +2398,8 @@ def rotating_work_type_assign_bulk_archive(request):
                 count=count, message=message
             ),
         )
+
+        return JsonResponse({"message": "Success"})
 
     return rotating_work_type_assign_redirect(request)
 
@@ -3134,11 +3173,32 @@ def rotating_shift_assign_redirect(request, obj_id, employee_id):
         previous_instance, next_instance = closest_numbers(
             json.loads(instances_ids), obj_id
         )
-        url = f"/rshit-individual-view/{next_instance}/"
-        params = f"?{previous_data}&instances_ids={instances_list}"
-        return redirect(url + params)
+        return redirect(
+            f"/rshit-individual-view/{next_instance}/?{previous_data}\
+            &instances_ids={instances_list}"
+        )
+    elif hx_target and hx_target == "genericModalBody":
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if obj_id in instances_list:
+            instances_list.remove(obj_id)
+        previous_instance, next_instance = closest_numbers(
+            json.loads(instances_ids), obj_id
+        )
+        return redirect(
+            f"/rotating-shift-individual-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&detail=true"
+        )
     elif hx_target and hx_target == "shift_target" and employee_id:
         return redirect(f"/employee/shift-tab/{employee_id}")
+    elif hx_target and hx_target == "rotating-shift-container":
+        path = request.META.get("HTTP_HX_CURRENT_URL", None)
+        parsed_url = urlparse(path)
+        parsed_path = parsed_url.path.lstrip("/")
+        if parsed_path == "employee/rotating-shift-assign/":
+            return redirect(f"/rotating-shift-request-list/?is_active=true")
+        return redirect(
+            f"/rotating-shift-individual-tab-view/{employee_id}?deleted=true"
+        )
     elif hx_target:
         return HttpResponse("<script>window.location.reload()</script>")
     else:
@@ -3283,16 +3343,17 @@ def get_models_in_app(app_name):
 
 @login_required
 @manager_can_enter("auth.view_permission")
-def employee_permission_assign(request):
+def employee_permission_assign(request, pk=None):
     """
     This method is used to assign permissions to employee user
     """
 
     context = {}
     template = "base/auth/permission.html"
-    if request.GET.get("profile_tab"):
+    # if request.GET.get("profile_tab"):
+    if pk:
         template = "tabs/group_permissions.html"
-        employees = Employee.objects.filter(id=request.GET["employee_id"]).distinct()
+        employees = Employee.objects.filter(id=pk).distinct()
         emoloyee = employees.first()
         context["employee"] = emoloyee
     else:
@@ -3905,6 +3966,7 @@ def work_type_request_delete(request, obj_id):
         id : work type request instance id
 
     """
+
     try:
         work_type_request = WorkTypeRequest.objects.get(id=obj_id)
         employee = work_type_request.employee_id
@@ -3926,8 +3988,12 @@ def work_type_request_delete(request, obj_id):
         messages.error(request, _("Work type request not found."))
     except ProtectedError:
         messages.error(request, _("You cannot delete this work type request."))
+
     hx_target = request.META.get("HTTP_HX_TARGET", None)
-    if hx_target and hx_target == "objectDetailsModalTarget":
+    hx_current_url = request.META.get("HTTP_HX_CURRENT_URL", None)
+    parsed_url = urlparse(hx_current_url)
+    hx_current_path = parsed_url.path.lstrip("/")
+    if hx_target and hx_target == "genericModalBody":
         instances_ids = request.GET.get("instances_ids")
         instances_list = json.loads(instances_ids)
         if obj_id in instances_list:
@@ -3935,19 +4001,32 @@ def work_type_request_delete(request, obj_id):
         previous_instance, next_instance = closest_numbers(
             json.loads(instances_ids), obj_id
         )
-        return redirect(
-            f"/work-type-request-single-view/{next_instance}/?instances_ids={instances_list}"
-        )
-    elif hx_target and hx_target == "view-container":
         previous_data = request.GET.urlencode()
-        work_type_requests = WorkTypeRequest.objects.all()
-        if work_type_requests.exists():
-            return redirect(f"/work-type-request-search?{previous_data}")
+        return redirect(
+            f"/work-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
+        )
+    # elif hx_target and hx_target == "listContainer":
+    #     previous_data = request.GET.urlencode()
+    #     work_type_requests = WorkTypeRequest.objects.all()
+    #     if work_type_requests.exists():
+    #         return redirect(f"/work-list-view?{previous_data}")
+    #     else:
+    #         return HttpResponse("<script>window.location.reload()</script>")
+
+    elif hx_target and hx_target == "work-shift":
+        if hx_current_path == "employee/work-type-request-view/":
+            work_type_requests = WorkTypeRequest.objects.all()
+            previous_data = request.GET.urlencode()
+            if work_type_requests.exists():
+                return redirect(f"/work-list-view?{previous_data}")
+            else:
+                return HttpResponse("<script>window.location.reload()</script>")
         else:
-            return HttpResponse("<script>window.location.reload()</script>")
+            return redirect(f"/employeeprofileview-Work Type & Shift/{employee.id}")
 
     elif hx_target and hx_target == "shift_target" and employee:
         return redirect(f"/employee/shift-tab/{employee.id}")
+
     else:
         return HttpResponse("<script>window.location.reload()</script>")
 
@@ -3991,12 +4070,13 @@ def work_type_request_bulk_delete(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    del_ids = []
     for id in ids:
         try:
             work_type_request = WorkTypeRequest.objects.get(id=id)
             user = work_type_request.employee_id.employee_user_id
             work_type_request.delete()
-            messages.success(request, _("Work type request deleted."))
+            del_ids.append(work_type_request)
             notify.send(
                 request.user.employee_get,
                 recipient=user,
@@ -4021,6 +4101,7 @@ def work_type_request_bulk_delete(request):
                 ),
             )
         result = True
+    messages.success(request, _("{} work type requests deleted.".format(len(del_ids))))
     return JsonResponse({"result": result})
 
 
@@ -4874,6 +4955,7 @@ def shift_request_delete(request, id):
         id : shift request instance id
 
     """
+
     try:
         shift_request = ShiftRequest.find(id)
         user = shift_request.employee_id.employee_user_id
@@ -4897,8 +4979,29 @@ def shift_request_delete(request, id):
         messages.error(request, _("You cannot delete this shift request."))
 
     hx_target = request.META.get("HTTP_HX_TARGET", None)
-    if hx_target and hx_target == "shift_target" and shift_request.employee_id:
-        return redirect(f"/employee/shift-tab/{shift_request.employee_id.id}")
+    path = request.META.get("HTTP_HX_CURRENT_URL", None)
+    parsed_url = urlparse(path)
+    parsed_path = parsed_url.path.lstrip("/")
+    if hx_target and hx_target == "shift-container":
+        previous_data = request.GET.urlencode()
+        if parsed_path == "employee/shift-request-view/":
+            return redirect(f"/list-shift-request/?deleted=true")
+        else:
+            return redirect(
+                f"/shift-request-individual-tab-view/{shift_request.employee_id.id}?deleted=true"
+            )
+    if hx_target and hx_target == "genericModalBody":
+        previous_data = request.GET.urlencode()
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if id in instances_list:
+            instances_list.remove(id)
+            previous_instance, next_instance = closest_numbers(
+                json.loads(instances_ids), id
+            )
+        return redirect(
+            f"/shift-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
+        )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -4914,13 +5017,14 @@ def shift_request_bulk_delete(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    del_ids = []
     result = False
     for id in ids:
         try:
             shift_request = ShiftRequest.objects.get(id=id)
             user = shift_request.employee_id.employee_user_id
             shift_request.delete()
-            messages.success(request, _("Shift request deleted."))
+            del_ids.append(shift_request)
             notify.send(
                 request.user.employee_get,
                 recipient=user,
@@ -4945,6 +5049,8 @@ def shift_request_bulk_delete(request):
                 ),
             )
         result = True
+
+    messages.success(request, _("{} shift requests deleted.".format(len(del_ids))))
     return JsonResponse({"result": result})
 
 
@@ -5819,7 +5925,6 @@ def add_more_approval_managers(request):
     field_html = render_to_string(
         "multi_approval_condition/add_more_approval_manager.html", context
     )
-
     return HttpResponse(field_html)
 
 
@@ -5902,6 +6007,23 @@ def edit_approval_managers(form, managers):
                 widget=forms.Select(attrs={"class": "oh-select oh-select-2 mb-3"}),
                 required=False,
             )
+
+            form.initial[field_name] = manager.employee_id
+    return form
+
+
+def approval_managers_edit(form, managers):
+    for i, manager in enumerate(managers):
+        if i == 0:
+            form.initial["multi_approval_manager"] = manager.employee_id
+        else:
+            field_name = f"multi_approval_manager_{i}"
+            form.fields[field_name] = forms.ModelChoiceField(
+                queryset=Employee.objects.all(),
+                label=_("Approval Manager {}").format(i),
+                widget=forms.Select(attrs={"class": "oh-select oh-select-2 mb-3"}),
+                required=False,
+            )
             form.initial[field_name] = manager.employee_id
     return form
 
@@ -5967,10 +6089,28 @@ def multiple_level_approval_edit(request, condition_id):
 @login_required
 @permission_required("base.delete_multipleapprovalcondition")
 def multiple_level_approval_delete(request, condition_id):
+
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
+
     condition = MultipleApprovalCondition.objects.get(id=condition_id)
     condition.delete()
     messages.success(request, _("Multiple approval condition deleted successfully"))
-    return redirect(hx_multiple_approval_condition)
+    hx_target = request.META.get("HTTP_HX_TARGET")
+    if hx_target and hx_target == "genericModalBody":
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if condition_id in instances_list:
+            instances_list.remove(condition_id)
+            previous_instance, next_instance = closest_numbers(
+                json.loads(instances_ids), condition_id
+            )
+        return redirect(
+            f"/detail-view-multiple-approval-condition/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
+        )
+
+    return redirect(reverse("hx-multiple-approval-condition"))
 
 
 @login_required
@@ -6985,6 +7125,8 @@ def holidays_info_import(request):
         "Other Errors": [],
     }
 
+    # is_hx_request = request.headers.get('HX-Request') == 'true'
+
     if request.method == "POST":
         file = request.FILES.get("holidays_import")
         if file:
@@ -7359,3 +7501,12 @@ def view_penalties(request):
     """
     records = PenaltyFilter(request.GET).qs
     return render(request, "penalty/penalty_view.html", {"records": records})
+
+
+def delete_penalities(request, penalty_id):
+    penalty = PenaltyAccounts.objects.get(id=penalty_id)
+    penalty.delete()
+    messages.success(request, _("Penalty deleted suucessfully"))
+    return HttpResponse(
+        "<script>$('.reload-record').click();$('#reloadMessagesButton').click();</script>"
+    )

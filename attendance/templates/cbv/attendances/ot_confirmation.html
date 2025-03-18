@@ -1,0 +1,49 @@
+{% load i18n %}
+<div class="" onclick="event.stopPropagation()">
+    {% if instance.attendance_overtime_approve %}
+        <a type="submit" href="#" title="{% trans 'Approved' %}"
+            class="oh-btn oh-btn--success oh-btn--disabled w-100"
+            onclick="event.stopPropagation()"
+          >
+            <ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
+        </a>
+    {% elif minot <= instance.overtime_second %}
+        <a type="submit" href="{% url 'approve-overtime' instance.id %}" title="{% trans 'Approve Overtime' %}"
+            class="oh-btn oh-btn--success w-100" onclick="event.stopPropagation()">
+            <ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
+        </a>
+        {% elif instance.overtime_second >= 60 %}
+        <a type="submit" href="#" title="{% trans 'Approve Overtime (OT < min.OT)' %}"
+            class="oh-btn oh-btn--warning w-100" onclick="event.stopPropagation();
+            Swal.fire({
+                  title: '{% trans 'Are you sure?' %}',
+                  text: '{% trans 'This does not satisfy the minimum OT requirement!' %}',
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#3085d6',
+                  cancelButtonColor: '#d33',
+                  confirmButtonText: 'Approve',
+                  cancelButtonText: 'Cancel'
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    // Your approve action logic here
+                    Swal.fire(
+                      '{% trans 'Approved!' %}',
+                      '{% trans 'Your action has been approved.' %}',
+                      'success'
+                    );
+                    $('[data-ot-approve-id={{instance.id}}]').click();
+                  }
+                });                                        "
+          >
+            <ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
+        </a>
+        <button type="submit" data-ot-approve-id={{instance.id}} hidden href=""
+            onclick="window.location.href='{% url 'approve-overtime' instance.id %}'"
+            title="{% trans 'Approve Overtime' %}"
+            class="oh-btn oh-btn--success w-100"
+            >
+            <ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
+        </button>
+    {% endif %}
+</div>

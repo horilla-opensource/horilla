@@ -25,15 +25,16 @@
                                 {% endif %}
                                 {% if perms.helpdesk.delete_faqcategory %}
                                     <li class="oh-dropdown__item">
-                                        <form hx-confirm="{% trans 'Are you sure you want to delete this FAQ Category?' %}"
-                                            hx-post="{% url 'faq-category-delete' category.id %}" hx-swap="outerHTML"
-                                            hx-on-htmx-after-request="setTimeout(() => {reloadMessage(this);},100);"
-                                            hx-target="#faqCategoryItem{{category.id}}">
+                                        <a
+                                            hx-get="{% url 'generic-delete' %}?model=helpdesk.FAQCategory&pk={{category.id}}"
+                                            hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+                                            data-target="#deleteConfirmation"
+                                            >
                                             {% csrf_token %}
                                             <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
                                                 {% trans "Delete" %}
                                             </button>
-                                        </form>
+                                        </a>
                                     </li>
                                 {% endif %}
                             </ul>

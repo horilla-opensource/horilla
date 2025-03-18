@@ -10,10 +10,12 @@ import datetime as dt
 import json
 from datetime import date, datetime, timedelta
 
+import pandas as pd
 from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -31,9 +33,12 @@ from base.horilla_company_manager import HorillaCompanyManager
 from base.methods import is_company_leave, is_holiday
 from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from employee.models import Employee
+
+# Create your models here.
 from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_views.cbv_methods import render_template
 
 # to skip the migration issue with the old migrations
 _validate_time_in_minutes = validate_time_in_minutes
@@ -81,6 +86,70 @@ class AttendanceActivity(HorillaModel):
 
         ordering = ["-attendance_date", "employee_id__employee_first_name", "clock_in"]
 
+    def get_status(self):
+        """
+        Display status
+        """
+
+        DAY = [
+            ("monday", _("Monday")),
+            ("tuesday", _("Tuesday")),
+            ("wednesday", _("Wednesday")),
+            ("thursday", _("Thursday")),
+            ("friday", _("Friday")),
+            ("saturday", _("Saturday")),
+            ("sunday", _("Sunday")),
+        ]
+        return dict(DAY).get(self.shift_day.day)
+
+    def get_delete_attendance(self):
+        """
+        for delete button
+        """
+
+        return render_template(
+            path="cbv/attendance_activity/delete_action.html",
+            context={"instance": self},
+        )
+
+    def attendance_detail_subtitle(self):
+        """
+        Return subtitle containing both department and job position information.
+        """
+        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+
+    def attendance_detail_view(self):
+        """
+        for detail view of page
+        """
+        url = reverse("attendance-activity-single-view", kwargs={"pk": self.pk})
+        return url
+
+    def diff_cell(self):
+        if self.clock_out == None:
+            return 'style="background-color: #FFE4B3"'
+
+    def detail_view_delete_attendance(self):
+        """
+        for delete button
+        """
+
+        return render_template(
+            path="cbv/attendance_activity/detail_delete_action.html",
+            context={"instance": self},
+        )
+
+    def duration_format_time(self, seconds):
+        """
+        This method is used to format seconds to H:M:S and return it
+        args:
+            seconds : seconds
+        """
+        hour = int(seconds // 3600)
+        minutes = int((seconds % 3600) // 60)
+        seconds = int((seconds % 3600) % 60)
+        return f"{hour:02d}:{minutes:02d}:{seconds:02d}"
+
     def duration(self):
         """
         Duration calc b/w in-out method
@@ -96,6 +165,15 @@ class AttendanceActivity(HorillaModel):
         time_difference = clock_out_datetime - clock_in_datetime
 
         return time_difference.total_seconds()
+
+    def duration_format(self):
+        """
+        Function to return the duration time in hh:mm:ss
+        """
+        total_seconds = self.duration()
+        formatted_duration = self.duration_format_time(total_seconds)
+
+        return formatted_duration
 
 
 class BatchAttendance(HorillaModel):
@@ -120,7 +198,7 @@ class Attendance(HorillaModel):
     status = [
         ("create_request", _("Create Request")),
         ("update_request", _("Update Request")),
-        ("revalidate_request", _("Re-validate Request")),
+        ("created_request", _("Created Request")),
     ]
 
     employee_id = models.ForeignKey(
@@ -223,6 +301,49 @@ class Attendance(HorillaModel):
         ],
     )
 
+    def get_instance_id(self):
+        return self.id
+
+    def diff_cell(self):
+        if self.request_type == "created_request":
+            return 'style="background-color: #FFE4B3"'
+
+    def status_col(self):
+        """
+        This method for get custome coloumn for rating.
+        """
+
+        return render_template(
+            path="cbv/attendance_request/status.html",
+            context={"instance": self},
+        )
+
+    def my_attendance_subtitle(self):
+        """
+        Detail view subtitle
+        """
+
+        return f"""{self.employee_id.employee_work_info.department_id } /
+          { self.employee_id.employee_work_info.job_position_id}"""
+
+    def my_attendance_detail(self):
+        """
+        detail view
+        """
+
+        url = reverse("my-attendance-detail", kwargs={"pk": self.pk})
+
+        return url
+
+    def attendance_detail_view(self):
+        """
+        detail view
+        """
+
+        url = reverse("attendances-tab-detail-view", kwargs={"pk": self.pk})
+
+        return url
+
     class Meta:
         """
         Meta class to add some additional options
@@ -259,6 +380,162 @@ class Attendance(HorillaModel):
     def __str__(self) -> str:
         return f"{self.employee_id.employee_first_name} \
             {self.employee_id.employee_last_name} - {self.attendance_date}"
+
+    def activities(self):
+        """
+        This method is used to return the activites and count of activites comes for an attendance
+        """
+        activities = AttendanceActivity.objects.filter(
+            attendance_date=self.attendance_date, employee_id=self.employee_id
+        )
+        return {"query": activities, "count": activities.count()}
+
+    def attendance_actions(self):
+        """
+        method for rendering actions(edit,delete)
+        """
+
+        return render_template(
+            path="cbv/attendances/attendance_actions.html",
+            context={"instance": self},
+        )
+
+    def comment_col(self):
+        """
+        This method for get custom coloumn for comment.
+        """
+
+        return render_template(
+            path="cbv/attendance_request/comment.html",
+            context={"instance": self},
+        )
+
+    def attendance_detail_activity_col(self):
+        """
+        this method is used to return attendance detail view activity custom col
+        """
+
+        return render_template(
+            path="cbv/attendances/detail_view_activity_col.html",
+            context={"instance": self},
+        )
+
+    def request_actions(self):
+        """
+        This method for get custom coloumn for comment.
+        """
+
+        return render_template(
+            path="cbv/attendance_request/request_actions.html",
+            context={"instance": self},
+        )
+
+    def validate_detail_view(self):
+        """
+        detail view of validate tab
+        """
+        url = reverse("validate-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def individual_validate_detail_view(self):
+        """
+        detail view of validate tab
+        """
+        url = reverse("individual-validate-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def ot_detail_view(self):
+        """
+        detail view of OT tab
+        """
+        url = reverse("ot-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def validated_detail_view(self):
+        """
+        detail view of validated tab
+        """
+        url = reverse("validated-detail-view", kwargs={"pk": self.pk})
+        return url
+
+    def detail_view(self):
+        """
+        deteil view of requested attendances
+        """
+        url = reverse("validate-attendance-request", kwargs={"attendance_id": self.pk})
+        return url
+
+    def change_attendance(self):
+        """
+        Edit url
+        """
+        url = reverse("update-attendance-request", kwargs={"pk": self.pk})
+        return url
+
+    def ot_approve(self):
+        """
+        method for rendering approve OT
+        """
+        minot = strtime_seconds("00:30")
+        condition = AttendanceValidationCondition.objects.first()
+        if condition is not None:
+            minot = strtime_seconds(condition.minimum_overtime_to_approve)
+
+        return render_template(
+            path="cbv/attendances/ot_confirmation.html",
+            context={"instance": self, "minot": minot},
+        )
+
+    def validate_detail_actions(self):
+        """
+        detail view actions of validate tab
+        """
+
+        return render_template(
+            path="cbv/attendances/validate_tab_action.html",
+            context={"instance": self},
+        )
+
+    def ot_detail_actions(self):
+        """
+        detail view actions of OT tab
+        """
+
+        minot = strtime_seconds("00:30")
+        condition = AttendanceValidationCondition.objects.first()
+        if condition is not None:
+            minot = strtime_seconds(condition.minimum_overtime_to_approve)
+
+        return render_template(
+            path="cbv/attendances/ot_tab_action.html",
+            context={"instance": self, "minot": minot},
+        )
+
+    def validated_detail_actions(self):
+        """
+        detail view actions of validated tab
+        """
+
+        return render_template(
+            path="cbv/attendances/validated_tab_action.html",
+            context={"instance": self},
+        )
+
+    def validate_button(self):
+        """
+        detail view actions of validated tab
+        """
+
+        return render_template(
+            path="cbv/attendances/validate_button.html",
+            context={"instance": self},
+        )
+
+    def attendances_detail_subtitle(self):
+        """
+        Return subtitle containing both department and job position information.
+        """
+        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
 
     def activities(self):
         """
@@ -412,6 +689,7 @@ class Attendance(HorillaModel):
         attendance_account.overtime = format_time(total_ot_seconds)
         attendance_account.save()
         super().save(*args, **kwargs)
+        self.first_save = False
 
     def serialize(self):
         """
@@ -646,6 +924,69 @@ class AttendanceOverTime(HorillaModel):
         unique_together = [("employee_id"), ("month"), ("year")]
         ordering = ["-year", "-month_sequence"]
 
+    def get_month_capitalized(self):
+        """
+        capitalize month
+        """
+        return self.month.capitalize()
+
+    def edit_url_overtime(self):
+        """
+        Edit url
+        """
+
+        url = reverse("attendance-overtime-update", kwargs={"obj_id": self.pk})
+
+        return url
+
+    def delete_url_overtime(self):
+        """
+        delete url
+        """
+
+        url = reverse("attendance-overtime-delete", kwargs={"obj_id": self.pk})
+
+        return url
+
+    def hour_actions(self):
+        """
+        actions in hour account
+
+        """
+
+        return render_template(
+            path="cbv/hour_account/hour_actions.html",
+            context={"instance": self},
+        )
+
+    def hour_account_subtitle(self):
+        """
+        Detail view subtitle
+        """
+
+        return f"""{self.employee_id.employee_work_info.department_id } /
+          { self.employee_id.employee_work_info.job_position_id}"""
+
+    def hour_account_detail(self):
+        """
+        detail view
+        """
+
+        url = reverse("hour-account-detail-view", kwargs={"pk": self.pk})
+
+        return url
+
+    def hour_detail_actions(self):
+        """
+        actions in hour account detail view
+
+        """
+
+        return render_template(
+            path="cbv/hour_account/hour_detail_action.html",
+            context={"instance": self},
+        )
+
     def clean(self):
         try:
             year = int(self.year)
@@ -783,6 +1124,72 @@ class AttendanceLateComeEarlyOut(HorillaModel):
         unique_together = [("attendance_id"), ("type")]
         ordering = ["-attendance_id__attendance_date"]
 
+    def get_type(self):
+        """
+        Display work type
+        """
+        choices = [
+            ("late_come", _("Late Come")),
+            ("early_out", _("Early Out")),
+        ]
+        return dict(choices).get(self.type)
+
+    def penalities_column(self):
+        """
+        To get penalities
+
+        """
+
+        return render_template(
+            path="cbv/late_come_and_early_out/penality.html",
+            context={"instance": self},
+        )
+
+    def actions_column(self):
+        """
+        actions in hour account
+
+        """
+
+        return render_template(
+            path="cbv/late_come_and_early_out/actions_column.html",
+            context={"instance": self},
+        )
+
+    def detail_actions(self):
+        """
+        actions in hour account
+
+        """
+
+        return render_template(
+            path="cbv/late_come_and_early_out/detail_action.html",
+            context={"instance": self},
+        )
+
+    def late_come_subtitle(self):
+        """
+        Detail view subtitle
+        """
+
+        return f"""{self.employee_id.employee_work_info.department_id } /
+          { self.employee_id.employee_work_info.job_position_id}"""
+
+    def attendance_validated_check(self):
+        if self.attendance_id.attendance_validated == True:
+            return "Yes"
+        else:
+            return "No"
+
+    def late_come_detail(self):
+        """
+        detail view
+        """
+
+        url = reverse("late-in-early-out-single-view", kwargs={"pk": self.pk})
+
+        return url
+
     def __str__(self) -> str:
         return f"{self.attendance_id.employee_id.employee_first_name} \
             {self.attendance_id.employee_id.employee_last_name} - {self.type}"
@@ -818,6 +1225,17 @@ class AttendanceValidationCondition(HorillaModel):
         if not self.id and AttendanceValidationCondition.objects.exists():
             raise ValidationError(_("You cannot add more conditions."))
 
+    def break_point_actions(self):
+        """
+        actions in hour account
+
+        """
+
+        return render_template(
+            path="cbv/settings/break_point_action.html",
+            context={"instance": self},
+        )
+
 
 class GraceTime(HorillaModel):
     """
@@ -844,6 +1262,65 @@ class GraceTime(HorillaModel):
 
     def __str__(self) -> str:
         return str(f"{self.allowed_time} - Hours")
+
+    def get_instance_id(self):
+        return self.id
+
+    def is_active_col(self):
+        """
+        This method for get custome coloumn .
+        """
+
+        return render_template(
+            path="cbv/settings/is_active_col_grace_time.html",
+            context={"instance": self},
+        )
+
+    def allowed_time_col(self):
+        """
+        Allowed time col
+        """
+        return f"{self.allowed_time} Hours"
+
+    def action_col(self):
+        """
+        This method for get custome coloumn .
+        """
+
+        return render_template(
+            path="cbv/settings/grace_time_default_action.html",
+            context={"instance": self},
+        )
+
+    def applicable_on_clock_in_col(self):
+        """
+        This method for get custom column .
+        """
+
+        return render_template(
+            path="cbv/settings/applicable_on_clock_in_col.html",
+            context={"instance": self},
+        )
+
+    def applicable_on_clock_out_col(self):
+        """
+        This method for get custom column .
+        """
+
+        return render_template(
+            path="cbv/settings/applicable_on_clock_out_col.html",
+            context={"instance": self},
+        )
+
+    def get_shifts_display(self):
+        """
+        This method for get custom column .
+        """
+
+        return render_template(
+            path="cbv/settings/grace_time_shift.html",
+            context={"instance": self},
+        )
 
     def clean(self):
         """
@@ -906,6 +1383,22 @@ class AttendanceGeneralSetting(HorillaModel):
     )
     company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
     objects = HorillaCompanyManager()
+
+    def company_col(self):
+        if self.company_id:
+            return self.company_id.company
+        else:
+            return "All Company"
+
+    def check_in_check_out_col(self):
+        """
+        This method for get custom coloumn .
+        """
+
+        return render_template(
+            path="cbv/settings/check_in_check_out_col.html",
+            context={"instance": self},
+        )
 
 
 class WorkRecords(models.Model):

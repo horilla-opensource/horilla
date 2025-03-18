@@ -43,8 +43,9 @@
     </div>
 {% endif %}
 <!-- end of messages -->
-
-
+{% include "generic/components.html" %}
+{% comment %} <div hx-get="{% url "asset-category-nav" %}" hx-trigger="load">
+</div>  {% endcomment %}
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
     <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
@@ -101,10 +102,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="oh-dropdown__filter-footer">
-                                            <button class="oh-btn oh-btn--secondary oh-btn--small  w-100 filterButton">{% trans "Filter" %}</button>
-                                        </div>
-                                    </form>
+                                    </div>
+                                    <div class="oh-dropdown__filter-footer">
+                                        <button id="filterButton" class="oh-btn oh-btn--secondary oh-btn--small  w-100 filterButton">{% trans "Filter" %}</button>
+                                    </div>
+                                </form>
                                 </div>
                             </div> -->
                             <div class="oh-accordion">
@@ -191,11 +193,13 @@
                 <div class="oh-btn-group ml-2">
                     {% if perms.asset.add_assetcategory %}
                         <div>
-                            <a href="#" class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
-                                data-target="#objectCreateModal" hx-get="{%url 'asset-category-creation' %}"
-                                hx-target="#objectCreateModalTarget">
-                                <ion-icon name="add-outline"></ion-icon>
-                                {% trans "Create" %}
+                            <a  href="#" class="oh-btn oh-btn--secondary oh-btn--shadow"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{%url 'asset-category-creation' %}"
+                            hx-target="#genericModalBody">
+                            <ion-icon name="add-outline"></ion-icon>
+                            {% trans "Create" %}
                             </a>
                         </div>
                     {% endif %}

@@ -35,6 +35,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.forms import Form
 from base.methods import reload_queryset
+from base.widgets import CustomTextInputWidget
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla import horilla_middlewares
@@ -261,7 +262,6 @@ class RecruitmentCreationForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         reload_queryset(self.fields)
         if not self.instance.pk:
             self.fields["recruitment_managers"] = HorillaMultiSelectField(
@@ -334,7 +334,7 @@ class StageCreationForm(ModelForm):
                     filter_template_path="employee_filters.html",
                     required=True,
                 ),
-                label="Employee",
+                label="Stage Managers",
             )
 
     def clean(self):
@@ -734,6 +734,8 @@ class QuestionForm(ModelForm):
     QuestionForm
     """
 
+    cols = {"options": 12, "template_id": 12, "question": 12}
+
     verbose_name = "Survey Questions"
 
     recruitment = forms.ModelMultipleChoiceField(
@@ -822,6 +824,20 @@ class QuestionForm(ModelForm):
                 initial=initial,
             )
 
+        def create_options_field_more(option_key, initial=None):
+            self.fields[option_key] = forms.CharField(
+                widget=CustomTextInputWidget(
+                    delete_url="add-remove-options-field",
+                    attrs={
+                        "name": option_key,
+                        "id": f"{option_key}",
+                        "class": "oh-input w-100",
+                    },
+                ),
+                required=False,
+                initial=initial,
+            )
+
         if instance:
             split_options = instance.options.split(",")
             for i, option in enumerate(split_options):
@@ -829,7 +845,7 @@ class QuestionForm(ModelForm):
                     create_options_field("options", option)
                 else:
                     self.option_count += 1
-                    create_options_field(f"options{i}", option)
+                    create_options_field_more(f"options{i}", option)
 
         if instance:
             self.fields["recruitment"].initial = instance.recruitment_ids.all()
@@ -886,6 +902,8 @@ class TemplateForm(ModelForm):
     """
     TemplateForm
     """
+
+    cols = {"title": 12, "description": 12, "company_id": 12}
 
     verbose_name = "Template"
 
@@ -977,6 +995,8 @@ class CandidateExportForm(forms.Form):
 class SkillZoneCreateForm(ModelForm):
     verbose_name = "Skill Zone"
 
+    cols = {"title": 12, "description": 12, "company_id": 12}
+
     class Meta:
         """
         Class Meta for additional options
@@ -996,6 +1016,8 @@ class SkillZoneCreateForm(ModelForm):
 
 
 class SkillZoneCandidateForm(ModelForm):
+
+    cols = {"skill_zone_id": 12, "candidate_id": 12, "reason": 12}
     verbose_name = "Skill Zone Candidate"
     candidate_id = forms.ModelMultipleChoiceField(
         queryset=Candidate.objects.all(),
@@ -1043,20 +1065,19 @@ class SkillZoneCandidateForm(ModelForm):
                 + self.instance.skill_zone_id.title
             )
 
-    def save(self, commit: bool = ...) -> Any:
-        super().save(commit)
+    def save(self, commit: bool = True) -> SkillZoneCandidate:
+        instance = super().save(commit=False)
         other_candidates = list(
             set(self.data.getlist("candidate_id"))
-            - {
-                str(self.instance.candidate_id.id),
-            }
+            - {str(self.instance.candidate_id.id)}
         )
+
         if commit:
             cand = self.instance
-            for id in other_candidates:
+            for _id in other_candidates:
                 cand.pk = cand.pk + 1
                 cand.id = cand.pk
-                cand.candidate_id = Candidate.objects.get(id=id)
+                cand.candidate_id = Candidate.objects.get(id=_id)
                 try:
                     super(SkillZoneCandidate, cand).save()
                 except Exception as e:
@@ -1066,10 +1087,13 @@ class SkillZoneCandidateForm(ModelForm):
 
 
 class ToSkillZoneForm(ModelForm):
+
     verbose_name = "Add To Skill Zone"
     skill_zone_ids = forms.ModelMultipleChoiceField(
         queryset=SkillZone.objects.all(), label=_("Skill Zones")
     )
+
+    cols = {"reason": 12, "skill_zone_ids": 12}
 
     class Meta:
         """
@@ -1124,6 +1148,8 @@ class RejectReasonForm(ModelForm):
     RejectReasonForm
     """
 
+    cols = {"title": 12, "description": 12, "company_id": 12}
+
     verbose_name = "Reject Reason"
 
     class Meta:
@@ -1146,6 +1172,8 @@ class RejectedCandidateForm(ModelForm):
     """
 
     verbose_name = "Rejected Candidate"
+
+    cols = {"reject_reason_id": 12, "description": 12}
 
     class Meta:
         model = RejectedCandidate
@@ -1171,6 +1199,14 @@ class ScheduleInterviewForm(ModelForm):
     ScheduleInterviewForm
     """
 
+    cols = {
+        "interview_date": 12,
+        "interview_time": 12,
+        "candidate_id": 12,
+        "description": 12,
+        "employee_id": 12,
+    }
+
     verbose_name = "Schedule Interview"
 
     class Meta:
@@ -1186,6 +1222,19 @@ class ScheduleInterviewForm(ModelForm):
         self.fields["interview_time"].widget = forms.TimeInput(
             attrs={"type": "time", "class": "oh-input w-100"}
         )
+        candidate_attr = {
+            "hx-include": "#InterviewCreateForm",
+            "hx-target": "#id_employee_id_parent_div",
+            "hx-get": "/recruitment/get-interview-managers",
+            "hx-swap": "innerHTML",
+            "hx-select": "#id_employee_id_parent_div",
+            "hx-trigger": "change, load delay:300ms",
+        }
+
+        if self.instance.pk:
+            candidate_attr["hx-get"] += f"?pk={self.instance.pk}"
+
+        self.fields["candidate_id"].widget.attrs.update(candidate_attr)
 
     def clean(self):
 
@@ -1240,6 +1289,10 @@ class ScheduleInterviewForm(ModelForm):
 
 
 class SkillsForm(ModelForm):
+    cols = {
+        "title": 12,
+    }
+
     class Meta:
         model = Skill
         fields = ["title"]
@@ -1310,3 +1363,19 @@ class CandidateDocumentForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+
+
+class StageChangeForm(forms.ModelForm):
+    """
+    StageChangeForm
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = Candidate
+        fields = [
+            "stage_id",
+        ]

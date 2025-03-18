@@ -14,6 +14,7 @@ from django_filters import DateFilter
 
 from base.filters import FilterSet
 from base.methods import reload_queryset
+from horilla.filters import HorillaFilterSet
 from pms.models import (
     AnonymousFeedback,
     BonusPointSetting,
@@ -24,6 +25,8 @@ from pms.models import (
     KeyResult,
     Meetings,
     Objective,
+    Period,
+    QuestionTemplate,
 )
 
 
@@ -100,7 +103,7 @@ class CustomFilterSet(django_filters.FilterSet):
                 field.lookup_expr = "icontains"
 
 
-class ActualObjectiveFilter(FilterSet):
+class ActualObjectiveFilter(HorillaFilterSet):
     """
     ActualObjectiveFilter
     """
@@ -131,7 +134,6 @@ class ActualObjectiveFilter(FilterSet):
                 | queryset.filter(assignees__employee_last_name__icontains=split)
                 | queryset.filter(title__icontains=split)
             )
-
         return empty.distinct()
 
 
@@ -213,6 +215,7 @@ class FeedbackFilter(CustomFilterSet):
     This filter set allows to filter Feedback records based on various criteria.
     """
 
+    search = django_filters.CharFilter(method="search_method")
     review_cycle = django_filters.CharFilter(lookup_expr="icontains")
     created_at_date_range = DateRangeFilter(field_name="created_at")
     start_date = DateFilter(
@@ -273,7 +276,7 @@ class KeyResultFilter(CustomFilterSet):
         fields = "__all__"
 
 
-class ActualKeyResultFilter(FilterSet):
+class ActualKeyResultFilter(HorillaFilterSet):
     """
     Filter through KeyResult model
     """
@@ -308,7 +311,7 @@ class ObjectiveReGroup:
     ]
 
 
-class EmployeeObjectiveFilter(FilterSet):
+class EmployeeObjectiveFilter(HorillaFilterSet):
     """
     Filter through EmployeeObjective model
     """
@@ -363,7 +366,7 @@ class EmployeeObjectiveFilter(FilterSet):
         return empty.distinct()
 
 
-class MeetingsFilter(FilterSet):
+class MeetingsFilter(HorillaFilterSet):
 
     search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
     date = django_filters.DateFilter(
@@ -439,6 +442,94 @@ class MeetingsFilter(FilterSet):
     #                     q_objects |= Q(**{key: value})
     #         return queryset.filter(q_objects)
     #     return super().filter_queryset(queryset)
+
+
+class AnonymousFilter(CustomFilterSet):
+    """
+    Custom filter set for Anonymous records.
+
+    This filter set allows to filter Anonymous records based on various criteria.
+    """
+
+    search = django_filters.CharFilter(
+        field_name="feedback_subject", lookup_expr="icontains"
+    )
+    review_cycle = django_filters.CharFilter(lookup_expr="icontains")
+    created_at_date_range = DateRangeFilter(field_name="created_at")
+    start_date = DateFilter(
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input  w-100"}),
+        # add lookup expression here
+    )
+    end_date = DateFilter(
+        widget=forms.DateInput(attrs={"type": "date", "class": "oh-input  w-100"}),
+        # add lookup expression here
+    )
+
+    def filter(self, qs, value):
+        if value:
+            if value == "today":
+                today = datetime.datetime.now().date()
+                formatted_date = today.strftime("%Y-%m-%d")
+                qs = qs.filter(created_at__startswith=formatted_date)
+
+            if value == "yesterday":
+                today = datetime.date.today()
+                yesterday = today - datetime.timedelta(days=1)
+                formatted_date = yesterday.strftime("%Y-%m-%d")
+                qs = qs.filter(created_at__startswith=formatted_date)
+
+            if value == "week":
+                today = datetime.date.today()
+                start_of_week = today - datetime.timedelta(days=today.weekday())
+                end_of_week = start_of_week + datetime.timedelta(days=6)
+                qs = qs.filter(created_at__range=[start_of_week, end_of_week])
+
+            elif value == "month":
+                today = datetime.date.today()
+                start_of_month = datetime.date(today.year, today.month, 1)
+                end_of_month = start_of_month + datetime.timedelta(days=31)
+                qs = qs.filter(created_at__range=[start_of_month, end_of_month])
+
+        return qs
+
+    class Meta:
+        """
+        A nested class that specifies the model and fields for the filter.
+        """
+
+        model = AnonymousFeedback
+        fields = "__all__"
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super(AnonymousFilter, self).__init__(
+            data=data, queryset=queryset, request=request, prefix=prefix
+        )
+
+
+class QuestionTemplateFilter(FilterSet):
+
+    search = django_filters.CharFilter(
+        field_name="question_template", lookup_expr="icontains"
+    )
+
+    class Meta:
+        model = QuestionTemplate
+        fields = [
+            "question_template",
+        ]
+
+
+class PeriodFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(
+        field_name="period_name", lookup_expr="icontains"
+    )
+
+    class Meta:
+        model = Period
+        fields = [
+            "period_name",
+        ]
 
 
 class BonusPointSettingFilter(FilterSet):

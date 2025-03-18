@@ -1,0 +1,105 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+	<div class="oh-accordion">
+		<div class="oh-accordion-header">{% trans "Leave Type" %}</div>
+		<div class="oh-accordion-body">
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label">{% trans "Name" %}</label>
+						{{form.name}}
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label">{% trans "Payment Method" %}</label>
+						{{form.payment}}
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label">{% trans "Reset" %}</label>
+						{{form.reset}}
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label">{% trans "Carry Forward Type" %}</label>
+						{{form.carryforward_type}}
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label">{% trans "Require Approval" %}</label>
+						{{form.require_approval}}
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label">{% trans "Require Attachment" %}</label>
+						{{form.require_attachment}}
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label">{% trans "Is Encashable" %}</label>
+						{{form.is_encashable}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="oh-accordion">
+		<div class="oh-accordion-header">{% trans "Advanced" %}</div>
+		<div class="oh-accordion-body">
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label" title="Carry Forward greater Than or Equal"
+							>{% trans "Carry Forward greater Than or Equal"|truncatechars:25 %}
+							</label
+						>
+						{{form.carry_forward_gte}}
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label" title="Carry Forward less Than or Equal"
+							>{% trans "Carry Forward less Than or Equal"|truncatechars:25 %}
+							</label
+						>
+						{{form.carry_forward_lte}}
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label" title="Total Days greater Than or Equal"
+							>{% trans "Total Days greater Than or Equal"|truncatechars:25 %}
+							</label
+						>
+						{{form.total_days_gte}}
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-12 col-lg-6">
+					<div class="oh-input-group">
+						<label class="oh-label" title="Total Days less Than or Equal"
+							>{% trans "Total Days less Than or Equal"|truncatechars:25 %}
+							</label
+						>
+						{{form.total_days_lte}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

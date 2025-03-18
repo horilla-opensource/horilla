@@ -1,3 +1,4 @@
+
 var downloadMessages = {
   ar: "هل ترغب في تنزيل القالب؟",
   de: "Möchten Sie die Vorlage herunterladen?",

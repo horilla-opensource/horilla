@@ -2,10 +2,14 @@
 horilla_automations/views/cbvs.py
 """
 
+from typing import Any
+
 from django.contrib import messages
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
 
 from horilla.decorators import login_required, permission_required
 from horilla_automations import models
@@ -52,7 +56,7 @@ class AutomationNavView(views.HorillaNavView):
             data-toggle="oh-modal-toggle"
         """
 
-    nav_title = _trans("Automations")
+    nav_title = _("Automations")
     search_url = reverse_lazy("mail-automations-list-view")
     search_swap_target = "#listContainer"
 
@@ -68,14 +72,17 @@ class AutomationFormView(views.HorillaFormView):
 
     form_class = AutomationForm
     model = models.MailAutomation
-    new_display_title = _trans("New Automation")
+    new_display_title = _("New Automation")
     template_name = "horilla_automations/automation_form.html"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.view_id = "automation"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         instance = models.MailAutomation.objects.filter(pk=self.kwargs["pk"]).first()
         kwargs["instance"] = instance
-
         return kwargs
 
     def form_valid(self, form: AutomationForm) -> views.HttpResponse:
@@ -84,8 +91,7 @@ class AutomationFormView(views.HorillaFormView):
             if form.instance.pk:
                 message = "Automation updated"
             form.save()
-
-            messages.success(self.request, _trans(message))
+            messages.success(self.request, _(message))
             return self.HttpResponse()
         return super().form_valid(form)
 

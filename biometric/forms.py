@@ -25,6 +25,19 @@ class BiometricDeviceForm(ModelForm):
     settings and device activation status.
     """
 
+    cols = {
+        "name": 12,
+        "machine_type": 12,
+        "machine_ip": 12,
+        "port": 12,
+        "cosec_username": 12,
+        "cosec_password": 12,
+        "anviz_request_id": 12,
+        "api_url": 12,
+        "api_key": 12,
+        "api_secret": 12,
+    }
+
     class Meta:
         """
         Meta class to add additional options
@@ -40,8 +53,13 @@ class BiometricDeviceForm(ModelForm):
         labels = {
             "name": _("Device Name"),
             "machine_ip": _("IP Address"),
-            "port": _("TCP COMM.Port"),
-            "anviz_request_id": _("Header Request ID"),
+            "port": _("Port No"),
+            "anviz_request_id": _("Request ID"),
+            "cosec_username": _("Username"),
+            "cosec_password": _("Paswword"),
+            "api_url": _("API Url"),
+            "api_key": _("API Key"),
+            "api_secret": _("API Secret"),
         }
         widgets = {
             "machine_type": forms.Select(
@@ -68,6 +86,8 @@ class BiometricDeviceSchedulerForm(ModelForm):
     It includes a field for entering the scheduler duration in the format HH:MM.
     """
 
+    cols = {"scheduler_duration": 12}
+
     class Meta:
         """
         Meta class to add additional options
@@ -76,7 +96,7 @@ class BiometricDeviceSchedulerForm(ModelForm):
         model = BiometricDevices
         fields = ["scheduler_duration"]
         labels = {
-            "scheduler_duration": _("Enter the duration in the format HH:MM"),
+            "scheduler_duration": _("Interval duration"),
         }
 
 

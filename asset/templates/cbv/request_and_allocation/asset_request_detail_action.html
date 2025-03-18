@@ -1,0 +1,30 @@
+{% load i18n %}
+<div class="oh-modal__button-container text-center w-100 mt-3">
+    {% if perms.asset.add_assetassignment %}
+        {% if	instance.asset_request_status == 'Requested' %}
+        <div class="oh-btn-group">
+            <a
+                class="oh-btn oh-btn--success w-100"
+                role="button123"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'asset-request-approve' req_id=instance.id %}"
+                hx-target="#objectCreateModalTarget"
+            >
+                <ion-icon name="checkmark-outline"></ion-icon>{% trans 'Approve' %}
+            </a>
+            <form
+                action="{% url 'asset-request-reject' req_id=instance.id %}"
+                onsubmit="event.stopPropagation(); return confirm('{% trans "Do you want to reject this request?" %}')"
+                method="post"
+                class="w-100"
+            >
+                {% csrf_token %}
+                <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();">
+                    <ion-icon name="close-outline"></ion-icon> {% trans 'Reject' %}
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    {% endif %}
+</div>

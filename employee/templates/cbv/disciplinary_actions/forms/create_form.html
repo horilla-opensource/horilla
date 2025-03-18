@@ -1,0 +1,21 @@
+<div id="formContainer">
+    {% include "generic/horilla_form.html" %}
+</div>
+
+<script>
+
+  $(document).on("htmx:afterSettle", function () {
+      var actionElement = $("#id_action");
+      if (actionElement.length > 0) {
+        var action = actionElement.val();
+        if (action) {
+          actionTypeChange(actionElement);
+        }
+      }
+    });
+
+    $("#id_days").parent().parent().hide();
+    $("#id_unit_in").parent().parent().hide();
+    $("#id_hours").parent().parent().hide();
+    $("[name=days]").prop("required", false);
+  </script>

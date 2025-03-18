@@ -11,6 +11,9 @@
         setTimeout(function () {
             $(".oh-modal__close").click();
         }, 1000);
+        $(document).ready(function() {
+            $('.reload-record').click();
+          });
     </script>
 </div>
 {% endif %}
@@ -31,6 +34,7 @@
     <div id="availableLeaveCount" style="height: 40px;display: none;"></div>
 </div>
 <div class="oh-modal__dialog-body">
+    1111111111
     <form
         hx-post="{% url 'request-creation' %}?{{pd}}"
         hx-encoding="multipart/form-data"

@@ -1,0 +1,314 @@
+
+
+{% extends "index.html" %}
+{% load i18n %}{% load static recruitmentfilters %}
+
+
+{% block content %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+.hired--dot{
+  background-color:yellowgreen;
+}
+.nothired--dot{
+  background-color:grey;
+}
+.canceled--dot{
+  background-color:red;
+}
+.hired-True{
+  border-left: 3.4px solid yellowgreen !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.hired-False{
+  border-left: 3.4px solid grey !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.canceled-True {
+
+  border-left: 3.4px solid red !important;
+  border-radius: 4px 0 0 4px;
+
+}
+
+.employee{
+  background-color:yellowgreen;
+}
+
+
+
+
+</style>
+
+
+<div hx-get="{% url "nav-candidate" %}?{{request.GET.urlencode}}" hx-trigger="load">
+</div>
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+  
+  <div 
+  class="oh-wrapper" 
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000">
+  <div class="oh-activity-sidebar__body" id="noteContainer">
+    <div class="oh-activity-sidebar__header">
+      <a event.stopPropagation
+      style="cursor: pointer;"
+      onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+      <ion-icon
+      name="chevron-forward-outline"
+      class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+      data-target="#activitySidebar">
+      </ion-icon>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+  function archiveCandidate(url,msg) {
+    Swal.fire({
+        text: msg,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "green",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm"
+    }).then((result) => {
+        if (result.isConfirmed) {
+              window.location.href = url;
+        } 
+    });
+}
+
+function getCSRFToken() {
+  return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+}
+
+function deleteCandidate(url) {
+  Swal.fire({
+    text: "Do you want to delete this candidate?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "green",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Confirm"
+}).then((result) => {
+    if (result.isConfirmed) {
+        const form = document.createElement('form');
+        form.setAttribute('action', url);
+        form.setAttribute('method', 'post');
+        
+        const csrfTokenInput = document.createElement('input');
+        csrfTokenInput.setAttribute('type', 'hidden');
+        csrfTokenInput.setAttribute('name', 'csrfmiddlewaretoken');
+        csrfTokenInput.value = getCSRFToken();
+        form.appendChild(csrfTokenInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+});
+}
+
+
+function toEmployee(url) {
+  Swal.fire({
+    text: "Are you sure you want to convert this candidate into an employee?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Confirm"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = url;
+    } else {
+      pass
+    }
+  });
+}
+
+$(document).on('click', '#archiveCandidates', function(e) { 
+  e.preventDefault();
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = archive_CanMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          $.ajax({
+            type: "POST",
+            url: "/recruitment/candidate-bulk-archive?is_active=False",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
+$(document).on('click', '#unArchiveCandidates', function(e) {
+  e.preventDefault();
+
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = unarchive_CanMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          $.ajax({
+            type: "POST",
+            url: "/recruitment/candidate-bulk-archive?is_active=True",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
+$(document).on('click', '#deleteCandidates', function(e) {
+  e.preventDefault();
+
+  var languageCode = null;
+  getCurrentLanguageCode(function (code) {
+    languageCode = code;
+    var confirmMessage = delete_CanMessages[languageCode];
+    var textMessage = noRowMessages[languageCode];
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
+      Swal.fire({
+        text: textMessage,
+        icon: "warning",
+        confirmButtonText: "Close",
+      });
+    } else {
+      Swal.fire({
+        text: confirmMessage,
+        icon: "error",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          e.preventDefault();
+          ids = [];
+
+          ids.push($("#selectedInstances").attr("data-ids"));
+          ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+
+          $.ajax({
+            type: "POST",
+            url: "/recruitment/candidate-bulk-delete",
+            data: {
+              csrfmiddlewaretoken: getCookie("csrftoken"),
+              ids: JSON.stringify(ids),
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload(); // Reload the current page
+              } else {
+                // console.log("Unexpected HTTP status:", jqXHR.status);
+              }
+            },
+          });
+        }
+      });
+    }
+  });
+});
+
+</script>
+<script src="{% static '/candidate/bulk.js' %}"></script>
+
+{% endblock content %}

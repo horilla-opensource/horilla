@@ -62,9 +62,9 @@
                                                 <ul class="oh-dropdown__items">
                                                     <li class="oh-dropdown__item">
                                                         <a data-toggle="oh-modal-toggle"
-                                                        data-target="#editModal3"
+                                                        data-target="#genericModal"
                                                         hx-get="{% url 'stage-update' stage.grouper.id rec.id %}"
-                                                        hx-target="#updateStage" class="oh-dropdown__link" style="cursor:pointer;">{% trans "Edit" %}</a>
+                                                        hx-target="#genericModalBody" class="oh-dropdown__link" style="cursor:pointer;">{% trans "Edit" %}</a>
                                                     </li>
                                                     <li class="oh-dropdown__item">
                                                         <a  href="{% url 'stage-delete' stage.grouper.id %}"
@@ -78,7 +78,7 @@
                                             class="oh-btn oh-btn--small oh-btn--transparent p-0"
                                             data-toggle="oh-modal-toggle"
                                             data-target="#taskModal"
-                                            hx-get="{% url 'task-creation' %}?stage_id={{stage.grouper.id}}"
+                                            hx-get="{% url 'task-creation' stage.grouper.id %}"
                                             hx-target = "#taskModalBody"
 
                                             title="{% trans 'Add task' %}">

@@ -1,0 +1,14 @@
+
+{% load i18n %}
+<div id="resignation-container">
+  {% if enabled_resignation_request %}
+<div class="d-flex flex-row-reverse oh-wrapper">
+    <a hx-get="{% url 'resignation-requests-create' %}?emp_id={{employee}}" hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModal" class="oh-btn oh-btn--secondary">
+      <ion-icon name="add-outline"></ion-icon>
+      {% trans 'Create' %}
+    </a>
+  </div>
+{% endif %}
+<br>
+{% include "generic/horilla_list.html" %}
+</div>

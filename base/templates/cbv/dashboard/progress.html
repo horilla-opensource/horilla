@@ -1,0 +1,7 @@
+{% load i18n %}
+
+<div class="progress">
+    <div class="progress-bar" role="progressbar" style="width: {{ instance.calculate_progress }}%;"></div>
+</div>
+<br>
+<div class="progress-text">{{ instance.calculate_progress }} % {% trans "Completed" %}</div>

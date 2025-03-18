@@ -4,6 +4,7 @@
 {% load i18n %}
 {% load recruitmentfilters %}
 {% load onboardingfilters %}
+{% include 'generic/components.html' %}
 <style>
     .select2-container{
         width: 100% !important;
@@ -57,8 +58,8 @@
                                 {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
                                 <div class="d-flex mb-3" style="flex-direction: row-reverse;">
                                     <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
-                                        data-toggle="oh-modal-toggle" data-target="#editModal1"
-                                        hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#stageForm">
+                                        data-toggle="oh-modal-toggle" data-target="#genericModal"
+                                        hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#genericModalBody">
                                         <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
                                             aria-label="add outline"></ion-icon>{% trans "Stage" %}
                                     </button>

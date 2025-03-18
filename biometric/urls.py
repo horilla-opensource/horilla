@@ -13,10 +13,37 @@ that require device IDs.
 
 from django.urls import path
 
+from biometric.cbv import biometric
+
 from . import views
 from .models import BiometricDevices
 
 urlpatterns = [
+    path(
+        "biometric-device-add/",
+        biometric.BiometricFormView.as_view(),
+        name="biometric-device-add",
+    ),
+    path(
+        "biometric-device-edit/<uuid:pk>/",
+        biometric.BiometricFormView.as_view(),
+        name="biometric-device-edit",
+    ),
+    path(
+        "biometric-card-view/",
+        biometric.BiometricCardView.as_view(),
+        name="biometric-card-view",
+    ),
+    path(
+        "biometric-navbar/",
+        biometric.BiometricNavBar.as_view(),
+        name="biometric-navbar",
+    ),
+    path(
+        "biometric-device-schedule/<uuid:pk>/",
+        biometric.BiometricSheduleForm.as_view(),
+        name="biometric-device-schedule",
+    ),
     path(
         "view-biometric-devices/",
         views.biometric_devices_view,
@@ -27,11 +54,11 @@ urlpatterns = [
         views.biometric_device_live,
         name="biometric-device-live-capture",
     ),
-    path(
-        "biometric-device-schedule/<uuid:device_id>/",
-        views.biometric_device_schedule,
-        name="biometric-device-schedule",
-    ),
+    # path(
+    #     "biometric-device-schedule/<uuid:device_id>/",
+    #     views.biometric_device_schedule,
+    #     name="biometric-device-schedule",
+    # ),
     path(
         "biometric-device-unschedule/<uuid:device_id>/",
         views.biometric_device_unschedule,
@@ -42,11 +69,11 @@ urlpatterns = [
         views.biometric_device_test,
         name="biometric-device-test",
     ),
-    path(
-        "biometric-device-add",
-        views.biometric_device_add,
-        name="biometric-device-add",
-    ),
+    # path(
+    #     "biometric-device-add",
+    #     views.biometric_device_add,
+    #     name="biometric-device-add",
+    # ),
     path(
         "biometric-device-edit/<uuid:device_id>/",
         views.biometric_device_edit,

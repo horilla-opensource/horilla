@@ -21,6 +21,7 @@ from base.forms import TagsForm
 from base.methods import (
     filtersubordinates,
     get_key_instances,
+    get_pagination,
     is_reportingmanager,
     paginator_qry,
     sortby,
@@ -1545,10 +1546,12 @@ def update_department_manager(request, dep_id):
 @permission_required("helpdesk.delete_departmentmanager")
 def delete_department_manager(request, dep_id):
     department_manager = DepartmentManager.objects.get(id=dep_id)
+    count = DepartmentManager.objects.count()
     department_manager.delete()
     messages.success(request, _("The department manager has been deleted successfully"))
-
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    if count == 1:
+        return HttpResponse("<script>$('.reload-record').click();</script>")
+    return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
 @login_required
@@ -1666,11 +1669,21 @@ def ticket_type_update(request, t_type_id):
 def ticket_type_delete(request, t_type_id):
     ticket_type = TicketType.find(t_type_id)
     if ticket_type:
-        ticket_type.delete()
-        messages.success(request, _("Ticket type has been deleted successfully!"))
-    else:
-        messages.error(request, _("Ticket type not found"))
-    return HttpResponse()
+        try:
+            ticket_type.delete()
+            messages.success(request, _("Ticket type has been deleted successfully!"))
+            count = TicketType.objects.count
+            if count == 0:
+                return HttpResponse("<script>$('.reload-record').click()</script>")
+            else:
+                return HttpResponse(
+                    "<script>$('#reloadMessagesButton').click()</script>"
+                )
+        except:
+            messages.error(request, _("Ticket type can not delete"))
+            return HttpResponse("<script>$('.reload-record').click()</script>")
+    # return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
 
 
 @login_required
@@ -1688,7 +1701,7 @@ def view_department_managers(request):
 @permission_required("helpdesk.change_departmentmanager")
 def get_department_employees(request):
     """
-    Method to return employee in the department
+    Method to return employees in the department.
     """
     department = (
         Department.objects.filter(id=request.GET.get("dep_id")).first()

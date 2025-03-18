@@ -494,7 +494,7 @@ def question_add(request):
     template = None
     title = request.GET.get("title")
     if title:
-        template = SurveyTemplate.objects.filter(title=title)
+        template = SurveyTemplate.objects.filter(title=title).first
 
     form = AddQuestionForm(initial={"template_ids": template})
     if request.method == "POST":

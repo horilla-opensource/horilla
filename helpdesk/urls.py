@@ -8,16 +8,39 @@ from django.urls import path
 
 from base.views import object_delete
 from helpdesk import views
+from helpdesk.cbv import department_managers, faq, tags, ticket_type
 from helpdesk.models import FAQ, FAQCategory, Ticket
 
 urlpatterns = [
-    path("faq-category-view/", views.faq_category_view, name="faq-category-view"),
-    path("faq-category-create/", views.faq_category_create, name="faq-category-create"),
+    path("ticket-list/", ticket_type.TicketsListView.as_view(), name="ticket-list"),
+    path("ticket-nav/", ticket_type.TicketsNavView.as_view(), name="ticket-nav"),
     path(
-        "faq-category-update/<int:id>/",
-        views.faq_category_update,
+        "ticket-create-form/",
+        ticket_type.TicketTypeCreateForm.as_view(),
+        name="ticket-create-form",
+    ),
+    path(
+        "ticket-update-form/<int:pk>",
+        ticket_type.TicketTypeCreateForm.as_view(),
+        name="ticket-update-form",
+    ),
+    path("faq-category-view/", views.faq_category_view, name="faq-category-view"),
+    # path("faq-category-create/", views.faq_category_create, name="faq-category-create"),
+    path(
+        "faq-category-create/",
+        faq.FaqCategoryCreateFormView.as_view(),
+        name="faq-category-create",
+    ),
+    path(
+        "faq-category-update/<int:pk>/",
+        faq.FaqCategoryCreateFormView.as_view(),
         name="faq-category-update",
     ),
+    # path(
+    #     "faq-category-update/<int:id>/",
+    #     views.faq_category_update,
+    #     name="faq-category-update",
+    # ),
     path(
         "faq-category-delete/<int:id>/",
         views.faq_category_delete,
@@ -30,8 +53,12 @@ urlpatterns = [
         name="faq-view",
         kwargs={"model": FAQCategory},
     ),
-    path("faq-create/<int:obj_id>/", views.create_faq, name="faq-create"),
-    path("faq-update/<int:obj_id>", views.faq_update, name="faq-update"),
+    path(
+        "faq-create/<int:cat_id>/", faq.FaqCreateFormView.as_view(), name="faq-create"
+    ),
+    # path("faq-create/<int:cat_id>/", views.create_faq, name="faq-create"),
+    path("faq-update/<int:pk>/", faq.FaqCreateFormView.as_view(), name="faq-update"),
+    # path("faq-update/<int:id>", views.faq_update, name="faq-update"),
     path("faq-search/", views.faq_search, name="faq-search"),
     path("faq-filter/<int:id>/", views.faq_filter, name="faq-filter"),
     path("faq-suggestion/", views.faq_suggestion, name="faq-suggestion"),
@@ -41,8 +68,18 @@ urlpatterns = [
         name="faq-delete",
     ),
     path("ticket-view/", views.ticket_view, name="ticket-view"),
-    path("ticket-create", views.ticket_create, name="ticket-create"),
-    path("ticket-update/<int:ticket_id>", views.ticket_update, name="ticket-update"),
+    path(
+        "ticket-create",
+        ticket_type.TicketsCreateFormView.as_view(),
+        name="ticket-create",
+    ),
+    # path("ticket-create", views.ticket_create, name="ticket-create"),
+    path(
+        "ticket-update/<int:pk>/",
+        ticket_type.TicketsCreateFormView.as_view(),
+        name="ticket-update",
+    ),
+    # path("ticket-update/<int:ticket_id>", views.ticket_update, name="ticket-update"),
     path("ticket-archive/<int:ticket_id>", views.ticket_archive, name="ticket-archive"),
     path(
         "change-ticket-status/<int:ticket_id>/",
@@ -106,15 +143,55 @@ urlpatterns = [
         "tickets-bulk-archive", views.tickets_bulk_archive, name="tickets-bulk-archive"
     ),
     path("tickets-bulk-delete", views.tickets_bulk_delete, name="tickets-bulk-delete"),
+    # path(
+    #     "department-manager-create/",
+    #     views.create_department_manager,
+    #     name="department-manager-create",
+    # ),
+    path(
+        "settings/helpdesk-tag-list/",
+        tags.TagsListView.as_view(),
+        name="helpdesk-tag-list",
+    ),
+    path(
+        "settings/helpdesk-tag-nav/",
+        tags.TagsNavView.as_view(),
+        name="helpdesk-tag-nav",
+    ),
+    path(
+        "settings/create-helpdesk-tag/",
+        tags.TagsFormView.as_view(),
+        name="create-helpdesk-tag",
+    ),
+    path(
+        "settings/update-helpdesk-tag/<int:pk>/",
+        tags.TagsFormView.as_view(),
+        name="update-helpdesk-tag",
+    ),
     path(
         "department-manager-create/",
-        views.create_department_manager,
+        department_managers.DepartmentManagersFormView.as_view(),
         name="department-manager-create",
+    ),
+    path(
+        "settings/department-manager-list/",
+        department_managers.DepartmentManagersListView.as_view(),
+        name="department-manager-list",
+    ),
+    path(
+        "settings/department-manager-nav/",
+        department_managers.DepartmentManagersNav.as_view(),
+        name="department-manager-nav",
     ),
     path(
         "department-manager-update/<int:dep_id>",
         views.update_department_manager,
         name="department-manager-update",
+    ),
+    path(
+        "department-manager-update-view/<int:pk>/",
+        department_managers.DepartmentManagersFormView.as_view(),
+        name="department-manager-update-view",
     ),
     path(
         "department-manager-delete/<int:dep_id>",

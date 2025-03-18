@@ -5,7 +5,7 @@
         color: blue;
     }
 </style>
-<div id="{{hx_target}}"
+<div id="{{hx_target}}" class="available-leave-count"
     style="height: 40px; {% if not available_leave and not leave_type_id %}display:none;{% endif %}">
     {% if not leave_type_id %}
         <div id="messageDiv" style="display:none;"></div>

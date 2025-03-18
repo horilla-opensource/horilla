@@ -1,20 +1,30 @@
-{% load i18n %}
+{% load i18n static %}
+
 {% if perms.auth.view_permission or perms.auth.view_group %}
+
 <div class="oh-tabs__contents">
-    <div class="oh-tabs__content oh-tabs__content--active" id="tab_1_permission">
+    <div class="" id="tab_1_permission">
         {% if employee %}
         {% include "base/auth/permission_accordion.html" %}
         {% else %}
         {% include "base/auth/permission_table.html" %}
         {% endif %}
     </div>
-    {% if employee.employee_user_id.groups.all.first %}
-    <div class="oh-tabs__content oh-tabs__content--active" style="display: none" id="tab_2_permission">
+    <br>
+
+
+    <div class="oh-tabs__contents" style="display: none" id="tab_2_permission">
         <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
             <h2 class="oh-inner-sidebar-content__title">
                 {% trans "Groups" %}
             </h2>
+            {% if perms.auth.change_group %}
+          <button class="oh-btn oh-btn--danger" hx-get="{% url "assign-group-user" %}" hx-vals='{"employee":"{{employee.id}}"}' hx-target="#groupAssignBody" data-toggle="oh-modal-toggle" data-target="#groupAssign" onclick="event.stopPropagation()" title="Assign user groups">
+            <ion-icon name="person-add-outline" class="text-light">Add</ion-icon>
+          </button>
+        {% endif %}
         </div>
+        {% if employee.employee_user_id.groups.all.first %}
         {% for gp in employee.employee_user_id.groups.all %}
         <div class="oh-user_permission-list_item exclude-accordion-style" onclick="event.stopPropagation()">
             <div class="oh-user_permission-list_profile">
@@ -31,8 +41,16 @@
             </div>
         </div>
         {% endfor %}
+        {% else %}
+          <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
+            <div align="center">
+              <img src="{% static  'images/ui/employee_group.png' %}" class="oh-404__image" alt="Page not found. 404.">
+              <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "This employee is not assigned to any groups." %}</h5>
+            </div>
+          </div>
+          {% endif %}
     </div>
-    {% endif %}
+    {% comment %} {% endif %} {% endcomment %}
 </div>
 <script>
     var showSearch = true

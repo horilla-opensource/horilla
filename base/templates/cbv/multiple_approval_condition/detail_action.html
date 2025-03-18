@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load basefilters %}
+{% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition %}
+    <div class="oh-btn-group" style="width: 100%;">
+        {% if request.user|is_reportingmanager or perms.base.change_multipleapprovalcondition %}
+            <button title="{% trans 'Edit' %}" class="oh-btn oh-btn--info w-50" data-toggle="oh-modal-toggle"
+                data-target="#objectUpdateModal" hx-target="#objectUpdateModalTarget"
+                hx-get="{% url 'multiple-level-approval-edit' instance.id %}">
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+            </button>
+        {% endif %}
+        {% if perms.base.delete_multipleapprovalcondition %}
+            <a hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+                hx-get="{% url 'multiple-level-approval-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
+                hx-target="#genericModalBody" class="oh-btn oh-btn--secondary w-50" id="delete-link"
+                title="{% trans 'Delete' %}">
+                <ion-icon name="trash-outline"></ion-icon>
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if request.GET.deleted %}
+    <script>
+        $(".reload-record").click()
+    </script>
+{% endif %}

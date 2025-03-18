@@ -1,0 +1,29 @@
+<style>
+.oh-sticky-table__th.sl-no,
+.oh-sticky-table__td.sl-no {
+            width: 70px !important; /* Adjust the width as needed */
+        }
+ </style>
+
+{% if interviews %}
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th  sl-no" >Sl No.</div>
+            <div class="oh-sticky-table__th">Date </div>
+            <div class="oh-sticky-table__th">Time </div>
+            <div class="oh-sticky-table__th">Is Completed</div>
+        </div>
+    </div>
+        {% for interview in interviews %}
+    <div class="oh-sticky-table__tbody">
+        <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__td sl-no">{{ forloop.counter }}</div>
+            <div class="oh-sticky-table__td dateformat_changer">{{ interview.interview_date }}</div>
+            <div class="oh-sticky-table__td timeformat_changer">{{ interview.interview_time }}</div>
+            <div class="oh-sticky-table__td">{% if interview.completed %}Yes{% else %}No{% endif %}</div>
+        </div>
+    </div>
+        {% endfor %}
+</div>
+{% endif %}

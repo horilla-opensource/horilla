@@ -147,6 +147,7 @@ sidebar_urls = [
     "skills-view",
     "employee-bonus-point",
     "mail-automations",
+    "task-all",
     "check-in-check-out-setting",
     "user-accessibility",
     "asset-batch-view",
@@ -161,6 +162,7 @@ remove_urls = [
     "ticket-detail",
     "faq-view",
     "get-job-positions",
+    "task-view",
 ]
 
 user_breadcrumbs = {}

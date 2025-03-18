@@ -1,0 +1,107 @@
+{% load i18n %}
+{% load static %}
+
+<div id="formContainer">
+    {% include "generic/horilla_form.html" %}
+
+    <button
+    hidden
+        hx-target="#multiApprovalManager_{{managers_count}}"
+        hx-swap="outerHTML"
+        hx-get="{% url 'add-more-approval-managers' %}?managers_count={{ managers_count }}"
+        role="button"
+        id = "addmangerButton"
+        style="color: green"
+        >{% trans "Add more managers.." %}</button>
+</div>
+
+<script>
+    $(document).ready(function () {  
+      
+      $(document).off('click', '#addmanger').on('click', '#addmanger', function(event) {
+        $('#addmangerButton').trigger('click');
+    });
+
+        $("select").on("select2:select", function (e) {
+            $(this).closest("select")[0].dispatchEvent(new Event("change"));
+          });
+        
+        var managersCount = {{ managers_count }};
+         
+
+        for (var i = 1; i < managersCount; i++) {
+            // Construct the ID dynamically
+            var parentDivId = "id_multi_approval_manager_" + i + "_parent_div";
+            var parentDiv = document.getElementById(parentDivId);
+            $(parentDiv).removeClass("col-md-6").addClass("col-md-12");
+            $(parentDiv).find('.oh-label__info').remove();
+        }
+        
+        $("#id_condition_operator").change(function() {
+            var selectedValue = $(this).val();
+            if (selectedValue == "range") {
+                $("#id_condition_start_value_parent_div").remove();
+                $("#id_condition_end_value_parent_div").remove();
+            }
+            else{
+            $("#id_condition_value_parent_div").show();
+            $("#id_condition_start_value_parent_div").remove();
+            $("#id_condition_end_value_parent_div").remove();
+            }
+        });
+        var managerid = "multiApprovalManager_" + managersCount
+        var divElement = document.createElement('div');
+        divElement.id = managerid;
+        divElement.className = 'pt-2';
+        divElement.style.textAlign = 'end';
+        var anchorElement = document.createElement('a');
+        anchorElement.setAttribute('role', 'button');
+        anchorElement.setAttribute('id', 'addmanger');
+        anchorElement.style.color = 'green';
+        anchorElement.innerText = 'Add more managers..';
+
+        divElement.appendChild(anchorElement);
+        var parentDiv = document.getElementById(parentDivId);
+        var parentIdDiv = document.getElementById('id_multi_approval_manager_parent_div');
+        if (parentDiv) {
+          
+            parentDiv.insertAdjacentElement('afterend', divElement);
+        } else {
+          parentIdDiv.insertAdjacentElement('afterend', divElement);
+        }
+
+        var hasRun = false;
+        function executeOnce() {
+          
+          if (hasRun) return;
+          var selectBox = document.querySelector('select[name="condition_operator"]');
+          var selectedValue = selectBox.value;
+          
+          if (selectedValue === "range") {
+            $("#id_condition_value_parent_div").hide();
+          } else {
+            $("#id_condition_start_value_parent_div").hide();
+            $("#id_condition_end_value_parent_div").hide();
+          }
+    
+          hasRun = true; // Set the flag to true after running the code
+        }
+    
+        executeOnce();
+
+      
+        $(document).on('htmx:afterSwap', function(event) {
+          $(document).off('click', '#addshift').on('click', '#addshift', function(event) {
+              $('#addshiftButton').click();
+          });
+          
+      });
+
+
+       
+         
+    });
+   
+   
+
+</script>

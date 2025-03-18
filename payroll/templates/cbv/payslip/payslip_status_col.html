@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load basefilters %}
+{% if perms.payroll.add_payslip %}
+<div data-cell-index="3" onclick="event.stopPropagation();">
+  <select name="status" data-instance-id="{{instance.id}}" hx-trigger="change" hx-post="{% url 'payslip-status-update' instance.id %}"
+          hx-target="#listContainer" hx-vals='{"view":"table"}'
+          style="color: hsl(0,0%,11%); background-color: transparent; border: none; height: 100%; border: 1px solid transparent;">
+    {% for opt in instance.status_choices %}
+    <option value="{{opt.0}}"{% if opt.0 == instance.status %}selected{% endif %}>{{opt.1}}</option>
+    {% endfor %}
+  </select>
+</div>
+{% else %}
+<div data-cell-index="3" class="oh-sticky-table__td">
+  {{instance.get_status_display}}
+</div>
+{% endif %}

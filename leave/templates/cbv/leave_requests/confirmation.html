@@ -1,0 +1,114 @@
+{% load i18n %}
+{% load basefilters %}
+{% if request.user.employee_get != instance.employee_id and request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_self_reporting_manager %}
+<div class="oh-btn-group" onclick="event.stopPropagation();">
+        {% if instance.status == 'cancelled' %}
+            {% if instance.end_date >= current_date %}
+                <button type="button" data-toggle="oh-modal-toggle"
+                    data-target="#rejectModal" hx-get="{% url 'request-cancel' instance.id %}"
+                    hx-target="#rejectForm" title="{% trans 'Approve cancellation request' %}"
+                    class="oh-btn oh-btn--warning w-100">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button type="button" href="#" title="{% trans 'Approve cancellation request' %}"
+                    class="oh-btn oh-btn--secondary oh-btn--disabled w-100">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </button>
+            {% endif %}
+        {% else %}
+            {% if instance.is_approved and instance.status == 'requested' %}
+                <a href="{% url 'request-approve' instance.id %}" title="{% trans 'Approve' %}"
+                    class="oh-btn oh-btn--success w-100" 
+                    {% if instance.end_date.month > current_date.month %} 
+                        onclick="leaveRequestConfirm('This leave request is for the month of {{instance.start_date|date:'F'}}. Approval depends on the {{instance.employee_id.get_full_name}} having available leave days for this month.', event);" 
+                    {% else %}  
+                        onclick="return confirm('Do you really want to approve this request?');" 
+                    {% endif %}>
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </a>
+            {% else %}
+                <a type="button" href="#" title="{% trans 'Approve' %}"
+                    class="oh-btn oh-btn--success oh-btn--disabled w-100">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </a>
+            {% endif %} 
+            {% comment %} {% if instance.is_approved and instance.status == 'requested' %}
+                <a href="{% url 'request-approve' instance.id %}" 
+                    hx-get="{% url 'request-approve' instance.id %}" 
+                    hx-confirm="{% if instance.end_date.month > current_date.month %} 
+                        'This leave request is for the month of {{ instance.start_date|date:'F' }}. Approval depends on {{ instance.employee_id.get_full_name }} having available leave days for this month.'
+                    {% else %}  
+                        'Do you really want to approve this request?' 
+                    {% endif %}"
+                    title="{% trans 'Approve' %}" 
+                    class="oh-btn oh-btn--success w-100">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </a>
+            {% else %}
+                <a href="#" 
+                    class="oh-btn oh-btn--success oh-btn--disabled w-100" 
+                    title="{% trans 'Approve' %}">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </a>
+            {% endif %} {% endcomment %}
+
+            {% if instance.status != 'rejected' and instance.end_date >= current_date %}
+                <a type="button" data-toggle="oh-modal-toggle"
+                    data-target="#rejectModal" hx-get="{% url 'request-cancel' instance.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
+                    class="oh-btn oh-btn--danger w-100">
+                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                </a>
+            {% else %}
+                <a type="button" href="#" title="{% trans 'Reject' %}"
+                    class="oh-btn oh-btn--danger oh-btn--disabled w-100">
+                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+{% else %}
+    <div class="oh-btn-group" onclick="event.stopPropagation();">
+        {% if instance.status == 'cancelled' %}
+            {% if instance.end_date >= current_date %}
+                <button type="button" disabled title="{% trans 'Approve cancellation request' %}"
+                    class="oh-btn oh-btn--warning w-100">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button type="button" disabled title="{% trans 'Approve cancellation request' %}"
+                    class="oh-btn oh-btn--secondary oh-btn--disabled w-100">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </button>
+            {% endif %}
+        {% else %}
+            {% if instance.is_approved and instance.status == 'requested' %}
+                <button type="button" disabled title="{% trans 'Approve' %}"
+                    class="oh-btn oh-btn--success w-100" 
+                    {% if instance.end_date.month > current_date.month %} 
+                        onclick="leaveRequestConfirm('This leave request is for the month of {{instance.start_date|date:'F'}}. Approval depends on the {{instance.employee_id.get_full_name}} having available leave days for this month.', event);" 
+                    {% else %}  
+                        onclick="return confirm('Do you really want to approve this request?');" 
+                    {% endif %}>
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button type="button" disabled title="{% trans 'Approve' %}"
+                    class="oh-btn oh-btn--success oh-btn--disabled w-100">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                </button>
+            {% endif %}
+            {% if instance.status != 'rejected' and instance.end_date >= current_date %}
+                <button type="button" disabled title="{% trans 'Reject' %}"
+                    class="oh-btn oh-btn--danger w-100">
+                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button type="button" disabled title="{% trans 'Reject' %}"
+                    class="oh-btn oh-btn--danger oh-btn--disabled w-100">
+                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                </button>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}

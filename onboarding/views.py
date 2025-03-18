@@ -468,7 +468,7 @@ def candidate_delete(request, obj_id):
                 )
             ),
         )
-    return redirect(candidates_view)
+    return redirect(reverse("candidates-view"))
 
 
 @login_required
@@ -1698,7 +1698,11 @@ def change_task_status(request):
     ]:
         candidate_task.status = status
         candidate_task.save()
-    return HttpResponse("Success")
+        messages.success(request, _("Task status updated successfully."))
+
+    return HttpResponse(
+        "<script>$('#reloadMessagesButton').click(); $('#myOnboardingReload').click(); </script>"
+    )
 
 
 @login_required
@@ -1713,7 +1717,15 @@ def update_offer_letter_status(request):
     if status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
         candidate.offer_letter_status = status
         candidate.save()
-    return HttpResponse("Success")
+    # return HttpResponse("Success")
+    return JsonResponse(
+        {
+            "type": "success",
+            "message": _("{candidate}'s Offer letter status updated").format(
+                candidate=candidate.name
+            ),
+        }
+    )
 
 
 @login_required

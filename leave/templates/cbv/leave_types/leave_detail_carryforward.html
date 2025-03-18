@@ -1,0 +1,25 @@
+{% load i18n %}
+<div class="oh-timeoff-modal__stats ">
+    <div class="oh-timeoff-modal__stat">
+        <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Type" %}</span>
+        <div class="oh-timeoff-modal__stat-count">{{instance.get_carryforward_type_display}}</div>
+    </div>
+</div>
+{% if instance.carryforward_max %}
+<div class="oh-timeoff-modal__stat">
+    <span class="oh-timeoff-modal__stat-title">{% trans "Maximum Carryforward" %}</span>
+    <span class="oh-timeoff-modal__stat-count">{{instance.carryforward_max}}</span>
+</div>
+{% endif %}
+{% if instance.carryforward_expire_in %}
+<div class="oh-timeoff-modal__stat">
+    <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Expire in" %}</span>
+    <span class="oh-timeoff-modal__stat-count">{{instance.carryforward_expire_in}}</span>
+</div>
+{% endif %}
+{% if instance.carryforward_expire_period %}
+<div class="oh-timeoff-modal__stat">
+    <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Expire period" %}</span>
+    <span class="oh-timeoff-modal__stat-count">{{instance.carryforward_expire_period}}</span>
+</div>
+{% endif %}

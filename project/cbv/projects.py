@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
+from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import login_required, permission_required
@@ -507,15 +508,13 @@ class ProjectsTabView(ListView):
         return context
 
 
-# Remove the command lines after horilla converted into CBV
-# from employee.cbv.employee_profile import EmployeeProfileView
-# EmployeeProfileView.add_tab(
-#     tabs=[
-#         {
-#             "title": "Projects",
-#             # "view": projects_tab,
-#             "view": ProjectsTabView.as_view(),
-#             "accessibility": "employee.cbv.accessibility.workshift_accessibility",
-#         },
-#     ]
-# )
+EmployeeProfileView.add_tab(
+    tabs=[
+        {
+            "title": "Projects",
+            # "view": projects_tab,
+            "view": ProjectsTabView.as_view(),
+            "accessibility": "employee.cbv.accessibility.workshift_accessibility",
+        },
+    ]
+)

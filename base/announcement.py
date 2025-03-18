@@ -113,6 +113,7 @@ def create_announcement(request):
                 employee_work_info__job_position_id__in=job_positions
             )
             anou.employees.add(*employees)
+            anou.save()
 
             notify.send(
                 request.user.employee_get,

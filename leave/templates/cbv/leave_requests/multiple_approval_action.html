@@ -1,0 +1,22 @@
+{% load i18n %}
+{% if instance.multiple_approvals %}
+        <div class="oh-timeoff-modal__stats w-100 mt-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "Multiple Approvals" %}</span>
+                {% for approval in  instance.multiple_approvals.approvals %}
+                    <div class="oh-timeoff-modal__stat-description">{{forloop.counter}}.{{approval.manager_id}} :
+                        {% if approval.is_approved %}{% trans "Approved" %}
+                        {% else %}
+                            {% if approval.is_rejected %}
+                                {% trans "Rejected" %}
+                            {% else %}
+                                {% trans "Not Marked" %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+

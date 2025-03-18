@@ -1,0 +1,13 @@
+{% if perms.pms.change_employeeobjective or instance|is_manager_or_owner:request.user %}
+
+                    <select name="status" id="{{instance.id}}" class="oh-select"
+                    onchange="changeObjectiveStatus(this)" data-empObj = {{instance.id}}
+                    >
+                        {% for status in objective_key_result_status %}
+                        <option value="{{status.0}}"  {% if status.0 == instance.status %} selected {% endif %}>
+                            <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <span class="oh-timeoff-modal__stat-count">{{instance.get_status_display}}</span>
+                {% endif %}

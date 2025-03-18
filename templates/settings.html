@@ -15,6 +15,42 @@
 	.oh-sticky-table{
 		max-height: 100vh;
 	}
+	.accordion--show{
+		display: block;
+	}
+
+.oh-accordion:not(.accordion--show):last-child .oh-accordion-header {
+    border-bottom: none
+}
+
+.accordion--show .oh-accordion-header:after {
+    content: "";
+    width: 25px;
+    height: 25px;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9IiMxZjFmMWYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJtNyAxNC41IDUtNSA1IDVIN1oiPjwvcGF0aD4KPC9zdmc+");
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    position: absolute;
+    right: 0;
+    top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.accordion--show .oh-accordion-body {
+    display: block
+}
+
 </style>
 
 <section class="oh-wrapper oh-main__topbar">
@@ -581,6 +617,35 @@
 							</li>
 							<hr>
 						{% endif %}
+						{% if "whatsapp"|app_installed %}
+							{% if perms.whatsapp.view_whatsappcredentials %}
+								<li class="oh-inner-sidebar__item">
+									<div class="oh-accordion ms-2">
+										<div class="oh-accordion-header" style="font-size:16px;">
+											<ion-icon name="headset" class="me-2"></ion-icon>
+											{% trans "Whatsapp Configuration" %}
+										</div>
+										<div class="oh-accordion-body">
+											<div class="row">
+												<div class="col-sm-12 col-md-12 col-lg-12">
+													<div class="oh-input-group">
+														{% if perms.whatsapp.add_whatsappcredentials %}
+															<a
+																id="whatsapp_credentials"
+																href="{% url 'whatsapp-credential-view' %}"
+																class="oh-inner-sidebar__link oh-dropdown__link"
+																>{% trans "Whatsapp Credentials" %}</a
+															>
+														{% endif %}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</li>
+								<hr>
+							{% endif %}
+						{% endif %}
 
 					</ul>
 				</div>
@@ -592,6 +657,18 @@
 	</div>
 </div>
 <script>
+	$(document).ready(function () {
+	$(".oh-accordion--show").removeClass("oh-accordion--show");
+	$('.oh-accordion-header').on("click", function (e) {
+		e.preventDefault();
+		$(this).parent().toggleClass("accordion--show");
+		setTimeout(() => {
+			$(".oh-accordion--show").removeClass("oh-accordion--show");
+		}, 100);
+	  });
+
+	});
+
     $(document).ready(function () {
         var path = location.pathname;
         var menu = $(`a[href="${path}"].oh-inner-sidebar__link.oh-dropdown__link`);
@@ -604,13 +681,16 @@
 
         // Find the parent accordion element and show it
         var parentAccordion = menu.closest('.oh-accordion');
-        parentAccordion.addClass('oh-accordion--show');
+        parentAccordion.addClass('accordion--show');
 
         menu[0].scrollIntoView({ behavior: "smooth", block: "center" });
         if (menu.length != undefined) {
             localStorage.setItem("lastActiveTab", path);
         }
     });
+
+
+
 </script>
 <script src="{% static 'build/js/settingsDriver.js' %}"></script>
 {% if not request.user.driverviewed_set.first or "settings" not in request.user.driverviewed_set.first.user_viewed %}

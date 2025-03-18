@@ -79,17 +79,239 @@
 		height: 34px !important;
 		font-size: 1.75rem !important;
 	}
-	.file-upload {
-		margin-top: 6px !important;
-		width: 34px !important;
-		height: 34px !important;
-		font-size: 1.75rem !important;
+	body {
+		background-color: #f9f9f9 !important;
 	}
-</style>
+    .draft--dot {
+		background-color: grey;
+	}
+    .review_ongoing--dot {
+		background-color: orange;
+	}
+    .confirmed--dot {
+		background-color: rgb(103, 171, 238);
+	}
+    .paid--dot {
+		background-color: green;
+	}
+    .status-draft {
+		border-left: 3.4px solid grey !important; border-radius: 4px 0 0 4px;
+	}
+    .status-review_ongoing {
+		border-left: 3.4px solid orange !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-confirmed {
+		border-left: 3.4px solid rgb(103, 171, 238) !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-paid {
+		border-left: 3.4px solid green !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .sent-to-employee {
+		background-color: yellowgreen;
+		color: white;
+	}
+    .at_risk--dot {
+		background-color: red;
+	}
+    .not_started--dot {
+		background-color: grey;
+	}
+    .behind--dot {
+		background-color: orange;
+	}
+    .closed--dot {
+		background-color: rgb(103, 171, 238);
+	}
+    .on_track--dot {
+		background-color: yellowgreen;
+	}
+    .status-At.Risk {
+		border-left: 3.4px solid red !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-Not.Started {
+		border-left: 3.4px solid grey !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-Behind {
+		border-left: 3.4px solid orange !important;
+		border-radius: 4px 0 0 4px; }
+    .status-Closed {
+		border-left: 3.4px solid rgb(103, 171, 238) !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-On.Track {
+		border-left: 3.4px solid yellowgreen !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-rejected {
+		border-left: 4px solid red !important;
+		border-radius: 5px 0 0 4px;
+	}
+    .status-cancelled {
+		border-left: 4px solid grey !important;
+		border-radius: 5px 0 0 4px;
+	}
+    .status-requested {
+		border-left: 4px solid orange !important;
+		border-radius: 5px 0 0 4px;
+	}
+    .status-approved {
+		border-left: 4px solid yellowgreen !important;
+		border-radius: 5px 0 0 4px;
+	}
+	.validated-True{
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
 
+      }
+      .validated-False {
+
+        border-left: 3.4px solid rgba(128, 128, 128, 0.482) !important;
+        border-radius: 4px 0 0 4px;
+
+
+      }
+      .bulk-request--dot {
+
+        background-color:rgb(31 122 220 / 48%);
+      }
+    .diff-cell{
+      background: rgba(255, 166, 0, 0.158);
+    }
+	.validated--dot{
+		background-color:yellowgreen;
+	  }
+	  .not-validated--dot{
+		background-color:rgba(128, 128, 128, 0.482);
+	  }
+
+</style>
+{% include "generic/components.html" %}
 <div id="enlargeImageContainer"></div>
 
-<div class="oh-wrapper">
+<div class="oh-wrapper"  hx-get="{% url 'employee-profile' request.user.employee_get.id  %}" hx-trigger="load">
+</div>
+
+<div class="oh-checkpoint-badge mb-2"
+id="selectedInstances"
+data-ids="[]"
+data-clicked=""
+style="display: none">
+</div>
+<div class="oh-checkpoint-badge mb-2"
+id="shiftselectedInstancesIndividual"
+data-ids="[]"
+data-clicked=""
+style="display: none">
+</div>
+<div class="oh-modal" id="TaskTimesheetModal" role="dialog" aria-labelledby="TaskTimesheetModal" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width:1350px" id="TaskTimesheetTarget"></div>
+
+</div>
+
+<div class="oh-modal" id="addTimesheetModal" role="dialog" aria-labelledby="addTimesheetModal" aria-hidden="true"
+    style="z-index: 1022;">
+    <div class="oh-modal__dialog" id="addTimesheetModalBody">
+
+    </div>
+</div>
+
+<div class="oh-activity-sidebar"
+id="activitySidebar"
+style="z-index: 1000">
+<div class="oh-activity-sidebar__body"
+	id="commentContainer">
+</div>
+</div>
+
+<div
+    class="oh-modal"
+    id="groupAssign"
+    role="dialog"
+    aria-labelledby="groupAssign"
+    aria-hidden="true"
+  >
+    <div class="oh-modal__dialog" >
+      <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+          {% trans "Group Assign" %}
+        </h2>
+        <button class="oh-modal__close" aria-label="Close">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id="groupAssignBody">
+
+      </div>
+    </div>
+  </div>
+
+<div class="oh-modal"
+id="editValidateAttendanceRequest"
+role="dialog"
+aria-labelledby="editValidateAttendanceRequest"
+aria-hidden="true">
+<div class="oh-modal__dialog">
+	<div class="oh-modal__dialog-header">
+		<h2 class="oh-modal__dialog-title"
+			id="addEmployeeModalLabel">
+			{% trans "Validate Attendances Request" %}
+		</h2>
+		<button
+			class="oh-modal_close--custom"
+			onclick="event.stopPropagation(); var modalElement = this.closest('.oh-modal'); modalElement.classList.toggle('oh-modal--show');">
+			<ion-icon name="close-outline"></ion-icon>
+		</button>
+	</div>
+	<div class="oh-modal__dialog-body"
+		id="editValidateAttendanceRequestModalBody">
+	</div>
+</div>
+</div>
+
+
+<div class="oh-modal"
+id="addBonusModal"
+role="dialog"
+aria-hidden="true">
+<div class="oh-modal__dialog"
+	id="addBonusModalBody">
+</div>
+</div>
+
+
+<div class="oh-modal"
+id="rejectModal"
+role="dialog"
+aria-labelledby="rejectModal"
+aria-hidden="true">
+<div class="oh-modal__dialog">
+	<div class="oh-modal__dialog-header">
+		<h2 class="oh-modal__dialog-title"
+			id="editModal1ModalLabel">
+			{% trans "Rejection" %}
+			<button
+				class="oh-modal_close--custom"
+				onclick="$('#rejectModal').removeClass('oh-modal--show');"
+				aria-label="Close"
+				style="margin-left:80%; border:none; background:none;">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</h2>
+	</div>
+	<div class="oh-modal__dialog-body"
+		id="rejectForm">
+	</div>
+</div>
+</div>
+
+
+
+{% comment %} <div class="oh-wrapper">
 	<div class="oh-card mt-4 mb-5">
 		{% if perms.employee.change_ownprofile or 'profile_edit'|feature_is_accessible:request %}
 		<div class="d-flex flex-row-reverse">
@@ -448,13 +670,144 @@
 		</div>
 
 	</div>
-</div>
+</div> {% endcomment %}
 <script src="{% static 'employee/search.js' %}"></script>
 <script src="{% static 'basedOn.js' %}"></script>
 <script>
-	toggleColumns("employee-tab-profile","fieldContainerTable")
+	{% comment %} toggleColumns("employee-tab-profile","fieldContainerTable")
 	if (!localStorage.getItem("employee_tab_profile")) {
 		  $("#fieldContainerTable").find("[type=checkbox]").prop("checked",true).change()
-	  }
+	  } {% endcomment %}
+	  $(document).ready(function () {
+		var exists = $("#view-container").find(".oh-general__tab-link--active").length;
+		if (!exists) {
+			$("#view-container").find(".oh-general__tab-link")[0].click();
+		}
+	});
+
+	toggleColumns("employee-tab", "fieldContainerTable");
+
+	if (!localStorage.getItem("employee_tab")) {
+		$("#fieldContainerTable").find("[type=checkbox]").prop("checked", true).change();
+	}
+
+	function handleFormSubmit() {
+		$('#successMessage').show();
+		setTimeout(function () {
+			$('#successMessage').hide();
+		}, 3000);
+		return false; // Prevent the default form submission
+	}
+
+	function submitForm(elem) {
+		$(elem).siblings('.add_more_submit').click();
+	}
+
+	function enlargeDoc(src, $element) {
+		var enlargeDocContainer = $element.parents().closest("li").find("#enlargeDocContainer");
+		enlargeDocContainer.empty();
+		var style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white';
+		var enlargedImage = $('<iframe>').attr({ src: src, style: style });
+		var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '));
+		enlargeDocContainer.append(enlargedImage);
+		enlargeDocContainer.append(name);
+		setTimeout(function () {
+			enlargeDocContainer.show();
+			const iframe = document.querySelector('iframe').contentWindow;
+			var iframe_document = iframe.document;
+			var iframe_image = iframe_document.getElementsByTagName('img')[0];
+			$(iframe_image).attr('style', 'width:100%; height:100%;');
+		}, 100);
+	}
+
+	function checkSelected(names, target, initial = false) {
+		names = JSON.parse(`${names}`);
+		$.each(names, function (indexInArray, valueOfElement) {
+			if (!initial) {
+				$(target).find(`[value=${valueOfElement}]`).prop("checked", true).change();
+			} else {
+				$(target).find(`[value=${valueOfElement}]`).prop("checked", true);
+			}
+		});
+	}
+
+	function updateBadge(element = false) {
+		var panels = $(".panel");
+		$.each(panels, function (indexInArray, valueOfElement) {
+			var check = $(valueOfElement).find("[name=permissions]:checked").length;
+			$(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+			$(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title", check + " Permissions");
+		});
+
+		var permissionLine = $(".oh-sticky-table__tr");
+		$.each(permissionLine, function (index, value) {
+			var check = $(value).find("[name=permissions]:checked").length;
+			if (check === 4) {
+				$(value).find(".row-permission").prop("checked", true);
+			}
+		});
+
+		var permissionApps = $(".oh-sticky-table__tbody");
+		$.each(permissionApps, function (index, value) {
+			var total_permission_count = $(value).find("[name=permissions]").length;
+			var checked_permission_count = $(value).find("[name=permissions]:checked").length;
+			if (checked_permission_count === total_permission_count) {
+				$(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", true);
+			} else {
+				$(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", false);
+			}
+		});
+	}
+
+	function hideEnlargeDoc() {
+		var enlargeDocContainer = $('.enlargeDocContainer');
+		enlargeDocContainer.empty();
+	}
+
+	$(document).on('click', function (event) {
+		if (!$(event.target).closest('#enlargeDocContainer').length) {
+			hideEnlargeDoc();
+		}
+	});
+	{% if "attendance"|app_installed %}
+
+	function validateHours(url) {
+		$.ajax({
+			url: "{% url 'active-tab' %}",
+			method: "GET",
+			data: {
+				path: "{% url 'attendances-tab-view' %}",
+				target: `li[data-target="#attendances-tab1"]`
+			},
+			success: function(response) {
+				window.location.href = url;
+			},
+			error: function(xhr, status, error) {
+				console.error(error);
+			}
+		});
+	}
+
+	 function validateOTHours(url) {
+		$.ajax({
+			url: "{% url 'active-tab' %}",
+			method: "GET",
+			data: {
+				path: "{% url 'attendances-tab-view' %}",
+				target: `li[data-target="#attendances-tab2"]`
+			},
+			success: function(response) {
+				window.location.href = url;
+			},
+			error: function(xhr, status, error) {
+				console.error(error);
+			}
+		});
+	}
+	{% endif %}
+
+	{% if request.GET.deleted %}
+	$('#reloadMessagesButton').click();
+	{% endif %}
 </script>
 {% endblock content %}

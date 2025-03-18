@@ -1,5 +1,5 @@
 {% load i18n %} {% load horillafilters %} {% load basefilters %} {% load static %}
-
+{% include 'generic/components.html'%}
 {% include 'filter_tags.html' %}
 <div
 	class="oh-modal"
@@ -86,12 +86,10 @@
 								</li>
 								<li class="oh-dropdown__item">
 
-									<form
-									action="{% url 'document-request-delete' document_list.list.0.document_request_id.id %}"
-										class="w-50"
-										onsubmit="return confirm('{% trans "Are you sure you want to delete this Document Request?" %}');"
-										method='post'>
-										{% csrf_token %}
+									<a
+										hx-get="{% url 'generic-delete' %}?model=horilla_documents.DocumentRequest&pk={{document_list.list.0.document_request_id.id}}"
+										hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+										data-target="#deleteConfirmation">
 										<button
 											type="submit"
 											class="oh-dropdown__link oh-dropdown__link--danger"
@@ -99,7 +97,7 @@
 										>
 											{% trans "Delete" %}
 										</button>
-									</form>
+									</a>
 								</li>
                             </ul>
                         </div>
@@ -147,10 +145,10 @@
 										<span
 											class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
 											hx-get="{% url 'file-upload' document.id %}"
-											hx-target="#objectCreateModalTarget"
+											hx-target="#genericModalBody"
 											data-document-id="{{ document.id }}"
 											data-toggle="oh-modal-toggle"
-											data-target="#objectCreateModal"
+											data-target="#genericModal"
 											onclick="event.stopPropagation()"
 											title="{% trans 'Upload' %}"
 										    >
@@ -202,7 +200,8 @@
                                         <a
                                             type="submit"
                                             hx-get="{% url 'document-reject' document.id %}"
-                                            hx-target="#rejectFileForm"
+											{% comment %} hx-confirm="{% trans 'Do you want to reject this request' %}" {% endcomment %}
+                                            hx-target="#genericModalBody"
 											data-toggle="oh-modal-toggle"
 											data-target="#rejectFileModal"
                                             title="{% trans 'Reject' %}"

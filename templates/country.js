@@ -261,16 +261,26 @@ s_a[252] = "Bulawayo|Harare|ManicalandMashonaland Central|Mashonaland East|Masho
 
 
 function populateStates(countryElementId, stateElementId) {
+    var countryElement = document.getElementById(countryElementId);
+    if (!countryElement) {
+        console.error(`Element with ID '${countryElementId}' not found.`);
+        return; // Exit if the country element doesn't exist
+    }
 
-    var selectedCountryIndex = document.getElementById(countryElementId).selectedIndex;
+    var selectedCountryIndex = countryElement.selectedIndex;
 
     var stateElement = document.getElementById(stateElementId);
+    if (!stateElement) {
+        console.error(`Element with ID '${stateElementId}' not found.`);
+        return; // Exit if the state element doesn't exist
+    }
 
-    stateElement.length = 0; // Fixed by Julian Woods
+    stateElement.length = 0; // Clear existing options
     stateElement.options[0] = new Option('Select State', '');
     stateElement.selectedIndex = 0;
+
     if (s_a[selectedCountryIndex]) {
-        state_arr = s_a[selectedCountryIndex].split("|")
+        var state_arr = s_a[selectedCountryIndex].split("|");
         for (var i = 0; i < state_arr.length; i++) {
             stateElement.options[stateElement.length] = new Option(state_arr[i], state_arr[i]);
         }
@@ -278,32 +288,45 @@ function populateStates(countryElementId, stateElementId) {
 }
 
 function populateCountries(countryElementId, stateElementId) {
-    // given the id of the <select> tag as function argument, it inserts <option> tags
+
+    // Get the country select element by its ID
     var countryElement = document.getElementById(countryElementId);
-    var value = countryElement?.value
-    if (value != undefined) {
+
+    // Check if the countryElement exists
+    if (!countryElement) {
+        console.error(`Element with ID ${countryElementId} not found`);
+        return; // Exit the function if the element does not exist
+    }
+
+    // Clear the existing options
     countryElement.length = 0;
-    countryElement.options[0] = new Option('Select Country', '-1');
+
+    // Add default option
+    countryElement.options[0] = new Option('Select Country');
     countryElement.selectedIndex = 0;
+
+    // Populate with countries
     for (var i = 0; i < country_arr.length; i++) {
         countryElement.options[countryElement.length] = new Option(country_arr[i], country_arr[i]);
     }
 
+    // Handle the selected value
+    var value = countryElement.value;
+    if (value !== undefined) {
         $(countryElement).append($('<option>', {
             value: value,
             text: value,
             selected: true // Add the selected attribute
         }));
-        if (stateElementId) {
-            countryElement.onchange = function () {
-                populateStates(countryElementId, stateElementId);
-            };
-        }
     }
 
-    // Assigned all countries. Now assign event listener for the states.
-
+    // Set up onchange event for the country element if stateElementId is provided
+    if (stateElementId) {
+        countryElement.onchange = function () {
+            populateStates(countryElementId, stateElementId);
+        };
+    }
 }
 
+{% comment %} populateCountries("country", "id_state"); {% endcomment %}
 populateCountries("id_country", "id_state");
-populateCountries("country", "state");

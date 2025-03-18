@@ -1,0 +1,18 @@
+{% load i18n %}
+<label
+  class="oh-label"
+  for="id_{{ form.job_position_id.title }}"
+  title="{{ form.job_position_id.help_text|safe }}"
+  >{% trans form.job_position_id.label %}</label
+>
+<div id ="dynamic_field_job_position_id">
+{{form.job_position_id}}
+</div>
+<script>
+  $(document).ready(function () {
+    
+      $("select").on("select2:select", function (e) {
+          $(this).closest("select")[0].dispatchEvent(new Event("change"));
+      });
+  });
+</script>

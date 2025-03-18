@@ -5,6 +5,7 @@ from django import apps
 from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.forms import ValidationError
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -13,6 +14,7 @@ from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_views.cbv_methods import render_template
 
 PRIORITY = [
     ("low", "Low"),
@@ -59,7 +61,24 @@ class DepartmentManager(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
-    objects = HorillaCompanyManager("manager__employee_work_info__company_id")
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+
+        url = reverse_lazy("department-manager-update-view", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        url = reverse_lazy("department-manager-delete", kwargs={"dep_id": self.pk})
+        return url
+
+    def get_instance_id(self):
+        return self.id
 
     class Meta:
         unique_together = ("department", "manager")
@@ -81,6 +100,27 @@ class TicketType(HorillaModel):
 
     def __str__(self):
         return self.title
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("ticket-update-form", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        url = reverse_lazy("generic-delete")
+        return url
+
+    def get_delete_instance(self):
+        """
+        to get instance for delete
+        """
+
+        return self.pk
 
 
 class Ticket(HorillaModel):

@@ -10,6 +10,7 @@ import django_filters
 from django import forms
 
 from base.filters import FilterSet
+from horilla.filters import HorillaFilterSet
 from offboarding.models import (
     Offboarding,
     OffboardingEmployee,
@@ -18,7 +19,7 @@ from offboarding.models import (
 )
 
 
-class LetterFilter(FilterSet):
+class LetterFilter(HorillaFilterSet):
     """
     LetterFilter class
     """
@@ -41,7 +42,7 @@ class LetterFilter(FilterSet):
         ]
 
 
-class PipelineFilter(FilterSet):
+class PipelineFilter(HorillaFilterSet):
     """
     PipelineFilter
     """
@@ -65,7 +66,7 @@ class PipelineFilter(FilterSet):
         ).distinct()
 
 
-class PipelineStageFilter(FilterSet):
+class PipelineStageFilter(HorillaFilterSet):
     """
     PipelineStageFilter
     """
@@ -93,7 +94,7 @@ class PipelineStageFilter(FilterSet):
         ).distinct()
 
 
-class PipelineEmployeeFilter(FilterSet):
+class PipelineEmployeeFilter(HorillaFilterSet):
     """
     PipelineEmployeeFilter
     """

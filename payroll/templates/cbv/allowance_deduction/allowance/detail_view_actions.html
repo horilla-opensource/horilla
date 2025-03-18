@@ -1,0 +1,43 @@
+{% load i18n %}
+{% if perms.payroll.change_allowance or perms.payroll.delete_allowance %}
+    <div class="oh-modal__button-container w-100">
+       <div class="oh-btn-group">
+         <a href="{% url 'update-allowance' instance.id %}" class="oh-btn oh-btn--info" style="width: 50%;">
+           <ion-icon
+           name="create-outline"
+           role="img"
+           class="md hydrated"
+           aria-label="create outline"
+           ></ion-icon>{% trans "Edit" %}
+          </a>
+          <a hx-post="{% url 'delete-employee-allowance' instance.id %}?instances_ids={{ request.GET.instance_ids }}" onclick="event.preventDefault();event.stopPropagation();"
+                class="oh-btn oh-btn--danger" style="width: 50%;"
+                hx-confirm="{% trans 'Do you want to delete this Allowance?' %}"
+                hx-target="#genericModalBody"
+                >
+            <ion-icon
+                name="trash-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="create outline"
+            >
+            </ion-icon>{% trans "Delete" %}
+               </a>
+
+        </div>
+    </div>
+    {% endif %}
+
+{% comment %} {% if request.GET.deleted %}
+    <script>
+    $(".reload-record").click()
+    $("#reloadMessagesButton").click()
+    </script>
+{% endif %}
+?instance_ids={{ request.GET.instance_ids }} {% endcomment %}
+{% if request.GET.deleted %}
+    <script>
+    $(".reload-record").click()
+    $("#reloadMessagesButton").click()
+    </script>
+{% endif %}

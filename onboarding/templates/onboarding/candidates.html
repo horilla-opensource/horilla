@@ -122,15 +122,16 @@
               color: white;" {% endif %} type="button" hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{candidate.id}}" {% if candidate.is_offer_rejected %} title="{% trans "Added In Rejected Candidates" %}" {% else %} title="{% trans "Add To Rejected Candidates" %}" {% endif %} hx-target="#rejectReasonModalBody" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#rejectReasonModal" >
                 <ion-icon name="thumbs-down-outline"></ion-icon></button>
               {% endif %}
-              {% if not candidate.converted_employee_id %}
-                <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
-                  title="{% trans 'Send Portal / Start Onboarding' %}" onclick="$('select[name=ids]').val('{{candidate.id}}');"
-                  data-target="#addAttachments" data-toggle="oh-modal-toggle"
-                  href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon name="link-outline"></ion-icon></a>
+              {% if candidate.onboarding_portal %}
+              <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
+                title="{% trans 'Send Portal / Start Onboarding' %}" onclick="$('select[name=ids]').val('{{candidate.id}}');"
+                data-target="#addAttachments" data-toggle="oh-modal-toggle"
+                href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon name="link-outline"></ion-icon></a>
               {% else %}
-                <a href="#" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Send Portal / Start onboarding' %}"
-                  data-toggle="oh-modal-toggle" disabled ><ion-icon
-                    name="link-outline"></ion-icon></a>
+              <a href="#" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Send Portal  / Start onboarding' %}"
+                onclick="$('select[name=ids]').val('{{candidate.id}}');" data-target="#addAttachments"
+                data-toggle="oh-modal-toggle" href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon
+                  name="link-outline"></ion-icon></a>
               {% endif %}
               <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" onclick="return confirm('{% trans "Do you want to delete this record" %}?')"  id="delete-link"
                 href="{% url 'candidate-delete' candidate.id %}" title="{% trans 'Delete' %}"><ion-icon

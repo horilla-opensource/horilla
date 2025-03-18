@@ -181,7 +181,12 @@ def request_new(request):
     form.fields["employee_id"].queryset = form.fields[
         "employee_id"
     ].queryset | Employee.objects.filter(employee_user_id=request.user)
+
     form.fields["employee_id"].initial = request.user.employee_get.id
+    if request.GET.get("emp_id"):
+        emp_id = request.GET.get("emp_id")
+        form.fields["employee_id"].queryset = Employee.objects.filter(id=emp_id)
+        form.fields["employee_id"].initial = emp_id
     if request.method == "POST":
         form = NewRequestForm(request.POST)
         form = choosesubordinates(request, form, "attendance.change_attendance")
@@ -347,7 +352,7 @@ def attendance_request_changes(request, attendance_id):
         if shift_id is None or not len(shift_id):
             form.add_error("shift_id", "This field is required")
         if form.is_valid():
-            # commit already set to False
+            # commit already set to False in the form save method
             # so the changes not affected to the db
             instance = form.save()
             instance.employee_id = attendance.employee_id
@@ -479,7 +484,10 @@ def approve_validate_attendance_request(request, attendance_id):
         # DUE TO AFFECT THE OVERTIME CALCULATION ON SAVE METHOD, SAVE THE INSTANCE ONCE MORE
         attendance = Attendance.objects.get(id=attendance_id)
         attendance.save()
-
+    if attendance.request_type == "create_request":
+        attendance.request_type = "created_request"
+        attendance.requested_data = None
+        attendance.save()
     if (
         attendance.attendance_clock_out is None
         or attendance.attendance_clock_out_date is None
@@ -523,7 +531,6 @@ def approve_validate_attendance_request(request, attendance_id):
         early_out(
             attendance, start_time=start_time_sec, end_time=end_time_sec, shift=shift
         )
-
     messages.success(request, _("Attendance request has been approved"))
     employee = attendance.employee_id
     notify.send(

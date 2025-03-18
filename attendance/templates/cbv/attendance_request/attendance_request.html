@@ -1,0 +1,138 @@
+
+
+
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+
+
+
+
+<style>
+.validated--dot{
+  background-color:yellowgreen;
+}
+.not-validated--dot{
+  background-color:rgba(128, 128, 128, 0.482);
+}
+
+.validated-True{
+  border-left: 3.4px solid yellowgreen !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.validated-False {
+
+  border-left: 3.4px solid rgba(128, 128, 128, 0.482) !important;
+  border-radius: 4px 0 0 4px;
+
+  
+}
+.bulk-request--dot {
+
+  background-color:rgb(31 122 220 / 48%);
+
+  
+}
+
+  .diff-cell{
+    background: rgba(255, 166, 0, 0.158);
+  }
+
+</style>
+
+<div hx-get="{% url "attendance-request-nav" %}" hx-trigger="load">
+</div>  
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+  <div 
+  class="oh-wrapper" 
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+  </div>
+  <script src="{% static 'cbv/attendance/hour_account.js' %}"></script>
+
+  <div
+  class="oh-modal"
+  id="updateAttendanceRequest"
+  role="dialog"
+  aria-labelledby="updateAttendanceRequest"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Update Attendances Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body"
+      id="updateAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="validateAttendanceRequest"
+  role="dialog"
+  aria-labelledby="validateAttendanceRequest"
+  aria-hidden="true"
+  style="z-index: 35;"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Validate Attendances Request" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div
+      class="oh-modal__dialog-body  oh-modal__dialog-body oh-modal__dialog-relative"
+      id="validateAttendanceRequestModalBody"
+    ></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="genericModalEdit"
+  role="dialog"
+  aria-labelledby="genericModalEdit"
+  aria-hidden="true"
+  style="z-index: 45;"
+>
+  <div class="oh-modal__dialog" id="genericModalEditBody"></div>
+</div>
+
+
+ 
+ 
+{% endblock content %}

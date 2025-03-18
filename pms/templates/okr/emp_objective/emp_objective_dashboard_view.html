@@ -48,10 +48,10 @@
                                                 {% comment %} {% if request.user|is_reportingmanager or perms.pms.view_employeekeyresult %} {% endcomment %}
                                                     <a
                                                         hx-get='{% url "view-employee-objective" emp_objective.id %}'
-                                                        hx-target="#objectDetailsModalTarget"
+                                                        hx-target="#genericModal"
                                                         data-toggle="oh-modal-toggle"
-                                                        data-target="#objectDetailsModal"
-                                                        type="button" title="{% trans 'Viewxxxxxxxxxxxx' %}"
+                                                        data-target="#genericModalBody"
+                                                        type="button" title="{% trans 'View' %}"
                                                         class="oh-btn oh-btn--light-bkg p-3 w-100"  onclick="event.stopPropagation()"
                                                     >
                                                         <ion-icon name="eye-outline"></ion-icon>
@@ -72,9 +72,9 @@
                                                     <button  style="border-right:1px solid hsl(8, 77%, 56%)"
                                                         class="oh-btn oh-btn--secondary-outline float-end"
                                                         hx-get='{% url "employee-key-result-creation" emp_objective.id %}'
-                                                        hx-target="#objectCreateModalTarget"
+                                                        hx-target="#genericModalBody"
                                                         data-toggle="oh-modal-toggle"
-                                                        data-target="#objectCreateModal"
+                                                        data-target="#genericModal"
                                                         title="Add Key Result"
                                                         onclick="event.stopPropagation()"
                                                     >

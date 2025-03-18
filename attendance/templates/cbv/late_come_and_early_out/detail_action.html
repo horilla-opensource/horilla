@@ -1,0 +1,43 @@
+{% load i18n %}
+{% load basefilters %}
+
+{% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or perms.attendance.delete_attendancelatecomeearlyout %}
+                {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
+                    <a
+                        class="oh-btn oh-btn-group oh-btn--warning"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#penaltyModal"
+                        hx-target="#penaltyModalBody"
+                        hx-get="{% url "cut-penalty" instance.id %}"
+                        style="width: 50%;"
+                        >
+                       
+                        <ion-icon name="information-circle-outline" role="img"
+                            class="md hydrated" aria-label="information circle outline">
+                        </ion-icon>{% trans "Penalty" %}
+                    </a>
+                {% endif %}
+                {% if perms.attendance.delete_attendancelatecomeearlyout %}
+                    <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
+                        hx-post="{% url 'late-come-early-out-delete' instance.id  %}?instances_ids={{ request.GET.instance_ids }}"
+                        hx-target="#genericModalBody"
+                        onclick="event.stopPropagation()"
+                        class="w-50"
+                    >
+                    {% csrf_token %}
+                        <button type='submit' class="oh-btn oh-btn-group oh-btn--danger w-100"><ion-icon
+                            name="trash-outline"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="create outline"
+                            ></ion-icon>{% trans "Delete" %}</button>
+                    </form>
+                {% endif %}
+            
+    {% endif %}
+
+{% if request.GET.deleted %}
+<script>
+    $(".reload-record").click()
+</script>
+{% endif %}

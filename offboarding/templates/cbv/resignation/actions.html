@@ -1,0 +1,69 @@
+{% load i18n %}
+<div style="width : 100%" onclick="event.stopPropagation()">
+    <form action="{% url 'update-letter-status' %}">
+        {% if perms.offboarding.change_resignationletter %}
+        <div class="oh-btn-group">
+            {% if instance.status != "approved" %}
+            <button
+                title="By approving the request employee will added to the offboarding pipeline"
+                type="button"
+                onclick="event.stopPropagation();$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
+                class="oh-btn oh-btn--success w-100 oh-btn--block w-100"
+            >
+                <ion-icon
+                    name="checkmark"
+                    class="mr-1 md hydrated"
+                    role="img"
+                    aria-label="checkmark"
+                ></ion-icon>
+            </button>
+            {% else %}
+            <button
+                type="button"
+                class="oh-btn oh-btn--success oh-btn--disabled oh-btn--block w-100"
+            >
+                <ion-icon
+                    name="checkmark"
+                    class="mr-1 md hydrated"
+                    role="img"
+                    aria-label="checkmark"
+                ></ion-icon>
+            </button>
+            {% endif %}
+            <button
+                type="button"
+                onclick="event.stopPropagation();$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
+                class="oh-btn oh-btn--danger oh-btn--block w-100"
+            >
+                <ion-icon
+                    name="close-circle-outline"
+                    class="mr-1 md hydrated"
+                    role="img"
+                    aria-label="close"
+                ></ion-icon>
+            </button>
+            <input type="hidden" name="status" />
+            <input
+                type="hidden"
+                name="letter_ids"
+                value="{{instance.id}}"
+            />
+            <input type="hidden" name="offboarding_id" />
+            <input type="hidden" name="notice_period_starts"
+            value="{% now "Y-m-d" %}"
+            id="notice_period_starts{{instance.id}}">
+            <input
+                type="hidden"
+                name="notice_period_ends"
+                id="notice_period_ends{{instance.id}}"
+            />
+            <button type="submit" hidden></button>
+        </div>
+        {% endif %}
+        <input
+            type="submit"
+            hidden=""
+            id="requestCard1Button"
+        />
+    </form>
+</div>

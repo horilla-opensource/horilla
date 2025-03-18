@@ -17,6 +17,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils import timezone as django_timezone
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
@@ -685,7 +686,7 @@ def biometric_device_archive(request, device_id):
     device_obj.save()
     message = _("archived") if not device_obj.is_active else _("un-archived")
     messages.success(request, _("Device is %(message)s") % {"message": message})
-    return redirect(f"/biometric/search-devices?{previous_data}")
+    return redirect(f"/biometric/biometric-card-view/?{previous_data}")
 
 
 @login_required
@@ -709,7 +710,8 @@ def biometric_device_delete(request, device_id):
     device.delete()
     previous_data = request.GET.urlencode()
     messages.success(request, _("Biometric device deleted successfully."))
-    return redirect(f"/biometric/search-devices?{previous_data}")
+    return redirect(f"/biometric/biometric-card-view?{previous_data}")
+    # return redirect(f"/biometric/view-biometric-devices?{previous_data}")
 
 
 @login_required
@@ -732,8 +734,11 @@ def search_devices(request):
     data_dict = parse_qs(previous_data)
     get_key_instances(BiometricDevices, data_dict)
     template = "biometric/card_biometric_devices.html"
-    if request.GET.get("view") == "list":
-        template = "biometric/list_biometric_devices.html"
+    # if request.GET.get("view") == "list":
+    #     template = "biometric/list_biometric_devices.html"
+    # else:
+    #     return HttpResponse("<script>$(#applyFilter').click();</script>")
+    #     # return redirect(reverse("biometric-card-view"))
 
     devices = paginator_qry(devices, request.GET.get("page"))
     return render(
@@ -980,16 +985,11 @@ def zk_employees_fetch(device):
     conn.enable_device()
     users = conn.get_users()
     fingers = conn.get_templates()
-
-    bio_employees = BiometricEmployees.objects.filter(device_id=device)
-    bio_lookup = {bio.user_id: bio for bio in bio_employees}
-
     employees = []
     for user in users:
         user_id = user.user_id
         uid = user.uid
-        bio_id = bio_lookup.get(user_id)
-
+        bio_id = BiometricEmployees.objects.filter(user_id=user_id).first()
         if bio_id:
             employee = bio_id.employee_id
             employee_work_info = EmployeeWorkInformation.objects.filter(
@@ -1778,7 +1778,6 @@ def biometric_device_live(request):
                       timer: 1500,
                       timerProgressBar: true, // Show a progress bar as the timer counts down
                       didClose: () => {
-                        location.reload(); // Reload the page after the SweetAlert is closed
                         },
                     });
                     </script>
