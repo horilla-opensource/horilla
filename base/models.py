@@ -104,7 +104,9 @@ class Department(HorillaModel):
     Department model
     """
 
-    department = models.CharField(max_length=50, blank=False)
+    department = models.CharField(
+        max_length=50, blank=False, verbose_name=_("Department")
+    )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager()
@@ -199,7 +201,7 @@ class WorkType(HorillaModel):
     WorkType model
     """
 
-    work_type = models.CharField(max_length=50)
+    work_type = models.CharField(max_length=50, verbose_name=_("Work Type"))
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager()
@@ -1510,17 +1512,21 @@ class Announcement(HorillaModel):
         Employee, related_name="announcement_employees", blank=True
     )
     department = models.ManyToManyField(Department, blank=True)
-    job_position = models.ManyToManyField(JobPosition, blank=True)
+    job_position = models.ManyToManyField(
+        JobPosition, blank=True, verbose_name=_("Job Position")
+    )
     company_id = models.ManyToManyField(
-        Company,
-        blank=True,
-        related_name="announcement",
+        Company, blank=True, related_name="announcement", verbose_name=_("Company")
     )
     disable_comments = models.BooleanField(default=False)
     filtered_employees = models.ManyToManyField(
         Employee, related_name="announcement_filtered_employees", editable=False
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
+
+    class Meta:
+        verbose_name = _("Announcement")
+        verbose_name_plural = _("Announcements")
 
     def get_views(self):
         """
