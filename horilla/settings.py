@@ -30,7 +30,7 @@ env = environ.Env(
         "uzm9yv+03rih4!ci_6bnc+=jt365xppy*7%2g+qzbc6acr%9me",
     ),
     ALLOWED_HOSTS=(list, ["*"]),
-    CSRF_TRUSTED_ORIGINS=(list, ["https://localhost:8000"]),
+    CSRF_TRUSTED_ORIGINS=(list, ["https://localhost", "https://hrms.jawswarehouse.com"]),
 )
 
 env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
@@ -240,4 +240,4 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    CSRF_TRUSTED_ORIGINS = ['https://hrms.jawswarehouse.com', 'http://localhost', 'http://127.0.0.1']
+  #  CSRF_TRUSTED_ORIGINS = ['https://hrms.jawswarehouse.com', 'http://localhost', 'http://127.0.0.1']
