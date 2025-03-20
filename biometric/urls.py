@@ -43,6 +43,11 @@ urlpatterns = [
         name="biometric-device-test",
     ),
     path(
+        "biometric-device-fetch-logs/<uuid:device_id>/",
+        views.biometric_device_fetch_logs,
+        name="biometric-device-fetch-logs",
+    ),
+    path(
         "biometric-device-add",
         views.biometric_device_add,
         name="biometric-device-add",
@@ -79,9 +84,34 @@ urlpatterns = [
         name="search-employee-in-device",
     ),
     path(
+        "find-employee-badge-id",
+        views.find_employee_badge_id,
+        name="find-employee-badge-id",
+    ),
+    path(
         "add-biometric-user/<uuid:device_id>/",
         views.add_biometric_user,
         name="add-biometric-user",
+    ),
+    path(
+        "map-biometric-users/<uuid:device_id>/",
+        views.map_biometric_users,
+        name="map-biometric-users",
+    ),
+    path(
+        "add-dahua-biometric-user/<uuid:device_id>/",
+        views.add_dahua_biometric_user,
+        name="add-dahua-biometric-user",
+    ),
+    path(
+        "delete-dahua-user/<uuid:obj_id>",
+        views.delete_dahua_user,
+        name="delete-dahua-user",
+    ),
+    path(
+        "delete-dahua-user",
+        views.delete_dahua_user,
+        name="delete-dahua-user",
     ),
     path(
         "enable-cosec-face-recognition/<str:user_id>/<uuid:device_id>/",

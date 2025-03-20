@@ -1,0 +1,60 @@
+{% load i18n %}{% load static %}
+<section class="oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <div class="oh-main__titlebar-title fw-bold mb-0 text-dark">
+            {% trans "Employees" %}
+        </div>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
+    </div>
+
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+            <input type="text" hx-get="{% url 'search-employee-in-device' %}?device={{device_id}}"
+                placeholder="{% trans 'Search' %}" name="search" hx-trigger="keyup changed delay:.2s"
+                hx-target="#dahuUsersList" class="oh-input oh-input__icon" hx-vals='{"view":"{{request.GET.view}}"}'
+                aria-label="Search Input" />
+        </div>
+        <div class="oh-main__titlebar-button-container">
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow" @click="open = !open"
+                        @click.outside="open = false">
+                        {% trans "Actions" %}
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
+                        <ul class="oh-dropdown__items">
+                            <li class="oh-dropdown__item">
+                                <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle"
+                                    data-target="#objectCreateModal" hx-get="{%url 'map-biometric-users' device_id %}"
+                                    hx-target="#objectCreateModalTarget">
+                                    {% trans "Map Employee" %}
+                                </a>
+                            </li>
+                            {% if perms.delete_biometricdevices %}
+                                <li class="oh-dropdown__item">
+                                    <a href="#" class="oh-dropdown__link oh-dropdown__link--danger"
+                                        onclick="deleteDahuaUsers(this)" data-action="delete">{% trans "Delete" %}</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown">
+                    {% if perms.biometric.add_biometricdevices %}
+                        <a href="#" class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle"
+                            data-target="#objectCreateModal" hx-target="#objectCreateModalTarget"
+                            hx-get="{% url 'add-dahua-biometric-user' device_id %}">
+                            <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Add" %}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,23 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+<div class="oh-wrapper">
+    {% include 'biometric_users/dahua/nav_dahua_employees.html' %}
+    <div id="dahuUsersList">
+        {% include 'biometric_users/dahua/list_dahua_employees.html' %}
+    </div>
+    <div class="oh-modal" id="BiometricDeviceModal" role="dialog" aria-labelledby="BiometricDeviceModal"
+        aria-hidden="true">
+        <div class="oh-modal__dialog " style="max-width: 550px;" id="BiometricDeviceFormTarget"></div>
+    </div>
+    <div class="oh-modal" id="BiometricDeviceTestModal" role="dialog" aria-labelledby="BiometricDeviceTestModal"
+        aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px" id="BiometricDeviceTestFormTarget">
+            {% include "animation.html" %}
+        </div>
+    </div>
+    <span hx-delete="{% url 'delete-dahua-user' %}" hx-vals="" id="deleteDahuaUsers"></span>
+</div>
+<script src="{% static 'actions.js' %}"></script>
+{% endblock %}

@@ -1,7 +1,7 @@
-""""
+""" "
 asset.py
 
-This module is used to """
+This module is used to"""
 
 import csv
 import json
@@ -113,7 +113,7 @@ def asset_creation(request, asset_category_id):
     initial_data = {"asset_category_id": asset_category_id}
     # Use request.GET to pre-fill the form with dynamic create batch number data if available
     form = (
-        AssetForm(request.GET, initial=initial_data)
+        AssetForm(initial={**initial_data, **request.GET.dict()})
         if request.GET.get("csrfmiddlewaretoken")
         else AssetForm(initial=initial_data)
     )
@@ -355,8 +355,7 @@ def asset_list(request, cat_id):
     context = {}
     asset_under = ""
     asset_filtered = AssetFilter(request.GET)
-
-    asset_list = asset_filtered.qs.filter(asset_category_id = cat_id)
+    asset_list = asset_filtered.qs.filter(asset_category_id=cat_id)
 
     paginator = Paginator(asset_list, get_pagination())
     page_number = request.GET.get("page")
@@ -389,18 +388,18 @@ def asset_category_creation(request):
     Returns:
         A rendered HTML template displaying the AssetCategory creation form.
     """
-    asset_category_form = AssetCategoryForm()
+    form = AssetCategoryForm()
 
     if request.method == "POST":
-        asset_category_form = AssetCategoryForm(request.POST)
-        if asset_category_form.is_valid():
-            asset_category_form.save()
+        form = AssetCategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
             messages.success(request, _("Asset category created successfully"))
-            asset_category_form = AssetCategoryForm()
+            form = AssetCategoryForm()
             if AssetCategory.objects.filter().count() == 1:
                 return HttpResponse("<script>window.location.reload();</script>")
-    context = {"asset_category_form": asset_category_form}
-    return render(request, "category/asset_category_creation.html", context)
+    context = {"form": form}
+    return render(request, "category/asset_category_form.html", context)
 
 
 @login_required
@@ -418,17 +417,17 @@ def asset_category_update(request, cat_id):
 
     previous_data = request.GET.urlencode()
     asset_category = AssetCategory.objects.get(id=cat_id)
-    asset_category_form = AssetCategoryForm(instance=asset_category)
-    context = {"asset_category_update_form": asset_category_form, "pg": previous_data}
+    form = AssetCategoryForm(instance=asset_category)
+    context = {"form": form, "pg": previous_data}
     if request.method == "POST":
-        asset_category_form = AssetCategoryForm(request.POST, instance=asset_category)
-        if asset_category_form.is_valid():
-            asset_category_form.save()
+        form = AssetCategoryForm(request.POST, instance=asset_category)
+        if form.is_valid():
+            form.save()
             messages.success(request, _("Asset category updated successfully"))
         else:
-            context["asset_category_form"] = asset_category_form
+            context["form"] = form
 
-    return render(request, "category/asset_category_update.html", context)
+    return render(request, "category/asset_category_form.html", context)
 
 
 @login_required
@@ -491,6 +490,7 @@ def filter_pagination_asset_category(request):
         "pg": previous_data,
         "filter_dict": data_dict,
         "dashboard": request.GET.get("dashboard"),
+        "model": AssetCategory,
     }
 
 
@@ -1478,7 +1478,7 @@ def asset_batch_update(request, batch_id):
         asset_batch_form = AssetBatchForm(request.POST, instance=asset_batch_number)
         if asset_batch_form.is_valid():
             asset_batch_form.save()
-            messages.info(request, _("Batch updated successfully."))
+            messages.success(request, _("Batch updated successfully."))
         context["asset_batch_update_form"] = asset_batch_form
     return render(request, "batch/asset_batch_number_update.html", context)
 

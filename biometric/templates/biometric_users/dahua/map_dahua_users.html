@@ -1,0 +1,25 @@
+{% load i18n %}
+{% if messages %}
+    <script>reloadMessage();</script>
+    <span hx-get="{% url 'biometric-device-employees' device_id %}" hx-target="#dahuUsersList" hx-select="#dahuUsersList" hx-trigger="load delay:500ms" hx-swap="outerHTML"
+    ></span>
+{% endif %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title">
+        {% trans "Map Dahua User" %}
+    </span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<div class="oh-modal__dialog-body">
+    <form hx-post="{%url 'map-biometric-users' device_id %}" hx-target="#objectCreateModalTarget" class="oh-profile-section pt-4">
+        {{form.as_p}}
+        <div class="oh-modal__dialog-footer p-0 pt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Map" %}
+            </button>
+        </div>
+    </form>
+</div>
