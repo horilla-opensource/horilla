@@ -148,3 +148,6 @@ whoosh_index/
 
 #VSCode
 .vscode/
+
+#PyCharm
+.idea/

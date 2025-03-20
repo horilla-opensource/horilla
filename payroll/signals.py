@@ -52,10 +52,9 @@ def create_installments(sender, instance, created, **kwargs):
         loan.is_fixed = True
         loan.one_time_date = instance.provided_date
         loan.is_loan = True
-        loan.save()
         loan.include_active_employees = False
-        loan.specific_employees.add(instance.employee_id)
         loan.save()
+        loan.specific_employees.add(instance.employee_id)
         instance.allowance_id = loan
         super(LoanAccount, instance).save()
     else:
