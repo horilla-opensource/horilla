@@ -139,7 +139,7 @@ class Command(BaseCommand):
             user = User.objects.get(
                 Q(username=email) | Q(username=user_id) | Q(email=email)
             )
-            user.username = user_id
+            user.username = email
             user.set_password(ldap_password)  # Hash and store password securely
             user.save()
             action = "Updated"

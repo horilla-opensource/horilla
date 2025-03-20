@@ -1,0 +1,45 @@
+{% load static i18n %}
+{% if messages %}
+    <span hx-get="{%url 'asset-category-view-search-filter' %}" hx-target="#assetCategoryList" hx-trigger="load"
+        hx-on-htmx-after-request="setTimeout(function () { $('.oh-modal__close').click(); }, 1000);"></span>
+{% endif %}
+<div class="oh-modal__dialog-header">
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
+        <h5>{% if form.instance.id %} {% trans "Update" %}{% else %}{% trans "Create" %}{% endif %}
+            {{form.verbose_name}}</h5>
+    </span>
+</div>
+<div class="oh-modal__dialog-body">
+    <form
+        hx-post="{% if form.instance.id %}{% url 'asset-category-update' cat_id=form.instance.id %}?{{pg}}{% else %}{%url 'asset-category-creation' %}{% endif %}"
+        hx-target="{% if form.instance.id %}#objectUpdateModalTarget{% else %}#objectCreateModalTarget{% endif %}">
+        {% csrf_token %}
+        <div class="oh-profile-section pt-0">
+            <div class="oh-input__group ">
+                <label class="oh-input__label"
+                    for="{{form.asset_category_name.id_for_label}}">{{form.asset_category_name.label}}</label>
+                {{form.asset_category_name}}
+                {{form.asset_category_name.errors}}
+            </div>
+            <div class="oh-input__group ">
+                <label class="oh-input__label"
+                    for="{{form.asset_category_description.id_for_label}}">{{form.asset_category_description.label}}</label>
+                {{form.asset_category_description}}
+                {{form.asset_category_description.errors}}
+            </div>
+            <div class="oh-input__group ">
+                <label class="oh-input__label" for="{{form.company_id.id_for_label}}">{{form.company_id.label}}</label>
+                {{form.company_id}}
+                {{form.company_id.errors}}
+            </div>
+            <div class="oh-modal__dialog-footer p-0 mt-3">
+                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                    {% trans "Save" %}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

@@ -7,6 +7,7 @@ This module is used to write email backends
 import importlib
 import logging
 
+from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.core.mail.backends.smtp import EmailBackend
 
@@ -71,6 +72,23 @@ class DefaultHorillaMailBackend(EmailBackend):
             configuration = DynamicEmailConfiguration.objects.filter(
                 is_primary=True
             ).first()
+        if configuration:
+            display_email_name = (
+                f"{configuration.display_name} <{configuration.from_email}>"
+            )
+            if request:
+                if (
+                    configuration.use_dynamic_display_name
+                    and request.user.is_authenticated
+                ):
+                    display_email_name = f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.get_email()}>"
+                cache.set(f"dynamic_display_name{request.user.pk}", display_email_name)
+                if request.user.is_authenticated:
+                    reply_to = [
+                        f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.get_email()}>",
+                    ]
+                    cache.set(f"reply_to{request.user.pk}", reply_to)
+
         return configuration
 
     @property
@@ -218,15 +236,10 @@ def new_init(
     custom __init_method to override
     """
     request = getattr(_thread_locals, "request", None)
-
-    if request:
-        try:
-            display_email_name = f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.email}>"
-            from_email = display_email_name if not from_email else from_email
-            reply_to = [display_email_name] if not reply_to else reply_to
-
-        except Exception as e:
-            logger.error(e)
+    DefaultHorillaMailBackend()
+    from_email = cache.get(f"dynamic_display_name{request.user.pk}")
+    if request.user.is_authenticated:
+        reply_to = cache.get(f"reply_to{request.user.pk}") if not reply_to else reply_to
 
     message_init(
         self,
