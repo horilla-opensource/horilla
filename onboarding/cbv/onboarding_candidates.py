@@ -3,9 +3,12 @@ Onboarding candidate view.
 """
 
 from typing import Any
+
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
+from base.models import HorillaMailTemplate
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaListView,
@@ -14,7 +17,6 @@ from horilla_views.generic.cbv.views import (
 )
 from recruitment.filters import CandidateFilter
 from recruitment.models import Candidate
-from base.models import HorillaMailTemplate
 
 
 @method_decorator(login_required, name="dispatch")
@@ -50,8 +52,7 @@ class OnboardingCandidatesList(HorillaListView):
         "joining_date",
         "probation_end",
         "job_position_id",
-        "recruitment_id"
-
+        "recruitment_id",
     ]
 
     def __init__(self, **kwargs: Any) -> None:
@@ -91,7 +92,7 @@ class OnboardingCandidatesList(HorillaListView):
                 $('#applyFilter').closest('form').find('[name=joining_set]').val('true');
                 $('[name=portal_sent]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -103,7 +104,7 @@ class OnboardingCandidatesList(HorillaListView):
                 $('#applyFilter').closest('form').find('[name=joining_set]').val('false');
                 $('[name=portal_sent]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -126,7 +127,7 @@ class OnboardingCandidatesList(HorillaListView):
                 $('#applyFilter').closest('form').find('[name=portal_sent]').val('true');
                 $('[name=joining_set]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -138,12 +139,13 @@ class OnboardingCandidatesList(HorillaListView):
         ("Date of joining", "date_of_joining"),
         ("Job position", "job_position_id__job_position"),
         ("Recruitment", "recruitment_id__title"),
-        ("Probation ends", "probation_date")
+        ("Probation ends", "probation_date"),
     ]
 
     row_attrs = """
                 onclick="window.location.href='{get_individual_url}'"
                 """
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required(perm="candidate.view_candidate"), name="dispatch")
@@ -181,7 +183,7 @@ class OnboardingCandidatesNav(HorillaNavView):
         {
             "action": _("Send Portal"),
             "attrs": """
-                    
+
                     data-target="#addAttachments"
                     data-toggle="oh-modal-toggle"
                     id="send-port"

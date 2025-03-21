@@ -6,7 +6,7 @@
 </style>
 {% if  perms.pms.add_employeeobjective or perms.pms.change_objective or perms.pms.delete_objective %}
 
-                                                          
+
                                                                 <div class="oh-btn-group" onclick="event.stopPropagation()">
                                                                     {% if perms.pms.add_employeeobjective %}
                                                                         <a
@@ -18,7 +18,7 @@
                                                                         <a
                                                                             onclick="event.preventDefault();event.stopPropagation()"
                                                                             data-toggle='oh-modal-toggle' data-target='#genericModal'
-                                                                            hx-get="{% url 'objective-update' instance.id %}" hx-target='#genericModalBody' 
+                                                                            hx-get="{% url 'objective-update' instance.id %}" hx-target='#genericModalBody'
                                                                             class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
                                                                         ><ion-icon name="create-outline"></ion-icon></a>
                                                                     {% endif %}
@@ -62,5 +62,5 @@
                                                                     </form>
                                                                     {% endif %}
                                                                 </div>
-                                                       
+
                                                             {% endif %}

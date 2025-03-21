@@ -4,6 +4,7 @@ Accessibility
 
 from django.contrib.auth.context_processors import PermWrapper
 from django.contrib.auth.models import User
+
 from base.methods import check_manager
 from employee.models import Employee
 from recruitment.methods import is_recruitmentmanager, is_stagemanager, stage_manages
@@ -129,7 +130,7 @@ def empl_scheduled_interview_accessibility(
     return False
 
 
-def view_candidate_self_tracking(request, instance,*args, **kwargs):
+def view_candidate_self_tracking(request, instance, *args, **kwargs):
     if (
         request.user.has_perm("recruitment.view_candidate")
         or is_stagemanager(request)
@@ -137,7 +138,8 @@ def view_candidate_self_tracking(request, instance,*args, **kwargs):
     ):
         return True
 
-def request_document(request, instance,*args, **kwargs):
+
+def request_document(request, instance, *args, **kwargs):
     if (
         request.user.has_perm("recruitment.change_candidate")
         or request.user.has_perm("recruitment.add_candidatedocumentrequest")
@@ -147,12 +149,14 @@ def request_document(request, instance,*args, **kwargs):
         return True
 
 
-def check_candidate_self_tracking(request,instance,user_perm):
+def check_candidate_self_tracking(request, instance, user_perm):
     """
     This method is used to get the candidate self tracking is enabled or not
     """
 
     candidate_self_tracking = False
     if RecruitmentGeneralSetting.objects.exists():
-        candidate_self_tracking = RecruitmentGeneralSetting.objects.first().candidate_self_tracking
+        candidate_self_tracking = (
+            RecruitmentGeneralSetting.objects.first().candidate_self_tracking
+        )
     return candidate_self_tracking

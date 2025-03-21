@@ -3,22 +3,24 @@ Asset category forms
 """
 
 from typing import Any
+
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from asset.cbv.asset_batch_no import DynamicCreateBatchNo
 from asset.filters import AssetCategoryFilter, AssetFilter, CustomAssetFilter
 from asset.forms import AssetCategoryForm, AssetForm, AssetReportForm
 from asset.models import Asset, AssetCategory, AssetDocuments, AssetReport
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
     HorillaNavView,
 )
-from horilla_views.cbv_methods import login_required, permission_required
 
 
 @method_decorator(login_required, name="dispatch")
@@ -130,7 +132,7 @@ class AssetCategoryDuplicateFormView(HorillaFormView):
 @method_decorator(permission_required("asset.view_asset"), name="dispatch")
 class AssetDuplicateFormView(HorillaFormView):
     """
-    form view for create duplicate for asset 
+    form view for create duplicate for asset
     """
 
     form_class = AssetForm
@@ -166,7 +168,8 @@ class AssetDuplicateFormView(HorillaFormView):
                 "<script>$('#genericModal').removeClass('oh-modal--show');$('.filterButton').click();</script>"
             )
         return super().form_valid(form)
-    
+
+
 class AssetReportFormView(HorillaFormView):
     """
     form view for create button
@@ -180,7 +183,7 @@ class AssetReportFormView(HorillaFormView):
         initial = super().get_initial()
         initial["asset_id"] = self.kwargs.get("asset_id")
         return initial
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         asset_id = self.kwargs.get("asset_id")
@@ -192,7 +195,7 @@ class AssetReportFormView(HorillaFormView):
         if form.is_valid():
             message = _("Asset report added successfully.")
             asset = form.save()
-            uploaded_files = form.cleaned_data.get('files')
+            uploaded_files = form.cleaned_data.get("files")
             if uploaded_files:
                 for file in uploaded_files:
                     AssetDocuments.objects.create(asset_report=asset, file=file)
@@ -249,14 +252,10 @@ class AssetCategoryNav(HorillaNavView):
     search_swap_target = "#assetCategoryList"
 
 
-
-
 class AssetCategoryDetailView(HorillaDetailedView):
     """
     Detail view of the page
     """
-
- 
 
     def get_context_data(self, **kwargs: Any):
         """
@@ -269,7 +268,7 @@ class AssetCategoryDetailView(HorillaDetailedView):
         return context
 
     model = Asset
-    header =  False
+    header = False
     template_name = "cbv/asset_category/detail_view_action.html"
     body = [
         (_("Tracking Id"), "asset_tracking_id"),
@@ -295,15 +294,11 @@ class AssetCategoryDetailView(HorillaDetailedView):
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-
             "attrs": """
                     class="oh-btn oh-btn--danger w-100"
                     hx-confirm="Do you want to delete this asset?"
                     hx-post="{get_delete_url}?instance_ids={ordered_ids}"
                     hx-target="#genericModalBody"
-                    """
+                    """,
         },
     ]
-
-
-

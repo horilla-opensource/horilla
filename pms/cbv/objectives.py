@@ -1,11 +1,13 @@
 from typing import Any
+
 from django import forms
-from django.http import HttpResponse
-from django.urls import resolve, reverse, reverse_lazy
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.db.models import Q
+from django.http import HttpResponse
+from django.urls import resolve, reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -16,7 +18,7 @@ from horilla_views.generic.cbv.views import (
     HorillaTabView,
     TemplateView,
 )
-
+from notifications.signals import notify
 from pms.cbv.key_result import KeyResultFormView
 from pms.filters import ActualObjectiveFilter, ObjectiveFilter
 from pms.forms import (
@@ -26,7 +28,6 @@ from pms.forms import (
     ObjectiveForm,
 )
 from pms.models import EmployeeKeyResult, EmployeeObjective, Objective
-from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -59,9 +60,8 @@ class ObjectivesList(HorillaListView):
         ("Description", "description"),
     ]
 
-
     header_attrs = {
-        "title_col" : """
+        "title_col": """
                       style="width:200px !important;"
                       """
     }
@@ -79,7 +79,7 @@ class MyObjectives(ObjectivesList):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.view_id="myObjContainer"
+        self.view_id = "myObjContainer"
         if self.request.user.has_perm(
             "pms.change_objective"
         ) or self.request.user.has_perm("pms.delete_objective"):
@@ -236,7 +236,6 @@ class CreateEmployeeObjectiveForm(HorillaFormView):
             self.form_class.verbose_name = _("Update Employee Objective")
         return context
 
-
     def form_valid(self, form: EmployeeObjectiveCreateForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
@@ -261,7 +260,7 @@ class CreateEmployeeObjectiveForm(HorillaFormView):
                             key_result_id=kr,
                             progress_type=kr.progress_type,
                             target_value=kr.target_value,
-                            start_date = emp_obj.start_date
+                            start_date=emp_obj.start_date,
                         )
                         emp_kr.save()
             messages.success(self.request, _(message))
@@ -282,7 +281,7 @@ class CreateObjectiveFormView(HorillaFormView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.view_id="objectiveForm"
+        self.view_id = "objectiveForm"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -290,7 +289,6 @@ class CreateObjectiveFormView(HorillaFormView):
             self.form.fields["assignees"].initial = self.form.instance.assignees.all()
             self.form_class.verbose_name = _("Update Objective")
         return context
-    
 
     def form_valid(self, form: ObjectiveForm) -> HttpResponse:
         if form.is_valid():
@@ -340,7 +338,7 @@ class CreateObjectiveFormView(HorillaFormView):
                                     key_result_id=key,
                                     progress_type=key.progress_type,
                                     target_value=key.target_value,
-                                    start_date = start_date
+                                    start_date=start_date,
                                 )
                                 emp_kr.save()
                     notify.send(
@@ -373,7 +371,7 @@ class CreateObjectiveFormView(HorillaFormView):
                                     key_result_id=key,
                                     progress_type=key.progress_type,
                                     target_value=key.target_value,
-                                    start_date = start_date
+                                    start_date=start_date,
                                 )
                                 emp_kr.save()
                         notify.send(
@@ -440,7 +438,7 @@ class AddAssigneesFormView(HorillaFormView):
                                     key_result_id=key_result,
                                     progress_type=key_result.progress_type,
                                     target_value=key_result.target_value,
-                                    start_date = start_date
+                                    start_date=start_date,
                                 )
                                 emp_kr.save()
                     notify.send(
@@ -474,7 +472,6 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.view_id = "empKeyrsult"
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -558,9 +555,6 @@ class EmployeeObjectiveDetailView(HorillaDetailedView):
         (_("Start Date"), "start_date"),
         (_("End Date"), "end_date"),
         (_("Status"), "status_col"),
-       
     ]
 
     action_method = "emp_obj_action"
-
- 

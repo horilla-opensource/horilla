@@ -75,7 +75,7 @@
             <label class="oh-label" for="{{form.employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
             {{form.employee_work_info__work_type_id}}
           </div>
-          {% if "attendance"|app_installed %} 
+          {% if "attendance"|app_installed %}
           <div class="oh-input-group">
             <label class="oh-label" for="{{form.working_today.id_for_label}}">{% trans "Currently Working" %}</label>
             {{form.working_today}}
@@ -110,8 +110,8 @@
       </div>
     </div>
   </div>
-</div> 
+</div>
 <script src="{% static '/base/filter.js' %}"></script>
 <script>
 {% include 'filter_country.js' %}
-</script> 
+</script>

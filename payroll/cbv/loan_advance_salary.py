@@ -2,22 +2,23 @@
 this page is handling the cbv methods of loan/advanced salary page
 """
 
-
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     HorillaTabView,
     TemplateView,
-    HorillaFormView,
 )
-from horilla_views.cbv_methods import login_required, permission_required
 from payroll.filters import LoanAccountFilter
 from payroll.forms.component_forms import LoanAccountForm
 from payroll.models.models import LoanAccount
@@ -93,7 +94,7 @@ class LoanListView(HorillaListView):
         (_("Toatal Installments"), "installments"),
         (_("Amount"), "loan_amount"),
         (_("Description"), "description"),
-        (_("Progress Bar"),"progress_bar_col")
+        (_("Progress Bar"), "progress_bar_col"),
     ]
 
     sortby_mapping = [
@@ -166,7 +167,6 @@ class LoanNavView(HorillaNavView):
              data-toggle="oh-modal-toggle"
          """
 
-
     nav_title = _("Loan / Advanced Salary")
     filter_body_template = "cbv/loan/loan_filter.html"
     filter_instance = LoanAccountFilter()
@@ -196,7 +196,6 @@ class LoanDetailView(HorillaDetailedView):
         context["ded_id"] = ded_id
         context["installments"] = installments
         return context
-    
 
 
 @method_decorator(login_required, name="dispatch")
@@ -223,4 +222,3 @@ class LoanFormView(HorillaFormView):
                 "<script>$('#reloadMessagesButton').click();</script>"
             )
         return super().form_valid(form)
-

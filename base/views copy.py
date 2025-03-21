@@ -738,11 +738,11 @@ def change_password(request):
         if form.is_valid():
             new_password = form.cleaned_data["new_password"]
             user.set_password(new_password)
-            
+
             if user.is_new_employee:  # Ensure this only affects new employees
                 user.is_new_employee = False
             user.save()
-            
+
             user = authenticate(request, username=user.username, password=new_password)
             login(request, user)
             messages.success(request, _("Password changed successfully"))
@@ -750,14 +750,6 @@ def change_password(request):
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
     return render(request, "base/auth/password_change.html", {"form": form})
-
-
-
-
-
-
-
-
 
 
 def logout_user(request):

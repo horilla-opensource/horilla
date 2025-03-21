@@ -3,11 +3,13 @@ Dashboard of onboarding
 """
 
 from typing import Any
+
+from django.db.models import CharField, Count, Q, Value
+from django.db.models.functions import Cast, Concat
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
-from django.db.models import Count, Q, Value, CharField
-from django.db.models.functions import Concat, Cast
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaListView
 from onboarding.cbv_decorators import all_manager_can_enter
@@ -46,22 +48,22 @@ class MyOnboardingTaskList(HorillaListView):
 
     header_attrs = {
         "task_title_count": """
-                          style = "width:100px !important "                          
+                          style = "width:100px !important "
                           """,
         "todo_count": """
-                          style = "width:55px !important"                          
+                          style = "width:55px !important"
                           """,
         "scheduled_count": """
-                          style = "width:55px !important;"                          
+                          style = "width:55px !important;"
                           """,
         "ongoing_count": """
-                          style = "width:60px !important"                          
+                          style = "width:60px !important"
                           """,
         "stuck_count": """
-                          style = "width:55px !important"                          
+                          style = "width:55px !important"
                           """,
         "done_count": """
-                          style = "width:65px !important"                          
+                          style = "width:65px !important"
                           """,
     }
 

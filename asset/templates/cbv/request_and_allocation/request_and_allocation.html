@@ -23,7 +23,7 @@
 
 
 <div hx-get="{% url "nav-asset-request-allocation" %}" hx-trigger="load">
-</div> 
+</div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
 
@@ -33,9 +33,9 @@
 <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
 <div class="oh-checkpoint-badge mb-2" id="assetlistInstances" data-ids="[]" data-clicked="" style="display: none"></div>
 
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -90,11 +90,11 @@ aria-hidden="true"
 <script>
   $(document).ready(function () {
       $("#assetFineModalBody").on("htmx:afterSwap", function () {
-         
+
           $("[name='installment_amount']").on("change keyup", function () {
               var loanAmount = $("[name='loan_amount']").val();
               var installmentAmount = $(this).val();
-      
+
               var installments = loanAmount / installmentAmount;
               $("[name='installments']").val(installments);
               if (Math.round(installments) !== installments) {
@@ -103,17 +103,17 @@ aria-hidden="true"
                   $("[name='installments']").trigger("change");
               }
           });
-      
+
           $("[name='loan_amount']").on("change keyup", function () {
               var loanAmount = $("[name='loan_amount']").val();
               if (loanAmount) {
-                  $("[name='installments']").val(1); 
+                  $("[name='installments']").val(1);
               } else {
-                  $("[name='installments']").val(""); 
+                  $("[name='installments']").val("");
               }
               $("[name='installments']").change();
           });
-      
+
           $("[name='installments']").on("change keyup", function () {
               var loanAmount = $("[name='loan_amount']").val();
               var installments = $(this).val();
@@ -128,5 +128,5 @@ aria-hidden="true"
 
 
 
-    
+
 {% endblock %}

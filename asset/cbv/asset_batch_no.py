@@ -3,11 +3,13 @@ this page is handling the cbv methods for asset batch no
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from asset.filters import AssetBatchNoFilter
 from asset.forms import AssetBatchForm
 from asset.models import AssetLot
@@ -49,12 +51,11 @@ class AssetBatchNoListView(HorillaListView):
     columns = [
         (_("Batch Number"), "lot_number"),
         (_("Description"), "lot_description"),
-        (_("Assets"),"assets_column")
+        (_("Assets"), "assets_column"),
     ]
 
-
     header_attrs = {
-        "action" : """
+        "action": """
                    style = "width:180px !important"
                    """
     }
@@ -151,16 +152,11 @@ class AssetBatchDetailView(HorillaDetailedView):
     model = AssetLot
     header = False
 
-    cols = {
-        "assets_column":12,
-        "lot_description":12,
-        "lot_number":12
-    }
+    cols = {"assets_column": 12, "lot_description": 12, "lot_number": 12}
     body = {
-        (_("Assets"),"assets_column"),
+        (_("Assets"), "assets_column"),
         (_("Description"), "lot_description"),
         (_("Batch Number"), "lot_number"),
-
     }
 
     actions = [
@@ -178,12 +174,11 @@ class AssetBatchDetailView(HorillaDetailedView):
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-
             "attrs": """
                     class="oh-btn oh-btn--danger w-100"
                     hx-confirm="Do you want to delete this batch number?"
                     hx-post="{get_delete_url}?instance_ids={ordered_ids}"
                     hx-target="#AssetBatchList"
-                    """
+                    """,
         },
     ]

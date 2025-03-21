@@ -1,12 +1,11 @@
-
-
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.contrib import messages
+
 from employee.models import Employee
+from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import decorator_with_arguments
 from recruitment.models import Recruitment, Stage
-from horilla.horilla_middlewares import _thread_locals
 
 
 @decorator_with_arguments
@@ -38,8 +37,8 @@ def manager_can_enter(function, perm):
             HttpResponse: The response from the decorated function.
 
         """
-        request = getattr(_thread_locals,"request")
-        if not getattr(self,"request",None):
+        request = getattr(_thread_locals, "request")
+        if not getattr(self, "request", None):
             self.request = request
         user = request.user
         employee = Employee.objects.filter(employee_user_id=user).first()

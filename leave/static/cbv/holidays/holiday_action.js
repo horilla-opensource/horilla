@@ -5,7 +5,7 @@ var rowMessages = {
     en: " Selected",
     fr: " Sélectionné",
   };
-  
+
   var deleteHolidayMessages = {
     ar: "هل تريد حقًا حذف جميع العطل المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Feiertage löschen?",
@@ -13,7 +13,7 @@ var rowMessages = {
     en: "Do you really want to delete all the selected holidays?",
     fr: "Voulez-vous vraiment supprimer toutes les vacances sélectionnées?",
   };
-  
+
   var no_rows_deleteMessages = {
     ar: "لم تتم تحديد صفوف لحذف العطلات.",
     de: "Es wurden keine Zeilen zum Löschen von Feiertagen ausgewählt.",
@@ -28,18 +28,18 @@ var rowMessages = {
     en: "Do you want to download the template?",
     fr: "Voulez-vous télécharger le modèle ?",
   };
-  
+
   function createHolidayHxValue() {
     var pd = $(".oh-pagination").attr("data-pd");
     var hxValue = JSON.stringify(pd);
     $("#holidayCreateButton").attr("hx-vals", `{"pd":${hxValue}}`);
   }
-  
+
   tickHolidayCheckboxes();
   function makeHolidayListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -64,7 +64,7 @@ var rowMessages = {
       });
     }
   }
-  
+
   function tickHolidayCheckboxes() {
     var ids = JSON.parse($("#selectedHolidays").attr("data-ids") || "[]");
     uniqueIds = makeHolidayListUnique(ids);

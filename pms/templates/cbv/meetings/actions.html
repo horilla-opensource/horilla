@@ -8,8 +8,8 @@
     <div class="oh-btn-group" onclick="event.stopPropagation()">
 
         {% if perms.pms.add_meetings or request.user.employee_get in instance.manager.all or request.user.employee_get in instance.answer_employees.all  %}
-        
-        <a 
+
+        <a
         onclick="event.preventDefault(); event.stopPropagation();"
         hx-get="{% url 'add-response' instance.id %}"
         hx-target="#genericModalBody"
@@ -97,5 +97,3 @@
         {% endif %}
     </div>
 </div>
-
-                                 

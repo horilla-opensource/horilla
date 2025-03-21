@@ -1,7 +1,7 @@
 {% load i18n %}
 
     <div class="oh-btn-group" style="width: 100%;">
-        
+
             {% if instance.status ==  'requested' %}
                 <button
                     class="oh-btn oh-btn--info w-100 "
@@ -21,7 +21,7 @@
                 </button></td>
             {% endif %}
             {% if instance.status  ==  'requested' %}
-            
+
                 <button class="oh-btn oh-btn--danger w-100" id="delete-link"
                 hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
                 hx-post="{% url 'leave-allocation-request-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"

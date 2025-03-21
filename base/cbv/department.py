@@ -3,23 +3,25 @@ this page is handling the cbv methods for department in settings
 """
 
 from typing import Any
-from django.middleware.csrf import get_token
+
+from django.contrib import messages
 from django.http import HttpResponse
+from django.middleware.csrf import get_token
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.filters import DepartmentViewFilter
 from base.forms import DepartmentForm
 from base.models import Department
+from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
     HorillaNavView,
 )
-from horilla.horilla_middlewares import _thread_locals
 
 
 @method_decorator(login_required, name="dispatch")
@@ -59,24 +61,23 @@ class DepartmentListView(HorillaListView):
                     "attrs": """
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                     hx-get="{get_delete_url}?model=base.Department&pk={pk}"
-                    data-toggle="oh-modal-toggle" 
+                    data-toggle="oh-modal-toggle"
                     data-target="#deleteConfirmation"
                     hx-target="#deleteConfirmationBody"
                 """,
                 }
             )
-            
-            
-									# <button
-									# 	class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-									# 	title="{% trans 'Remove' %}"
-									# 	hx-get="{% url 'generic-delete' %}?model=base.Department&pk={{dep.id}}" 
-									# 	data-toggle="oh-modal-toggle" 
-									# 	data-target="#deleteConfirmation" 
-									# 	hx-target="#deleteConfirmationBody"
-									# >
-									# 	<ion-icon name="trash-outline"></ion-icon>
-									# </button>
+
+        # <button
+        # 	class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+        # 	title="{% trans 'Remove' %}"
+        # 	hx-get="{% url 'generic-delete' %}?model=base.Department&pk={{dep.id}}"
+        # 	data-toggle="oh-modal-toggle"
+        # 	data-target="#deleteConfirmation"
+        # 	hx-target="#deleteConfirmationBody"
+        # >
+        # 	<ion-icon name="trash-outline"></ion-icon>
+        # </button>
 
     row_attrs = """
                 id="departmentTr{get_delete_instance}"

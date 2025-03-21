@@ -17,8 +17,8 @@
     {% if perms.recruitment.delete_recruitment %}
     <span>
       <a
-        hx-get="{% url 'generic-delete' %}?model=recruitment.Recruitment&pk={{instance.id}}" 
-        hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle" 
+        hx-get="{% url 'generic-delete' %}?model=recruitment.Recruitment&pk={{instance.id}}"
+        hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
         data-target="#deleteConfirmation"
         style="display: contents"
       >

@@ -3,22 +3,24 @@ this page handles cbv of interview page
 """
 
 from typing import Any
+
 from django.contrib import messages
-from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import resolve, reverse, reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from notifications.signals import notify
+from django.utils.translation import gettext_lazy as _
+
 from base.decorators import manager_can_enter
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaFormView,
 )
+from notifications.signals import notify
 from recruitment.filters import InterviewFilter
 from recruitment.forms import ScheduleInterviewForm
 from recruitment.models import Candidate, InterviewSchedule
@@ -76,19 +78,12 @@ class InterviewLIstView(HorillaListView):
     list view of the page
     """
 
-    bulk_update_fields = [
-        "employee_id",
-        "interview_date",
-        "interview_time"
-
-    ]
+    bulk_update_fields = ["employee_id", "interview_date", "interview_time"]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("interview-list-view")
         self.view_id = "interviewdelete"
-
-
 
     def get_queryset(self):
         """
@@ -101,7 +96,9 @@ class InterviewLIstView(HorillaListView):
         if self.request.user.has_perm("view_interviewschedule"):
             queryset = queryset.all().order_by("-interview_date")
         else:
-            queryset = queryset.filter(employee_id=self.request.user.employee_get.id).order_by("-interview_date")
+            queryset = queryset.filter(
+                employee_id=self.request.user.employee_get.id
+            ).order_by("-interview_date")
 
         return queryset
 
@@ -175,6 +172,7 @@ class InterviewForm(HorillaFormView):
     """
     form view
     """
+
     form_class = ScheduleInterviewForm
     model = InterviewSchedule
     new_display_title = _("Schedule Interview")
@@ -187,14 +185,16 @@ class InterviewForm(HorillaFormView):
         resolved = resolve(self.request.path_info)
         cand_id = resolved.kwargs.get("cand_id")
         if cand_id:
-            self.form.fields["candidate_id"].queryset = Candidate.objects.filter(id=cand_id)
+            self.form.fields["candidate_id"].queryset = Candidate.objects.filter(
+                id=cand_id
+            )
             self.form.fields["candidate_id"].initial = cand_id
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Schedule Interview")
         context["form"] = self.form
         context["view_id"] = "InterviewCreate"
         return context
-    
+
     def form_invalid(self, form: Any) -> HttpResponse:
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Schedule Interview")
@@ -204,7 +204,6 @@ class InterviewForm(HorillaFormView):
                 self.request, self.template_name, {"form": form, "errors": errors}
             )
         return super().form_invalid(form)
-    
 
     def form_valid(self, form: ScheduleInterviewForm) -> HttpResponse:
         """
@@ -235,15 +234,19 @@ class InterviewForm(HorillaFormView):
                 redirect=reverse("interview-view"),
             )
             if form.instance.pk:
-                messages.success(self.request,_("Interview Updated Successfully"))
+                messages.success(self.request, _("Interview Updated Successfully"))
                 if view_data == "false":
                     form.save()
-                    return self.HttpResponse("<script>window.location.reload();</script>")
+                    return self.HttpResponse(
+                        "<script>window.location.reload();</script>"
+                    )
             else:
-                messages.success(self.request,_("Interview Scheduled successfully."))
+                messages.success(self.request, _("Interview Scheduled successfully."))
                 if not view_data:
                     form.save()
-                    return self.HttpResponse("<script>window.location.reload();</script>")
+                    return self.HttpResponse(
+                        "<script>window.location.reload();</script>"
+                    )
             form.save()
             return self.HttpResponse()
         return super().form_valid(form)

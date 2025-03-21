@@ -2,8 +2,8 @@
 onboarding/cbv/accessibility.py
 """
 
-from recruitment.methods import recruitment_manages
 from onboarding.templatetags.onboardingfilters import stage_manages
+from recruitment.methods import recruitment_manages
 
 
 def edit_stage_accessibility(

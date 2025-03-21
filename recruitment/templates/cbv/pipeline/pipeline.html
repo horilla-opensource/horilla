@@ -36,8 +36,8 @@
       visibility: visible;
       opacity: 1;
 
-  
-      
+
+
   }
 </style>
 
@@ -45,10 +45,10 @@
 
 <div hx-get="{% url "cbv-pipeline-nav" %}" hx-trigger="load"></div>
 
-<div 
-  class="oh-wrapper" 
-  id="pipelineContainer" 
-  hx-get="{% url "cbv-pipeline-tab" %}?is_active=true" 
+<div
+  class="oh-wrapper"
+  id="pipelineContainer"
+  hx-get="{% url "cbv-pipeline-tab" %}?is_active=true"
   hx-trigger="load"
 >
 </div>

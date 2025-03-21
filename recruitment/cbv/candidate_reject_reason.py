@@ -3,18 +3,20 @@ This page handles reject reason in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from django.contrib import messages
-from recruitment.filters import RejectReasonFilter
-from horilla_views.cbv_methods import permission_required, login_required
+from django.utils.translation import gettext_lazy as _
+
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
     HorillaNavView,
 )
+from recruitment.filters import RejectReasonFilter
 from recruitment.forms import RejectReasonForm
 from recruitment.models import RejectReason
 
@@ -72,12 +74,13 @@ class RejectReasonListView(HorillaListView):
     header_attrs = {
         "title": """ style="width:200px !important" """,
         "description": """ style="width:200px !important" """,
-        "action": """ style="width:200px !important" """
+        "action": """ style="width:200px !important" """,
     }
 
     row_attrs = """
                 id = "rejectReasonTr{get_instance_id}"
                 """
+
 
 #  onclick="deleteRejectReason('{get_delete_url}')"
 @method_decorator(login_required, name="dispatch")
@@ -141,7 +144,8 @@ class RejectReasonFormView(HorillaFormView):
             messages.success(self.request, _(message))
             return self.HttpResponse()
         return super().form_valid(form)
-    
+
+
 class DynamicRejectReasonFormView(HorillaFormView):
 
     model = RejectReason

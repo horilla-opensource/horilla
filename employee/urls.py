@@ -6,10 +6,12 @@ This module is used to map url path with view methods.
 
 from django.urls import path
 
+from base.templatetags.horillafilters import app_installed
 from base.views import object_delete, object_duplicate
 from employee import not_in_out_dashboard, policies, views
 from employee.cbv import (
     action_type,
+    allocations,
     disciplinary_actions,
     document_request,
     employee_profile,
@@ -22,6 +24,42 @@ from employee.models import DisciplinaryAction, Employee, EmployeeTag
 from horilla_documents.models import DocumentRequest
 
 urlpatterns = [
+    path(
+        "allocation-view/<int:pk>/",
+        allocations.AllocationView.as_view(),
+        name="allocation-view",
+    ),
+    path(
+        "allocation-employee-forms",
+        allocations.EmployeeForms.as_view(),
+        name="allocation-employee-forms",
+    ),
+    path("personal-form", allocations.PersonalFormView.as_view(), name="personal-form"),
+    path("work-form", allocations.WorkFormView.as_view(), name="work-form"),
+    path("bank-form", allocations.BankFormView.as_view(), name="bank-form"),
+    path(
+        "allocation-user-group-view",
+        allocations.GroupsView.as_view(),
+        name="allocation-user-group-view",
+    ),
+    path(
+        "allocation-user-groups",
+        allocations.Groups.as_view(),
+        name="allocation-user-groups",
+    ),
+    path(
+        "allocation-assign-group-user",
+        allocations.GroupAssignView.as_view(),
+        name="allocation-assign-group-user",
+    ),
+    path(
+        "allocation-summary", allocations.Summary.as_view(), name="allocation-summary"
+    ),
+    path(
+        "toggle-user-dashboard-access",
+        allocations.ToggleDashboardAccess.as_view(),
+        name="toggle-user-dashboard-access",
+    ),
     path(
         "employee-tag-list/",
         employee_tags.EmployeeTagListView.as_view(),
@@ -590,3 +628,59 @@ urlpatterns = [
         name="assign-group-user",
     ),
 ]
+
+
+if app_installed("asset"):
+    urlpatterns += [
+        path(
+            "allocation-assets", allocations.Assets.as_view(), name="allocation-assets"
+        ),
+        path(
+            "allocation-asset-list",
+            allocations.AssetAllocationList.as_view(),
+            name="allocation-asset-list",
+        ),
+        path(
+            "allocation-return-asset/<int:asset_id>/",
+            allocations.return_allocation,
+            name="allocation-return-asset",
+        ),
+    ]
+
+if app_installed("leave"):
+    urlpatterns += [
+        path(
+            "allocation-leave-type",
+            allocations.LeaveTypeView.as_view(),
+            name="allocation-leave-type",
+        ),
+        path(
+            "allocation-leave-type-list",
+            allocations.LeaveTypeAllocationList.as_view(),
+            name="allocation-leave-type-list",
+        ),
+    ]
+
+if app_installed("payroll"):
+    urlpatterns += [
+        path(
+            "allocation-allowance",
+            allocations.AllowanceView.as_view(),
+            name="allocation-allowance",
+        ),
+        path(
+            "allocation-allowance-list",
+            allocations.AllowanceList.as_view(),
+            name="allocation-allowance-list",
+        ),
+        path(
+            "allocation-deduction",
+            allocations.DeductionView.as_view(),
+            name="allocation-deduction",
+        ),
+        path(
+            "allocation-deduction-list",
+            allocations.DeductionList.as_view(),
+            name="allocation-deduction-list",
+        ),
+    ]

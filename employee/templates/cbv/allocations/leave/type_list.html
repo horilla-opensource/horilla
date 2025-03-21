@@ -1,0 +1,30 @@
+{% load i18n %}
+<div id="{{ view_id }}">
+  <div class="oh-layout_horizontal">
+    {% for type in assigned_types %}
+      <div class="oh-kanban-card">
+        <div class="d-flex flex-column gap-2">
+          <div class="oh-kanban-card__avatar">
+            <div class="oh-kanban-card__profile-container">
+              <img src="{{type.leave_type_id.get_avatar}}" class="oh-kanban-card__profile-image"/>
+            </div>
+          </div>
+          <div class="oh-kanban-card__details">
+            <span class="oh-kanban-card__title">{{type.leave_type_id.name}}</span>
+            <span class="oh-kanban-card__subtitle">{% trans "Available Days" %}: {{type.leave_type_id.employee_available_leave.first.available_days}}</span>
+            <br>
+            <span class="oh-kanban-card__subtitle">{% trans "Total Days" %}: {{type.leave_type_id.employee_available_leave.first.total_leave_days}}</span>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if not request.GET.card_only %}
+  {% include 'generic/horilla_list_table.html' %}
+  {% elif not queryset.exists %}
+    <div class="oh-checkpoint-badge text-success quick-bulk-action"
+     onclick="$(`[hx-get='{% url "allocation-leave-type" %}?instance_id={{request.GET.instance_id}}']`).click();" style="cursor: pointer;">
+      <span class="label">+ Allocate</span>
+    </div>
+  {% endif %}
+</div>

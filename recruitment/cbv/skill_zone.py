@@ -6,18 +6,16 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required
+from horilla_views.generic.cbv.views import HorillaFormView
 from recruitment.cbv_decorators import manager_can_enter
-from horilla_views.generic.cbv.views import (
-    HorillaFormView,
-)
 from recruitment.forms import SkillZoneCandidateForm, SkillZoneCreateForm
 from recruitment.models import SkillZone, SkillZoneCandidate
 
 
-
-@method_decorator(login_required,name="dispatch")
-@method_decorator(manager_can_enter("recruitment.add_skillzone"),name="dispatch")
+@method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter("recruitment.add_skillzone"), name="dispatch")
 class SkillZoneFormView(HorillaFormView):
     """
     form view for create skill zone
@@ -47,8 +45,10 @@ class SkillZoneFormView(HorillaFormView):
         return super().form_valid(form)
 
 
-@method_decorator(login_required,name="dispatch")
-@method_decorator(manager_can_enter("recruitment.add_skillzonecandidate"),name="dispatch")
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    manager_can_enter("recruitment.add_skillzonecandidate"), name="dispatch"
+)
 class SkillZoneCandidateFormView(HorillaFormView):
     """
     form view for create skill zone candidate

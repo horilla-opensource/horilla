@@ -1,10 +1,10 @@
 {% load basefilters %}
 {% load i18n %}
 {% if perms.pms.change_period or request.user|filtersubordinates %}
-    <a hx-get="{% url 'period-update' instance.id %}" 
-    hx-target='#genericModalBody' 
+    <a hx-get="{% url 'period-update' instance.id %}"
+    hx-target='#genericModalBody'
     data-toggle="oh-modal-toggle"
-    data-target='#genericModal' 
+    data-target='#genericModal'
     class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}">
     <ion-icon name="create-outline"></ion-icon>
 </a>
@@ -19,7 +19,6 @@ style="display: contents;width:100%">
 {% csrf_token %}
 <button onclick="event.stopPropagation()" type="submit" class="oh-btn oh-btn--secondary w-50" title="{% trans 'Delete' %}">
 <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-</button> 
-   
-{% endif %}
+</button>
 
+{% endif %}

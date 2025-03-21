@@ -3,24 +3,23 @@ This page handles action type of disciplinary action.
 """
 
 from typing import Any
+
 from django import forms
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
 from django.views import View
+
 from employee.cbv.disciplinary_actions import DynamicActionTypeFormView
 from employee.filters import ActionTypeFilter
 from employee.forms import ActiontypeForm
 from employee.models import Actiontype
 from horilla_audit.models import AccountBlockUnblock
 from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import (
-    HorillaListView,
-    HorillaNavView,
-)
+from horilla_views.generic.cbv.views import HorillaListView, HorillaNavView
 
 
 @method_decorator(login_required, name="dispatch")

@@ -84,7 +84,7 @@ var downloadMessages = {
     en: "Do you really want to approve all the selected attendance requests?",
     fr: "Voulez-vous vraiment approuver toutes les demandes de présence sélectionnées?",
   };
-  
+
   var reqAttendancRejectMessages = {
     ar: "هل ترغب حقًا في رفض جميع طلبات الحضور المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen ablehnen?",
@@ -92,22 +92,22 @@ var downloadMessages = {
     en: "Do you really want to reject all the selected attendance requests?",
     fr: "Voulez-vous vraiment rejeter toutes les demandes de présence sélectionnées?",
   };
-  
+
   tickCheckboxes();
   function makeListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   tickactivityCheckboxes();
   function makeactivityListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   ticklatecomeCheckboxes();
   function makelatecomeListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -135,7 +135,7 @@ var downloadMessages = {
 
 
   function hourAccountbulkDelete() {
-    
+
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
@@ -184,7 +184,7 @@ var downloadMessages = {
 
 
  function lateComeBulkDelete() {
-   
+
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
@@ -276,7 +276,7 @@ var downloadMessages = {
       }
     });
   };
-  
+
 
   function reqAttendanceBulkReject() {
     var languageCode = null;
@@ -322,6 +322,3 @@ var downloadMessages = {
       }
     });
   };
-  
-  
-  

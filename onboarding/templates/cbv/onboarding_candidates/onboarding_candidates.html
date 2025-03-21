@@ -34,7 +34,7 @@
 </style>
 
  <div hx-get="{% url "onboarding-candidates-nav" %}" hx-trigger="load">
-</div>  
+</div>
 
 
 
@@ -51,10 +51,10 @@
     style="display: none">
   </div>
 
-  
-  <div 
-  class="oh-wrapper" 
-  hx-get="{% url 'onboarding-candidates-list' %}?{{request.GET.urlencode}}" 
+
+  <div
+  class="oh-wrapper"
+  hx-get="{% url 'onboarding-candidates-list' %}?{{request.GET.urlencode}}"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -71,7 +71,7 @@
       <div class="oh-modal__dialog-header">
         <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
       </div>
-  
+
       <div class="oh-modal__dialog-body" id="rejectReasonModalBody"></div>
     </div>
   </div>
@@ -93,7 +93,7 @@
             <div id="keyResultsContainer">
               <div class="my-3" id="keyResultCard">
                 <div class="oh-card oh-card--no-shadow oh-card__body">
-  
+
                   <div class="oh-input__group">
                     <select name="ids" id="hired_candidates" multiple class="w-100" hidden >
                       {% for candidate in hired_candidates %}
@@ -135,7 +135,7 @@
       </form>
     </div>
   </div>
-  
+
 
   <script>
 
@@ -148,16 +148,16 @@
   });
 
     function dateJoining($element){
-        var candId = $element.attr("data-candidate-id"); 
+        var candId = $element.attr("data-candidate-id");
         console.log(candId);
         var dateVal = $element.val();
         $.ajax({
-          type: "POST", 
+          type: "POST",
           url: "{% url 'update-joining' %}",
           data: {
             "candId": candId,
             "date": dateVal,
-            csrfmiddlewaretoken: '{{ csrf_token }}' 
+            csrfmiddlewaretoken: '{{ csrf_token }}'
           },
           success: function (response) {
             $("#ohMessages").append(`
@@ -206,13 +206,13 @@
         });
       }
 
-    
-  
-  
-    
+
+
+
+
 </script>
 
- 
+
 <script src="{% static 'cbv/attendance/hour_account.js' %}"></script>
 
 {% endblock content %}

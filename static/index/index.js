@@ -141,81 +141,81 @@ function switchGeneralTab(e) {
 
 function toggleReimbursmentType(element) {
     if (element.val() == "reimbursement") {
-        $("#objectCreateModalTarget [name=attachment]").parent().show();
-        $("#objectCreateModalTarget [name=attachment]").attr("required", true);
-        $("#objectCreateModalTarget [name=leave_type_id]")
-            .parent()
+        $("#genericModalBody [name=attachment]").parent().show();
+        $("#genericModalBody [name=attachment]").attr("required", true);
+        $("#genericModalBody [name=leave_type_id]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=cfd_to_encash]")
-            .parent()
+        $("#genericModalBody [name=cfd_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=ad_to_encash]")
-            .parent()
+        $("#genericModalBody [name=ad_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=amount]")
-            .parent()
+        $("#genericModalBody [name=amount]")
+            .parent().parent()
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget #availableTable")
+        $("#genericModalBody #availableTable")
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=bonus_to_encash]")
-            .parent()
+        $("#genericModalBody [name=bonus_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
     } else if (element.val() == "leave_encashment") {
-        $("#objectCreateModalTarget [name=attachment]").parent().hide();
-        $("#objectCreateModalTarget [name=attachment]").attr("required", false);
-        $("#objectCreateModalTarget [name=leave_type_id]")
-            .parent()
+        $("#genericModalBody [name=attachment]").parent().hide();
+        $("#genericModalBody [name=attachment]").attr("required", false);
+        $("#genericModalBody [name=leave_type_id]")
+            .parent().parent()
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget [name=cfd_to_encash]")
-            .parent()
+        $("#genericModalBody [name=cfd_to_encash]")
+            .parent().parent()
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget [name=ad_to_encash]")
-            .parent()
+        $("#genericModalBody [name=ad_to_encash]")
+            .parent().parent()
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget [name=amount]")
-            .parent()
+        $("#genericModalBody [name=amount]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget #availableTable")
+        $("#genericModalBody #availableTable")
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget [name=bonus_to_encash]")
-            .parent()
+        $("#genericModalBody [name=bonus_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
     } else if (element.val() == "bonus_encashment") {
-        $("#objectCreateModalTarget [name=attachment]").parent().hide();
-        $("#objectCreateModalTarget [name=attachment]").attr("required", false);
-        $("#objectCreateModalTarget [name=leave_type_id]")
-            .parent()
+        $("#genericModalBody [name=attachment]").parent().hide();
+        $("#genericModalBody [name=attachment]").attr("required", false);
+        $("#genericModalBody [name=leave_type_id]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=cfd_to_encash]")
-            .parent()
+        $("#genericModalBody [name=cfd_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=ad_to_encash]")
-            .parent()
+        $("#genericModalBody [name=ad_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=amount]")
-            .parent()
+        $("#genericModalBody [name=amount]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget #availableTable")
+        $("#genericModalBody #availableTable")
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=bonus_to_encash]")
-            .parent()
+        $("#genericModalBody [name=bonus_to_encash]")
+            .parent().parent()
             .show()
             .attr("required", true);
     }

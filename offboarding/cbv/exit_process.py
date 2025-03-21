@@ -3,18 +3,18 @@ This page handles the cbv methods for existing process
 """
 
 from datetime import datetime, timedelta
+
 from django import forms
-from django.http import HttpResponse
 from django.contrib import messages
+from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.context_processors import intial_notice_period
-from horilla_views.generic.cbv.views import (
-    HorillaDetailedView,
-    HorillaFormView,
-)
 from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaFormView
+from notifications.signals import notify
 from offboarding.cbv_decorators import (
     any_manager_can_enter,
     offboarding_manager_can_enter,
@@ -22,18 +22,16 @@ from offboarding.cbv_decorators import (
 )
 from offboarding.forms import (
     OffboardingEmployeeForm,
-    OffboardingStageForm,
     OffboardingForm,
+    OffboardingStageForm,
     TaskForm,
 )
 from offboarding.models import (
-    OffboardingEmployee,
-    OffboardingStage,
     Offboarding,
     OffboardingEmployee,
+    OffboardingStage,
     OffboardingTask,
 )
-from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -201,12 +199,13 @@ class OffboardingTaskFormView(HorillaFormView):
             messages.success(self.request, message)
             return HttpResponse("<script>window.location.reload()</script>")
         return super().form_valid(form)
-    
+
 
 class ExitProcessDetailView(HorillaDetailedView):
     """
     detail view
     """
+
     model = OffboardingEmployee
     title = _("Details")
     header = {

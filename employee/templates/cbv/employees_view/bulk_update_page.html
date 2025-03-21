@@ -23,11 +23,11 @@
                         text: value
                     }));
                 });
-    
+
                 if ($('#id_employee_work_info__job_position_id option').length > 0) {
                     var firstJobPositionId = $('#id_employee_work_info__job_position_id option:first').val();
                     $('#id_employee_work_info__job_position_id').val(firstJobPositionId);
-    
+
 
                     $('#id_employee_work_info__job_role_id').empty();
                     $.each(data.job_roles, function(key, value) {
@@ -37,9 +37,9 @@
                         }));
                     });
                 }
-    
-                $('#id_employee_work_info__job_position_id').change(); 
-                $('#id_employee_work_info__job_role_id').change(); 
+
+                $('#id_employee_work_info__job_position_id').change();
+                $('#id_employee_work_info__job_role_id').change();
             }
         });
     });
@@ -47,16 +47,16 @@
 
     // auto update department and job role when change job position
     $('#id_employee_work_info__job_position_id').on('change', function() {
-  
+
         var jobPositionId = $(this).val();
         $.ajax({
-            url: '{% url "get-job-roles" %}', 
+            url: '{% url "get-job-roles" %}',
             method: 'GET',
             data: {
                 'job_position_id': jobPositionId
             },
             success: function(data) {
-                
+
                 $('#id_employee_work_info__job_role_id').empty();
                 $.each(data.job_roles, function(key, value) {
                     $('#id_employee_work_info__job_role_id').append($('<option>', {
@@ -64,7 +64,7 @@
                         text: value
                     }));
                 });
-    
+
                 $('#id_employee_work_info__job_role_id').change();
                 //department
                 $('#id_employee_work_info__department_id').empty();
@@ -74,7 +74,7 @@
                         text: value
                     }));
                 });
-    
+
                 // Select the correct department
                 if (data.department_id) {
                     $('#id_employee_work_info__department_id').val(data.department_id);
@@ -84,16 +84,16 @@
     });
 // changing job role
     $('#id_employee_work_info__job_role_id').on('change', function() {
-  
+
         var jobroleId = $(this).val();
         $.ajax({
-            url: '{% url "get-job-position-department" %}', 
+            url: '{% url "get-job-position-department" %}',
             method: 'GET',
             data: {
                 'job_role_id': jobroleId
             },
             success: function(data) {
-                
+
                 $('#id_employee_work_info__job_position_id').empty();
                 $.each(data.job_positions, function(key, value) {
                     $('#id_employee_work_info__job_position_id').append($('<option>', {
@@ -101,7 +101,7 @@
                         text: value
                     }));
                 });
-    
+
                 if (data.job_position_id) {
                     $('#id_employee_work_info__job_position_id').val(data.job_position_id);
                 }
@@ -113,7 +113,7 @@
                         text: value
                     }));
                 });
-    
+
                 // Select the correct department
                 if (data.department_id) {
                     $('#id_employee_work_info__department_id').val(data.department_id);
@@ -126,6 +126,3 @@
 <script>
     {% include 'country.js' %}
 </script>
-    
-
-

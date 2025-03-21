@@ -7,7 +7,7 @@
 <meta name="csrf-token" content="{{ csrf_token }}">
 
 <div hx-get="{% url "attendances-navbar-view" %}" hx-trigger="load">
-</div>  
+</div>
 
 {% include "generic/components.html" %}
 <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
@@ -16,7 +16,7 @@
 <div class="oh-checkpoint-badge mb-2" id="validatedselectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
 <div class="oh-wrapper"  id="listContainer">
     <div class="animated-background"></div>
-</div> 
+</div>
 
 
 <!--import attendances-->

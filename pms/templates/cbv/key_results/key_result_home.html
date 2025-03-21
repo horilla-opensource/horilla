@@ -5,7 +5,7 @@
 <meta name="csrf-token" content="{{ csrf_token }}">
 
 <div hx-get="{% url "key-result-navbar" %}" hx-trigger="load">
-</div> 
+</div>
 
 
 {% include "generic/components.html" %}
@@ -13,15 +13,15 @@
 </div>
 
 
-<div class="oh-wrapper" 
+<div class="oh-wrapper"
   id="listContainer">
-  <div class="animated-background">   
+  <div class="animated-background">
 </div>
-</div> 
+</div>
 
 
 
 
-<script src="{% static 'cbv/deleteFunc.js' %}"></script>	
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
 
 {% endblock content %}

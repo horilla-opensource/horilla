@@ -288,7 +288,7 @@ function populateStates(countryElementId, stateElementId) {
 }
 
 function populateCountries(countryElementId, stateElementId) {
-   
+
     // Get the country select element by its ID
     var countryElement = document.getElementById(countryElementId);
 
@@ -329,5 +329,3 @@ function populateCountries(countryElementId, stateElementId) {
 }
 
 populateCountries("country", "state");
-
-

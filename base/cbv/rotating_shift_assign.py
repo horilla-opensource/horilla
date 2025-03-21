@@ -5,12 +5,14 @@ Rotating shift request
 
 import contextlib
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
+
 from base.decorators import manager_can_enter
 from base.filters import RotatingShiftAssignFilters
 from base.forms import (
@@ -128,7 +130,9 @@ class RotatingShiftAssignNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("rotating-shift-request-list")
-        if self.request.user.has_perm("base.add_rotatingshiftassign") or is_reportingmanager(self.request):
+        if self.request.user.has_perm(
+            "base.add_rotatingshiftassign"
+        ) or is_reportingmanager(self.request):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy('rotating-shift-assign-add')}"
                 data-toggle="oh-modal-toggle"
@@ -136,8 +140,10 @@ class RotatingShiftAssignNav(HorillaNavView):
                 hx-target="#genericModalBody"
             """
         self.actions = []
-        
-        if self.request.user.has_perm("base.view_rotatingshiftassign") or is_reportingmanager(self.request):
+
+        if self.request.user.has_perm(
+            "base.view_rotatingshiftassign"
+        ) or is_reportingmanager(self.request):
             self.actions.append(
                 {
                     "action": _("Import"),
@@ -151,7 +157,9 @@ class RotatingShiftAssignNav(HorillaNavView):
                 },
             )
 
-        if self.request.user.has_perm("base.view_rotatingshiftassign") or is_reportingmanager(self.request):
+        if self.request.user.has_perm(
+            "base.view_rotatingshiftassign"
+        ) or is_reportingmanager(self.request):
             self.actions.append(
                 {
                     "action": _("Export"),
@@ -164,7 +172,9 @@ class RotatingShiftAssignNav(HorillaNavView):
                         """,
                 },
             )
-        if self.request.user.has_perm("base.change_rotatingshiftassign") or is_reportingmanager(self.request):
+        if self.request.user.has_perm(
+            "base.change_rotatingshiftassign"
+        ) or is_reportingmanager(self.request):
             self.actions.append(
                 {
                     "action": _("Archive"),
@@ -183,7 +193,9 @@ class RotatingShiftAssignNav(HorillaNavView):
                         """,
                 }
             )
-        if self.request.user.has_perm("base.delete_rotatingshiftassign") or is_reportingmanager(self.request):
+        if self.request.user.has_perm(
+            "base.delete_rotatingshiftassign"
+        ) or is_reportingmanager(self.request):
             self.actions.append(
                 {
                     "action": _("Delete"),
@@ -195,7 +207,6 @@ class RotatingShiftAssignNav(HorillaNavView):
                             """,
                 }
             )
-
 
     nav_title = "Rotating Shift Assign"
     filter_body_template = "cbv/rotating_shift/rotating_shift_filter.html"

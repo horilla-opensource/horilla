@@ -7,13 +7,13 @@
 <meta name="csrf-token" content="{{ csrf_token }}">
 
 <div hx-get="{% url "loan-navbar-view" %}" hx-trigger="load">
-</div>  
+</div>
 
 {% include "generic/components.html" %}
 <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
 <div class="oh-wrapper"  id="listContainer">
     <div class="animated-background"></div>
-</div> 
+</div>
 
 
 <div class="oh-modal" id="loanModal" role="dialog" aria-hidden="true">
@@ -58,8 +58,8 @@
         });
     });
 
-    
+
 </script>
-<script src="{% static 'cbv/deleteFunc.js' %}"></script>	
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
 
 {% endblock content %}

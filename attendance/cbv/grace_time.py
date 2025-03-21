@@ -1,13 +1,16 @@
 """
 This page handles grace time in settings page.
 """
+
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
 from django.urls import reverse
-from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from attendance.filters import GraceTimeFilter
 from attendance.forms import GraceTimeForm
 from attendance.models import GraceTime
@@ -43,14 +46,12 @@ class GenericGraceTimeListView(HorillaListView):
         (_("Applicable on clock-in"), "applicable_on_clock_in_col"),
         (_("Applicable on clock-out"), "applicable_on_clock_out_col"),
         (_("Assigned Shifts"), "get_shifts_display"),
-        
     ]
 
     header_attrs = {
-        "allowed_time_col" : """
+        "allowed_time_col": """
                    style = "width:200px !important"
                    """,
-       
     }
 
     row_attrs = """
@@ -116,7 +117,9 @@ class DefaultGraceTimeNav(HorillaNavView):
         super().__init__(**kwargs)
         # self.search_url = reverse("grace-time-list")
         default_grace_time = GraceTime.objects.filter(is_default=True).first()
-        if not default_grace_time and self.request.user.has_perm("attendance.add_gracetime"):
+        if not default_grace_time and self.request.user.has_perm(
+            "attendance.add_gracetime"
+        ):
             self.create_attrs = f"""
                                 onclick = "event.stopPropagation();"
                                 data-toggle="oh-modal-toggle"
@@ -142,7 +145,7 @@ class GraceTimeNav(HorillaNavView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-       
+
         # self.search_url = reverse("grace-time-list")
         self.create_attrs = f"""
                             onclick = "event.stopPropagation();"
@@ -173,7 +176,7 @@ class GraceTimeFormView(HorillaFormView):
         is_default = eval(self.request.GET.get("default"))
         self.form.fields["is_default"].initial = is_default
         if self.form.instance.pk:
-            self.form.fields["shifts"].initial=self.form.instance.employee_shift.all()
+            self.form.fields["shifts"].initial = self.form.instance.employee_shift.all()
             self.form_class.verbose_name = _("Update grace time")
         return context
 
@@ -185,23 +188,25 @@ class GraceTimeFormView(HorillaFormView):
                 message = _("Grace time updated successfully.")
                 messages.success(self.request, message)
             else:
-                
+
                 message = _("Grace time created successfully.")
                 messages.success(self.request, message)
-            shifts = form.cleaned_data.get('shifts')
+            shifts = form.cleaned_data.get("shifts")
             for shift in shifts:
                 shift.grace_time_id = gracetime
                 shift.save()
             # form.save()
             defaultValue = self.request.GET.get("default")
             if defaultValue == "False":
-                return HttpResponse("<script>$('#genericModal').removeClass('oh-modal--show');$('#gracetime-containerReload').click();</script>")
-            return HttpResponse("<script>$('#genericModal').removeClass('oh-modal--show');$('#default-containerReload').click();$('.defaultGraceNav').click();</script>")
+                return HttpResponse(
+                    "<script>$('#genericModal').removeClass('oh-modal--show');$('#gracetime-containerReload').click();</script>"
+                )
+            return HttpResponse(
+                "<script>$('#genericModal').removeClass('oh-modal--show');$('#default-containerReload').click();$('.defaultGraceNav').click();</script>"
+            )
         return super().form_valid(form)
-    
 
 
 EmployeeShiftListView.columns.append((_("Grace Time"), "get_grace_time"))
 EmployeeShiftListView.sortby_mapping.append(("Grace Time", "grace_time_id"))
 EmployeeShiftListView.bulk_update_fields.append("grace_time_id")
-

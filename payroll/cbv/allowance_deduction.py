@@ -4,23 +4,24 @@ This page is handling the cbv methods of allowance and deduction in employee pro
 
 import operator
 from typing import Any
+
 from django.apps import apps
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from employee.models import Employee
 from employee.views import return_none
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
-    HorillaTabView,
     HorillaListView,
+    HorillaTabView,
 )
-from payroll.cbv.deduction import DeductionListView
 from payroll.cbv.allowances import AllowanceListView
+from payroll.cbv.deduction import DeductionListView
 from payroll.methods.payslip_calc import dynamic_attr
 from payroll.models.models import Allowance, Deduction
-from horilla_views.cbv_methods import login_required
-from django.utils.decorators import method_decorator
 
 operator_mapping = {
     "equal": operator.eq,
@@ -38,7 +39,6 @@ class AllowanceDeductionTabView(HorillaTabView):
     """
     generic tab view for allowance and deduction
     """
-    
 
     def get_context_data(self, **kwargs):
         """
@@ -83,22 +83,26 @@ class AllowanceTabList(AllowanceListView):
         super().__init__(**kwargs)
         self.view_id = "allowance_tab_id"
         pk = self.request.resolver_match.kwargs.get("pk")
-        self.search_url = reverse("allowance-tab-list", kwargs={'pk':pk})
+        self.search_url = reverse("allowance-tab-list", kwargs={"pk": pk})
 
     columns = [
-    col for col in AllowanceListView.columns
-    if col[1] not in ("get_specific_employees", "get_exclude_employees", "condition_based_display", "rate")
+        col
+        for col in AllowanceListView.columns
+        if col[1]
+        not in (
+            "get_specific_employees",
+            "get_exclude_employees",
+            "condition_based_display",
+            "rate",
+        )
     ]
 
     # row_status_class = None
     row_status_indications = None
 
-
     @method_decorator(login_required, name="dispatch")
     def dispatch(self, *args, **kwargs):
         return super(AllowanceListView, self).dispatch(*args, **kwargs)
-
-
 
     def get_context_data(self, **kwargs: Any):
         """
@@ -124,7 +128,7 @@ class AllowanceTabList(AllowanceListView):
 
     def get_queryset(self):
         """
-        Returns a filtered queryset of allowance based on 
+        Returns a filtered queryset of allowance based on
         the employee's active contract and specific conditions
         """
 
@@ -186,27 +190,30 @@ class AllowanceTabList(AllowanceListView):
 
 class DeductionTab(DeductionListView):
     """
-    list view for deduction tab 
+    list view for deduction tab
     """
 
-    @method_decorator(login_required, name="dispatch") 
+    @method_decorator(login_required, name="dispatch")
     def dispatch(self, *args, **kwargs):
         return super(DeductionListView, self).dispatch(*args, **kwargs)
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.view_id = "deduct-div"
-        pk = self.request.resolver_match.kwargs.get('pk')
-        self.search_url = reverse("deduction-tab-list",kwargs= {'pk': pk} )
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse("deduction-tab-list", kwargs={"pk": pk})
         self.row_status_indications = None
 
-
-
-
-
     columns = [
-        col for col in DeductionListView.columns
-        if col[1] not in ("specific_employees_col","excluded_employees_col","condition_bsed_col","rate")
+        col
+        for col in DeductionListView.columns
+        if col[1]
+        not in (
+            "specific_employees_col",
+            "excluded_employees_col",
+            "condition_bsed_col",
+            "rate",
+        )
     ]
 
     # action_method = "deduct_detail_actions"
@@ -235,10 +242,9 @@ class DeductionTab(DeductionListView):
         # )
         return context
 
-
     def get_queryset(self):
         """
-        Returns a filtered queryset of deductions based on 
+        Returns a filtered queryset of deductions based on
         the employee's active contract and specific conditions
         """
 
@@ -342,5 +348,5 @@ class AllowanceDetailView(HorillaDetailedView):
         (_("Has Maximum Limit"), "cust_allowance_max_limit"),
         (_("Allowance Eligibility"), "allowance_eligibility"),
     ]
-    
+
     action_method = "allowance_detail_actions"

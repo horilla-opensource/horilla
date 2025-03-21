@@ -3,11 +3,14 @@ Restricted page
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
+
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -15,7 +18,6 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
-from horilla_views.cbv_methods import login_required, permission_required
 from leave.filters import RestrictLeaveFilter
 from leave.forms import RestrictLeaveForm
 from leave.models import RestrictLeave
@@ -36,11 +38,7 @@ class RestrictedDaysList(HorillaListView):
     List view of the resticted days page
     """
 
-    bulk_update_fields = [
-        "department",
-        "job_position"
-
-    ]
+    bulk_update_fields = ["department", "job_position"]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -62,9 +60,7 @@ class RestrictedDaysList(HorillaListView):
         (_("Description"), "description"),
     ]
 
-    header_attrs = {
-        "title": """ style="width:180px !important" """
-    }
+    header_attrs = {"title": """ style="width:180px !important" """}
 
     sortby_mapping = [
         ("Start Date", "start_date"),
@@ -79,6 +75,7 @@ class RestrictedDaysList(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
+
 
 @method_decorator(login_required, name="dispatch")
 class RestrictedDaysNav(HorillaNavView):
@@ -115,8 +112,9 @@ class RestrictedDaysNav(HorillaNavView):
     search_swap_target = "#listContainer"
     filter_form_context_name = "form"
 
+
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("leave.add_restrictleave"),name="dispatch")
+@method_decorator(permission_required("leave.add_restrictleave"), name="dispatch")
 class RestrictedDaysFormView(HorillaFormView):
     """
     Create and edit form

@@ -3,22 +3,24 @@ this page is handling the cbv methods of holiday page
 """
 
 from typing import Any
+
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from horilla_views.generic.cbv.views import (
-    HorillaDetailedView,
-    TemplateView,
-    HorillaListView,
-    HorillaNavView,
-    HorillaFormView,
-)
-from horilla_views.cbv_methods import login_required, permission_required
+
 from base.filters import HolidayFilter
 from base.forms import HolidayForm, HolidaysColumnExportForm
 from base.models import Holidays
+from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+    TemplateView,
+)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -28,7 +30,6 @@ class HolidaysView(TemplateView):
     """
 
     template_name = "cbv/holidays/holidays_home.html"
-    
 
 
 @method_decorator(login_required, name="dispatch")
@@ -37,9 +38,7 @@ class HolidayListView(HorillaListView):
     list view
     """
 
-    bulk_update_fields = [
-        "recurring"
-    ]
+    bulk_update_fields = ["recurring"]
 
     filter_class = HolidayFilter
     model = Holidays
@@ -60,9 +59,8 @@ class HolidayListView(HorillaListView):
 
     header_attrs = {
         "name": """ style="width:200px !important;"
-                                """,                
+                                """,
     }
-
 
     sortby_mapping = [
         ("Holiday Name", "name"),
@@ -137,6 +135,7 @@ class HolidayNavView(HorillaNavView):
     filter_instance = HolidayFilter()
     search_swap_target = "#listContainer"
 
+
 @method_decorator(login_required, name="dispatch")
 class HolidayDetailView(HorillaDetailedView):
     """
@@ -146,19 +145,16 @@ class HolidayDetailView(HorillaDetailedView):
     model = Holidays
     title = _("Details")
 
-    header = {
-        "title": "name",
-        "subtitle":"",
-        "avatar":"get_avatar"
-    }
+    header = {"title": "name", "subtitle": "", "avatar": "get_avatar"}
     body = {
         (_("Holiday Name"), "name"),
         (_("Start Date"), "start_date"),
         (_("End Date"), "end_date"),
         (_("Recurring"), "get_recurring_status"),
     }
-    
+
     action_method = "detail_view_actions"
+
 
 @method_decorator(login_required, name="dispatch")
 class HolidayExport(TemplateView):
@@ -181,8 +177,9 @@ class HolidayExport(TemplateView):
         context["export_filter"] = export_filter
         return context
 
+
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("leave.add_holiday"),name="dispatch")
+@method_decorator(permission_required("leave.add_holiday"), name="dispatch")
 class HolidayFormView(HorillaFormView):
     """
     form view for create button

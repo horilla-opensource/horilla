@@ -3,13 +3,14 @@ this page is handling the cbv methods for Ticket types in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from notifications.signals import notify
+
 from base.models import Attachment
 from helpdesk.cbv.tags import DynamicTagsCreateFormView
 from helpdesk.filter import TicketTypeFilter
@@ -22,6 +23,7 @@ from horilla_views.generic.cbv.views import (
     HorillaListView,
     HorillaNavView,
 )
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -51,18 +53,18 @@ class TicketsListView(HorillaListView):
             )
         if self.request.user.has_perm("helpdesk.delete_tickettype"):
             self.actions.append(
-            {
-                "action": _("Delete"),
-                "icon": "trash-outline",
-                "attrs": """
+                {
+                    "action": _("Delete"),
+                    "icon": "trash-outline",
+                    "attrs": """
                         class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                         hx-get="{get_delete_url}?model=helpdesk.tickettype&pk={pk}"
                         data-toggle="oh-modal-toggle"
                         data-target="#deleteConfirmation"
                         hx-target="#deleteConfirmationBody"
                     """,
-            },
-        )
+                },
+            )
 
     model = TicketType
     filter_class = TicketTypeFilter
@@ -74,12 +76,10 @@ class TicketsListView(HorillaListView):
     ]
 
     header_attrs = {
-        "title" : """
+        "title": """
                    style = "width:200px !important"
                    """
-       
     }
-
 
     sortby_mapping = [
         ("Ticket Type", "title"),
@@ -89,7 +89,7 @@ class TicketsListView(HorillaListView):
 
     row_attrs = """
                 id="ticketTypeTr{get_delete_instance}"
-                """ 
+                """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -168,9 +168,9 @@ class TicketTypeCreateForm(HorillaFormView):
             form.save()
             return self.HttpResponse()
         return super().form_valid(form)
-    
 
-@method_decorator(login_required,name="dispatch")
+
+@method_decorator(login_required, name="dispatch")
 class TicketsCreateFormView(HorillaFormView):
     """
     form view for create and update tickets
@@ -180,13 +180,14 @@ class TicketsCreateFormView(HorillaFormView):
     form_class = TicketForm
     new_display_title = _("Create Ticket")
     template_name = "cbv/tickets/inherit_form.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         if self.request.user.has_perm("helpdesk.add_tickettype"):
-            self.dynamic_create_fields = [("ticket_type", TicketTypeCreateForm),
-                             ("tags", DynamicTagsCreateFormView)]
-    
-   
+            self.dynamic_create_fields = [
+                ("ticket_type", TicketTypeCreateForm),
+                ("tags", DynamicTagsCreateFormView),
+            ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -197,7 +198,7 @@ class TicketsCreateFormView(HorillaFormView):
             self.form_class.verbose_name = _("Update Ticket")
         context["form"] = self.form
         return context
-    
+
     def form_valid(self, form: TicketForm) -> HttpResponse:
         if form.is_valid():
             if not form.instance.pk:
@@ -215,7 +216,10 @@ class TicketsCreateFormView(HorillaFormView):
                 if hasattr(ticket.get_raised_on_object(), "dept_manager"):
                     if ticket.get_raised_on_object().dept_manager.all():
                         manager = (
-                            ticket.get_raised_on_object().dept_manager.all().first().manager
+                            ticket.get_raised_on_object()
+                            .dept_manager.all()
+                            .first()
+                            .manager
                         )
                         assignees.append(manager.employee_user_id)
                 notify.send(
@@ -227,11 +231,11 @@ class TicketsCreateFormView(HorillaFormView):
                     verb_es="Se te ha asignado un nuevo ticket",
                     verb_fr="Un nouveau ticket vous a été attribué",
                     icon="infinite",
-                    redirect=reverse("ticket-detail", kwargs={"ticket_id":ticket.id}),
+                    redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
                 )
             else:
                 ticket = form.save()
-                messages.success(self.request,_("The Ticket updated successfully."))
-            
+                messages.success(self.request, _("The Ticket updated successfully."))
+
             return HttpResponse("<script>window.location.reload();</script>")
         return super().form_valid(form)

@@ -35,9 +35,9 @@
 							<button
 								class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
 								title="{% trans 'Remove' %}"
-								hx-get="{% url 'generic-delete' %}?model=base.jobposition&pk={{job.pk}}" 
-								data-toggle="oh-modal-toggle" 
-								data-target="#deleteConfirmation" 
+								hx-get="{% url 'generic-delete' %}?model=base.jobposition&pk={{job.pk}}"
+								data-toggle="oh-modal-toggle"
+								data-target="#deleteConfirmation"
 								hx-target="#deleteConfirmationBody"
 							>
 								<ion-icon name="close" class="text-danger"></ion-icon>

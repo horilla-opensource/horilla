@@ -4,13 +4,14 @@ this page is handling the cbv methods of  rotating work request page
 
 from typing import Any
 
-from django.http import HttpResponse
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from notifications.signals import notify
+from django.utils.translation import gettext_lazy as _
+
+from base.decorators import manager_can_enter
 from base.filters import RotatingWorkTypeAssignFilter
 from base.forms import (
     RotatingWorkTypeAssignExportForm,
@@ -24,16 +25,16 @@ from base.methods import (
     is_reportingmanager,
 )
 from base.models import RotatingWorkType, RotatingWorkTypeAssign
-from base.decorators import manager_can_enter
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
+    HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaListView,
 )
+from notifications.signals import notify
 
 
 @method_decorator(

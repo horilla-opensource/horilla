@@ -62,7 +62,7 @@
 </style>
 
  <div hx-get="{% url "nav-objectives-view" %}" hx-trigger="load">
-</div>   
+</div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
 
@@ -85,9 +85,9 @@
     style="display: none"
   ></div>
 
- 
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -102,10 +102,10 @@
 
 
 
- 
+
 <script>
   $(document).on("htmx:afterSettle", function () {
-    $("[data-toggle-count]").off("click").on("click", function (e) { 
+    $("[data-toggle-count]").off("click").on("click", function (e) {
       e.stopPropagation();
       let recViewContainer = $(this).closest('.oh-sticky-table__tr');
       span = recViewContainer.find(".count-span").toggle();
@@ -113,5 +113,5 @@
       row.toggleClass("oh-permission-table--collapsed");
     });
   });
-</script> 
+</script>
 {% endblock content %}

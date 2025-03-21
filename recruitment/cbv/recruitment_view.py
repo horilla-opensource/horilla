@@ -1,21 +1,23 @@
 """
-recruitment 
+recruitment
 """
 
 from typing import Any
+
+from django import forms
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from django import forms
+
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaFormView,
 )
 from recruitment.filters import RecruitmentFilter
 from recruitment.forms import AddCandidateForm, RecruitmentCreationForm, SkillsForm
@@ -68,7 +70,7 @@ class RecruitmentList(HorillaListView):
     action_method = "rec_actions"
 
     header_attrs = {
-        "recruitment_column" : """
+        "recruitment_column": """
                                 style="width : 200px !important"
                                """
     }
@@ -81,7 +83,7 @@ class RecruitmentList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=closed]').val('true');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -92,7 +94,7 @@ class RecruitmentList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=closed]').val('false');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -169,7 +171,7 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             "skills",
             "is_published",
             "optional_profile_image",
-            "optional_resume"
+            "optional_resume",
         ]
         exclude = ["is_active"]
         widgets = {
@@ -186,8 +188,8 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             "vacancy": _("Vacancy"),
             "open_positions": _("Job Position"),
             "recruitment_managers": _("Managers"),
-            "optional_profile_image":_("Optional Profile Image?"),
-            "optional_resume": _("Optional Resume?")
+            "optional_profile_image": _("Optional Profile Image?"),
+            "optional_resume": _("Optional Resume?"),
         }
 
 
@@ -224,8 +226,6 @@ class RecruitmentForm(HorillaFormView):
     new_display_title = _("Add Recruitment")
     dynamic_create_fields = [("skills", RecruitmentNewSkillForm)]
 
-    
-
     def get_context_data(self, **kwargs):
         """
         Return context data with optional verbose name for form based on instance state.
@@ -254,11 +254,10 @@ class RecruitmentForm(HorillaFormView):
                     recruitment.recruitment_managers.set(recruitment_managers)
                 message = _("Recruitment Created Successfully")
             messages.success(self.request, message)
-            if self.request.GET.get("pipeline") == "true" :
+            if self.request.GET.get("pipeline") == "true":
                 return HttpResponse("<script>window.location.reload();</script>")
             return self.HttpResponse()
         return super().form_valid(form)
-
 
 
 class AddCandidateFormView(HorillaFormView):

@@ -1,0 +1,28 @@
+{% load i18n %}
+<div id="{{ view_id }}">
+  <div class="oh-layout_horizontal">
+    {% for deduction in assigned_deductions %}
+      <div class="oh-kanban-card">
+        <div class="d-flex flex-column gap-2">
+          <div class="oh-kanban-card__avatar">
+            <div class="oh-kanban-card__profile-container">
+              <img src="{{deduction.get_avatar}}" class="oh-kanban-card__profile-image"/>
+            </div>
+          </div>
+          <div class="oh-kanban-card__details">
+            <span class="oh-kanban-card__title">{{deduction}}</span>
+            <span class="oh-kanban-card__subtitle">{% trans "Amount" %}: {% if deduction.is_fixed %}{{deduction.amount}}{{currency}}{% else %}{{deduction.rate|default:"0"}}% of {{deduction.get_based_on_display}}{% endif %}</span>
+            <br>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if not request.GET.card_only %}
+  {% include 'generic/horilla_list_table.html' %}
+  {% elif not queryset.exists %}
+    <div class="oh-checkpoint-badge text-success quick-bulk-action" onclick="$(`[hx-get='{% url "allocation-deduction" %}?instance_id={{request.GET.instance_id}}']`).click();"style="cursor: pointer;">
+      <span class="label">+ Allocate</span>
+    </div>
+  {% endif %}
+</div>

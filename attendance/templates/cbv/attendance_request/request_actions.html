@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="oh-btn-group">
     <a data-toggle="oh-modal-toggle"
-     data-target="#validateAttendanceRequest" 
+     data-target="#validateAttendanceRequest"
      hx-get="{% url 'validate-attendance-request' instance.id %}" hx-trigger="click" hx-target="#validateAttendanceRequestModalBody"
       class="oh-btn oh-btn--light-bkg w-100"
       title="{% trans 'View' %}"><ion-icon name="eye-outline" role="img"></ion-icon></a>

@@ -10,7 +10,7 @@
             $(this).closest("select")[0].dispatchEvent(new Event("change"));
         });
     });
-    
+
         $("#createTitle").on("htmx:beforeSwap",function(e){
             $('.available-leave-count').remove();
         });
@@ -56,7 +56,7 @@
                             content += `</ol>
                             <p style="font-weight:700">Are you sure you want to proceed with the request?</p>
                         </div>`;
-                        
+
                         if (interviews.length != 0) {
                             Swal.fire({
                                 title: title,

@@ -60,7 +60,7 @@
 </style>
 
 <div hx-get="{% url "contracts-nav" %}" hx-trigger="load">
-</div>  
+</div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
 
@@ -76,9 +76,9 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -110,8 +110,8 @@
                     id="hxContractExportForm"
                 >
                     {% csrf_token %}
-			
-                   
+
+
                 </form>
             </div>
         </div>
@@ -121,6 +121,6 @@
 
 <script src="{% static 'cbv/actions.js' %}"></script>
 
- 
- 
+
+
 {% endblock content %}

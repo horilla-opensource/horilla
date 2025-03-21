@@ -2,12 +2,13 @@
 This page handles the cbv methods for dashboard views
 """
 
-
 from typing import Any
-from django.urls import reverse
+
 from django.db.models import Q
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.methods import filtersubordinates
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaListView
@@ -29,7 +30,6 @@ class DashboardFeedbackView(RequestedFeedbackTab):
         self.search_url = reverse("dashboard-feedback-answer")
         self.request.dashboard_feedback = "dashboard_feedback"
 
-    
     def get_queryset(self):
         queryset = super().get_queryset()
         employee = self.request.user.employee_get
@@ -42,8 +42,6 @@ class DashboardFeedbackView(RequestedFeedbackTab):
 
         queryset = feedback_requested_ids.exclude(feedback_answer__employee_id=employee)
         return queryset
-
-
 
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
@@ -69,7 +67,6 @@ class DashboardFeedbackView(RequestedFeedbackTab):
 
 class KeyResultStatus(HorillaListView):
 
-
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.view_id = "keyContainer"
@@ -81,21 +78,20 @@ class KeyResultStatus(HorillaListView):
     bulk_select_option = False
 
     header_attrs = {
-        "key_result_column" : """
+        "key_result_column": """
                               style="width:200px !important;"
                               """
     }
 
-
     columns = [
-        (_("Title"),"key_result_column"),
-        (_("Start Value"),"start_value"),
-        (_("Current Value"),"current_value_col"),
-        (_("Target Value"),"target_value_col"),
-        (_("Progress Percentage"),"progress_col"),
-        (_("Start Date"),"start_date"),
-        (_("End date"),"end_date"),
-        (_("Status"),"status")
+        (_("Title"), "key_result_column"),
+        (_("Start Value"), "start_value"),
+        (_("Current Value"), "current_value_col"),
+        (_("Target Value"), "target_value_col"),
+        (_("Progress Percentage"), "progress_col"),
+        (_("Start Date"), "start_date"),
+        (_("End date"), "end_date"),
+        (_("Status"), "status"),
     ]
 
     action_method = "actions_col"
@@ -110,11 +106,9 @@ class KeyResultStatus(HorillaListView):
         return super(HorillaListView, self).dispatch(*args, **kwargs)
 
 
-
-
 class DasboardObjectivesRisk(HorillaListView):
     """
-    list view for objectives at risk 
+    list view for objectives at risk
     """
 
     model = EmployeeObjective
@@ -141,6 +135,3 @@ class DasboardObjectivesRisk(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
-
-
-    

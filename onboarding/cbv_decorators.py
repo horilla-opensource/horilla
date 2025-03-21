@@ -1,13 +1,12 @@
-
-
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
+
 from employee.models import Employee
-from horilla_views.cbv_methods import decorator_with_arguments
 from horilla.horilla_middlewares import _thread_locals
+from horilla_views.cbv_methods import decorator_with_arguments
 from onboarding.models import OnboardingStage, OnboardingTask
 from recruitment.models import Recruitment
-from django.contrib import messages
 
 
 @decorator_with_arguments
@@ -17,8 +16,8 @@ def recruitment_manager_can_enter(function, perm):
     """
 
     def _function(self, *args, **kwargs):
-        request = getattr(_thread_locals,"request")
-        if not getattr(self,"request",None):
+        request = getattr(_thread_locals, "request")
+        if not getattr(self, "request", None):
             self.request = request
         user = request.user
         employee = Employee.objects.filter(employee_user_id=user).first()
@@ -43,8 +42,8 @@ def stage_manager_can_enter(function, perm):
     """
 
     def _function(self, *args, **kwargs):
-        request = getattr(_thread_locals,"request")
-        if not getattr(self,"request",None):
+        request = getattr(_thread_locals, "request")
+        if not getattr(self, "request", None):
             self.request = request
         user = request.user
         employee = Employee.objects.filter(employee_user_id=user).first()
@@ -72,8 +71,8 @@ def all_manager_can_enter(function, perm):
     """
 
     def _function(self, *args, **kwargs):
-        request = getattr(_thread_locals,"request")
-        if not getattr(self,"request",None):
+        request = getattr(_thread_locals, "request")
+        if not getattr(self, "request", None):
             self.request = request
         user = request.user
         employee = Employee.objects.filter(employee_user_id=user).first()

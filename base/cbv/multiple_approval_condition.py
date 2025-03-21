@@ -3,17 +3,20 @@ Multiple approval condition page
 """
 
 from typing import Any
+
+from django import forms
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from django import forms
+
 from base.filters import MultipleApprovalConditionFilter
 from base.forms import MultipleApproveConditionForm
 from base.models import MultipleApprovalCondition, MultipleApprovalManagers
 from base.widgets import CustomModelChoiceWidget
 from employee.models import Employee
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -21,7 +24,6 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
-from horilla_views.cbv_methods import login_required, permission_required
 
 
 @method_decorator(login_required, name="dispatch")
@@ -61,13 +63,12 @@ class MultipleApprovalConditionList(HorillaListView):
         (_("Condition Operator"), "get_condition_operator"),
         (_("Condition Value"), "get_condition_value"),
         (_("Approval Managers"), "approval_managers_col"),
-        (_("Company"),"company_id")
+        (_("Company"), "company_id"),
     ]
 
     header_attrs = {
         "department": """ style="width:180px !important" """,
         "approval_managers_col": """ style="width:200px !important" """,
-
     }
 
     sortby_mapping = [

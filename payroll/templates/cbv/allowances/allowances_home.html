@@ -10,14 +10,14 @@
   .non-taxable--dot{
     background-color:gray;
   }
-  
+
   .fixed--dot{
     background-color:orange;
-  
+
   }
   .not-fixed--dot{
     background-color:yellowgreen;
-  
+
   }
 
   .taxable-True {
@@ -38,7 +38,7 @@
   }
 </style>
 <div hx-get="{% url "allowances-nav-view" %}" hx-trigger="load">
-</div> 
+</div>
 
 
 {% include "generic/components.html" %}
@@ -46,11 +46,11 @@
 </div>
 
 
-<div class="oh-wrapper"  
+<div class="oh-wrapper"
    id="listContainer">
-  <div class="animated-background">   
+  <div class="animated-background">
 </div>
-</div> 
+</div>
 
 <script>
     $("#filterForm").submit(function (e) {

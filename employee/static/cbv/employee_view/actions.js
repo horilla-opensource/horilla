@@ -6,7 +6,7 @@ var downloadMessages = {
     en: "Do you want to download the template?",
     fr: "Voulez-vous télécharger le modèle ?",
   };
-  
+
   var importSuccess = {
     ar: "نجح الاستيراد", // Arabic
     de: "Import erfolgreich", // German
@@ -14,7 +14,7 @@ var downloadMessages = {
     en: "Imported Successfully!", // English
     fr: "Importation réussie", // French
   };
-  
+
   var uploadSuccess = {
     ar: "تحميل كامل", // Arabic
     de: "Upload abgeschlossen", // German
@@ -22,7 +22,7 @@ var downloadMessages = {
     en: "Upload Complete!", // English
     fr: "Téléchargement terminé", // French
   };
-  
+
   var uploadingMessage = {
     ar: "جارٍ الرفع",
     de: "Hochladen...",
@@ -30,7 +30,7 @@ var downloadMessages = {
     en: "Uploading...",
     fr: "Téléchargement en cours...",
   };
-  
+
   var validationMessage = {
     ar: "يرجى تحميل ملف بامتداد .xlsx فقط.",
     de: "Bitte laden Sie nur eine Datei mit der Erweiterung .xlsx hoch.",
@@ -53,7 +53,7 @@ var downloadMessages = {
     en: "Do you really want to archive all the selected employees?",
     fr: "Voulez-vous vraiment archiver tous les employés sélectionnés ?",
   };
-  
+
   var unarchiveMessagesEmployees = {
     ar: "هل ترغب حقًا في إلغاء أرشفة جميع الموظفين المحددين؟",
     de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter aus der Archivierung zurückholen?",
@@ -61,7 +61,7 @@ var downloadMessages = {
     en: "Do you really want to unarchive all the selected employees?",
     fr: "Voulez-vous vraiment désarchiver tous les employés sélectionnés?",
   };
-  
+
   var deleteMessages = {
     ar: "هل ترغب حقًا في حذف جميع الموظفين المحددين؟",
     de: "Möchten Sie wirklich alle ausgewählten Mitarbeiter löschen?",
@@ -69,7 +69,7 @@ var downloadMessages = {
     en: "Do you really want to delete all the selected employees?",
     fr: "Voulez-vous vraiment supprimer tous les employés sélectionnés?",
   };
-  
+
   var noRowMessages = {
     ar: "لم يتم تحديد أي صفوف.",
     de: "Es wurden keine Zeilen ausgewählt.",
@@ -77,7 +77,7 @@ var downloadMessages = {
     en: "No rows have been selected.",
     fr: "Aucune ligne n'a été sélectionnée.",
   };
-  
+
   var rowMessages = {
     ar: " تم الاختيار",
     de: " Ausgewählt",
@@ -85,8 +85,8 @@ var downloadMessages = {
     en: " Selected",
     fr: " Sélectionné",
   };
-  
-  
+
+
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -102,7 +102,7 @@ var downloadMessages = {
     }
     return cookieValue;
   }
-  
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -134,12 +134,12 @@ var downloadMessages = {
   form.addEventListener("submit", function (event) {
     // Prevent the default form submission
     event.preventDefault();
-  
+
     // Create a new form data object
     $(".oh-dropdown__import-form").css("display", "none");
     $("#uploading").css("display", "block");
     var formData = new FormData();
-  
+
     // Append the file to the form data object
     var fileInput = document.querySelector("#workInfoImportFile");
     formData.append("file", fileInput.files[0]);
@@ -160,10 +160,10 @@ var downloadMessages = {
         var errorCount = xhr.getResponseHeader('X-Error-Count');
         if (typeof response === 'object' && response.type == 'application/json') {
           var reader = new FileReader();
-  
+
           reader.onload = function() {
             var json = JSON.parse(reader.result);
-  
+
             if(json.success_count > 0) {
               Swal.fire({
                 text: `${json.success_count} Employees Imported Successfully`,
@@ -241,7 +241,7 @@ var downloadMessages = {
                     link.click();
                     window.location.reload();
                   });
-  
+
                   return;
                 }
               })
@@ -252,15 +252,15 @@ var downloadMessages = {
             }
           });
         }
-  
+
       },
       error: function (xhr, textStatus, errorThrown) {
         console.error("Error downloading file:", errorThrown);
       },
     });
   });
-  
-  
+
+
 
 $(document).on("click", "#work-info-import", function (e) {
     e.preventDefault();
@@ -277,7 +277,7 @@ $(document).on("click", "#work-info-import", function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           $("#loading").show();
-  
+
           var xhr = new XMLHttpRequest();
           xhr.open("GET", "/employee/work-info-import", true);
           xhr.responseType = "arraybuffer";
@@ -293,7 +293,7 @@ $(document).on("click", "#work-info-import", function (e) {
               );
             }
           };
-  
+
           xhr.onload = function (e) {
             if (this.status == 200) {
               const file = new Blob([this.response], {
@@ -307,12 +307,12 @@ $(document).on("click", "#work-info-import", function (e) {
               link.click();
             }
           };
-  
-  
+
+
           xhr.onerror = function () {
             console.error("Error downloading file:", xhr.statusText);
           };
-  
+
           xhr.onerror = function (e) {
             console.error("Error downloading file:", e);
           };
@@ -324,16 +324,16 @@ $(document).on("click", "#work-info-import", function (e) {
   $(document).ajaxStart(function () {
     $("#loading").show();
   });
-  
+
   $(document).ajaxStop(function () {
     $("#loading").hide();
   });
-  
+
   function simulateProgress() {
     getCurrentLanguageCode(function (code) {
       let progressBar = document.querySelector(".progress-bar");
       let progressText = document.getElementById("progress-text");
-  
+
       let width = 0;
       let interval = setInterval(function () {
         if (width >= 100) {
@@ -362,8 +362,8 @@ $(document).on("click", "#work-info-import", function (e) {
       }, 20);
     });
   }
-  
-  
+
+
 
   $(document).on("click", "#archiveEmployees", function (e) {
     e.preventDefault();
@@ -449,12 +449,12 @@ $(document).on("click", "#work-info-import", function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           e.preventDefault();
-  
+
           ids = [];
-  
+
           ids.push($("#selectedInstances").attr("data-ids"));
           ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-  
+
           $.ajax({
             type: "POST",
             url: "/employee/employee-bulk-archive?is_active=True",
@@ -528,11 +528,11 @@ $(document).on("click", "#work-info-import", function (e) {
       }).then(function (result) {
         if (result.isConfirmed) {
           e.preventDefault();
-  
+
           ids = [];
           ids.push($("#selectedInstances").attr("data-ids"));
           ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-  
+
           $.ajax({
             type: "POST",
             url: "/employee/employee-bulk-delete",
@@ -552,7 +552,3 @@ $(document).on("click", "#work-info-import", function (e) {
       });
     }
   });
-  
- 
-  
-  

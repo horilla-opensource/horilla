@@ -3,12 +3,14 @@ this page is handling the cbv methods for Job role in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
 from django.urls import reverse
-from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.filters import JobRoleFilter
 from base.forms import JobRoleForm
 from base.models import JobPosition, JobRole
@@ -50,7 +52,7 @@ class JobRoleListView(HorillaListView):
 
     row_attrs = """
                 class = "oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
-                data-count="{get_data_count}" 
+                data-count="{get_data_count}"
                 data-label="Job Role"
                 """
 
@@ -110,9 +112,7 @@ class JobRoleFormView(HorillaFormView):
             job_position = form.cleaned_data.get("job_position_id")
             instance.job_position_id = job_position
             instance.save()
-            messages.success(
-                self.request, _("Job role has been updated successfully!")
-            )
+            messages.success(self.request, _("Job role has been updated successfully!"))
         elif (
             not self.form.instance.pk
             and self.form.data.getlist("job_position_id")

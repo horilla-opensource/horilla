@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="oh-btn-group" style="width: 100%;">
-  
+
     {% if perms.recruitment.change_recruitment %}
     <a hx-get="{% url 'recruitment-update' instance.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--info w-50 " title="Edit">
         <button style="
@@ -45,7 +45,7 @@
       {% endif %}
     {% endif %}
     {% if perms.recruitment.delete_recruitment %}
-    
+
       <form class="oh-btn  oh-btn--secondary w-50" title="{% trans 'Delete' %}"
       action="{% url 'recruitment-delete' instance.id  %}"
       onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')"
@@ -64,6 +64,6 @@
         <ion-icon name="trash-outline" ></ion-icon>
       Delete</button>
     </form>
-  
+
     {% endif %}
   </div>

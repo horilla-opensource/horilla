@@ -1,17 +1,18 @@
 """
 Policy  forms
 """
+
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from employee.forms import PolicyForm
 from employee.models import Policy
-from horilla_views.generic.cbv.views import (
-    HorillaFormView,
-)
 from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.views import HorillaFormView
+
 
 class PolicyFormView(HorillaFormView):
     """

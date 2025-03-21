@@ -21,23 +21,23 @@
       .rejected-rejected{
         border-left: 4px solid red !important;
         border-radius: 5px 0 0 4px;
-      
+
       }
      .cancelled-cancelled {
         border-left: 4px solid grey !important;
         border-radius: 5px 0 0 4px;
-      
-      } 
+
+      }
       .requested-requested{
         border-left: 4px solid orange !important;
         border-radius: 5px 0 0 4px;
-      
+
       }
      .approved-approved {
         border-left: 4px solid yellowgreen !important;
         border-radius: 5px 0 0 4px;
-      
-      } 
+
+      }
       .delete{
         color = hsl(1, 100%, 61%) !important;
       }
@@ -48,7 +48,7 @@
             position: relative;
             display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
         }
-    
+
         .tooltip .tooltiptext {
             visibility: hidden;
             width: auto; /* Allow the tooltip width to adjust based on content */
@@ -69,7 +69,7 @@
             overflow: hidden; /* Hides any overflowed content */
             font-size:15px;
         }
-    
+
         .tooltip:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
@@ -77,18 +77,18 @@
     </style>
 
 <div hx-get="{% url "leave-requests-nav" %}?{{request.GET.urlencode}}" hx-trigger="load">
-</div> 
+</div>
 
 {% include "generic/components.html" %}
 <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
 </div>
 
 
-<div class="oh-wrapper" hx-get="{% url "request-filter" %}?{{request.GET.urlencode}}" 
+<div class="oh-wrapper" hx-get="{% url "request-filter" %}?{{request.GET.urlencode}}"
   id="listContainer">
-  <div class="animated-background">   
+  <div class="animated-background">
 </div>
-</div> 
+</div>
 
 
 <div class="oh-activity-sidebar" id="leaveactivitySidebar" style="z-index:1000;">
@@ -157,14 +157,14 @@
     </div>
     <div class="oh-modal__dialog-body" id="rejectForm"></div>
   </div>
-</div> 
+</div>
 
 <div class="oh-wrapper" id="leaveRequest">
 </div>
 
 <span id="bulkApproveSpan" hx-post="{% url 'leave-requests-bulk-approve' %}" hx-target="#leaveRequest"></span>
 
-  
+
 <script src="{% static 'cbv/leave_requests/leave_requests.js' %}"></script>
 <script>
   $('#penaltyModalBody').submit(function(e) {
@@ -182,7 +182,7 @@
               </div>
               `;
               $("#LeaveForm .row").after(button);
-    
+
 {% if "recruitment"|app_installed %}
   $(document).ready(function () {
                   $("#buttonID").on("click", function () {
@@ -191,7 +191,7 @@
                       var startDate = $("#LeaveForm [name = start_date]").val();
                       var endDate = $("#LeaveForm [name = end_date]").val();
                       var employee = $("#LeaveForm [name = employee_id]").val();
-          
+
                       $.ajax({
                           type: "GET",
                           url: "{% url 'check-interview-conflicts' %}",
@@ -202,7 +202,7 @@
                           },
                           success: function (response) {
                               var interviews = response.interviews;
-          
+
                               title = "Leave Request Alert.";
                               var content = `<div>
                       <p>${employee} has interview in the requested date.</p>
@@ -213,7 +213,7 @@
                               content += `</ol>
                       <p style="font-weight:700">Are you sure you want to proceed with the request?</p>
                     </div>`;
-          
+
                               if (interviews.length != 0) {
                                   Swal.fire({
                                       title: title,
@@ -266,7 +266,7 @@
                     } else {
                     }
                   });
-            
+
               }
 
 
@@ -285,10 +285,10 @@
                   "date":start_date,
                   },
                   success: function (response) {
-              
+
                     // Assuming parentForm is a reference to the form containing the element to update
                     var messageDiv = parentForm.find(".leave-message");
-              
+
                     // Check if the messageDiv already exists, if not create it
                     if (!messageDiv.length) {
                       messageDiv = $("<div class='leave-message'></div>");
@@ -340,11 +340,11 @@
                     else{
                       messageDiv.hide()
                     }
-              
+
                   }
                 });
               }
-              
+
               </script>
-              
+
 {% endblock content %}

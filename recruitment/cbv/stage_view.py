@@ -2,16 +2,17 @@
 Stage.py
 """
 
-from typing import Any
 import contextlib
+from typing import Any
+
 from django import forms
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from notifications.signals import notify
+
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
@@ -21,6 +22,7 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
+from notifications.signals import notify
 from recruitment.filters import StageFilter
 from recruitment.forms import StageCreationForm
 from recruitment.models import Stage
@@ -126,18 +128,18 @@ class StageList(HorillaListView):
                 data-toggle="oh-modal-toggle"
                 """
     header_attrs = {
-        "title_col" : """
+        "title_col": """
                       style='width:250px !important'
                       """,
-        "managers_col" : """
+        "managers_col": """
                       style='width:250px !important'
                       """,
-        "get_type" : """
+        "get_type": """
                       style='width:250px !important'
                       """,
-        "action" : """
-                   style="width:250px !important" 
-                   """
+        "action": """
+                   style="width:250px !important"
+                   """,
     }
 
 
@@ -188,8 +190,6 @@ class StageFormView(HorillaFormView):
             self.form_class(instance=self.form.instance)
         context["form"] = self.form
         return context
-
-
 
     def form_valid(self, form: StageCreationForm) -> HttpResponse:
         """

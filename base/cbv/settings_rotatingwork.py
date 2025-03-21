@@ -3,9 +3,11 @@ this page is handling the cbv methods for Rotating work type in settings
 """
 
 from typing import Any
+
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.filters import RotatingWorkTypeFilter
 from base.models import RotatingWorkType
 from horilla.decorators import permission_required

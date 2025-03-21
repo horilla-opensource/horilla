@@ -4,26 +4,37 @@ This page handles the cbv methods for Biometric app
 
 from typing import Any
 from venv import logger
-from django.http import HttpResponse
+
+from apscheduler.schedulers.background import BackgroundScheduler
 from django.contrib import messages
+from django.http import HttpResponse
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from zk import ZK
+
 from biometric.filters import BiometricDeviceFilter
 from biometric.forms import BiometricDeviceForm, BiometricDeviceSchedulerForm
 from biometric.models import BiometricDevices
-from django.utils.decorators import method_decorator
-from apscheduler.schedulers.background import BackgroundScheduler
-
-from biometric.views import anviz_biometric_device_attendance, cosec_biometric_device_attendance, str_time_seconds, zk_biometric_device_attendance
+from biometric.views import (
+    anviz_biometric_attendance_scheduler,
+    cosec_biometric_attendance_scheduler,
+    str_time_seconds,
+    zk_biometric_attendance_scheduler,
+)
 from horilla.horilla_settings import BIO_DEVICE_THREADS
-from horilla_views.generic.cbv.views import HorillaFormView,HorillaCardView,HorillaNavView
 from horilla_views.cbv_methods import login_required, permission_required
-
+from horilla_views.generic.cbv.views import (
+    HorillaCardView,
+    HorillaFormView,
+    HorillaNavView,
+)
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="biometric.view_biometricdevices"), name="dispatch")
+@method_decorator(
+    permission_required(perm="biometric.view_biometricdevices"), name="dispatch"
+)
 class BiometricNavBar(HorillaNavView):
     """
     nav bar of the page
@@ -46,10 +57,11 @@ class BiometricNavBar(HorillaNavView):
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
 
-    
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="biometric.view_biometricdevices"), name="dispatch")
+@method_decorator(
+    permission_required(perm="biometric.view_biometricdevices"), name="dispatch"
+)
 class BiometricCardView(HorillaCardView):
     """
     card view of the page
@@ -57,40 +69,41 @@ class BiometricCardView(HorillaCardView):
 
     model = BiometricDevices
     filter_class = BiometricDeviceFilter
-   
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("biometric-card-view")
         self.actions = [
-                {
-                    "action": "Edit",
-                 "attrs": """
+            {
+                "action": "Edit",
+                "attrs": """
                     class="oh-dropdown__link"
                     hx-get="{get_update_url}"
                     hx-target="#genericModalBody"
                     data-toggle="oh-modal-toggle"
                     data-target="#genericModal"
                     """,
-                },
-                {
-                    "action": "archive_status",
-                    "attrs": """
+            },
+            {
+                "action": "archive_status",
+                "attrs": """
                     hx-confirm="Do you want to {archive_status} this device?"
                     hx-post="{get_archive_url}"
                     class="oh-dropdown__link"
-                    hx-target="#listContainer"  
+                    hx-target="#listContainer"
                     """,
-                },
-                {
-                    "action": "Delete",
-                    "attrs": """
+            },
+            {
+                "action": "Delete",
+                "attrs": """
                     hx-confirm="Do you want to delete this device?"
                     hx-post="{get_delete_url}"
                     class="oh-dropdown__link oh-dropdown__link--danger"
                     hx-target="#biometricDeviceList"
                     """,
-                },
-            ]
+            },
+        ]
+
     details = {
         "title": "{name}",
         "subtitle": " Device Type : {get_machine_type} <br> {get_card_details} <br> {render_live_capture_html} <br> {render_actions_html}",
@@ -118,7 +131,7 @@ class BiometricCardView(HorillaCardView):
             "
             """,
         ),
-         (
+        (
             "live--dot",
             _("Live Capture"),
             """
@@ -129,14 +142,11 @@ class BiometricCardView(HorillaCardView):
         ),
     ]
 
-    
-
-
-
-
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="biometric.add_biometricdevices"), name="dispatch")
+@method_decorator(
+    permission_required(perm="biometric.add_biometricdevices"), name="dispatch"
+)
 class BiometricFormView(HorillaFormView):
     """
     from view for create and update biometric devices
@@ -149,7 +159,7 @@ class BiometricFormView(HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-       
+
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Edit Biometric Devices")
         context["form"] = self.form
@@ -166,13 +176,12 @@ class BiometricFormView(HorillaFormView):
             messages.success(self.request, message)
             return self.HttpResponse()
         return super().form_valid(form)
-    
-
-
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="biometric.change_biometricdevices"), name="dispatch")
+@method_decorator(
+    permission_required(perm="biometric.change_biometricdevices"), name="dispatch"
+)
 class BiometricSheduleForm(HorillaFormView):
     """
     form view for shedule biometric device
@@ -190,7 +199,7 @@ class BiometricSheduleForm(HorillaFormView):
             self.form.fields["scheduler_duration"].initial = device.scheduler_duration
 
         return context
-    
+
     def form_valid(self, form: BiometricDeviceSchedulerForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
@@ -220,14 +229,16 @@ class BiometricSheduleForm(HorillaFormView):
                         device.save()
                         scheduler = BackgroundScheduler()
                         scheduler.add_job(
-                            lambda: zk_biometric_device_attendance(device.id),
+                            lambda: zk_biometric_attendance_scheduler(device.id),
                             "interval",
                             seconds=str_time_seconds(device.scheduler_duration),
                         )
                         scheduler.start()
                         return HttpResponse("<script>window.location.reload()</script>")
                     except Exception as error:
-                        logger.error("An error comes in biometric_device_schedule ", error)
+                        logger.error(
+                            "An error comes in biometric_device_schedule ", error
+                        )
                         script = """
                         <script>
                             Swal.fire({
@@ -235,10 +246,10 @@ class BiometricSheduleForm(HorillaFormView):
                             text: "Please double-check the accuracy of the provided IP Address and Port Number for correctness",
                             icon: "warning",
                             showConfirmButton: false,
-                            timer: 3500, 
+                            timer: 3500,
                             timerProgressBar: true,
                             didClose: () => {
-                                location.reload(); 
+                                location.reload();
                                 },
                             });
                         </script>
@@ -251,7 +262,7 @@ class BiometricSheduleForm(HorillaFormView):
                     device.save()
                     scheduler = BackgroundScheduler()
                     scheduler.add_job(
-                        lambda: anviz_biometric_device_attendance(device.id),
+                        lambda: anviz_biometric_attendance_scheduler(device.id),
                         "interval",
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
@@ -269,7 +280,7 @@ class BiometricSheduleForm(HorillaFormView):
                         existing_thread.stop()
                         del BIO_DEVICE_THREADS[device.id]
                     scheduler.add_job(
-                        lambda: cosec_biometric_device_attendance(device.id),
+                        lambda: cosec_biometric_attendance_scheduler(device.id),
                         "interval",
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
@@ -282,4 +293,3 @@ class BiometricSheduleForm(HorillaFormView):
             messages.success(self.request, message)
             # return self.HttpResponse("<script>location.reload();</script>")
         return super().form_valid(form)
-

@@ -1,8 +1,8 @@
 {% load basefilters%}
 
 {% load i18n %}
-     
-        
+
+
           {% if perms.base.change_rotatingworktypeassign  or request.user|is_reportingmanager %}
             <a class="oh-btn oh-btn-group oh-btn--info"
             data-toggle="oh-modal-toggle"
@@ -66,11 +66,5 @@
 {% if request.GET.deleted %}
   <script>
     $("#reloadMessagesButton").click()
-  </script> 
+  </script>
 {% endif %}
- 
-
-
-                 
-                
-                

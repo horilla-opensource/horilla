@@ -1,14 +1,20 @@
-
 """
 CBV of resigantions page
 """
+
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from horilla_views.cbv_methods import login_required,permission_required,check_feature_enabled
+
+from horilla_views.cbv_methods import (
+    check_feature_enabled,
+    login_required,
+    permission_required,
+)
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -21,10 +27,14 @@ from offboarding.forms import ResignationLetterForm
 from offboarding.models import Offboarding, OffboardingGeneralSetting, ResignationLetter
 
 
-
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("offboarding.view_resignationletter"),name="dispatch")
-@method_decorator(check_feature_enabled("resignation_request",OffboardingGeneralSetting),name="dispatch")
+@method_decorator(
+    permission_required("offboarding.view_resignationletter"), name="dispatch"
+)
+@method_decorator(
+    check_feature_enabled("resignation_request", OffboardingGeneralSetting),
+    name="dispatch",
+)
 class ResignationLettersView(TemplateView):
     """
     for reimbursements and encashments page
@@ -39,22 +49,25 @@ class ResignationLettersView(TemplateView):
     template_name = "cbv/resignation/resignation.html"
 
 
-
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("offboarding.view_resignationletter"),name="dispatch")
-@method_decorator(check_feature_enabled("resignation_request",OffboardingGeneralSetting),name="dispatch")
+@method_decorator(
+    permission_required("offboarding.view_resignationletter"), name="dispatch"
+)
+@method_decorator(
+    check_feature_enabled("resignation_request", OffboardingGeneralSetting),
+    name="dispatch",
+)
 class ResignationListView(HorillaListView):
     """
     list view
     """
-    
 
     model = ResignationLetter
     filter_class = LetterFilter
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse('list-resignation-request')
+        self.search_url = reverse("list-resignation-request")
         if self.request.user.has_perm("offboarding.change_resignationletter"):
             self.action_method = "actions_column"
 
@@ -107,14 +120,14 @@ class ResignationListView(HorillaListView):
         (_("Title"), "title"),
         (_("Planned To Leave"), "planned_to_leave_on"),
         (_("Status"), "get_status"),
-        (_("Description"), "description_col")
+        (_("Description"), "description_col"),
     ]
 
     header_attrs = {
-        "description_col" : """
+        "description_col": """
                             style="width:200px !important"
-                            """ 
-                }
+                            """
+    }
 
     sortby_mapping = [
         ("Employee", "employee_id", "employee_id__get_avatar"),
@@ -123,10 +136,14 @@ class ResignationListView(HorillaListView):
     ]
 
 
-
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("offboarding.view_resignationletter"),name="dispatch")
-@method_decorator(check_feature_enabled("resignation_request",OffboardingGeneralSetting),name="dispatch")
+@method_decorator(
+    permission_required("offboarding.view_resignationletter"), name="dispatch"
+)
+@method_decorator(
+    check_feature_enabled("resignation_request", OffboardingGeneralSetting),
+    name="dispatch",
+)
 class ResinationLettersNav(HorillaNavView):
     """
     Nav bar
@@ -154,7 +171,10 @@ class ResinationLettersNav(HorillaNavView):
         ("status", _("Status")),
         ("employee_id__employee_work_info__department_id", _("Department")),
         ("employee_id__employee_work_info__job_position_id", _("Job Position")),
-        ("employee_id__employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
     ]
 
 
@@ -186,8 +206,13 @@ class ResignationLettersFormView(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("offboarding.view_resignationletter"),name="dispatch")
-@method_decorator(check_feature_enabled("resignation_request",OffboardingGeneralSetting),name="dispatch")
+@method_decorator(
+    permission_required("offboarding.view_resignationletter"), name="dispatch"
+)
+@method_decorator(
+    check_feature_enabled("resignation_request", OffboardingGeneralSetting),
+    name="dispatch",
+)
 class ResignationLetterDetailView(HorillaDetailedView):
     """
     detail view of resignations
@@ -208,8 +233,8 @@ class ResignationLetterDetailView(HorillaDetailedView):
         return context
 
     body = [
-        (_(""),""),
-        (_("Actions"),"option_column",True),
+        (_(""), ""),
+        (_("Actions"), "option_column", True),
         (_("Planned To Leave"), "planned_to_leave_on"),
         (_("Status"), "get_status"),
         (_("Description"), "detail_description_col"),

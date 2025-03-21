@@ -60,7 +60,7 @@
 </style>
 
  <div hx-get="{% url "hour-account-nav" %}" hx-trigger="load">
-</div>   
+</div>
 
 
 
@@ -76,9 +76,9 @@
     style="display: none">
   </div>
 
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -107,16 +107,16 @@
       </button>
       <divattendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}
         class="oh-modal__dialog-body p-0 pt-2"
-        
+
       >
           <form
           action="{%url 'attendance-account-info-export' %}"
           id="hourAccountExportModalBody"
           method="get"
           onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-         
+
         >
-          
+
         </form>
       </div>
     </div>
@@ -127,14 +127,14 @@
   function validateHours(url) {
 
     $.ajax({
-        url: "{% url 'active-tab' %}",  
+        url: "{% url 'active-tab' %}",
         method: "GET",
         data: {
             path: "{% url 'attendances-tab-view' %}",
             target: `li[data-target="#attendances-tab1"]`
         },
         success: function(response) {
-            window.location.href = url 
+            window.location.href = url
         },hx-get="{% url "attendances-tab-view" %}?{{request.GET.urlencode}}"
         error: function(xhr, status, error) {
             console.error(error);
@@ -144,18 +144,18 @@
 
 function validateOTHours(url) {
   $.ajax({
-      url: "{% url 'active-tab' %}",  
+      url: "{% url 'active-tab' %}",
       method: "GET",
       data: {
           path: "{% url 'attendances-tab-view' %}",
           target: `li[data-target="#attendances-tab2"]`
       },
       success: function(response) {
-        
+
           window.location.href = url
       },
       error: function(xhr, status, error) {
-          
+
           console.error(error);
       }
   });

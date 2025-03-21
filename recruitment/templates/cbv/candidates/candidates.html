@@ -64,9 +64,9 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -105,7 +105,7 @@
     }).then((result) => {
         if (result.isConfirmed) {
               window.location.href = url;
-        } 
+        }
     });
 }
 
@@ -126,13 +126,13 @@ function deleteCandidate(url) {
         const form = document.createElement('form');
         form.setAttribute('action', url);
         form.setAttribute('method', 'post');
-        
+
         const csrfTokenInput = document.createElement('input');
         csrfTokenInput.setAttribute('type', 'hidden');
         csrfTokenInput.setAttribute('name', 'csrfmiddlewaretoken');
         csrfTokenInput.value = getCSRFToken();
         form.appendChild(csrfTokenInput);
-        
+
         document.body.appendChild(form);
         form.submit();
     }
@@ -157,7 +157,7 @@ function toEmployee(url) {
   });
 }
 
-$(document).on('click', '#archiveCandidates', function(e) { 
+$(document).on('click', '#archiveCandidates', function(e) {
   e.preventDefault();
   var languageCode = null;
   getCurrentLanguageCode(function (code) {

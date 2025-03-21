@@ -1,16 +1,20 @@
 """
 decorator functions for base
 """
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
+
 from base.models import MultipleApprovalManagers
 from employee.models import EmployeeWorkInformation
-from django.contrib import messages
+
 decorator_with_arguments = (
     lambda decorator: lambda *args, **kwargs: lambda func: decorator(
         func, *args, **kwargs
     )
 )
+
 
 @decorator_with_arguments
 def report_manager_can_enter(function, perm):
@@ -48,4 +52,3 @@ def report_manager_can_enter(function, perm):
             return HttpResponse(script)
 
     return _function
-

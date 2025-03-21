@@ -19,23 +19,23 @@
       .status-rejected{
         border-left: 4px solid red !important;
         border-radius: 5px 0 0 4px;
-      
+
       }
      .status-cancelled {
         border-left: 4px solid grey !important;
         border-radius: 5px 0 0 4px;
-      
-      } 
+
+      }
       .status-requested{
         border-left: 4px solid orange !important;
         border-radius: 5px 0 0 4px;
-      
+
       }
      .status-approved {
         border-left: 4px solid yellowgreen !important;
         border-radius: 5px 0 0 4px;
-      
-      } 
+
+      }
       .delete{
         color = hsl(1, 100%, 61%) !important;
       }
@@ -46,7 +46,7 @@
             position: relative;
             display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
         }
-    
+
         .tooltip .tooltiptext {
             visibility: hidden;
             width: auto; /* Allow the tooltip width to adjust based on content */
@@ -67,29 +67,29 @@
             overflow: hidden; /* Hides any overflowed content */
             font-size:15px;
         }
-    
+
         .tooltip:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
         }
     </style>
-    
+
 <div hx-get="{% url "my-leave-request-nav" %}" hx-trigger="load">
 </div>
 <div>
     {% include "leave/user_leave/user_leave.html" %}
-    
+
 </div>
 {% include "generic/components.html" %}
 <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
 </div>
 
 
-<div class="oh-wrapper" hx-get="{% url "user-request-filter" %}?{{request.GET.urlencode}}" 
+<div class="oh-wrapper" hx-get="{% url "user-request-filter" %}?{{request.GET.urlencode}}"
    id="listContainer">
-  <div class="animated-background">   
+  <div class="animated-background">
 </div>
-</div> 
+</div>
 
 
 <div class="oh-activity-sidebar" id="leaveactivitySidebar" style="z-index:1000;">

@@ -16,7 +16,7 @@
     >
         <ion-icon name="create-outline"></ion-icon>
     </a>
-    {% endif %} 
+    {% endif %}
     {% if perms.instance.delete_attendance or request.user|is_reportingmanager %}
     <form action="{% url 'attendance-delete' instance.id %}"
           onclick="event.stopPropagation()"

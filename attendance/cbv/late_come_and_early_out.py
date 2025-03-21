@@ -1,10 +1,13 @@
 """
 Late come and early out page
 """
+
 from typing import Any
+
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from attendance.filters import LateComeEarlyOutFilter
 from attendance.forms import LateComeEarlyOutExportForm
 from attendance.models import AttendanceLateComeEarlyOut
@@ -13,11 +16,12 @@ from base.methods import filtersubordinates, is_reportingmanager
 from base.models import PenaltyAccounts
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaDetailedView,
 )
+
 
 @method_decorator(login_required, name="dispatch")
 class LateComeAndEarlyOut(TemplateView):
@@ -27,15 +31,14 @@ class LateComeAndEarlyOut(TemplateView):
 
     template_name = "cbv/late_come_and_early_out/late_come_and_early_out.html"
 
+
 @method_decorator(login_required, name="dispatch")
 class LateComeAndEarlyOutList(HorillaListView):
     """
     List view
     """
 
-    filter_keys_to_remove = [
-        "late_early_id"
-    ]
+    filter_keys_to_remove = ["late_early_id"]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -85,7 +88,7 @@ class LateComeAndEarlyOutList(HorillaListView):
     ]
 
     header_attrs = {
-        "penalities_column" :"""
+        "penalities_column": """
                              style ="width:170px !important"
                              """
     }
@@ -100,8 +103,8 @@ class LateComeAndEarlyOutList(HorillaListView):
         ("Out Date", "attendance_id__attendance_clock_out_date"),
         ("At Work", "attendance_id__attendance_worked_hour"),
         ("Min Hour", "attendance_id__minimum_hour"),
-
     ]
+
 
 @method_decorator(login_required, name="dispatch")
 class LateComeAndEarlyOutListNav(HorillaNavView):
@@ -172,7 +175,10 @@ class LateComeAndEarlyOutListNav(HorillaNavView):
             "attendance_id__employee_id__employee_work_info__reporting_manager_id",
             _("Reporting Manager"),
         ),
-        ("attendance_id__employee_id__employee_work_info__department_id", _("Department")),
+        (
+            "attendance_id__employee_id__employee_work_info__department_id",
+            _("Department"),
+        ),
         (
             "attendance_id__employee_id__employee_work_info__job_position_id",
             _("Job Position"),
@@ -201,6 +207,7 @@ class LateEarlyExportView(TemplateView):
         context["export_form"] = export_form
         context["export"] = export
         return context
+
 
 @method_decorator(login_required, name="dispatch")
 class LateComeEarlyOutDetailView(HorillaDetailedView):
@@ -233,4 +240,3 @@ class LateComeEarlyOutDetailView(HorillaDetailedView):
     ]
 
     action_method = "detail_actions"
-

@@ -77,46 +77,32 @@
 <script>
     function machineTypeChange(selectElement) {
         var machineType = selectElement.val();
-        if (machineType === "anviz") {
-            $("#machinIpInput").hide();
-            $("#machinPortInput").hide();
-            $("#machinUserName").hide();
-            $("#machinPassword").hide();
-            $("#apiRequestIDInput").show();
-            $("#apiUrlInput").show();
-            $("#apiKeyInput").show();
-            $("#apiSecretInput").show();
-        } else if (machineType === "zk") {
-            $("#machinIpInput").show();
-            $("#machinPortInput").show();
-            $("#zkPassword").show();
-            $("#machinUserName").hide();
-            $("#machinPassword").hide();
-            $("#apiRequestIDInput").hide();
-            $("#apiUrlInput").hide();
-            $("#apiKeyInput").hide();
-            $("#apiSecretInput").hide();
-        }
-        else if (machineType === "cosec") {
-            console.log()
-            $("#machinIpInput").show();
-            $("#machinPortInput").show();
-            $("#machinUserName").show();
-            $("#machinPassword").show();
-            $("#apiRequestIDInput").hide();
-            $("#apiUrlInput").hide();
-            $("#apiKeyInput").hide();
-            $("#apiSecretInput").hide();
-        }
-        else {
-            $("#machinIpInput").hide();
-            $("#machinPortInput").hide();
-            $("#machinUserName").hide();
-            $("#machinPassword").hide();
-            $("#apiUrlInput").hide();
-            $("#apiKeyInput").hide();
-            $("#apiSecretInput").hide();
+        var allElements = [
+            "#zkPassword", "#machinIpInput", "#machinUserName", "#machinPassword",
+            "#machinPortInput", "#apiUrlInput", "#apiKeyInput", "#apiSecretInput",
+            "#apiRequestIDInput"
+        ];
+
+        // Hide all elements initially
+        $(allElements.join(', ')).hide();
+
+        // Show relevant elements based on the selected machine type
+        switch (machineType) {
+            case "anviz":
+                $("#apiUrlInput, #apiKeyInput, #apiSecretInput, #apiRequestIDInput").show();
+                break;
+            case "zk":
+                $("#zkPassword, #machinIpInput, #machinPortInput").show();
+                break;
+            case "cosec":
+            case "dahua":
+                $("#machinIpInput, #machinUserName, #machinPassword, #machinPortInput").show();
+                break;
+            default:
+                // No elements need to be shown for unknown machine types
+                break;
         }
     }
 </script>
+
 {% endblock %}

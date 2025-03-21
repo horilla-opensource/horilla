@@ -5,31 +5,33 @@ This page is handled the cbv of my leave request page
 import contextlib
 from datetime import datetime
 from typing import Any
-from django.urls import resolve, reverse, reverse_lazy
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.contrib import messages
-from notifications.signals import notify
+from django.urls import resolve, reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaFormView,
 )
-from leave.models import AvailableLeave, CompanyLeave, Holiday, LeaveRequest, LeaveType
-from leave.forms import UserLeaveRequestCreationForm
 from leave.filters import UserLeaveRequestFilter
-from leave.threading import LeaveMailSendThread
+from leave.forms import UserLeaveRequestCreationForm
 from leave.methods import (
     calculate_requested_days,
     company_leave_dates_list,
     holiday_dates_list,
     leave_requested_dates,
 )
+from leave.models import AvailableLeave, CompanyLeave, Holiday, LeaveRequest, LeaveType
+from leave.threading import LeaveMailSendThread
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -50,9 +52,8 @@ class MyLeaveRequestView(TemplateView):
         )
         context["user_leaves"] = user_leave
         return context
-    
 
-    
+
 @method_decorator(login_required, name="dispatch")
 class MainParentListView(HorillaListView):
     """
@@ -62,7 +63,6 @@ class MainParentListView(HorillaListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("user-request-filter")
-
 
     filter_class = UserLeaveRequestFilter
     model = LeaveRequest
@@ -151,7 +151,7 @@ class MainParentListView(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
-    
+
 
 @method_decorator(login_required, name="dispatch")
 class MyLeaveRequestListView(MainParentListView):
@@ -167,8 +167,6 @@ class MyLeaveRequestListView(MainParentListView):
         employee = self.request.user.employee_get
         queryset = queryset.filter(employee_id=employee)
         return queryset
-
-   
 
 
 class MyLeaveRequestNavView(HorillaNavView):
@@ -254,7 +252,7 @@ class MyLeaveRequestForm(HorillaFormView):
 
     # def get_initial(self) -> dict:
     #     initial = super().get_initial()
-    #     emp = self.request.user.employee_get   
+    #     emp = self.request.user.employee_get
     #     initial["employee_id"] = emp
     #     return initial
 
@@ -264,10 +262,10 @@ class MyLeaveRequestForm(HorillaFormView):
         emp = self.request.user.employee_get
         available_leaves = emp.available_leave.all()
         assigned_leave_types = LeaveType.objects.filter(
-                    id__in=available_leaves.values_list("leave_type_id", flat=True)
-                )
+            id__in=available_leaves.values_list("leave_type_id", flat=True)
+        )
         self.form.fields["leave_type_id"].queryset = assigned_leave_types
-        self.form.fields["employee_id"].initial = emp    
+        self.form.fields["employee_id"].initial = emp
 
         if self.form.instance.pk:
             leave_request = LeaveRequest.objects.get(id=self.form.instance.pk)
@@ -609,4 +607,3 @@ class MyLeaveRequestSingleForm(HorillaFormView):
             else:
                 return self.form_invalid(form)
         return super().form_valid(form)
-

@@ -33,12 +33,12 @@
                   {% if perms.recruitment.view_candidate or request.user|is_stagemanager %}
                     <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans "View candidate self tracking" %}"
                       href="{% url 'candidate-self-status-tracking' instance.id %}"
-                        style="padding:0.8rem 1rem" 
+                        style="padding:0.8rem 1rem"
                       >
                       <ion-icon name="heart-circle-outline"></ion-icon>
                     </a>
-                  {% endif %} 
-              {% endif %} 
+                  {% endif %}
+              {% endif %}
               {% if instance.email in emp_list %}
                 <button class="oh-btn oh-btn--light-bkg w-100"  title='{% trans "Candidate is Converted " %}' style="opacity: 30%; padding:0.8rem 1rem">
                   <ion-icon name="thumbs-down-outline"></ion-icon></button>

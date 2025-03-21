@@ -2,15 +2,16 @@
 Leave allocation request page
 """
 
-from typing import Any
 import contextlib
+from typing import Any
+
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from notifications.signals import notify
+from django.utils.translation import gettext_lazy as _
+
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
@@ -27,7 +28,7 @@ from leave.cbv.leave_tab import IndividualLeaveTab
 from leave.filters import LeaveAllocationRequestFilter
 from leave.forms import LeaveAllocationRequestForm
 from leave.models import LeaveAllocationRequest
-
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -48,13 +49,10 @@ class LeaveAllocationRequestList(HorillaListView):
     model = LeaveAllocationRequest
     filter_class = LeaveAllocationRequestFilter
 
-
-
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("leave-allocation-request-filter")
         self.view_id = "view-container"
-
 
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
@@ -67,15 +65,13 @@ class LeaveAllocationRequestList(HorillaListView):
     ]
 
     header_attrs = {
-        "action" :  """
+        "action": """
                     style="width:180px !important;"
                     """,
-        "description" :  """
+        "description": """
                     style="width:180px !important;"
                     """,
-
     }
-
 
     sortby_mapping = [
         ("Employee", "employee_id__get_full_name"),
@@ -84,7 +80,6 @@ class LeaveAllocationRequestList(HorillaListView):
         ("Created By", "created_by__get_full_name"),
         ("Status", "get_status"),
     ]
-
 
     option_method = "action_col"
 
@@ -132,7 +127,6 @@ class LeaveAllocationRequestTab(HorillaTabView):
     """
     Tab View
     """
-
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

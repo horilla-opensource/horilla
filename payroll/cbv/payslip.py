@@ -4,29 +4,30 @@ this page handles cbv methods of payslip page
 
 import json
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from employee.cbv.employee_profile import EmployeeProfileView
+from django.utils.translation import gettext_lazy as _
+
 from employee import views as employee_view
+from employee.cbv.employee_profile import EmployeeProfileView
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaFormView,
 )
 from notifications.signals import notify
 from payroll.cbv.allowance_deduction import AllowanceDeductionTabView
-from payroll.forms import component_forms as forms
 from payroll.filters import PayslipFilter
+from payroll.forms import component_forms as forms
 from payroll.methods.methods import calculate_employer_contribution, save_payslip
 from payroll.models.models import Contract, Payslip
 from payroll.views.component_views import payroll_calculation
-
 
 
 @method_decorator(login_required, name="dispatch")
@@ -57,13 +58,14 @@ class PayslipList(HorillaListView):
     """
     list view
     """
+
     selected_instances_key_id = "selectedInstances"
     bulk_update_fields = [
         "status",
         "start_date",
         "end_date",
-        
     ]
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("payslip-list")
@@ -98,7 +100,7 @@ class PayslipList(HorillaListView):
         ("Gross Pay", "gross_pay_display"),
         ("Deduction", "deduction_display"),
         ("Net Pay", "net_pay_display"),
-        ("Status", "custom_status_col")
+        ("Status", "custom_status_col"),
     ]
     records_per_page = 5
     action_method = "custom_actions_col"
@@ -159,11 +161,11 @@ class PayslipList(HorillaListView):
     ]
 
     row_attrs = """
-   
+
                 onclick="
                 event.stopPropagation();
                 window.location.href='{get_individual_payslip}'"
-                
+
                 """
 
     row_status_class = "status-{status} sent_to_employee-{sent_to_employee}"
@@ -212,7 +214,6 @@ class PayslipNav(HorillaNavView):
                     style="cursor: pointer;"
                 """,
                 },
-                
                 {
                     "action": _("Export"),
                     "attrs": f"""
@@ -257,6 +258,7 @@ class PayslipNav(HorillaNavView):
         ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 
+
 @method_decorator(login_required, name="dispatch")
 class PayslipBulkExport(TemplateView):
     """
@@ -293,7 +295,6 @@ class PayrollCreateFormView(HorillaFormView):
     form_class = forms.PayslipForm
     new_display_title = _("Create Payslip")
     template_name = "cbv/payslip/payslip_inherit_form.html"
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -381,11 +382,11 @@ class PayrollTab(PayslipList):
         pk = self.kwargs.get("pk")
         queryset = queryset.filter(employee_id=pk)
         return queryset
-    
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pk = self.request.resolver_match.kwargs.get("pk")
-        self.search_url = reverse("individual-payslip-tab-list",kwargs={'pk':pk})
+        self.search_url = reverse("individual-payslip-tab-list", kwargs={"pk": pk})
 
     columns = [col for col in PayslipList.columns if col[0] != _("Status")]
     columns.append((_("Status"), "get_status"))

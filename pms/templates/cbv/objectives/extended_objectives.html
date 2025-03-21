@@ -5,7 +5,7 @@
 
 <script>
     $(document).on("htmx:afterSettle", function () {
-      $("[data-toggle-count]").off("click").on("click", function (e) { 
+      $("[data-toggle-count]").off("click").on("click", function (e) {
         e.stopPropagation();
         let recViewContainer = $(this).closest('tr');
         span = recViewContainer.find(".count-span").toggle();
@@ -13,4 +13,4 @@
         row.toggleClass("oh-permission-table--collapsed");
       });
     });
-  </script> 
+  </script>

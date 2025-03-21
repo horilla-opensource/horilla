@@ -4,16 +4,16 @@ This page is handling the cbv methods of shift request page.
 
 import contextlib
 from typing import Any
+
 from django import forms
+from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from django.db.models import Q
-from employee.models import Employee
-from notifications.signals import notify
+
 from base.filters import ShiftRequestFilter
 from base.forms import (
     EmployeeShiftForm,
@@ -21,18 +21,20 @@ from base.forms import (
     ShiftRequestColumnForm,
     ShiftRequestForm,
 )
-from base.models import EmployeeShift, ShiftRequest
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
+from base.models import EmployeeShift, ShiftRequest
 from base.views import include_employee_instance
+from employee.models import Employee
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
     HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
     HorillaTabView,
     TemplateView,
-    HorillaNavView,
-    HorillaListView,
-    HorillaDetailedView,
 )
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -242,7 +244,7 @@ class ShitRequestNav(HorillaNavView):
              data-toggle="oh-modal-toggle"
              data-target="#genericModal"
              hx-target="#genericModalBody"
-            
+
          """
         self.actions = []
         if self.request.user.has_perm(

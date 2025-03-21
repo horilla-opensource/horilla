@@ -1,14 +1,16 @@
 from datetime import date
 from typing import Any
+
 from django.urls import reverse
-from base.methods import filtersubordinates
-from base.decorators import manager_can_enter
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
+from base.decorators import manager_can_enter
+from base.methods import filtersubordinates
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaListView
 from leave.cbv.leave_allocation_request import LeaveAllocationRequests
-from django.utils.translation import gettext_lazy as _
 from leave.cbv.leave_requests import LeaveRequestsListView
-from horilla_views.cbv_methods import login_required
 from leave.cbv.my_leave_request import MyLeaveRequestListView
 from leave.filters import UserLeaveRequestFilter
 from leave.models import LeaveRequest
@@ -54,6 +56,7 @@ class LeaveAllocationRequestToApprove(LeaveAllocationRequests):
                         """,
     }
 
+
 @method_decorator(login_required, name="dispatch")
 class LeaveRequestsToApprove(LeaveRequestsListView):
     """
@@ -64,7 +67,6 @@ class LeaveRequestsToApprove(LeaveRequestsListView):
     row_status_indications = None
     option_method = None
     show_toggle_form = False
-    
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -93,12 +95,10 @@ class LeaveRequestsToApprove(LeaveRequestsListView):
         "employee_id": """
                         style ="width:100px !important"
                         """,
-        "get_period":     """
+        "get_period": """
                         style ="width:100px !important"
                         """,
     }
-
-   
 
 
 @method_decorator(login_required, name="dispatch")
@@ -113,7 +113,6 @@ class DashboardOnLeave(HorillaListView):
     show_toggle_form = False
     bulk_select_option = False
 
-
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("dashboard-on-leave")
@@ -124,19 +123,18 @@ class DashboardOnLeave(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
-        
 
     def get_queryset(self):
         today = date.today()
-        queryset =  super().get_queryset()
+        queryset = super().get_queryset()
         queryset = queryset.filter(
-        employee_id__is_active=True,
-        status="approved",
-        start_date__lte=today,
-        end_date__gte=today,
-            )
+            employee_id__is_active=True,
+            status="approved",
+            start_date__lte=today,
+            end_date__gte=today,
+        )
         return queryset
-    
+
     columns = [
         ("Employee", "employee_id", "employee_id__get_avatar"),
     ]
@@ -164,7 +162,7 @@ class DashboardTotalLeaveRequest(MyLeaveRequestListView):
         """
         queryset = super().get_queryset()
         employee = self.request.user.employee_get
-        queryset = queryset.filter(employee_id=employee,status="approved")
+        queryset = queryset.filter(employee_id=employee, status="approved")
         return queryset
 
     columns = [
@@ -205,5 +203,3 @@ class DashboardTotalLeaveRequest(MyLeaveRequestListView):
                         style ="width:100px !important"
                         """,
     }
-
-    

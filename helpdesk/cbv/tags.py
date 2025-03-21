@@ -3,12 +3,14 @@ This page is handling the cbv methods for Ticket types in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.forms import TagsForm
 from base.models import Tags
 from helpdesk.filter import TagsFilter
@@ -36,44 +38,40 @@ class TagsListView(HorillaListView):
         self.view_id = "tagContainer"
         self.search_url = reverse("helpdesk-tag-list")
         self.actions = [
-        {
-            "action": _("Edit"),
-            "icon": "create-outline",
-            "attrs": """
+            {
+                "action": _("Edit"),
+                "icon": "create-outline",
+                "attrs": """
                         class="oh-btn oh-btn--light-bkg w-100"
                         hx-get='{get_update_url}?instance_ids={ordered_ids}'
 								hx-target="#genericModalBody"
 								data-toggle="oh-modal-toggle"
 								data-target="#genericModal"
                       """,
-        },
-        {
-            "action": _("Delete"),
-            "icon": "trash-outline",
-            "attrs": """
+            },
+            {
+                "action": _("Delete"),
+                "icon": "trash-outline",
+                "attrs": """
                         class="oh-btn oh-btn--light-bkg w-100 text-danger"
                         hx-confirm="Are you sure you want to delete this tag ?"
                         hx-post="{get_delete_url}"
                         hx-target="#tagTr{get_instance_id}"
-                        hx-swap="delete"      
+                        hx-swap="delete"
                         """,
-        },
-    ]
-        
+            },
+        ]
+
     columns = [(_("Title"), "title"), (_("Color"), "get_color")]
 
     header_attrs = {
-        "title" :   """
+        "title": """
                    style = "width:200px !important"
                    """,
-       
     }
 
+    sortby_mapping = [("Title", "title")]
 
-    sortby_mapping = [
-        ("Title", "title")
-    ]
-    
     row_attrs = """
                 id = "tagTr{get_instance_id}"
                 """
@@ -112,7 +110,6 @@ class TagsFormView(HorillaFormView):
     model = Tags
     form_class = TagsForm
     new_display_title = _("Create Helpdesk Tag")
-   
 
     def get_context_data(self, **kwargs):
         """
@@ -148,20 +145,16 @@ class TagsFormView(HorillaFormView):
         """
         if form.is_valid():
             if form.instance.pk:
-                messages.success(
-                    self.request, _("Tag has been updated successfully!")
-                )
+                messages.success(self.request, _("Tag has been updated successfully!"))
             else:
-                messages.success(
-                    self.request, _("Tag has been created successfully!")
-                )
+                messages.success(self.request, _("Tag has been created successfully!"))
             form.save()
             return self.HttpResponse()
             # return HttpResponse("<script>$(document).ready(function(e) { $('#addTagModal').toggleClass('oh-modal--show')});</script>")
             # return HttpResponse("<script>$('#addTagModal').find('.oh-modal--show').first().removeClass('.oh-modal--show');</script>")
         return super().form_valid(form)
 
+
 class DynamicTagsCreateFormView(TagsFormView):
 
     is_dynamic_create_view = True
-

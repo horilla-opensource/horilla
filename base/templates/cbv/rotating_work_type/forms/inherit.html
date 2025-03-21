@@ -15,14 +15,14 @@
       {% trans "Add more work types.." %}
     </button>
 </div>
-   
+
 
    <script>
-    
+
         $(document).ready(function() {
             var workCount = {{ form.work_type_counts }} - 1;
             var workCounts = {{ form.work_type_counts }};
-            
+
             for (var i = 1; i < workCounts; i++) {
                 var parentDivId = "id_work_type" + i + "_parent_div";
                 var parentDiv = document.getElementById(parentDivId);
@@ -31,7 +31,7 @@
                     $(parentDiv).find('.oh-label__info').remove();
                 }
             }
-            
+
             var divElement = document.createElement('div');
             var test = {{ form.work_type_counts }} - 1;
             divElement.id = 'moreWorkTypeContainer_{{form.work_type_counts|add:2}}';
@@ -43,9 +43,9 @@
             anchorElement.setAttribute('id', 'link');
             anchorElement.style.color = 'green';
             anchorElement.innerText = 'Add more Work Types..';
-   
+
             divElement.appendChild(anchorElement);
-            
+
             var parentDivId = "id_work_type" + test + "_parent_div";
             var parentDiv = document.getElementById(parentDivId);
             if (!document.getElementById('link')) {
@@ -56,12 +56,11 @@
                 parentDiv.insertAdjacentElement('afterend', divElement);
             }
         }
-       
+
         $(document).off('click', '#link').on('click', '#link', function(e) {
             e.preventDefault();
             $('#hidden').trigger('click');
         });
     });
-            
-</script>
 
+</script>

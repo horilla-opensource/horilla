@@ -31,7 +31,7 @@
 
 
 <div hx-get="{% url "reimbursement-nav" %}" hx-trigger="load">
-</div> 
+</div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
 
@@ -47,9 +47,9 @@
     style="display: none"
   ></div>
  {% comment %} status=requested {% endcomment %}
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -62,7 +62,7 @@
 
   </div>
 
- 
+
   <script>
     function reimbursementConfirm(params, target, approve = false) {
         Swal.fire({
@@ -92,7 +92,7 @@
         let amount=elem.val()
         $(elem).parents().closest("tr").find('[name=amount]').val(amount);
       }
-     
+
 
      function enlargeImage(src,$element) {
         $(".enlargeImageContainer").empty()
@@ -111,7 +111,7 @@
             iframe_image = iframe_document.getElementsByTagName('img')[0]
             $(iframe_image).attr('style', 'width:100%; height:100%;')
         }, 100)
-    } 
+    }
 
  function hideEnlargeImage() {
         var enlargeImageContainer = $('.enlargeImageContainer')
@@ -122,11 +122,11 @@
         if (!$(event.target).closest('#enlargeImageContainer').length) {
             hideEnlargeImage()
         }
-    }) 
+    })
     function submitForm(elem) {
         $(elem).siblings(".add_more_submit").click();
     }
-    
+
    function enlargeattachment(src,$element) {
       $("#enlargeattachmentContainer").empty()
       var enlargeattachmentContainer = $("#enlargeattachmentContainer")
@@ -154,8 +154,8 @@
     if (!$(event.target).closest('#enlargeattachmentContainer').length) {
       hideEnlargeattachment()
     }
-  }) 
+  })
 </script>
 
-    
+
 {% endblock %}

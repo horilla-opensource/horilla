@@ -15,8 +15,8 @@
       {% trans "Add more work types.." %}
     </button>
     <script>
-        
-    
+
+
        $(document).ready(function () {
                var divElement = document.createElement('div');
                var test = {{ form.work_type_counts }} - 1
@@ -29,7 +29,7 @@
                anchorElement.setAttribute('id', 'link');
                anchorElement.style.color = 'green';
                anchorElement.innerText = 'Add more Work Types..';
-       
+
                divElement.appendChild(anchorElement);
                var parentDivId = "id_work_type" + test + "_parent_div"
                var parentDiv = document.getElementById(parentDivId);
@@ -39,16 +39,16 @@
                 var parentDiv = document.getElementById('id_work_type2_parent_div');
                 parentDiv.insertAdjacentElement('afterend', divElement);
                }
-               
+
             });
-        
+
 
            $('.oh-modal__close--custom').on('click', function() {
             console.log('Close button clicked');
             //location.reload();
-            
+
             // Function to reload the record
-            
+
         });
            $(document).off('click', '#link').on('click', '#link', function(e) {
             e.preventDefault
@@ -60,9 +60,8 @@
             });
 
             $(document).on('click', '#delete-link', function(e) {
-                e.preventDefault(); 
-                $(this).parents().eq(3).remove();        
+                e.preventDefault();
+                $(this).parents().eq(3).remove();
             });
 </script>
-</div> 
-  
+</div>

@@ -2,26 +2,26 @@
 This page handles the cbv methods for dashboard views
 """
 
+from datetime import datetime
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
-from datetime import datetime
 from django.utils.decorators import method_decorator
-from django.contrib import messages
-from base.cbv.work_type_request import WorkRequestListView
 from django.utils.translation import gettext_lazy as _
+
+from base.cbv.shift_request import ShiftRequestList
+from base.cbv.work_type_request import WorkRequestListView
 from base.decorators import manager_can_enter
 from base.filters import AnnouncementFilter, AnnouncementViewFilter
 from base.methods import filtersubordinates
 from base.models import Announcement, AnnouncementView
 from employee.filters import EmployeeWorkInformationFilter
-from employee.forms import (
-    EmployeeWorkInformationUpdateForm,
-)
+from employee.forms import EmployeeWorkInformationUpdateForm
 from employee.models import EmployeeWorkInformation
-from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
 from horilla_views.cbv_methods import login_required, permission_required
-from base.cbv.shift_request import ShiftRequestList
+from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
 
 
 @method_decorator(login_required, name="dispatch")
@@ -96,7 +96,7 @@ class ShiftRequestToApprove(ShiftRequestList):
         "employee_id": """
                         style ="width:100px !important"
                         """,
-        "shift_id":     """
+        "shift_id": """
                         style ="width:100px !important"
                         """,
     }
@@ -144,7 +144,7 @@ class EmployeeWorkInformationList(HorillaListView):
     model = EmployeeWorkInformation
     filter_class = EmployeeWorkInformationFilter
     bulk_select_option = False
-    show_toggle_form =False
+    show_toggle_form = False
 
     columns = [
         (_("Employee"), "employee_id"),
@@ -233,8 +233,6 @@ class DashboardAnnouncementView(HorillaListView):
 
         return queryset
 
-    
-
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("base.view_announcement"), name="dispatch")
@@ -251,7 +249,6 @@ class AnnouncementViewedByList(HorillaListView):
     columns = [
         (_("Viewed By"), "announcement_viewed_by_col"),
     ]
-
 
     def get_queryset(self):
         queryset = super().get_queryset()

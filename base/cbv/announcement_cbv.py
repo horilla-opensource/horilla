@@ -1,23 +1,23 @@
 """
 Announcement page
 """
+
+from django.contrib import messages
+from django.contrib.auth.models import User
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.forms import AnnouncementForm
 from base.models import Announcement
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required, permission_required
-from django.utils.decorators import method_decorator
 from horilla_views.generic.cbv.views import HorillaFormView
-from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from django.contrib.auth.models import User
 from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required(perm="base.add_announcement"), name="dispatch"
-)
+@method_decorator(permission_required(perm="base.add_announcement"), name="dispatch")
 class AnnouncementFormView(HorillaFormView):
     """
     form view for create button
@@ -49,7 +49,7 @@ class AnnouncementFormView(HorillaFormView):
             anou.department.set(departments)
             anou.job_position.set(job_positions)
             emp_dep = User.objects.filter(
-            employee_get__employee_work_info__department_id__in=departments
+                employee_get__employee_work_info__department_id__in=departments
             )
             emp_jobs = User.objects.filter(
                 employee_get__employee_work_info__job_position_id__in=job_positions
@@ -62,15 +62,15 @@ class AnnouncementFormView(HorillaFormView):
             )
             anou.employees.add(*employees)
             notify.send(
-            self.request.user.employee_get,
-            recipient=emp_dep,
-            verb="Your department was mentioned in a post.",
-            verb_ar="تم ذكر قسمك في منشور.",
-            verb_de="Ihr Abteilung wurde in einem Beitrag erwähnt.",
-            verb_es="Tu departamento fue mencionado en una publicación.",
-            verb_fr="Votre département a été mentionné dans un post.",
-            redirect="/",
-            icon="chatbox-ellipses",
+                self.request.user.employee_get,
+                recipient=emp_dep,
+                verb="Your department was mentioned in a post.",
+                verb_ar="تم ذكر قسمك في منشور.",
+                verb_de="Ihr Abteilung wurde in einem Beitrag erwähnt.",
+                verb_es="Tu departamento fue mencionado en una publicación.",
+                verb_fr="Votre département a été mentionné dans un post.",
+                redirect="/",
+                icon="chatbox-ellipses",
             )
             notify.send(
                 self.request.user.employee_get,

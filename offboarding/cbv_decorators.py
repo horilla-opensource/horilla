@@ -1,9 +1,10 @@
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
+
 from horilla.decorators import decorator_with_arguments
-from offboarding.models import Offboarding, OffboardingStage, OffboardingTask
 from horilla.horilla_middlewares import _thread_locals
-from django.contrib import messages
+from offboarding.models import Offboarding, OffboardingStage, OffboardingTask
 
 
 @decorator_with_arguments
@@ -32,7 +33,6 @@ def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
             return HttpResponse(script)
 
     return _function
-
 
 
 @decorator_with_arguments

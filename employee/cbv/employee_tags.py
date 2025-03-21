@@ -3,12 +3,14 @@ this page is handling the cbv methods for employee tags in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.forms import EmployeeTagForm
 from employee.filters import EmployeeTagFilter
 from employee.models import EmployeeTag
@@ -58,8 +60,8 @@ class EmployeeTagListView(HorillaListView):
                         hx-swap="outerHTML"
                         hx-post="{get_delete_url}"
                         hx-target="#employeeTagTr{get_instance_id}"
-                       
-                                    
+
+
                       """,
                 }
             )
@@ -109,9 +111,7 @@ class EmployeetagNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required(perm="employee.add_employeetag"), name="dispatch"
-)
+@method_decorator(permission_required(perm="employee.add_employeetag"), name="dispatch")
 class EmployeeTagCreateForm(HorillaFormView):
     """
     form view for creating and update employee tags in settings
@@ -143,13 +143,9 @@ class EmployeeTagCreateForm(HorillaFormView):
     def form_valid(self, form: EmployeeTagForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
-                messages.success(
-                    self.request, _("Tag has been updated successfully!")
-                )
+                messages.success(self.request, _("Tag has been updated successfully!"))
             else:
-                messages.success(
-                    self.request, _("Tag has been created successfully!")
-                )
+                messages.success(self.request, _("Tag has been created successfully!"))
             form.save()
             return self.HttpResponse()
         return super().form_valid(form)

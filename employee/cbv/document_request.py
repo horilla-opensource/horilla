@@ -3,26 +3,34 @@ This page handles the cbv methods for document request page
 """
 
 from typing import Any
+
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from employee.models import Employee
-from notifications.signals import notify
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from base.methods import choosesubordinates
-from horilla.decorators import manager_can_enter
-from horilla_documents.forms import DocumentRejectForm, DocumentRequestForm, DocumentUpdateForm,DocumentForm
-from horilla_documents.models import Document, DocumentRequest
-from horilla_views.generic.cbv.views import HorillaFormView
-from horilla_views.cbv_methods import login_required
 
+from base.methods import choosesubordinates
+from employee.models import Employee
+from horilla.decorators import manager_can_enter
+from horilla_documents.forms import (
+    DocumentForm,
+    DocumentRejectForm,
+    DocumentRequestForm,
+    DocumentUpdateForm,
+)
+from horilla_documents.models import Document, DocumentRequest
+from horilla_views.cbv_methods import login_required
+from horilla_views.generic.cbv.views import HorillaFormView
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(manager_can_enter("horilla_documents.add_documentrequests"),name="dispatch")
+@method_decorator(
+    manager_can_enter("horilla_documents.add_documentrequests"), name="dispatch"
+)
 class DocumentRequestCreateForm(HorillaFormView):
     """
     form view for create and update document request
@@ -34,7 +42,9 @@ class DocumentRequestCreateForm(HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        self.form = choosesubordinates(self.request, self.form, "horilla_documents.add_documentrequest")
+        self.form = choosesubordinates(
+            self.request, self.form, "horilla_documents.add_documentrequest"
+        )
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Update Document Request")
 
@@ -46,13 +56,19 @@ class DocumentRequestCreateForm(HorillaFormView):
                 pk = self.form.instance.pk
                 documents = Document.objects.filter(document_request_id=pk)
                 doc_obj = form.save()
-                doc_obj.employee_id.set(Employee.objects.filter(id__in=form.data.getlist("employee_id")))
+                doc_obj.employee_id.set(
+                    Employee.objects.filter(id__in=form.data.getlist("employee_id"))
+                )
                 documents.exclude(employee_id__in=doc_obj.employee_id.all()).delete()
-                messages.success(self.request, _("Document Request Updated Successfully"))
+                messages.success(
+                    self.request, _("Document Request Updated Successfully")
+                )
             else:
-                messages.success(self.request, _("Document request created successfully"))
-                emp = form.cleaned_data['employee_id'].all()
-                users = [ user.employee_user_id for user in emp ]
+                messages.success(
+                    self.request, _("Document request created successfully")
+                )
+                emp = form.cleaned_data["employee_id"].all()
+                users = [user.employee_user_id for user in emp]
                 notify.send(
                     self.request.user.employee_get,
                     recipient=users,
@@ -67,7 +83,7 @@ class DocumentRequestCreateForm(HorillaFormView):
                 form.save()
             return self.HttpResponse("<script>window.location.reload();</script>")
         return super().form_valid(form)
-    
+
 
 class DocumentCreateForm(HorillaFormView):
     """
@@ -94,7 +110,7 @@ class DocumentCreateForm(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(manager_can_enter("horilla_documents.add_document"),name="dispatch")
+@method_decorator(manager_can_enter("horilla_documents.add_document"), name="dispatch")
 class DocumentRejectform(HorillaFormView):
     """
     form view for rejecting document on document request and employee individual view
@@ -109,7 +125,7 @@ class DocumentRejectform(HorillaFormView):
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Reject")
         return context
-    
+
     def form_valid(self, form: DocumentRejectForm) -> HttpResponse:
         if form.is_valid():
             pk = self.form.instance.pk
@@ -124,7 +140,6 @@ class DocumentRejectform(HorillaFormView):
             # form.save()
             return HttpResponse("<script>window.location.reload();</script>")
         return super().form_valid(form)
-    
 
 
 class DocumentUploadForm(HorillaFormView):
@@ -148,7 +163,6 @@ class DocumentUploadForm(HorillaFormView):
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Upload File")
         return context
-    
 
     def form_valid(self, form: DocumentUpdateForm) -> HttpResponse:
         if form.is_valid():
@@ -174,4 +188,3 @@ class DocumentUploadForm(HorillaFormView):
             form.save()
             return HttpResponse("<script>window.location.reload();</script>")
         return super().form_valid(form)
-

@@ -3,16 +3,27 @@ This module used for recruitment candidates
 """
 
 from typing import Any
+
+from django import forms
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
 from django.urls import reverse, reverse_lazy
-from django.views import View
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from django import forms
+from django.views import View
+
 from employee.forms import BulkUpdateFieldForm
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.forms import DynamicBulkUpdateForm
+from horilla_views.generic.cbv.views import (
+    HorillaCardView,
+    HorillaDetailedView,
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+    TemplateView,
+)
 from recruitment.cbv.candidate_reject_reason import DynamicRejectReasonFormView
 from recruitment.filters import CandidateFilter
 from recruitment.forms import (
@@ -21,15 +32,6 @@ from recruitment.forms import (
     ToSkillZoneForm,
 )
 from recruitment.models import Candidate, RejectedCandidate, SkillZoneCandidate
-from horilla_views.generic.cbv.views import (
-    HorillaFormView,
-    HorillaListView,
-    TemplateView,
-    HorillaNavView,
-    HorillaCardView,
-    HorillaDetailedView,
-)
-from horilla_views.cbv_methods import login_required, permission_required
 
 
 @method_decorator(
@@ -73,39 +75,37 @@ class ListCandidates(HorillaListView):
         "joining_date",
         "probation_end",
     ]
-    
+
     def get_bulk_form(self):
         """
         Bulk from generating method
         """
-    
+
         form = DynamicBulkUpdateForm(
             root_model=Candidate, bulk_update_fields=self.bulk_update_fields
         )
 
         form.fields["country"] = forms.ChoiceField(
             widget=forms.Select(
-              attrs={
-                "class": "oh-select oh-select-2", 
-                "required": True,
-                "style": "width: 100%; height:45px;"
-            }
+                attrs={
+                    "class": "oh-select oh-select-2",
+                    "required": True,
+                    "style": "width: 100%; height:45px;",
+                }
             )
         )
 
         form.fields["state"] = forms.ChoiceField(
             widget=forms.Select(
                 attrs={
-                "class": "oh-select oh-select-2",
-                "required": True,
-                "style": "width: 100%; height:45px;"
-            }
+                    "class": "oh-select oh-select-2",
+                    "required": True,
+                    "style": "width: 100%; height:45px;",
+                }
             )
         )
 
         return form
-
-
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -126,15 +126,15 @@ class ListCandidates(HorillaListView):
     ]
 
     header_attrs = {
-        "option" : """
+        "option": """
                    style ="width : 230px !important;"
                    """,
-        "action" : """
+        "action": """
                    style ="width : 200px !important;"
                    """,
-        "email" : """
+        "email": """
                    style ="width : 200px !important;"
-                   """
+                   """,
     }
 
     actions = [
@@ -153,7 +153,7 @@ class ListCandidates(HorillaListView):
             "attrs": """
                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                 onclick="event.stopPropagation()
-                archiveCandidate({get_archive_url});  "  
+                archiveCandidate({get_archive_url});  "
             """,
         },
         {
@@ -163,11 +163,11 @@ class ListCandidates(HorillaListView):
             "attrs": """
                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                 onclick="event.stopPropagation()
-                archiveCandidate({get_archive_url});  "  
+                archiveCandidate({get_archive_url});  "
             """,
         },
         {
-            "action":_("Delete"),
+            "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": """
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -259,7 +259,7 @@ class CardCandidates(HorillaCardView):
                 return confirm('Are you sure you want to convert this candidate into an employee?')"
                 href='{get_convert_to_emp}'
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -271,7 +271,7 @@ class CardCandidates(HorillaCardView):
                 hx-get="{get_add_to_skill}"
                 hx-target="#genericModalBody"
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -283,7 +283,6 @@ class CardCandidates(HorillaCardView):
             """,
         },
         {
-            
             "action": "Request Document",
             "accessibility": "recruitment.cbv.accessibility.request_document",
             "attrs": """
@@ -292,7 +291,7 @@ class CardCandidates(HorillaCardView):
                 hx-get="{get_document_request_doc}"
                 hx-target="#genericModalBody"
                 class="oh-dropdown__link"
-            """
+            """,
         },
         {
             "action": "Add to Rejected",
@@ -304,7 +303,7 @@ class CardCandidates(HorillaCardView):
                 data-target="#genericModal"
                 hx-get="{get_add_to_reject}"
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -317,7 +316,7 @@ class CardCandidates(HorillaCardView):
                 data-target="#genericModal"
                 hx-get="{get_add_to_reject}"
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -326,7 +325,7 @@ class CardCandidates(HorillaCardView):
                 onclick="event.stopPropagation()
                 window.location.href='{get_update_url}' "
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -334,8 +333,8 @@ class CardCandidates(HorillaCardView):
             "attrs": """
                 class="oh-dropdown__link"
                 onclick="archiveCandidate({get_archive_url});"
-                
-                
+
+
             """,
         },
         {
@@ -344,7 +343,7 @@ class CardCandidates(HorillaCardView):
                 class="oh-dropdown__link oh-dropdown__link--danger"
                 onclick="event.stopPropagation();
                 deleteCandidate('{get_delete_url}'); "
-                
+
             """,
         },
     ]
@@ -431,14 +430,14 @@ class CandidateNav(HorillaNavView):
                 "action": "Archive",
                 "attrs": """
                 id="archiveCandidates"
-                 
+
                 """,
             },
             {
                 "action": "Un archive",
                 "attrs": """
                 id="unArchiveCandidates"
-                 
+
                 """,
             },
             {
@@ -569,11 +568,11 @@ class CandidateDetail(HorillaDetailedView):
         ("Rating", "rating_bar"),
         ("Recruitment", "recruitment_id"),
         ("Job Position", "job_position_id"),
-        ("Interview Table", "candidate_interview_view",True),
+        ("Interview Table", "candidate_interview_view", True),
     ]
 
     cols = {
-        "candidate_interview_view" : 12,
+        "candidate_interview_view": 12,
     }
     actions = [
         {
@@ -688,14 +687,13 @@ class RejectReasonFormView(HorillaFormView):
         initial = super().get_initial()
         initial["candidate_id"] = self.request.GET.get("candidate_id")
         return initial
-    
+
     def init_form(self, *args, data={}, files={}, instance=None, **kwargs):
         candidate_id = self.request.GET.get("candidate_id")
-        instance = RejectedCandidate.objects.filter(
-                candidate_id=candidate_id
-            ).first()
-        return super().init_form(*args, data=data, files=files, instance=instance, **kwargs)
-
+        instance = RejectedCandidate.objects.filter(candidate_id=candidate_id).first()
+        return super().init_form(
+            *args, data=data, files=files, instance=instance, **kwargs
+        )
 
     def form_valid(self, form: RejectedCandidateForm) -> HttpResponse:
         """

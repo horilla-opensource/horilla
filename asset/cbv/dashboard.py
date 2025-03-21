@@ -1,13 +1,15 @@
 from typing import Any
+
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+
 from asset.cbv.request_and_allocation import AssetAllocationList, AssetRequestList
 from base.methods import filtersubordinates
-from horilla_views.generic.cbv.views import HorillaListView
 from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.views import HorillaListView
 
 
-@method_decorator(login_required,name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class AssetRequestToApprove(AssetRequestList):
     """
     Asset request to approve in dashboard
@@ -35,7 +37,7 @@ class AssetRequestToApprove(AssetRequestList):
             field="requested_employee_id",
         )
         return queryset
-    
+
     header_attrs = {
         "requested_employee_id": """
                         style ="width:100px !important"
@@ -51,11 +53,12 @@ class AssetRequestToApprove(AssetRequestList):
                         """,
         "action": """
                         style ="width:100px !important"
-                        """
+                        """,
     }
 
-@method_decorator(login_required,name="dispatch")
-@method_decorator(permission_required("asset.view_assetcategory"),name="dispatch")
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("asset.view_assetcategory"), name="dispatch")
 class AllocatedAssetsList(AssetAllocationList):
     """
     List of allocated assets in dashboard

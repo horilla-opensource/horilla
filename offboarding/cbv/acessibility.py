@@ -2,9 +2,10 @@
 Accessibility page to specify the permissions
 """
 
+from django.contrib.auth.context_processors import PermWrapper
+
 from base.context_processors import resignation_request_enabled
 from employee.models import Employee
-from django.contrib.auth.context_processors import PermWrapper
 
 
 def resignation_accessibility(

@@ -3,11 +3,13 @@ This page handles the mail server page in settings
 """
 
 from typing import Any
-from django.http import HttpResponse
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
-from django.urls import reverse
+
 from django.contrib import messages
+from django.http import HttpResponse
+from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.filters import MailServerFilter
 from base.forms import DynamicMailConfForm
 from base.models import DynamicEmailConfiguration
@@ -54,7 +56,7 @@ class MailServerListView(HorillaListView):
     ]
 
     header_attrs = {
-        "action" : """
+        "action": """
                     style="width:200px !important"
                    """
     }

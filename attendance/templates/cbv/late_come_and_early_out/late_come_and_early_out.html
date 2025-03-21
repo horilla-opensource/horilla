@@ -60,7 +60,7 @@
 </style>
 
  <div hx-get="{% url "late-come-and-early-out-nav" %}" hx-trigger="load">
-</div>   
+</div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
 
@@ -76,9 +76,9 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -130,7 +130,7 @@
               onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
               id="attendanceExportForm"
             >
-              {% csrf_token %} 
+              {% csrf_token %}
               <div class="oh-dropdown__filter-footer">
                 <button class="oh-btn oh-btn--secondary oh-btn--small w-100 mb-4">
                   {% trans "Export" %}
@@ -142,9 +142,9 @@
       </div>
     </div>
 
-    
+
 
 <script src="{% static 'cbv/attendance/hour_account.js' %}"></script>
- 
- 
+
+
 {% endblock content %}

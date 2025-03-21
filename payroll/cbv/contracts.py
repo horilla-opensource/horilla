@@ -3,9 +3,11 @@ Contracts page
 """
 
 from typing import Any
+
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -41,8 +43,7 @@ class ContractsList(HorillaListView):
         "wage_type",
         "filing_status",
         "wage",
-        "contract_status"
-
+        "contract_status",
     ]
 
     def __init__(self, **kwargs: Any) -> None:
@@ -65,7 +66,7 @@ class ContractsList(HorillaListView):
     ]
 
     header_attrs = {
-        "contract_name" : """
+        "contract_name": """
                           style="width:250px !important;"
                           """
     }
@@ -76,7 +77,7 @@ class ContractsList(HorillaListView):
         ("Start Date", "contract_start_date"),
         ("End Date", "contract_end_date"),
         ("Basic Salary", "wage"),
-        ("Status", "status_col")
+        ("Status", "status_col"),
     ]
 
     action_method = "actions_col"
@@ -89,7 +90,7 @@ class ContractsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=contract_status]').val('terminated');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -100,7 +101,7 @@ class ContractsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=contract_status]').val('expired');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -121,7 +122,7 @@ class ContractsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=contract_status]').val('active');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -136,6 +137,7 @@ class ContractsList(HorillaListView):
                 data-toggle="oh-modal-toggle"
                 """
 
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required(perm="payroll.view_contract"), name="dispatch")
 class ContractsNav(HorillaNavView):
@@ -147,7 +149,7 @@ class ContractsNav(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("contract-filter")
         self.create_attrs = f"""
-                          href={reverse('contract-create')}  
+                          href={reverse('contract-create')}
                           """
         self.actions = [
             {
@@ -186,9 +188,13 @@ class ContractsNav(HorillaNavView):
         ("employee_id__employee_work_info__shift_id", _("Shift")),
         ("employee_id__employee_work_info__work_type_id", _("Work Type")),
         ("employee_id__employee_work_info__job_role_id", _("Job Role")),
-        ("employee_id__employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
         ("employee_id__employee_work_info__company_id", _("Company")),
     ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required(perm="payroll.view_contract"), name="dispatch")
@@ -210,6 +216,7 @@ class ContractsExportView(TemplateView):
         context["export_column"] = export_column
         context["export_filter"] = export_filter
         return context
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required(perm="payroll.view_contract"), name="dispatch")

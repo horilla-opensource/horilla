@@ -8,10 +8,10 @@
         "#id_department_id_parent_div",
         "#id_job_position_id_parent_div",
       ];
-  
+
       function updateFieldsVisibility() {
         var based_on = $("#id_based_on").val();
-  
+
         fields.forEach(function (field) {
           if (field.includes(based_on)) {
             $(field).show();
@@ -20,9 +20,9 @@
           }
         });
       }
-  
+
       updateFieldsVisibility();
-  
+
       $("#id_based_on").change(function () {
         updateFieldsVisibility();
       });

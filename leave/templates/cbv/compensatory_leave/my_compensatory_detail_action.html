@@ -4,12 +4,12 @@
 
     <div class="oh-btn-group" style="width:100%;">
         {% if instance.status ==  'requested' %}
-        
-                <button  
-                    class="oh-btn oh-btn-group oh-btn--info" style="width:50%;" 
-                    title="{% trans 'Edit' %}" 
+
+                <button
+                    class="oh-btn oh-btn-group oh-btn--info" style="width:50%;"
+                    title="{% trans 'Edit' %}"
                     data-toggle="oh-modal-toggle"
-                    data-target="#genericModal" 
+                    data-target="#genericModal"
                     hx-get="{% url 'update-compensatory-leave' instance.id %}"
                     hx-target="#genericModalBody">
                     <ion-icon name="create-outline"></ion-icon>

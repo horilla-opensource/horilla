@@ -3,13 +3,15 @@ This page is handle the payslip automation page in settings.
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
 from django.urls import reverse
-from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views import View
+
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -47,10 +49,9 @@ class PaySlipAutomationListView(HorillaListView):
     ]
 
     header_attrs = {
-        "get_generate_day_display" : """
+        "get_generate_day_display": """
                    style = "width:200px !important"
                    """,
-       
     }
 
     actions = [
@@ -84,6 +85,7 @@ class PaySlipAutomationListView(HorillaListView):
 
 
 #   onclick = "deleteItem({get_delete_url})"
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(

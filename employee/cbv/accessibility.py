@@ -3,6 +3,7 @@ Accessiblility
 """
 
 from django.contrib.auth.context_processors import PermWrapper
+
 from base.methods import check_manager
 from employee.models import Employee
 from horilla_audit.models import AccountBlockUnblock
@@ -57,6 +58,7 @@ def block_account_accessibility(
     ):
         return True
     return False
+
 
 def un_block_account_accessibility(
     request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs

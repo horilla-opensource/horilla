@@ -3,15 +3,20 @@ employee view page
 """
 
 from typing import Any
+
+from django import forms
 from django.dispatch import receiver
 from django.urls import reverse, reverse_lazy
-from django import forms
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from accessibility.cbv_decorators import enter_if_accessible
-from horilla.signals import post_generic_delete
 from base.methods import is_reportingmanager
+from employee.filters import EmployeeFilter
+from employee.forms import BulkUpdateFieldForm, EmployeeExportExcelForm
+from employee.models import Employee
 from employee.views import _check_reporting_manager
+from horilla.signals import post_generic_delete
 from horilla_views.cbv_methods import login_required
 from horilla_views.forms import DynamicBulkUpdateForm
 from horilla_views.generic.cbv.views import (
@@ -20,9 +25,6 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
-from employee.filters import EmployeeFilter
-from employee.forms import BulkUpdateFieldForm, EmployeeExportExcelForm
-from employee.models import Employee
 
 
 @method_decorator(login_required, name="dispatch")
@@ -144,7 +146,7 @@ class EmployeesList(HorillaListView):
 
     header_attrs = {
         "action": """
-                   style="width:300px !important;" 
+                   style="width:300px !important;"
                    """
     }
 
@@ -231,7 +233,7 @@ class EmployeeNav(HorillaNavView):
                     "action": _("Un-archive"),
                     "attrs": """
                     id="unArchiveEmployees"
-                    style="cursor: pointer;" 
+                    style="cursor: pointer;"
                     """,
                 },
                 {
@@ -359,7 +361,7 @@ class EmployeeCard(HorillaCardView):
                     onclick="event.stopPropagation()
                     window.location.href='{get_update_url}' "
                     class="oh-dropdown__link"
-                    
+
                 """,
                 },
                 {
@@ -369,7 +371,7 @@ class EmployeeCard(HorillaCardView):
                     hx-confirm="Do you want to {archive_status} this employee?"
                     hx-post="{get_archive_url}"
                     class="oh-dropdown__link"
-                    hx-target="#relatedModel"  
+                    hx-target="#relatedModel"
                     """,
                 },
                 {
@@ -378,7 +380,7 @@ class EmployeeCard(HorillaCardView):
                     "attrs": """
                         onclick="event.stopPropagation()"
                         hx-get="{get_delete_url}?model=employee.Employee&pk={pk}"
-                        data-toggle="oh-modal-toggle" 
+                        data-toggle="oh-modal-toggle"
                         data-target="#deleteConfirmation"
                         hx-target="#deleteConfirmationBody"
                         class="oh-dropdown__link"
@@ -399,6 +401,7 @@ class EmployeeCard(HorillaCardView):
                 {diff_cell}
                 onclick="window.location.href='{get_individual_url}?instance_ids={ordered_ids}'"
                 """
+
 
 @receiver(post_generic_delete, sender=Employee)
 def employee_generic_post_delete(sender, instance, *args, view_instance=None, **kwargs):

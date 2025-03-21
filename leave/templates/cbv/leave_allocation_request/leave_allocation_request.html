@@ -27,7 +27,7 @@
 		top: 25px;
 		right: 15px;
 	}
-	
+
 .approved--dot{
   background-color:yellowgreen;
 }
@@ -68,7 +68,7 @@
 </style>
 
 <div hx-get="{% url "nav-leave-allocation-request" %}" hx-trigger="load">
-</div>  
+</div>
 
 
 {% include "generic/components.html" %}
@@ -82,10 +82,10 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
-  hx-get="{% url "leave-allocation-request-filter"  %}?{{request.GET.urlencode}}" 
+
+  <div
+  class="oh-wrapper"
+  hx-get="{% url "leave-allocation-request-filter"  %}?{{request.GET.urlencode}}"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -122,6 +122,6 @@
 		});
 	});
 </script>
- 
- 
+
+
 {% endblock content %}

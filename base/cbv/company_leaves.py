@@ -3,22 +3,24 @@ this page is handling the cbv methods of company leaves page
 """
 
 from typing import Any
-from django.http import HttpResponse
+
 from django.contrib import messages
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
+from base.filters import CompanyLeaveFilter
+from base.forms import CompanyLeaveForm
+from base.models import CompanyLeaves
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
-    TemplateView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
-    HorillaFormView,
+    TemplateView,
 )
-from horilla_views.cbv_methods import login_required, permission_required
-from base.filters import CompanyLeaveFilter
-from base.models import CompanyLeaves
-from base.forms import CompanyLeaveForm
 
 
 @method_decorator(login_required, name="dispatch")
@@ -56,13 +58,12 @@ class CompanyleaveListView(HorillaListView):
         "custom_based_on_week": """
                                 style="width:200px !important;"
                                 """,
-        
         "based_on_week_day_col": """
                                 style="width:200px !important;"
-                                """, 
-         "action": """
+                                """,
+        "action": """
                                 style="width:200px !important;"
-                                """,                  
+                                """,
     }
 
     sortby_mapping = [
@@ -76,6 +77,7 @@ class CompanyleaveListView(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
+
 
 @method_decorator(login_required, name="dispatch")
 class CompanyLeaveNavView(HorillaNavView):
@@ -109,21 +111,16 @@ class CompanyLeaveDetailView(HorillaDetailedView):
 
     model = CompanyLeaves
     title = _("Details")
-    header = {
-        "title": "get_detail_title",
-        "subtitle": "",
-        "avatar": "get_avatar"
-    }
+    header = {"title": "get_detail_title", "subtitle": "", "avatar": "get_avatar"}
     body = {
         (_("Based On Week"), "custom_based_on_week"),
         (_("Based On Week Day"), "based_on_week_day_col"),
-
     }
     action_method = "detail_view_actions"
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("leave.add_companyleave"),name="dispatch")
+@method_decorator(permission_required("leave.add_companyleave"), name="dispatch")
 class CompanyleaveFormView(HorillaFormView):
     """
     form view for create button

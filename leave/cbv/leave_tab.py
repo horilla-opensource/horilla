@@ -3,8 +3,10 @@ This page is handling the cbv methods of leave tab in employee profile page.
 """
 
 from typing import Any
+
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+
 from base.methods import is_reportingmanager
 from employee.models import Employee
 from leave.cbv.my_leave_request import MainParentListView, MyLeaveRequestListView
@@ -42,7 +44,7 @@ class IndividualLeaveTab(MainParentListView):
         super().__init__(**kwargs)
         self.view_id = "leave-tab"
         pk = self.request.resolver_match.kwargs.get("pk")
-        self.search_url = reverse("individual-leave-tab-list",kwargs={'pk':pk})
+        self.search_url = reverse("individual-leave-tab-list", kwargs={"pk": pk})
         if self.request.user.has_perm(
             "leave.change_leaverequest"
         ) or is_reportingmanager(self.request):

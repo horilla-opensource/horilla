@@ -23,7 +23,7 @@
   {% include "generic/quick_actions.html" %}
   {% endif %}
 
-  
+
   <div class="oh-table_sticky--wrapper">
     <div class="oh-sticky-dropdown--header" style="z-index: 13;">
       <div class="oh-dropdown" x-data="{ open: false }">
@@ -73,7 +73,7 @@
             {% for cell in columns %}
             {% with cell_attr=header_attrs|get_item:cell.1 %}
             <th {% if cell.2 and not cell_attr %}style="width:220px!important;"{% endif %} {{cell_attr|safe}} id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header">
-              <div 
+              <div
                 {% for sort_map in sortby_mapping %}
                 {% if sort_map.0 == cell.0 %}
                 hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
@@ -109,7 +109,7 @@
         </thead>
         <tbody>
           {% for instance in queryset %}
-          <tr 
+          <tr
            data-instance-id="{{instance.id}}"
            {{row_attrs|format:instance|safe}}
           >
@@ -138,7 +138,7 @@
             </td>
             {% endif %}
             {% for cell in columns %}
-            {% with attribute=cell.1 index=forloop.counter %} 
+            {% with attribute=cell.1 index=forloop.counter %}
             <td class="{% if cell.1 == "attendance_date" %}
                         {% if 'attendance_date' in instance.requested_fields or instance.request_type == 'create_request' %}
                     diff-cell
@@ -338,10 +338,10 @@
   <script>
     selectSelected("#{{view_id|safe}}",'{{selected_instances_key_id}}')
   </script>
-  {% endif %} 
+  {% endif %}
   {% endif %}
   <script>
-    $("ul[data-search-url] a").click(function (e) { 
+    $("ul[data-search-url] a").click(function (e) {
       e.preventDefault();
       const url =  $(this).attr("hx-get")
       const $urlObj = $('<a>', { href: url });
@@ -408,7 +408,7 @@
   {% endif %}
 </div>
 
-{% comment %}   
+{% comment %}
   {% load static i18n generic_template_filters %}
 <div id="{{view_id|safe}}">
   <div
@@ -435,7 +435,7 @@
   {% include "generic/quick_actions.html" %}
   {% endif %}
 
-  
+
   <div class="oh-table_sticky--wrapper">
     <div class="oh-sticky-dropdown--header" style="z-index:13;">
       <div class="oh-dropdown" x-data="{open: false}">
@@ -489,11 +489,11 @@
               </div>
             </div>
             {% endif %} {% for cell in columns %}
-            <div 
-              
+            <div
+
               class="oh-sticky-table__th"
               style="z-index: 11;width:100px;">
-              <div 
+              <div
               {% for sort_map in sortby_mapping %}
               {% if sort_map.0 == cell.0 %}
               hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
@@ -509,7 +509,7 @@
                 "
               {% endif %}
               {% endfor %}
-                
+
                 style="width: 200px;"
               >
                 {{cell.0}}
@@ -564,7 +564,7 @@
                 />
               </div>
             </div>
-            {% endif %} {% for cell in columns %} 
+            {% endif %} {% for cell in columns %}
             {% with attribute=cell.1 index=forloop.counter %} {% if not cell.2 %}
 
             <div class="{% if index == 1 %}
@@ -770,10 +770,10 @@
   <script>
     selectSelected("#{{view_id|safe}}",'{{selected_instances_key_id}}')
   </script>
-  {% endif %} 
+  {% endif %}
   {% endif %}
   <script>
-    $("ul[data-search-url] a").click(function (e) { 
+    $("ul[data-search-url] a").click(function (e) {
       e.preventDefault();
       const url =  $(this).attr("hx-get")
       const $urlObj = $('<a>', { href: url });
@@ -818,5 +818,3 @@
   </div>
   {% endif %}
 </div> {% endcomment %}
-
-

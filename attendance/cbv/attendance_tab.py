@@ -4,8 +4,10 @@ This page is handling the cbv methods of work type and shift tab in employee pro
 
 import json
 from typing import Any
-from django.utils.translation import gettext_lazy as _
+
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+
 from attendance.cbv.attendance_request import AttendanceRequestListTab
 from attendance.cbv.hour_account import HourAccountList
 from attendance.cbv.my_attendances import MyAttendancesListView
@@ -15,6 +17,7 @@ from base.methods import filtersubordinates
 from base.request_and_approve import paginator_qry
 from employee.models import Employee
 from horilla_views.generic.cbv.views import HorillaListView, HorillaTabView
+
 
 class AttendanceTabView(HorillaTabView):
     """
@@ -73,31 +76,35 @@ class RequestedAttendanceIndividualView(AttendanceRequestListTab):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        pk = self.request.resolver_match.kwargs.get('pk')
-        self.search_url = reverse("attendance-request-individual-tab",kwargs= {'pk': pk} )
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse(
+            "attendance-request-individual-tab", kwargs={"pk": pk}
+        )
         self.view_id = "attendance-requests-container"
 
     def get_queryset(self):
         queryset = HorillaListView.get_queryset(self)
-        pk = self.request.resolver_match.kwargs.get('pk')
+        pk = self.request.resolver_match.kwargs.get("pk")
         queryset = queryset.filter(
             employee_id__employee_user_id=pk,
             is_validate_request=True,
         )
         return queryset
-    
+
 
 class HourAccountIndividualTabView(HourAccountList):
     """
-    list view for hour account tab 
+    list view for hour account tab
     """
 
     template_name = "cbv/hour_account/hour_account_main.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        pk = self.request.resolver_match.kwargs.get('pk')
-        self.search_url = reverse("attendance-overtime-individual-tab",kwargs= {'pk': pk} )
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse(
+            "attendance-overtime-individual-tab", kwargs={"pk": pk}
+        )
         self.view_id = "ot-table"
 
     def get_queryset(self):

@@ -3,21 +3,23 @@ this page handles cbv of assigned leave page
 """
 
 from typing import Any
-from django.http import HttpResponse
+
 from django.contrib import messages
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from base.methods import filtersubordinates
+from django.utils.translation import gettext_lazy as _
+
 from base.decorators import manager_can_enter
+from base.methods import filtersubordinates
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
-    TemplateView,
-    HorillaListView,
-    HorillaNavView,
     HorillaDetailedView,
     HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+    TemplateView,
 )
-from horilla_views.cbv_methods import login_required
 from leave.filters import AssignedLeaveFilter
 from leave.forms import AssignLeaveForm, AvailableLeaveColumnExportForm
 from leave.models import AvailableLeave
@@ -141,8 +143,11 @@ class AssignedLeaveNavView(HorillaNavView):
         ("carryforward_days", _("Carryforward Days")),
         ("total_leave_days", _("Total Leave Days")),
         ("assigned_date", _("Assigned Date")),
-        ("employee_id__employee_work_info__reporting_manager_id", _("Reporting Manager")),
-        ("employee_id__employee_work_info__department_id",_("Department")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
+        ("employee_id__employee_work_info__department_id", _("Department")),
         ("employee_id__employee_work_info__job_position_id", _("Job Position")),
         ("employee_id__employee_work_info__employee_type_id", _("Employement Type")),
         ("employee_id__employee_work_info__company_id", _("Company")),
@@ -196,7 +201,8 @@ class AssignedLeaveDetailView(HorillaDetailedView):
 
     action_method = "assigned_leave_detail_actions"
 
-# not done 
+
+# not done
 class AssignedLeaveFormView(HorillaFormView):
     """
     form view

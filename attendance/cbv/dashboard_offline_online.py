@@ -4,11 +4,12 @@ this page handles the cbv methods for online and offline employee list in dashbo
 
 from datetime import date
 from typing import Any
-from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
-from attendance.cbv.attendances import OTAttendancesList, ValidateAttendancesList
 
+from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
+from attendance.cbv.attendances import OTAttendancesList, ValidateAttendancesList
 from base.decorators import manager_can_enter
 from employee.filters import EmployeeFilter
 from employee.models import Employee

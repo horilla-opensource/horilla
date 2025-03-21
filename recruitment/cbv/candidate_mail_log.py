@@ -3,8 +3,10 @@ This page is handling the cbv methods of mail log tab in employee individual pag
 """
 
 from typing import Any
-from django.utils.translation import gettext_lazy as _
+
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+
 from base.cbv.mail_log_tab import MailLogTabList
 from horilla_views.generic.cbv.views import HorillaListView
 from recruitment.models import Candidate

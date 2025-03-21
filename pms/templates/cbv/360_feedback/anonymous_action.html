@@ -3,9 +3,9 @@
 {% if request.user.id|stringformat:"d" == instance.anonymous_feedback_id  or request.user.is_superuser %}
 <div class="oh-btn-group" onclick="event.stopPropagation();">
     <a class="oh-btn w-100" data-toggle="oh-modal-toggle"
-     data-target="#genericModal" 
+     data-target="#genericModal"
     hx-get="{% url 'edit-anonymous-feedback' instance.id %}?instance_ids={{instance.ordered_ids}}"
-     title="{% trans 'Edit' %}" 
+     title="{% trans 'Edit' %}"
      hx-target="#genericModalBody">
      <ion-icon name="create-outline"></ion-icon></a>
     <form action="{% url 'archive-anonymous-feedback' obj_id=instance.id %}" method="post" onsubmit="return confirm('{% if instance.archive %}{% trans "Are you sure you want to Un-archive this feedback?" %}{% else %}{% trans "Are you sure you want to archive this feedback?" %}{% endif %}')" style="display: contents">

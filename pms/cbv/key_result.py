@@ -4,13 +4,15 @@ this page handles cbv of key result page
 
 import json
 from typing import Any
-from django.http import HttpResponse
+
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views import View
+
 from base.methods import closest_numbers
 from horilla.decorators import manager_can_enter
 from horilla_views.cbv_methods import login_required, permission_required
@@ -54,7 +56,7 @@ class KeyResultNavView(HorillaNavView):
                         hx-get="{reverse('create-key-result')}"
                         hx-target="#genericModalBody"
                         """
-        
+
         self.view_types = [
             {
                 "type": "list",
@@ -82,9 +84,7 @@ class KeyResultNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    manager_can_enter(perm="pms.view_keyresult"), name="dispatch"
-)
+@method_decorator(manager_can_enter(perm="pms.view_keyresult"), name="dispatch")
 class KeyResultsListView(HorillaListView):
 
     model = KeyResult
@@ -118,12 +118,9 @@ class KeyResultsListView(HorillaListView):
                 data-toggle="oh-modal-toggle"
                 """
 
-   
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    manager_can_enter(perm="pms.view_keyresult"), name="dispatch"
-)
+@method_decorator(manager_can_enter(perm="pms.view_keyresult"), name="dispatch")
 class KeyResultCardView(HorillaCardView):
     """
     card view of the page
@@ -148,14 +145,12 @@ class KeyResultCardView(HorillaCardView):
         "subtitle": "Target Value : {target_value} {progress_type} <br> Duration : {duration} Days",
     }
 
-
     card_attrs = """
                 hx-get='{get_detail_url}?instance_ids={ordered_ids}'
                 hx-target="#genericModalBody"
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
-
 
     actions = [
         {
@@ -180,10 +175,9 @@ class KeyResultCardView(HorillaCardView):
         },
     ]
 
+
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    manager_can_enter(perm="pms.view_keyresult"), name="dispatch"
-)
+@method_decorator(manager_can_enter(perm="pms.view_keyresult"), name="dispatch")
 class KeyResultsDetailedView(HorillaDetailedView):
     """
     Detail View
@@ -203,17 +197,14 @@ class KeyResultsDetailedView(HorillaDetailedView):
         (_("Progress Type"), "get_progress_type"),
         (_("Target Value"), "target_value"),
         (_("Duration"), "duration"),
-        (_("Description"), "description"),   
+        (_("Description"), "description"),
     ]
 
     action_method = "detail_action_col"
 
 
-
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    manager_can_enter(perm="pms.view_keyresult"), name="dispatch"
-)
+@method_decorator(manager_can_enter(perm="pms.view_keyresult"), name="dispatch")
 class KeyResultFormView(HorillaFormView):
     """
     form view for create and update key results
@@ -224,14 +215,14 @@ class KeyResultFormView(HorillaFormView):
     new_display_title = _("Create Key result")
 
     def get_context_data(self, **kwargs):
-        context =  super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Update Key result")
-        
+
         context["form"] = self.form
         return context
-    
+
     def form_invalid(self, form: Any) -> HttpResponse:
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Update Key result")
@@ -241,17 +232,22 @@ class KeyResultFormView(HorillaFormView):
                 self.request, self.template_name, {"form": form, "errors": errors}
             )
         return super().form_invalid(form)
-    
+
     def form_valid(self, form: KRForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
-                messages.success(self.request, _(f"Key result {self.form.instance} updated successfully"))
+                messages.success(
+                    self.request,
+                    _(f"Key result {self.form.instance} updated successfully"),
+                )
             else:
-                messages.success(self.request, _(f"Key result {self.form.instance} created successfully"))
+                messages.success(
+                    self.request,
+                    _(f"Key result {self.form.instance} created successfully"),
+                )
             form.save()
             return self.HttpResponse()
         return super().form_valid(form)
-    
 
 
 @method_decorator(login_required, name="dispatch")
@@ -267,7 +263,7 @@ class DeleteKeyResults(View):
         """
         Handle POST request to delete an action type.
         """
-        
+
         instances_ids = request.GET.get("instances_ids")
         next_instance = None
         instances_list = None

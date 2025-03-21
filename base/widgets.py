@@ -1,6 +1,7 @@
 from django import forms
 from django.utils.safestring import mark_safe
 
+
 class CustomModelChoiceWidget(forms.Select):
     """
     A custom Django widget for rendering a select input with an optional delete button.
@@ -13,6 +14,7 @@ class CustomModelChoiceWidget(forms.Select):
         delete_url (str): The URL to be used for the delete button's action.
                         If not provided, the button will not be rendered.
     """
+
     def __init__(self, *args, **kwargs):
         # Remove default delete_url
         self.delete_url = None
@@ -37,10 +39,12 @@ class CustomModelChoiceWidget(forms.Select):
         </div>
         """
         return mark_safe(custom_html)
-    
 
     from django import forms
+
+
 from django.utils.safestring import mark_safe
+
 
 class CustomTextInputWidget(forms.TextInput):
     """
@@ -54,6 +58,7 @@ class CustomTextInputWidget(forms.TextInput):
         delete_url (str): The URL to be used for the delete button's action.
                         If not provided, the button will not be rendered.
     """
+
     def __init__(self, *args, **kwargs):
         # Remove default delete_url
         self.delete_url = None
@@ -78,4 +83,3 @@ class CustomTextInputWidget(forms.TextInput):
         </div>
         """
         return mark_safe(custom_html)
-

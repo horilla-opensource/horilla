@@ -3,8 +3,8 @@
 
 <div id="formContainer">
     {% include "generic/horilla_form.html" %}
-    
-  
+
+
     <button
     hidden
     hx-target="#moreShiftContainer_{{form.shift_counts|add:2}}"
@@ -13,8 +13,8 @@
     role="button"
     id = "addshiftButton"
     style="color: green">{% trans "Add more shifts.." %}</button>
-    
-        
+
+
 </div>
 
 <script>
@@ -31,7 +31,7 @@
                 $(parentDiv).find('.oh-label__info').remove();
             }
         }
-        
+
         var divElement = document.createElement('div');
         var shifCount = {{form.shift_counts|add:2}}
         divElement.id = 'moreShiftContainer_'+ shifCount;
@@ -47,7 +47,7 @@
         var parentDiv = document.getElementById(parentDivId);
         if (!document.getElementById('addshift')) {
         if (parentDiv) {
-          
+
             parentDiv.insertAdjacentElement('afterend', divElement);
         } else {
             var parentDiv = document.getElementById('id_shift2_parent_div');
@@ -58,7 +58,7 @@
            $(document).off('click', '#addshift').on('click', '#addshift', function(event) {
             $('#addshiftButton').click();
         });
-    
+
     });
-   
+
 </script>

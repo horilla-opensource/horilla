@@ -2,9 +2,9 @@
 <div>
     {% include "generic/horilla_form.html" %}
 </div>
-<iframe 
+<iframe
 style="display: none;"
-frameBorder="0" 
+frameBorder="0"
 height="450px"
 id="oc-editor"
 src="https://onecompiler.com/embed/python?codeChangeEvent=true&hideNew=true&hideNewFileOption=true&hideStdin=true&hideTitle=true&listenToEvents=true&availableLanguages=false&theme=dark"
@@ -19,7 +19,7 @@ width="100%"
     console.log(inputBox) {% endcomment %}
     var iFrame = document.getElementById('oc-editor');
     console.log(iFrame)
-   
+
     // Make sure the iframe is fully loaded before sending the postMessage
     iFrame.onload = function() {
         // Populate the code in the OneCompiler editor
@@ -33,7 +33,7 @@ width="100%"
               }
             ]
         }, "*");
-   
+
         // Trigger the code to run
         iFrame.contentWindow.postMessage({
             eventType: 'triggerRun'

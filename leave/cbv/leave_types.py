@@ -4,26 +4,28 @@ This page handles the cbv methods for leave types page
 
 import contextlib
 from typing import Any
-from django.http import HttpResponse
+
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from notifications.signals import notify
+
 from employee.models import Employee
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
-    HorillaFormView,
-    HorillaListView,
-    TemplateView,
-    HorillaNavView,
     HorillaCardView,
     HorillaDetailedView,
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+    TemplateView,
 )
-from horilla_views.cbv_methods import login_required, permission_required
 from leave.filters import LeaveTypeFilter
 from leave.forms import AssignLeaveForm, LeaveOneAssignForm
 from leave.models import AvailableLeave, LeaveType
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -50,7 +52,6 @@ class LeaveTypeListView(HorillaListView):
     filter_class = LeaveTypeFilter
     model = LeaveType
 
-
     columns = [
         (_("Leave Type"), "name", "get_avatar"),
         (_("Payment"), "payment"),
@@ -63,7 +64,6 @@ class LeaveTypeListView(HorillaListView):
         ("Leave Type", "name", "get_avatar"),
         ("Total Days", "count"),
     ]
-
 
     row_status_indications = [
         (
@@ -89,7 +89,7 @@ class LeaveTypeListView(HorillaListView):
     ]
 
     header_attrs = {
-        "action" : """
+        "action": """
                    style = "width:180px !important"
                    """
     }
@@ -103,6 +103,7 @@ class LeaveTypeListView(HorillaListView):
                 hx-target="#genericModalBody"
 
                 """
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required(perm="leave.view_leavetype"), name="dispatch")
@@ -123,17 +124,17 @@ class LeaveTypeNavView(HorillaNavView):
                     "type": "list",
                     "icon": "list-outline",
                     "url": reverse("leave-type-list"),
-                    "attrs" : """
+                    "attrs": """
                             title='List'
-                            """
+                            """,
                 },
                 {
                     "type": "card",
                     "icon": "grid-outline",
                     "url": reverse("leave-type-card-view"),
-                    "attrs" : """
+                    "attrs": """
                             title='Card'
-                            """
+                            """,
                 },
             ]
 
@@ -247,11 +248,11 @@ class LeaveTypeCardView(HorillaCardView):
             "attrs": """
             class="oh-dropdown__link"
             hx-get="{get_delete_url}?model=leave.LeaveType&pk={pk}"
-            data-toggle="oh-modal-toggle" 
+            data-toggle="oh-modal-toggle"
             data-target="#deleteConfirmation"
             hx-target="#deleteConfirmationBody"
             style="cursor: pointer; color:red !important"
-           
+
             """,
         },
     ]
@@ -324,9 +325,7 @@ class LeaveTypeAssignForm(HorillaFormView):
                         else:
                             messages.info(
                                 self.request,
-                                _(
-                                    "leave type is already assigned to the employee"
-                                ),
+                                _("leave type is already assigned to the employee"),
                             )
                 else:
                     messages.info(

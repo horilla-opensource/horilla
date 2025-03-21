@@ -1,7 +1,7 @@
 {% load i18n %} {% load basefilters %}
 {% load horillafilters %}
 <div id="leave-tab">
-    
+
     {% comment %} {% include "leave/user_leave/user_leave.html" %} {% endcomment %}
 
 <br>
@@ -24,23 +24,23 @@
   .status-rejected{
     border-left: 4px solid red !important;
     border-radius: 5px 0 0 4px;
-  
+
   }
  .status-cancelled {
     border-left: 4px solid grey !important;
     border-radius: 5px 0 0 4px;
-  
-  } 
+
+  }
   .status-requested{
     border-left: 4px solid orange !important;
     border-radius: 5px 0 0 4px;
-  
+
   }
  .status-approved {
     border-left: 4px solid yellowgreen !important;
     border-radius: 5px 0 0 4px;
-  
-  } 
+
+  }
 
 
 
@@ -236,7 +236,7 @@
     $('#penaltyModalBody').submit(function(e) {
         $(".reload-record").click()
         });
-    
+
     $("#LeaveForm [type=submit]").hide();
     var button = `
     <div class="oh-modal__dialog-footer p-0 mt-3">
@@ -329,7 +329,7 @@
           } else {
           }
         });
-    
+
     }
   </script>
 {% comment %} function typeChange(selectElement) {
@@ -345,10 +345,10 @@
         "employee_id":employeeId,
       },
       success: function (response) {
-    
+
         // Assuming parentForm is a reference to the form containing the element to update
           var messageDiv = parentForm.find(".leave-message");
-    
+
           // Check if the messageDiv already exists, if not create it
           if (!messageDiv.length) {
             messageDiv = $("<div class='leave-message'></div>");
@@ -385,7 +385,7 @@
               'width': '35%'
             });
           }
-    
+
         }
       });
     } {% endcomment %}

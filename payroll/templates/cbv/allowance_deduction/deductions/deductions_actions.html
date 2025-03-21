@@ -19,8 +19,8 @@
                                   <a
                                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                                     onclick = "event.preventDefault();event.stopPropagation();"
-                                    hx-get="{% url 'generic-delete' %}?model=payroll.Deduction&pk={{instance.id}}" 
-                                    hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle" 
+                                    hx-get="{% url 'generic-delete' %}?model=payroll.Deduction&pk={{instance.id}}"
+                                    hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
                                     data-target="#deleteConfirmation"
                                     title="{% trans 'Delete' %}"
                                     >

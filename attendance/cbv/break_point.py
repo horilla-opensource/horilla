@@ -3,12 +3,14 @@ this page is handling the cbv methods for Break point conditions in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from attendance.filters import AttendanceBreakpointFilter
 from attendance.forms import AttendanceValidationConditionForm
 from attendance.models import AttendanceValidationCondition
@@ -42,8 +44,8 @@ class BreakPointList(HorillaListView):
     ]
     header_attrs = {
         "validation_at_work": """ style="width:200px !important" """,
-
     }
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -58,7 +60,9 @@ class BreakPointNavView(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         condition = AttendanceValidationCondition.objects.first()
-        if not condition and self.request.user.has_perm("attendance.add_attendancevalidationcondition"):
+        if not condition and self.request.user.has_perm(
+            "attendance.add_attendancevalidationcondition"
+        ):
             self.create_attrs = f"""
                                 onclick = "event.stopPropagation();"
                                 data-toggle="oh-modal-toggle"

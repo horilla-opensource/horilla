@@ -3,22 +3,24 @@ this page handles the cbv methods of compensatory leave request page.
 """
 
 from typing import Any
+
 from django.apps import apps
-from django.http import HttpResponse
 from django.contrib import messages
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.methods import filtersubordinates, is_reportingmanager
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     HorillaTabView,
     TemplateView,
-    HorillaFormView,
 )
-from horilla_views.cbv_methods import login_required
 from leave.decorators import is_compensatory_leave_enabled
 from leave.methods import attendance_days
 
@@ -70,7 +72,7 @@ class CompensatoryListView(HorillaListView):
         ("Attendance Dates", "compensatory_date"),
         ("Requested Days", "requested_days"),
         ("Created By", "created_by__get_full_name"),
-        ("Status", "status_display")
+        ("Status", "status_display"),
     ]
     row_status_indications = [
         (
@@ -115,6 +117,7 @@ class CompensatoryListView(HorillaListView):
     ]
 
     row_status_class = "status-{status}"
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(is_compensatory_leave_enabled(), name="dispatch")
@@ -168,6 +171,7 @@ class CompensatoryLeaveTabView(HorillaTabView):
                 }
             )
 
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(is_compensatory_leave_enabled(), name="dispatch")
 class MyCompensatoryLeaveTab(CompensatoryListView):
@@ -192,7 +196,7 @@ class MyCompensatoryLeaveTab(CompensatoryListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
-    
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(is_compensatory_leave_enabled(), name="dispatch")
@@ -222,6 +226,7 @@ class CompensatoryLeaveTab(CompensatoryListView):
                 data-toggle="oh-modal-toggle"
                 """
 
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(is_compensatory_leave_enabled(), name="dispatch")
 class CompensatoryGenericDetailView(HorillaDetailedView):
@@ -244,8 +249,9 @@ class CompensatoryGenericDetailView(HorillaDetailedView):
         (_("Created By"), "created_by__employee_get"),
         (_("Attendance Dates"), "compensatory_date"),
         (_("Description"), "description"),
-        (_("Reject Reason"),"compensatory_detail_reject_reason", True)
+        (_("Reject Reason"), "compensatory_detail_reject_reason", True),
     ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(is_compensatory_leave_enabled(), name="dispatch")
@@ -292,7 +298,7 @@ class CompensatoryForm(HorillaFormView):
             else:
                 comp_req = form.save()
                 comp_req.requested_days = attendance_days(
-                comp_req.employee_id, comp_req.attendance_id.all()
+                    comp_req.employee_id, comp_req.attendance_id.all()
                 )
                 comp_req.save()
                 message = _("Compensatory Leave Created")

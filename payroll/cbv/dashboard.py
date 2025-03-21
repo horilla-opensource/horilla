@@ -2,16 +2,17 @@
 This page handles the cbv methods for payroll dashboard
 """
 
+import calendar
 from typing import Any
+
+from django.db.models import F, Sum, Value
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
 from base.filters import DepartmentViewFilter
 from base.models import Department
 from horilla_views.generic.cbv.views import HorillaListView
-from django.db.models import Sum, F, Value
-import calendar
-from django.utils.translation import gettext_lazy as _
-
 from payroll.filters import ContractFilter
 from payroll.models.models import Contract
 
@@ -25,7 +26,6 @@ class DashboardDepartmentPayslip(HorillaListView):
     filter_class = DepartmentViewFilter
     show_filter_tags = False
     bulk_select_option = False
-
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -92,7 +92,7 @@ class DashboardContractList(HorillaListView):
         month = month_year.split("-")[1]
         input_month_year = (int(year), int(month))
         current_month_year = (current_year, current_month)
-        
+
         if input_month_year < current_month_year:
             month = current_month
             year = current_year
@@ -103,11 +103,11 @@ class DashboardContractList(HorillaListView):
 
     columns = [
         (_("Contract"), "contract_name"),
-         (_("Ending Date"), "contract_end_date"),
+        (_("Ending Date"), "contract_end_date"),
     ]
 
     header_attrs = {
-        "contract_name" : """
+        "contract_name": """
                               style="width:200px !important;"
                               """
     }
@@ -123,6 +123,7 @@ class DashboardContractListExpired(HorillaListView):
     """
     list view for contract ending this month
     """
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("dashboard-contract-expired")
@@ -145,10 +146,10 @@ class DashboardContractListExpired(HorillaListView):
         input_month_year = (int(year), int(month))
         current_month_year = (current_year, current_month)
         if input_month_year >= current_month_year:
-           if current_month == 1: 
+            if current_month == 1:
                 month = 12
                 year = current_year - 1
-           else:
+            else:
                 month = current_month - 1
                 year = current_year
         queryset = queryset.filter(
@@ -158,11 +159,11 @@ class DashboardContractListExpired(HorillaListView):
 
     columns = [
         (_("Contract"), "contract_name"),
-         (_("Expired Date"), "contract_end_date"),
+        (_("Expired Date"), "contract_end_date"),
     ]
 
     header_attrs = {
-        "contract_name" : """
+        "contract_name": """
                               style="width:200px !important;"
                               """
     }

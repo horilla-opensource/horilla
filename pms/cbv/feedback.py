@@ -3,27 +3,29 @@ this page handles cbv of assigned leave page
 """
 
 from typing import Any
-from django.shortcuts import render
-from django.urls import reverse
+
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.http import HttpResponse
 from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.decorators import manager_can_enter
-from notifications.signals import notify
 from base.methods import choosesubordinates, is_reportingmanager
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
-from horilla_views.generic.cbv.views import (
-    TemplateView,
-    HorillaListView,
-    HorillaTabView,
-    HorillaNavView,
-    HorillaFormView,
-)
 from horilla_views.cbv_methods import login_required
+from horilla_views.generic.cbv.views import (
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+    HorillaTabView,
+    TemplateView,
+)
+from notifications.signals import notify
 from pms.filters import AnonymousFilter, FeedbackFilter
 from pms.forms import AnonymousFeedbackForm, FeedbackForm
 from pms.models import AnonymousFeedback, EmployeeKeyResult, Feedback
@@ -61,9 +63,8 @@ class FeedbackListView(HorillaListView):
     action_method = "custom_actions_col"
 
     header_attrs = {
-        "action" : """style="width:200px!important;" """,   
+        "action": """style="width:200px!important;" """,
     }
-
 
     sortby_mapping = [
         ("Employee", "employee_id__get_full_name"),
@@ -73,7 +74,7 @@ class FeedbackListView(HorillaListView):
     row_attrs = """
                 onclick="
                 event.stopPropagation();
-                window.location.href='{get_individual_feedback}'" 
+                window.location.href='{get_individual_feedback}'"
                 """
 
     row_status_indications = [
@@ -193,7 +194,6 @@ class SelfFeedbacktab(FeedbackListView):
         self.search_url = reverse("self-feedback-tab")
         self.request.self_feedback = "self_feedback"
 
-
     def get_queryset(self):
         queryset = super().get_queryset()
         employee = self.request.user.employee_get
@@ -214,7 +214,6 @@ class RequestedFeedbackTab(FeedbackListView):
         super().__init__(**kwargs)
         self.search_url = reverse("requested-feedback-tab")
         self.request.request_feedback = "request_feedback"
-
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -243,7 +242,6 @@ class AllFeedbackTab(FeedbackListView):
         super().__init__(**kwargs)
         self.search_url = reverse("all-feedback-tab")
         self.request.all_feedback = "all_feedback"
-
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -278,7 +276,7 @@ class AnonymousFeedbackTab(HorillaListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         querys = self.get_queryset()
-        anonymous_feedback_ids = querys.values_list('anonymous_feedback_id', flat=True)
+        anonymous_feedback_ids = querys.values_list("anonymous_feedback_id", flat=True)
         context["created_user"] = anonymous_feedback_ids
         return context
 
@@ -291,13 +289,11 @@ class AnonymousFeedbackTab(HorillaListView):
         (_("Created At"), "created_at"),
     ]
 
-    sortby_mapping = [
-        ("Created At", "created_at")
-    ]
+    sortby_mapping = [("Created At", "created_at")]
 
     action_method = "anonymous_actions_col"
     header_attrs = {
-        "action" : """style="width:200px!important;" """,   
+        "action": """style="width:200px!important;" """,
     }
 
     def get_queryset(self):
@@ -437,7 +433,7 @@ class PerformanceTab(SelfFeedbacktab):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pk = self.request.resolver_match.kwargs.get("pk")
-        self.search_url = reverse("individual-performance-tab-list",kwargs={'pk':pk})
+        self.search_url = reverse("individual-performance-tab-list", kwargs={"pk": pk})
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -457,7 +453,6 @@ EmployeeProfileView.add_tab(
 )
 
 
-
 @method_decorator(login_required, name="dispatch")
 @method_decorator(manager_can_enter("pms.change_feedback"), name="dispatch")
 class FeedbackUpdateFormView(HorillaFormView):
@@ -469,17 +464,18 @@ class FeedbackUpdateFormView(HorillaFormView):
     model = Feedback
     template_name = "cbv/360_feedback/form/form_inherit.html"
 
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.form.instance.pk:
             employees = self.form.instance.employee_id
-            subordinate_ids = self.form.instance.subordinate_id.values_list('id', flat=True)
+            subordinate_ids = self.form.instance.subordinate_id.values_list(
+                "id", flat=True
+            )
             subordinate_ids_list = list(subordinate_ids)
             key_result = EmployeeKeyResult.objects.filter(
-                            employee_objective_id__employee_id=employees.id
-                        )
-           
+                employee_objective_id__employee_id=employees.id
+            )
+
             self.form_class.verbose_name = _("Update Feedback")
             self.form.fields["employee_key_results_id"].queryset = key_result
             self.form.fields["subordinate_id"].initial = subordinate_ids_list
@@ -487,12 +483,14 @@ class FeedbackUpdateFormView(HorillaFormView):
         context["form"] = self.form
         context["feedback_form"] = self.form
         return context
-    
+
     def form_valid(self, form: FeedbackForm) -> HttpResponse:
         if form.is_valid():
             if form.instance.pk:
                 employees = form.data.getlist("subordinate_id")
-                if key_result_ids := self.request.POST.getlist("employee_key_results_id"):
+                if key_result_ids := self.request.POST.getlist(
+                    "employee_key_results_id"
+                ):
                     for key_result_id in key_result_ids:
                         key_result = EmployeeKeyResult.objects.filter(
                             id=key_result_id
@@ -509,6 +507,3 @@ class FeedbackUpdateFormView(HorillaFormView):
             messages.success(self.request, message)
             return self.HttpResponse()
         return super().form_valid(form)
-
-
-

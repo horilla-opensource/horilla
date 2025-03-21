@@ -3,9 +3,11 @@ This page is handling the cbv methods of mail log tab in employee individual pag
 """
 
 from typing import Any
+
 from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+
 from base.filters import MailLogFilter
 from base.models import EmailLog
 from employee.models import Employee
@@ -48,15 +50,14 @@ class MailLogTabList(HorillaListView):
         return queryset
 
     columns = [
-                (_("Subject"), "subject"),
-                (_("Date"), "created_at"),
-                (_("Status"), "status_display"),
-                ]
-    
+        (_("Subject"), "subject"),
+        (_("Date"), "created_at"),
+        (_("Status"), "status_display"),
+    ]
+
     sortby_mapping = [
         (_("Subject"), "subject"),
         (_("Date"), "created_at"),
-
     ]
 
     row_attrs = """
