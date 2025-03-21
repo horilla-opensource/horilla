@@ -1443,9 +1443,9 @@ class Payslip(HorillaModel):
         if self.group_name:
             return self.group_name
         return (
-            f"Payslip {self.start_date} to {self.end_date}"
+            f"Payslip {self.start_date} to {self.end_date} for {self.employee_id}"
             if self.start_date != self.end_date
-            else f"Payslip for {self.start_date}"
+            else f"Payslip for {self.start_date} for {self.employee_id}"
         )
 
     def get_days_in_month(self):
