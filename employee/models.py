@@ -406,12 +406,6 @@ class Employee(models.Model):
         badge_id = (f"({self.badge_id})") if self.badge_id is not None else ""
         return f"{self.employee_first_name} {last_name} {badge_id}"
 
-    def get_employee_dob(self) -> any:
-        if self.dob:
-            return self.dob.strftime("%d %b")
-        return None
-
-
     def check_online(self):
         """
         This method is used to check if the user is in the list of online users.

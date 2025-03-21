@@ -1,20 +1,19 @@
 """
 DahuaAPI module for interacting with Dahua biometric and access control devices.
 
-This module provides a set of methods for managing and configuring Dahua devices, 
-including retrieving system information, managing users, setting up network configurations, 
-and interacting with attendance logs. It communicates with Dahua devices via HTTP requests 
+This module provides a set of methods for managing and configuring Dahua devices,
+including retrieving system information, managing users, setting up network configurations,
+and interacting with attendance logs. It communicates with Dahua devices via HTTP requests
 and supports basic operations such as system reboot, setting time, and language configuration.
 """
 
 import re
-from typing import Any, Dict
-from datetime import datetime, timezone
 from collections import defaultdict
+from datetime import datetime, timezone
+from typing import Any, Dict
 
 import requests
 from requests.auth import HTTPDigestAuth
-
 
 key_map = {
     "AttendanceState": "attendance_state",
