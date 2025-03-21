@@ -1434,7 +1434,7 @@ def interview_view(request):
     """
     previous_data = request.GET.urlencode()
 
-    if request.user.has_perm("view_interviewschedule"):
+    if request.user.has_perm("recruitment.view_interviewschedule"):
         interviews = InterviewSchedule.objects.all().order_by("-interview_date")
     else:
         interviews = InterviewSchedule.objects.filter(
