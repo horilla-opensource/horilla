@@ -246,10 +246,9 @@
         });
     });
     // toggle columns //
-    toggleColumns("payslip_column_tab", "payslipCells")
+    toggleColumns("payslip-column-table", "payslipCells")
     localStoragepayslipCells = localStorage.getItem("payslip_column_tab")
     if (!localStoragepayslipCells) {
         $("#payslipCells").find("[type=checkbox]").prop("checked", true)
     }
-    $("[type=checkbox]").change()
 </script>
