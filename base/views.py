@@ -250,9 +250,7 @@ def load_demo_database(request):
 
                 # Add data files for installed apps
                 data_files += [
-                    file
-                    for app, file in optional_apps
-                    if apps.is_installed(app)
+                    file for app, file in optional_apps if apps.is_installed(app)
                 ]
 
                 # Load all data files
