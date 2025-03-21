@@ -18,7 +18,8 @@ def employeeworkinformation_pre_save(sender, instance, **_kwargs):
         instance.employee_id if instance.employee_id.is_active == True else None
     )
     if active_employee is not None:
-        contract_exists = active_employee.contract_set.exists()
+        all_contracts = Contract.objects.entire()
+        contract_exists = all_contracts.filter(employee_id_id=active_employee).exists()
         if not contract_exists:
             contract = Contract()
             contract.contract_name = f"{active_employee}'s Contract"
