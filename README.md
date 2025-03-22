@@ -309,7 +309,7 @@ Next, you need to create an admin user for the Horilla application. Run the foll
 
 #### **Ubuntu/macOS**
 ```bash
-python manage.py createhorillauser
+python3 manage.py createhorillauser
 ```
 
 #### **Windows**
