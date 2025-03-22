@@ -314,7 +314,7 @@ python manage.py createhorillauser
 
 #### **Windows**
 ```powershell
-python manage.py runserver
+python manage.py createhorillauser
 ```
 
 #### **Running on a Custom Port**
