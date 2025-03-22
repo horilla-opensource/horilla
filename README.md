@@ -304,7 +304,7 @@ From the login page, you will have two options:
 2. **Load Demo Data**: Use this option if you want to work with demo data. Authenticate using the `DB_INIT_PASSWORD` specified in the `.env` file.
 
 
-#### **Create the admin employee user
+#### **Create the admin employee user**
 Next, you need to create an admin user for the Horilla application. Run the following command to create an admin user:
 
 ```bash
