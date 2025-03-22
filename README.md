@@ -303,6 +303,15 @@ From the login page, you will have two options:
 1. **Initialize Database**: Use this option to initialize the Horilla database by creating a super admin, headquarter company, department, and job position. Authenticate using the `DB_INIT_PASSWORD` specified in the `.env` file.
 2. **Load Demo Data**: Use this option if you want to work with demo data. Authenticate using the `DB_INIT_PASSWORD` specified in the `.env` file.
 
+
+#### **Create the admin employee user
+Next, you need to create an admin user for the Horilla application. Run the following command to create an admin user:
+
+```bash
+python manage.py createhorillauser
+```
+
+
 #### **Running on a Custom Port**
 If you wish to run the Horilla application on a different port, specify the port number after the `runserver` command. For example:
 ```bash
