@@ -307,10 +307,15 @@ From the login page, you will have two options:
 #### **Create the admin employee user**
 Next, you need to create an admin user for the Horilla application. Run the following command to create an admin user:
 
+#### **Ubuntu/macOS**
 ```bash
 python manage.py createhorillauser
 ```
 
+#### **Windows**
+```powershell
+python manage.py runserver
+```
 
 #### **Running on a Custom Port**
 If you wish to run the Horilla application on a different port, specify the port number after the `runserver` command. For example:
