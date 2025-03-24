@@ -105,15 +105,6 @@
         z-index: 1000; /* Ensure it's behind the canvas */
     }
 
-    #c {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%; /* Make sure the canvas fills the modal */
-        height: 100%;
-        z-index: 1000; /* Ensure it's above the blurred background */
-        pointer-events: none; /* Ensure clicks pass through to underlying content */
-    }
 
 </style>
 
@@ -153,12 +144,6 @@
         <!-- end of back button -->
         <div class="oh-dashboard row" id="dashboard" style="padding-bottom: 3.5rem;">
 
-            {% if is_birthday %}
-                <div class="page-wrapper">
-                    <div class="blurred-background"></div>
-                    <canvas id="c"></canvas>
-                </div>
-            {% endif %}
 
             <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
                 <div class="oh-dashboard__cards row">

@@ -1398,7 +1398,7 @@ def interview_filter_view(request):
 
     previous_data = request.GET.urlencode()
 
-    if request.user.has_perm("view_interviewschedule"):
+    if request.user.has_perm("recruitment.view_interviewschedule"):
         interviews = InterviewSchedule.objects.all().order_by("-interview_date")
     else:
         interviews = InterviewSchedule.objects.filter(
@@ -1434,7 +1434,7 @@ def interview_view(request):
     """
     previous_data = request.GET.urlencode()
 
-    if request.user.has_perm("view_interviewschedule"):
+    if request.user.has_perm("recruitment.view_interviewschedule"):
         interviews = InterviewSchedule.objects.all().order_by("-interview_date")
     else:
         interviews = InterviewSchedule.objects.filter(
@@ -2035,7 +2035,6 @@ def create_interview_schedule(request):
             )
 
             messages.success(request, "Interview Scheduled successfully.")
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(request, template, {"form": form})
 
 
@@ -2044,21 +2043,23 @@ def create_interview_schedule(request):
 @manager_can_enter(perm="recruitment.delete_interviewschedule")
 def interview_delete(request, interview_id):
     """
-    This method is used to delete interview
+    Deletes an interview schedule.
     Args:
-        interview_id : interview schedule instance id
+        interview_id: InterviewSchedule instance ID
     """
+    view = request.GET.get("view", "false")
 
-    view = request.GET.get("view")
-    interview = InterviewSchedule.objects.get(id=interview_id)
-    interview.delete()
-    messages.success(request, "Interview deleted successfully.")
-    if view == "true":
-        # return HttpResponse("<script>window.location.reload()</script>")
-        return redirect(reverse("interview-list-view"))
-    else:
-        # return redirect(reverse("interview-detail-view", kwargs={'pk': interview_id}))
-        return HttpResponse("<script>window.location.reload()</script>")
+    try:
+        InterviewSchedule.objects.get(id=interview_id).delete()
+        messages.success(request, _("Interview deleted successfully."))
+    except:
+        messages.error(request, _("Scheduled Interview not found"))
+
+    return HttpResponse(
+        "<script>$('.filterButton')[0].click()</script>"
+        if view == "true"
+        else "<script>window.location.reload()</script>"
+    )
 
 
 @login_required

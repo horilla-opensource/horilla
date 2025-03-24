@@ -601,3 +601,16 @@ form label {
     border: solid 1px;
     border-radius: 5px;
 }
+
+#c {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    /* Make sure the canvas fills the modal */
+    height: 100%;
+    z-index: 1000;
+    /* Ensure it's above the blurred background */
+    pointer-events: none;
+    /* Ensure clicks pass through to underlying content */
+}

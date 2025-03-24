@@ -67,6 +67,12 @@
             {% endfor %}
         </div>
     {% endif %}
+    {% if is_birthday %}
+        <div class="page-wrapper">
+            <div class="blurred-background"></div>
+            <canvas id="c"></canvas>
+        </div>
+    {% endif %}
     <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hx-swap="afterend" hidden hx-target="#reloadMessages"></button>
     {% include "generic/components.html" %}
 

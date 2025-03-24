@@ -2,7 +2,7 @@
 CrossChexCloudAPI module for Anviz Biometric Integration
 
 This module provides a wrapper for interacting with the CrossChex Cloud API to manage
-authentication, attendance data retrieval, and token handling. It allows for secure 
+authentication, attendance data retrieval, and token handling. It allows for secure
 communication with the API, including fetching and validating tokens, and retrieving
 attendance records .
 """

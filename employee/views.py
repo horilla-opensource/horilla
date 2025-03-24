@@ -2917,7 +2917,7 @@ def get_employees_birthday(request):
                 else f"{default_avatar_url}{emp.employee_first_name}+{emp.employee_last_name}"
             ),
             "name": f"{emp.employee_first_name} {emp.employee_last_name}",
-            "dob": emp.dob.strftime("%d %b %Y"),
+            "dob": emp.dob.strftime("%d %b"),
             "daysUntilBirthday": (
                 _("Today")
                 if emp.days_until_birthday == 0
