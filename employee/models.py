@@ -6,15 +6,18 @@ This module is used to register models for employee app
 """
 
 from datetime import date, datetime, timedelta
-
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 from django.apps import apps
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import Permission, User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db import models
+from django.db.models import Q
 from django.db.models.query import QuerySet
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
@@ -640,6 +643,12 @@ class EmployeeWorkInformation(models.Model):
     )
     additional_info = models.JSONField(null=True, blank=True)
     experience = models.FloatField(null=True, blank=True, default=0)
+    anniversary_date = models.DateField(
+        null=True, 
+        blank=True,
+        verbose_name=_("Anniversary Date"),
+        help_text=_("Date used for anniversary-based leave resets")
+    )
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -685,6 +694,25 @@ class EmployeeWorkInformation(models.Model):
         self.experience = experience
         self.save()
         return self
+
+    def clean(self):
+        super().clean()
+        if self.anniversary_date:
+            # Ensure anniversary date isn't in the future
+            if self.anniversary_date > timezone.now().date():
+                raise ValidationError({
+                    'anniversary_date': _('Anniversary date cannot be in the future')
+                })
+            
+            # Check if employee has anniversary-based leave types
+            has_anniversary_leaves = self.employee_id.available_leave.filter(
+                leave_type_id__reset_based='anniversary'
+            ).exists()
+            
+            if has_anniversary_leaves and not self.anniversary_date:
+                raise ValidationError({
+                    'anniversary_date': _('Anniversary date is required for employees with anniversary-based leave types')
+                })
 
 
 class EmployeeBankDetails(HorillaModel):
