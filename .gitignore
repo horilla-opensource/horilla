@@ -107,7 +107,6 @@ env/
 venv/
 ENV/
 env.bak/
-venv.bak/
 horillavenv/
 
 # Spyder project settings
