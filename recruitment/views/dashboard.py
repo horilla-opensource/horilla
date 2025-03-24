@@ -104,8 +104,8 @@ def dashboard(request):
         if stage_chart_count >= 1:
             stage_chart_count = 1
 
-    onboarding_count = Candidate.objects.filter(start_onboard=True)
-    onboarding_count = onboarding_count.count()
+    accepted = Candidate.objects.filter(offer_letter_status="accepted")
+    accepted_count = accepted.count()
 
     recruitment_manager_mapping = {}
 
@@ -139,7 +139,7 @@ def dashboard(request):
         hired_ratio = f"{((total_hired_candidates / total_vacancy) * 100):.1f}"
         total_candidate_ratio = f"{((total_candidates / total_vacancy) * 100):.1f}"
     if total_hired_candidates != 0:
-        acceptance_ratio = f"{((onboarding_count / total_hired_candidates) * 100):.1f}"
+        acceptance_ratio = f"{((accepted_count / total_hired_candidates) * 100):.1f}"
 
     skill_zone = SkillZone.objects.filter(is_active=True)
     return render(
