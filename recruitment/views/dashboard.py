@@ -159,7 +159,7 @@ def dashboard(request):
             "joining": joining,
             "dep_vacancy": dep_vacancy,
             "stage_chart_count": stage_chart_count,
-            "onboarding_count": onboarding_count,
+            "onboarding_count": hired_candidates.filter(start_onboard=True).count(),
             "total_candidates": total_candidates,
             "skill_zone": skill_zone,
         },
