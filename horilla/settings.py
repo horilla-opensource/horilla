@@ -27,34 +27,19 @@ env = environ.Env(
     DEBUG=(bool, True),
     SECRET_KEY=(
         str,
-        "uzm9yv+03rih4!ci_6bnc+=jt365xppy*7%2g+qzbc6acr%9me",
+        "django-insecure-j8op9)1q8$1&0^s&p*_0%d#pr@w9qj@1o=3#@d=a(^@9@zd@%j",
     ),
     ALLOWED_HOSTS=(list, ["*"]),
-    CSRF_TRUSTED_ORIGINS=(list, ["https://localhost:8000"]),
+    CSRF_TRUSTED_ORIGINS=(list, ["http://localhost:8000"]),
 )
 
 env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
-
-# Production settings
-if not DEBUG:
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_SSL_REDIRECT = False
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
@@ -174,7 +159,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / "/var/www/staticfiles"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
@@ -237,9 +222,7 @@ LOCALE_PATHS = [
 
 LANGUAGE_CODE = "en-us"
 
-# Timezone settings
-TIME_ZONE = 'America/New_York'
-USE_TZ = True
+TIME_ZONE = env("TIME_ZONE", default="Asia/Kolkata")
 
 USE_I18N = True
 
@@ -258,4 +241,3 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-    CSRF_TRUSTED_ORIGINS = ['https://hrms.jawswarehouse.com', 'http://localhost', 'http://127.0.0.1']
