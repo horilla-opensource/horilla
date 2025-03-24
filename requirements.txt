@@ -20,6 +20,7 @@ django-haystack
 django-import-export
 django-jsonfield
 django-mathfilters
+django-microsoft-auth
 django-model-utils
 django-simple-history
 django-widget-tweaks
@@ -28,11 +29,13 @@ djangorestframework-simplejwt
 drf-yasg
 et-xmlfile
 google-api-python-client
+google-cloud-storage==3.0.0
 html5lib
 Jinja2
 idna
 lxml
 numpy
+oauthlib
 openpyxl
 oscrypto
 pandas
@@ -72,3 +75,4 @@ XlsxWriter
 gunicorn
 psycopg2-binary
 whitenoise
+django-storages

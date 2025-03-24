@@ -246,27 +246,6 @@ class Recruitment(HorillaModel):
                 return True
 
 
-@receiver(post_save, sender=Recruitment)
-def create_initial_stage(sender, instance, created, **kwargs):
-    """
-    This is post save method, used to create initial stage for the recruitment
-    """
-    if created:
-        applied_stage = Stage()
-        applied_stage.sequence = 0
-        applied_stage.recruitment_id = instance
-        applied_stage.stage = "Applied"
-        applied_stage.stage_type = "applied"
-        applied_stage.save()
-
-        initial_stage = Stage()
-        initial_stage.sequence = 1
-        initial_stage.recruitment_id = instance
-        initial_stage.stage = "Initial"
-        initial_stage.stage_type = "initial"
-        initial_stage.save()
-
-
 class Stage(HorillaModel):
     """
     Stage model
@@ -512,6 +491,9 @@ class Candidate(HorillaModel):
         """ """
         return self.get_email()
 
+    def phone(self):
+        return self.mobile
+
     def tracking(self):
         """
         This method is used to return the tracked history of the instance
@@ -612,9 +594,6 @@ class Candidate(HorillaModel):
             ("archive_candidate", "Archive Candidate"),
         )
         ordering = ["sequence"]
-
-
-from horilla.signals import pre_bulk_update
 
 
 class RejectReason(HorillaModel):
@@ -815,21 +794,6 @@ class RecruitmentSurveyAnswer(HorillaModel):
 
     def __str__(self) -> str:
         return f"{self.candidate_id.name}-{self.recruitment_id}"
-
-
-class RecruitmentMailTemplate(HorillaModel):
-    title = models.CharField(max_length=25, unique=True)
-    body = models.TextField()
-    company_id = models.ForeignKey(
-        Company,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        verbose_name=_("Company"),
-    )
-
-    def __str__(self) -> str:
-        return f"{self.title}"
 
 
 class SkillZone(HorillaModel):
@@ -1051,24 +1015,3 @@ class CandidateDocument(HorillaModel):
                 raise ValidationError(
                     {"document": _("Please upload {} file only.").format(format)}
                 )
-
-
-@receiver(m2m_changed, sender=CandidateDocumentRequest.candidate_id.through)
-def document_request_m2m_changed(sender, instance, action, **kwargs):
-    if action == "post_add":
-        candidate_document_create(instance)
-
-    elif action == "post_remove":
-        candidate_document_create(instance)
-
-
-def candidate_document_create(instance):
-    candidates = instance.candidate_id.all()
-    for candidate in candidates:
-        document, created = CandidateDocument.objects.get_or_create(
-            candidate_id=candidate,
-            document_request_id=instance,
-            defaults={"title": f"Upload {instance.title}"},
-        )
-        document.title = f"Upload {instance.title}"
-        document.save()

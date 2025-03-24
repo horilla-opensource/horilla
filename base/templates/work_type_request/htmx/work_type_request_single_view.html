@@ -112,9 +112,9 @@
                                     {% if can_change or can_delete %}
                                         {% if not work_type_request.approved and not work_type_request.canceled %}
                                             <a hx-get="{% url 'work-type-request-update' work_type_request.id %}"
-                                                hx-target='#workTypeRequestUpdateModalBody'
+                                                hx-target='#objectUpdateModalTarget'
                                                 data-toggle="oh-modal-toggle"
-                                                data-target='#workTypeRequestUpdateModal'
+                                                data-target='#objectUpdateModal'
                                                 class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}">
                                                 <ion-icon name="create-outline"></ion-icon>
                                             </a>

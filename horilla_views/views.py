@@ -382,6 +382,8 @@ class HorillaDeleteConfirmationView(View):
                         ),
                     ]
                     records_per_page = 5
+                    filter_selected = False
+                    quick_export = False
 
                     selected_instances_key_id = "storedIds" + app_label
 
@@ -584,14 +586,7 @@ class HorillaDeleteConfirmationView(View):
         # deleting related objects
         collector.nested(delete_callback)
 
-        return HttpResponse(
-            """
-        <script>
-            $("#reloadMessagesButton").click();
-            $(".oh-modal--show").removeClass("oh-modal--show");
-        </script>
-        """
-        )
+        return HorillaFormView.HttpResponse()
 
     def get_context_data(self, **kwargs) -> dict:
         context = {}

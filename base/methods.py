@@ -22,17 +22,47 @@ from xhtml2pdf import pisa
 
 from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
 from employee.models import Employee, EmployeeWorkInformation
+from horilla.horilla_apps import NESTED_SUBORDINATE_VISIBILITY
 from horilla.horilla_middlewares import _thread_locals
 from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 
 
-def filtersubordinates(request, queryset, perm=None, field=None):
+def filtersubordinates(request, queryset, perm=None, field="employee_id"):
     """
     This method is used to filter out subordinates queryset element.
     """
     user = request.user
     if user.has_perm(perm):
         return queryset
+
+    if not request:
+        return queryset
+    if NESTED_SUBORDINATE_VISIBILITY:
+        current_managers = [
+            request.user.employee_get.id,
+        ]
+        all_subordinates = Q(
+            **{
+                f"{field}__employee_work_info__reporting_manager_id__in": current_managers
+            }
+        )
+
+        while True:
+            sub_managers = queryset.filter(
+                **{
+                    f"{field}__employee_work_info__reporting_manager_id__in": current_managers
+                }
+            ).values_list(f"{field}__id", flat=True)
+            if not sub_managers.exists():
+                break
+            current_managers = sub_managers
+            all_subordinates |= Q(
+                **{
+                    f"{field}__employee_work_info__reporting_manager_id__in": sub_managers
+                }
+            )
+
+        return queryset.filter(all_subordinates)
 
     manager = Employee.objects.filter(employee_user_id=user).first()
 
@@ -73,11 +103,41 @@ def filter_own_and_subordinate_recordes(request, queryset, perm=None):
 
 def filtersubordinatesemployeemodel(request, queryset, perm=None):
     """
-    This method is used to filter out subordinates queryset element.
+    This method is used to filter out all subordinates in the entire reporting chain.
     """
     user = request.user
     if user.has_perm(perm):
         return queryset
+
+    if not request:
+        return queryset
+
+    if NESTED_SUBORDINATE_VISIBILITY:
+        # Initialize the set of subordinates with the current manager(s)
+        current_managers = [
+            request.user.employee_get.id,
+        ]
+        all_subordinates = Q(
+            employee_work_info__reporting_manager_id__in=current_managers
+        )
+
+        # Iteratively find subordinates in the chain
+        while True:
+            sub_managers = queryset.filter(
+                employee_work_info__reporting_manager_id__in=current_managers
+            ).values_list("id", flat=True)
+
+            if not sub_managers.exists():
+                break
+
+            current_managers = sub_managers
+            all_subordinates |= Q(
+                employee_work_info__reporting_manager_id__in=sub_managers
+            )
+
+        # Apply the filter to the queryset
+        return queryset.filter(all_subordinates).distinct()
+
     manager = Employee.objects.filter(employee_user_id=user).first()
     queryset = queryset.filter(employee_work_info__reporting_manager_id=manager)
     return queryset
@@ -451,7 +511,7 @@ def format_export_value(value, employee):
     return value
 
 
-def export_data(request, model, form_class, filter_class, file_name):
+def export_data(request, model, form_class, filter_class, file_name, perm=None):
     fields_mapping = {
         "male": _("Male"),
         "female": _("Female"),
@@ -488,6 +548,8 @@ def export_data(request, model, form_class, filter_class, file_name):
     form = form_class()
     model_fields = model._meta.get_fields()
     export_objects = filter_class(request.GET).qs
+    if perm:
+        export_objects = filtersubordinates(request, export_objects, perm)
     selected_fields = request.GET.getlist("selected_fields")
 
     if not selected_fields:
@@ -552,13 +614,18 @@ def reload_queryset(fields):
         "Employee": {"is_active": True},
         "Candidate": {"is_active": True} if apps.is_installed("recruitment") else None,
     }
+    request = getattr(_thread_locals, "request", None)
 
+    selected_company = request.session.get("selected_company") if request else None
     for field in fields.values():
         if isinstance(field, ModelChoiceField):
             model_name = field.queryset.model.__name__
             filter_criteria = model_filters.get(model_name)
             if filter_criteria is not None:
                 field.queryset = field.queryset.model.objects.filter(**filter_criteria)
+            # Future updation for company select field options when select a comapany from navbar
+            # elif selected_company and not selected_company == 'all':
+            #     field.queryset = field.queryset.model.objects.filter(id=selected_company)
             else:
                 field.queryset = field.queryset.model.objects.all()
 

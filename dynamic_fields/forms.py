@@ -4,11 +4,12 @@ dynamic_fields/forms.py
 
 from django import forms
 from django.utils.translation import gettext_lazy as _
+
 from base.forms import ModelForm
-from horilla.horilla_middlewares import _thread_locals
 from dynamic_fields import models
 from dynamic_fields.df_not_allowed_models import DF_NOT_ALLOWED_MODELS
 from dynamic_fields.models import DynamicField
+from horilla.horilla_middlewares import _thread_locals
 
 
 class DynamicFieldForm(ModelForm):

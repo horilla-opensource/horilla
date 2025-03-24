@@ -1,34 +1,22 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
-  <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-    {% if rshift.id %}
-      {% trans "Update Rotating Shift" %}
-    {% else %}
-      {% trans "Create Rotating Shift" %}
-    {% endif %}
-  </h2>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+        {% if rshift.id %} {% trans "Update" %} {% else %} {% trans "Create" %} {% endif %} {{form.verbose_name}}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    {% if rshift.id %}
-      hx-post="{% url 'rotating-shift-update' rshift.id %}"
-      hx-target="#objectUpdateModalTarget"
-    {% else %}
-      hx-post="{% url 'rotating-shift-create' %}"
-      hx-target="#objectCreateModalTarget"
-    {% endif %}
-    class="oh-profile-section"
-  >
-    {% csrf_token %}
-    {{form.as_p}}
-
-    <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form hx-post="{{ request.get_full_path }}"
+        hx-target="{% if rshift.id %}#objectUpdateModalTarget{% else %}#objectCreateModalTarget{% endif %}"
+        class="oh-profile-section">
+        {% csrf_token %}
+        {{form.as_p}}
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>

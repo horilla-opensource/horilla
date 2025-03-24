@@ -236,22 +236,21 @@ def load_demo_database(request):
                     "base_data.json",
                     "work_info_data.json",
                 ]
-                optional_apps = {
-                    "attendance": "attendance_data.json",
-                    "leave": "leave_data.json",
-                    "asset": "asset_data.json",
-                    "recruitment": "recruitment_data.json",
-                    "onboarding": "onboarding_data.json",
-                    "offboarding": "offboarding_data.json",
-                    "pms": "pms_data.json",
-                    "payroll": "payroll_data.json",
-                }
+                optional_apps = [
+                    ("attendance", "attendance_data.json"),
+                    ("leave", "leave_data.json"),
+                    ("asset", "asset_data.json"),
+                    ("recruitment", "recruitment_data.json"),
+                    ("onboarding", "onboarding_data.json"),
+                    ("offboarding", "offboarding_data.json"),
+                    ("pms", "pms_data.json"),
+                    ("payroll", "payroll_data.json"),
+                    ("payroll", "payroll_loanaccount_data.json"),
+                ]
 
                 # Add data files for installed apps
                 data_files += [
-                    file
-                    for app, file in optional_apps.items()
-                    if apps.is_installed(app)
+                    file for app, file in optional_apps if apps.is_installed(app)
                 ]
 
                 # Load all data files
@@ -3877,7 +3876,7 @@ def work_type_request_update(request, work_type_request_id):
     if request.method == "POST":
         response = render(
             request,
-            "work_type_request/request_update_form.html",
+            "work_type_request/request_form.html",
             {
                 "form": form,
             },
@@ -3892,7 +3891,7 @@ def work_type_request_update(request, work_type_request_id):
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
 
-    return render(request, "work_type_request/request_update_form.html", {"form": form})
+    return render(request, "work_type_request/request_form.html", {"form": form})
 
 
 @login_required
@@ -6763,11 +6762,9 @@ def get_upcoming_holidays(request):
     Retrieve and display a list of upcoming holidays for the current month and year.
     """
     today = timezone.localdate()
-    current_month = today.month
     current_year = today.year
     holidays = Holidays.objects.filter(
-        Q(start_date__month=current_month, start_date__year=current_year)
-        & Q(start_date__gte=today)
+        start_date__year=current_year, start_date__gte=today
     )
     colors = generate_colors(len(holidays))
     for i, holiday in enumerate(holidays):

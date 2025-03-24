@@ -9,32 +9,29 @@
 
 {% block content %}
 {% if feedback_form.errors %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-    <div class="oh-alert-container">
-
-        {% for error in feedback_form.non_field_errors %}
-        <div class="oh-alert oh-alert--animated oh-alert--danger">
-            {{ error }}
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in feedback_form.non_field_errors %}
+            <div class="oh-alert oh-alert--animated oh-alert--danger">
+                {{ error }}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
-</div>
 {% endif %}
 
-<div class="oh-wrapper" id="message">
-
-</div>
+<div class="oh-wrapper" id="message"></div>
 <!-- Feedback form'-->
 <main class="oh-onboarding">
     <div class="oh-onboarding-card oh-profile-section" style="max-width: 868px;">
         <form action="{%url 'feedback-creation' %}" id="feedbackCreationForm" method="post">
-        {{feedback_form.non_field_errors}}
+            {{feedback_form.non_field_errors}}
             {% csrf_token %}
             <div class="oh-onboarding-card__address-group">
-                <h2 class="oh-onboarding-card__section-title">{% trans "Feedback" %}</h2>
+                <h2 class="oh-onboarding-card__section-title">{{feedback_form.verbose_name}}</h2>
                 <div class="oh-input__group ">
-                    <label class="oh-input__label" for="{{feedback_form.review_cycle.id_for_label}}">{% trans "Title" %}</label>
+                    <label class="oh-input__label"
+                        for="{{feedback_form.review_cycle.id_for_label}}">{{feedback_form.review_cycle.label}}</label>
                     {{feedback_form.review_cycle}}
                     {{feedback_form.review_cycle.errors}}
                 </div>
@@ -42,7 +39,8 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="oh-input__group">
                             <div class="oh-input__group">
-                                <label class="oh-input__label" for="{{feedback_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+                                <label class="oh-input__label"
+                                    for="{{feedback_form.employee_id.id_for_label}}">{{feedback_form.employee_id.label}}</label>
                                 {{feedback_form.employee_id }}
                                 {{feedback_form.employee_id.errors }}
                                 <ul id="error-list" class="errorlist" style="display: none">
@@ -54,7 +52,8 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="oh-input__group">
                             <div class="oh-input__group">
-                                <label class="oh-input__label" for="{{feedback_form.manager_id.id_for_label}}">{% trans "Manager" %}</label>
+                                <label class="oh-input__label"
+                                    for="{{feedback_form.manager_id.id_for_label}}">{{feedback_form.manager_id.label}}</label>
                                 {{feedback_form.manager_id}}
                                 {{feedback_form.manager_id.errros}}
                                 <ul id="error-list" class="errorlist" style="display: none">
@@ -68,7 +67,8 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="oh-input__group">
                             <div class="oh-input__group">
-                                <label class="oh-input__label" for="{{feedback_form.subordinate_id.id_for_label}}">{% trans "Subordinates" %}</label>
+                                <label class="oh-input__label"
+                                    for="{{feedback_form.subordinate_id.id_for_label}}">{{feedback_form.subordinate_id.label}}</label>
                                 {{feedback_form.subordinate_id}}
                                 {{feedback_form.subordinate_id.errors}}
                             </div>
@@ -77,7 +77,8 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="oh-input__group">
                             <div class="oh-input__group">
-                                <label class="oh-input__label" for="{{feedback_form.colleague_id.id_for_label}}">{% trans "Colleague" %}</label>
+                                <label class="oh-input__label"
+                                    for="{{feedback_form.colleague_id.id_for_label}}">{{feedback_form.colleague_id.label}}</label>
                                 {{feedback_form.colleague_id}}
                                 {{feedback_form.colleague_id.errors}}
                             </div>
@@ -88,7 +89,8 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="oh-input__group">
                             <div class="oh-input__group">
-                                <label class="oh-input__label" for="{{feedback_form.period.id_for_label}}">{% trans "Period" %}</label>
+                                <label class="oh-input__label"
+                                    for="{{feedback_form.period.id_for_label}}">{{feedback_form.period.label}}</label>
                                 {{feedback_form.period}}
                                 {{feedback_form.period.errors}}
                             </div>
@@ -97,7 +99,8 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="oh-input__group">
                             <div class="oh-input__group">
-                                <label class="oh-input__label" for="{{feedback_form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
+                                <label class="oh-input__label"
+                                    for="{{feedback_form.start_date.id_for_label}}">{{feedback_form.start_date.label}}</label>
                                 {{feedback_form.start_date}}
                                 {{feedback_form.start_date.errors}}
                             </div>
@@ -106,7 +109,8 @@
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="oh-input__group">
                             <div class="oh-input__group">
-                                <label class="oh-input__label" for="{{feedback_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
+                                <label class="oh-input__label"
+                                    for="{{feedback_form.end_date.id_for_label}}">{{feedback_form.end_date.label}}</label>
                                 {{feedback_form.end_date}}
                                 {{feedback_form.end_date.errors}}
                             </div>
@@ -116,7 +120,8 @@
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="{{feedback_form.question_template_id.id_for_label}}">{% trans "Question Template" %}</label>
+                            <label class="oh-input__label"
+                                for="{{feedback_form.question_template_id.id_for_label}}">{{feedback_form.question_template_id.label}}</label>
                             {{feedback_form.question_template_id}}
                             {{feedback_form.question_template_id.errors}}
                             <ul id="error-list" class="errorlist" style="display: none">
@@ -126,26 +131,27 @@
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="id_employee_key_results_id">{% trans "Key Result" %}</label>
-                            <select name="employee_key_results_id" id="id_employee_key_results_id" class="oh-select  oh-select--lg oh-select-no-search w-100 oh-select-2--large" multiple="multiple" style="display: none;">
-                                <option value="">------------------</option>
-                            </select>
+                            <label class="oh-input__label"
+                                for="id_employee_key_results_id">{{feedback_form.employee_key_results_id.label}}</label>
+                            {{feedback_form.employee_key_results_id}}
+                            {{feedback_form.employee_key_results_id.errors}}
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6 mb-5" id="">
                         <div class="oh-input__group">
-                            <label class="oh-input__label" for="{{feedback_form.cyclic_feedback.id_for_label}}">{% trans "Is Cyclic Feedback" %}</label>
+                            <label class="oh-input__label"
+                                for="{{feedback_form.cyclic_feedback.id_for_label}}">{{feedback_form.cyclic_feedback.label}}</label>
                             <div class="oh-switch">
-                            {{feedback_form.cyclic_feedback}}
+                                {{feedback_form.cyclic_feedback}}
                             </div>
                             {{feedback_form.cyclic_feedback.errors}}
                         </div>
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6" style="display:none" id="cyclic_feedback_period">
                         <div class="oh-input__group">
-                            <label class="oh-input__label">{% trans "Cycle Period" %}</label>
+                            <label class="oh-input__label" for="{{feedback_form.cyclic_feedback_days_count.id_for_label}}">{{feedback_form.cyclic_feedback_days_count.label}}</label>
                             <div class="w-100 d-flex">
                                 {{feedback_form.cyclic_feedback_days_count}}
                                 {{feedback_form.cyclic_feedback_period}}
@@ -157,10 +163,7 @@
             </section>
 
             <div class="w-100 d-flex align-items-center justify-content-end">
-                <button
-                    type="submit"
-                    class="oh-btn oh-btn--secondary oh-btn--w-100-resp"
-                >
+                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
                     {% trans "Save" %}
                 </button>
             </div>
@@ -171,28 +174,36 @@
     <!-- period modal -->
     <div class="oh-modal" id="PeriodModal" role="dialog" aria-labelledby="editKeyResultModal" aria-hidden="true">
         <div class="oh-modal__dialog">
-          <!-- for creating period -->
-          <div class="oh-modal__dialog-header">
-            <button type="button" class="oh-modal__close" aria-label="Close">
-              <ion-icon name="close-outline"></ion-icon>
-            </button>
-          </div>
-          <div class="oh-modal__dialog-body" id="periodModalTarget">
+            <!-- for creating period -->
+            <div class="oh-modal__dialog-header">
+                <button type="button" class="oh-modal__close" aria-label="Close">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="periodModalTarget">
 
             </div>
         </div>
-      </div>
-      <!-- end of period modal -->
+    </div>
+    <!-- end of period modal -->
 
 </main>
-<button id="colleguesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_colleague_id" hidden > </button>
-<button id="managerButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_manager_id" hidden > </button>
-<button id="subordinatesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_subordinate_id" hidden > </button>
-<button id="keyresultButtton" hx-get="{% url 'get-collegues' %}" hx-target="#id_employee_key_results_id" hidden > </button>
+<button id="colleguesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_colleague_id" hidden> </button>
+<button id="managerButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_manager_id" hidden> </button>
+<button id="subordinatesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_subordinate_id" hidden> </button>
+<button id="keyresultButtton" hx-get="{% url 'get-collegues' %}" hx-target="#id_employee_key_results_id" hidden></button>
 
 <script>
     $(document).ready(function(){
-        get_collegues($('#id_employee_id'))
+        get_collegues($('#id_employee_id'));
+        $('#id_colleague_id').on('click', function() {
+            console.log('Colleague field clicked');
+        });
+
+        $('#id_subordinate_id').on('click', function() {
+            console.log('Subordinate field clicked');
+        });
+
     });
     function get_collegues(element) {
         var employee_id = $(element).val();
@@ -214,6 +225,4 @@
 </script>
 <script src="{% static 'src/feedback/feedback_creation.js' %}"></script>
 <script src="{% static 'src/period/period.js' %}"></script>
-
-
 {% endblock%}

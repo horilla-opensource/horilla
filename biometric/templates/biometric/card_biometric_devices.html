@@ -22,10 +22,8 @@
                 <div class="oh-kanban-card__details">
                     <span class="oh-kanban-card__title">{{device.name}}</span>
                     <span class="oh-kanban-card__subtitle d-block">{{device.get_machine_type_display}}</span>
-                    {% if device.machine_type == "zk" or device.machine_type == "cosec" %}
+                    {% if device.machine_type == "zk" or device.machine_type == "cosec" or device.machine_type == "dahua" %}
                         <span class="oh-kanban-card__subtitle d-block">{{device.machine_ip}}</span>
-                    {% endif %}
-                    {% if device.machine_type == "zk" %}
                         <span class="oh-kanban-card__subtitle d-block">{{device.port}}</span>
                     {% else %}
                         <span class="oh-kanban-card__subtitle d-block">{{device.api_url}}</span>
@@ -64,8 +62,14 @@
                             <ul class="oh-dropdown__items">
                                 <li class="oh-dropdown__item">
                                     <a hx-get="{% url 'biometric-device-edit' device.id %}" class="oh-dropdown__link"
-                                        data-toggle="oh-modal-toggle" data-target="#BiometricDeviceModal"
-                                        hx-target="#BiometricDeviceFormTarget">{% trans "Edit" %}</a>
+                                        data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                        hx-target="#objectUpdateModalTarget">{% trans "Edit" %}</a>
+                                </li>
+                                <li class="oh-dropdown__item">
+                                    <a href="#" hx-get="{% url 'biometric-device-fetch-logs' device.id %}" data-toggle="oh-modal-toggle"
+                                        data-target="#BiometricDeviceTestModal" hx-target="#BiometricDeviceTestFormTarget"
+                                        class="oh-dropdown__link">{% trans "Fetch Logs" %}
+                                    </a>
                                 </li>
                                 {% if perms.biometric.change_biometricdevices %}
                                     {% if device.is_active %}
@@ -98,12 +102,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="d-block oh-kanban-card__biometric-actions"
-                    {% if device.machine_type == "anviz" or device.machine_type == "cosec" %} style='margin-top:53px;' {% endif %}>
-                        <a href="#" hx-get="{% url 'biometric-device-test' device.id %}" data-toggle="oh-modal-toggle"
-                            data-target="#BiometricDeviceTestModal" hx-target="#BiometricDeviceTestFormTarget"
-                            class="oh-checkpoint-badge text-success">{% trans "Test" %}
-                        </a>
+                <div class="d-block oh-kanban-card__biometric-actions" style='margin-top:53px;'>
+                    <a href="#" hx-get="{% url 'biometric-device-test' device.id %}" data-toggle="oh-modal-toggle"
+                        data-target="#BiometricDeviceTestModal" hx-target="#BiometricDeviceTestFormTarget"
+                        class="oh-checkpoint-badge text-success">{% trans "Test" %}
+                    </a>
                     {% if device.is_scheduler %}
                         <a hx-confirm="{% trans 'Do you want to unschedule the device attendance fetching?' %}"
                             hx-post="{% url 'biometric-device-unschedule' device.id %}?{{pd}}&page={{devices.number}}&view=card"
@@ -114,7 +117,7 @@
                             data-toggle="oh-modal-toggle" data-target="#BiometricDeviceModal"
                             hx-target="#BiometricDeviceFormTarget">{% trans "Schedule" %}</a>
                     {% endif %}
-                    {% if device.machine_type == "zk" or device.machine_type == "cosec" %}
+                    {% if device.machine_type == "zk" or device.machine_type == "cosec" or device.machine_type == "dahua" %}
                         <a href="{% url 'biometric-device-employees' device.id %}"
                             class="oh-checkpoint-badge text-secondary bio-user-list">{% trans "Employee" %}</a>
                     {% endif %}

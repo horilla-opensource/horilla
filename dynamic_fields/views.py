@@ -2,15 +2,16 @@
 dynamic_fields/views.py
 """
 
+from django.contrib import messages
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
 from django.views.generic import View
-from horilla_views.generic.cbv.views import HorillaFormView
-from dynamic_fields import models, forms
+
+from dynamic_fields import forms, models
 from dynamic_fields.methods import structured
 from horilla.decorators import login_required, permission_required
+from horilla_views.generic.cbv.views import HorillaFormView
 
 
 @method_decorator(login_required, name="dispatch")
