@@ -382,6 +382,8 @@ class HorillaDeleteConfirmationView(View):
                         ),
                     ]
                     records_per_page = 5
+                    filter_selected = False
+                    quick_export = False
 
                     selected_instances_key_id = "storedIds" + app_label
 

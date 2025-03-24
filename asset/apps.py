@@ -22,11 +22,12 @@ class AssetConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
-        from horilla.horilla_settings import APPS
+        from horilla.horilla_settings import APP_URLS, APPS
         from horilla.urls import urlpatterns
 
         APPS.append("asset")
         urlpatterns.append(
             path("asset/", include("asset.urls")),
         )
+        APP_URLS.append("asset.urls")
         super().ready()

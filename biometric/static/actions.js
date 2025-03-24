@@ -25,14 +25,15 @@ function getCurrentLanguageCode(callback) {
     });
 }
 
-$(".all-bio-employee").change(function (e) {
-    var is_checked = $(this).is(":checked");
+function selectAllDahuaUsers(element) {
+    var is_checked = $("#allBioEmployee").is(":checked");
     if (is_checked) {
         $(".all-bio-employee-row").prop("checked", true);
     } else {
         $(".all-bio-employee-row").prop("checked", false);
     }
-});
+}
+
 
 $(".all-bio-employee-row").change(function (e) {
     var is_checked = $(".all-bio-employee").is(":checked");
@@ -147,6 +148,44 @@ $("#deleteCosecUsers").click(function (e) {
         }
     });
 });
+
+
+function deleteDahuaUsers(e) {
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+        languageCode = code;
+        var confirmMessage = deleteUsersMessages[languageCode];
+        var textMessage = nousersdeleteMessages[languageCode];
+        var checkedRows = $(".all-bio-employee-row").filter(":checked");
+        if (checkedRows.length === 0) {
+            Swal.fire({
+                text: textMessage,
+                icon: "warning",
+                confirmButtonText: "Close",
+            });
+        } else {
+            Swal.fire({
+                text: confirmMessage,
+                icon: "error",
+                showCancelButton: true,
+                confirmButtonColor: "#008000",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirm",
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    ids = [];
+                    checkedRows.each(function () {
+                        ids.push($(this).attr("id"));
+                    });
+                    var hxValue = JSON.stringify(ids);
+                    var bioDeviceID = JSON.stringify($("#allBioEmployee").data("device"))
+                    $("#deleteDahuaUsers").attr("hx-vals", `{"ids":${hxValue},"device_id":${bioDeviceID}}`);
+                    $("#deleteDahuaUsers").click();
+                }
+            });
+        }
+    });
+}
 
 // ------------------------------------------------------------------------------------------------------------------------------
 
