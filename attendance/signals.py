@@ -1,21 +1,17 @@
 # attendance/signals.py
 
 from datetime import datetime, timedelta
+
 from django.apps import apps
 from django.db.models.signals import post_migrate, post_save, pre_delete
-from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 from attendance.methods.utils import strtime_seconds
-from attendance.models import (
-    Attendance,
-    AttendanceGeneralSetting,
-    WorkRecords,
-)
+from attendance.models import Attendance, AttendanceGeneralSetting, WorkRecords
 from base.models import Company, PenaltyAccounts
 from employee.models import Employee
 from horilla.methods import get_horilla_model_class
-
 
 if apps.is_installed("payroll"):
 
@@ -148,7 +144,7 @@ def add_missing_attendance_to_workrecord(sender, **kwargs):
     if sender.label not in ["attendance", "leave"]:
         return
 
-    from attendance.models import WorkRecords, Attendance
+    from attendance.models import Attendance, WorkRecords
 
     try:
         work_records = WorkRecords.objects.filter(
@@ -230,6 +226,7 @@ def create_attendance_setting(sender, instance, created, raw, **kwargs):
     if created:
         AttendanceGeneralSetting.objects.get_or_create(company_id=instance)
 
+
 @receiver(post_migrate)
 def create_missing_work_records(sender, **kwargs):
     if sender.label not in ["attendance"]:
@@ -247,10 +244,15 @@ def create_missing_work_records(sender, **kwargs):
                 end_date = datetime.today().date()
 
                 existing_dates = set(
-                    WorkRecords.objects.filter(employee_id=employee.id).values_list("date", flat=True)
+                    WorkRecords.objects.filter(employee_id=employee.id).values_list(
+                        "date", flat=True
+                    )
                 )
 
-                all_dates = {start_date + timedelta(days=i) for i in range((end_date - start_date).days)}
+                all_dates = {
+                    start_date + timedelta(days=i)
+                    for i in range((end_date - start_date).days)
+                }
                 missing_dates = all_dates - existing_dates
 
                 work_records_to_create = [
@@ -264,8 +266,11 @@ def create_missing_work_records(sender, **kwargs):
                 ]
 
                 if work_records_to_create:
-                    WorkRecords.objects.bulk_create(work_records_to_create, batch_size=500, ignore_conflicts=True)
+                    WorkRecords.objects.bulk_create(
+                        work_records_to_create, batch_size=500, ignore_conflicts=True
+                    )
 
             except Exception as e:
-                print(f"Error creating missing work records for employee {employee}: {e}")
-                
+                print(
+                    f"Error creating missing work records for employee {employee}: {e}"
+                )

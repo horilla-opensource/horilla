@@ -104,7 +104,9 @@ class Department(HorillaModel):
     Department model
     """
 
-    department = models.CharField(max_length=50, blank=False)
+    department = models.CharField(
+        max_length=50, blank=False, verbose_name=_("Department")
+    )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager()
@@ -143,7 +145,9 @@ class JobPosition(HorillaModel):
     JobPosition model
     """
 
-    job_position = models.CharField(max_length=50, blank=False, null=False)
+    job_position = models.CharField(
+        max_length=50, blank=False, null=False, verbose_name=_("Job Position")
+    )
     department_id = models.ForeignKey(
         Department,
         on_delete=models.PROTECT,
@@ -172,7 +176,9 @@ class JobRole(HorillaModel):
     job_position_id = models.ForeignKey(
         JobPosition, on_delete=models.PROTECT, verbose_name=_("Job Position")
     )
-    job_role = models.CharField(max_length=50, blank=False, null=True)
+    job_role = models.CharField(
+        max_length=50, blank=False, null=True, verbose_name=_("Job Role")
+    )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager("job_position_id__department_id__company_id")
@@ -195,7 +201,7 @@ class WorkType(HorillaModel):
     WorkType model
     """
 
-    work_type = models.CharField(max_length=50)
+    work_type = models.CharField(max_length=50, verbose_name=_("Work Type"))
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager()
@@ -1211,6 +1217,12 @@ class DynamicEmailConfiguration(HorillaModel):
     is_primary = models.BooleanField(
         default=False, verbose_name=_("Primary Mail Server")
     )
+    use_dynamic_display_name = models.BooleanField(
+        default=True,
+        help_text=_(
+            "By enabling this the display name will take from who triggered the mail"
+        ),
+    )
 
     timeout = models.SmallIntegerField(
         null=True, verbose_name=_("Email Send Timeout (seconds)")
@@ -1488,6 +1500,8 @@ class Announcement(HorillaModel):
 
     from employee.models import Employee
 
+    model_employee = Employee
+
     title = models.CharField(max_length=100)
     description = models.TextField(null=True)
     attachments = models.ManyToManyField(
@@ -1498,14 +1512,21 @@ class Announcement(HorillaModel):
         Employee, related_name="announcement_employees", blank=True
     )
     department = models.ManyToManyField(Department, blank=True)
-    job_position = models.ManyToManyField(JobPosition, blank=True)
+    job_position = models.ManyToManyField(
+        JobPosition, blank=True, verbose_name=_("Job Position")
+    )
     company_id = models.ManyToManyField(
-        Company,
-        blank=True,
-        related_name="announcement",
+        Company, blank=True, related_name="announcement", verbose_name=_("Company")
     )
     disable_comments = models.BooleanField(default=False)
+    filtered_employees = models.ManyToManyField(
+        Employee, related_name="announcement_filtered_employees", editable=False
+    )
     objects = HorillaCompanyManager(related_company_field="company_id")
+
+    class Meta:
+        verbose_name = _("Announcement")
+        verbose_name_plural = _("Announcements")
 
     def get_views(self):
         """

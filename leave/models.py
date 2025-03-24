@@ -296,6 +296,8 @@ class LeaveType(HorillaModel):
             self.carryforward_expire_date = self.set_expired_date(
                 assigned_date=self.created_at
             )
+        elif self.carryforward_type != "carryforward expire":
+            self.carryforward_expire_date = None
 
         super().save()
 
@@ -480,24 +482,31 @@ class AvailableLeave(HorillaModel):
         available_leave.available_days = available_leave.leave_type_id.total_days
         return expired_date
 
-    def save(self, *args, **kwargs):
-        # if self.assigned_date == datetime.now().date() or self.assigned_date.date() == datetime.now().date():
-        if self.reset_date is None:
-            # Check whether the reset is enabled
-            if self.leave_type_id.reset:
-                reset_date = self.set_reset_date(
-                    assigned_date=self.assigned_date, available_leave=self
-                )
-                self.reset_date = reset_date
-            # assigning expire date
+    def pre_save_processing(self):
+        """
+        Reusable method to compute fields normally set in save().
+        """
+        # Logic for reset_date
+        if self.reset_date is None and self.leave_type_id.reset:
+            self.reset_date = self.set_reset_date(
+                assigned_date=self.assigned_date, available_leave=self
+            )
+
+        # Logic for expired_date
         if self.leave_type_id.carryforward_type == "carryforward expire":
             expiry_date = self.assigned_date
             if self.leave_type_id.carryforward_expire_date:
                 expiry_date = self.leave_type_id.carryforward_expire_date
             self.expired_date = expiry_date
 
-        self.total_leave_days = max(self.available_days + self.carryforward_days, 0)
-        self.carryforward_days = max(self.carryforward_days, 0)
+        # Compute total_leave_days and ensure carryforward_days >= 0
+        self.total_leave_days = round(
+            max(self.available_days + self.carryforward_days, 0), 3
+        )
+        self.carryforward_days = round(max(self.carryforward_days, 0), 3)
+
+    def save(self, *args, **kwargs):
+        self.pre_save_processing()
         super().save(*args, **kwargs)
 
 

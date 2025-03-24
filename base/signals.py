@@ -1,11 +1,11 @@
 from datetime import datetime
 
 from django.apps import apps
-from django.db.models import Max
-from django.db.models.signals import post_migrate, post_save
+from django.db.models import Max, Q
+from django.db.models.signals import m2m_changed, post_migrate, post_save
 from django.dispatch import receiver
 
-from base.models import PenaltyAccounts
+from base.models import Announcement, PenaltyAccounts
 from horilla.methods import get_horilla_model_class
 
 
@@ -80,3 +80,23 @@ def clean_work_records(sender, **kwargs):
             .exclude(id=record["latest_id"])
             .delete()[0]
         )
+
+
+@receiver(m2m_changed, sender=Announcement.employees.through)
+def filtered_employees(sender, instance, action, **kwargs):
+    """
+    filtered employees
+    """
+    if action not in ["post_add", "post_remove", "post_clear"]:
+        return  # Only run after M2M changes
+    employee_ids = list(instance.employees.values_list("id", flat=True))
+    department_ids = list(instance.department.values_list("id", flat=True))
+    job_position_ids = list(instance.job_position.values_list("id", flat=True))
+
+    employees = instance.model_employee.objects.filter(
+        Q(id__in=employee_ids)
+        | Q(employee_work_info__department_id__in=department_ids)
+        | Q(employee_work_info__job_position_id__in=job_position_ids)
+    )
+
+    instance.filtered_employees.set(employees)

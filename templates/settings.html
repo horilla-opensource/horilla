@@ -139,6 +139,18 @@
 													>
 												{% endif %}
 											</div>
+											{% if "horilla_ldap"|app_installed %}
+												{% if perms.horilla_ldap.add_ldapsettings or perms.horilla_ldap.update_ldapsettings %}
+													<div class="oh-input-group">
+														<a
+															id="date"
+															href="{% url 'ldap-settings' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "LDAP Configuration" %}</a
+														>
+													</div>
+												{% endif %}
+											{% endif %}
 										</div>
 									</div>
 								</div>

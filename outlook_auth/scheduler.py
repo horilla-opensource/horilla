@@ -36,7 +36,7 @@ if not any(
     scheduler.add_job(
         refresh_outlook_auth_token,
         "interval",
-        minutes=30,
+        minutes=50,
         id="refresh_outlook_auth_token",
     )
     scheduler.start()

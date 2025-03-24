@@ -132,8 +132,8 @@ def send_outlook_email(request, email_data=None):
     else:
         api = models.AzureApi.objects.filter(company=selected_company).first()
     token = api.token
-
-    refresh_outlook_token(api)
+    if not token and not api.is_token_expired():
+        refresh_outlook_token(api)
     if not token and request:
         messages.info(request, "Mail not sent")
         return redirect("outlook_login")

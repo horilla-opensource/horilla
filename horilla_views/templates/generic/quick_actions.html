@@ -98,7 +98,7 @@
         </span>)
       </div>
       <form
-      hx-get="/{{bulk_path}}"
+      hx-post="/{{bulk_path}}"
       hx-target="#bulkUpdateModalBody{{view_id|safe}}">
       <input type="hidden" name="instance_ids">
       <button type="submit" id="bulk_update_get_form{{view_id}}" hidden>
