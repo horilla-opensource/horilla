@@ -619,6 +619,7 @@ def leave_requests_export(request):
         filter_class=LeaveRequestFilter,
         form_class=LeaveRequestExportForm,
         file_name="Leave_requests",
+        perm="leave.view_leaverequest",
     )
 
 
@@ -1753,6 +1754,7 @@ def assigned_leaves_export(request):
         filter_class=AssignedLeaveFilter,
         form_class=AvailableLeaveColumnExportForm,
         file_name="Assign_Leave",
+        perm="leave.view_availableleave",
     )
 
 

@@ -99,6 +99,9 @@ class HorillaModel(models.Model):
 
         super(HorillaModel, self).save(*args, **kwargs)
 
+    def get_verbose_name(self):
+        return self._meta.verbose_name
+
     @classmethod
     def find(cls, object_id):
         """
