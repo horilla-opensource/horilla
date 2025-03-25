@@ -2166,11 +2166,12 @@ def skill_zone_view(request):
         template = "skill_zone/empty_skill_zone.html"
 
     context = {
+        "pd": previous_data,
+        "filter_dict": data_dict,
+        "model": SkillZone(),
+        "f": SkillZoneCandFilter(),
         "skill_zones": skill_groups,
         "page": request.GET.get("page"),
-        "pd": previous_data,
-        "f": SkillZoneCandFilter(),
-        "filter_dict": data_dict,
     }
     return render(request, template, context=context)
 
@@ -2188,10 +2189,11 @@ def skill_zone_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Skill Zone created successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
+            form = SkillZoneCreateForm()
+
     return render(
         request,
-        "skill_zone/skill_zone_create.html",
+        "skill_zone/skill_zone_form.html",
         {"form": form},
     )
 
@@ -2210,10 +2212,9 @@ def skill_zone_update(request, sz_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Skill Zone updated successfully."))
-            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
-        "skill_zone/skill_zone_update.html",
+        "skill_zone/skill_zone_form.html",
         {"form": form, "sz_id": sz_id},
     )
 
@@ -2240,7 +2241,9 @@ def skill_zone_delete(request, sz_id):
             messages.error(request, _("Skill zone not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
-    return redirect(skill_zone_view)
+    return HttpResponse(
+        "<script>$('.filterButton')[0].click();reloadMessage();</script>"
+    )
 
 
 @login_required

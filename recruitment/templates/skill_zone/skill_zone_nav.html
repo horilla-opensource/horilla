@@ -2,7 +2,7 @@
 <section class="oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold mb-0">
-            {% trans "Skill Zone" %}
+            {{model.get_verbose_name}}
         </h1>
 
         <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
@@ -134,8 +134,8 @@
         </form>
 
         <div class="oh-btn-group ml-2">
-            <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle" data-target="#createModal"
-                hx-get="{% url 'skill-zone-create' %}" hx-target="#createTarget">
+            <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                hx-get="{% url 'skill-zone-create' %}" hx-target="#objectCreateModalTarget">
                 <ion-icon name="add-outline" class="me-1"></ion-icon>
                 {% trans "Create" %}
             </a>
