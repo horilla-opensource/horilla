@@ -15,7 +15,7 @@
 							<span>{% trans "Date of Birth" %}</span>
 						</span>
 						<span
-							class="oh-profile__info-value dateformat_changer">{{employee.dob|default:_("None")}}</span>
+							class="oh-profile__info-value dateformat_changer">{{employee.get_employee_dob|default:_("None")}}</span>
 					</li>
 
 					<li class="oh-profile__card-info-item">
