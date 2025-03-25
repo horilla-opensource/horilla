@@ -133,6 +133,11 @@ class Employee(models.Model):
             url = self.employee_profile.url
         return url
 
+    def get_employee_dob(self) -> any:
+        if self.dob:
+            return self.dob.strftime("%d %b")
+        return None
+
     def get_full_name(self):
         """
         Method will return employee full name

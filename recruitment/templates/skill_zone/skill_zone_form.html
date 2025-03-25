@@ -1,0 +1,40 @@
+{% load i18n %}
+{% if messages %}
+    <script>
+        $('.filterButton')[0].click()
+        reloadMessage();
+        setTimeout(function () { $('.oh-modal__close').click(); }, 1000);
+    </script>
+{% endif %}
+{% if form.errors %}
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+<div class="oh-modal__dialog-header">
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
+        {% if form.instance.id %} {% trans "Update" %}{% else %}{% trans "Create" %}{% endif %} {{form.verbose_name}}
+    </span>
+</div>
+<div class="oh-modal__dialog-body">
+    <form
+        hx-post="{% if form.instance.id %} {% url 'skill-zone-update' sz_id %} {% else %} {% url 'skill-zone-create' %} {% endif %}"
+        id="skillform" hx-encoding="multipart/form-data" class="oh-profile-section"
+        hx-target="{% if form.instance.id %}#objectUpdateModalTarget{% else %}#objectCreateModalTarget{% endif %}"
+        >
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>
