@@ -511,7 +511,7 @@ def format_export_value(value, employee):
     return value
 
 
-def export_data(request, model, form_class, filter_class, file_name):
+def export_data(request, model, form_class, filter_class, file_name, perm=None):
     fields_mapping = {
         "male": _("Male"),
         "female": _("Female"),
@@ -548,6 +548,8 @@ def export_data(request, model, form_class, filter_class, file_name):
     form = form_class()
     model_fields = model._meta.get_fields()
     export_objects = filter_class(request.GET).qs
+    if perm:
+        export_objects = filtersubordinates(request, export_objects, perm)
     selected_fields = request.GET.getlist("selected_fields")
 
     if not selected_fields:

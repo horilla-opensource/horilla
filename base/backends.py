@@ -76,6 +76,7 @@ class DefaultHorillaMailBackend(EmailBackend):
             display_email_name = (
                 f"{configuration.display_name} <{configuration.from_email}>"
             )
+
             user_id = ""
             if request:
                 if (
@@ -83,13 +84,14 @@ class DefaultHorillaMailBackend(EmailBackend):
                     and request.user.is_authenticated
                 ):
                     display_email_name = f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.get_email()}>"
-                    user_id = request.user.pk
-                cache.set(f"dynamic_display_name{user_id}", display_email_name)
                 if request.user.is_authenticated:
+                    user_id = request.user.pk
                     reply_to = [
                         f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.get_email()}>",
                     ]
                     cache.set(f"reply_to{request.user.pk}", reply_to)
+
+            cache.set(f"dynamic_display_name{user_id}", display_email_name)
 
         return configuration
 
@@ -240,10 +242,9 @@ def new_init(
     request = getattr(_thread_locals, "request", None)
     DefaultHorillaMailBackend()
     user_id = ""
-    if request and request.user:
+    if request and request.user and request.user.is_authenticated:
         user_id = request.user.pk
-        if request.user.is_authenticated:
-            reply_to = cache.get(f"reply_to{user_id}") if not reply_to else reply_to
+        reply_to = cache.get(f"reply_to{user_id}") if not reply_to else reply_to
     from_email = cache.get(f"dynamic_display_name{user_id}")
 
     message_init(

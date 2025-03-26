@@ -2342,9 +2342,10 @@ def work_record_export(request):
         row_data = {"Employee": employee}
         for day, formatted_day in zip(all_date_objects, formatted_dates):
             if not day in leave_dates and day < date.today():
-                row_data[formatted_day] = record_lookup.get((employee, day), "EW")
+                row_data[formatted_day] = record_lookup.get((employee, day), "DFT")
             else:
-                row_data[formatted_day] = record_lookup.get((employee, day), "")
+                data = record_lookup.get((employee, day), "")
+                row_data[formatted_day] = data if data != "DFT" else ""
         data_rows.append(row_data)
 
     columns = ["Employee"] + formatted_dates
@@ -2369,7 +2370,9 @@ def work_record_export(request):
             "CONF": workbook.add_format(
                 {"bg_color": "#ed4c4c", "font_color": "#ffffff"}
             ),
-            "EW": workbook.add_format({"bg_color": "#a8b1ff", "font_color": "#ffffff"}),
+            "DFT": workbook.add_format(
+                {"bg_color": "#a8b1ff", "font_color": "#ffffff"}
+            ),
         }
 
         for row_idx, row in enumerate(df.itertuples(index=False), start=1):

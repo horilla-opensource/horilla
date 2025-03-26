@@ -947,6 +947,11 @@ urlpatterns = [
         name="update-announcement",
     ),
     path(
+        "remove-announcement-file/<int:obj_id>/<int:attachment_id>",
+        announcement.remove_announcement_file,
+        name="remove-announcement-file",
+    ),
+    path(
         "announcement-add-comment/<int:anoun_id>/",
         announcement.create_announcement_comment,
         name="announcement-add-comment",

@@ -812,6 +812,10 @@ class SkillZone(HorillaModel):
     )
     objects = HorillaCompanyManager()
 
+    class Meta:
+        verbose_name = _("Skill Zone")
+        verbose_name_plural = _("Skill Zones")
+
     def get_active(self):
         return SkillZoneCandidate.objects.filter(is_active=True, skill_zone_id=self)
 

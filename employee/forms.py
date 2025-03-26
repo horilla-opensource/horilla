@@ -300,25 +300,8 @@ class EmployeeWorkInformationForm(ModelForm):
         """
 
         model = EmployeeWorkInformation
-        fields = (
-            "department_id",
-            "job_position_id",
-            "job_role_id",
-            "shift_id",
-            "work_type_id",
-            "employee_type_id",
-            "reporting_manager_id",
-            "company_id",
-            "location",
-            "email",
-            "mobile",
-            "date_joining",
-            "contract_end_date",
-            "tags",
-            "basic_salary",
-            "salary_hour",
-        )
-        exclude = ("employee_id",)
+        fields = "__all__"
+        exclude = ("employee_id", "additional_info", "experience")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),

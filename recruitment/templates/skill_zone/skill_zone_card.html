@@ -52,9 +52,9 @@
                     <li class="oh-dropdown__item">
                         <a onclick="event.stopPropagation();"
                           hx-get="{% url 'skill-zone-update' skill_zone.id %}"
-                          hx-target="#createTarget"
+                          hx-target="#objectUpdateModalTarget"
                           data-toggle="oh-modal-toggle"
-                          data-target="#createModal"
+                          data-target="#objectUpdateModal"
                         >{% trans "Edit" %}</a>
                     </li>
                     {% endif %}

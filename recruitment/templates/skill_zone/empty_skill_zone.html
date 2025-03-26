@@ -5,9 +5,10 @@
 <div class="oh-wrapper">
     {% include 'skill_zone/skill_zone_nav.html' %}
     <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-        <div class="oh-wrapper">
+        <div id="skill_zone_container">
             <div class="oh-404">
-                <img style="width: 150px;height: 150px;" src="{% static 'images/ui/cv.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
+                <img style="width: 150px;height: 150px;" src="{% static 'images/ui/cv.png' %}"
+                    class="oh-404__image mb-4" alt="Page not found. 404." />
                 <h5 class="oh-404__subtitle">{% trans "There are currently no skill zone to consider." %}</h5>
             </div>
         </div>
@@ -17,7 +18,8 @@
 <div class="oh-modal" id="editCandModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+            <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon
+                    name="close-outline"></ion-icon></button>
         </div>
         <div class="oh-modal__dialog-body" id="editCandTarget"></div>
     </div>
@@ -25,9 +27,9 @@
 <div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+            <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon
+                    name="close-outline"></ion-icon></button>
         </div>
-
         <div class="oh-modal__dialog-body" id="createTarget"></div>
     </div>
 </div>
