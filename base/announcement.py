@@ -178,7 +178,7 @@ def update_announcement(request, anoun_id):
 
     announcement = Announcement.objects.get(id=anoun_id)
     form = AnnouncementForm(instance=announcement)
-    existing_attachments = announcement.attachments.all() 
+    existing_attachments = announcement.attachments.all()
     instance_ids = request.GET.get("instance_ids")
     if request.method == "POST":
         form = AnnouncementForm(request.POST, request.FILES, instance=announcement)

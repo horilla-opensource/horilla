@@ -2371,7 +2371,7 @@ class AnnouncementForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["attachments"] = MultipleFileField(label="Attachments ")
+        self.fields["attachments"] = MultipleFileField(label=_("Attachments"))
         self.fields["attachments"].required = False
         self.fields["description"].required = False
 
@@ -2393,6 +2393,10 @@ class AnnouncementForm(ModelForm):
         if commit:
             instance.attachements.add(*multiple_attachment_ids)
         return instance, multiple_attachment_ids
+
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string("announcement/as_p.html", context)
 
 
 class AnnouncementCommentForm(ModelForm):
