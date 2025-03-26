@@ -30,6 +30,7 @@ from attendance.models import AttendanceActivity
 from attendance.views.clock_in_out import clock_in, clock_out
 from base.methods import get_key_instances, get_pagination
 from biometric.anviz import CrossChexCloudAPI
+from biometric.etimeoffice import ETimeOfficeAPI
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
     hx_request_required,
@@ -49,9 +50,9 @@ from .forms import (
     BiometricDeviceSchedulerForm,
     CosecUserAddForm,
     COSECUserForm,
-    DahuaMapUsers,
     DahuaUserForm,
     EmployeeBiometricAddForm,
+    MapBioUsers,
 )
 from .models import BiometricDevices, BiometricEmployees, COSECAttendanceArguments
 
@@ -463,7 +464,7 @@ def biometric_device_schedule(request, device_id):
                 )
                 scheduler.start()
                 return HttpResponse("<script>window.location.reload()</script>")
-            else:
+            elif device.machine_type == "cosec":
                 duration = request.POST.get("scheduler_duration")
                 device.is_scheduler = True
                 device.is_live = False
@@ -480,6 +481,22 @@ def biometric_device_schedule(request, device_id):
                     seconds=str_time_seconds(device.scheduler_duration),
                 )
                 scheduler.start()
+                return HttpResponse("<script>window.location.reload()</script>")
+            elif device.machine_type == "etimeoffice":
+                duration = request.POST.get("scheduler_duration")
+                device.is_scheduler = True
+                device.is_live = False
+                device.scheduler_duration = duration
+                device.save()
+                scheduler = BackgroundScheduler()
+                scheduler.add_job(
+                    lambda: etimeoffice_biometric_attendance_scheduler(device.id),
+                    "interval",
+                    seconds=str_time_seconds(device.scheduler_duration),
+                )
+                scheduler.start()
+                return HttpResponse("<script>window.location.reload()</script>")
+            else:
                 return HttpResponse("<script>window.location.reload()</script>")
 
         context["scheduler_form"] = scheduler_form
@@ -786,6 +803,45 @@ def test_dahua_connection(device):
         )
 
 
+def test_etimeoffice_connection(device):
+    """Test connection for e-TimeOffice device."""
+    now = datetime.now()
+    etimeoffice = ETimeOfficeAPI(
+        username=device.bio_username,
+        password=device.bio_password,
+    )
+
+    from_date = f"{now.day:02d}/{now.month:02d}/{now.year}_00:00"
+    to_date = (
+        f"{now.day:02d}/{now.month:02d}/{now.year}_{now.hour:02d}:{now.minute:02d}"
+    )
+
+    try:
+        response = etimeoffice.download_punch_data(from_date=from_date, to_date=to_date)
+        if response.get("Msg") == "Success":
+            return render_connection_response(
+                _("Connection Successful"),
+                _("e-Time Office test connection successful."),
+                "success",
+            )
+
+        error_msg = response.get("Message")
+        return render_connection_response(
+            _("Connection unsuccessful"),
+            _("Double-check the provided API Url, Username, and Password: {}").format(
+                error_msg
+            ),
+            "warning",
+        )
+
+    except Exception as e:
+        return render_connection_response(
+            _("Connection error"),
+            _(f"API request failed with exception: {str(e)}"),
+            "danger",
+        )
+
+
 @login_required
 @install_required
 @hx_request_required
@@ -810,6 +866,8 @@ def biometric_device_test(request, device_id):
             script = test_cosec_connection(device)
         elif device.machine_type == "dahua":
             script = test_dahua_connection(device)
+        elif device.machine_type == "etimeoffice":
+            script = test_etimeoffice_connection(device)
         else:
             script = render_connection_response(
                 "Connection unsuccessful",
@@ -890,7 +948,6 @@ def biometric_device_fetch_logs(request, device_id):
                 "warning",
             )
     elif device.machine_type == "dahua":
-        script = test_dahua_connection(device)
         attendance_count = dahua_biometric_attendance_logs(device)
         if isinstance(attendance_count, int):
             script = render_connection_response(
@@ -904,6 +961,22 @@ def biometric_device_fetch_logs(request, device_id):
             script = render_connection_response(
                 _("Connection unsuccessful"),
                 _("Double-check the provided Machine IP, Username, and Password."),
+                "warning",
+            )
+    elif device.machine_type == "etimeoffice":
+        attendance_count = etimeoffice_biometric_attendance_logs(device)
+        if isinstance(attendance_count, int):
+            script = render_connection_response(
+                _("Logs Fetched Successfully"),
+                _(
+                    f"Biometric attendance logs fetched successfully. Total records: {attendance_count}"
+                ),
+                "success",
+            )
+        else:
+            script = render_connection_response(
+                _("Connection unsuccessful"),
+                _("Double-check the provided API Url, Username, and Password"),
                 "warning",
             )
     else:
@@ -1154,6 +1227,17 @@ def biometric_device_employees(request, device_id, **kwargs):
                 return render(
                     request, "biometric_users/dahua/view_dahua_employees.html", context
                 )
+            if device.machine_type == "etimeoffice":
+                employees = BiometricEmployees.objects.filter(device_id=device_id)
+                context = {
+                    "device_id": device.id,
+                    "employees": employees,
+                }
+                return render(
+                    request,
+                    "biometric_users/etimeoffice/view_etimeoffice_employees.html",
+                    context,
+                )
         except Exception as error:
             logger.error("An error occurred: ", error)
             messages.info(
@@ -1207,13 +1291,17 @@ def search_employee_device(request):
             "device_id": device_id,
             "pd": previous_data,
         }
-    elif device.machine_type == "dahua":
+    elif device.machine_type == "dahua" or device.machine_type == "etimeoffice":
         search_employees = BiometricEmployees.objects.filter(device_id=device)
         if search:
             search_employees = BiometricEmployees.objects.filter(
                 employee_id__employee_first_name__icontains=search, device_id=device
             )
-        template = "biometric_users/dahua/list_dahua_employees.html"
+        template = (
+            "biometric_users/dahua/list_dahua_employees.html"
+            if device.machine_type == "dahua"
+            else "biometric_users/etimeoffice/list_etimeoffice_employees.html"
+        )
         context = {
             "device_id": device.id,
             "employees": search_employees,
@@ -1695,24 +1783,36 @@ def add_biometric_user(request, device_id):
 @install_required
 @hx_request_required
 def map_biometric_users(request, device_id):
-    form = DahuaMapUsers()
-    if request.method == "POST":
-        form = DahuaMapUsers(request.POST)
-        if form.is_valid():
-            user_id = request.POST.get("user_id")
-            employee_id = request.POST.get("employee_id")
-            employee = Employee.objects.filter(id=employee_id).first()
-            device = BiometricDevices.find(device_id)
-            if device and employee_id:
-                created = BiometricEmployees.objects.create(
-                    user_id=user_id, employee_id=employee, device_id=device
-                )
-                messages.success(
-                    request,
-                    _("Selected employee successfully mapped to the biometric user"),
-                )
-    context = {"form": form, "device_id": device_id}
-    return render(request, "biometric_users/dahua/map_dahua_users.html", context)
+    device = BiometricDevices.find(device_id)
+    form = MapBioUsers(request.POST or None)
+    template = "biometric_users/dahua/map_dahua_users.html"
+
+    if device.machine_type == "etimeoffice":
+        template = "biometric_users/etimeoffice/map_etimeoffice_users.html"
+        form.fields["user_id"].label = _("Emp Code")
+
+    if request.method == "POST" and form.is_valid():
+        user_id = form.cleaned_data["user_id"]
+        employee = form.cleaned_data["employee_id"]
+        if device and employee:
+            BiometricEmployees.objects.create(
+                user_id=user_id, employee_id=employee, device_id=device
+            )
+
+            messages.success(
+                request,
+                _("Selected employee successfully mapped to the biometric user"),
+            )
+            form = MapBioUsers()
+
+            if device.machine_type == "etimeoffice":
+                form.fields["user_id"].label = _("Emp Code")
+
+    return render(
+        request,
+        template,
+        {"form": form, "device_id": device_id},
+    )
 
 
 @login_required
@@ -1827,6 +1927,47 @@ def delete_dahua_user(request, obj_id=None):
                     )
     except Exception as e:
         messages.error(request, _("An error occurred: {}").format(str(e)))
+    return HttpResponse(script)
+
+
+@login_required
+@install_required
+@hx_request_required
+@permission_required("biometric.delete_biometricemployees")
+def delete_etimeoffice_user(request, obj_id=None):
+    script = "<script>window.location.href = '/';</script>"
+    if request.method == "POST":
+        user = BiometricEmployees.objects.get(id=obj_id)
+        device_id = user.device_id.id
+        user.delete()
+        messages.success(
+            request, _("{} successfully deleted!").format(user.employee_id)
+        )
+        script = "<script>reloadMessage();</script>"
+    if request.method == "DELETE":
+        user_ids = request.GET.getlist("ids")
+        device_id = request.GET.get("device_id")
+        if device_id:
+            script = f"""
+                            <span hx-get="/biometric/biometric-device-employees/{device_id}/"
+                                hx-target="#eTimeOfficeUsersList" hx-select="#eTimeOfficeUsersList" hx-trigger="load delay:200ms"
+                                hx-swap="outerHTML" hx-on-htmx-before-request="reloadMessage();">
+                            </span>
+                        """
+        if user_ids:
+            users = BiometricEmployees.objects.filter(user_id__in=user_ids)
+            if users:
+                count = users.count()
+                users.delete()
+                messages.success(
+                    request, _("{} users successfully deleted!").format(count)
+                ),
+            else:
+                messages.warning(
+                    request,
+                    _("No rows are selected for deleting users from device."),
+                )
+
     return HttpResponse(script)
 
 
@@ -1977,8 +2118,11 @@ def zk_biometric_attendance_logs(device):
             filtered_attendances = [
                 attendance
                 for attendance in attendances
-                if attendance.timestamp.date() >= device.last_fetch_date
-                and attendance.timestamp.time() > device.last_fetch_time
+                if (attendance.timestamp.date() > device.last_fetch_date)
+                or (
+                    attendance.timestamp.date() == device.last_fetch_date
+                    and attendance.timestamp.time() > device.last_fetch_time
+                )
             ]
         else:
             filtered_attendances = attendances
@@ -2250,6 +2394,79 @@ def dahua_biometric_attendance_scheduler(device_id):
         dahua_biometric_attendance_logs(device)
 
 
+def etimeoffice_biometric_attendance_logs(device):
+    now = datetime.now()
+    etimeoffice = ETimeOfficeAPI(
+        username=device.bio_username,
+        password=device.bio_password,
+    )
+
+    from_date = (
+        f"{(datetime.combine(device.last_fetch_date, device.last_fetch_time) + timedelta(minutes=1)):%d/%m/%Y_%H:%M}"
+        if device.last_fetch_date and device.last_fetch_time
+        else f"{now:%d/%m/%Y}_00:00"
+    )
+    to_date = f"{now:%d/%m/%Y_%H:%M}"
+
+    logs = etimeoffice.download_punch_data(from_date=from_date, to_date=to_date)
+    if logs.get("Msg") != "Success":
+        return "error"
+
+    punch_data = logs.get("PunchData", [])
+    if not punch_data:
+        return 0
+
+    user_tz = pytz.timezone(TIME_ZONE)
+
+    employee_map = {
+        emp.user_id: emp for emp in BiometricEmployees.objects.filter(device_id=device)
+    }
+
+    for log in reversed(punch_data):
+        user_id = log.get("Empcode")
+        if not user_id or user_id not in employee_map:
+            continue
+
+        employee = employee_map[user_id]
+        attendance_datetime = log["PunchDate"].astimezone(user_tz)
+
+        request_data = Request(
+            user=employee.employee_id.employee_user_id,
+            date=attendance_datetime.date(),
+            time=attendance_datetime.time(),
+            datetime=attendance_datetime,
+        )
+
+        last_none_activity = (
+            AttendanceActivity.objects.filter(
+                employee_id=employee.employee_id,
+                clock_out=None,
+            )
+            .order_by("in_datetime")
+            .last()
+        )
+
+        if last_none_activity:
+            clock_out(request_data)
+        else:
+            clock_in(request_data)
+
+    last_log = punch_data[0]
+    device.last_fetch_date, device.last_fetch_time = (
+        last_log["PunchDate"].date(),
+        last_log["PunchDate"].time(),
+    )
+    device.save()
+
+    return len(punch_data)
+
+
+def etimeoffice_biometric_attendance_scheduler(device_id):
+    device = BiometricDevices.find(device_id)
+    if device and device.is_scheduler:
+        etimeoffice_biometric_attendance_logs(device)
+
+
 try:
     devices = BiometricDevices.objects.all().update(is_live=False)
     for device in BiometricDevices.objects.filter(is_scheduler=True):
@@ -2285,6 +2502,15 @@ try:
                     scheduler = BackgroundScheduler()
                     scheduler.add_job(
                         lambda: cosec_biometric_attendance_scheduler(device.id),
+                        "interval",
+                        seconds=str_time_seconds(device.scheduler_duration),
+                    )
+                    scheduler.start()
+
+                elif device.machine_type == "etimeoffice":
+                    scheduler = BackgroundScheduler()
+                    scheduler.add_job(
+                        lambda: etimeoffice_biometric_attendance_scheduler(device.id),
                         "interval",
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
