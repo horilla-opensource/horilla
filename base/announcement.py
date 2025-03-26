@@ -178,13 +178,17 @@ def update_announcement(request, anoun_id):
 
     announcement = Announcement.objects.get(id=anoun_id)
     form = AnnouncementForm(instance=announcement)
+    existing_attachments = announcement.attachments.all() 
     instance_ids = request.GET.get("instance_ids")
     if request.method == "POST":
         form = AnnouncementForm(request.POST, request.FILES, instance=announcement)
         if form.is_valid():
             anou, attachment_ids = form.save(commit=False)
             announcement = anou.save()
-            anou.attachments.set(attachment_ids)
+            if attachment_ids:
+                anou.attachments.set(attachment_ids)
+            else:
+                anou.attachments.set(existing_attachments)
             employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
             job_positions = form.cleaned_data["job_position"]
