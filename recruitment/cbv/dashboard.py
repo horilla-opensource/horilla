@@ -81,7 +81,7 @@ class CandidateOnOnboardList(HorillaListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(start_onboard=True)
+        queryset = queryset.filter(onboarding_stage__isnull=False)
         return queryset
 
     def __init__(self, **kwargs: Any) -> None:

@@ -12,7 +12,8 @@ from horilla.methods import get_horilla_model_class
 @receiver(post_save, sender=PenaltyAccounts)
 def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
     """
-    This is post save method, used to create deduction and cut availabl leave days"""
+    This is post save method, used to create deduction and cut available leave days
+    """
     # only work when creating
     if created:
         penalty_amount = instance.penalty_amount

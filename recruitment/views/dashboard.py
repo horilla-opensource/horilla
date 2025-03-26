@@ -7,6 +7,7 @@ This module is used to write dashboard related views
 import datetime
 
 from django.core import serializers
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
@@ -126,7 +127,9 @@ def dashboard(request):
         else:
             total_vacancy += openings.vacancy
 
-    hired_candidates = candidates.filter(hired=True)
+    hired_candidates = candidates.filter(
+        Q(hired=True) | Q(stage_id__stage_type="hired")
+    ).distinct()
     total_candidates = len(candidates)
     total_hired_candidates = len(hired_candidates)
     conversion_ratio = 0
@@ -151,7 +154,9 @@ def dashboard(request):
             "total_hired_candidates": total_hired_candidates,
             "conversion_ratio": conversion_ratio,
             "acceptance_ratio": acceptance_ratio,
-            "onboard_candidates": hired_candidates.filter(start_onboard=True),
+            "onboard_candidates": hired_candidates.filter(
+                onboarding_stage__isnull=False
+            ),
             "job_data": job_data,
             "total_vacancy": total_vacancy,
             "recruitment_manager_mapping": recruitment_manager_mapping,
@@ -159,7 +164,9 @@ def dashboard(request):
             "joining": joining,
             "dep_vacancy": dep_vacancy,
             "stage_chart_count": stage_chart_count,
-            "onboarding_count": hired_candidates.filter(start_onboard=True).count(),
+            "onboarding_count": hired_candidates.filter(
+                onboarding_stage__isnull=False
+            ).count(),
             "total_candidates": total_candidates,
             "skill_zone": skill_zone,
         },

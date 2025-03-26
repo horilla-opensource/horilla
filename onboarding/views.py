@@ -1082,6 +1082,7 @@ def employee_creation(request, token):
             work_info.job_position_id = job_position
             work_info.date_joining = candidate.joining_date
             work_info.email = candidate.email
+            work_info.company_id = candidate.recruitment_id.company_id
             work_info.save()
             onboarding_portal.count = 3
             onboarding_portal.save()

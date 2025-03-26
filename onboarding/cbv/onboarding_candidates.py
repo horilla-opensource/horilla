@@ -4,6 +4,7 @@ Onboarding candidate view.
 
 from typing import Any
 
+from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -60,13 +61,18 @@ class OnboardingCandidatesList(HorillaListView):
         self.search_url = reverse("onboarding-candidates-list")
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(
-            is_active=True,
-            hired=True,
-            recruitment_id__closed=False,
-        )
-        return queryset
+        if not getattr(self, "queryset"):
+            queryset = super().get_queryset()
+            self.queryset = (
+                queryset.filter(
+                    is_active=True,
+                    recruitment_id__closed=False,
+                )
+                .filter(Q(hired=True) | Q(stage_id__stage_type="hired"))
+                .distinct()
+            )
+
+        return self.queryset
 
     model = Candidate
     filter_class = CandidateFilter

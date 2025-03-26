@@ -76,8 +76,8 @@ class RecruitmentTabView(HorillaTabView):
             tab["url"] = reverse("get-stages-recruitment", kwargs={"rec_id": rec.pk})
             tab["badge_label"] = _("Stages")
             tab["actions"] = []
-            if rec_manager_perm:
-                if add_stage_perm:
+            if rec_manager_perm or change_perm:
+                if add_stage_perm or rec_manager_perm or change_perm:
                     tab["actions"].append(
                         {
                             "action": _("Add Stage"),
@@ -91,7 +91,7 @@ class RecruitmentTabView(HorillaTabView):
                         },
                     )
 
-                if change_perm:
+                if change_perm or rec_manager_perm or change_perm:
                     tab["actions"].append(
                         {
                             "action": _("Edit"),
@@ -105,7 +105,7 @@ class RecruitmentTabView(HorillaTabView):
                         },
                     )
 
-                if add_cand_perm:
+                if add_cand_perm or rec_manager_perm or change_perm:
                     tab["actions"].append(
                         {
                             "action": _("Resume Shortlisting"),
@@ -119,7 +119,7 @@ class RecruitmentTabView(HorillaTabView):
                         },
                     )
 
-                if change_perm:
+                if change_perm or rec_manager_perm:
                     if rec.closed:
                         tab["actions"].append(
                             {

@@ -39,6 +39,10 @@ class CandidateFilter(HorillaFilterSet):
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
     search = django_filters.CharFilter(method="search_by_name", lookup_expr="icontains")
 
+    start_onboard = django_filters.CharFilter(
+        method="start_onboard_method", lookup_expr="icontains"
+    )
+
     candidate = django_filters.ModelMultipleChoiceFilter(
         queryset=Candidate.objects.all(),
         field_name="name",
@@ -123,6 +127,13 @@ class CandidateFilter(HorillaFilterSet):
             | queryset.filter(stage_id__recruitment_id__title__icontains=value)
         )
         return queryset.distinct()
+
+    def start_onboard_method(self, queryset, _, value):
+        """
+        This method will include the candidates whether they are on the onboarding pipline stage
+        """
+
+        return queryset.filter(onboarding_stage__isnull=False)
 
     class Meta:
         """
