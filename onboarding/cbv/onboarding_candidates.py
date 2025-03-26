@@ -86,6 +86,9 @@ class OnboardingCandidatesList(HorillaListView):
         ("Recruitment", "recruitment_id"),
         ("Offer letter", "offer_letter"),
     ]
+    header_attrs = {
+        "action": "style='width: 350px;'",
+    }
 
     action_method = "actions"
 

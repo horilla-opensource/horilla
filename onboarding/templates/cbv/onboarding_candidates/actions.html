@@ -13,6 +13,49 @@
     color: white;" {% endif %} type="button" hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{instance.id}}" {% if instance.is_offer_rejected %} title="{% trans "Added In Rejected Candidates" %}" {% else %} title="{% trans "Add To Rejected Candidates" %}" {% endif %} hx-target="#genericModalBody" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#genericModal" >
       <ion-icon name="thumbs-down-outline"></ion-icon></button>
     {% endif %}
+    {% if not instance.onboarding_stage %}
+    <form hx-post="{% url 'email-send' %}?&no_portal=True" hx-target="#reloadMessages">
+    <a class="oh-btn oh-btn--light-bkg w-100"
+      onclick="
+      event.preventDefault()
+      Swal.fire({
+          title: 'Are you sure?',
+          text: '{% trans "Do you want to add this candidate to onboarding stage?" %}',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: '{% trans "Yes" %}',
+          cancelButtonText: '{% trans "Cancel" %}'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              this.nextElementSibling.nextElementSibling.click();
+          }
+      })"
+    {% comment %} style="background-color: yellowgreen;color: white;" {% endcomment %}
+      title="{% trans 'Start Onboarding' %}"
+      >
+      <ion-icon name="add-outline"></ion-icon>
+    </a>
+    <input type="text" hidden name="ids" value="{{instance.pk}}">
+    <input type="submit" hidden>
+    </form>
+    {% else %}
+    <a class="oh-btn w-100"
+      disabled
+      onclick="
+      event.preventDefault();
+      Swal.fire({
+          icon: 'warning',
+          title: '{% trans "Already Added!" %}',
+          text: '{% trans "Candidate already added to onboarding" %}.',
+          confirmButtonText: 'OK'
+      });
+      "
+      style="background-color: #1dbfca;color: white;"
+      title="{% trans 'Added to Onobarding' %}"
+      >
+      <ion-icon name="add-outline"></ion-icon>
+      </a>
+    {% endif %}
     {% if instance.onboarding_portal %}
     <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
       title="{% trans 'Send Portal / Start Onboarding' %}" onclick="$('select[name=ids]').val('{{instance.id}}');"
