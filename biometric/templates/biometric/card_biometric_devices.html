@@ -117,7 +117,7 @@
                             data-toggle="oh-modal-toggle" data-target="#BiometricDeviceModal"
                             hx-target="#BiometricDeviceFormTarget">{% trans "Schedule" %}</a>
                     {% endif %}
-                    {% if device.machine_type == "zk" or device.machine_type == "cosec" or device.machine_type == "dahua" %}
+                    {% if device.machine_type == "zk" or device.machine_type == "cosec" or device.machine_type == "dahua" or device.machine_type == "etimeoffice" %}
                         <a href="{% url 'biometric-device-employees' device.id %}"
                             class="oh-checkpoint-badge text-secondary bio-user-list">{% trans "Employee" %}</a>
                     {% endif %}
