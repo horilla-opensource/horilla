@@ -73,17 +73,10 @@ def attendance_post_save(sender, instance, **kwargs):
 
 
 @receiver(pre_delete, sender=Attendance)
-def attendance_pre_delete(sender, instance, **_kwargs):
-    """
-    Overriding Attendance model delete method
-    """
-    # Perform any actions before deleting the instance
-    # ...
-    WorkRecords.objects.filter(
-        employee_id=instance.employee_id,
-        is_attendance_record=True,
-        date=instance.attendance_date,
-    ).delete()
+def handle_attendance_deletion(sender, instance, **kwargs):
+    for workrecord in instance.workrecords_set.all():
+        if not workrecord.leave_request_id:
+            workrecord.delete()
 
 
 @receiver(post_migrate)
