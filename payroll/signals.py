@@ -9,6 +9,7 @@ from payroll.methods.deductions import create_deductions
 from payroll.models.models import Allowance, Contract, Deduction, LoanAccount, Payslip
 
 
+
 @receiver(post_save, sender=EmployeeWorkInformation)
 def employeeworkinformation_pre_save(sender, instance, **_kwargs):
     """
