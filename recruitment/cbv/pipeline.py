@@ -49,15 +49,17 @@ class RecruitmentTabView(HorillaTabView):
     RecruitmentTabView
     """
 
+    filter_class = filters.RecruitmentFilter
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        recruitments = filters.RecruitmentFilter(self.request.GET).qs.filter(
-            is_active=True
-        )
+        recruitments = self.filter_class(self.request.GET).qs.filter(is_active=True)
         CACHE.set(
             self.request.session.session_key + "pipeline",
             {
-                "stages": filters.StageFilter(self.request.GET).qs.order_by("sequence"),
+                "stages": GetStages.filter_class(self.request.GET).qs.order_by(
+                    "sequence"
+                ),
                 "recruitments": recruitments,
                 "candidates": False,
             },
@@ -168,6 +170,8 @@ class GetStages(TemplateView):
     GetStages
     """
 
+    filter_class = filters.StageFilter
+
     template_name = "cbv/pipeline/stages.html"
     stages = None
 
@@ -177,9 +181,9 @@ class GetStages(TemplateView):
         """
         cache = CACHE.get(request.session.session_key + "pipeline")
         if not cache.get("candidates"):
-            cache["candidates"] = filters.CandidateFilter(self.request.GET).qs.filter(
-                is_active=True
-            )
+            cache["candidates"] = CandidateList.filter_class(
+                self.request.GET
+            ).qs.filter(is_active=True)
             CACHE.set(request.session.session_key + "pipeline", cache)
 
         self.stages = cache["stages"].filter(recruitment_id=rec_id)
@@ -389,8 +393,8 @@ class PipelineNav(HorillaNavView):
         context data
         """
         context = super().get_context_data(**kwargs)
-        stage_filter_obj = filters.StageFilter()
-        candidate_filter_obj = filters.CandidateFilter()
+        stage_filter_obj = GetStages.filter_class()
+        candidate_filter_obj = CandidateList.filter_class()
         context["stage_filter_obj"] = stage_filter_obj
         context["candidate_filter_obj"] = candidate_filter_obj
         return context
