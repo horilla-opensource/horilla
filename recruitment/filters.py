@@ -128,13 +128,6 @@ class CandidateFilter(HorillaFilterSet):
         )
         return queryset.distinct()
 
-    def start_onboard_method(self, queryset, _, value):
-        """
-        This method will include the candidates whether they are on the onboarding pipline stage
-        """
-
-        return queryset.filter(onboarding_stage__isnull=False)
-
     class Meta:
         """
         Meta class to add the additional info
