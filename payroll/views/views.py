@@ -1466,10 +1466,10 @@ def generate_payslip_pdf(template_path, context, html=False):
             "margin-left": "10mm",
             "margin-right": "10mm",
             "encoding": "UTF-8",
-            "enable-local-file-access": None, # Required to load local CSS/images
+            "enable-local-file-access": None,  # Required to load local CSS/images
             "dpi": 300,
             "zoom": 1.3,
-            "footer-center": "[page]/[topage]",
+            "footer-center": "[page]/[topage]",  # Required to load local CSS/images
         }
 
         # Generate the PDF as binary content
