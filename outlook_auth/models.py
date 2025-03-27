@@ -71,3 +71,14 @@ class AzureApi(models.Model):
             if duration_seconds > expires_in_seconds:
                 return _("Expired⚠️")
             return f"{display}/{sec_to_hm(expires_in_seconds)}"
+
+    def is_token_expired(self):
+        """
+        is token expired
+        """
+        if self.last_refreshed:
+            duration_seconds = (timezone.now() - self.last_refreshed).seconds
+            expires_in_seconds = self.token.get("expires_in")
+            if duration_seconds > expires_in_seconds:
+                return True
+            return False

@@ -82,7 +82,7 @@ class Employee(models.Model):
     )
     email = models.EmailField(max_length=254, unique=True)
     phone = models.CharField(
-        max_length=15,
+        max_length=25,
     )
     address = models.TextField(max_length=200, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
@@ -122,6 +122,11 @@ class Employee(models.Model):
         if self.employee_profile:
             url = self.employee_profile.url
         return url
+
+    def get_employee_dob(self) -> any:
+        if self.dob:
+            return self.dob.strftime("%d %b")
+        return None
 
     def get_full_name(self):
         """

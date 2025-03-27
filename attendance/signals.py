@@ -1,74 +1,17 @@
 # attendance/signals.py
 
 from datetime import datetime, timedelta
+
 from django.apps import apps
 from django.db.models.signals import post_migrate, post_save, pre_delete
-from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
+from django.utils.translation import gettext_lazy as _
 
 from attendance.methods.utils import strtime_seconds
-from attendance.models import (
-    Attendance,
-    AttendanceGeneralSetting,
-    WorkRecords,
-)
+from attendance.models import Attendance, AttendanceGeneralSetting, WorkRecords
 from base.models import Company, PenaltyAccounts
 from employee.models import Employee
 from horilla.methods import get_horilla_model_class
-
-
-if apps.is_installed("payroll"):
-
-    @receiver(post_save, sender=PenaltyAccounts)
-    def create_initial_stage(sender, instance, created, **kwargs):
-        """
-        This is post save method, used to create initial stage for the recruitment
-        """
-        # only work when creating
-        if created:
-            penalty_amount = instance.penalty_amount
-            if penalty_amount:
-                Deduction = get_horilla_model_class(
-                    app_label="payroll", model="deduction"
-                )
-                penalty = Deduction()
-                if instance.late_early_id:
-                    penalty.title = (
-                        f"{instance.late_early_id.get_type_display()} penalty"
-                    )
-                    penalty.one_time_date = (
-                        instance.late_early_id.attendance_id.attendance_date
-                    )
-                elif instance.leave_request_id:
-                    penalty.title = (
-                        f"Leave penalty {instance.leave_request_id.end_date}"
-                    )
-                    penalty.one_time_date = instance.leave_request_id.end_date
-                else:
-                    penalty.title = f"Penalty on {datetime.today()}"
-                    penalty.one_time_date = datetime.today()
-                penalty.include_active_employees = False
-                penalty.is_fixed = True
-                penalty.amount = instance.penalty_amount
-                penalty.only_show_under_employee = True
-                penalty.save()
-                penalty.include_active_employees = False
-                penalty.specific_employees.add(instance.employee_id)
-                penalty.save()
-
-            if instance.leave_type_id and instance.minus_leaves:
-                available = instance.employee_id.available_leave.filter(
-                    leave_type_id=instance.leave_type_id
-                ).first()
-                unit = round(instance.minus_leaves * 2) / 2
-                if not instance.deduct_from_carry_forward:
-                    available.available_days = max(0, (available.available_days - unit))
-                else:
-                    available.carryforward_days = max(
-                        0, (available.carryforward_days - unit)
-                    )
-
-                available.save()
 
 
 @receiver(post_save, sender=Attendance)
@@ -130,17 +73,10 @@ def attendance_post_save(sender, instance, **kwargs):
 
 
 @receiver(pre_delete, sender=Attendance)
-def attendance_pre_delete(sender, instance, **_kwargs):
-    """
-    Overriding Attendance model delete method
-    """
-    # Perform any actions before deleting the instance
-    # ...
-    WorkRecords.objects.filter(
-        employee_id=instance.employee_id,
-        is_attendance_record=True,
-        date=instance.attendance_date,
-    ).delete()
+def handle_attendance_deletion(sender, instance, **kwargs):
+    for workrecord in instance.workrecords_set.all():
+        if not workrecord.leave_request_id:
+            workrecord.delete()
 
 
 @receiver(post_migrate)
@@ -148,7 +84,7 @@ def add_missing_attendance_to_workrecord(sender, **kwargs):
     if sender.label not in ["attendance", "leave"]:
         return
 
-    from attendance.models import WorkRecords, Attendance
+    from attendance.models import Attendance, WorkRecords
 
     try:
         work_records = WorkRecords.objects.filter(
@@ -230,6 +166,7 @@ def create_attendance_setting(sender, instance, created, raw, **kwargs):
     if created:
         AttendanceGeneralSetting.objects.get_or_create(company_id=instance)
 
+
 @receiver(post_migrate)
 def create_missing_work_records(sender, **kwargs):
     if sender.label not in ["attendance"]:
@@ -247,10 +184,15 @@ def create_missing_work_records(sender, **kwargs):
                 end_date = datetime.today().date()
 
                 existing_dates = set(
-                    WorkRecords.objects.filter(employee_id=employee.id).values_list("date", flat=True)
+                    WorkRecords.objects.filter(employee_id=employee.id).values_list(
+                        "date", flat=True
+                    )
                 )
 
-                all_dates = {start_date + timedelta(days=i) for i in range((end_date - start_date).days)}
+                all_dates = {
+                    start_date + timedelta(days=i)
+                    for i in range((end_date - start_date).days)
+                }
                 missing_dates = all_dates - existing_dates
 
                 work_records_to_create = [
@@ -264,8 +206,11 @@ def create_missing_work_records(sender, **kwargs):
                 ]
 
                 if work_records_to_create:
-                    WorkRecords.objects.bulk_create(work_records_to_create, batch_size=500, ignore_conflicts=True)
+                    WorkRecords.objects.bulk_create(
+                        work_records_to_create, batch_size=500, ignore_conflicts=True
+                    )
 
             except Exception as e:
-                print(f"Error creating missing work records for employee {employee}: {e}")
-                
+                print(
+                    f"Error creating missing work records for employee {employee}: {e}"
+                )

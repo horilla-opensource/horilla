@@ -11,13 +11,14 @@
     {% endif %}
 {% endif %}
 <div class="oh-modal__dialog-header">
-    <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{% trans "Work Type Request" %}</span>
+    <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{{form.verbose_name}}</span>
     <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body" id="formBody">
-    <form hx-post="{% url 'work-type-request' %}?{{pd}}" hx-target="#objectCreateModalTarget">
+    <form hx-post="{{ request.get_full_path }}"
+        hx-target=" {% if form.instance.id %} #objectUpdateModalTarget {% else %} #objectCreateModalTarget {% endif %}">
         {{form.as_p}}
     </form>
 </div>

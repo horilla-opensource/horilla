@@ -256,9 +256,9 @@
                                                 {% if work_type_request.approved == False and not work_type_request.canceled %}
                                                     <a
                                                         hx-get="{% url 'work-type-request-update' work_type_request.id %}"
-                                                        hx-target="#workTypeRequestUpdateModalBody"
+                                                        hx-target="#objectUpdateModalTarget"
                                                         data-toggle="oh-modal-toggle"
-                                                        data-target="#workTypeRequestUpdateModal"
+                                                        data-target="#objectUpdateModal"
                                                         class="oh-btn oh-btn--light-bkg w-50"
                                                         title="{% trans 'Edit' %}"
                                                         ><ion-icon
@@ -1067,36 +1067,6 @@
     aria-hidden="true"
 >
     <div class="oh-modal__dialog" id="rotatingWorkTypeAssignDetail"></div>
-</div>
-
-<div
-    class="oh-modal"
-    id="workTypeRequestUpdateModal"
-    role="dialog"
-    aria-labelledby="workTypeRequestUpdateModal"
-    aria-hidden="true"
->
-    <div class="oh-modal__dialog">
-        <div class="oh-modal__dialog-header">
-            <h5
-                class="oh-modal__dialog-title"
-                id="workTypeRequestUpdateModalLabel"
-            >
-                {% trans "Work type Request" %}
-            </h5>
-            <button
-                class="oh-modal_close--custom"
-                onclick="event.stopPropagation(); var modalElement = this.closest('.oh-modal'); modalElement.classList.toggle('oh-modal--show');"
-            >
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-
-        <div
-            class="oh-modal__dialog-body"
-            id="workTypeRequestUpdateModalBody"
-        ></div>
-    </div>
 </div>
 
 <div

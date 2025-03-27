@@ -194,19 +194,28 @@ class EmployeeForm(ModelForm):
     def clean(self):
         super().clean()
         email = self.cleaned_data["email"]
-        all_employees = Employee.objects.entire()
-        exit_employee = all_employees.filter(email=email).first()
+        query = Employee.objects.entire().filter(email=email)
+        if self.instance and self.instance.id:
+            query = query.exclude(id=self.instance.id)
 
-        if exit_employee:
-            company_id = getattr(
-                getattr(exit_employee, "employee_work_info", None), "company_id", None
-            )
+        existing_employee = query.first()
+
+        if existing_employee:
+            company_id = None
+            if (
+                hasattr(existing_employee, "employee_work_info")
+                and existing_employee.employee_work_info
+            ):
+                company_id = existing_employee.employee_work_info.company_id
+
             if company_id:
                 error_message = _(
-                    "Employee with this Email already exists in company {}"
-                ).format(company_id)
+                    "An Employee with this Email already exists in company {}".format(
+                        company_id
+                    )
+                )
             else:
-                error_message = _(f"Employee with this Email already exists")
+                error_message = _("An Employee with this Email already exists")
 
             raise forms.ValidationError({"email": error_message})
 
@@ -291,25 +300,8 @@ class EmployeeWorkInformationForm(ModelForm):
         """
 
         model = EmployeeWorkInformation
-        fields = (
-            "department_id",
-            "job_position_id",
-            "job_role_id",
-            "shift_id",
-            "work_type_id",
-            "employee_type_id",
-            "reporting_manager_id",
-            "company_id",
-            "location",
-            "email",
-            "mobile",
-            "date_joining",
-            "contract_end_date",
-            "tags",
-            "basic_salary",
-            "salary_hour",
-        )
-        exclude = ("employee_id",)
+        fields = "__all__"
+        exclude = ("employee_id", "additional_info", "experience")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),

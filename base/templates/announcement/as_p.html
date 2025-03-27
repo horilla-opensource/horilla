@@ -1,0 +1,49 @@
+{% load static %}
+{% load i18n %}
+{% load widget_tweaks %}
+<div class="oh-profile-section__card">
+    <div class="row">
+        <div class="col-12">{{ form.non_field_errors }}</div>
+        {% for field in form.visible_fields %}
+            <div class="col-12" id="id_{{field.name}}_parent_div">
+                <div class="oh-label__info" for="id_{{ field.name }}">
+                    <label class="oh-label {% if field.field.required %} required-star{% endif %}"
+                        for="id_{{ field.name }}">{% trans field.label %}</label>
+                    {% if field.help_text != '' %}
+                        <span class="oh-info mr-2" title="{{ field.help_text|safe }}"></span>
+                    {% endif %}
+                </div>
+                {% if field.field.widget.input_type == 'checkbox' %}
+                <div class="oh-switch" style="width: 30px;">{{ field|add_class:'oh-switch__checkbox' }}</div>
+                {% else %}
+                {{ field|add_class:'form-control' }}
+                {% endif %}
+                {{ field.errors }}
+                {% if field.name == "attachments" and field.field.widget.input_type == "file" and field.field.widget.attrs.multiple %}
+                    {% if form.instance.pk %}
+                        <div class="d-flex mt-2 mb-2">
+                            {% for file in form.instance.attachments.all %}
+                                <a href="{{ file.file.url }}" rel="noopener noreferrer" target="_blank"
+                                    id="objectFileItem{{ file.id }}">
+                                    <span class="oh-file-icon oh-file-icon--pdf"
+                                        onmouseover="enlargeImage('{{ file.file.url }}',$(this))" style="width: 40px; height: 40px">
+                                        <img src="{% static 'images/ui/minus-icon.png' %}"
+                                            style="display: block; width: 50%; height: 50%"
+                                            hx-confirm="{% trans 'Are you sure do you want to delete this file ?' %}"
+                                            hx-post="{% url 'remove-announcement-file' form.instance.pk file.id %}"
+                                            hx-target="#objectFileItem{{ file.id }}"
+                                            hx-swap="outerHTML"
+                                            onclick="event.stopPropagation();event.preventDefault()" />
+                                    </span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+    {% for field in form.hidden_fields %}
+        {{ field }}
+    {% endfor %}
+</div>

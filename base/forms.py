@@ -251,6 +251,18 @@ class ModelForm(forms.ModelForm):
             except:
                 pass
 
+    def verbose_name(self):
+        """
+        Returns the verbose name of the model associated with the form.
+        Provides fallback values if no model or verbose name is defined.
+        """
+        if hasattr(self, "_meta") and hasattr(self._meta, "model"):
+            model = self._meta.model
+            if hasattr(model._meta, "verbose_name") and model._meta.verbose_name:
+                return model._meta.verbose_name
+            return model.__name__
+        return ""
+
 
 class Form(forms.Form):
     """
@@ -490,20 +502,21 @@ class JobPositionMultiForm(ModelForm):
     JobPosition model's form
     """
 
-    department_id = HorillaMultiSelectField(queryset=Department.objects.all())
+    department_id = HorillaMultiSelectField(
+        queryset=Department.objects.all(),
+        label=JobPosition._meta.get_field("department_id").verbose_name,
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "oh-select oh-select2 w-100",
+                "style": "height:45px;",
+            }
+        ),
+    )
 
     class Meta:
         model = JobPosition
         fields = "__all__"
         exclude = ["department_id", "is_active"]
-        widgets = {
-            "department_id": forms.SelectMultiple(
-                attrs={
-                    "class": "oh-select oh-select2 w-100",
-                    "style": "height:45px;",
-                }
-            ),
-        }
 
     def clean(self):
         """
@@ -565,7 +578,8 @@ class JobRoleForm(ModelForm):
         super().__init__(*args, **kwargs)
         if not self.instance.pk:
             self.fields["job_position_id"] = forms.ModelMultipleChoiceField(
-                queryset=self.fields["job_position_id"].queryset
+                queryset=self.fields["job_position_id"].queryset,
+                label=JobRole._meta.get_field("job_position_id").verbose_name,
             )
             attrs = self.fields["job_position_id"].widget.attrs
             attrs["class"] = "oh-select oh-select2 w-100"
@@ -2357,7 +2371,7 @@ class AnnouncementForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["attachments"] = MultipleFileField(label="Attachments ")
+        self.fields["attachments"] = MultipleFileField(label=_("Attachments"))
         self.fields["attachments"].required = False
         self.fields["description"].required = False
 
@@ -2379,6 +2393,10 @@ class AnnouncementForm(ModelForm):
         if commit:
             instance.attachements.add(*multiple_attachment_ids)
         return instance, multiple_attachment_ids
+
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string("announcement/as_p.html", context)
 
 
 class AnnouncementCommentForm(ModelForm):

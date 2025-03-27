@@ -15,14 +15,11 @@
       <li
         class="oh-tabs__tab d-flex {% if forloop.counter == 1 and not active_target %} oh-tabs__tab--active {% endif %}"
         data-target="#{{view_id}}{{forloop.counter}}"
-        {% comment %} hx-get="{{tab.url}}?{{request.GET.urlencode}}"
-        hx-target="#{{view_id}}{{forloop.counter}}" {% endcomment %}
         onclick="
         switchTab(event);
-        if (!this.dataset.processed) {
+        if (!$(this).attr('data-loaded')) {
             htmx.ajax('GET', '{{tab.url}}?{{request.GET.urlencode}}', {target: '#{{view_id}}{{forloop.counter}}'});
-            this.setAttribute('hx-disable', '[true]');
-            this.dataset.processed = 'true';
+            this.setAttribute('data-loaded', 'true');
         }
         "
       >
@@ -68,7 +65,7 @@
                 {% if instance %}
                 {% if action.accessibility|accessibility:instance %}
                 <li class="oh-dropdown__item">
-                  <a {{action.attrs|safe}}>{{action.action}}</a>
+                  <a {{action.attrs|safe}} hx-on::after-settle="Alpine.initTree($el)">{{action.action}}</a>
                 </li>
                 {% endif %}
                 {% else %}

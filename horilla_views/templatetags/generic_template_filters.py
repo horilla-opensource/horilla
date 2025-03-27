@@ -77,6 +77,8 @@ def getattribute(value, attr: str):
             if isinstance(result, types.MethodType):
                 result = result()
             value = result
+        else:
+            return getattr(value, attr, "")
 
     return result
 
