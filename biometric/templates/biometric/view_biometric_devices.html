@@ -51,6 +51,7 @@
         // Show relevant elements based on the selected machine type
         switch (machineType) {
             case "anviz":
+                $("input[name='api_url']").val("");
                 $("#apiUrlInput, #apiKeyInput, #apiSecretInput, #apiRequestIDInput").show();
                 break;
             case "zk":
@@ -59,6 +60,13 @@
             case "cosec":
             case "dahua":
                 $("#machinIpInput, #machinUserName, #machinPassword, #machinPortInput").show();
+                break;
+            case "etimeoffice":
+                $("#apiUrlInput, #machinUserName, #machinPassword").show();
+                if (!$("input[name='api_url']").val()) {
+                    $("input[name='api_url']").val("https://api.etimeoffice.com/api/");
+                }
+
                 break;
             default:
                 // No elements need to be shown for unknown machine types

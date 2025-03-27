@@ -6,6 +6,7 @@ employee biometric data, COSEC users, and related configurations.
 """
 
 from django import forms
+from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
 from attendance.forms import ModelForm
@@ -289,7 +290,7 @@ class DahuaUserForm(Form):
         return cleaned_data
 
 
-class DahuaMapUsers(ModelForm):
+class MapBioUsers(ModelForm):
     class Meta:
         model = BiometricEmployees
         fields = ["employee_id", "user_id"]
@@ -307,6 +308,24 @@ class DahuaMapUsers(ModelForm):
                 device_id=self.device_id
             ).values_list("employee_id", flat=True)
             self.fields["employee_id"].queryset = Employee.objects.exclude(
-                id__in=already_mapped_employees
+                Q(id__in=already_mapped_employees) | Q(is_active=False)
             )
         self.fields["user_id"].required = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        user_id = cleaned_data.get("user_id")
+        user_id_label = self.fields["user_id"].label or "User ID"
+        if self.device_id and user_id:
+            if BiometricEmployees.objects.filter(
+                user_id=user_id, device_id=self.device_id
+            ).exists():
+                raise forms.ValidationError(
+                    {
+                        "user_id": _(
+                            "This biometric {} is already mapped with an employee"
+                        ).format(user_id_label)
+                    }
+                )
+
+        return cleaned_data

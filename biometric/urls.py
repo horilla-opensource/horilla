@@ -114,6 +114,16 @@ urlpatterns = [
         name="delete-dahua-user",
     ),
     path(
+        "delete-etimeoffice-user",
+        views.delete_etimeoffice_user,
+        name="delete-etimeoffice-user",
+    ),
+    path(
+        "delete-etimeoffice-user/<uuid:obj_id>",
+        views.delete_etimeoffice_user,
+        name="delete-etimeoffice-user",
+    ),
+    path(
         "enable-cosec-face-recognition/<str:user_id>/<uuid:device_id>/",
         views.enable_cosec_face_recognition,
         name="enable-cosec-face-recognition",

@@ -50,6 +50,7 @@ class BiometricDevices(HorillaModel):
         ("anviz", _("Anviz Biometric")),
         ("cosec", _("Matrix COSEC Biometric")),
         ("dahua", _("Dahua Biometric")),
+        ("etimeoffice", _("e-Time Office")),
     ]
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     name = models.CharField(max_length=100)
