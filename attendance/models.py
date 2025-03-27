@@ -136,7 +136,7 @@ class Attendance(HorillaModel):
         verbose_name=_("Attendance date"),
     )
     shift_id = models.ForeignKey(
-        EmployeeShift, on_delete=models.DO_NOTHING, null=True, verbose_name=_("Shift")
+        EmployeeShift, on_delete=models.SET_NULL, null=True, verbose_name=_("Shift")
     )
     work_type_id = models.ForeignKey(
         WorkType,
@@ -952,18 +952,18 @@ class WorkRecords(models.Model):
     message = models.CharField(max_length=30, null=True, blank=True)
     is_attendance_record = models.BooleanField(default=False)
     attendance_id = models.ForeignKey(
-        Attendance, on_delete=models.CASCADE, blank=True, null=True
+        Attendance, on_delete=models.SET_NULL, blank=True, null=True
     )
     is_leave_record = models.BooleanField(default=False)
     if apps.is_installed("leave"):
         leave_request_id = models.ForeignKey(
             "leave.LeaveRequest",
-            on_delete=models.CASCADE,
+            on_delete=models.SET_NULL,
             blank=True,
             null=True,
         )
     shift_id = models.ForeignKey(
-        EmployeeShift, on_delete=models.DO_NOTHING, blank=True, null=True
+        EmployeeShift, on_delete=models.SET_NULL, blank=True, null=True
     )
     day_percentage = models.FloatField(default=0)
     last_update = models.DateTimeField(null=True, blank=True)

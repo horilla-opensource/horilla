@@ -162,17 +162,14 @@
                                 class="fw-bold"
                                 onclick="
                                     {% if work_record.work_record_type == 'ABS' %}
-                                        window.location.href = `{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&
-                                        from_date={{work_record.date|date:'Y-m-d'}}&
-                                        to_date={{work_record.date|date:'Y-m-d'}}`;
+                                        window.location.href = `{% url 'request-view' %}?employee_id={{work_record.employee_id.id}}&from_date={{work_record.date|date:'Y-m-d'}}&to_date={{work_record.date|date:'Y-m-d'}}`;
                                     {% elif work_record.work_record_type != 'DFT' %}
                                         {% if work_record.work_record_type == 'CONF' %}
                                             localStorage.setItem('activeTabAttendance', '#tab_1');
                                         {% else %}
                                             localStorage.setItem('activeTabAttendance', '#tab_2');
                                         {% endif %}
-                                        window.location.href = `{% url 'attendance-view' %}?employee_id={{work_record.employee_id.id}}&
-                                        attendance_date={{work_record.date|date:'Y-m-d'}}`;
+                                        window.location.href = `{% url 'attendance-view' %}?employee_id={{work_record.employee_id.id}}&attendance_date={{work_record.date|date:'Y-m-d'}}`;
                                     {% endif %}
                                 "
                             >
