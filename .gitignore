@@ -152,3 +152,11 @@ whoosh_index/
 
 #PyCharm
 .idea/
+
+
+#Settings
+horilla/horilla_settings.py
+
+
+#Biometrics
+biometric/dahua.py
