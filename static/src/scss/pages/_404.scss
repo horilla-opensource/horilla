@@ -1,0 +1,36 @@
+.oh-404 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  @media screen and (max-width: 576px) {
+    width: 80%;
+  }
+}
+.oh-404__image {
+  width: 80px;
+  height: 80px;
+}
+.oh-404__title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-top: 1rem;
+  text-align: center;
+
+  @media screen and (max-width: 576px) {
+    font-size: 1.25rem;
+  }
+}
+.oh-404__subtitle {
+  color: $light-text-color;
+  text-align: center;
+
+  @media screen and (max-width: 576px) {
+    font-size: 0.9rem;
+  }
+}
