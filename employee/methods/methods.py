@@ -447,7 +447,9 @@ def bulk_create_work_info_import(success_lists):
     # Bulk fetch related objects and reduce repeated DB calls
     existing_employees = {
         emp.badge_id: emp
-        for emp in Employee.objects.filter(badge_id__in=badge_ids).only("badge_id")
+        for emp in Employee.objects.entire()
+        .filter(badge_id__in=badge_ids)
+        .only("badge_id")
     }
     existing_employee_work_infos = {
         emp.employee_id: emp
