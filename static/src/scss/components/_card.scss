@@ -175,7 +175,36 @@
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
       rgba(0, 0, 0, 0.02) 0px 1px 2px 0px;
   }
+
+  &--red{
+    border-left: 5px solid $danger-color-dark;
+  }
+  &--blue{
+    border-left: 5px solid $blue;
+  }
+  &--yellow{
+    border-left: 5px solid $yellow-dark;
+  }
+  &--green{
+    border-left: 5px solid $success-color-dark;
+  }
+  &--orange{
+    border-left: 5px solid $orange;
+  }
 }
+.oh-kanban-card--biometric {
+  padding-left: 1.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.oh-kanban-card__biometric-actions {
+  padding-top: 0.75rem;
+  margin-top: 0.75rem;
+  display: block;
+  width: 100%;
+  border-top: 1px solid $border-light-color;
+}
+
 .oh-kanban-card__profile-container {
   width: 60px;
   height: 60px;

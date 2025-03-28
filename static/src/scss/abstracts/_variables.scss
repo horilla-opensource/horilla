@@ -18,7 +18,7 @@ $code-font-stack: 'Courier New', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
 
 /// Copy text color
 /// @type Color
-$text-color: #1c1c1c !default;
+$text-color: hsl(0, 0%, 11%) !default;
 
 /// Copy text color
 /// @type Color
@@ -89,7 +89,7 @@ $button-light-color: hsl(0, 0%, 93%) !default;
 
 /// Input placeholder
 /// @type Color
-$placeholder-color: hsl(215, 18%, 64%) !default;
+$placeholder-color: hsl(216, 18%, 64%) !default;
 
 /// Table color
 /// @type Color
@@ -120,7 +120,7 @@ $light-grey: hsl(0, 0%, 96%) !default;
 $mid-grey: rgb(153, 153, 153) !default;
 /// icon grey
 /// @type Color
-$icon-grey: hsl(220, 2%, 39%) !default;
+$icon-grey: hsl(216, 3%, 39%);
 
 /// Dark grey
 /// @type Color
@@ -216,6 +216,15 @@ $alert-color-hlt-success: hwb(119 28% 36%) !default;
 /// Container's maximum width
 /// @type Length
 $max-width: 1180px !default;
+
+/// OrgChart Colors
+/// @type Color
+
+$org-chart-primary: hsl(8, 77%, 56%);
+$org-chart-secondary:hsl(12, 17%, 29%);
+$org-chart-tertiary: hsl(12, 19%, 69%);
+$org-chart-quaternary: hsl(193, 100%, 39%);
+$org-chart-quinary: hsl(198, 100%, 29%);
 
 
 
