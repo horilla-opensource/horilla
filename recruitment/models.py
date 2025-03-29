@@ -83,7 +83,7 @@ class SurveyTemplate(HorillaModel):
     SurveyTemplate Model
     """
 
-    title = models.CharField(max_length=30, unique=True)
+    title = models.CharField(max_length=50, unique=True)
     description = models.TextField(null=True, blank=True)
     is_general_template = models.BooleanField(default=False, editable=False)
     company_id = models.ForeignKey(
@@ -150,7 +150,7 @@ class Recruitment(HorillaModel):
     Recruitment model
     """
 
-    title = models.CharField(max_length=30, null=True, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(null=True)
     is_event_based = models.BooleanField(
         default=False,
@@ -1197,7 +1197,7 @@ class RejectReason(HorillaModel):
     """
 
     title = models.CharField(
-        max_length=20,
+        max_length=50,
     )
     description = models.TextField(null=True, blank=True, max_length=255)
     company_id = models.ForeignKey(

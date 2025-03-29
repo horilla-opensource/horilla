@@ -53,7 +53,7 @@
 
   <div
   class="oh-wrapper"
-  hx-get="{% url "list-resignation-request"  %}?{{request.GET.urlencode}}&status=requested"
+  hx-get="{% url "list-resignation-request"  %}?{{request.GET.urlencode}}&status=requested" hx-trigger="load"
   id="listContainer">
   <div class="animated-background">
   </div>
