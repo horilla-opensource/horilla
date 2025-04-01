@@ -230,6 +230,7 @@ class CandidateList(HorillaListView):
         ("Email", "mail_indication"),
         ("Stage", "stage_drop_down"),
         ("Rating", "rating_bar"),
+        ("Hired Date", "hired_date"),
         ("Scheduled Interview", "get_interview_count"),
         ("Job Position", "job_position_id"),
         ("Contact", "mobile"),
@@ -243,6 +244,7 @@ class CandidateList(HorillaListView):
 
     bulk_update_fields = [
         "stage_id",
+        "hired_date",
     ]
 
     row_attrs = """

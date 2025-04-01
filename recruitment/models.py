@@ -662,6 +662,7 @@ class Candidate(HorillaModel):
         ("stage_id__stage_managers__get_mail", "Stage Managers"),
         ("recruitment_id__recruitment_managers__get_mail", "Recruitment Managers"),
     ]
+    hired_date = models.DateField(null=True, blank=True, editable=False)
 
     def __str__(self):
         return f"{self.name}"

@@ -88,8 +88,7 @@ class ListCandidates(HorillaListView):
     bulk_update_fields = [
         "gender",
         "job_position_id",
-        "stage_id",
-        "schedule_date",
+        "hired_date",
         "referral",
         "country",
         "state",
@@ -109,23 +108,25 @@ class ListCandidates(HorillaListView):
         )
 
         form.fields["country"] = forms.ChoiceField(
+            required=False,
             widget=forms.Select(
                 attrs={
                     "class": "oh-select oh-select-2",
-                    "required": True,
+                    "required": False,
                     "style": "width: 100%; height:45px;",
                 }
-            )
+            ),
         )
 
         form.fields["state"] = forms.ChoiceField(
+            required=False,
             widget=forms.Select(
                 attrs={
                     "class": "oh-select oh-select-2",
-                    "required": True,
+                    "required": False,
                     "style": "width: 100%; height:45px;",
-                }
-            )
+                },
+            ),
         )
 
         return form
@@ -158,8 +159,10 @@ class ListCandidates(HorillaListView):
         ("Rating", "rating"),
         ("Recruitment", "recruitment_id"),
         ("Job Position", "job_position_id"),
+        ("Hired Date", "hired_date"),
         ("Resume", "resume_pdf"),
     ]
+    default_columns = columns
 
     header_attrs = {
         "option": """
