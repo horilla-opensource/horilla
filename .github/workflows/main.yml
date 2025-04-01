@@ -1,0 +1,61 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - dev
+      - prod
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install SSH and SSHPass
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sshpass openssh-client
+
+    # Removed bastion host setup for dev, qa, and prod branches
+    - name: Set up SSH key and environment variables for dev branch
+      if: github.ref == 'refs/heads/dev'
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEV_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo "TARGET_HOST=${{ secrets.TARGET_HOST_DEV }}" >> $GITHUB_ENV
+
+    - name: Set up SSH key and environment variables for prod branch
+      if: github.ref == 'refs/heads/prod'
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.PROD_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo "TARGET_HOST=${{ secrets.TARGET_HOST_PROD }}" >> $GITHUB_ENV
+
+    - name: Extract repo name
+      id: extract-repo-name
+      run: |
+        REPO_NAME=$(basename ${{ github.repository }})
+        echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
+
+    - name: Copy deploy_script.sh to Target Host
+      env:
+        TARGET_USER: ec2-user
+      run: |
+        ssh-keyscan -H ${{ env.TARGET_HOST }} >> ~/.ssh/known_hosts
+        scp -o StrictHostKeyChecking=no ./deploy_script.sh $TARGET_USER@${{ env.TARGET_HOST }}:/home/$TARGET_USER/
+
+    - name: Execute deploy_script.sh on Target EC2
+      env:
+        TARGET_USER: ec2-user
+        REPO_SLUG: ${{ env.REPO_NAME }}
+        COMMIT_HASH: ${{ github.sha }}
+        BRANCH: ${{ github.ref_name }}
+        TARGET_HOST: ${{ env.TARGET_HOST }}
+      run: |
+        # Execute deploy_script.sh on the target EC2 instance
+        ssh -o StrictHostKeyChecking=no $TARGET_USER@$TARGET_HOST "bash /home/$TARGET_USER/deploy_script.sh $REPO_SLUG ${COMMIT_HASH:0:7} $BRANCH"
