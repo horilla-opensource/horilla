@@ -5402,6 +5402,12 @@ def enable_profile_edit_feature(request):
             DefaultAccessibility.objects.create(
                 feature="profile_edit", filter={"feature": ["profile_edit"]}
             )
+        elif not enabled and feature:
+            feature.is_enabled = False
+            feature.save()
+        elif enabled and feature:
+            feature.is_enabled = True
+            feature.save()
 
         if enabled:
             if not any(item[0] == "profile_edit" for item in ACCESSBILITY_FEATURE):
