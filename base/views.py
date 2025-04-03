@@ -5398,16 +5398,16 @@ def enable_profile_edit_feature(request):
         else:
             ProfileEditFeature.objects.create(is_enabled=enabled)
 
+
+        '''
+        This updated code is responsible for the enable restriction and removed over click only
+        '''
         if enabled and not feature:
-            DefaultAccessibility.objects.create(
-                feature="profile_edit", filter={"feature": ["profile_edit"]}
-            )
-        elif not enabled and feature:
-            feature.is_enabled = False
-            feature.save()
-        elif enabled and feature:
-            feature.is_enabled = True
-            feature.save()
+                DefaultAccessibility.objects.create(
+                    feature="profile_edit", filter={"feature": ["profile_edit"]}
+                )
+        else:
+            feature.delete()
 
         if enabled:
             if not any(item[0] == "profile_edit" for item in ACCESSBILITY_FEATURE):
