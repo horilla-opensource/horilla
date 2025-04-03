@@ -712,3 +712,18 @@ $(document).on("click", function (event) {
 function submitForm(elem) {
     $(elem).siblings(".add_more_submit").click();
 }
+
+$(document).on('htmx:afterSwap', function () {
+    if ( $('[data-summernote]').length > 0 ) {
+        $('[data-summernote]').summernote({
+            height: 300,
+            codeviewFilter: false,
+            codeviewIframeFilter: false,
+            callbacks: {
+                onChange: function(contents) {
+                    $('[name="body"]').val(contents);
+                }
+            }
+        });
+    }
+});
