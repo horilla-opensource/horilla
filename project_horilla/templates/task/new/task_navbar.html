@@ -1,0 +1,72 @@
+{% load i18n taskfilters %}
+<form
+    hx-get='{% url "task-filter" project_id %}?view={{request.GET.view}}'
+    hx-target="#viewContainer"
+    hx-swap="innerHTML"
+    id="taskFilterForm">
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">{{project}}</h1>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon md hydrated" role="img"
+                aria-label="search outline"></ion-icon>
+        </a>
+    </div>
+
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+            <input type="text" class="oh-input oh-input__icon" aria-label="Search Input"
+                name="search" placeholder="{% trans 'Search' %}"
+                onkeyup="$('#taskFilterButton').click()"
+                hx-target="#viewContainer" autocomplete="off" />
+        </div>
+        <input name='view' id="viewInput" hidden>
+        <div class="oh-dropdown" x-data="{open: false}">
+            <ul class="oh-view-types ml-2">
+                <li class="oh-view-type task-view-type" data-view="list">
+                    <a
+                        onclick="$('#viewInput').val('list');$('#taskFilterButton').click()"
+                         class="oh-btn oh-btn--view">
+                        <ion-icon name="list-outline"></ion-icon>
+                    </a>
+                </li>
+                <li class="oh-view-type task-view-type" data-view="card">
+                    <a
+                        onclick="$('#viewInput').val('card');$('#taskFilterButton').click()"
+                        class="oh-btn oh-btn--view">
+                        <ion-icon name="grid-outline"></ion-icon>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="oh-dropdown" x-data="{open: false}">
+            <button class="oh-btn ml-2" @click="open = !open"
+                onclick="event.preventDefault()"
+            >
+                <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+            </button>
+            <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                @click.outside="open = false" style="display: none;">
+                {% include 'task/new/filter_task.html' %}
+            </div>
+        </div>
+        {% if request.user|is_project_manager:project or request.user.is_superuser %}
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-btn-group ml-2">
+                    <div>
+                        <a class="oh-btn oh-btn--secondary oh-btn--shadow" title="{% trans 'Create task' %}"
+                            hx-get='{% url "create-task" project_id %}' hx-target='#TaskFormTarget'
+                            data-toggle="oh-modal-toggle" data-target="#TaskModal">
+                            <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+</form>

@@ -68,6 +68,9 @@ INSTALLED_APPS = [
     "payroll",
     "widget_tweaks",
     "django_apscheduler",
+    'project',
+    'finance',
+    # 'django-select2',    
 ]
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
@@ -229,6 +232,18 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
+SITE_ID = 1
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Replace with your SMTP host
+EMAIL_PORT = 587  # Common for TLS; use 465 for SSL
+EMAIL_USE_TLS = True  # Use True if using TLS
+EMAIL_USE_SSL = False  # Use False if using TLS
+EMAIL_HOST_USER = 'carzone1806@gmail.com'
+EMAIL_HOST_PASSWORD = 'onovdkxaixykyzef'
+EMAIL_TIMEOUT = 30  # Adjust as needed
+
 
 # Production settings
 if not DEBUG:

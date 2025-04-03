@@ -1000,6 +1000,15 @@ class LeaveAllocationRequestForm(ModelForm):
     Methods:
         - as_p: Render the form fields as HTML table rows with Bootstrap styling.
     """
+    def clean_requested_days(self):
+        """
+        Validate that requested_days is not negative.
+        """
+        requested_days = self.cleaned_data.get("requested_days")
+        if requested_days is not None and requested_days < 0:
+            raise ValidationError("Requested days cannot be negative.")
+        return requested_days
+
 
     def as_p(self, *args, **kwargs):
         """

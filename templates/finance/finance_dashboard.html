@@ -1,0 +1,211 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .loss-amount{
+            color: rgb(224, 20, 20) !important;
+        }
+        .nor-amount{
+            color: grey !important;
+        }
+    </style>
+</head>
+<div class="finance-dashboard">
+    <div class="dashboard-header">
+        <h1>Finance Overview</h1>
+        <h2>{{ project.name }}</h2>
+    </div>
+    <div class="dashboard-summary">
+        <div class="summary-card estimated-cost">
+            <div class="card-icon">
+                <i class="fas fa-calculator"></i>
+            </div>
+            <div class="card-content">
+                <h3>Estimated Project Cost</h3>
+                <p class="amount">${{ estimated_cost|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="summary-card employee-cost">
+            <div class="card-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="card-content">
+                <h3>Total Employee Cost</h3>
+                <p class="amount">${{ total_employee_cost|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="summary-card operational-cost">
+            <div class="card-icon">
+                <i class="fas fa-cogs"></i>
+            </div>
+            <div class="card-content">
+                <h3>Operational Cost</h3>
+                <p class="amount">${{ operational_cost|floatformat:2 }}</p>
+            </div>
+        </div>
+        <div class="summary-card profit">
+            <div class="card-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="card-content">
+                <!-- profit variable is being used to print both profit and loss -->
+                {% if  profit > 0%}
+                    <h3>Profit</h3>
+                    <p class="amount profit-amount">${{ profit|floatformat:2 }}</p>
+                {% elif profit == 0%}
+                    <h3>Not Configured</h3>
+                    <p class="amount nor-amount">${{ profit|floatformat:2 }}</p>
+                
+                {% else %}
+                    <h3>Loss</h3>
+                    <p class="amount loss-amount">${{ profit|floatformat:2 }}</p>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-section">
+        <div class="section-header">
+            <h2>Employee Cost Allocation</h2>
+            <div class="section-actions">
+                <button class="btn-export">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Monthly Salary</th>
+                        <th>Allocation (%)</th>
+                        <th>Allocated Cost</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for allocation in employee_allocations %}
+                    <tr>
+                        <td>{{ allocation.employee.employee_first_name }} {{ allocation.employee.employee_last_name }}</td>
+                        <td class="amount-cell">${{ allocation.monthly_salary|floatformat:2 }}</td>
+                        <td class="percentage-cell">{{ allocation.percentage_allocation }}%</td>
+                        <td class="amount-cell">${{ allocation.allocated_cost|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="4">No employees assigned to this project.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="dashboard-section">
+        <div class="section-header">
+            <h2>Dynamic Cost Distribution</h2>
+            <div class="section-actions">
+                <button class="btn-export">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Percentage</th>
+                        <th>Calculated Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cost in calculated_costs %}
+                    <tr>
+                        <td>{{ cost.category }}</td>
+                        <td class="percentage-cell">{{ cost.percentage }}%</td>
+                        <td class="amount-cell">${{ cost.calculated_value|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="3">No cost distribution set yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="dashboard-section">
+        <div class="section-header">
+            <h2>All Extra Operational Costs</h2>
+        </div>
+    
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Cost Name</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cost in additional_costs %}
+                    <tr>
+                        <td>{{ cost.cost_name }}</td>
+                        <td class="amount-cell">${{ cost.cost_value|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="3">No additional costs recorded.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if distributed_profits and profit > 0%}
+    <div class="dashboard-section">
+        <div class="section-header">
+            <h2>Profit Distribution</h2>
+            <div class="section-actions">
+                <button class="btn-export">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Percentage</th>
+                        <th>Allocated Profit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for distribution in distributed_profits %}
+                    <tr>
+                        <td>{{ distribution.category }}</td>
+                        <td class="percentage-cell">{{ distribution.percentage }}%</td>
+                        <td class="amount-cell">${{ distribution.allocated_profit|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+    {% if profit > 0%}
+    <div class="dashboard-actions">
+        <a href="{% url 'profit_distribution_view' project.id %}" class="btn-primary">
+            <i class="fas fa-money-bill-wave"></i> Manage Profit Distribution
+        </a>
+    </div>
+    {%endif%}
+    <div class="dashboard-actions">
+        <a href="{% url 'add_additional_cost' project.id %}" class="btn-primary">
+            <i class="fas fa-money-bill-wave"></i> Add Additional Cost
+        </a>
+    </div>
+</div>
+{% endblock %}

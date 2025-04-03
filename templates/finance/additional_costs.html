@@ -1,0 +1,344 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="costs-container">
+    <div class="costs-header">
+        <h2>Additional Costs for Project: <span class="project-name">{{ project.name }}</span></h2>
+        <p class="costs-subtitle">Manage and track all additional expenses for this project</p>
+    </div>
+    
+    <div class="costs-card">
+        <form method="post">
+            {% csrf_token %}
+            
+            {{ formset.management_form }}
+            
+            <div class="costs-table-container">
+                <table class="costs-table">
+                    <thead>
+                        <tr>
+                            <th>Cost Name</th>
+                            <th>Cost Value</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cost-table-body">
+                        {% for form in formset %}
+                            <tr class="formset-row">
+                                <td class="cost-name-cell">
+                                    {{ form.id }}  {# Ensure ID field is included #}
+                                    <div class="form-field">
+                                        {{ form.cost_name }}
+                                        {% if form.cost_name.errors %}
+                                            <div class="field-error">
+                                                {{ form.cost_name.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="cost-value-cell">
+                                    <div class="form-field">
+                                        {{ form.cost_value }}
+                                        {% if form.cost_value.errors %}
+                                            <div class="field-error">
+                                                {{ form.cost_value.errors }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="delete-cell">
+                                    <label class="delete-checkbox">
+                                        {{ form.DELETE }}
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if not formset.forms %}
+                <div class="empty-state" id="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <p>No additional costs added yet. Click "Add Row" to get started.</p>
+                </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="button" id="add-row" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add Row
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+
+    :root {
+        --primary-color: #4361ee;
+        --primary-hover: #3a56d4;
+        --secondary-color: #4f5d75;
+        --secondary-hover: #404c5f;
+        --success-color: #2ecc71;
+        --danger-color: #e74c3c;
+        --warning-color: #f39c12;
+        --light-color: #f8f9fa;
+        --dark-color: #343a40;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.08);
+        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        --radius-sm: 0.25rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+    }
+
+
+    .costs-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+
+    .costs-header {
+        margin-bottom: 2rem;
+    }
+
+    .costs-header h2 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .project-name {
+        color: var(--primary-color);
+    }
+
+    .costs-subtitle {
+        color: var(--secondary-color);
+        font-size: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .costs-card {
+        background-color: white;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+ 
+    .costs-table-container {
+        overflow-x: auto;
+        margin-bottom: 1.5rem;
+    }
+
+    .costs-table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+
+    .costs-table thead tr {
+        background-color: #f8fafc;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .costs-table th {
+        text-align: left;
+        padding: 1rem;
+        font-weight: 600;
+        color: var(--secondary-color);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .costs-table td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    .formset-row:hover {
+        background-color: #f8fafc;
+    }
+
+
+    .form-field {
+        position: relative;
+    }
+
+    .form-field input[type="text"],
+    .form-field input[type="number"],
+    .form-field select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 1rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+
+    .field-error {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    .delete-cell {
+        text-align: center;
+        width: 80px;
+    }
+
+    .delete-checkbox {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        background-color: #f8fafc;
+        border-radius: var(--radius-md);
+        color: var(--secondary-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state svg {
+        margin-bottom: 1rem;
+        color: var(--secondary-color);
+        opacity: 0.5;
+    }
+
+    .empty-state p {
+        font-size: 1rem;
+    }
+
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+    }
+
+    .btn svg {
+        stroke-width: 2;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--secondary-hover);
+    }
+
+    @media (max-width: 768px) {
+        .costs-card {
+            padding: 1.5rem;
+        }
+        
+        .costs-table th,
+        .costs-table td {
+            padding: 0.75rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addRowBtn = document.getElementById('add-row');
+        const tableBody = document.getElementById('cost-table-body');
+        const totalFormsInput = document.querySelector('[name="form-TOTAL_FORMS"]');
+        
+        addRowBtn.addEventListener('click', function() {
+            let formCount = parseInt(totalFormsInput.value);
+            
+            const lastForm = tableBody.querySelector('.formset-row:last-child');
+            if (!lastForm) return;
+
+            const newForm = lastForm.cloneNode(true);
+            
+            newForm.innerHTML = newForm.innerHTML.replace(
+                /form-(\d+)/g, `form-${formCount}`
+            );
+
+            newForm.querySelectorAll('input').forEach(input => {
+                input.value = '';
+                if (input.name.includes('DELETE')) {
+                    input.checked = false;
+                }
+            });
+            const hiddenIdField = newForm.querySelector('[name^="form-"][name$="-id"]');
+            if (hiddenIdField) {
+                hiddenIdField.value = '';
+            }
+
+            tableBody.appendChild(newForm);
+            totalFormsInput.value = formCount + 1;
+        });
+    });
+</script>
+{% endblock %}

@@ -550,55 +550,101 @@ def initialize_job_position_delete(request, obj_id):
         },
     )
 
-
+from django.contrib.auth import get_user_model
 def login_user(request):
     """
-    Handles user login and authentication.
+    This method renders the login template and authenticates the user in a case-insensitive manner.
     """
     if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
-        next_url = request.GET.get("next", "/")
+        username = request.POST["username"].strip().lower()  # Convert input to lowercase
+        password = request.POST["password"]
+        next_url = request.GET.get("next")
         query_params = request.GET.dict()
-        query_params.pop("next", None)
-        params = urlencode(query_params)
-
-        user = authenticate(request, username=username, password=password)
-
-        if not user:
-            user_object = User.objects.filter(username=username).first()
-            if user_object and not user_object.is_active:
-                messages.warning(request, _("Access Denied: Your account is blocked."))
-            else:
+        if "next" in query_params:
+            del query_params["next"]
+        params = f"{urlencode(query_params)}"
+        User = get_user_model()
+        user_object = User.objects.filter(username__iexact=username).first()
+        if user_object:
+            user = authenticate(request, username=user_object.username, password=password)
+        else:
+            user = None
+        if user is None:
+            is_active = user_object.is_active if user_object else None
+            if is_active is True or is_active is None:
                 messages.error(request, _("Invalid username or password."))
-            return redirect("login")
-
-        employee = getattr(user, "employee_get", None)
-        if employee is None:
-            messages.error(
-                request,
-                _("An employee related to this user's credentials does not exist."),
-            )
-            return redirect("login")
-        if not employee.is_active:
+            else:
+                messages.warning(
+                    request,
+                    _("Access Denied: Your login credentials are currently blocked."),
+                )
+            return redirect("/login")
+        if user.employee_get.is_active == False:
             messages.warning(
                 request,
-                _(
-                    "This user is archived. Please contact the manager for more information."
-                ),
+                _("This user is archived. Please contact the manager for more information."),
             )
-            return redirect("login")
-
+            return redirect("/login")
         login(request, user)
-        messages.success(request, _("Login successful."))
-
-        if params:
-            next_url += f"?{params}"
-        return redirect(next_url)
-
+        messages.success(request, _("Login Success"))
+        if next_url:
+            url = f"{next_url}"
+            if params:
+                url += f"?{params}"
+            return redirect(url)
+        return redirect("/")
     return render(
         request, "login.html", {"initialize_database": initialize_database_condition()}
     )
+
+# def login_user(request):
+#     """
+#     Handles user login and authentication.
+#     """
+#     if request.method == "POST":
+#         username = request.POST.get("username")
+#         password = request.POST.get("password")
+#         next_url = request.GET.get("next", "/")
+#         query_params = request.GET.dict()
+#         query_params.pop("next", None)
+#         params = urlencode(query_params)
+
+#         user = authenticate(request, username=username, password=password)
+
+#         if not user:
+#             user_object = User.objects.filter(username=username).first()
+#             if user_object and not user_object.is_active:
+#                 messages.warning(request, _("Access Denied: Your account is blocked."))
+#             else:
+#                 messages.error(request, _("Invalid username or password."))
+#             return redirect("login")
+
+#         employee = getattr(user, "employee_get", None)
+#         if employee is None:
+#             messages.error(
+#                 request,
+#                 _("An employee related to this user's credentials does not exist."),
+#             )
+#             return redirect("login")
+#         if not employee.is_active:
+#             messages.warning(
+#                 request,
+#                 _(
+#                     "This user is archived. Please contact the manager for more information."
+#                 ),
+#             )
+#             return redirect("login")
+
+#         login(request, user)
+#         messages.success(request, _("Login successful."))
+
+#         if params:
+#             next_url += f"?{params}"
+#         return redirect(next_url)
+
+#     return render(
+#         request, "login.html", {"initialize_database": initialize_database_condition()}
+#     )
 
 
 def include_employee_instance(request, form):

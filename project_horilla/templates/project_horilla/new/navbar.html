@@ -1,0 +1,234 @@
+{% load i18n %}
+<!-- start of import form -->
+<div
+  class="oh-modal"
+  id="projectImport"
+  role="dialog"
+  aria-labelledby="projectImport"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="projectImportLavel">
+        {% trans "Import Project" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div class="oh-modal__dialog-body p-0 pt-2" id="projectImportModalBody">
+        <form
+
+          id="projectImportForm"
+          enctype="multipart/form-data"
+        >
+        <div id="loading" style="display: none;">
+          <div id="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <p id="progress-text">{% trans "Uploading..." %}</p>
+        </div>
+
+        <div id="error-container" style='color:red;'></div>
+
+          <div class="modal-body">
+
+            {% csrf_token %}
+            {% comment %} {% endcomment %}
+            <div class="oh-dropdown__import-form">
+              <label class="oh-dropdown__import-label" for="uploadFile">
+                  <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon md hydrated" role="img" aria-label="cloud upload"></ion-icon>
+                  <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                  <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+              </label>
+              <input type="file" name="file" id="projectImportFile" />
+          </div>
+          </div>
+          <div class="modal-footer d-flex flex-row-reverse">
+            <input
+              type="submit"
+              class="oh-btn oh-btn--secondary"
+              value='{% trans "Upload" %}'
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end of import form -->
+
+<!-- start of navbar contents -->
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+  <div class="oh-main__titlebar oh-main__titlebar--left">
+    <h1 class="oh-main__titlebar-title fw-bold">{% trans "Projects" %}</h1>
+    <a
+      class="oh-main__titlebar-search-toggle"
+      role="button"
+      aria-label="Toggle Search"
+      @click="searchShow = !searchShow"
+    >
+        <ion-icon
+            name="search-outline"
+            class="oh-main__titlebar-serach-icon md hydrated"
+            role="img"
+            aria-label="search outline"
+        ></ion-icon>
+    </a>
+  </div>
+  <div class="oh-main__titlebar oh-main__titlebar--right">
+		{% if projects %}
+        {% comment %} for search{% endcomment %}
+        <form
+            hx-get='{% url "project-filter" %}?view={{request.GET.view }}'
+            hx-target="#view-container"
+            hx-swap="innerHTML"
+            id="projectFilterForm"
+            class="d-flex"
+            onsubmit="event.preventDefault()"
+        >
+        <div
+          class="oh-input-group oh-input__search-group"
+          :class="searchShow ? 'oh-input__search-group--show' : ''"
+        >
+          <ion-icon
+            name="search-outline"
+            class="oh-input-group__icon oh-input-group__icon--left"
+          ></ion-icon>
+          <input
+            type="text"
+            class="oh-input oh-input__icon"
+            aria-label="Search Input"
+            id="filter-project"
+            name="search"
+            placeholder="{% trans 'Search' %}"
+            onkeyup="$('.filterButton')[0].click()"
+          />
+        </div>
+        <div class="oh-dropdown" x-data="{open: false}">
+          <ul class="oh-view-types ml-2">
+            {% comment %} for list view {% endcomment %}
+            <li class="oh-view-type project-view-type" data-view="list">
+              <a
+                href="{% url 'project-view' %}?view=list"
+                {% comment %} hx-target="#view-container" {% endcomment %}
+                class="oh-btn oh-btn--view"
+                ><ion-icon name="list-outline"></ion-icon
+              ></a>
+            </li>
+            {% comment %} for card view {% endcomment %}
+            <li class="oh-view-type project-view-type" data-view="card">
+              <a
+                href="{% url 'project-view' %}?view=card"
+                {% comment %} hx-target="#view-container" {% endcomment %}
+                class="oh-btn oh-btn--view"
+                ><ion-icon name="grid-outline"></ion-icon
+              ></a>
+            </li>
+          </ul>
+        </div>
+        {% comment %} for filtering {% endcomment %}
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button
+            class="oh-btn ml-2"
+            @click="open = !open"
+            onclick="event.preventDefault()"
+          >
+            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+            <div id="filterCount"></div>
+          </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+              x-show="open"
+              @click.outside="open = false"
+              style="display: none;"
+              >
+              {% include 'project/new/filter_project.html' %}
+            </div>
+        </div>
+      </form>
+        {% comment %} for actions {% endcomment %}
+        <div class="oh-btn-group ml-2">
+            <div class="oh-dropdown" x-data="{open: false}">
+              <button
+                class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+                @click="open = !open"
+                @click.outside="open = false"
+              >
+                {% trans "Actions" %}
+              </button>
+              <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
+                <ul class="oh-dropdown__items">
+                  {% comment %} {% if perms.delete_employee %} {% endcomment %}
+                  <li class="oh-dropdown__item">
+                    <a  href="#"
+                        class="oh-dropdown__link "
+                        id="importProject"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#projectImport"
+                      >{% trans "Import" %}</a
+                    >
+                  </li>
+                  {% comment %} {% endif %}  {% endcomment %}
+                  {% comment %} {% if perms.delete_employee %} {% endcomment %}
+                  <li class="oh-dropdown__item">
+                    <a href="#"
+                      class="oh-dropdown__link "
+                      id="exportProject"
+                      >{% trans "Export" %}</a
+                    >
+                  </li>
+                  {% comment %} {% endif %}  {% endcomment %}
+                  {% comment %} {% if perms.delete_employee %} {% endcomment %}
+                  <li class="oh-dropdown__item">
+                    <a href="#" class="oh-dropdown__link " id="duplicateProject"
+                      >{% trans "Duplicate" %}</a
+                    >
+                  </li>
+                  {% comment %} {% endif %}  {% endcomment %}
+                  {% comment %} {% if perms.delete_employee %} {% endcomment %}
+                  <li class="oh-dropdown__item">
+                    <a href="#" class="oh-dropdown__link " id="archiveProject"
+                      >{% trans "Archive" %}</a
+                    >
+                  </li>
+                  {% comment %} {% endif %}  {% endcomment %}
+                  {% comment %} {% if perms.delete_employee %} {% endcomment %}
+                  <li class="oh-dropdown__item">
+                    <a href="#" class="oh-dropdown__link "  id="unArchiveProject"
+                      >{% trans "Un-Archive" %}</a
+                    >
+                  </li>
+                  {% comment %} {% endif %}  {% endcomment %}
+                  {% comment %} {% if perms.delete_employee %} {% endcomment %}
+                  <li class="oh-dropdown__item">
+                    <a
+                      href="#"
+                      class="oh-dropdown__link oh-dropdown__link--danger"
+                      id="deleteProject"
+                      >{% trans "Delete" %}</a
+                    >
+                  </li>
+                  {% comment %} {% endif %} {% endcomment %}
+                </ul>
+              </div>
+            </div>
+        </div>
+    {% endif %}
+    {% comment %} for create project {% endcomment %}
+    <div class="oh-main__titlebar-button-container">
+      <div class="oh-btn-group ml-2">
+        <div>
+          <a
+            class="oh-btn oh-btn--secondary oh-btn--shadow"
+            data-toggle="oh-modal-toggle"
+            data-target="#ProjectModal"
+            hx-get="{% url 'create-project' %}"
+            hx-target="#ProjectFormTarget"
+          >
+            <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Create" %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

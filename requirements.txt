@@ -76,3 +76,4 @@ gunicorn
 psycopg2-binary
 whitenoise
 django-storages
+django-select2
