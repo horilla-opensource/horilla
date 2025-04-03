@@ -131,8 +131,6 @@ if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" in INSTALLED_A
     settings.MEDIA_ROOT = f"{settings.env('MEDIA_ROOT')}/{settings.env('NAMESPACE')}/"
 
 
-from django.conf import settings
-
 # Default LDAP settings
 DEFAULT_LDAP_CONFIG = {
     "LDAP_SERVER": settings.env("LDAP_SERVER", default="ldap://127.0.0.1:389"),
