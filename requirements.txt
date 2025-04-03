@@ -76,4 +76,6 @@ gunicorn
 psycopg2-binary
 whitenoise
 django-storages
+django-select2
 sentry-sdk==1.36.0
+

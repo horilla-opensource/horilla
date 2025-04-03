@@ -1,0 +1,105 @@
+{% load i18n %} {% load horillafilters %}
+<div id="ohMessages"></div>
+  <div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+      {% comment %}
+      <div class="oh-sticky-table__thead">
+        <div class="oh-sticky-table__tr">
+          <div class="oh-sticky-table__th">
+            <div class="d-flex">
+              <div class="">
+                <input
+                  type="checkbox"
+                  class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate"
+                />
+              </div>
+              <div>{% trans "Tasks" %}</div>
+            </div>
+          </div>
+          <div class="oh-sticky-table__th">{% trans "Task Assigner" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Task Members" %}</div>
+          <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Document" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Description" %}</div>
+          <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+        </div>
+      </div>
+      {% endcomment %}
+
+      <div class="oh-sticky-table__tr ui-sortable-handle task_row">
+        <div class="oh-sticky-table__sd">{{task.title}}</div>
+        <div class="oh-sticky-table__td">{{task.task_assigner}}</div>
+        <div class="oh-sticky-table__td">
+          {% for employee in task.task_members.all %} {{employee}}<br />
+          {% endfor %}
+        </div>
+        <div class="oh-sticky-table__td">{{task.end_date}}</div>
+        {% comment %}
+        <div class="oh-sticky-table__td">{{task.stage}}</div>
+        {% endcomment %}
+        <div class="oh-sticky-table__td oh-table-config__td">
+          <select
+            id="stageChange{{task.id}}"
+            class="oh-select w-100 stage-change"
+            data-task="{{task.id}}"
+          >
+            {% for stage in stages %} {% if stage.id == task.stage.id %}
+            <option value="{{stage.id}}" selected>{{stage}}</option>
+            {% else %}
+            <option value="{{stage.id}}">{{stage}}</option>
+            {% endif %} {% endfor %}
+          </select>
+        </div>
+
+        <div class="oh-sticky-table__td">{{task.document}}</div>
+        <div class="oh-sticky-table__td">{{task.description}}</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1)
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+      $(".stage-change").change(function () {
+        var stage = $(this).val();
+        var task = $(this).data("task");
+        $.ajax({
+          type: "post",
+          url: "/project/task-stage-change",
+          data: {
+            csrfmiddlewaretoken: getCookie("csrftoken"),
+            stage: stage,
+            task: task,
+          },
+          success: function (response) {
+            $("#ohMessages").append(`
+                    <div class="oh-alert-container">
+                        <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                            ${response.message}
+                        </div>
+                    </div>`);
+          },
+        });
+        $(this).parents(".task_row").remove();
+        $();
+      });
+    });
+  </script>
+</div>

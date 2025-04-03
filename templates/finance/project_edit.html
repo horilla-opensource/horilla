@@ -1,0 +1,517 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block content %}
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    /* Import Font Awesome for icons */
+   
+    :root {
+      --primary-color: #EE3b38;
+      --primary-hover: rgb(255, 98, 0);
+      --secondary-color: #4f5d75;
+      --danger-color:  #d23d60;
+      --danger-hover: #d11a2a;
+      --success-color: #06d6a0;
+      --success-hover: #05c091;
+      --light-bg: #f8f9fa;
+      --border-radius: 10px;
+      --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+    }
+
+    body {
+      background-color: #f5f7fb;
+      color: #333;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+      max-width: 1200px;
+      padding: 0 20px;
+    }
+
+    .finance-card {
+      background: #fff;
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+    }
+
+    .finance-card:hover {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .finance-title {
+      font-size: 28px;
+      margin-bottom: 25px;
+      color: var(--secondary-color);
+      font-weight: 700;
+      border-bottom: 2px solid #f0f0f0;
+      padding-bottom: 15px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--secondary-color);
+      margin: 25px 0 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-title::before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 20px;
+      background-color: var(--primary-color);
+      margin-right: 10px;
+      border-radius: 3px;
+    }
+
+    /* Table Styling */
+    .finance-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 25px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .finance-table thead {
+      background-color: #f8f9fa;
+    }
+
+    .finance-table th {
+      padding: 15px;
+      font-weight: 600;
+      color: var(--secondary-color);
+      text-transform: uppercase;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .finance-table td {
+      padding: 15px;
+      vertical-align: top; /* Keep all cells aligned to top */
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .finance-table tbody tr:hover {
+      background-color: rgba(67, 97, 238, 0.03);
+    }
+
+    .finance-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Form Controls */
+    .form-control, .form-select {
+      padding: 10px 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      transition: var(--transition);
+      box-shadow: none;
+      font-size: 15px;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: #555;
+      font-size: 14px;
+      display: block; /* Make all labels block to ensure consistent alignment */
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: var(--transition);
+      border: none;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+      transform: translateY(-2px);
+    }
+
+    .btn-success {
+      background-color: #EE3b38;
+      border-color: #FF5722;
+    }
+
+    .btn-success:hover {
+      background-color: #E64A19;
+      border-color: #E64A19;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background-color: var(--danger-color);
+      border-color: var(--danger-color);
+    }
+
+    .btn-danger:hover {
+      background-color: var(--danger-hover);
+      border-color: var(--danger-hover);
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+
+    .btn-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* Delete checkbox styling */
+    .cd-row input[type="checkbox"] {
+      display: none;
+    }
+
+    .delete-label {
+      display: none;
+    }
+
+    .action-cell {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
+      align-items: flex-start; /* Align to top */
+      margin-top: 32px; /* Add margin to align with input fields */
+    }
+
+    /* Percentage input styling - REMOVED % sign */
+    .percentage-input {
+      position: relative;
+    }
+
+    /* Divider */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(to right, rgba(0,0,0,0.05), rgba(0,0,0,0.1), rgba(0,0,0,0.05));
+      margin: 30px 0;
+      border: none;
+    }
+
+    /* Footer actions */
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    /* Project ID badge */
+    .project-id {
+      display: inline-block;
+      background-color: #f0f0f0;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      color: #666;
+      margin-left: 10px;
+      font-weight: normal;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .finance-card {
+        padding: 20px;
+      }
+      
+      .finance-title {
+        font-size: 22px;
+      }
+      
+      .finance-table th, 
+      .finance-table td {
+        padding: 10px;
+      }
+      
+      .btn {
+        padding: 8px 16px;
+      }
+    }
+    /* Updated Percentage input styling */
+    .percentage-input {
+      position: relative;
+    }
+
+    .percentage-input::after {
+      content: "%";
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-weight: 500;
+      pointer-events: none;
+      padding-top: 25px;
+    }
+
+    .percentage-input input {
+      padding-right: 26px; /* Make room for the % sign */
+    }
+  </style>
+</head>
+
+<div class="container mt-5">
+  <div class="finance-card">
+    <h2 class="finance-title">
+      Edit Finance for {{ project.name }} 
+      <span class="project-id">ID: {{ project.id }}</span>
+    </h2>
+    
+    <form method="POST">
+      {% csrf_token %}
+      
+      <h3 class="section-title">Cost Distribution</h3>
+      {{ cd_formset.management_form }}
+      
+      <table class="finance-table" id="cd-table">
+        <thead>
+          <tr>
+            <th width="50%">Category</th>
+            <th width="30%">Percentage</th>
+            <th width="20%">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in cd_formset %}
+            <tr class="cd-row" data-form-index="{{ forloop.counter0 }}">
+              <td>
+                {{ form.id }}
+                <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+                {{ form.category|add_class:"form-control" }}
+                {% if form.category.errors %}
+                  <div class="text-danger mt-1">{{ form.category.errors }}</div>
+                {% endif %}
+              </td>
+              <td>
+                <div class="percentage-input">
+                  <label for="{{ form.percentage.id_for_label }}">{{ form.percentage.label }}</label>
+                  {{ form.percentage|add_class:"form-control" }}
+                  {% if form.percentage.errors %}
+                    <div class="text-danger mt-1">{{ form.percentage.errors }}</div>
+                  {% endif %}
+                </div>
+              </td>
+              <td>
+                <div class="action-cell">
+                  {{ form.id }}
+                  <input type="checkbox" name="{{ form.DELETE.html_name }}" id="{{ form.DELETE.id_for_label }}" {% if form.DELETE.value %}checked{% endif %}>
+                  <label for="{{ form.DELETE.id_for_label }}" class="delete-label">Delete</label>
+                  <button type="button" class="btn btn-danger btn-sm remove-cd-row btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                    </svg>
+                    Remove
+                  </button>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      
+      <div class="mb-4">
+        <button type="button" class="btn btn-primary btn-icon" id="add-cd-row">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+          </svg>
+          Add Category
+        </button>
+      </div>
+      
+      <hr class="section-divider">
+      
+      <h3 class="section-title">Employee Allocations</h3>
+      {{ ea_formset.management_form }}
+      
+      <table class="finance-table" id="ea-table">
+        <thead>
+          <tr>
+            <th width="60%">Employee</th>
+            <th width="40%">% Allocation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in ea_formset %}
+            <tr class="ea-row" data-form-index="{{ forloop.counter0 }}">
+              <td>
+                {{ form.id }}
+                <label for="{{ form.employee_display.id_for_label }}">{{ form.employee_display.label }}</label>
+                {{ form.employee_display|add_class:"form-control" }}
+                {{ form.employee }}
+                {% if form.employee.errors %}
+                  <div class="text-danger mt-1">{{ form.employee.errors }}</div>
+                {% endif %}
+              </td>
+              <td>
+                <div class="percentage-input">
+                  {{ form.id }}
+                  <label for="{{ form.percentage_allocation.id_for_label }}">{{ form.percentage_allocation.label }}</label>
+                  {{ form.percentage_allocation|add_class:"form-control" }}
+                  {% if form.percentage_allocation.errors %}
+                    <div class="text-danger mt-1">{{ form.percentage_allocation.errors }}</div>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      
+      <div class="form-actions">
+        <button type="submit" class="btn btn-success btn-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
+          </svg>
+          Save Changes
+        </button>
+        <a href="{% url 'finance_project_list' %}" class="btn btn-secondary btn-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+          </svg>
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let cdTable = document.querySelector("#cd-table tbody");
+    let cdTotalForms = document.querySelector("#id_cd-TOTAL_FORMS");
+    let cdAddRowButton = document.querySelector("#add-cd-row");
+    function addNewRow() {
+        let formIndex = parseInt(cdTotalForms.value);
+        let emptyRow = document.createElement("tr");
+        emptyRow.classList.add("cd-row");
+        emptyRow.dataset.formIndex = formIndex;
+        emptyRow.innerHTML = `
+            <td>
+                <input type="hidden" name="cd-${formIndex}-id" id="id_cd-${formIndex}-id">
+                <label for="id_cd-${formIndex}-category">Category</label>
+                <input type="text" name="cd-${formIndex}-category" class="form-control" id="id_cd-${formIndex}-category">
+            </td>
+            <td>
+                <div class="percentage-input">
+                    <label for="id_cd-${formIndex}-percentage">Percentage</label>
+                    <input type="number" name="cd-${formIndex}-percentage" class="form-control" id="id_cd-${formIndex}-percentage" step="0.01">
+                </div>
+            </td>
+            <td>
+                <div class="action-cell">
+                    <input type="checkbox" name="cd-${formIndex}-DELETE" id="id_cd-${formIndex}-DELETE" style="display:none;">
+                    <button type="button" class="btn btn-danger btn-sm remove-cd-row btn-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg>
+                        Remove
+                    </button>
+                </div>
+            </td>
+        `;
+        cdTable.appendChild(emptyRow);
+        cdTotalForms.value = formIndex + 1;
+        addRemoveEventListeners();
+    }
+
+    function addRemoveEventListeners() {
+        document.querySelectorAll(".remove-cd-row").forEach((button) => {
+            button.addEventListener("click", function () {
+                let row = this.closest("tr");
+                let formId = row.querySelector('input[id$="-id"]').value;
+                if (formId) {
+                    row.querySelector('input[id$="-DELETE"]').checked = true;
+                    row.style.display = "none";
+                } else {
+                    row.remove();
+                }
+                updateIndexes();
+            });
+        });
+    }
+
+    function updateIndexes() {
+        let rows = document.querySelectorAll(".cd-row");
+        let visibleIndex = 0;
+        rows.forEach((row, index) => {
+            row.dataset.formIndex = index;
+            row.querySelectorAll("input, select").forEach((input) => {
+                let name = input.getAttribute("name");
+                if (name) {
+                    let newName = name.replace(/cd-\d+-/, `cd-${index}-`);
+                    input.setAttribute("name", newName);
+                    let id = input.getAttribute("id");
+                    if (id) {
+                        let newId = id.replace(/id_cd-\d+-/, `id_cd-${index}-`);
+                        input.setAttribute("id", newId);
+                    }
+                }
+            });
+            row.querySelectorAll("label").forEach((label) => {
+                let forAttr = label.getAttribute("for");
+                if (forAttr) {
+                    let newFor = forAttr.replace(/id_cd-\d+-/, `id_cd-${index}-`);
+                    label.setAttribute("for", newFor);
+                }
+            });
+            if (row.style.display !== "none") {
+                visibleIndex++;
+            }
+        });
+        cdTotalForms.value = rows.length;
+    }
+
+    // Add a row if the formset is empty
+    if (cdTable.children.length === 0) {
+        addNewRow();
+    }
+    cdAddRowButton.addEventListener("click", addNewRow);
+    addRemoveEventListeners();
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+{% load horillafilters %}
+{% load basefilters %}
+{% load mathfilters %}
+{% include 'filter_tags.html' %}
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<div class="container mt-5">
+    <div class="card horilla-card">
+        <div class="card-header horilla-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0 fw-bold">{% trans "Finance Project List" %}</h3>
+            <div class="d-flex">
+                <!-- Search Form -->
+                <form method="GET" action="{% url 'finance_project_list' %}" class="d-flex">
+                    <input type="text" name="q" value="{{ request.GET.q|default:'' }}" class="form-control horilla-search me-2"
+                        placeholder="{% trans 'Search projects...' %}">
+                    <button type="submit" class="btn btn-dark">
+                        <i class="fas fa-search"></i> {% trans "Search" %}
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table {% if projects %}table-hover{% endif %} align-middle text-center horilla-table">
+                    <thead>
+                        <tr>
+                            <th class="text-start px-4 py-3">{% trans "Project Name" %}</th>
+                            <th class="py-3">{% trans "Finance Status" %}</th>
+                            <th class="py-3">{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for project in projects %}
+                        <tr class="border-bottom">
+                            <td class="text-start px-4 fw-medium py-3">{{ project.name }}</td>
+                            <td class="py-3">
+                                {% if project.finance %}
+                                    <span class="badge bg-secondary text-white px-3 py-2">{% trans "Configured" %}</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark px-3 py-2">{% trans "Not Configured" %}</span>
+                                {% endif %}
+                            </td>
+                            <td class="py-3">
+                                <a href="{% url 'finance_dashboard' project.id %}" class="btn btn-sm btn-outline-dark me-1">
+                                    <i class="fas fa-eye"></i> {% trans "View" %}
+                                </a>
+                                <a href="{% url 'finance_project_edit' project.id %}" class="btn btn-sm btn-outline-warning">
+                                    <i class="fas fa-edit"></i> {% trans "Edit" %}
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted py-4">
+                                {% if request.GET.q %}
+                                    {% trans "No projects found matching your search." %}
+                                {% else %}
+                                    {% trans "No projects found." %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
