@@ -13,7 +13,7 @@ class Faq {
   toggleFaq(e) {
     const targetEl = $(e.target);
     const selectedItemEl = targetEl.parents(".oh-faq__item");
-    
+
     console.log(targetEl.hasClass("oh-btn"), targetEl.hasClass("oh-faq__tag"), targetEl.hasClass("oh-faq__tag"))
     if (selectedItemEl) {
       if (

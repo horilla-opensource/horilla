@@ -1,11 +1,7 @@
-import requests
-from requests.auth import HTTPBasicAuth
 from datetime import datetime
-
 
 import requests
 from requests.auth import HTTPBasicAuth
-from datetime import datetime
 
 
 class ETimeOfficeAPI:

@@ -77,6 +77,10 @@ class CandidateFilter(FilterSet):
         field_name="schedule_date",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    hired_date = django_filters.DateFilter(
+        field_name="hired_date",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
     interview_date = django_filters.DateFilter(
         field_name="candidate_interview__interview_date",
         widget=forms.DateInput(attrs={"type": "date"}),

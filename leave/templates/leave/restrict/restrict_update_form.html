@@ -24,18 +24,18 @@
 </div>
 <div class="oh-modal__dialog-body">
     <form hx-post="{% url 'restrict-update' id %}?{{pd}}" hx-target="#objectUpdateModalTarget" class="oh-profile-section">
-        <label class="oh-label d-block" for="{{ form.title.id_for_label }}">{% trans "Title" %}</label>
+        <label class="oh-label d-block" for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
         {{form.title}} {{form.title.errors}}
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}">{% trans "Start Date" %}</label>
+                    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}">{{ form.start_date.label }}</label>
                     {{form.start_date}} {{form.start_date.errors}}
                 </div>
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.end_date.id_for_label }}">{% trans "End Date" %}</label>
+                    <label class="oh-label d-block" for="{{ form.end_date.id_for_label }}">{{ form.end_date.label }}</label>
                     {{form.end_date}} {{form.end_date.errors}}
                 </div>
             </div>
@@ -43,7 +43,7 @@
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}">{% trans "Department" %}</label>
+                    <label class="oh-label d-block" for="{{ form.start_date.id_for_label }}">{{ form.department.label }}</label>
                     {{form.department}} {{form.department.errors}}
                 </div>
             </div>
@@ -56,7 +56,7 @@
             <!-- Include All Checkbox -->
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.include_all.id_for_label }}">{% trans "Include all" %}</label>
+                    <label class="oh-label d-block" for="{{ form.include_all.id_for_label }}">{{ form.include_all.label }}</label>
                     <div class="oh-switch">
                         {{ form.include_all }} <!-- Checkbox -->
                     </div>
@@ -67,7 +67,7 @@
             <!-- Spesific Leave Types Field -->
             <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="specific-leave-group" style="display: none;">
                 <div class="oh-input__group">
-                    <label class="oh-label d-flex" for="{{ form.spesific_leave_types.id_for_label }}">{% trans "Specific Leave Types" %}
+                    <label class="oh-label d-flex" for="{{ form.spesific_leave_types.id_for_label }}">{{ form.spesific_leave_types.label }}
                         <span class="oh-info ms-2" title="{{ form.spesific_leave_types.help_text|safe }}"></span></label>
                     {{ form.spesific_leave_types }} {{ form.spesific_leave_types.errors }}
                 </div>
@@ -76,7 +76,7 @@
             <!-- Exclude Leave Types Field -->
             <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="exclude-leave-group" style="display: none;">
                 <div class="oh-input__group">
-                    <label class="oh-label d-flex" for="{{ form.exclued_leave_types.id_for_label }}">{% trans "Exclude Leave Types" %}
+                    <label class="oh-label d-flex" for="{{ form.exclued_leave_types.id_for_label }}">{{ form.exclued_leave_types.label }}
                         <span class="oh-info ms-2" title="{{ form.exclued_leave_types.help_text|safe }}"></span>
                     </label>
                     {{ form.exclued_leave_types }} {{ form.exclued_leave_types.errors }}
@@ -85,12 +85,12 @@
         </div>
 
 
-        <label class="oh-label d-block" for="{{ form.description.id_for_label }}">{% trans "Description" %}</label>
+        <label class="oh-label d-block" for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
         {{form.description}} {{form.description.errors}}
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-label d-block" for="{{ form.company_id.id_for_label }}">{% trans "Company" %}</label>
+                    <label class="oh-label d-block" for="{{ form.company_id.id_for_label }}">{{ form.company_id.label }}</label>
                     {{form.company_id}} {{form.company_id.errors}}
                 </div>
             </div>
