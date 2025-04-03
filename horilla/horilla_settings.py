@@ -135,10 +135,10 @@ from django.conf import settings
 
 # Default LDAP settings
 DEFAULT_LDAP_CONFIG = {
-    "LDAP_SERVER": settings.env('LDAP_SERVER'),
-    "BIND_DN": settings.env('BIND_DN'),
-    "BIND_PASSWORD": settings.env('BIND_PASSWORD'),
-    "BASE_DN": settings.env('BASE_DN'),
+    "LDAP_SERVER": settings.env("LDAP_SERVER", default="ldap://127.0.0.1:389"),
+    "BIND_DN": settings.env("BIND_DN", default="cn=admin,dc=horilla,dc=com"),
+    "BIND_PASSWORD": settings.env("BIND_PASSWORD", default="horilla"),
+    "BASE_DN": settings.env("BASE_DN", default="ou=users,dc=horilla,dc=com"),
 }
 
 
