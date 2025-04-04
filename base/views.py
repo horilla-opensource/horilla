@@ -5408,6 +5408,8 @@ def enable_profile_edit_feature(request):
                 )
         else:
             feature.delete()
+            messages.info(request, _("Profile edit accessibility feature has been removed."))
+
 
         if enabled:
             if not any(item[0] == "profile_edit" for item in ACCESSBILITY_FEATURE):
