@@ -2,7 +2,7 @@
 pms/sidebar.py
 """
 
-from django.urls import reverse
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as trans
 
 from base.templatetags.basefilters import is_reportingmanager
@@ -14,37 +14,37 @@ IMG_SRC = "images/ui/pms.svg"
 SUBMENUS = [
     {
         "menu": trans("Dashboard"),
-        "redirect": reverse("dashboard-view"),
+        "redirect": reverse_lazy("dashboard-view"),
     },
     {
         "menu": trans("Objectives"),
-        "redirect": reverse("objective-list-view"),
+        "redirect": reverse_lazy("objective-list-view"),
     },
     {
         "menu": trans("360 Feedback"),
-        "redirect": reverse("feedback-view"),
+        "redirect": reverse_lazy("feedback-view"),
     },
     {
         "menu": trans("Meetings"),
-        "redirect": reverse("view-meetings"),
+        "redirect": reverse_lazy("view-meetings"),
     },
     {
         "menu": trans("Key Results"),
-        "redirect": reverse("view-key-result"),
+        "redirect": reverse_lazy("view-key-result"),
         "accessibility": "pms.sidebar.key_result_accessibility",
     },
     {
         "menu": trans("Employee Bonus Point"),
-        "redirect": reverse("employee-bonus-point"),
+        "redirect": reverse_lazy("employee-bonus-point"),
     },
     {
         "menu": trans("Period"),
-        "redirect": reverse("period-view"),
+        "redirect": reverse_lazy("period-view"),
         "accessibility": "pms.sidebar.period_accessibility",
     },
     {
         "menu": trans("Question Template"),
-        "redirect": reverse("question-template-view"),
+        "redirect": reverse_lazy("question-template-view"),
         "accessibility": "pms.sidebar.question_template_accessibility",
     },
 ]
