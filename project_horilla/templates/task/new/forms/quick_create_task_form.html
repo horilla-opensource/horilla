@@ -1,0 +1,26 @@
+<form class="oh-kanban__add-card-form" hx-post="{% url 'quick-create-task' stage_id %}" hx-target="#{{hx_target}}">
+    {% if form.errors %}
+        <ul class="errorlist nonfield">
+            {% for error in form.non_field_errors %}
+            <li>
+                {{ error }}
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {{form.as_p}}
+    <div class="d-flex align-items-center justify-content-end">
+        <a role="button"
+            class="oh-btn oh-btn--light-dark-text oh-btn--x-small oh-kanban__add-card-cancel-btn me-2 mt-2">Cancel</a>
+        <button type="submit" class="oh-btn oh-btn--secondary oh-btn--x-small mt-2">Add</button>
+    </div>
+</form>
+<script>
+    $(document).ready(function (e) {
+        $('.oh-kanban__add-card-cancel-btn').click(function (e) {
+            e.stopPropagation();
+            $(this).closest('.oh-kanban__add-card-container').addClass('d-none');
+            $(this).closest('.list-quick-add').toggleClass('d-none');
+        });
+    });
+</script>

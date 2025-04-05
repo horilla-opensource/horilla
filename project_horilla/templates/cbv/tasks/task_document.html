@@ -1,0 +1,10 @@
+{% load i18n %}
+{% if instance.document %}
+    <span class="oh-timeoff-modal__stat-title">{% trans "Document" %}</span>
+    <div class="d-flex ">
+        <a href="{{instance.document.url}}" rel="noopener noreferrer" target="_blank"><span
+                class="oh-file-icon oh-file-icon--pdf" onmouseover="enlargeattachment('{{instance.document.url}}')"
+                style="width:40px;height:40px"></span>
+        </a>
+    </div>
+{% endif%}

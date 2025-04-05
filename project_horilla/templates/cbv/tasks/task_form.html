@@ -1,0 +1,9 @@
+<div>
+  <form hidden hx-get="{{request.path}}" hx-target="#id_stage_parent_div" hx-swap="outerHTML"
+    hx-select="#id_stage_parent_div, .dynamic_stage_scripts">
+    <input type="text" name="dynamic_project">
+    <button id="getStageButton" type="submit">
+    </button>
+  </form>
+  {% include 'generic/horilla_form.html' %}
+</div>

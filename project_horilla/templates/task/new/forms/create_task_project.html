@@ -1,0 +1,55 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5>{% trans "Task" %}</h5>
+    <br />
+  </span>
+  <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    data-toggle="oh-modal-toggle"
+    hx-target="#TaskFormTarget"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <form
+    hx-post="{% url 'create-task-in-project' project_id %}"
+    hx-target="#TaskFormTarget"
+    hx-encoding="multipart/form-data"
+  >
+    {% csrf_token %} {{ form.as_p }}
+  </form>
+</div>
+
+<script>
+$(document).ready(function(){
+    var data = {{ stages|safe }};
+    $('#project_stage').html('<options>--------</options>')
+
+     // Iterate through the data array and create options
+    $.each(data, function(index, stage) {
+        $("#project_stage").append("<option value=" + stage.pk + ">" + stage.fields.title + "</option>");
+    });
+    $("#project_stage").append( "<option value='create_new_stage'>Create a new Stage</option>");
+    $("#project_stage").append( "<option value='old_stage'>Old Stage</option>");
+
+});
+$("#project_stage").change(function(e){
+  stage_id = $(this).val()
+
+    if (stage_id === "create_new_stage") {
+
+      $.ajax({
+        type: "GET",
+        url: '/project/create-stage-taskall',
+        data: { project_id: {{project_id}} },
+        success: function (response) {
+          $("#ProjectStageModal").addClass("oh-modal--show");
+          $("#ProjectStageFormTarget").html(response);
+        },
+      });
+    }
+});
+</script>

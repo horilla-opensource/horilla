@@ -1,0 +1,252 @@
+{% extends 'index.html' %}{% block content %}{% load static %} {% load i18n %}
+{% load basefilters %} {% if request.user.employee_get.id == emp_id or perms.project.view_timesheet or request.user|is_reportingmanager %}
+<div
+	class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent"
+>
+	<div
+		class="oh-card-dashboard__header oh-card-dashboard__header--divider d-flex justify-content-between align-items-center"
+	>
+		<div class="">
+			<h5 class="oh-card-dashboard__title">
+				Personal Timesheet of {{emp_name|capfirst}}
+			</h5>
+		</div>
+		<div>
+			<span class="oh-card-dashboard__title me-5"
+				><a id="previous">Previous</a></span
+			>
+			<span class="oh-card-dashboard__title me-5"><a id="next">Next</a></span>
+			<select
+				class="oh-select oh-select--sm me-5"
+				name=""
+				id="personalTimesheetSelect"
+			>
+				<option value="week" selected>Week</option>
+				<option value="month">Month</option>
+			</select>
+		</div>
+	</div>
+	<div class="oh-card-dashboard__body" style="width: 99%">
+		<canvas id="personalChart"></canvas>
+	</div>
+</div>
+{% else %} {% include '404.html' %} {% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+	$(document).ready(function () {
+
+	    Date.prototype.getWeek = function () { return $.datepicker.iso8601Week(this); }
+
+	    var myDate = new Date();
+	    var myWeek=myDate.getWeek();
+	    var year = myDate. getFullYear()
+	    var month = myDate.getMonth()
+
+
+
+	   function personalChart(dataSet, labels) {
+	       const data = {
+	           labels: labels,
+	           datasets: dataSet,
+
+	       };
+	       // Create chart using the Chart.js library
+	       window["personalChart"] = {};
+	       const ctx = document.getElementById("personalChart").getContext("2d");
+	       personalChart = new Chart(ctx, {
+	           type: "bar",
+	           data: data,
+	           options: {
+	            animation: {
+	                duration: 1000, // Duration of the animation in milliseconds
+	                easing: 'easeInOutQuart', // Easing function for the animation
+	            },
+	            scales: {
+	              x: {
+	                  stacked: true,
+	              },
+	              y: {
+	                  stacked: true,
+	              }
+	            }
+	           },
+	       });
+	   }
+
+	   function personalChart_one(dataSet, labels) {
+	    personalChart.destroy()
+	    const data = {
+	        labels: labels,
+	        datasets: dataSet,
+
+	    };
+	    // Create chart using the Chart.js library
+	    window["personalChart"] = {};
+	    const ctx = document.getElementById("personalChart").getContext("2d");
+	    personalChart = new Chart(ctx, {
+	        type: "bar",
+	        data: data,
+	        options: {
+	            animation: {
+	                duration: 1000, // Duration of the animation in milliseconds
+	                easing: 'easeInOutQuart', // Easing function for the animation
+	            },
+	         scales: {
+	           x: {
+	               stacked: true,
+	           },
+	           y: {
+	               stacked: true
+	           }
+	         }
+	        },
+	    });
+	}
+
+
+	   $.ajax({
+	       type: "GET",
+	       url: "/project/personal-time-sheet/" ,
+	       data :{
+	           emp_id : {{emp_id}},
+	            year : year,
+	            week:myWeek,
+	            month:month,
+	            selected : $("#personalTimesheetSelect").val(),
+	        },
+	       success: function (response) {
+	           // Code to handle the response
+	           dataSet = response.dataSet;
+	           labels = response.labels;
+
+	           personalChart(dataSet, labels);
+	       },
+	       error: function(response){
+	           console.log("error")
+	       },
+	   });
+
+	   $("#previous").click(function(){
+	    if ($("#personalTimesheetSelect").val() == "week"){
+	        myWeek-=1
+	        if (myWeek<1){
+	            year = year - 1;
+	            myWeek = 52+myWeek;
+	        }
+	    }
+	    else if ($("#personalTimesheetSelect").val() == "month"){
+	        month-=1
+	        if (month<0){
+	            year=year-1;
+	            month = 12+month
+	        }
+	    }
+	    $.ajax({
+	      type: "GET",
+	      url: "/project/personal-time-sheet/",
+	      data :{
+	          emp_id : {{emp_id}},
+	          year : year,
+	          week:myWeek,
+	          month:month,
+	          selected : $("#personalTimesheetSelect").val()
+
+	      },
+	      success: function (response) {
+	          // Code to handle the response
+	          dataSet = response.dataSet;
+	          labels = response.labels;
+
+	          personalChart_one(dataSet, labels);
+
+	      },
+	      error: function(response){
+	          console.log("error")
+	      },
+	  });
+
+
+	   })
+
+	   $("#next").click(function(){
+	    this_week = myDate.getWeek()
+	    this_month = myDate.getMonth()
+
+	    if ($("#personalTimesheetSelect").val() == "week"){
+	        if (myWeek < this_week){
+
+	            myWeek+=1
+	        } else {
+	            myWeek = this_week
+	        }
+	    }
+	    else if ($("#personalTimesheetSelect").val() == "month"){
+	        if (month < this_month){
+
+	            month+=1
+	        } else {
+	            month = this_month
+	        }
+	    }
+
+
+	    year = myDate. getFullYear()
+	    $.ajax({
+	      type: "GET",
+	      url: "/project/personal-time-sheet/",
+	      data :{
+	          emp_id : {{emp_id}},
+	          year:year,
+	          week:myWeek,
+	          month:month,
+	          selected : $("#personalTimesheetSelect").val()
+
+	      },
+	      success: function (response) {
+	          // Code to handle the response
+	          dataSet = response.dataSet;
+	          labels = response.labels;
+
+	          personalChart_one(dataSet, labels);
+	      },
+	      error: function(response){
+	          console.log("error")
+	      },
+	  });
+
+
+	   })
+
+	   $("#personalTimesheetSelect").change(function(){
+	    $.ajax({
+	      type: "GET",
+	      url: "/project/personal-time-sheet/",
+	      data :{
+	          emp_id : {{emp_id}},
+	          year:year,
+	          week:myWeek,
+	          week:myWeek,
+	          month:month,
+	          selected:$("#personalTimesheetSelect").val(),
+	      },
+	      success: function (response) {
+	          // Code to handle the response.labels
+	          dataSet = response.dataSet;
+	          labels = response.labels;
+
+	          personalChart_one(dataSet, labels);
+	      },
+	      error: function(response){
+	          console.log("error")
+	      },
+	  });
+
+
+	   })
+
+	});
+</script>
+{% endblock %}

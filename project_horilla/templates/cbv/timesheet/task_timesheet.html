@@ -1,0 +1,37 @@
+{% load i18n %}
+<div id="task-timesheet-container">
+    {% include "generic/components.html" %}
+    <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+            <h5 style="margin-bottom: 20px;">{% trans "Time sheet" %}</h5>
+        </span>
+        {% comment %} for add timesheet {% endcomment %}
+        <div class="d-flex flex-row-reverse oh-wrapper oh-main__titlebar-button-container">
+            <div class="oh-btn-group ml-2">
+                <div>
+                    <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                        data-target="#addTimesheetModal" hx-get="{% url 'create-timesheet-task' task_id %}"
+                        hx-target="#addTimesheetModalBody">
+                        <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans " Add" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        <button type="button" style="
+          border: none;
+          background: none;
+          font-size: 1.5rem;
+          opacity: 0.7;
+          position: absolute;
+          top: 25px;
+          right: 15px;
+          cursor: pointer;
+          -webkit-transition: all 0.3s ease-in-out;
+          transition: all 0.3s ease-in-out;"
+            onclick="event.stopPropagation(); $(this).parents().find('.oh-modal--show:last').toggleClass('oh-modal--show')"
+            id="close">
+            <ion-icon name="close-outline"></ion-icon>
+        </button>
+        {% include "generic/horilla_list_table.html" %}
+    </div>
+</div>

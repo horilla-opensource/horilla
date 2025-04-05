@@ -1,0 +1,71 @@
+{% load i18n %} {% load horillafilters %}
+
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="projectDetails">
+        <h5 style="margin-bottom: 20px;">{{project.title}}</h5>
+    </span>
+    <button
+        type="button"
+        class="oh-modal__close"
+        data-dismiss="oh-modal"
+        aria-label="Close"
+        data-toggle="oh-modal-toggle"
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <div class="oh-timeoff-modal__stats-container mb-3">
+      <div class="oh-timeoff-modal__stat">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Manager" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{project.manager}}</span>
+      </div>
+      <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Members" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{% for member in project.members.all %}{{member}}, {% endfor %}</span>
+      </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Status" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{project.get_status_display}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "No of Tasks" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{task_count}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Start Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{project.start_date}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "End date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{project.end_date}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Document" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{project.document}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{project.description}}</span>
+        </div>
+    </div>
+    <div class="oh-modal__button-container text-center" style="width: 50%; margin:0 auto">
+       {% comment %} <div class="oh-btn-group"> {% endcomment %}
+         <a href="{%url 'task-view' project.id %}"
+                class="oh-btn oh-btn--info" >
+                <ion-icon
+                    name="create-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="create outline"
+                >
+                </ion-icon>{% trans "View" %}
+            </a>
+       {% comment %} </div> {% endcomment %}
+    </div>
+
+</div>

@@ -1,0 +1,121 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+{% load horillafilters %}
+{% load basefilters %}
+{% load mathfilters %}
+{% include 'filter_tags.html' %}
+
+<head>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<div class="container mt-4">
+    <div class="card shadow p-4">
+        <div class="card-header bg-white border-bottom">
+            <h4 class="card-title">
+                {% if project %}
+                    {% trans "Update Project" %}
+                {% else %}
+                    {% trans "Create Project" %}
+                {% endif %}
+            </h4>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="fw-bold">Project Name <span class="text-danger">*</span></label>
+                    {{ form.name }}
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-bold">Start Date <span class="text-danger">*</span></label>
+                        {{ form.start_date }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-bold">End Date</label>
+                        {{ form.end_date }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Attachment</label>
+                    {{ form.attachment }}
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Project Description <span class="text-danger">*</span></label>
+                    {{ form.description1 }}
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Status <span class="text-danger">*</span></label>
+                    {{ form.status }}
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Project Owner <span class="text-danger">*</span></label>
+                    {{ form.project_owner }}
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Team Members <span class="text-danger">*</span></label>
+                    {{ form.team_members }}
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold">Estimated Cost <span class="text-danger">*</span></label>
+                    {{ form.estimated_cost }}
+                </div>
+                <hr style="border: none; height: 0.25px; background-color: rgb(54, 54, 54);">
+                <button type="submit" class="btn btn-primary custom-btn">
+                    {% if project.id %}
+                        {% trans "Save Changes" %}
+                    {% else %}
+                        {% trans "Save" %}
+                    {% endif %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Initialize Select2 for team members selection
+        $('#id_team_members').select2({
+            placeholder: "Search and select team members",
+            allowClear: true
+        });
+
+        // Form validation
+        document.querySelector("form").addEventListener("submit", function(event) {
+            let isValid = true;
+            document.querySelectorAll("input[required], select[required], textarea[required]").forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add("is-invalid");
+                } else {
+                    field.classList.remove("is-invalid");
+                }
+            });
+            if (!isValid) {
+                event.preventDefault();
+                alert("Please fill in all required fields.");
+            }
+        });
+
+        // Ensure date picker opens properly
+        document.querySelectorAll('input[type="date"]').forEach(function(input) {
+            input.addEventListener('click', function() {
+                this.showPicker();  // Force open the date picker
+            });
+        });
+    });
+</script>
+
+{% endblock %}

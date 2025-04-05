@@ -1,0 +1,98 @@
+{% block content %} {% load static %} {% load i18n %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5>{% trans "Time Sheet" %}</h5>
+    <br />
+  </span>
+  {% comment %} <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    data-toggle="oh-modal-toggle"
+    hx-target="#TimeSheetFormTarget"
+    onclick="location.reload()"
+  > {% endcomment %}
+   <button
+    type="button"
+    style="
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    opacity: 0.7;
+    position: absolute;
+    top: 25px;
+    right: 15px;
+    cursor: pointer;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;"
+    onclick="event.stopPropagation(); $(this).parents().find('.oh-modal--show:last').toggleClass('oh-modal--show')"
+    id="close1"
+
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <form
+    hx-post="{% url 'update-time-sheet' form.instance.id %}"
+    hx-target="#TimeSheetFormTarget"
+    hx-encoding="multipart/form-data"
+  >
+    {% csrf_token %} {{form.as_p}}
+    <div class="oh-modal__dialog-footer">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>
+<script>
+  $(document).ready(function () {
+    // Revert select field styling
+    $("#id_employee_id").select2();
+
+    // Show the original select field
+    function toggleFunction() {
+      if ($("#id_calculate_daily_leave_amount").is(":checked")) {
+        $(
+          "#id_deduction_for_one_leave_amount,[for=id_deduction_for_one_leave_amount]"
+        ).hide();
+      } else {
+        $(
+          "#id_deduction_for_one_leave_amount,[for=id_deduction_for_one_leave_amount]"
+        ).show();
+      }
+      if ($("#id_calculate_daily_leave_amount").is(":checked")) {
+        $("#id_deduction_for_one_leave_amount").parent().hide();
+      } else {
+        $("#id_deduction_for_one_leave_amount").parent().show();
+      }
+    }
+
+    $("[type=checkbox]").change(function (e) {
+      e.preventDefault();
+      toggleFunction();
+    });
+    toggleFunction();
+    $("#id_project_id").change(function (e) {
+      var project_id = $(this).val();
+      $.ajax({
+        type: "GET",
+        url: "{% url 'time-sheet-initial' %}",
+        data: { project_id: project_id },
+        success: function (response) {
+          $("#id_task_id").html("<option>---------</option>");
+
+          for (let i = 0; i < response.data.length; i++) {
+            const element = response.data[i];
+            let newOption = $("<option></option>");
+            newOption.html(element.task_title);
+            newOption.val(element.id);
+            $("#id_task_id").append(newOption);
+          }
+        },
+      });
+      e.preventDefault();
+    });
+  });
+</script>
+{% endblock content %}

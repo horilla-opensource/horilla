@@ -1,0 +1,19 @@
+{% load i18n %} {% load static %}
+<div id="messages" class="oh-alert-container"></div>
+{% if projects %}
+<div
+  class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
+>
+  <h2 class="oh-inner-sidebar-content__title">{% trans "Projects" %}</h2>
+</div>
+<div id="projectContainer">
+{% include "cbv/projects/project_list.html" %}
+</div>
+{% else %}
+<div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+    <div style="" class="">
+    <img style="display: block;width: 100px;margin: 10px auto ;" src="{% static 'images/ui/project/project.png' %}" class="" alt="Page not found. 404."/>
+    <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "No projects assigned to this employee." %}</h3>
+    </div>
+</div>
+{% endif %}

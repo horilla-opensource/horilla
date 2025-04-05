@@ -1,0 +1,30 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5>{% trans "Project Stage" %}</h5>
+    <br />
+  </span>
+  <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    data-toggle="oh-modal-toggle"
+    hx-target="#TaskFormTarget"
+    onclick="location.reload()"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <form
+    hx-post="{%url 'create-project-stage' project_id %}"
+    hx-target="#TaskFormTarget"
+    hx-encoding="multipart/form-data"
+  >
+    {% csrf_token %} {{ form.as_p }}
+    <div class="oh-modal__dialog-footer">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>

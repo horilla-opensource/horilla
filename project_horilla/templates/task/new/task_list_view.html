@@ -1,0 +1,214 @@
+{% load static %}
+{% load i18n %}
+{% load horillafilters taskfilters %}
+
+{% if messages %}
+<div class="oh-alert-container" id='ohMessages'>
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% include "filter_tags.html" %}
+<div id="projectStages" class="oh-card" style="margin-top: 5px">
+    {% if request.user|is_project_manager:stages.first.project or request.user.is_superuser %}
+    <div class="oh-kanban__add-container mb-2">
+        <button class="oh-btn oh-btn--x-small oh-kanban__add-section mr-2" data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal" hx-get="{% url 'create-project-stage' project_id %}"
+            hx-target="#objectCreateModalTarget">
+            <ion-icon class="me-1 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+            {% trans "Add Stage" %}
+        </button>
+    </div>
+    {% endif %}
+    {% if stages %}
+        <div class="oh-accordion-meta">
+            <div class="">
+                {% for stage in stages %}
+                <!-- Start of stages comes under the project will loading here -->
+                <div class="oh-accordion-meta__header oh-accordion-meta__header--custom stage_header" data-target="#taskStage{{stage.id}}"
+                    style ="min-height: 50px;"
+                >
+                    <div class="d-flex">
+                        <span class="oh-accordion-meta__title" style="display:inherit;">
+                            <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1">
+                                {{ stage.tasks.all|length}}
+                            </span>
+                            {{stage.title}}
+                        </span>
+                    </div>
+                    <div class="d-flex oh-tabs__input-badge-container">
+
+                    </div>
+                    <div class="oh-btn-group ml-3">
+                        {% if request.user|is_project_manager:stage.project or request.user.is_superuser %}
+                            <div class="mr-2" onclick="event.stopPropagation();">
+                                <a class="oh-btn oh-btn--secondary oh-btn--shadow"
+                                    data-toggle = "oh-modal-toggle" data-target="#genericModal"
+                                    hx-get="{% url 'create-stage-task' stage.id %}" hx-target="#genericModalBody"
+                                >
+                                    <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans "Add Task" %}
+                                </a>
+                            </div>
+                            <div class="oh-dropdown" x-data="{open: false}">
+                                <button class="oh-btn oh-stop-prop oh-accordion-meta__btn" @click="open = !open"
+                                    @click.outside="open = false">
+                                    {% trans "Actions" %}
+                                    <ion-icon class="ms-2 oh-accordion-meta__btn-icon" name="caret-down-outline"></ion-icon>
+                                </button>
+                                <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
+                                    <ul class="oh-dropdown__items">
+                                        <li class="oh-dropdown__item">
+                                            <a class="oh-dropdown__link oh-dropdown__link" data-toggle="oh-modal-toggle"
+                                                data-target="#TaskModal" hx-get="{% url 'update-project-stage' stage.id %}"
+                                                onclick="event.stopPropagation()" hx-target="#TaskFormTarget">
+                                                {% trans "Update" %}</a>
+                                        </li>
+
+                                        <li class="oh-dropdown__item">
+                                            <form action="{% url 'delete-project-stage' stage.id %}"
+                                                onsubmit="return confirm('{% trans " Are you sure you want to delete this stage?" %}');" method="post">
+                                                {% csrf_token %}
+                                                <button class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div id="taskCreateForm{{stage.id}}"
+                            class="oh-dropdown__menu oh-dropdown__menu--highlight oh-dropdown__menu--top-100 oh-dropdown__close-outside-click oh-dropdown__menu--right pt-2 pb-2 list-quick-add d-none"
+                            style="z-index: 15;">
+                        </div>
+                    </div>
+                </div>
+                <!-- End of stages comes under the project will loading here -->
+                <div class="oh-accordion-meta__body d-none" id="taskStage{{stage.id}}">
+                    {% if stage.tasks.all %}
+                    <!-- Start of tasks comes under the stage will loading here -->
+                    <div class="oh-sticky-table oh-sticky-table--no-overflow mb-5">
+                        <div class="oh-sticky-table">
+                            <div class="oh-sticky-table__table oh-table--sortable">
+                                <div class="oh-sticky-table__thead">
+                                    <div class="oh-sticky-table__tr">
+                                        <div class="oh-sticky-table__th">
+                                            <div class="d-flex">
+                                                <div class="">
+                                                    <input type="checkbox" id="selectAllTasks {{stage.id}}"
+                                                        class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate" />
+                                                </div>
+                                                <div>
+                                                    {% trans "Tasks" %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="oh-sticky-table__th">{% trans "Task Managers" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Document" %}</div>
+                                        <div class="oh-sticky-table__th">{% trans "Description" %}</div>
+                                        {% if request.user|is_project_manager:stage.project or request.user.is_superuser %}
+                                            <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% for task in stage.tasks.all %}
+                                {% if task in tasks %}
+                                <div class="oh-sticky-table__tr ui-sortable-handle task_row" data-task="{{task.title}}"
+                                    data-toggle="oh-modal-toggle" data-target="#genericModal" hx-target="#genericModalBody"
+                                    hx-get="{% url 'task-detail-view' task.id %}?view=list" onclick="event.stopPropagation()">
+                                    <div class="oh-sticky-table__sd">
+                                        <div class="d-flex">
+                                            <div class="">
+                                                <input type="checkbox" id="selectRowTask {{task.id}}"
+                                                    class="oh-input oh-input__checkbox mt-1 mr-2 all-candidate" />
+                                            </div>
+                                            {{task.title}}
+                                        </div>
+                                    </div>
+                                    <div class="oh-sticky-table__td">
+                                        {% for manager in task.task_managers.all %}
+                                            {{manager}},
+                                        {% endfor %}
+                                    </div>
+                                    <div class="oh-sticky-table__td">{{task.end_date}}</div>
+                                    <div class="oh-sticky-table__td">{{task.get_status_display}}</div>
+                                    <div class="oh-sticky-table__td oh-table-config__td" onclick='event.stopPropagation();'>
+                                        <select class="oh-table__editable-input w-100 mt-2 mr-2"
+                                            hx-get="{% url 'update-project-task-status' task.id %}?view=list"
+                                            hx-trigger="change" hx-swap="afterend" tabindex="-1" aria-hidden="true"
+                                            name="status">
+                                            {% for option in task.TASK_STATUS %}
+                                            <option value="{{option.0}}" {% if option.0 == task.status %}selected{% endif %}>
+                                                {{option.1}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                        {% if task.document %}
+                                            <a style="text-decoration: none" class="oh-btn oh-btn--light"
+                                                href="/media/{{task.document}}" target="_blank" title="{{task.document}}"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <span class="oh-file-icon oh-file-icon--pdf"></span> &nbsp View
+                                            </a>
+                                        {% else %}
+                                            {% trans "None" %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="oh-sticky-table__td">{{task.description}}</div>
+                                    {% if request.user|is_project_manager:stage.project or request.user.is_superuser %}
+                                        <div class="oh-sticky-table__td">
+                                            <div class="oh-btn-group"
+                                                onclick="event.preventDefault();event.stopPropagation()"
+                                            >
+                                                <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+                                                    data-toggle="oh-modal-toggle" data-target="#TaskModal"
+                                                    hx-get="{% url 'update-task' task.id %}?project_task=true"
+                                                    hx-target="#TaskFormTarget"><ion-icon
+                                                        name="create-outline"></ion-icon></button>
+
+                                                <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                    hx-confirm="{% trans 'Do you really want to delete this task?' %}"
+                                                    hx-post="{% url 'delete-task' task.id %}?view=list"
+                                                    hx-target="#taskCreateForm{{stage.id}}">
+                                                    <ion-icon name="trash-outline" role="img" class="md hydrated"
+                                                        aria-label="trash outline"></ion-icon>
+                                                </a>
+
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of tasks comes under the stage will loading here -->
+                    {% else %}
+                    <div class="oh-empty">
+                        <img src="{% static 'images/ui/grid.svg' %} " class="mb-4" width="140" height="140" alt="Empty" />
+                        <p class="oh-empty__message">
+                            {% trans "No tasks found in this stage." %}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+            <div style="" class="">
+                <img style="display: block;width: 200px;margin: 10px auto ;" src="{% static 'images/ui/project/task.png' %}"
+                    class="" alt="Page not found. 404." />
+                <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "No search result found!" %}</h3>
+            </div>
+        </div>
+    {% endif %}
+</div>

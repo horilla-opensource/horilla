@@ -1,0 +1,125 @@
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+<style>
+    .expired--dot {
+        background-color: red;
+    }
+
+    .todo--dot {
+        background-color: yellowgreen;
+    }
+
+    .completed--dot {
+        background-color: rgb(103, 171, 238);
+    }
+
+    .in-progress--dot {
+        background-color: orange;
+    }
+
+    .status-completed {
+        border-left: 3.4px solid rgb(103, 171, 238) !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .status-to_do {
+
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .status-expired {
+
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .status-in_progress {
+
+        border-left: 3.4px solid orange; !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+</style>
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<div hx-get="{% url 'tasks-navbar' %}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+
+
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+
+
+<div class="oh-wrapper" id="listContainer">
+    <div class="animated-background">
+    </div>
+</div>
+
+
+
+
+
+<div class="oh-modal" id="TaskTimesheetModal" role="dialog" aria-labelledby="TaskTimesheetModal" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width:1350px" id="TaskTimesheetTarget"></div>
+
+</div>
+
+<div class="oh-modal" id="addTimesheetModal" role="dialog" aria-labelledby="addTimesheetModal" aria-hidden="true"
+    style="z-index: 1022;">
+    <div class="oh-modal__dialog" id="addTimesheetModalBody">
+
+    </div>
+</div>
+
+
+
+
+
+<script src="{% static '/task_all/task_all_action.js' %}"></script>
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+
+<script>
+
+    function enlargeattachment(src, $element) {
+        $("#enlargeattachmentContainer").empty()
+        var enlargeattachmentContainer = $("#enlargeattachmentContainer")
+        enlargeattachmentContainer.empty()
+        style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+        var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+        var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+        enlargeattachmentContainer.append(enlargedImage)
+        enlargeattachmentContainer.append(name)
+        setTimeout(function () {
+            enlargeattachmentContainer.show()
+
+            const iframe = document.querySelector('iframe').contentWindow
+            var iframe_document = iframe.document
+            iframe_image = iframe_document.getElementsByTagName('img')[0]
+            $(iframe_image).attr('style', 'width:100%; height:100%;')
+        }, 100)
+    }
+
+    function hideEnlargeattachment() {
+        var enlargeattachmentContainer = $('#enlargeattachmentContainer')
+        enlargeattachmentContainer.empty()
+    }
+    $(document).on('click', function (event) {
+        if (!$(event.target).closest('#enlargeattachmentContainer').length) {
+            hideEnlargeattachment()
+        }
+    })
+</script>
+
+
+{% endblock %}
