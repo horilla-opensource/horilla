@@ -60,6 +60,7 @@ class FeedbackListView(HorillaListView):
         (_("Start Date"), "start_date"),
         (_("Due On"), "get_feedback_due_date"),
     ]
+
     action_method = "custom_actions_col"
 
     header_attrs = {
@@ -69,6 +70,10 @@ class FeedbackListView(HorillaListView):
     sortby_mapping = [
         ("Employee", "employee_id__get_full_name"),
         ("Status", "custom_status_style"),
+        ("Title", "review_cycle"),
+        ("Status", "custom_status_style"),
+        ("Start Date", "start_date"),
+        ("Due On", "due_days_diff"),
     ]
 
     row_attrs = """

@@ -413,7 +413,7 @@ class EmployeeObjective(HorillaModel):
         if len(krs) > 0:
             current = 0
             for kr in krs:
-                current += kr.progress_percentage
+                current += min(kr.progress_percentage, 100)
             self.progress_percentage = int(current / len(krs))
             self.save()
 
@@ -724,14 +724,14 @@ class EmployeeKeyResult(models.Model):
             raise ValidationError(
                 "The start value can't be greater than current value or target value."
             )
-        if current_value > target_value:
-            raise ValidationError(
-                {
-                    "current_value": _(
-                        "The current value can't be greater than target value."
-                    )
-                }
-            )
+        # if current_value > target_value:
+        #     raise ValidationError(
+        #         {
+        #             "current_value": _(
+        #                 "The current value can't be greater than target value."
+        #             )
+        #         }
+        #     )
 
     def save(self, *args, **kwargs):
         if self.start_date and not self.end_date:
@@ -959,6 +959,15 @@ class Feedback(HorillaModel):
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.review_cycle}"
 
+    def due_days_diff(self):
+        """
+        Returns number of days between current date and end_date.
+        """
+        current_date = timezone.now().date()
+        if not self.end_date:
+            return None
+        return (self.end_date - current_date).days
+
     def custom_status_style(self):
         """
         method for rendering custom status col
@@ -988,6 +997,11 @@ class Feedback(HorillaModel):
         return url
 
     def get_feedback_due_date(self):
+        """
+        Due display
+        """
+        if self.status == "Closed":
+            return self.end_date.strftime("%b %d, %Y")
         current_date = timezone.now().date()
         date_diff = (self.end_date - current_date).days
 

@@ -1,4 +1,20 @@
 {% load i18n %}{% load widget_tweaks %} {% load mathfilters %} {% load basefilters %}
+<style>
+    .filter-pill {
+      border-radius: 999px;
+      padding: 6px 16px;
+      background-color: #f0f0f0;
+      display: inline-block;
+      margin: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: none;
+    }
+    .filter-pill.active {
+      background-color: #007bff;
+      color: white;
+    }
+  </style>
 <span
   name=""
   id="dynamicKeyResult"
@@ -130,6 +146,22 @@
                                                 {{emp_obj_form.form.status}}
                                             </div>
                                         </div>
+                                        <div class="col-md-6 col-lg-12">
+                                            <div class="oh-input-group">
+                                              <label class="oh-label">{% trans "Quick Filters" %}</label>
+                                              <div>
+                                                <input type="text" name="due" hidden >
+                                                {% for value, label in emp_obj_form.form.due.field.choices %}
+                                                  {% if value %}
+                                                    <button type="button" onclick="$(this).closest('form').find('[name=due]').val('{{value}}');$(this).closest('form').find('.filterButton').click();"
+                                                            class="filter-pill {% if request.GET.due == value %}active{% endif %}">
+                                                      {{ label }}
+                                                    </button>
+                                                  {% endif %}
+                                                {% endfor %}
+                                              </div>
+                                              </div>
+                                          </div>
                                     </div>
                                 </div>
                             </div>

@@ -1854,12 +1854,12 @@ def feedback_answer_get(request, id, **kwargs):
     # check if the feedback start_date is not started yet
     if feedback.start_date > datetime.date.today():
         messages.info(request, _("Feedback not started yet"))
-        return redirect(feedback_list_view)
+        return redirect(reverse("feedback-view"))
 
     # check if the feedback end_date is not over
     if feedback.end_date and feedback.end_date < datetime.date.today():
-        messages.info(request, _("Feedback is due"))
-        return redirect(feedback_list_view)
+        messages.info(request, _("Feedback is due/closed"))
+        return redirect(reverse("feedback-view"))
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
     answer = Answer.objects.filter(feedback_id=feedback, employee_id=employee)
@@ -3322,11 +3322,17 @@ def key_result_current_value_update(request):
         current_value = eval_validate(request.POST.get("current_value"))
         emp_kr_id = eval_validate(request.POST.get("emp_key_result_id"))
         emp_kr = EmployeeKeyResult.objects.get(id=emp_kr_id)
-        if current_value <= emp_kr.target_value:
-            emp_kr.current_value = current_value
-            emp_kr.save()
-            emp_kr.employee_objective_id.update_objective_progress()
-            return JsonResponse({"type": "sucess"})
+        current_value = max(0, current_value)
+        emp_kr.current_value = current_value
+        emp_kr.save()
+        emp_kr.employee_objective_id.update_objective_progress()
+        return JsonResponse(
+            {
+                "type": "sucess",
+                "progress": emp_kr.employee_objective_id.progress_percentage,
+                "pk": emp_kr.employee_objective_id.pk,
+            }
+        )
     except:
         return JsonResponse({"type": "error"})
 

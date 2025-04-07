@@ -94,7 +94,7 @@
                 title="{% trans 'Edit' %}"
                 ><ion-icon name="create-outline"></ion-icon
               ></a>
-              {% endif %} {% if perms.pms.add_employeeobjective %}
+              {% endif %} {% if perms.pms.add_employeeobjective or request.user.employee_get in objective.managers.all %}
               <a
                 onclick="event.preventDefault();event.stopPropagation()"
                 hx-get="{% url 'add-assignees' objective.id %}"
@@ -278,12 +278,11 @@
       var numericValue = parseFloat(targetValue.replace(/[^\d.]/g, ""));
       var prgressPercentage = parseInt((currentValue * 100) / numericValue);
       // Ensure totalProgress doesn't exceed 100
-      if (prgressPercentage > 100) {
-        prgressPercentage = 100;
+      if (prgressPercentage < 0) {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Current Value cannot exceed target value!",
+          text: "Current Value Cannot be -ve",
           timer: 3000, // Display the alert for 3 seconds
           timerProgressBar: true, // Show the progress bar
           showConfirmButton: false, // Hide the "OK" button
@@ -299,37 +298,9 @@
           },
           success: function (response) {
             if (response.type != "error") {
-              keyResultRow.find(".p-percentage").text(prgressPercentage + "%");
+              $(`#kr${response.pk}`).attr("style",`width:${response.progress}% !important;`)
+              $(`#kr${response.pk}Html`).html(`${response.progress}%`)
 
-              // Iterate over each span and get its text content
-              var total_percentage = 0;
-              var total_kr = 0;
-              keyResultTable.find(".p-percentage").each(function () {
-                strPercentage = $(this).text();
-                numPercentage = parseFloat(
-                  strPercentage.replace(/[^\d.]/g, "")
-                );
-                total_percentage += numPercentage;
-                total_kr += 1;
-              });
-              totalProgress = parseInt(total_percentage / total_kr);
-              // Ensure totalProgress doesn't exceed 100
-              if (totalProgress > 100) {
-                totalProgress = 100;
-              }
-              objectiveProgressContainer = $(element)
-                .closest(".oh-accordion-meta__item")
-                .find(".progress_bar_objective");
-              objectiveProgressContainer.html(
-                '<div class="oh-progress" role="progressbar">' +
-                  '<div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc(' +
-                  totalProgress +
-                  '%)"></div>' +
-                  "</div>" +
-                  '<div class="oh-progress-container__percentage" style="width:50px" name= "key_result_percentage">' +
-                  totalProgress +
-                  " %</div>"
-              );
             }
           },
         });

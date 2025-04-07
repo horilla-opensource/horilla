@@ -6,11 +6,14 @@ the PMS (Performance Management System) app.
 """
 
 import datetime
+from datetime import timedelta
 
 import django
 import django_filters
+from dateutil.relativedelta import relativedelta
 from django import forms
-from django_filters import DateFilter
+from django.utils import timezone
+from django_filters import DateFilter, DateFromToRangeFilter
 
 from base.filters import FilterSet
 from base.methods import reload_queryset
@@ -208,16 +211,37 @@ class ObjectiveFilter(CustomFilterSet):
         return empty
 
 
-class FeedbackFilter(CustomFilterSet):
+DUE_DATE_CHOICES = [
+    ("", "All"),
+    ("overdue", "Overdue"),
+    ("due_today", "Due Today"),
+    ("due_this_week", "Due This Week"),
+    ("due_this_month", "Due This Month"),
+]
+
+
+class FeedbackFilter(HorillaFilterSet):
     """
     Custom filter set for Feedback records.
 
     This filter set allows to filter Feedback records based on various criteria.
     """
 
+    due_date_quick_filter = django_filters.ChoiceFilter(
+        label="Quick Date",
+        choices=DUE_DATE_CHOICES,
+        method="filter_due_date",
+        widget=forms.HiddenInput(),  # We'll trigger this via pills
+    )
+
     search = django_filters.CharFilter(method="search_method")
     review_cycle = django_filters.CharFilter(lookup_expr="icontains")
-    created_at_date_range = DateRangeFilter(field_name="created_at")
+    created_at_date_range = DateRangeFilter(
+        field_name="created_at",
+        widget=django_filters.widgets.RangeWidget(
+            attrs={"type": "date", "class": "oh-input w-100"}
+        ),
+    )
     start_date = DateFilter(
         widget=forms.DateInput(attrs={"type": "date", "class": "oh-input  w-100"}),
         # add lookup expression here
@@ -227,18 +251,89 @@ class FeedbackFilter(CustomFilterSet):
         # add lookup expression here
     )
 
+    start_date_range = DateFromToRangeFilter(
+        field_name="start_date",
+        widget=django_filters.widgets.RangeWidget(
+            attrs={"type": "date", "class": "oh-input w-100"}
+        ),
+    )
+    end_date_range = DateFromToRangeFilter(
+        field_name="end_date",
+        widget=django_filters.widgets.RangeWidget(
+            attrs={"type": "date", "class": "oh-input w-100"}
+        ),
+    )
+
     class Meta:
         """
         A nested class that specifies the model and fields for the filter.
         """
 
         model = Feedback
-        fields = "__all__"
+        fields = [
+            "manager_id",
+            "employee_id",
+            "colleague_id",
+            "subordinate_id",
+            "question_template_id",
+            "status",
+            "archive",
+            "start_date",
+            "end_date",
+            "employee_key_results_id",
+            "cyclic_feedback",
+            "cyclic_feedback_days_count",
+            "cyclic_feedback_period",
+            "cyclic_next_start_date",
+            "cyclic_next_end_date",
+            "start_date_range",
+            "end_date_range",
+        ]
 
-    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
-        super(FeedbackFilter, self).__init__(
-            data=data, queryset=queryset, request=request, prefix=prefix
-        )
+    def filter_due_date(self, queryset, name, value):
+        """
+        Filter due date
+        """
+        queryset = queryset.exclude(status__iexact="Closed")
+
+        today = timezone.now().date()
+
+        if value == "overdue":
+            return queryset.filter(end_date__lt=today)
+        elif value == "due_today":
+            return queryset.filter(end_date=today)
+        elif value == "due_this_week":
+            start_of_week = today - timedelta(days=today.weekday())
+            end_of_week = start_of_week + timedelta(days=6)
+            return queryset.filter(end_date__range=(start_of_week, end_of_week))
+        elif value == "due_this_month":
+            first_day = today.replace(day=1)
+            last_day = (first_day + relativedelta(months=1)) - timedelta(days=1)
+            return queryset.filter(end_date__range=(first_day, last_day))
+        return queryset
+
+    def search_method(self, queryset, _, value: str):
+        """
+        Search Method
+        """
+        parts = value.split()
+        first_name = parts[0]
+        last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
+        qrst = queryset.none()
+        if first_name and last_name:
+            qrst = queryset.filter(
+                employee_id__employee_first_name__icontains=first_name,
+                employee_id__employee_last_name__icontains=last_name,
+            ) | queryset.filter(review_cycle__icontains=value)
+        elif first_name:
+            qrst = queryset.filter(
+                employee_id__employee_first_name__icontains=first_name
+            ) | queryset.filter(review_cycle__icontains=value)
+        elif last_name:
+            qrst = queryset.filter(
+                employee_id__employee_last_name__icontains=last_name
+            ) | queryset.filter(review_cycle__icontains=value)
+        return qrst.distinct()
 
 
 class AnonymousFeedbackFilter(django_filters.FilterSet):
@@ -270,6 +365,46 @@ class AnonymousFeedbackFilter(django_filters.FilterSet):
 
 
 class KeyResultFilter(CustomFilterSet):
+    """
+    KeyResult Filter
+    """
+
+    due = django_filters.ChoiceFilter(
+        method="filter_due_date",
+        label="Due",
+        choices=[
+            ("due_today", "Due Today"),
+            ("due_this_week", "Due This Week"),
+            ("due_this_month", "Due This Month"),
+            ("due_next_month", "Due Next Month"),
+            ("overdue", "Overdue"),
+        ],
+    )
+
+    def filter_due_date(self, queryset, name, value):
+        """
+        Filter due date
+        """
+        today = timezone.now().date()
+
+        if value == "due_today":
+            return queryset.filter(end_date=today)
+        elif value == "due_this_week":
+            start = today - timedelta(days=today.weekday())
+            end = start + timedelta(days=6)
+            return queryset.filter(end_date__range=(start, end))
+        elif value == "due_this_month":
+            start = today.replace(day=1)
+            end = (start + relativedelta(months=1)) - timedelta(days=1)
+            return queryset.filter(end_date__range=(start, end))
+        elif value == "due_next_month":
+            start = (today + relativedelta(months=1)).replace(day=1)
+            end = (start + relativedelta(months=1)) - timedelta(days=1)
+            return queryset.filter(end_date__range=(start, end))
+        elif value == "overdue":
+            return queryset.filter(end_date__lt=today)
+
+        return queryset
 
     class Meta:
         model = EmployeeKeyResult
@@ -338,6 +473,43 @@ class EmployeeObjectiveFilter(HorillaFilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
     )
 
+    due = django_filters.ChoiceFilter(
+        method="filter_due_date",
+        label="Due",
+        choices=[
+            ("due_today", "Due Today"),
+            ("due_this_week", "Due This Week"),
+            ("due_this_month", "Due This Month"),
+            ("due_next_month", "Due Next Month"),
+            ("overdue", "Overdue"),
+        ],
+    )
+
+    def filter_due_date(self, queryset, name, value):
+        """
+        Filter due date
+        """
+        today = timezone.now().date()
+
+        if value == "due_today":
+            return queryset.filter(employee_key_result__end_date=today)
+        elif value == "due_this_week":
+            start = today - timedelta(days=today.weekday())
+            end = start + timedelta(days=6)
+            return queryset.filter(employee_key_result__end_date__range=(start, end))
+        elif value == "due_this_month":
+            start = today.replace(day=1)
+            end = (start + relativedelta(months=1)) - timedelta(days=1)
+            return queryset.filter(employee_key_result__end_date__range=(start, end))
+        elif value == "due_next_month":
+            start = (today + relativedelta(months=1)).replace(day=1)
+            end = (start + relativedelta(months=1)) - timedelta(days=1)
+            return queryset.filter(employee_key_result__end_date__range=(start, end))
+        elif value == "overdue":
+            return queryset.filter(employee_key_result__end_date__lt=today)
+
+        return queryset
+
     class Meta:
         model = EmployeeObjective
         fields = [
@@ -361,6 +533,7 @@ class EmployeeObjectiveFilter(HorillaFilterSet):
                 | (queryset.filter(employee_id__employee_first_name__icontains=split))
                 | (queryset.filter(employee_id__employee_last_name__icontains=split))
                 | (queryset.filter(objective__icontains=split))
+                | (queryset.filter(employee_key_result__key_result__icontains=split))
             )
 
         return empty.distinct()
@@ -444,16 +617,14 @@ class MeetingsFilter(HorillaFilterSet):
     #     return super().filter_queryset(queryset)
 
 
-class AnonymousFilter(CustomFilterSet):
+class AnonymousFilter(HorillaFilterSet):
     """
     Custom filter set for Anonymous records.
 
     This filter set allows to filter Anonymous records based on various criteria.
     """
 
-    search = django_filters.CharFilter(
-        field_name="feedback_subject", lookup_expr="icontains"
-    )
+    search = django_filters.CharFilter(method="search_method", lookup_expr="icontains")
     review_cycle = django_filters.CharFilter(lookup_expr="icontains")
     created_at_date_range = DateRangeFilter(field_name="created_at")
     start_date = DateFilter(
@@ -499,6 +670,12 @@ class AnonymousFilter(CustomFilterSet):
 
         model = AnonymousFeedback
         fields = "__all__"
+
+    def search_method(self, queryset, _, value: str):
+        """
+        Search Method
+        """
+        return queryset.filter(feedback_subject__icontains=value)
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super(AnonymousFilter, self).__init__(

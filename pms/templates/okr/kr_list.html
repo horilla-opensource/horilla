@@ -74,8 +74,9 @@
                         <div class="oh-sticky-table__td">
                             <input
                                 id = {{kr.id}}
-                                type="number" class="oh-input p-1"  min="0"
-                                max="{{kr.target_value}}"
+                                type="number" class="oh-input p-1"
+                                style="width: 100px;"
+                                min="0"
                                 value="{{kr.current_value}}"
                                 {% comment %} hx-post="{%url 'employee-keyresult-update-current_value' kr.id %}"
                                 hx-trigger="change"
