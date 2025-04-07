@@ -857,6 +857,8 @@ class LeaveRequest(HorillaModel):
 
     class Meta:
         ordering = ["-id"]
+        verbose_name = "Leave Request"
+        verbose_name_plural = "Leave Requests"
 
     def comment_action(self):
         """
@@ -1324,14 +1326,15 @@ class LeaveRequest(HorillaModel):
             sequence = 0
             managers = applicable_condition.approval_managers()
             for manager in managers:
-                sequence += 1
                 if not isinstance(manager, Employee):
                     manager = getattr(self.employee_id.employee_work_info, manager)
-                LeaveRequestConditionApproval.objects.create(
-                    sequence=sequence,
-                    leave_request_id=self,
-                    manager_id=manager,
-                )
+                if manager:
+                    sequence += 1
+                    LeaveRequestConditionApproval.objects.create(
+                        sequence=sequence,
+                        leave_request_id=self,
+                        manager_id=manager,
+                    )
 
     def clean(self, *args, **kwargs):
 
@@ -1566,16 +1569,21 @@ class LeaverequestComment(HorillaModel):
 
 class LeaveAllocationRequest(HorillaModel):
     leave_type_id = models.ForeignKey(
-        LeaveType, on_delete=models.PROTECT, verbose_name="Leave type"
+        LeaveType, on_delete=models.PROTECT, verbose_name=_("Leave type")
     )
     employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, verbose_name="Employee"
+        Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
     )
-    requested_days = models.FloatField(blank=True, null=True)
+    requested_days = models.FloatField(
+        blank=True, null=True, verbose_name=_("Requested days")
+    )
     requested_date = models.DateField(default=timezone.now)
-    description = models.TextField(max_length=255)
+    description = models.TextField(max_length=255, verbose_name=_("Description"))
     attachment = models.FileField(
-        null=True, blank=True, upload_to="leave/leave_attachment"
+        null=True,
+        blank=True,
+        upload_to="leave/leave_attachment",
+        verbose_name=_("Attachment"),
     )
     status = models.CharField(
         max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested"
@@ -1593,6 +1601,8 @@ class LeaveAllocationRequest(HorillaModel):
 
     class Meta:
         ordering = ["-id"]
+        verbose_name = _("Leave Allocation Request")
+        verbose_name_plural = _("Leave Allocation Requests")
 
     def __str__(self):
         return f"{self.employee_id}| {self.leave_type_id}| {self.id}"
@@ -1764,7 +1774,7 @@ class LeaveRequestConditionApproval(models.Model):
 
 
 class RestrictLeave(HorillaModel):
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, verbose_name=_("Title"))
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(verbose_name=_("End Date"))
     department = models.ForeignKey(
@@ -1779,18 +1789,20 @@ class RestrictLeave(HorillaModel):
         ),
     )
     include_all = models.BooleanField(
-        default=True, help_text=_("Enable to select all Leave types.")
+        default=True,
+        help_text=_("Enable to select all Leave types."),
+        verbose_name=_("Include All"),
     )
     spesific_leave_types = models.ManyToManyField(
         LeaveType,
-        verbose_name=_("Spesific leave types"),
+        verbose_name=_("Specific Leave Types"),
         related_name="spesific_leave_type",
         blank=True,
         help_text=_("Choose specific leave types to restrict."),
     )
     exclued_leave_types = models.ManyToManyField(
         LeaveType,
-        verbose_name=_("Exclude leave types"),
+        verbose_name=_("Exclude Leave Types"),
         related_name="excluded_leave_type",
         blank=True,
         help_text=_("Choose leave types to exclude from restriction."),

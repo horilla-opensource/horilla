@@ -58,7 +58,7 @@
          $.getJSON("leave-pivot", function (data) {
             // Add Plotly renderers correctly
             let plotlyRenderers = $.pivotUtilities.plotly_renderers;
-    
+
             // Initialize pivot table with Plotly enabled
             $("#pivot-container").pivotUI(data, {
                 rows: ["Name", "Leave Type"],
@@ -67,7 +67,7 @@
                 rendererName: "Table", // Default view as Table
                 onRefresh: function (config) {
                     let currentRenderer = config.rendererName;
-                    if (currentRenderer === "Table" || currentRenderer === "Table Barchart" || 
+                    if (currentRenderer === "Table" || currentRenderer === "Table Barchart" ||
                         currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap" ) {
                         $("#export-btn").show(); // Show button for tables
                     } else {
@@ -79,26 +79,26 @@
                     plotlyRenderers // Adding Plotly renderers
                 )
             });
-    
+
             // Export to Excel on button click
             $("#export-btn").on("click", function () {
                 exportTableToExcel("pivot-container", "pivot_report.xlsx");
             });
-    
+
             // Function to export table to Excel with styles
             function exportTableToExcel(containerId, filename) {
                 let table = document.querySelector(`#${containerId} .pvtTable`);
                 let wb = XLSX.utils.table_to_book(table, { sheet: "Pivot Data" });
-    
+
                 // Apply custom styles for Excel
                 let ws = wb.Sheets["Pivot Data"];
                 let range = XLSX.utils.decode_range(ws["!ref"]);
-    
+
                 for (let R = range.s.r; R <= range.e.r; ++R) {
                     for (let C = range.s.c; C <= range.e.c; ++C) {
                         let cell_address = XLSX.utils.encode_cell({ r: R, c: C });
                         if (!ws[cell_address]) continue;
-    
+
                         // Apply header styles (first row)
                         if (R === 0) {
                             ws[cell_address].s = {
@@ -118,7 +118,7 @@
                         }
                     }
                 }
-    
+
                 // Save the file
                 XLSX.writeFile(wb, filename);
             }
@@ -130,15 +130,15 @@
         // Function to load pivot data dynamically
         function loadPivotData(model) {
             let url = `leave-pivot?model=${model}`;
-    
+
             // Fetch data dynamically based on model
             $.getJSON(url, function (data) {
                 // Destroy and reinitialize pivot table with new data
                 $("#pivot-container").empty();
-    
+
                 // Add Plotly renderers correctly
                 let plotlyRenderers = $.pivotUtilities.plotly_renderers;
-    
+
                 // Initialize pivot table with Plotly enabled
                 $("#pivot-container").pivotUI(data, {
                     rows: ["Name","Phone","Department","Shift", "Leave Type","Requested Days","Status"],
@@ -163,42 +163,42 @@
                 });
             });
         }
-    
+
         // Initial load with all models
         loadPivotData("leave_request");
-    
+
         // Model selection change event
         $("#model-select").on("change", function () {
             let selectedModel = $(this).val();
             loadPivotData(selectedModel); // Reload pivot data with selected model
         });
-    
+
         // Export to Excel on button click
         $("#export-btn").on("click", function () {
             exportTableToExcel("pivot-container", "pivot_report.xlsx");
         });
-    
+
         // Function to export table to Excel with custom styles
         function exportTableToExcel(containerId, filename) {
             let table = document.querySelector(`#${containerId} .pvtTable`);
             let wb = XLSX.utils.table_to_book(table, { sheet: "Pivot Data" });
             let ws = wb.Sheets["Pivot Data"];
-    
+
             // Apply header styles
             applyHeaderStyles(ws);
-    
+
             // Save the file
             XLSX.writeFile(wb, filename);
         }
-    
+
         // Function to apply styles to Excel headers
         function applyHeaderStyles(ws) {
             let range = XLSX.utils.decode_range(ws["!ref"]);
-    
+
             for (let C = range.s.c; C <= range.e.c; ++C) {
                 let cell_address = XLSX.utils.encode_cell({ r: 0, c: C });
                 if (!ws[cell_address]) continue;
-    
+
                 // Apply header styles (first row)
                 ws[cell_address].s = {
                     font: { bold: true, sz: 14, color: { rgb: "FFFFFF" } },
@@ -210,13 +210,13 @@
                     },
                 };
             }
-    
+
             // Apply cell styles for data
             for (let R = range.s.r + 1; R <= range.e.r; ++R) {
                 for (let C = range.s.c; C <= range.e.c; ++C) {
                     let cell_address = XLSX.utils.encode_cell({ r: R, c: C });
                     if (!ws[cell_address]) continue;
-    
+
                     ws[cell_address].s = {
                         font: { sz: 12, color: { rgb: "333333" } },
                         alignment: { horizontal: "center", vertical: "center" },
@@ -229,7 +229,7 @@
             }
         }
     });
-        
+
 </script>
 
 

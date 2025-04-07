@@ -1098,17 +1098,13 @@ def employee_view(request):
     view_type = request.GET.get("view")
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
-    selected_company = request.session.get("selected_company")
     error_message = request.session.pop("error_message", None)
-    queryset = (
-        Employee.objects.filter(
-            is_active=True, employee_work_info__company_id=selected_company
-        )
-        if selected_company != "all"
-        else Employee.objects.filter(is_active=True)
-    )
 
-    filter_obj = EmployeeFilter(request.GET, queryset=queryset)
+    queryset = Employee.objects.filter()
+    filter_obj = EmployeeFilter(request.GET, queryset=queryset).qs
+    if request.GET.get("is_active") != "False":
+        filter_obj = filter_obj.filter(is_active=True)
+
     update_fields = BulkUpdateFieldForm()
     data_dict = parse_qs(previous_data)
     get_key_instances(Employee, data_dict)
@@ -1121,7 +1117,7 @@ def employee_view(request):
         request,
         "employee_personal_info/employee_view.html",
         {
-            "data": paginator_qry(filter_obj.qs, page_number),
+            "data": paginator_qry(filter_obj, page_number),
             "pd": previous_data,
             "f": filter_obj,
             "update_fields_form": update_fields,

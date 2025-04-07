@@ -868,6 +868,7 @@ def leave_request_approve(request, id, emp_id=None):
     total_available_leave = (
         available_leave.available_days + available_leave.carryforward_days
     )
+    send_notification = False
     if leave_request.status != "approved":
         if total_available_leave >= leave_request.requested_days:
             if leave_request.requested_days > available_leave.carryforward_days:
@@ -886,6 +887,7 @@ def leave_request_approve(request, id, emp_id=None):
             if not leave_request.multiple_approvals():
                 super(AvailableLeave, available_leave).save()
                 leave_request.save()
+                send_notification = True
             else:
                 if request.user.is_superuser:
                     LeaveRequestConditionApproval.objects.filter(
@@ -893,15 +895,19 @@ def leave_request_approve(request, id, emp_id=None):
                     ).update(is_approved=True)
                     super(AvailableLeave, available_leave).save()
                     leave_request.save()
+                    send_notification = True
                 else:
                     conditional_requests = leave_request.multiple_approvals()
-                    approver = [
-                        manager
-                        for manager in conditional_requests["managers"]
-                        if manager.employee_user_id == request.user
-                    ]
+                    approver = next(
+                        (
+                            manager
+                            for manager in conditional_requests["managers"]
+                            if manager == request.user.employee_get
+                        ),
+                        None,
+                    )
                     condition_approval = LeaveRequestConditionApproval.objects.filter(
-                        manager_id=approver[0], leave_request_id=leave_request
+                        manager_id=approver, leave_request_id=leave_request
                     ).first()
                     condition_approval.is_approved = True
                     managers = []
@@ -922,25 +928,30 @@ def leave_request_approve(request, id, emp_id=None):
                             )
 
                     condition_approval.save()
-                    if approver[0] == conditional_requests["managers"][-1]:
+                    if approver == conditional_requests["managers"][-1]:
                         super(AvailableLeave, available_leave).save()
                         leave_request.save()
+                        send_notification = True
             messages.success(request, _("Leave request approved successfully.."))
-            with contextlib.suppress(Exception):
-                notify.send(
-                    request.user.employee_get,
-                    recipient=leave_request.employee_id.employee_user_id,
-                    verb="Your Leave request has been approved",
-                    verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
-                    verb_de="Ihr Urlaubsantrag wurde genehmigt",
-                    verb_es="Se ha aprobado su solicitud de permiso",
-                    verb_fr="Votre demande de congé a été approuvée",
-                    icon="people-circle",
-                    redirect=reverse("user-request-view") + f"?id={leave_request.id}",
-                )
+            if send_notification:
+                with contextlib.suppress(Exception):
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=leave_request.employee_id.employee_user_id,
+                        verb="Your Leave request has been approved",
+                        verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
+                        verb_de="Ihr Urlaubsantrag wurde genehmigt",
+                        verb_es="Se ha aprobado su solicitud de permiso",
+                        verb_fr="Votre demande de congé a été approuvée",
+                        icon="people-circle",
+                        redirect=reverse("user-request-view")
+                        + f"?id={leave_request.id}",
+                    )
 
-            mail_thread = LeaveMailSendThread(request, leave_request, type="approve")
-            mail_thread.start()
+                mail_thread = LeaveMailSendThread(
+                    request, leave_request, type="approve"
+                )
+                mail_thread.start()
         else:
             messages.error(
                 request,

@@ -161,6 +161,14 @@ class EmployeesList(HorillaListView):
             "Reporting Manager",
             "employee_work_info__reporting_manager_id__get_full_name",
         ),
+        (
+            "Department",
+            "employee_work_info__department_id__department",
+        ),
+        (
+            "Job Position",
+            "employee_work_info__job_position_id__job_position",
+        ),
         ("Date of Joining", "employee_work_info__date_joining"),
     ]
 

@@ -74,7 +74,7 @@
                     $.pivotUtilities.renderers,
                     plotlyRenderers // Adding Plotly renderers
                 ),
-                
+
                 // Hide specific fields from selection dropdown
                 onRefresh: function (config) {
                     let currentRenderer = config.rendererName;
@@ -109,26 +109,26 @@
                     }, 10);
                 }
             });
-    
+
             // Export to Excel on button click
             $("#export-btn").on("click", function () {
                 exportTableToExcel("pivot-container", "pivot_report.xlsx");
             });
-    
+
             // Function to export table to Excel with styles
             function exportTableToExcel(containerId, filename) {
                 let table = document.querySelector(`#${containerId} .pvtTable`);
                 let wb = XLSX.utils.table_to_book(table, { sheet: "Pivot Data" });
-    
+
                 // Apply custom styles for Excel
                 let ws = wb.Sheets["Pivot Data"];
                 let range = XLSX.utils.decode_range(ws["!ref"]);
-    
+
                 for (let R = range.s.r; R <= range.e.r; ++R) {
                     for (let C = range.s.c; C <= range.e.c; ++C) {
                         let cell_address = XLSX.utils.encode_cell({ r: R, c: C });
                         if (!ws[cell_address]) continue;
-    
+
                         // Apply header styles (first row)
                         if (R === 0) {
                             ws[cell_address].s = {
@@ -148,13 +148,13 @@
                         }
                     }
                 }
-    
+
                 // Save the file
                 XLSX.writeFile(wb, filename);
             }
         });
     });
-    
+
 </script>
 
 

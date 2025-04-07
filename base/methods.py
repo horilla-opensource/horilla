@@ -6,6 +6,7 @@ import random
 from datetime import date, datetime, time, timedelta
 
 import pandas as pd
+import pdfkit
 from django.apps import apps
 from django.conf import settings
 from django.contrib.staticfiles import finders
@@ -16,9 +17,8 @@ from django.db.models import ForeignKey, ManyToManyField, OneToOneField, Q
 from django.db.models.functions import Lower
 from django.forms.models import ModelChoiceField
 from django.http import HttpResponse
-from django.template.loader import get_template
+from django.template.loader import render_to_string
 from django.utils.translation import gettext as _
-from xhtml2pdf import pisa
 
 from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
 from employee.models import Employee, EmployeeWorkInformation
@@ -686,32 +686,44 @@ def link_callback(uri, rel):
     return path
 
 
-def generate_pdf(template_path, context, path=True, title=None, html=True):
-    template_path = template_path
-    context_data = context
-    title = (
-        f"""{context_data.get("employee")}'s payslip for {context_data.get("range")}.pdf"""
-        if not title
-        else title
-    )
+# def generate_pdf(template_path, context, path=True, title=None, html=True):
+#     template_path = template_path
+#     context_data = context
+#     title = (
+#         f"""{context_data.get("employee")}'s payslip for {context_data.get("range")}.pdf"""
+#         if not title
+#         else title
+#     )
+#     response = HttpResponse(content_type="application/pdf")
+#     response["Content-Disposition"] = f"attachment; filename={title}"
 
-    response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = f"attachment; filename={title}"
+#     if html:
+#         html = template_path
+#     else:
+#         template = get_template(template_path)
+#         html = template.render(context_data)
+
+#     pisa_status = pisa.CreatePDF(
+#         html.encode("utf-8"),
+#         dest=response,
+#         link_callback=link_callback,
+#     )
+
+#     if pisa_status.err:
+#         return HttpResponse("We had some errors <pre>" + html + "</pre>")
+
+#     return response
+
+
+def generate_pdf(template_path, context, path=True, title=None, html=True):
+    title = "Document" if not title else title
 
     if html:
         html = template_path
     else:
-        template = get_template(template_path)
-        html = template.render(context_data)
+        html = render_to_string(template_path, context)
 
-    pisa_status = pisa.CreatePDF(
-        html.encode("utf-8"),
-        dest=response,
-        link_callback=link_callback,
-    )
-
-    if pisa_status.err:
-        return HttpResponse("We had some errors <pre>" + html + "</pre>")
+    response = template_pdf(template=html, html=True, filename=title)
 
     return response
 
@@ -954,3 +966,41 @@ def eval_validate(value):
     """
     value = ast.literal_eval(value)
     return value
+
+
+def template_pdf(template, context={}, html=False, filename="payslip.pdf"):
+    """
+    Generate a PDF file from an HTML template and context data.
+
+    Args:
+        template_path (str): The path to the HTML template.
+        context (dict): The context data to render the template.
+        html (bool): If True, return raw HTML instead of a PDF.
+
+    Returns:
+        HttpResponse: A response with the generated PDF file or raw HTML.
+    """
+    try:
+        bootstrap_css = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">'
+        html_content = f"{bootstrap_css}\n{template}"
+
+        pdf_options = {
+            "page-size": "A4",
+            "margin-top": "10mm",
+            "margin-bottom": "10mm",
+            "margin-left": "10mm",
+            "margin-right": "10mm",
+            "encoding": "UTF-8",
+            "enable-local-file-access": None,
+            "dpi": 300,
+            "zoom": 1.3,
+            "footer-center": "[page]/[topage]",
+        }
+
+        pdf = pdfkit.from_string(html_content, False, options=pdf_options)
+
+        response = HttpResponse(pdf, content_type="application/pdf")
+        response["Content-Disposition"] = f"inline; filename={filename}"
+        return response
+    except Exception as e:
+        return HttpResponse(f"Error generating PDF: {str(e)}", status=500)

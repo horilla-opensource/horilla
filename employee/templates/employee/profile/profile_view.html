@@ -1,8 +1,4 @@
-{% extends 'index.html' %} {% load i18n %} {% load static %} {% load basefilters %} {% load horillafilters accessibility_filters %} {% block content %}
-<style>
-	.oh-general__tab{
-		margin-bottom: 15px;
-	}
+{% extends 'index.html' %} {% load i18n static basefilters horillafilters accessibility_filters %} {% block content %}
 
 .resign-status {
 	background: #73bbe12b;
@@ -312,6 +308,8 @@ aria-hidden="true">
 
 
 {% comment %} <div class="oh-wrapper">
+<div class="oh-wrapper" id="profile-view">
+	<div id="enlargeImageContainer"></div>
 	<div class="oh-card mt-4 mb-5">
 		{% if perms.employee.change_ownprofile or 'profile_edit'|feature_is_accessible:request %}
 		<div class="d-flex flex-row-reverse">

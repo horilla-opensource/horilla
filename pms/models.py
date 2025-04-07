@@ -95,7 +95,7 @@ class KeyResult(HorillaModel):
         max_length=60, default="%", choices=PROGRESS_CHOICES
     )
     target_value = models.IntegerField(null=True, blank=True, default=100)
-    duration = models.IntegerField(null=True, blank=True)
+    duration = models.IntegerField(null=True, blank=True, help_text="In Days")
     archive = models.BooleanField(default=False)
     history = HorillaAuditLog(bases=[HorillaAuditInfo])
     company_id = models.ForeignKey(

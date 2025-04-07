@@ -400,10 +400,10 @@ def change_stage(request):
     for employee in employees:
         employee.stage_id = stage
         employee.save()
-    # if stage.type == "archived":
-    #     Employee.objects.filter(
-    #         id__in=employees.values_list("employee_id__id", flat=True)
-    #     ).update(is_active=False)
+    if stage.type == "archived":
+        Employee.objects.filter(
+            id__in=employees.values_list("employee_id__id", flat=True)
+        ).update(is_active=False)
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
         offboarding=stage.offboarding_id

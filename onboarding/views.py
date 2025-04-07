@@ -670,7 +670,7 @@ def email_send(request):
     for cand_id in candidates:
         attachments = list(set(attachments_other) | set([]))
         candidate = Candidate.objects.get(id=cand_id)
-        if not request.GET["no_portal"]:
+        if not request.GET.get("no_portal"):
             if candidate.converted_employee_id:
                 messages.info(
                     request, _(f"{candidate} has already been converted to employee.")

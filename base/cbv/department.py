@@ -86,6 +86,9 @@ class DepartmentListView(HorillaListView):
     columns = [
         (_("Department"), "department"),
     ]
+    sortby_mapping = [
+        (_("Department"), "department"),
+    ]
 
     header_attrs = {
         "department": """ style="width:300px !important" """,
