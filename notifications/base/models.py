@@ -212,7 +212,7 @@ class AbstractNotification(models.Model):
         "action_object_content_type", "action_object_object_id"
     )
 
-    timestamp = models.DateTimeField(default=timezone.now, db_index=True)
+    timestamp = models.DateTimeField(default=timezone.now, db_index=True, auto_now=False)
 
     public = models.BooleanField(default=True, db_index=True)
     deleted = models.BooleanField(default=False, db_index=True)

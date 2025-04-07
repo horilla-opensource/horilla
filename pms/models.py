@@ -263,7 +263,7 @@ class Comment(models.Model):
         null=True,
         blank=True,
     )
-    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True, auto_now=False)
     history = HorillaAuditLog(excluded_fields=["comment"], bases=[HorillaAuditInfo])
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -751,7 +751,7 @@ class KeyResultFeedback(models.Model):
 
 class Meetings(HorillaModel):
     title = models.CharField(max_length=100)
-    date = models.DateTimeField(null=True, blank=True)
+    date = models.DateTimeField(null=True, blank=True, auto_now=False)
     employee_id = models.ManyToManyField(
         Employee,
         related_name="meeting_employee",

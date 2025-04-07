@@ -64,11 +64,11 @@ class AttendanceActivity(HorillaModel):
         on_delete=models.DO_NOTHING,
         verbose_name=_("Shift Day"),
     )
-    in_datetime = models.DateTimeField(null=True)
+    in_datetime = models.DateTimeField(null=True, auto_now=False)
     clock_in_date = models.DateField(null=True, verbose_name=_("In Date"))
     clock_in = models.TimeField(verbose_name=_("Check In"))
     clock_out_date = models.DateField(null=True, verbose_name=_("Out Date"))
-    out_datetime = models.DateTimeField(null=True)
+    out_datetime = models.DateTimeField(null=True, auto_now=False)
     clock_out = models.TimeField(null=True, verbose_name=_("Check Out"))
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -762,7 +762,7 @@ class AttendanceLateComeEarlyOut(HorillaModel):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, auto_now=False)
 
     def get_penalties_count(self):
         """
@@ -966,7 +966,7 @@ class WorkRecords(models.Model):
         EmployeeShift, on_delete=models.SET_NULL, blank=True, null=True
     )
     day_percentage = models.FloatField(default=0)
-    last_update = models.DateTimeField(null=True, blank=True)
+    last_update = models.DateTimeField(null=True, blank=True, auto_now=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def title_message(self):

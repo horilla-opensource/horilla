@@ -72,7 +72,7 @@ class Company(HorillaModel):
 
     company = models.CharField(max_length=50)
     hq = models.BooleanField(default=False)
-    address = models.TextField(max_length=255)
+    address = models.CharField(max_length=255)
     country = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
@@ -1569,7 +1569,7 @@ class AnnouncementView(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     viewed = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, auto_now=False)
     objects = models.Manager()
 
 
@@ -1584,7 +1584,7 @@ class EmailLog(models.Model):
     from_email = models.EmailField()
     to = models.EmailField()
     status = models.CharField(max_length=6, choices=statuses)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, auto_now=False)
     objects = models.Manager()
     company_id = models.ForeignKey(
         Company, on_delete=models.CASCADE, null=True, editable=False

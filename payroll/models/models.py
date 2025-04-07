@@ -422,7 +422,7 @@ class WorkRecord(models.Model):
     is_attendance_record = models.BooleanField(default=False)
     is_leave_record = models.BooleanField(default=False)
     day_percentage = models.FloatField(default=0)
-    last_update = models.DateTimeField(null=True, blank=True)
+    last_update = models.DateTimeField(null=True, blank=True, auto_now=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def save(self, *args, **kwargs):
@@ -732,7 +732,7 @@ class Allowance(HorillaModel):
         ("basic_pay", _("Basic Pay")),
     ]
     title = models.CharField(
-        max_length=255, null=False, blank=False, help_text=_("Title of the allowance")
+        max_length=100, null=False, blank=False, help_text=_("Title of the allowance")
     )
     one_time_date = models.DateField(
         null=True,
@@ -777,17 +777,17 @@ class Allowance(HorillaModel):
     )
     # If condition based
     field = models.CharField(
-        max_length=255,
+        max_length=100,
         choices=FIELD_CHOICE,
         null=True,
         blank=True,
         help_text=_("The related field of the employees"),
     )
     condition = models.CharField(
-        max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
+        max_length=100, choices=CONDITION_CHOICE, null=True, blank=True
     )
     value = models.CharField(
-        max_length=255,
+        max_length=100,
         null=True,
         blank=True,
         help_text=_("The value must be like the data stored in the database"),
@@ -804,7 +804,7 @@ class Allowance(HorillaModel):
     )
     # If is fixed is false
     based_on = models.CharField(
-        max_length=255,
+        max_length=100,
         default="basic_pay",
         choices=based_on_choice,
         null=True,
@@ -1496,7 +1496,7 @@ class LoanAccount(HorillaModel):
     )
     apply_on = models.CharField(default="end_of_month", max_length=20, editable=False)
     settled = models.BooleanField(default=False)
-    settled_date = models.DateTimeField(null=True)
+    settled_date = models.DateTimeField(null=True, auto_now=False)
 
     if apps.is_installed("asset"):
         asset_id = models.ForeignKey(
@@ -1808,6 +1808,7 @@ class ReimbursementrequestComment(HorillaModel):
         auto_now_add=True,
         verbose_name=_("Created At"),
         null=True,
+        auto_now=False
     )
 
     def __str__(self) -> str:

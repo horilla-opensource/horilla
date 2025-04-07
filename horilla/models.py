@@ -45,6 +45,7 @@ class HorillaModel(models.Model):
         null=True,
         blank=True,
         verbose_name=_("Created At"),
+        auto_now=False
     )
     created_by = models.ForeignKey(
         User,

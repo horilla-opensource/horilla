@@ -346,7 +346,7 @@ class Candidate(HorillaModel):
         verbose_name=_("Employee"),
     )
     schedule_date = models.DateTimeField(
-        blank=True, null=True, verbose_name=_("Schedule date")
+        blank=True, null=True, verbose_name=_("Schedule date"), auto_now=False
     )
     email = models.EmailField(max_length=254, unique=True, verbose_name=_("Email"))
     mobile = models.CharField(

@@ -192,7 +192,7 @@ class Comment(HorillaModel):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.DO_NOTHING, related_name="employee_comment"
     )
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True, auto_now=False)
 
     def __str__(self):
         return self.comment

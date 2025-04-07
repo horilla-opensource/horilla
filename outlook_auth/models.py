@@ -44,7 +44,7 @@ class AzureApi(models.Model):
     is_primary = models.BooleanField(default=False)
     token = models.JSONField(editable=False, default=dict)
     oauth_state = models.CharField(editable=False, max_length=100, null=True)
-    last_refreshed = models.DateTimeField(null=True, editable=False)
+    last_refreshed = models.DateTimeField(null=True, editable=False, auto_now=False)
 
     def save(self, *args, **kwargs):
         if self.is_primary:
