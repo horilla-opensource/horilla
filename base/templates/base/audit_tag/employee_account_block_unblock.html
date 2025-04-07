@@ -42,8 +42,7 @@
             hx-post="{% url 'enable-profile-edit-feature' %}"
             hx-swap="none"
             hx-trigger="change from:#enableProfileEditUnblock"
-            hx-on-htmx-confirm="return confirm('{% trans 'Are you sure you want to restrict profile editing?' %}');"
-            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 70);"
+            hx-on="htmx:confirm"
         >
             {% csrf_token %}
             <div class="oh-label__info" for="enable_block_unblock">
@@ -72,3 +71,19 @@
     </div>
 </div>
 <div class="oh-inner-sidebar-content__footer"></div>
+<script>
+document.getElementById("enableProfileEditUnblock").addEventListener("change", function () {
+    const checkbox = this;
+
+    const confirmMessage = checkbox.checked
+        ? "{{ _('Are you sure you want to allow profile editing?') }}"
+        : "{{ _('Are you sure you want to restrict profile editing?') }}";
+
+    if (confirm(confirmMessage)) {
+        document.getElementById("enableProfileEditForm").dispatchEvent(new Event("submit", { bubbles: true }));
+    } else {
+        // Revert the checkbox state if cancelled
+        checkbox.checked = !checkbox.checked;
+    }
+});
+</script>
