@@ -1,0 +1,208 @@
+{% extends 'index.html' %} {% block content %} {% load static i18n horillafilters %}
+
+<div class="oh-wrapper" id="offboardingDashboard">
+    <div class="oh-dashboard mb-5" id="dashboard">
+        <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="oh-dashboard__cards row">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div
+                        class="oh-card-dashboard oh-card-dashboard--success h-100"
+                    >
+                        <a
+                            href="{% url 'offboarding-pipeline' %}"
+                            class="text-decoration-none recruitment"
+                        >
+                            <div
+                                class="oh-card-dashboard__header d-flex justify-content-between align-items-center"
+                            >
+                                <span class="oh-card-dashboard__title"
+                                    >{% trans "Exit Ratio" %}</span
+                                >
+                                <span
+                                    style="font-size: 24px"
+                                    title="{% trans 'Archived Employees / Total Employees' %}"
+                                    ><ion-icon
+                                        name="help-circle-outline"
+                                    ></ion-icon
+                                ></span>
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <span class="oh-card-dashboard__count"
+                                    >{{exit_ratio}}
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div
+                        class="oh-card-dashboard oh-card-dashboard--warning h-100"
+                    >
+                        <div
+                            class="oh-card-dashboard__header d-flex justify-content-between align-items-center"
+                        >
+                            <span class="oh-card-dashboard__title"
+                                >{% trans "Exiting to Joining Ratio" %}</span
+                            >
+                            <span
+                                style="font-size: 24px"
+                                title="{% trans 'Exiting Employees : Joining Employees' %}"
+                                ><ion-icon name="help-circle-outline"></ion-icon
+                            ></span>
+                        </div>
+                        <div class="oh-card-dashboard__body">
+                            <span class="oh-card-dashboard__count"
+                                >{{resigning_employees.count}} :
+                                {{onboarding_employees}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4">
+                    <div
+                        class="oh-card-dashboard oh-card-dashboard--success h-100"
+                    >
+                        <a
+                            href="{% url 'employee-view' %}?is_active=False"
+                            style="text-decoration: none"
+                        >
+                            <div class="oh-card-dashboard__header">
+                                <span class="oh-card-dashboard__title"
+                                    >{% trans "Archived Employees" %}</span
+                                >
+                            </div>
+                            <div class="oh-card-dashboard__body">
+                                <span
+                                    style="text-decoration: none"
+                                    class="oh-card-dashboard__counts"
+                                >
+                                    <span class="oh-card-dashboard__count">
+                                        {{archived_employees.count}}
+                                    </span>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% if perms.offboarding.view_offboardingtask %}
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-4">
+                    <div
+                        class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent oh-offboarding-card"
+                        hx-get="{% url 'dashboard-task-table' %}"
+                        hx-trigger="load"
+                    >
+                        <div class="animated-background"></div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if "asset"|app_installed %}
+                    {% if perms.offboarding.view_offboarding %}
+                        <div class="col-12 col-sm-12 col-md-12 col-lg-6 mt-4">
+                            <div
+                                class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent oh-offboarding-card"
+                                style="cursor: default"
+                                hx-get="{% url 'dashboard-asset-table' %}"
+                                hx-trigger="load"
+                            >
+                                <div class="animated-background"></div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+                {% if perms.offboarding.view_offboarding %}
+
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-4">
+                    <div
+                        class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent oh-offboarding-card"
+                        style="cursor: default"
+                    >
+                        <div
+                            class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+                        >
+                            <span class="oh-card-dashboard__title"
+                                >{% trans "Department - JobPosition Offboarding" %}</span
+                            >
+                        </div>
+                        <div
+                            class="oh-card-dashboard__body"
+                            style="height: 350px; overflow: auto"
+                        >
+                            <canvas id="departmentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-4">
+                    <div
+                        class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent oh-offboarding-card"
+                        style="cursor: default"
+                        hx-get="{% url 'dashboard-feedback-table' %}"
+                        hx-trigger="load"
+                    >
+                        <div
+                            class="oh-card-dashboard__body"
+                        >
+                            <div class="animated-background"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-4 mt-4">
+                    <div
+                        class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent oh-offboarding-card"
+                        style="cursor: default"
+                    >
+                        <div
+                            class="oh-card-dashboard__header oh-card-dashboard__header--divider"
+                        >
+                            <span class="oh-card-dashboard__title"
+                                >{% trans "Joining and Offboarding Chart" %}</span
+                            >
+                            <span
+                                class="oh-card-dashboard__title float-end"
+                                id="joinChartChange"
+                                style="cursor: pointer"
+                            >
+                                <ion-icon
+                                    name="caret-forward"
+                                    role="img"
+                                    class="md hydrated"
+                                ></ion-icon>
+                            </span>
+                        </div>
+                        <div
+                            class="oh-card-dashboard__body"
+                            style="height: 350px; overflow: auto"
+                        >
+                            <canvas id="joinChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div
+        class="oh-modal"
+        id="sendMailModal"
+        role="dialog"
+        aria-labelledby="sendMailModal"
+        aria-hidden="true"
+    >
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <h5 class="oh-modal__dialog-title" id="sendMailModalLabel">
+                    {% trans "Send Mail" %}
+                </h5>
+                <button class="oh-modal__close" aria-label="Close">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="mail-content"></div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'offboarding/dashboard.js' %}"></script>
+
+{% endblock content %}

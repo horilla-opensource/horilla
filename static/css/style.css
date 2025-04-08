@@ -517,7 +517,6 @@ form label {
     line-height: 1;
 }
 
-
 .lastTd {
     position: sticky;
     right: 0;
@@ -552,7 +551,7 @@ form label {
 }
 
 /* Selected radio */
-.custom-radio-container input[type="radio"]:checked + .custom-radio-checkmark {
+.custom-radio-container input[type="radio"]:checked+.custom-radio-checkmark {
     background-color: red;
     border-color: red;
 }
@@ -564,7 +563,7 @@ form label {
     display: none;
 }
 
-.custom-radio-container input[type="radio"]:checked + .custom-radio-checkmark::after {
+.custom-radio-container input[type="radio"]:checked+.custom-radio-checkmark::after {
     display: block;
     width: 10px;
     height: 10px;
@@ -585,18 +584,20 @@ form label {
     pointer-events: none;
 }
 
-#profile-view .oh-general__tab{
-	margin-bottom: 15px;
+#profile-view .oh-general__tab {
+    margin-bottom: 15px;
 }
+
 #profile-view .resign-status {
-	background: #73bbe12b;
-	font-size: 0.8rem;
-	padding: 4px 8px;
-	border-radius: 10px;
-	margin-bottom: 6px;
-	font-weight: 600;
-	color: #357579;
-	}
+    background: #73bbe12b;
+    font-size: 0.8rem;
+    padding: 4px 8px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #357579;
+}
+
 #profile-view .enlarge-image-container {
     display: none;
     position: fixed;
@@ -607,14 +608,17 @@ form label {
     height: 50%;
     z-index: 9999;
 }
-#profile-view .enlarge-image-container img{
+
+#profile-view .enlarge-image-container img {
     max-width: 100%;
     height: auto;
     border-radius: 5%;
 }
-#profile-view .oh-sticky-table{
-    max-height:50vh;
+
+#profile-view .oh-sticky-table {
+    max-height: 50vh;
 }
+
 #profile-view .oh-modal_close--custom {
     border: none;
     background: none;
@@ -624,13 +628,16 @@ form label {
     top: 25px;
     right: 15px;
 }
+
 #profile-view .oh-tabs__tablist .oh-tabs__tab--active:nth-last-child(2) {
-    border-right: 1px solid hsl(213deg,22%,84%);
+    border-right: 1px solid hsl(213deg, 22%, 84%);
 }
+
 #profile-view .custom-dialog {
-    max-width:1000px;
+    max-width: 1000px;
     max-height: 800px;
 }
+
 #profile-view .file-validation {
     color: #4f5bd9;
     background-color: #d8e7f0;
@@ -640,6 +647,7 @@ form label {
     border-radius: 4px;
 
 }
+
 #profile-view .oh-not-found {
     display: flex;
     justify-content: center;
@@ -648,25 +656,39 @@ form label {
     height: 50vh;
     opacity: 0.5;
 }
+
 #profile-view .editable-input:read-only {
-    color: hsl(0,0%,11%);
+    color: hsl(0, 0%, 11%);
     background-color: transparent;
     border: none;
     height: 100%;
     border: 1px solid transparent;
 }
+
 #profile-view .editable-input:read-only:hover {
-    border: 1px solid hsl(213,22%,84%);
-    }
+    border: 1px solid hsl(213, 22%, 84%);
+}
+
 #profile-view .file-upload {
     margin-top: 6px !important;
     width: 34px !important;
     height: 34px !important;
     font-size: 1.75rem !important;
 }
+
 #profile-view .file-upload {
     margin-top: 6px !important;
     width: 34px !important;
     height: 34px !important;
     font-size: 1.75rem !important;
+}
+
+.oh-offboarding-card {
+    height: 450px !important;
+}
+
+.display-justify-center {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
