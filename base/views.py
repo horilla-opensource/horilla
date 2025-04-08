@@ -5407,8 +5407,9 @@ def enable_profile_edit_feature(request):
                     feature="profile_edit", filter={"feature": ["profile_edit"]}
                 )
         else:
-            feature.delete()
-            messages.info(request, _("Profile edit accessibility feature has been removed."))
+            if feature is not None:
+                feature.delete()
+                messages.info(request, _("Profile edit accessibility feature has been removed."))
 
 
         if enabled:
@@ -5422,8 +5423,8 @@ def enable_profile_edit_feature(request):
             _(f"Profile edit feature has been {'enabled' if enabled else 'disabled'}."),
         )
         if request.META.get("HTTP_HX_REQUEST"):
-            return HttpResponse()
-        return redirect(general_settings)
+            return HttpResponse(status=204)
+        return redirect('employee-view-new')
     return HttpResponse(status=405)
 
 
