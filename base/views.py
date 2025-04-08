@@ -5423,7 +5423,7 @@ def enable_profile_edit_feature(request):
             _(f"Profile edit feature has been {'enabled' if enabled else 'disabled'}."),
         )
         if request.META.get("HTTP_HX_REQUEST"):
-            return HttpResponse(status=204)
+            return HttpResponse()
         return redirect(general_settings)
     return HttpResponse(status=405)
 
