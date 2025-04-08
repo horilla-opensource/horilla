@@ -844,7 +844,7 @@ def emp_objective_search(request, obj_id):
     search_val = request.GET.get("search")
     if search_val is None:
         search_val = ""
-    emp_objectives = EmployeeObjectiveFilter(request.GET, emp_objectives).qs
+    emp_objectives = EmployeeObjectiveFilter(request.GET, emp_objectives).qs.distinct()
     if not request.GET.get("archive") == "true":
         emp_objectives = emp_objectives.filter(archive=False)
     previous_data = request.GET.urlencode()
@@ -880,6 +880,7 @@ def kr_table_view(request, emp_objective_id):
     """
     emp_objective = EmployeeObjective.objects.get(id=emp_objective_id)
     krs = emp_objective.employee_key_result.all()
+    krs = KeyResultFilter(request.GET, queryset=krs).qs.distinct()
     krs = Paginator(krs, get_pagination())
     krs_page = request.GET.get("krs_page")
     krs = krs.get_page(krs_page)

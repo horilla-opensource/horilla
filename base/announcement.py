@@ -42,6 +42,9 @@ def announcement_list(request):
     )
     announcements = Announcement.objects.all()
     announcements_to_update = []
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
+    print(announcements)
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
     for announcement in announcements.filter(expire_date__isnull=True):
         announcement.expire_date = announcement.created_at + timedelta(

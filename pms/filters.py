@@ -381,6 +381,26 @@ class KeyResultFilter(CustomFilterSet):
         ],
     )
 
+    kr_progress_percentage__gte = django_filters.NumberFilter(
+        field_name="progress_percentage", lookup_expr="gte"
+    )
+    kr_progress_percentage__lte = django_filters.NumberFilter(
+        field_name="progress_percentage", lookup_expr="lte"
+    )
+
+    kr_start_date_from = django_filters.CharFilter(
+        lookup_expr="gte", field_name="start_date"
+    )
+    kr_start_date_till = django_filters.CharFilter(
+        lookup_expr="lte", field_name="start_date"
+    )
+    kr_end_date_from = django_filters.CharFilter(
+        lookup_expr="gte", field_name="end_date"
+    )
+    kr_end_date_till = django_filters.CharFilter(
+        lookup_expr="lte", field_name="end_date"
+    )
+
     def filter_due_date(self, queryset, name, value):
         """
         Filter due date
@@ -472,6 +492,26 @@ class EmployeeObjectiveFilter(HorillaFilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    kr_start_date_from = django_filters.DateFilter(
+        method="kr_start_date_till_method",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    kr_start_date_till = django_filters.DateFilter(
+        method="kr_start_date_till_method",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    kr_end_date_from = django_filters.DateFilter(
+        method="kr_end_date_from_method",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    kr_end_date_till = django_filters.DateFilter(
+        method="kr_end_date_till_method",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
 
     due = django_filters.ChoiceFilter(
         method="filter_due_date",
@@ -484,6 +524,50 @@ class EmployeeObjectiveFilter(HorillaFilterSet):
             ("overdue", "Overdue"),
         ],
     )
+    progress_percentage__gte = django_filters.NumberFilter(
+        field_name="progress_percentage", lookup_expr="gte"
+    )
+    progress_percentage__lte = django_filters.NumberFilter(
+        field_name="progress_percentage", lookup_expr="lte"
+    )
+    kr_progress_percentage__gte = django_filters.NumberFilter(method="kr_progress_gte")
+    kr_progress_percentage__lte = django_filters.NumberFilter(method="kr_progress_lte")
+
+    def kr_start_date_from_method(self, queryset, name, value):
+        """
+        Kr filter
+        """
+        return queryset.filter(employee_key_result__start_date__gte=value)
+
+    def kr_start_date_till_method(self, queryset, name, value):
+        """
+        Kr filter
+        """
+        return queryset.filter(employee_key_result__start_date__lte=value)
+
+    def kr_end_date_from_method(self, queryset, name, value):
+        """
+        Kr filter
+        """
+        return queryset.filter(employee_key_result__end_date__gte=value)
+
+    def kr_end_date_till_method(self, queryset, name, value):
+        """
+        Kr filter
+        """
+        return queryset.filter(employee_key_result__end_date__lte=value)
+
+    def kr_progress_gte(self, queryset, name, value):
+        """
+        Kr prgress filter
+        """
+        return queryset.filter(employee_key_result__progress_percentage__gte=value)
+
+    def kr_progress_lte(self, queryset, name, value):
+        """
+        Kr prgress filter
+        """
+        return queryset.filter(employee_key_result__progress_percentage__lte=value)
 
     def filter_due_date(self, queryset, name, value):
         """

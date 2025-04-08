@@ -1119,7 +1119,7 @@ def employee_view(request):
         {
             "data": paginator_qry(filter_obj, page_number),
             "pd": previous_data,
-            "f": filter_obj,
+            "f": EmployeeFilter(),
             "update_fields_form": update_fields,
             "view_type": view_type,
             "filter_dict": data_dict,
