@@ -5424,7 +5424,7 @@ def enable_profile_edit_feature(request):
         )
         if request.META.get("HTTP_HX_REQUEST"):
             return HttpResponse(status=204)
-        return redirect('employee-view-new')
+        return redirect(general_settings)
     return HttpResponse(status=405)
 
 
