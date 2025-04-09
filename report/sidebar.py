@@ -23,6 +23,14 @@ SUBMENUS = [
         "menu": "Payroll",
         "redirect": reverse_lazy("payroll-report"),
     },
+    {
+        "menu": "Asset",
+        "redirect": reverse_lazy("asset-report"),
+    },
+    {
+        "menu": "Performance",
+        "redirect": reverse_lazy("pms-report"),
+    },
 ]
 
 

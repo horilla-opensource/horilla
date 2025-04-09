@@ -202,9 +202,14 @@ urlpatterns = [
     ),
     path(
         "kr-table-view/<int:emp_objective_id>",
-        views.kr_table_view,
+        objectives.EmployeeObjectiveKeyResultDetailListView.as_view(),
         name="kr-table-view",
     ),
+    # path(
+    #     "kr-table-view/<int:emp_objective_id>",
+    #     views.kr_table_view,
+    #     name="kr-table-view",
+    # ),
     # path(
     #     "key-result-view",
     #     views.key_result_view,

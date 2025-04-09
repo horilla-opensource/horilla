@@ -741,33 +741,45 @@ class CandidateDetail(HorillaDetailedView):
     cols = {
         "candidate_interview_view": 12,
     }
-    actions = [
-        {
-            "action": "Edit",
-            "icon": "create-outline",
-            "attrs": """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.actions = [
+            {
+                "action": "Edit",
+                "icon": "create-outline",
+                "attrs": """
             class="oh-btn oh-btn--info w-50"
             onclick="window.location.href='{get_update_url}' "
             """,
-        },
-        {
-            "action": "View",
-            "icon": "eye-outline",
-            "attrs": """
+            },
+            {
+                "action": "View",
+                "icon": "eye-outline",
+                "attrs": """
             class="oh-btn oh-btn--success w-50"
             onclick="window.location.href='{get_individual_url}'"
             """,
-        },
-        {
-            "action": "Delete",
-            "icon": "trash-outline",
-            "attrs": """
+            },
+        ]
+
+        if self.request.user.has_perm("recruitment.delete_candidate"):
+            self.actions.append(
+                {
+                    "action": "Delete",
+                    "icon": "trash-outline",
+                    "accessibility": "recruitment.cbv.candidates.delete_cand",
+                    "attrs": f"""
             class="oh-btn oh-btn--danger w-50"
+            hx-get="{reverse_lazy("generic-delete")}?model=recruitment.Candidate&pk={{pk}}"
+            hx-target="#deleteConfirmationBody"
+            data-toggle="oh-modal-toggle"
+            data-target="#deleteConfirmation"
             onclick="event.stopPropagation()
-            deleteCandidate('{get_delete_url}'); "
+            deleteCandidate('{{get_delete_url}}'); "
             """,
-        },
-    ]
+                }
+            )
 
 
 class ToSkillZoneFormView(HorillaFormView):

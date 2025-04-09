@@ -281,7 +281,7 @@ class CandidateList(HorillaListView):
             "action": _("Add to Skill Zone"),
             "icon": "heart-circle-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 disabled"
                     data-toggle="oh-modal-toggle"
                     hx-get="{get_skill_zone_url}"
                     data-target="#genericModal"
@@ -340,11 +340,34 @@ class CandidateList(HorillaListView):
         )
         return form
 
+    def bulk_update_accessibility(self):
+        """
+        Bulk Update accessiblity
+        """
+        if not self.kwargs.get("stage_id"):
+            return super().bulk_update_accessibility()
+        first_cand_in_stage = self.queryset.first()
+        return super().bulk_update_accessibility() or (
+            first_cand_in_stage
+            and (
+                self.request.user.employee_get
+                in first_cand_in_stage.stage_id.stage_managers.all()
+                or self.request.user.employee_get
+                in first_cand_in_stage.recruitment_id.recruitment_managers.all()
+            )
+        )
+
     records_per_page = 10
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.search_url = self.request.path
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if not self.bulk_update_accessibility():
+            context["actions"] = []
+        return context
 
     def get(self, request, *args, **kwargs):
         self.selected_instances_key_id = f"selectedCandidateRecords{kwargs['stage_id']}"

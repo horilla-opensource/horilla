@@ -3331,10 +3331,12 @@ def key_result_current_value_update(request):
             {
                 "type": "sucess",
                 "progress": emp_kr.employee_objective_id.progress_percentage,
+                "kr_progress": emp_kr.progress_percentage,
                 "pk": emp_kr.employee_objective_id.pk,
             }
         )
-    except:
+    except Exception as e:
+        print(e)
         return JsonResponse({"type": "error"})
 
 

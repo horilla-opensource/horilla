@@ -20,7 +20,7 @@ from horilla_views.generic.cbv.views import (
 )
 from notifications.signals import notify
 from pms.cbv.key_result import KeyResultFormView
-from pms.filters import ActualObjectiveFilter, ObjectiveFilter
+from pms.filters import ActualObjectiveFilter, KeyResultFilter, ObjectiveFilter
 from pms.forms import (
     AddAssigneesForm,
     EmployeeKeyResultForm,
@@ -558,3 +558,67 @@ class EmployeeObjectiveDetailView(HorillaDetailedView):
     ]
 
     action_method = "emp_obj_action"
+
+
+class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
+    """
+    List view of the page
+    """
+
+    model = EmployeeKeyResult
+    filter_class = KeyResultFilter
+    columns = [
+        ("Title", "title_col"),
+        ("Start Value", "start_value"),
+        ("Current Value", "get_current_value_col"),
+        ("Target Value", "target_value"),
+        ("Progress Percentage", "get_progress_col"),
+        ("Start Date", "start_date"),
+        ("End Date", "end_date"),
+        ("Status", "status_col"),
+    ]
+    actions = [
+        {
+            "action": "Edit",
+            "icon": "create-outline",
+            "attrs": """
+                hx-get='{get_update_url}'
+                class="oh-btn w-100"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+                style="cursor: pointer;"
+                """,
+        },
+        {
+            "action": "Delete",
+            "icon": "trash-outline",
+            "attrs": """
+                hx-get='{get_delete_url}'
+                hx-confirm="Are you sure you want to delete	this Key result?"
+                hx-swap="none"
+                class="oh-btn oh-btn--danger-outline w-100"
+                hx-on-htmx-after-request= "window.location.reload();"
+                style="cursor: pointer;"
+                """,
+        },
+    ]
+    filter_selected = False
+    show_filter_tags = False
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.search_url = self.request.path
+        self.selected_instances_key_id = (
+            f'ekrIds{self.request.GET.get("employee_objective_id")}'
+        )
+
+    header_attrs = {
+        "title_col": """
+                      style="width:200px !important;"
+                      """
+    }
+    row_attrs = """
+                class = "oh-employee-okr-row"
+                data-kr-id = "{get_instance_id}"
+                """

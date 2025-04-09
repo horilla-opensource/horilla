@@ -11,7 +11,6 @@ from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
-from base.decorators import manager_can_enter
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -21,15 +20,15 @@ from horilla_views.generic.cbv.views import (
     TemplateView,
 )
 from notifications.signals import notify
+from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.filters import InterviewFilter
 from recruitment.forms import ScheduleInterviewForm
 from recruitment.models import Candidate, InterviewSchedule
-from recruitment.views.views import get_managers
 
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
+    recruitment_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )
 class InterviewViewPage(TemplateView):
     """
@@ -41,7 +40,7 @@ class InterviewViewPage(TemplateView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
+    recruitment_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )
 class InterviewNavView(HorillaNavView):
     """
@@ -71,7 +70,7 @@ class InterviewNavView(HorillaNavView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
+    recruitment_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )
 class InterviewLIstView(HorillaListView):
     """
@@ -139,7 +138,7 @@ class InterviewLIstView(HorillaListView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
+    recruitment_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )
 class InterviewDetailView(HorillaDetailedView):
     """

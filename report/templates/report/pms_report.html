@@ -8,7 +8,7 @@
     <div class="d-flex mt-3 mb-3" style='justify-content: space-between;
         align-items: center;'>
         <h1 class="oh-main__titlebar-title fw-bold">
-          {% trans "Payroll Reports" %}
+          {% trans "Performance Reports" %}
         </h1>
         <!-- Export Button -->
         <button id="export-btn" class="oh-btn oh-btn--secondary" style="margin-top: 10px;">
@@ -20,9 +20,11 @@
     <!-- Model Selection Dropdown -->
     <span class="ms-1 fw-bold" style="font-size:16px;">Choose Report : </span>
     <select id="model-select" class="oh-select oh-select--sm ml-2 mb-2" style="width: 200px;">
-        <option value="payslip">Payslip</option>
-        <option value="allowance">Allowance & Deduction</option>
+        <option value="objective">Objectives</option>
+        {% comment %} <option value="employeeobjective">Employee Objective</option> {% endcomment %}
+        <option value="feedback">Feedback</option>
     </select>
+    
 
     <!-- Pivot Container -->
     <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto;"></div>
@@ -56,41 +58,28 @@
     $(function () {
         // Function to load pivot data dynamically
         function loadPivotData(model) {
-            let url = `payroll-pivot?model=${model}`;
-
+            let url = `pms-pivot?model=${model}`;
+        
             $.getJSON(url, function (data) {
                 // Add Plotly renderers correctly
                 let plotlyRenderers = $.pivotUtilities.plotly_renderers;
-
+        
                 // Initialize pivot table with Plotly enabled
                 $("#pivot-container").pivotUI(data, {
-
-                    rows: ["Name","Basic Salary","Gross Pay","Net Pay","Status","Allowance & Deduction","Allowance & Deduction Title","Allowance & Deduction Amount"], // Default rows
-                    cols: [], // Default columns
-                    aggregatorName: "Count", // Default aggregator
+                    rows: ["Objective","Manager"],
+                    cols: [],
+                    aggregatorName: "Count",
                     rendererName: "Table", // Default view as Table
-
-                    renderers: $.extend(
-                        $.pivotUtilities.renderers,
-                        plotlyRenderers // Adding Plotly renderers
-                    ),
-
                     onRefresh: function (config) {
                         let currentRenderer = config.rendererName;
-                        if (
-                            currentRenderer === "Table" ||
-                            currentRenderer === "Table Barchart" ||
-                            currentRenderer === "Heatmap" ||
-                            currentRenderer === "Row Heatmap" ||
-                            currentRenderer === "Col Heatmap"
-                        ) {
+                        if (currentRenderer === "Table" || currentRenderer === "Table Barchart" || 
+                            currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap" ) {
                             $("#export-btn").show(); // Show button for tables
                         } else {
                             $("#export-btn").hide(); // Hide button for charts
                         }
-
-                        // ✅ Hide fields from the dropdown but keep them visible in the table
-                        let hiddenFields = ["Allowance Amount", "Deduction Amount"];
+ 
+                        $(".pvtTotal, .pvtTotalLabel, .pvtGrandTotal, .pvtAggregator").hide();
 
                         setTimeout(function () {
                             $(".pvtAttrDropdown option").each(function () {
@@ -100,66 +89,75 @@
                             });
                         }, 10);
                     },
+                    renderers: $.extend(
+                        $.pivotUtilities.renderers,
+                        plotlyRenderers // Adding Plotly renderers
+                    )
                 });
 
-
-                // Export to Excel on button click
-                $("#export-btn").on("click", function () {
-                    exportTableToExcel("pivot-container", "pivot_report.xlsx");
-                });
-
-                // Function to export table to Excel with styles
-                function exportTableToExcel(containerId, filename) {
-                    let table = document.querySelector(`#${containerId} .pvtTable`);
-                    let wb = XLSX.utils.table_to_book(table, { sheet: "Pivot Data" });
-
-                    // Apply custom styles for Excel
-                    let ws = wb.Sheets["Pivot Data"];
-                    let range = XLSX.utils.decode_range(ws["!ref"]);
-
-                    for (let R = range.s.r; R <= range.e.r; ++R) {
-                        for (let C = range.s.c; C <= range.e.c; ++C) {
-                            let cell_address = XLSX.utils.encode_cell({ r: R, c: C });
-                            if (!ws[cell_address]) continue;
-
-                            // Apply header styles (first row)
-                            if (R === 0) {
-                                ws[cell_address].s = {
-                                    font: { bold: true, sz: 14, color: { rgb: "FFFFFF" } },
-                                    fill: { fgColor: { rgb: "007BFF" } },
-                                    alignment: { horizontal: "center", vertical: "center" },
-                                    border: { top: { style: "thin" }, bottom: { style: "thin" } },
-                                };
-                            }
-                            // Apply general styles to all cells
-                            else {
-                                ws[cell_address].s = {
-                                    font: { sz: 12, color: { rgb: "333333" } },
-                                    alignment: { horizontal: "center", vertical: "center" },
-                                    border: { top: { style: "thin" }, bottom: { style: "thin" } },
-                                };
-                            }
-                        }
-                    }
-
-                    // Save the file
-                    XLSX.writeFile(wb, filename);
-                }
             });
+            
         }
+
         // Initial load with all models
-        loadPivotData("payslip");
+        loadPivotData("objective");
 
         // Model selection change event
         $("#model-select").on("change", function () {
             let selectedModel = $(this).val();
             loadPivotData(selectedModel); // Reload pivot data with selected model
+        });        
+
+        // Export to Excel on button click
+        $("#export-btn").on("click", function () {
+            exportTableToExcel("pivot-container", "pivot_report.xlsx");
         });
-    });
 
-
+        // Function to export table to Excel with styles
+        function exportTableToExcel(containerId, filename) {
+            let table = document.querySelector(`#${containerId} .pvtTable`);
+        
+            // Clone the table so we can safely remove elements
+            let clonedTable = table.cloneNode(true);
+        
+            // Remove total rows and columns
+            clonedTable.querySelectorAll(".pvtTotal, .pvtTotalLabel, .pvtGrandTotal, .pvtAggregator").forEach(el => el.remove());
+        
+            // Create workbook from cleaned table
+            let wb = XLSX.utils.table_to_book(clonedTable, { sheet: "Pivot Data" });
+        
+            // Apply custom styles for Excel
+            let ws = wb.Sheets["Pivot Data"];
+            let range = XLSX.utils.decode_range(ws["!ref"]);
+        
+            for (let R = range.s.r; R <= range.e.r; ++R) {
+                for (let C = range.s.c; C <= range.e.c; ++C) {
+                    let cell_address = XLSX.utils.encode_cell({ r: R, c: C });
+                    if (!ws[cell_address]) continue;
+        
+                    // Style the header row
+                    if (R === 0) {
+                        ws[cell_address].s = {
+                            font: { bold: true, sz: 14, color: { rgb: "FFFFFF" } },
+                            fill: { fgColor: { rgb: "007BFF" } },
+                            alignment: { horizontal: "center", vertical: "center" },
+                            border: { top: { style: "thin" }, bottom: { style: "thin" } },
+                        };
+                    } else {
+                        ws[cell_address].s = {
+                            font: { sz: 12, color: { rgb: "333333" } },
+                            alignment: { horizontal: "center", vertical: "center" },
+                            border: { top: { style: "thin" }, bottom: { style: "thin" } },
+                        };
+                    }
+                }
+            }
+        
+            XLSX.writeFile(wb, filename);
+        }
+});
+    
 </script>
-
 
 
 {% endblock content %}

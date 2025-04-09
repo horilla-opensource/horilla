@@ -341,11 +341,11 @@ class EmployeeObjective(HorillaModel):
     """this is a EmployObjective model used for creating Employee objectives"""
 
     STATUS_CHOICES = (
+        ("Not Started", _("Not Started")),
         ("On Track", _("On Track")),
         ("Behind", _("Behind")),
-        ("Closed", _("Closed")),
         ("At Risk", _("At Risk")),
-        ("Not Started", _("Not Started")),
+        ("Closed", _("Closed")),
     )
     objective = models.CharField(
         null=True,
@@ -583,11 +583,11 @@ class EmployeeKeyResult(models.Model):
         ("Currency", (("$", "USD$"), ("₹", "INR"), ("€", "EUR"))),
     )
     STATUS_CHOICES = (
+        ("Not Started", _("Not Started")),
         ("On Track", _("On Track")),
         ("Behind", _("Behind")),
-        ("Closed", _("Closed")),
         ("At Risk", _("At Risk")),
-        ("Not Started", _("Not Started")),
+        ("Closed", _("Closed")),
     )
 
     key_result = models.CharField(max_length=60, null=True, blank=True)
@@ -633,6 +633,22 @@ class EmployeeKeyResult(models.Model):
     def __str__(self):
         return f"{self.key_result_id} | {self.employee_objective_id.employee_id}"
 
+    def get_update_url(self):
+        """
+        to get the update url for card action update
+        """
+
+        url = reverse("employee-key-result-update", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        to get the delete url for card action delete
+        """
+
+        url = reverse("delete-employee-keyresult", kwargs={"kr_id": self.pk})
+        return url
+
     def key_result_column(self):
 
         today = datetime.today().date()
@@ -647,6 +663,91 @@ class EmployeeKeyResult(models.Model):
             path="cbv/dashboard/actions.html",
             context={"instance": self},
         )
+
+    def title_col(self):
+        """
+        For title column
+        """
+        due = None
+        color = "success"
+        if self.end_date:
+            due = (
+                f"due {self.end_date}"
+                if self.end_date == date.today()
+                else f"due in{self.end_date - date.today()}"
+            )
+
+            if self.end_date < date.today():
+                color = "danger"
+            elif self.end_date == date.today():
+                color = "warning"
+
+        col = f"""
+        <span class='d-flex justify-content-between align-items-center'
+        >
+            {self.key_result}
+            <span title = 'due  {due}'>
+                <ion-icon
+                    class="text-{color}"
+                    name="time-sharp"
+                >
+                </ion-icon>
+            </span>
+        </span>
+        """
+
+        return col
+
+    def get_current_value_col(self):
+        """
+        For current value column
+        """
+        col = f"""
+            <input
+                id = {self.id}
+                type="number" class="oh-input p-1"
+                style="width: 100px;"
+                min="0"
+                value="{self.current_value}"
+                name="current_value"
+                onchange="delayedProgress(this)"
+            />
+        """
+        return col
+
+    def get_progress_col(self):
+        """
+        For progress column
+        """
+        col = f"""
+        <span class="progressPercentage"> {self.progress_percentage}%</span>
+        """
+        return col
+
+    def status_col(self):
+        """
+        For status column
+        """
+        update_url = reverse(
+            "employee-keyresult-update-status", kwargs={"kr_id": self.pk}
+        )
+        options = "".join(
+            f"<option value='{str(key)}' {'selected' if key == self.status else ''}>{str(value)}</option>"
+            for key, value in self.STATUS_CHOICES
+        )
+
+        col = f"""
+            <select
+                id="keyResultStatus" name="key_result_status"
+                hx-post="{update_url}"
+                hx-trigger="change" class="oh-table__editable-input w-100"
+                hx-on-htmx-after-request = "$('#reloadMessagesButton').click()"
+                hx-swap = "none"
+            >
+                    {options}
+            </select>
+        """
+        return col
 
     def get_instance_id(self):
         return self.pk
