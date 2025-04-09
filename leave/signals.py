@@ -111,7 +111,7 @@ def update_available(sender, instance, **kwargs):
     thread.start()
 
 
-@receiver(post_migrate)
+# @receiver(post_migrate)
 def add_missing_leave_to_workrecords(sender, **kwargs):
     if sender.label not in ["attendance", "leave"]:
         return

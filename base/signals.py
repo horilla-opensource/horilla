@@ -59,7 +59,7 @@ def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
             available.save()
 
 
-@receiver(post_migrate)
+# @receiver(post_migrate)
 def clean_work_records(sender, **kwargs):
     if sender.label not in ["attendance"]:
         return
