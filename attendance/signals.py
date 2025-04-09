@@ -79,7 +79,7 @@ def handle_attendance_deletion(sender, instance, **kwargs):
             workrecord.delete()
 
 
-@receiver(post_migrate)
+# @receiver(post_migrate)
 def add_missing_attendance_to_workrecord(sender, **kwargs):
     if sender.label not in ["attendance", "leave"]:
         return
@@ -120,7 +120,7 @@ def add_missing_attendance_to_workrecord(sender, **kwargs):
         print(f"Error updating work records with attendance: {e}")
 
 
-@receiver(post_migrate)
+# @receiver(post_migrate)
 def add_missing_shift_to_work_record(sender, **kwargs):
     if sender.label not in ["attendance", "leave"]:
         return
@@ -167,7 +167,7 @@ def create_attendance_setting(sender, instance, created, raw, **kwargs):
         AttendanceGeneralSetting.objects.get_or_create(company_id=instance)
 
 
-@receiver(post_migrate)
+# @receiver(post_migrate)
 def create_missing_work_records(sender, **kwargs):
     if sender.label not in ["attendance"]:
         return
