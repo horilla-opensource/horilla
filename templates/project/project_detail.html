@@ -41,6 +41,9 @@
                         <dt class="col-sm-4">{% trans "Status" %}</dt>
                         <dd class="col-sm-8">{{ project.get_status_display }}</dd>
 
+                        <dt class="col-sm-4">{% trans "Project Type" %}</dt>
+                        <dd class="col-sm-8">{{ project.get_project_type_display }}</dd> 
+
                         <dt class="col-sm-4">{% trans "Description" %}</dt>
                         <dd class="col-sm-8">{{ project.description1 }}</dd>
 
@@ -52,7 +55,7 @@
 
                         <dt class="col-sm-4">{% trans "Owner" %}</dt>
                         <dd class="col-sm-8">{{ project.project_owner }}</dd>
-                        
+
                         <dt class="col-sm-4">{% trans "Attachment" %}</dt>
                         <dd class="col-sm-8">
                             {% if project.attachment %}
@@ -65,7 +68,7 @@
                         </dd>
                     </dl>
                 </div>
-                
+
                 <div class="col-md-6">
                     <h3>{% trans "Financial Overview" %}</h3>
                     <dl class="row">

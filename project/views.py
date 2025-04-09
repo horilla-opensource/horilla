@@ -11,61 +11,104 @@ import logging
 from django_select2.forms import Select2MultipleWidget
 # Set up logging
 logger = logging.getLogger(__name__)
-
-# Project Form (Removed actual_cost)
 class ProjectForm(forms.ModelForm):
     team_members = forms.ModelMultipleChoiceField(
         queryset=Employee.objects.all(),
-        widget=Select2MultipleWidget(attrs={'class': 'form-control', 'data-placeholder': 'Search and select team members'}),
+        widget=Select2MultipleWidget(attrs={
+            'class': 'form-control',
+            'data-placeholder': 'Search and select team members'
+        }),
         required=False
     )
 
     class Meta:
         model = Project
-        fields = ['name', 'start_date', 'end_date', 'attachment', 'description1',
-                  'status', 'project_owner', 'team_members', 'estimated_cost']
+        fields = [
+            'name', 'start_date', 'end_date', 'attachment', 'description1',
+            'status', 'project_owner', 'team_members', 'estimated_cost', 'project_type'
+        ]
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Project Name', 'required': True}),
-            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'required': True}),
-            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
-            'description1': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Project Description', 'required': True}),
-            'status': forms.Select(attrs={'class': 'form-select', 'required': True}),
-            'project_owner': forms.Select(attrs={'class': 'form-select', 'required': True}),
-            'estimated_cost': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Estimated Cost', 'required': True}),
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Project Name',
+                'required': True
+            }),
+            'start_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control',
+                'required': True
+            }),
+            'end_date': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'form-control'
+            }),
+            'description1': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Project Description',
+                'required': True
+            }),
+            'status': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True
+            }),
+            'project_owner': forms.Select(attrs={
+                'class': 'form-select',
+                'required': True
+            }),
+            'estimated_cost': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Estimated Cost',
+                'required': True
+            }),
+            'project_type': forms.Select(attrs={ 
+                'class': 'form-select',
+                'required': True
+            }),
         }
+    
+
 
 # List Projects
 @login_required
 def project_list(request):
-    query = request.GET.get('q', '').strip()
+    query = request.GET.get("q", "").strip()
 
     try:
         employee = Employee.objects.filter(employee_user_id=request.user).first()
+
         if not employee and not request.user.is_superuser:
-            messages.error(request, _('Employee profile not found for current user.'))
-            return redirect('home-page')
+            messages.error(request, _("Employee profile not found for current user."))
+            return redirect("home-page")
 
         if request.user.is_superuser:
             projects = Project.objects.filter(name__icontains=query) if query else Project.objects.all()
         else:
-            projects = Project.objects.filter(team_members=employee)
             if query:
-                projects = projects.filter(name__icontains=query)
+                projects_as_member = Project.objects.filter(team_members=employee, name__icontains=query)
+                projects_as_owner = Project.objects.filter(project_owner=employee, name__icontains=query)
+            else:
+                projects_as_member = Project.objects.filter(team_members=employee)
+                projects_as_owner = Project.objects.filter(project_owner=employee)
+
+            projects = projects_as_member.union(projects_as_owner)
 
         context = {
-            'projects': projects,
-            'query': query,
-            'page_title': _('Projects List'),
-            'is_admin': request.user.is_superuser,
+            "projects": projects,
+            "query": query,
+            "page_title": _("Projects List"),
+            "is_admin": request.user.is_superuser,
+            "is_project_owner": Project.objects.filter(project_owner=employee).exists() if employee else False
         }
-        return render(request, 'project/project_list.html', context)
+        return render(request, "project/project_list.html", context)
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         logger.error(f"Error in project_list: {e}")
-        messages.error(request, _('An error occurred while fetching projects.'))
-        return redirect('home-page')
-
-# View Project Details
+        messages.error(request, _("An error occurred while fetching projects."))
+        return redirect("project_list")
+    # View Project Details
 @login_required
 @project_access_required("project.view_project")
 def project_detail(request, pk):
@@ -93,7 +136,7 @@ def project_create(request):
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             project = form.save(commit=False)
-            project.attachment = request.FILES.get('attachment', None)  # Handle file properly
+            project.attachment = request.FILES.get('attachment', None) 
             project.save()
             form.save_m2m()
             messages.success(request, _('Project created successfully'))

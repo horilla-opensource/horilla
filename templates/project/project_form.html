@@ -11,8 +11,41 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    border: 1px solid #aaa;
+    box-sizing: border-box;
+    display: inline-block;
+    margin-left: 5px;
+    margin-top: 5px;
+    padding: 0;
+    padding-left: 20px;
+    position: relative;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    white-space: nowrap;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    background-color: transparent;
+    border: none;
+    border-right: 1px solid #aaa;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    color: #999;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 0 4px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+    </style>
 </head>
 
 <div class="container mt-4">
@@ -46,7 +79,14 @@
                 <div class="mb-3">
                     <label class="fw-bold">Attachment</label>
                     {{ form.attachment }}
-                </div>
+                    {% if form.attachment.errors %}
+                        <div class="text-danger mt-1">
+                            {% for error in form.attachment.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>                
                 <div class="mb-3">
                     <label class="fw-bold">Project Description <span class="text-danger">*</span></label>
                     {{ form.description1 }}
@@ -56,10 +96,14 @@
                     {{ form.status }}
                 </div>
                 <div class="mb-3">
+                    <label class="fw-bold">Project Type <span class="text-danger">*</span></label>
+                    {{ form.project_type }}
+                </div>
+                <div class="mb-3">
                     <label class="fw-bold">Project Owner <span class="text-danger">*</span></label>
                     {{ form.project_owner }}
                 </div>
-                <div class="mb-3">
+                <div class="flex gap-2 mb-3">
                     <label class="fw-bold">Team Members <span class="text-danger">*</span></label>
                     {{ form.team_members }}
                 </div>

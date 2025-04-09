@@ -154,3 +154,5 @@ whoosh_index/
 .idea/
 myenv/
 
+
+horilla/settings.py

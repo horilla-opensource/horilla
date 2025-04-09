@@ -33,15 +33,48 @@ EmployeeAllocationFormSet = modelformset_factory(
     extra=0,
     can_delete=False
 )
+from django.contrib import messages
+from django.utils.translation import gettext as _
+from django.shortcuts import render, redirect
+import logging
+logger = logging.getLogger(__name__)
 @login_required
 @project_finance_list()
 def finance_project_list(request):
-    query = request.GET.get("q", "")
-    projects = Project.objects.filter(name__icontains=query) if query else Project.objects.all()
-    context = {
-        "projects": projects,
-    }
-    return render(request, "finance/finance_project_list.html", context)
+    query = request.GET.get("q", "").strip()
+
+    try:
+        employee = Employee.objects.filter(employee_user_id=request.user).first()
+        if not employee and not request.user.is_superuser:
+            messages.error(request, _('Employee profile not found for current user.'))
+            return redirect('home-page')
+
+        if request.user.is_superuser:
+            projects = Project.objects.filter(name__icontains=query) if query else Project.objects.all()
+        else:
+            if query:
+                projects_as_member = Project.objects.filter(team_members=employee, name__icontains=query)
+                projects_as_owner = Project.objects.filter(project_owner=employee, name__icontains=query)
+            else:
+                projects_as_member = Project.objects.filter(team_members=employee)
+                projects_as_owner = Project.objects.filter(project_owner=employee)
+
+            projects = projects_as_member.union(projects_as_owner)
+
+        context = {
+            "projects": projects,
+            "query": query,
+            "page_title": _('Finance Projects List'),
+            "is_admin": request.user.is_superuser,
+            "is_project_owner": Project.objects.filter(project_owner=employee).exists() if employee else False
+        }
+        return render(request, "finance/finance_project_list.html", context)
+
+    except Exception as e:
+        logger.error(f"Error in finance_project_list: {e}")
+        messages.error(request, _('An error occurred while fetching finance projects.'))
+        return redirect('home-page')
+
 
 
 @login_required

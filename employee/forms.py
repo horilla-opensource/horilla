@@ -51,8 +51,22 @@ from employee.models import (
 )
 from horilla import horilla_middlewares
 from horilla_audit.models import AccountBlockUnblock
+from django.core.exceptions import ValidationError
 
 logger = logging.getLogger(__name__)
+
+ALLOWED_EXTENSIONS = ['.jpeg','.jpg', '.pdf', '.png', '.docx', '.doc', '.xls', '.xlsx']	
+
+def validate_file_extension_form(file):
+    filename = file.name
+    if '.' not in filename:
+        raise ValidationError("File does not have an extension.")
+    
+    ext = '.' + filename.rsplit('.', 1)[-1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValidationError(
+            f"Unsupported file extension: {ext}. Allowed extensions are: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
 
 
 class ModelForm(forms.ModelForm):
@@ -186,7 +200,14 @@ class EmployeeForm(ModelForm):
             kwargs["initial"] = initial
         else:
             self.initial = {"badge_id": self.get_next_badge_id()}
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
     def as_p(self, *args, **kwargs):
         context = {"form": self}
         return render_to_string("employee/create_form/personal_info_as_p.html", context)
@@ -370,7 +391,15 @@ class EmployeeWorkInformationForm(ModelForm):
         if "employee_id" in self.errors:
             del self.errors["employee_id"]
         return cleaned_data
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
+    
     def as_p(self, *args, **kwargs):
         context = {"form": self}
         return render_to_string("employee/create_form/personal_info_as_p.html", context)
@@ -394,7 +423,14 @@ class EmployeeWorkInformationUpdateForm(ModelForm):
             "date_joining": DateInput(attrs={"type": "date"}),
             "contract_end_date": DateInput(attrs={"type": "date"}),
         }
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
     def as_p(self, *args, **kwargs):
         context = {"form": self}
         return render_to_string("employee/create_form/personal_info_as_p.html", context)
@@ -431,7 +467,15 @@ class EmployeeBankDetailsForm(ModelForm):
         self.fields["address"].widget.attrs["autocomplete"] = "address"
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "oh-input w-100"
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
+    
     def as_p(self, *args, **kwargs):
         context = {"form": self}
         return render_to_string("employee/update_form/bank_info_as_p.html", context)
@@ -457,7 +501,15 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
             visible.field.widget.attrs["class"] = "oh-input w-100"
         for field in self.fields:
             self.fields[field].widget.attrs["placeholder"] = self.fields[field].label
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
+    
     def as_p(self, *args, **kwargs):
         context = {"form": self}
         return render_to_string("employee/update_form/bank_info_as_p.html", context)
@@ -710,7 +762,15 @@ class DisciplinaryActionForm(ModelForm):
         self.fields["action"].choices = action_choices
         if self.instance.pk is None:
             self.fields["action"].choices += [("create", _("Create new action type "))]
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
+    
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.

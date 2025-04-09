@@ -48,6 +48,18 @@ from leave.models import (
 CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 LEAVE_MAX_LIMIT = 1e5
 
+ALLOWED_EXTENSIONS = ['.jpeg','.jpg', '.pdf', '.png', '.docx', '.doc', '.xls', '.xlsx']	
+
+def validate_file_extension_form(file):
+    filename = file.name
+    if '.' not in filename:
+        raise ValidationError("File does not have an extension.")
+    
+    ext = '.' + filename.rsplit('.', 1)[-1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValidationError(
+            f"Unsupported file extension: {ext}. Allowed extensions are: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
 
 class ModelForm(forms.ModelForm):
     """
@@ -435,7 +447,14 @@ class LeaveRequestCreationForm(ModelForm):
                 "hx-get": "/leave/employee-available-leave-count",
             }
         )
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -564,7 +583,15 @@ class LeaveRequestUpdationForm(ModelForm):
                 "hx-get": "/leave/employee-available-leave-count",
             }
         )
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
+    
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -779,7 +806,15 @@ class UserLeaveRequestForm(ModelForm):
             )
             self.fields["leave_type_id"].initial = leave_type["leave_type_id"].id
             self.fields["leave_type_id"].empty_label = None
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
+    
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -881,7 +916,14 @@ class RejectForm(forms.Form):
 class UserLeaveRequestCreationForm(ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -1009,7 +1051,14 @@ class LeaveAllocationRequestForm(ModelForm):
             raise ValidationError("Requested days cannot be negative.")
         return requested_days
 
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -1175,7 +1224,14 @@ class LeaveCommentForm(ModelForm):
         self.fields["files"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
         self.fields["files"].required = False
-
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -1236,6 +1292,15 @@ class LeaveAllocationCommentForm(ModelForm):
         self.fields["files"] = MultipleFileField(label="files")
         self.fields["files"].required = False
 
+    def clean_attachment(self):
+        """
+        Validate file extension of the uploaded attachment.
+        """
+        attachment = self.cleaned_data.get("attachment")
+        if attachment:
+            validate_file_extension_form(attachment)
+        return attachment
+    
     def as_p(self):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -1367,7 +1432,7 @@ if apps.is_installed("attendance"):
                     "hx-get": "/leave/get-leave-attendance-dates",
                 }
             )
-
+        
         def as_p(self, *args, **kwargs):
             """
             Render the form fields as HTML table rows with Bootstrap styling.
@@ -1375,7 +1440,14 @@ if apps.is_installed("attendance"):
             context = {"form": self}
             table_html = render_to_string("horilla_form.html", context)
             return table_html
-
+        def clean_attachment(self):
+            """
+            Validate file extension of the uploaded attachment.
+            """
+            attachment = self.cleaned_data.get("attachment")
+            if attachment:
+                validate_file_extension_form(attachment)
+            return attachment
         def clean(self):
             cleaned_data = super().clean()
             attendance_id = cleaned_data.get("attendance_id")

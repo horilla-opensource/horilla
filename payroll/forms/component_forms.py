@@ -41,6 +41,21 @@ from payroll.widgets import component_widgets as widget
 
 logger = logging.getLogger(__name__)
 
+from django.core.exceptions import ValidationError
+
+ALLOWED_EXTENSIONS = ['.jpeg','.jpg', '.png', '.pdf', '.docx', '.doc', '.xls', '.xlsx'] 
+
+def validate_file_extension_form(file):
+    filename = file.name
+    if '.' not in filename:
+        raise ValidationError("File does not have an extension.")
+    ext = '.' + filename.rsplit('.', 1)[-1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValidationError(
+            f"Unsupported file extension: {ext}. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+
+
 
 class AllowanceForm(forms.ModelForm):
     """
@@ -897,11 +912,14 @@ class ReimbursementForm(ModelForm):
         if self.instance.pk:
             employee_id = self.instance.employee_id
             type = self.instance.type
-
         else:
             employee_id = request.user.employee_get
-            type = cleaned_data["type"]
+            type = cleaned_data.get("type")
+        files = self.files.getlist("attachment")
+        for f in files:
+            validate_file_extension_form(f)
 
+        # --- your existing bonus/leave logic ---
         available_points = BonusPoint.objects.filter(employee_id=employee_id).first()
         if type == "bonus_encashment":
             if self.instance.pk:
@@ -956,6 +974,8 @@ class ReimbursementForm(ModelForm):
                     raise forms.ValidationError(
                         {"ad_to_encash": _("Not enough available days to redeem")}
                     )
+
+        return cleaned_data
 
     def save(self, commit: bool = ...) -> Any:
         is_new = not self.instance.pk

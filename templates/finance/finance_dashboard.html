@@ -69,9 +69,6 @@
         <div class="section-header">
             <h2>Employee Cost Allocation</h2>
             <div class="section-actions">
-                <button class="btn-export">
-                    <i class="fas fa-download"></i> Export
-                </button>
             </div>
         </div>
         <div class="table-container">
@@ -105,9 +102,7 @@
         <div class="section-header">
             <h2>Dynamic Cost Distribution</h2>
             <div class="section-actions">
-                <button class="btn-export">
-                    <i class="fas fa-download"></i> Export
-                </button>
+                
             </div>
         </div>
         <div class="table-container">
@@ -163,14 +158,10 @@
             </table>
         </div>
     </div>
-    {% if distributed_profits and profit > 0%}
     <div class="dashboard-section">
         <div class="section-header">
             <h2>Profit Distribution</h2>
             <div class="section-actions">
-                <button class="btn-export">
-                    <i class="fas fa-download"></i> Export
-                </button>
             </div>
         </div>
         <div class="table-container">
@@ -189,19 +180,20 @@
                         <td class="percentage-cell">{{ distribution.percentage }}%</td>
                         <td class="amount-cell">${{ distribution.allocated_profit|floatformat:2 }}</td>
                     </tr>
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="3">No profit distribution set yet.</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-    {% endif %}
-    {% if profit > 0%}
     <div class="dashboard-actions">
         <a href="{% url 'profit_distribution_view' project.id %}" class="btn-primary">
             <i class="fas fa-money-bill-wave"></i> Manage Profit Distribution
         </a>
     </div>
-    {%endif%}
     <div class="dashboard-actions">
         <a href="{% url 'add_additional_cost' project.id %}" class="btn-primary">
             <i class="fas fa-money-bill-wave"></i> Add Additional Cost

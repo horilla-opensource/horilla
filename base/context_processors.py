@@ -301,3 +301,35 @@ def enable_profile_edit(request):
             ACCESSBILITY_FEATURE.append(("profile_edit", _("Profile Edit Access")))
 
     return {"profile_edit_enabled": enable}
+
+
+def get_breadcrumbs(request):
+    path = request.path.strip('/')
+    segments = path.split('/')
+    segments = [s for s in segments if s]  
+    
+    breadcrumbs = []
+    
+    if segments and segments[0] == 'project' and len(segments) > 1 and segments[1] == 'create':
+        breadcrumbs = [
+            {'name': 'Project', 'url': '/project/', 'active': False},
+            {'name': 'Create Project', 'url': '/project/create/', 'active': True}
+        ]
+    elif segments and segments[0] == 'project':
+        breadcrumbs = [{'name': 'Project', 'url': '/project/', 'active': True}]
+    elif segments and segments[0] == 'finance':
+        breadcrumbs = [{'name': 'Finance', 'url': '/finance/', 'active': True}]
+    elif segments:
+        current_url = ''
+        for i, segment in enumerate(segments):
+            current_url += '/' + segment
+            
+            name = segment.replace('-', ' ').title()
+            
+            breadcrumbs.append({
+                'name': name,
+                'url': current_url + '/',
+                'active': i == len(segments) - 1  
+            })
+    
+    return {'app_breadcrumbs': breadcrumbs}

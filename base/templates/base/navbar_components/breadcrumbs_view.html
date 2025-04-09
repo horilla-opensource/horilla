@@ -1,15 +1,17 @@
 {% load static %}
 {% load i18n %}
+
 <ul class="oh-navbar__breadcrumb">
-    {% for breadcrumb in breadcrumbs %}
-        {% if breadcrumb.name == "Projects" or breadcrumb.name == "Finance" or breadcrumb.name == "Configuration" or breadcrumb.found %}
-            <li class="oh-navbar__breadcrumb-item">
-                {% if breadcrumb.found %}
-                    <a href="{{breadcrumb.url}}" class="oh-navbar__breadcrumb-link {% if forloop.last %}active{% endif %}">{% trans breadcrumb.name %}</a>
-                {% else %}
-                    <a href="#" class="oh-navbar__breadcrumb-link {% if forloop.last %}active{% endif %}">{% trans breadcrumb.name %}</a>
-                {% endif %}
-            </li>
-        {% endif %}
+    <!-- Always show Horilla as the first item -->
+    <li class="oh-navbar__breadcrumb-item">
+        <a href="/" class="oh-navbar__breadcrumb-link">{% trans "Horilla" %}</a>
+    </li>
+    
+    {% for crumb in app_breadcrumbs %}
+        <li class="oh-navbar__breadcrumb-item">
+            <a href="{{ crumb.url }}" class="oh-navbar__breadcrumb-link{% if crumb.active %} active{% endif %}">
+                {% trans crumb.name %}
+            </a>
+        </li>
     {% endfor %}
 </ul>
