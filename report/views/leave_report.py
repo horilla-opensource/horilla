@@ -61,24 +61,38 @@ def leave_pivot(request):
                 "Gender": choice_gender.get(item["employee_id__gender"]),
                 "Email": item["employee_id__email"],
                 "Phone": item["employee_id__phone"],
-                "Department": item[
-                    "employee_id__employee_work_info__department_id__department"
-                ],
-                "Job Position": item[
-                    "employee_id__employee_work_info__job_position_id__job_position"
-                ],
-                "Job Role": item[
-                    "employee_id__employee_work_info__job_role_id__job_role"
-                ],
-                "Work Type": item[
-                    "employee_id__employee_work_info__work_type_id__work_type"
-                ],
-                "Shift": item[
-                    "employee_id__employee_work_info__shift_id__employee_shift"
-                ],
-                "Experience": round(
-                    float(item["employee_id__employee_work_info__experience"] or 0), 2
+                "Department": (
+                    item["employee_id__employee_work_info__department_id__department"]
+                    if item[
+                        "employee_id__employee_work_info__department_id__department"
+                    ]
+                    else "-"
                 ),
+                "Job Position": (
+                    item[
+                        "employee_id__employee_work_info__job_position_id__job_position"
+                    ]
+                    if item[
+                        "employee_id__employee_work_info__job_position_id__job_position"
+                    ]
+                    else "-"
+                ),
+                "Job Role": (
+                    item["employee_id__employee_work_info__job_role_id__job_role"]
+                    if item["employee_id__employee_work_info__job_role_id__job_role"]
+                    else "-"
+                ),
+                "Work Type": (
+                    item["employee_id__employee_work_info__work_type_id__work_type"]
+                    if item["employee_id__employee_work_info__work_type_id__work_type"]
+                    else "-"
+                ),
+                "Shift": (
+                    item["employee_id__employee_work_info__shift_id__employee_shift"]
+                    if item["employee_id__employee_work_info__shift_id__employee_shift"]
+                    else "-"
+                ),
+                "Experience": item["employee_id__employee_work_info__experience"],
                 "Leave Type": item["leave_type_id__name"],
                 "Start Date": item["start_date"],
                 "Start Date Breakdown": BREAKDOWN_MAP.get(
@@ -126,21 +140,37 @@ def leave_pivot(request):
                 "Gender": choice_gender.get(item["employee_id__gender"]),
                 "Email": item["employee_id__email"],
                 "Phone": item["employee_id__phone"],
-                "Department": item[
-                    "employee_id__employee_work_info__department_id__department"
-                ],
-                "Job Position": item[
-                    "employee_id__employee_work_info__job_position_id__job_position"
-                ],
-                "Job Role": item[
-                    "employee_id__employee_work_info__job_role_id__job_role"
-                ],
-                "Work Type": item[
-                    "employee_id__employee_work_info__work_type_id__work_type"
-                ],
-                "Shift": item[
-                    "employee_id__employee_work_info__shift_id__employee_shift"
-                ],
+                "Department": (
+                    item["employee_id__employee_work_info__department_id__department"]
+                    if item[
+                        "employee_id__employee_work_info__department_id__department"
+                    ]
+                    else "-"
+                ),
+                "Job Position": (
+                    item[
+                        "employee_id__employee_work_info__job_position_id__job_position"
+                    ]
+                    if item[
+                        "employee_id__employee_work_info__job_position_id__job_position"
+                    ]
+                    else "-"
+                ),
+                "Job Role": (
+                    item["employee_id__employee_work_info__job_role_id__job_role"]
+                    if item["employee_id__employee_work_info__job_role_id__job_role"]
+                    else "-"
+                ),
+                "Work Type": (
+                    item["employee_id__employee_work_info__work_type_id__work_type"]
+                    if item["employee_id__employee_work_info__work_type_id__work_type"]
+                    else "-"
+                ),
+                "Shift": (
+                    item["employee_id__employee_work_info__shift_id__employee_shift"]
+                    if item["employee_id__employee_work_info__shift_id__employee_shift"]
+                    else "-"
+                ),
                 "Experience": item["employee_id__employee_work_info__experience"],
                 "Leave Type": item["leave_type_id__name"],
                 "Available Days": item["available_days"],

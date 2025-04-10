@@ -38,7 +38,9 @@
             <div class="col-sm-12 col-md-12 col-lg-6">
               <div class="oh-input-group">
                 <label class="oh-label" style="color:hsl(8deg 76.82% 46.12%);">
-                  <input type="checkbox" id="select-all-fields" /> {% trans "Select All Columns" %}
+                  <input type="checkbox" id="select-all-export-fields" onchange="
+                      $(this).closest('form').find('[type=checkbox]').prop('checked',$(this).is(':checked')).change();
+                    " /> {% trans "Select All Columns" %}
                 </label>
               </div>
             </div>

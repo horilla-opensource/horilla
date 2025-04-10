@@ -8,6 +8,7 @@ from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -577,32 +578,6 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
         ("End Date", "end_date"),
         ("Status", "status_col"),
     ]
-    actions = [
-        {
-            "action": "Edit",
-            "icon": "create-outline",
-            "attrs": """
-                hx-get='{get_update_url}'
-                class="oh-btn w-100"
-                data-toggle="oh-modal-toggle"
-                data-target="#genericModal"
-                hx-target="#genericModalBody"
-                style="cursor: pointer;"
-                """,
-        },
-        {
-            "action": "Delete",
-            "icon": "trash-outline",
-            "attrs": """
-                hx-get='{get_delete_url}'
-                hx-confirm="Are you sure you want to delete	this Key result?"
-                hx-swap="none"
-                class="oh-btn oh-btn--danger-outline w-100"
-                hx-on-htmx-after-request= "window.location.reload();"
-                style="cursor: pointer;"
-                """,
-        },
-    ]
     filter_selected = False
     show_filter_tags = False
 
@@ -612,6 +587,35 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
         self.selected_instances_key_id = (
             f'ekrIds{self.request.GET.get("employee_objective_id")}'
         )
+        self.actions = [
+            {
+                "action": "Edit",
+                "icon": "create-outline",
+                "attrs": """
+                    hx-get='{get_update_url}'
+                    class="oh-btn w-100"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-target="#genericModalBody"
+                    style="cursor: pointer;"
+                    """,
+            },
+        ]
+        if self.request.user.has_perm("pms.delete_employeekeyresult"):
+            self.actions.append(
+                {
+                    "action": "Delete",
+                    "icon": "trash-outline",
+                    "attrs": """
+                hx-get='{get_delete_url}'
+                hx-confirm="Are you sure you want to delete	this Key result?"
+                hx-swap="none"
+                class="oh-btn oh-btn--danger-outline w-100"
+                hx-on-htmx-after-request= "window.location.reload();"
+                style="cursor: pointer;"
+                """,
+                }
+            )
 
     header_attrs = {
         "title_col": """
@@ -622,3 +626,48 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                 class = "oh-employee-okr-row"
                 data-kr-id = "{get_instance_id}"
                 """
+
+
+class EKRTab(EmployeeObjectiveKeyResultDetailListView):
+    """
+    EKR tab
+    """
+
+    columns = [
+        ("Title", "title_col"),
+        ("Objective", "employee_objective_id__objective_id__title"),
+        ("Start Value", "start_value"),
+        ("Current Value", "current_value"),
+        ("Target Value", "target_value"),
+        ("Progress Percentage", "get_progress_col"),
+        ("Start Date", "start_date"),
+        ("End Date", "end_date"),
+        ("Status", "status"),
+    ]
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.selected_instances_key_id = "selectedInstanceIds"
+
+    filter_selected = False
+
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        self.queryset = (
+            super()
+            .get_queryset(queryset, filtered, *args, **kwargs)
+            .filter(employee_objective_id__employee_id__pk=self.kwargs["pk"])
+        )
+        self._saved_filters = self._saved_filters.copy()
+        self._saved_filters["field"] = "employee_objective_id"
+        return self.queryset
+
+
+EmployeeProfileView.add_tab(
+    tabs=[
+        {
+            "title": "Key Results",
+            "view": EKRTab.as_view(),
+            "accessibility": "pms.cbv.accessibility.performance_accessibility",
+        },
+    ]
+)

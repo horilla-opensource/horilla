@@ -3315,15 +3315,15 @@ def bonus_points_tab(request, pk):
     Returns: return bonus_points template
 
     """
-    employee_obj = Employee.objects.get(id=emp_id)
+    employee_obj = Employee.objects.get(id=pk)
     try:
-        points = BonusPoint.objects.get(employee_id=emp_id)
+        points = BonusPoint.objects.get(employee_id=pk)
         if apps.is_installed("payroll"):
             Reimbursement = get_horilla_model_class(
                 app_label="payroll", model="reimbursement"
             )
             requested_bonus_points = Reimbursement.objects.filter(
-                employee_id=emp_id, type="bonus_encashment", status="requested"
+                employee_id=pk, type="bonus_encashment", status="requested"
             )
         else:
             requested_bonus_points = QuerySet().none()

@@ -118,28 +118,60 @@ def payroll_pivot(request):
             # Main data structure
             data_list.append(
                 {
-                    "Name": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
+                    "Employee": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
                     "Gender": choice_gender.get(item["employee_id__gender"]),
                     "Email": item["employee_id__email"],
                     "Phone": item["employee_id__phone"],
-                    "Department": item[
-                        "employee_id__employee_work_info__department_id__department"
-                    ],
-                    "Job Position": item[
-                        "employee_id__employee_work_info__job_position_id__job_position"
-                    ],
-                    "Job Role": item[
-                        "employee_id__employee_work_info__job_role_id__job_role"
-                    ],
-                    "Work Type": item[
-                        "employee_id__employee_work_info__work_type_id__work_type"
-                    ],
-                    "Shift": item[
-                        "employee_id__employee_work_info__shift_id__employee_shift"
-                    ],
-                    "Employee Type": item[
-                        "employee_id__employee_work_info__employee_type_id__employee_type"
-                    ],
+                    "Department": (
+                        item[
+                            "employee_id__employee_work_info__department_id__department"
+                        ]
+                        if item[
+                            "employee_id__employee_work_info__department_id__department"
+                        ]
+                        else "-"
+                    ),
+                    "Job Position": (
+                        item[
+                            "employee_id__employee_work_info__job_position_id__job_position"
+                        ]
+                        if item[
+                            "employee_id__employee_work_info__job_position_id__job_position"
+                        ]
+                        else "-"
+                    ),
+                    "Job Role": (
+                        item["employee_id__employee_work_info__job_role_id__job_role"]
+                        if item[
+                            "employee_id__employee_work_info__job_role_id__job_role"
+                        ]
+                        else "-"
+                    ),
+                    "Work Type": (
+                        item["employee_id__employee_work_info__work_type_id__work_type"]
+                        if item[
+                            "employee_id__employee_work_info__work_type_id__work_type"
+                        ]
+                        else "-"
+                    ),
+                    "Shift": (
+                        item[
+                            "employee_id__employee_work_info__shift_id__employee_shift"
+                        ]
+                        if item[
+                            "employee_id__employee_work_info__shift_id__employee_shift"
+                        ]
+                        else "-"
+                    ),
+                    "Employee Type": (
+                        item[
+                            "employee_id__employee_work_info__employee_type_id__employee_type"
+                        ]
+                        if item[
+                            "employee_id__employee_work_info__employee_type_id__employee_type"
+                        ]
+                        else "-"
+                    ),
                     "Payslip Start Date": item["start_date"],
                     "Payslip End Date": item["end_date"],
                     "Contract Wage": round(float(item["contract_wage"] or 0), 2),
@@ -170,19 +202,12 @@ def payroll_pivot(request):
             "employee_id__phone",
             "start_date",
             "end_date",
-            "contract_wage",
-            "basic_pay",
-            "gross_pay",
-            "deduction",
-            "net_pay",
             "status",
             "employee_id__employee_work_info__department_id__department",
             "employee_id__employee_work_info__job_role_id__job_role",
             "employee_id__employee_work_info__job_position_id__job_position",
             "employee_id__employee_work_info__work_type_id__work_type",
             "employee_id__employee_work_info__shift_id__employee_shift",
-            "employee_id__employee_work_info__employee_type_id__employee_type",
-            "employee_id__employee_work_info__experience",
         )
 
         choice_gender = {
@@ -240,37 +265,61 @@ def payroll_pivot(request):
             for pay_item in all_pay_data:
                 data_list.append(
                     {
-                        "Name": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
+                        "Employee": f"{item['employee_id__employee_first_name']} {item['employee_id__employee_last_name']}",
                         "Gender": choice_gender.get(item["employee_id__gender"]),
                         "Email": item["employee_id__email"],
                         "Phone": item["employee_id__phone"],
-                        "Department": item[
-                            "employee_id__employee_work_info__department_id__department"
-                        ],
-                        "Job Position": item[
-                            "employee_id__employee_work_info__job_position_id__job_position"
-                        ],
-                        "Job Role": item[
-                            "employee_id__employee_work_info__job_role_id__job_role"
-                        ],
-                        "Work Type": item[
-                            "employee_id__employee_work_info__work_type_id__work_type"
-                        ],
-                        "Shift": item[
-                            "employee_id__employee_work_info__shift_id__employee_shift"
-                        ],
-                        # "Employee Type": item["employee_id__employee_work_info__employee_type_id__employee_type"],
+                        "Department": (
+                            item[
+                                "employee_id__employee_work_info__department_id__department"
+                            ]
+                            if item[
+                                "employee_id__employee_work_info__department_id__department"
+                            ]
+                            else "-"
+                        ),
+                        "Job Position": (
+                            item[
+                                "employee_id__employee_work_info__job_position_id__job_position"
+                            ]
+                            if item[
+                                "employee_id__employee_work_info__job_position_id__job_position"
+                            ]
+                            else "-"
+                        ),
+                        "Job Role": (
+                            item[
+                                "employee_id__employee_work_info__job_role_id__job_role"
+                            ]
+                            if item[
+                                "employee_id__employee_work_info__job_role_id__job_role"
+                            ]
+                            else "-"
+                        ),
+                        "Work Type": (
+                            item[
+                                "employee_id__employee_work_info__work_type_id__work_type"
+                            ]
+                            if item[
+                                "employee_id__employee_work_info__work_type_id__work_type"
+                            ]
+                            else "-"
+                        ),
+                        "Shift": (
+                            item[
+                                "employee_id__employee_work_info__shift_id__employee_shift"
+                            ]
+                            if item[
+                                "employee_id__employee_work_info__shift_id__employee_shift"
+                            ]
+                            else "-"
+                        ),
                         "Payslip Start Date": item["start_date"],
                         "Payslip End Date": item["end_date"],
-                        # "Contract Wage": item["contract_wage"],
-                        # "Basic Salary": item["basic_pay"],
-                        # "Gross Pay": item["gross_pay"],
-                        # "Net Pay": item["net_pay"],
                         "Allowance & Deduction": pay_item["Pay Type"],
                         "Allowance & Deduction Title": pay_item["Title"],
                         "Allowance & Deduction Amount": pay_item["Amount"],
                         "Status": STATUS.get(item["status"]),
-                        # "Experience": item["employee_id__employee_work_info__experience"],
                     }
                 )
     else:

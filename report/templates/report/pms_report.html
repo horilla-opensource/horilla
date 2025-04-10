@@ -21,13 +21,18 @@
     <span class="ms-1 fw-bold" style="font-size:16px;">Choose Report : </span>
     <select id="model-select" class="oh-select oh-select--sm ml-2 mb-2" style="width: 200px;">
         <option value="objective">Objectives</option>
-        {% comment %} <option value="employeeobjective">Employee Objective</option> {% endcomment %}
+        <option value="employeeobjective">Employee Objective</option>
         <option value="feedback">Feedback</option>
     </select>
-    
+
 
     <!-- Pivot Container -->
-    <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto;"></div>
+    <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto;">
+        <div id="pivot-feedback" class="pivot-wrapper" style="display:none;width: 100%; overflow-x: auto;"></div>
+        <div id="pivot-objective" class="pivot-wrapper" style="display:none;width: 100%; overflow-x: auto;"></div>
+        <div id="pivot-employeeobjective" class="pivot-wrapper" style="display:none;width: 100%; overflow-x: auto;"></div>
+    </div>
+
 </div>
 
 
@@ -56,85 +61,101 @@
 
 <script>
     $(function () {
-        // Function to load pivot data dynamically
+
         function loadPivotData(model) {
-            let url = `pms-pivot?model=${model}`;
-        
-            $.getJSON(url, function (data) {
-                // Add Plotly renderers correctly
+            // Hide all containers first
+            $(".pivot-wrapper").hide();
+
+            // Determine current container and row config
+            let containerId = "";
+            let rowsConfig = [];
+
+            if (model === "feedback") {
+                containerId = "pivot-feedback";
+                rowsConfig = ["Employee","Manager","Answerable Employees","Answered Employees","Questions","Answer"];
+            } else if (model === "objective") {
+                containerId = "pivot-objective";
+                rowsConfig = ["Objective","Key Results","Manager","Assignees"];
+            } else if (model === "employeeobjective") {
+                containerId = "pivot-employeeobjective";
+                rowsConfig = ["Employee", "Objective","Employee Keyresult","Keyresult Target Value","Keyresult Current Value"];
+            }
+
+            // Show relevant container
+            $("#" + containerId).show();
+
+            // Fetch and render data in its own container
+            $.getJSON(`pms-pivot?model=${model}`, function (data) {
                 let plotlyRenderers = $.pivotUtilities.plotly_renderers;
-        
-                // Initialize pivot table with Plotly enabled
-                $("#pivot-container").pivotUI(data, {
-                    rows: ["Objective","Manager"],
+
+                $("#" + containerId).pivotUI(data, {
+                    rows: rowsConfig,
                     cols: [],
                     aggregatorName: "Count",
-                    rendererName: "Table", // Default view as Table
+                    rendererName: "Table",
+                    renderers: $.extend($.pivotUtilities.renderers, plotlyRenderers),
                     onRefresh: function (config) {
-                        let currentRenderer = config.rendererName;
-                        if (currentRenderer === "Table" || currentRenderer === "Table Barchart" || 
-                            currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap" ) {
-                            $("#export-btn").show(); // Show button for tables
+                        const currentRenderer = config.rendererName;
+                        if (["Table", "Table Barchart", "Heatmap", "Row Heatmap", "Col Heatmap"].includes(currentRenderer)) {
+                            $("#export-btn").show();
                         } else {
-                            $("#export-btn").hide(); // Hide button for charts
+                            $("#export-btn").hide();
                         }
- 
+
                         $(".pvtTotal, .pvtTotalLabel, .pvtGrandTotal, .pvtAggregator").hide();
 
-                        setTimeout(function () {
+                        setTimeout(() => {
                             $(".pvtAttrDropdown option").each(function () {
                                 if (hiddenFields.includes($(this).text())) {
-                                    $(this).remove(); // Remove from selection
+                                    $(this).remove();
                                 }
                             });
                         }, 10);
-                    },
-                    renderers: $.extend(
-                        $.pivotUtilities.renderers,
-                        plotlyRenderers // Adding Plotly renderers
-                    )
+                    }
                 });
-
             });
-            
         }
 
-        // Initial load with all models
-        loadPivotData("objective");
-
-        // Model selection change event
+        // Listen to dropdown
         $("#model-select").on("change", function () {
             let selectedModel = $(this).val();
-            loadPivotData(selectedModel); // Reload pivot data with selected model
-        });        
+            loadPivotData(selectedModel);
+        });
+
+        // Initial load
+        loadPivotData("objective");
 
         // Export to Excel on button click
         $("#export-btn").on("click", function () {
-            exportTableToExcel("pivot-container", "pivot_report.xlsx");
+            let visiblePivot = $(".pivot-wrapper:visible .pvtTable").closest(".pivot-wrapper");
+
+            if (visiblePivot.length) {
+                exportTableToExcel(visiblePivot.attr("id"), "pivot_report.xlsx");
+            }
         });
 
         // Function to export table to Excel with styles
         function exportTableToExcel(containerId, filename) {
             let table = document.querySelector(`#${containerId} .pvtTable`);
-        
+
             // Clone the table so we can safely remove elements
             let clonedTable = table.cloneNode(true);
-        
+
             // Remove total rows and columns
             clonedTable.querySelectorAll(".pvtTotal, .pvtTotalLabel, .pvtGrandTotal, .pvtAggregator").forEach(el => el.remove());
-        
+
             // Create workbook from cleaned table
             let wb = XLSX.utils.table_to_book(clonedTable, { sheet: "Pivot Data" });
-        
+
             // Apply custom styles for Excel
             let ws = wb.Sheets["Pivot Data"];
             let range = XLSX.utils.decode_range(ws["!ref"]);
-        
+
             for (let R = range.s.r; R <= range.e.r; ++R) {
                 for (let C = range.s.c; C <= range.e.c; ++C) {
                     let cell_address = XLSX.utils.encode_cell({ r: R, c: C });
                     if (!ws[cell_address]) continue;
-        
+
                     // Style the header row
                     if (R === 0) {
                         ws[cell_address].s = {
@@ -152,11 +173,11 @@
                     }
                 }
             }
-        
+
             XLSX.writeFile(wb, filename);
         }
 });
-    
+
 </script>
 
 

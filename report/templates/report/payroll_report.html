@@ -25,7 +25,10 @@
     </select>
 
     <!-- Pivot Container -->
-    <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto;"></div>
+    <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto;">
+        <div id="pivot-payslip" class="pivot-wrapper" style="display:none;width: 100%; overflow-x: auto;"></div>
+        <div id="pivot-allowance" class="pivot-wrapper" style="display:none;width: 100%; overflow-x: auto;"></div>
+    </div>
 </div>
 
 
@@ -58,14 +61,33 @@
         function loadPivotData(model) {
             let url = `payroll-pivot?model=${model}`;
 
+            // Hide all containers first
+            $(".pivot-wrapper").hide();
+
+            // Determine current container and row config
+            let containerId = "";
+            let rowsConfig = [];
+
+            if (model === "payslip") {
+                containerId = "pivot-payslip";
+                rowsConfig = ["Employee","Basic Salary","Gross Pay","Net Pay","Status"];
+            } else if (model === "allowance") {
+                containerId = "pivot-allowance";
+                rowsConfig = ["Employee","Allowance & Deduction","Allowance & Deduction Title","Allowance & Deduction Amount"];
+            }
+
+            // Show relevant container
+            $("#" + containerId).show();
+
+
             $.getJSON(url, function (data) {
                 // Add Plotly renderers correctly
                 let plotlyRenderers = $.pivotUtilities.plotly_renderers;
 
                 // Initialize pivot table with Plotly enabled
-                $("#pivot-container").pivotUI(data, {
+                $("#" + containerId).pivotUI(data, {
 
-                    rows: ["Name","Basic Salary","Gross Pay","Net Pay","Status","Allowance & Deduction","Allowance & Deduction Title","Allowance & Deduction Amount"], // Default rows
+                    rows: rowsConfig,
                     cols: [], // Default columns
                     aggregatorName: "Count", // Default aggregator
                     rendererName: "Table", // Default view as Table
@@ -105,7 +127,11 @@
 
                 // Export to Excel on button click
                 $("#export-btn").on("click", function () {
-                    exportTableToExcel("pivot-container", "pivot_report.xlsx");
+                    let visiblePivot = $(".pivot-wrapper:visible .pvtTable").closest(".pivot-wrapper");
+
+                    if (visiblePivot.length) {
+                        exportTableToExcel(visiblePivot.attr("id"), "pivot_report.xlsx");
+                    }
                 });
 
                 // Function to export table to Excel with styles

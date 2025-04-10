@@ -50,12 +50,34 @@ def employee_pivot(request):
             "Gender": choice_gender.get(item["employee_id__gender"]),
             "Email": item["employee_id__email"],
             "Phone": item["employee_id__phone"],
-            "Department": item["department_id__department"],
-            "Job Position": item["job_position_id__job_position"],
-            "Job Role": item["job_role_id__job_role"],
-            "Work Type": item["work_type_id__work_type"],
-            "Shift": item["shift_id__employee_shift"],
-            "Employee Type": item["employee_type_id__employee_type"],
+            "Department": (
+                item["department_id__department"]
+                if item["department_id__department"]
+                else "-"
+            ),
+            "Job Position": (
+                item["job_position_id__job_position"]
+                if item["job_position_id__job_position"]
+                else "-"
+            ),
+            "Job Role": (
+                item["job_role_id__job_role"] if item["job_role_id__job_role"] else "-"
+            ),
+            "Work Type": (
+                item["work_type_id__work_type"]
+                if item["work_type_id__work_type"]
+                else "-"
+            ),
+            "Shift": (
+                item["shift_id__employee_shift"]
+                if item["shift_id__employee_shift"]
+                else "-"
+            ),
+            "Employee Type": (
+                item["employee_type_id__employee_type"]
+                if item["employee_type_id__employee_type"]
+                else "-"
+            ),
             "Reporting Manager": f"{item['reporting_manager_id__employee_first_name']} {item['reporting_manager_id__employee_last_name']}",
             "Date of Joining": item["date_joining"],
             "Experience": round(float(item["experience"] or 0), 2),
