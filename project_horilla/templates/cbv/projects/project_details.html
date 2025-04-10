@@ -1,0 +1,125 @@
+{% load mathfilters %}
+{% load static i18n %}
+{% load taskfilters %}
+<div class="oh-card">
+    <div class="oh-helpdesk__header">
+      <div class="d-flex justify-content-between align-items-center">
+        <ul class="helpdesk__card-items">
+          <li class="helpdesk__card-item">
+            <span class="helpdesk__card-label">{% trans "Project:" %}</span>
+            <span class="helpdesk__card-value b" name="" id="">{{project}}</span>
+          </li>
+        </ul>
+
+        <span class="helpdesk__card-value me-3" style="display:flex">
+          {% if perms.pms.change_project or request.user|is_project_manager_or_member:project %}
+            <select id="status" class="oh-select oh-select--sm ms-3 mr-1 " name="status" title="Status"
+                hx-post="{%url 'change-project-status' project.id %}"
+                hx-trigger="change" hx-target="#reloadMessages">
+                  <option value="{{project.status}}" selected>
+                      {% trans project.get_status_display %}
+                  </option>
+                {%for status in project.PROJECT_STATUS %}
+                  {% if project.status != status.0 %}
+                    <option value="{{status.0}}">{% trans status.1 %}</option>
+                  {% endif%}
+                {% endfor %}
+            </select>
+          {% else %}
+            <label id="status" class="oh-select oh-select--sm ms-3" name="status" title="Status">
+                {% trans project.get_status_display %}
+            </label>
+          {% endif %}
+          {% if perms.project.change_project or perms.project.add_projectstage or request.user|is_project_manager_or_member:project %}
+            <div class="oh-btn-group">
+              {% if perms.project.add_project %}
+              <a
+                onclick="event.preventDefault();event.stopPropagation()"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{% url 'update-project' project.id %}"
+                hx-target="#objectCreateModalTarget"
+                class="oh-btn oh-btn--light-bkg w-100"
+                title="{% trans 'Edit' %}"
+                ><ion-icon name="create-outline"></ion-icon
+              ></a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </span>
+      </div>
+
+      <ul class="helpdesk__card-items">
+        <li class="helpdesk__card-item">
+          <span class="helpdesk__card-label">{% trans "Managers:" %}</span>
+          <span class="helpdesk__card-value" name="" id="">
+            <div class="d-flex justify-content-between custom-scroll">
+              <div class="avatars" id="avatarsContainer">
+                {% for manager in project.managers.all %}
+                <a
+                  href="{% url 'employee-view-individual' manager.id %}"
+                  class="avatars__item"
+                  title="{{manager}}"
+                  ><img class="avatar" src="{{manager.get_avatar}}" alt=""
+                /></a>
+                {% endfor %}
+              </div>
+            </div>
+          </span>
+        </li>
+        <li class="helpdesk__card-item">
+          <span class="helpdesk__card-label">{% trans "Members:" %}</span>
+          <span class="helpdesk__card-value" name="" id="">
+            <div class="d-flex justify-content-between custom-scroll">
+              <div class="avatars" id="avatarsContainer">
+                {% for menber in project.members.all %}
+                <a
+                  href="{% url 'employee-view-individual' menber.id %}"
+                  class="avatars__item"
+                  title="{{menber}}"
+                  ><img class="avatar" src="{{menber.get_avatar}}" alt=""
+                /></a>
+                {% endfor %}
+              </div>
+            </div>
+          </span>
+        </li>
+        <li class="helpdesk__card-item">
+          <span class="helpdesk__card-label">{% trans "Start date:" %}</span>
+          <span class="helpdesk__card-value" name="" id=""
+            >{{project.start_date}}
+            </span
+          >
+        </li>
+        <li class="helpdesk__card-item">
+          <span class="helpdesk__card-label">{% trans "End date:" %}</span>
+          <span class="helpdesk__card-value" name="" id=""
+            >{{project.end_date}}
+            </span
+          >
+              <span title = 'due  {% if project.end_date == today %} today {% else %}in {{project.end_date|sub:today}}{% endif %}'>
+                  <ion-icon
+                      class="text-{% if project.end_date < today %}danger {% elif project.end_date == today %}warning {% else %}success{% endif %}"
+                      name="time-sharp"
+                  >
+                  </ion-icon>
+              </span>
+        </li>
+        <li class="helpdesk__card-item">
+          <div class="d-flex">
+            <div>
+              <span class="helpdesk__card-label">{% trans "Description:" %}</span>
+            </div>
+            <details>
+              <summary>
+              </summary>
+               <p>
+                {{project.description}}
+                </p>
+             </details>
+
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>

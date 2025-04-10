@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from os.path import join
 from pathlib import Path
-
+import sentry_sdk
 import environ
 from django.contrib.messages import constants as messages
 
@@ -30,7 +30,7 @@ env = environ.Env(
         "django-insecure-j8op9)1q8$1&0^s&p*_0%d#pr@w9qj@1o=3#@d=a(^@9@zd@%j",
     ),
     ALLOWED_HOSTS=(list, ["*"]),
-    CSRF_TRUSTED_ORIGINS=(list, ["http://localhost:8000"]),
+    CSRF_TRUSTED_ORIGINS=(list, ["*"]),
 )
 
 env.read_env(os.path.join(BASE_DIR, ".env"), overwrite=True)
@@ -40,8 +40,10 @@ SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])
 
-ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=["http://127.0.0.1", "http://localhost"])
+
 
 # Application definition
 
@@ -68,6 +70,9 @@ INSTALLED_APPS = [
     "payroll",
     "widget_tweaks",
     "django_apscheduler",
+    'project',
+    'finance',
+    # 'django-select2',    
 ]
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
@@ -183,8 +188,7 @@ MESSAGE_TAGS = {
     messages.ERROR: "oh-alert--danger",
 }
 
-
-CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
+# CSRF_TRUSTED_ORIGINS = [env("ALLOWED_HOSTS")]
 
 LOGIN_URL = "/login"
 
@@ -230,6 +234,18 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+SITE_ID = 1
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Replace with your SMTP host
+EMAIL_PORT = 587  # Common for TLS; use 465 for SSL
+EMAIL_USE_TLS = True  # Use True if using TLS
+EMAIL_USE_SSL = False  # Use False if using TLS
+EMAIL_HOST_USER = 'carzone1806@gmail.com'
+EMAIL_HOST_PASSWORD = 'onovdkxaixykyzef'
+EMAIL_TIMEOUT = 30  # Adjust as needed
+
+
 # Production settings
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
@@ -241,3 +257,20 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+sentry_sdk.init(
+    dsn= os.environ.get("SENTRY_DSN"),
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=1.0,
+    _experiments={
+        # Set continuous_profiling_auto_start to True
+        # to automatically start the profiler on when
+        # possible.
+        "continuous_profiling_auto_start": True,
+    },
+) 

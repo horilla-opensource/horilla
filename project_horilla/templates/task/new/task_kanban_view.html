@@ -1,0 +1,168 @@
+{% load i18n %}
+{% load static %}
+
+{% if messages %}
+<div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% include "filter_tags.html" %}
+
+{% if stages %}
+    <div class="oh-tabs oh-card mt-3 mb-3">
+        <div class="oh-kanban ui-sortable" id="projectStages" style="border: none;">
+            {% for stage in stages %}
+                <div class="oh-kanban__section ml-2 stage" id="projectStage{{stage.id}}" style="opacity: 1;"
+                    data-stage-id="{{stage.id}}" data-sequence="{{stage.sequence}}" data-project-id="{{project.id}}">
+                    <div class="oh-kanban-group__head" style="cursor: pointer;" onclick="updateStageClass(this)">
+                        <span class="oh-kanban-gorup__title" data-type="label" style="display: flex;">
+                            {{stage.title}}
+                            <div class="oh-tabs__input-badge-container ml-2">
+                                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1 task-count">
+                                    {{ stage.tasks.all|length}}
+                                </span>
+                            </div>
+                        </span>
+                        {% if request.user|is_project_manager:stage.project or request.user.is_superuser %}
+                            <div class="oh-kanban__head-actions oh-kanban__dropdown" onclick="event.stopPropagation();">
+                                <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
+                                    <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated"
+                                        aria-label="ellipsis vertical sharp"></ion-icon>
+                                </button>
+                                <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
+                                    <div class="oh-dropdown__menu oh-dropdown__menu--right">
+                                        <ul class="oh-dropdown__items">
+                                            <li class="oh-dropdown__item">
+                                                <a hx-get='{% url "update-project-stage" stage.id %}' hx-target='#TaskFormTarget'
+                                                    class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#TaskModal">
+                                                    {% trans "Edit" %}
+                                                </a>
+
+                                            </li>
+                                            <li class="oh-dropdown__item">
+                                                <a hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
+                                                    hx-post="{% url 'delete-project-stage' stage.id %}?view=card"
+                                                    hx-target="#projectStage{{stage.id}}"
+                                                    class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                    <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__add-card-btn"
+                                        title="{% trans 'Add task' %}" hx-get="{% url 'quick-create-task' stage.id %}"
+                                        hx-target="#taskCreateForm{{stage.id}}">
+                                        <ion-icon name="add-sharp" role="img" class="md hydrated" aria-label="add sharp"></ion-icon>
+                                    </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="oh-kanban__section-body ui-sortable task-container">
+                        <div class="oh-card oh-kanban__add-card-container mb-2 d-none" id="taskCreateForm{{stage.id}}">
+                        </div>
+                        {% for task in stage.tasks.all|dictsort:"sequence" %}
+                            {% if task in tasks %}
+                                <div class="oh-kanban__card task" data-task-id="{{task.id}}" style="opacity: 1;min-height:85px">
+                                    <div class="oh-kanban__card-head" hx-get="{% url 'task-detail-view' task.id %}?view=card"
+                                        hx-target='#genericModalBody' data-toggle="oh-modal-toggle" style="cursor: pointer;"
+                                        data-target="#genericModal">
+                                        <div class="oh-profile oh-profile--md">
+                                            <div class="oh-profile__avatar mr-1">
+                                                <img src="{{task.get_avatar}}"
+                                                    class="oh-profile__image" alt="{{task}}">
+                                            </div>
+                                            <span class="oh-profile__name oh-text--dark" data-type="label"
+                                                style="font-weight:bold">{{task}}</span>
+                                        </div>
+                                        {% if request.user|is_project_manager:stage.project or request.user.is_superuser or request.user|is_task_manager:task %}
+                                            <div class="oh-kanban__card-actions oh-kanban__dropdown" onclick="event.stopPropagation();">
+                                                <button
+                                                    class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
+                                                    <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated"
+                                                        aria-label="ellipsis vertical sharp"></ion-icon>
+                                                </button>
+
+                                                <div class="oh-dropdown oh-kanban__dropdown-menu d-none">
+                                                    <div class="oh-dropdown__menu oh-dropdown__menu--right">
+                                                        <ul class="oh-dropdown__items">
+                                                            <li class="oh-dropdown__item">
+                                                                <a hx-get='{% url "update-task" task.id %}?project_task=true'
+                                                                    hx-target='#TaskFormTarget' class="oh-dropdown__link"
+                                                                    data-toggle="oh-modal-toggle" data-target="#TaskModal">
+                                                                    {% trans "Edit" %}
+                                                                </a>
+                                                            </li>
+                                                            <li class="oh-dropdown__item">
+                                                                <a hx-confirm="{% trans 'Do you really want to delete this task?' %}"
+                                                                    hx-post="{% url 'delete-task' task.id %}?view=card"
+                                                                    hx-target="#taskCreateForm{{stage.id}}"
+                                                                    class="oh-dropdown__link oh-dropdown__link--danger">
+                                                                    {% trans "Delete" %}
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="oh-kanban__card-body">
+                                        <button class="oh-kanban__card-body-collapse oh-kanban__card-collapse--down"
+                                            aria-label="Toggle Options"></button>
+                                        <div class="oh-kanban__card-content oh-kanban__card-content--hide">
+                                            <span class="oh-kanban-card__subtitle d-flex">{% trans "Managers: " %}
+                                                <span class="oh-kanban-card__title ml-1">
+                                                    {% for manager in task.task_managers.all %}
+                                                        {{manager}}
+                                                    {% endfor %}
+                                                </span>
+                                            </span><br>
+                                            <div style="display: flex;" class="mb-2">
+                                                <label class="oh-kanban-card__subtitle">{% trans "Status" %} </label>
+                                                <select class="oh-table__editable-input w-100 ml-2"
+                                                    hx-get="{% url 'update-project-task-status' task.id %}?view=card"
+                                                    hx-trigger="change" hx-swap="afterend" tabindex="-1" aria-hidden="true"
+                                                    name="status">
+                                                    {% for option in task.TASK_STATUS %}
+                                                        <option value="{{option.0}}" {% if option.0 == task.status %}selected{% endif %}>{{option.1}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="oh-kanban__card-footer">
+                                        <span class="oh-kanban__card-footer-text oh-text--light">{% trans "End date:" %} :
+                                            {{task.end_date}}</span>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+            {% if request.user|is_project_manager:stages.first.project or request.user.is_superuser %}
+                <div class="oh-kanban__add-container">
+                    <button class="oh-btn oh-btn--x-small oh-kanban__add-section mr-2" data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal" hx-get="{% url 'create-project-stage' project_id %}"
+                        hx-target="#objectCreateModalTarget">
+                        <ion-icon class="me-1 md hydrated" name="add-outline" role="img" aria-label="add outline"></ion-icon>
+                        {% trans "Add Stage" %}
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% else %}
+    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+        <div>
+            <img style="display: block;width: 200px;margin: 10px auto ;" src="{% static 'images/ui/project/task.png' %}"
+                class="" alt="Page not found. 404." />
+            <h3 style="font-size:20px" class="oh-404__subtitle">
+                {% trans "No search result found!" %}</h3>
+        </div>
+    </div>
+{% endif %}

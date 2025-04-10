@@ -1,0 +1,248 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<div class="profit-container">
+    <div class="profit-header">
+        <h1>Profit Distribution</h1>
+        <div class="profit-total">
+            <span>Total Profit:</span>
+            <span class="profit-amount">${{ total_profit | floatformat:2 }}</span>
+        </div>
+    </div>
+    {% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+        <div class="message {% if message.tags %}message-{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="profit-card">
+        <form method="POST">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <div class="table-responsive">
+                <table class="profit-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Percentage</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                        <tr class="profit-row">
+                            <td class="category-cell">
+                                {{ form.id }}
+                                {{ form.category }}
+                            </td>
+                            <td class="percentage-cell">
+                                <div class="percentage-wrapper">
+                                    {{ form.percentage }}
+                                    <span class="percentage-symbol">%</span>
+                                </div>
+                            </td>
+                            <td class="delete-cell">
+                                <label class="delete-checkbox">
+                                    {{ form.DELETE }}
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        {% if form.non_field_errors %}
+                        <tr class="error-row">
+                            <td colspan="3" class="form-error">
+                                {{ form.non_field_errors }}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="add-button" id="add-more">Add More</button>
+                <button type="submit" class="save-button">Save Profit Distribution</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let addButton = document.getElementById("add-more");
+        let tableBody = document.querySelector(".profit-table tbody");
+        let totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');  
+
+        addButton.addEventListener("click", function() {
+            let formNum = parseInt(totalForms.value);  
+            let lastRow = tableBody.querySelector(".profit-row:last-child");  
+            
+            if (!lastRow) {
+                console.error("No existing rows to clone.");
+                return;
+            }
+
+            let newRow = lastRow.cloneNode(true);  
+
+            // Update input names & IDs to avoid duplication
+            newRow.innerHTML = newRow.innerHTML.replace(/-\d+-/g, `-${formNum}-`);
+
+            // Clear input values
+            let inputs = newRow.querySelectorAll("input");
+            inputs.forEach(input => {
+                if (input.type !== "hidden") {
+                    input.value = "";
+                }
+            });
+
+            // Append new row & update total form count
+            tableBody.appendChild(newRow);
+            totalForms.value = formNum + 1;  
+        });
+    });
+</script>
+
+<style>
+    /* Base Styles */
+    :root {
+        --primary-color: #2C3E50;
+        --secondary-color: #3498DB;
+        --success-color: #2ECC71;
+        --danger-color: #E74C3C;
+        --warning-color: #F39C12;
+        --light-color: #ECF0F1;
+        --dark-color: #2C3E50;
+        --border-radius: 8px;
+        --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    /* Container */
+    .profit-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    /* Header */
+    .profit-header {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2rem;
+    }
+    .profit-header h1 {
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    .profit-total {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.2rem;
+    }
+    .profit-amount {
+        font-weight: 600;
+        color: var(--secondary-color);
+        font-size: 1.4rem;
+    }
+    /* Card */
+    .profit-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    /* Table */
+    .table-responsive {
+        overflow-x: auto;
+        margin-bottom: 1.5rem;
+    }
+    .profit-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+    .profit-table th {
+        background-color: var(--primary-color);
+        color: white;
+        text-align: left;
+        padding: 1rem;
+        font-weight: 500;
+    }
+    .profit-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #E0E0E0;
+    }
+    .profit-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    /* Form Elements */
+    .category-cell input,
+    .percentage-cell input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+    }
+    .percentage-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .percentage-symbol {
+        position: absolute;
+        right: 10px;
+        color: #777;
+    }
+    /* Delete Checkbox */
+    .delete-cell {
+        text-align: center;
+    }
+    .delete-checkbox {
+        position: relative;
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+    }
+    /* Button */
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+    .save-button {
+        background-color: var(--success-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+    .save-button:hover {
+        background-color: #27AE60;
+        transform: translateY(-2px);
+    }
+    .add-button {
+        background-color: var(--secondary-color);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+    .add-button:hover {
+        background-color: #2980B9;
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}

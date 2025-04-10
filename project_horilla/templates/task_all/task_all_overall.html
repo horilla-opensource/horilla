@@ -1,0 +1,122 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        .to-do-task{
+            border-left: solid 5px yellowgreen !important;
+            border-radius: 5px 0 0 5px;
+        }
+        .in-progress-task{
+            border-left: solid 5px Orange !important;
+            border-radius: 5px 0 0 5px;
+        }
+        .completed-task{
+            border-left: solid 5px DodgerBlue !important;
+            border-radius: 5px 0 0 5px;
+        }
+        .expired-task{
+            border-left: solid 5px Tomato !important;
+            border-radius: 5px 0 0 5px;
+        }
+    </style>
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+        {% include 'task_all/task_all_navbar.html' %}
+
+    </main>
+
+    <div id="view-container" class="oh-wrapper">
+        {% if view_type == 'list' %}
+        {% include 'task_all/task_all_list.html' %}
+        {% else %}
+        {% include 'task_all/task_all_card.html' %}
+        {% endif %}
+    </div>
+
+    <div
+        class="oh-modal"
+        id="TaskModal"
+        role="dialog"
+        aria-labelledby="TaskModal"
+        aria-hidden="true"
+        >
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TaskDetailsTarget"
+        ></div>
+    </div>
+
+    <div
+        class="oh-modal"
+        id="TaskUpdateModal"
+        role="dialog"
+        aria-labelledby="TaskUpdateModal"
+        aria-hidden="true"
+        >
+
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TaskUpdateTarget"
+        ></div>
+    </div>
+
+    <div
+        class="oh-modal"
+        id="TaskTimesheetModal"
+        role="dialog"
+        aria-labelledby="TaskTimesheetModal"
+        aria-hidden="true"
+        >
+        <div
+            class="oh-modal__dialog"
+            style="max-width:1350px"
+            id="TaskTimesheetTarget"
+        ></div>
+
+    </div>
+    <div
+        class="oh-modal"
+        id="TimesheetUpdateModal"
+        role="dialog"
+        aria-labelledby="TaskUpdateModal"
+        aria-hidden="true"
+        >
+
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="TimesheetUpdateTarget"
+        ></div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $("#filter-task-all").keyup(function (e) {
+                let search = $(this).val()
+                $(".task-all-view-type").attr("hx-vals", `{"search":"${search}"}`);
+                $("#filter-task-all").attr("hx-vals",`{'search':"${search}"}`)
+            });
+            $(".task-all-view-type").click(function (e) {
+                let view = $(this).data("view");
+                var currentURL = window.location.href;
+                if (view != undefined){
+                // Check if the query string already exists in the URL
+                if (/\?view=[^&]+/.test(currentURL)) {
+                    // If the query parameter ?view exists, replace it with the new value
+                    newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);
+                }
+                else {
+                    // If the query parameter ?view does not exist, add it to the URL
+                    var separator = currentURL.includes('?') ? '&' : '?';
+                    newURL = currentURL + separator + "view="+view;
+                }
+                history.pushState({}, "", newURL);
+                console.log(view)
+                $("#taskAllFilterForm").attr("hx-vals", `{"view":"${view}"}`);
+                $('#filter-task-all').attr("hx-vals", `{"view":"${view}"}`);
+            }
+            });
+        });
+    </script>
+{% endblock content %}

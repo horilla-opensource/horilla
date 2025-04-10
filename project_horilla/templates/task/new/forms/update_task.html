@@ -1,0 +1,55 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header ">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5>{% trans "Task" %}</h5>
+    <br />
+  </span>
+  <button
+    type="button"
+    style="
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    opacity: 0.7;
+    position: absolute;
+    top: 25px;
+    right: 15px;
+    cursor: pointer;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;"
+    onclick="event.stopPropagation(); $(this).parents().find('.oh-modal--show:last').toggleClass('oh-modal--show')"
+    id="close1"
+
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <form
+    hx-post="{%url 'update-task' task_id %}"
+    hx-target="#TaskUpdateTarget"
+    hx-encoding="multipart/form-data"
+  >
+    {% csrf_token %} {{ form.as_p }}
+    <div class="oh-modal__dialog-footer">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- <script>
+    $(document).ready(function(){
+        console.log('ready modal')
+        $('#close1').click(function(e){
+          e.preventDefault()
+          e.stopPropagation()
+          var closestModal = $(this).closest('.oh-modal--show');
+          console.log(closestModal);
+          closestModal.removeClass('oh-modal--show')
+            // e.preventDefault()
+            // var parentDiv = $(this).parents().closest('oh-modal--show')
+            // console.log(parentDiv)
+            // parentDiv.classList.remove('oh-modal--show')
+        })
+    });
+</script> -->

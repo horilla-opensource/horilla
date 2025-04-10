@@ -1,0 +1,65 @@
+{% extends 'index.html' %}
+{% block content %}
+  {% load i18n %}
+  {% load basefilters %}
+  <style>
+    .in-progress-time-sheet{
+            border-left: solid 5px Orange !important;
+            border-radius: 5px 0 0 5px;
+        }
+    .completed-time-sheet{
+            border-left: solid 5px DodgerBlue !important;
+            border-radius: 5px 0 0 5px;
+        }
+  </style>
+  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    {% include 'time_sheet/time_sheet_navbar.html' %}
+
+    <div id="TimeSheetList" class="oh-wrapper">
+      {% if view_type == "card" %}
+        {% include 'time_sheet/time_sheet_card_view.html' %}
+      {% else %}
+        {% include 'time_sheet/time_sheet_list_view.html' %}
+      {% endif %}
+    </div>
+  </main>
+
+  <div
+    class="oh-modal"
+    id="TimeSheetModal"
+    role="dialog"
+    aria-labelledby="TimeSheetModal"
+    aria-hidden="true"
+  >
+    <div
+      class="oh-modal__dialog"
+      style="max-width: 550px"
+      id="TimeSheetFormTarget"
+    ></div>
+  </div>
+  <script>
+    $(document).ready(function () {
+      $("#filter-time-sheet").keyup(function (e) {
+        $(".time-sheet-view-type").attr("hx-vals", `{"search":"${$(this).val()}"}`);
+      });
+      $(".time-sheet-view-type").click(function (e) {
+        let view = $(this).data("view");
+        var currentURL = window.location.href;
+        if (view != undefined){
+          if (/\?view=[^&]+/.test(currentURL)) {
+            newURL = currentURL.replace(/\?view=[^&]+/, "?view="+view);
+          }
+          else {
+            var separator = currentURL.includes('?') ? '&' : '?';
+            newURL = currentURL + separator + "view="+view;
+          }
+
+          history.pushState({}, "", newURL);
+        $("#filter-time-sheet").attr("hx-vals", `{"view":"${view}"}`);
+        $('#timesheetForm').attr("hx-vals", `{"view":"${view}"}`);
+      }
+      });
+
+    });
+  </script>
+{% endblock content %}

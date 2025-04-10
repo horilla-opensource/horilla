@@ -1,6 +1,5 @@
 {% load static %} {% load i18n %} {% load horillafilters  %}
 {% load basefilters %}
-{% verbatim %}
 <script>
   function activeNav(id) {
     const navElement = $(`#${id}`);
@@ -34,24 +33,20 @@ function initializeSummernote(candId,searchWords,) {
                 }));
             },
             content: function(item) {
-              var word = searchWords[item];
-              var insertText = `{{${word}}}`; // Correct string formatting
-
-              if (preloadedData[word]) {
-                  $("[name='body']").summernote('pasteHTML', insertText); // Use pasteHTML instead
-                  $('.note-hint-popover').hide();
-              } else {
-                  preloadData(word, candId, preloadedData, function() {
-                      $("[name='body']").summernote('pasteHTML', insertText);
-                      $('.note-hint-popover').hide();
+                var word = searchWords[item];
+                if (preloadedData[word]) {
+                    $("[name='body']").summernote('insertText', preloadedData[word]);
+                    $('.note-hint-popover').hide();
+                } else {
+                    preloadData(word,candId,preloadedData, function() {
+                      $("[name='body']").summernote('insertText',preloadedData[word]);
                   });
-              }
-          }
+                }
+            }
         }
     });
 }
 </script>
-{% endverbatim %}
 <div
   class="oh-sidebar"
   style="position: -webkit-sticky; position: sticky; top: 0;height:100vh; overflow-x:hidden;"
@@ -175,7 +170,104 @@ function initializeSummernote(candId,searchWords,) {
         </div>
       </li>
       {% endfor %}
+      <!-- Add this right after one of the existing menu items in the sidebar section -->
 
+     
+      <li
+        class="oh-sidebar__menu-item"
+        x-data="{ isOpen: getOpenState('projectsNav') }"
+      >
+        <a
+          class="oh-sidebar__menu-link"
+          data-id="projectsNav"
+          x-on:click.prevent="isOpen = !isOpen; saveOpenState('projectsNav', isOpen)"
+          x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
+          style="cursor: pointer"
+        >
+          <div class="oh-sidebar__menu-icon">
+            <img
+              src="{% static 'images/ui/project.png' %}"
+              alt="Projects"
+              style="filter: brightness(0) invert(1);"
+              width="24"
+              height="24"
+            />
+          </div>
+          <span>
+            {% trans "Projects" %}
+          </span>
+        </a>
+        <div
+          class="oh-sidebar__submenu"
+          id="projectsNav"
+          style="display: none"
+          x-show="isOpen"
+          x-transition
+        >
+          <ul class="oh-sidebar__submenu-items">
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="/project/"
+                class="oh-sidebar__submenu-link"
+              >
+                {% trans "All Projects" %}
+              </a>
+            </li>
+            <li class="oh-sidebar__submenu-item">
+              <a
+              href="/project/create"
+              class="oh-sidebar__submenu-link"
+              >
+                {% trans "Create Project" %}
+              </a>
+            </li>
+            
+          </ul>
+        </div>
+      </li>
+      <li
+        class="oh-sidebar__menu-item"
+        x-data="{ isOpen: getOpenState('FinancesNav') }"
+      >
+        <a
+          class="oh-sidebar__menu-link"
+          data-id="FinancesNav"
+          x-on:click.prevent="isOpen = !isOpen; saveOpenState('FinancesNav', isOpen)"
+          x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
+          style="cursor: pointer"
+        >
+          <div class="oh-sidebar__menu-icon">
+            <img
+              src="{% static 'images/ui/Fin1.png' %}"
+              alt="Projects"
+              style="filter: brightness(0) invert(1);"
+              width="24"
+              height="24"
+            />
+          </div>
+          <span>
+            {% trans "Finance" %}
+          </span>
+        </a>
+        <div
+          class="oh-sidebar__submenu"
+          id="FinancesNav"
+          style="display: none"
+          x-show="isOpen"
+          x-transition
+        >
+          <ul class="oh-sidebar__submenu-items">
+            <li class="oh-sidebar__submenu-item">
+              <a
+                href="{% url 'finance_project_list' %}"
+                class="oh-sidebar__submenu-link"
+              >
+                {% trans "Finance List" %}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
       {% if request.user|config_perms %}
       <li
         class="oh-sidebar__menu-item"
@@ -234,12 +326,12 @@ function initializeSummernote(candId,searchWords,) {
           style="display: none"
           >
           <ul class="oh-sidebar__submenu-items">
-            {% if "leave"|app_installed and perms.base.view_multipleapprovalcondition %}
+            {% if "leave"|app_installed and perms.Leave.view_leaverequest %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'multiple-approval-condition' %}"
                 class="oh-sidebar__submenu-link"
-                >{% trans "Multiple Approvals" %}</a
+                >{% trans "Multiple Approvals " %}</a
               >
             </li>
             {% endif %}
@@ -263,7 +355,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
-            {% if perms.base.add_holidays %}
+            {% if perms.base.add_holiday %}
             <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'holiday-view' %}"
@@ -272,7 +364,7 @@ function initializeSummernote(candId,searchWords,) {
               >
             </li>
             {% endif %}
-            {% if perms.base.view_companyleaves %}
+            {% if perms.base.view_companyleave %}
             <li class="oh-sidebar__submenu-item">
               <a
               href="{% url 'company-leave-view' %}"

@@ -1,0 +1,27 @@
+{% load i18n %}
+{% if request.user|task_crud_perm:instance or perms.project.view_task %}
+    <a hx-get="{% url 'update-task' instance.id %}?project_task=true" hx-target='#genericModalBody'
+        data-toggle="oh-modal-toggle" data-target="#genericModal" data-key=".oh-kanban__section"
+        class="oh-btn oh-btn-group oh-btn--info" style="width: 50%;">
+        <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
+        </ion-icon>
+        {% trans "Edit" %}
+    </a>
+{% endif %}
+    <a hx-get="{% url 'task-timesheet' instance.id %}?employee_id={{request.user.employee_get.id}}"
+        hx-target='#TaskTimesheetTarget' data-target="#TaskTimesheetModal" data-toggle="oh-modal-toggle"
+        data-key=".oh-kanban__section"
+        class="oh-btn oh-btn--info {% if not request.user|task_crud_perm:instance and not perms.project.view_task %} w-100 {% endif %}"
+        style="width: 56%; background-color:green">
+        <ion-icon name="bar-chart" role="img" class="md hydrated" aria-label="create outline">
+        </ion-icon>
+        {% trans "Time sheet" %}
+    </a>
+{% if request.user|task_crud_perm:instance or perms.project.view_task %}
+    <a href="{% url 'delete-task' instance.id %}?view={{request.GET.view }}" class="oh-btn oh-btn-group oh-btn--danger"
+        style="width: 50%;"
+        onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this task?' %}`)">
+        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+        {% trans "Delete" %}
+    </a>
+{% endif %}

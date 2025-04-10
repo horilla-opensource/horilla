@@ -1,0 +1,42 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header ">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5>{% trans "Task" %}</h5>
+    <br />
+  </span>
+  <button
+    type="button"
+
+    id="close1"
+
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <form
+    hx-post="{%url 'update-task' task_id %}"
+    hx-target="#TaskFormTarget"
+    hx-encoding="multipart/form-data"
+  >
+    {% csrf_token %} {{ form.as_p }}
+    <div class="oh-modal__dialog-footer">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $('#close1').click(function(e){
+          e.preventDefault()
+          e.stopPropagation()
+          var closestModal = $(this).closest('.oh-modal--show');
+          closestModal.removeClass('oh-modal--show')
+            // e.preventDefault()
+            // var parentDiv = $(this).parents().closest('oh-modal--show')
+            // console.log(parentDiv)
+            // parentDiv.classList.remove('oh-modal--show')
+        })
+    });
+</script>

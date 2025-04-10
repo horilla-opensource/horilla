@@ -1,0 +1,133 @@
+{% load i18n %} {% load horillafilters %}
+
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+        <h5 style="margin-bottom: 20px;">{{task.title}}</h5>
+    </span>
+    <button
+        type="button"
+        class="oh-modal__close"
+        data-dismiss="oh-modal"
+        aria-label="Close"
+        data-toggle="oh-modal-toggle"
+
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <div class="oh-timeoff-modal__stats-container mb-3">
+      <div class="oh-timeoff-modal__stat">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Title" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{task.title}}</span>
+      </div>
+      <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+          <span class="oh-timeoff-modal__stat-title">{% trans "Project" %}</span>
+          <span class="oh-timeoff-modal__stat-count">{{task.project}}</span>
+      </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Stage" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{task.stage}}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Task manager" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{task.task_manager}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Task members" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{% for member in task.task_members.all %}{{member}}, {% endfor %}</span>
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Status" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{task.get_status_display}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "End Date" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{task.end_date}}</span>
+
+        </div>
+        <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Description" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{task.description}}</span>
+        </div>
+    </div>
+    <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Document" %}</span>
+            <span class="oh-timeoff-modal__stat-count">{{task.document}}
+
+    </span>
+        </div>
+    </div>
+    <div class="oh-modal__button-container text-center">
+       <div class="oh-btn-group">
+
+            <a hx-get="{% url 'update-task' task.id %}"
+                hx-target='#TaskUpdateTarget'
+
+                data-toggle="oh-modal-toggle"
+                data-target="#TaskUpdateModal"
+                data-key=".oh-kanban__section"
+                class="oh-btn oh-btn--info" style="width: 50%;">
+                <ion-icon
+                    name="create-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="create outline"
+                >
+                </ion-icon>{% trans "Edit" %}
+            </a>
+            <a hx-get="{% url 'task-timesheet' task.id %}"
+                hx-target='#TaskTimesheetTarget'
+                data-target="#TaskTimesheetModal"
+                data-toggle="oh-modal-toggle"
+                data-key=".oh-kanban__section"
+                class="oh-btn oh-btn--info" style="width: 56%; background-color:green">
+                <ion-icon
+                    name="bar-chart"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="create outline"
+                >
+                </ion-icon>{% trans " Time sheet" %}
+            </a>
+            <a href="{% url 'delete-task' task.id %}?view={{request.GET.view }}" class="oh-btn oh-btn--danger"style="width: 50%;"
+                onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this task?' %}`)"
+                >
+            {% comment %} <a hx-get="{% url 'delete-task' task.id %}" class="oh-btn oh-btn--danger"style="width: 50%;"
+                onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this task?' %}`)"
+                hx-target='#TaskUpdateTarget'
+
+                data-toggle="oh-modal-toggle"
+                data-target="#TaskUpdateModal"
+                data-key=".oh-kanban__section"
+                class="oh-btn oh-btn--info" style="width: 50%;">
+                 {% endcomment %}
+                <ion-icon
+                    name="trash-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="create outline"
+                ></ion-icon>{% trans "Delete" %}
+            </a>
+        </div>
+    </div>
+</div>
+    {% comment %} <script>
+        $(document).ready(function(){
+            console.log('ready modal')
+            $('.oh-modal__close').click(function(e){
+                e.preventDefault()
+                var parentDiv = $(this).parents().closest('oh-modal--show')
+                console.log(parentDiv)
+                parentDiv.classList.remove('oh-modal--show')
+            })
+
+
+        });
+
+    </script> {% endcomment %}

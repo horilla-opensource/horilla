@@ -1,0 +1,236 @@
+
+{% load static %}
+{% load i18n %} {% load horillafilters %}
+
+
+{% comment %} for showing messages {% endcomment %}
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% include "filter_tags.html" %}
+
+<div id="view-container">
+  {% if projects %}
+    <div class="oh-tabs__content oh-tabs__content--active" style="padding-top: 10px;">
+      {% comment %} easy filters {% endcomment %}
+        <div class="d-flex flex-row-reverse">
+            <span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=new&view=list" hx-target="#view-container" style="cursor: pointer">
+                <span class="oh-dot oh-dot--small me-1" style="background-color:cyan"></span>
+                {% trans "New" %}
+            </span>
+            <span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=in_progress&view=list" hx-target="#view-container" style="cursor: pointer">
+                <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
+                {% trans "In progress" %}
+            </span>
+            <span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=completed&view=list" hx-target="#view-container" style="cursor: pointer">
+                <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+                {% trans "Completed" %}
+            </span><span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=on_hold&view=list" hx-target="#view-container" style="cursor: pointer">
+                <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+                {% trans "On Hold" %}
+            </span>
+            </span><span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=cancelled&view=list" hx-target="#view-container" style="cursor: pointer">
+                <span class="oh-dot oh-dot--small me-1" style="background-color:Red"></span>
+                {% trans "Cancelled" %}
+            </span>
+            </span><span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=expired&view=list" hx-target="#view-container" style="cursor: pointer">
+                <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
+                {% trans "Expired" %}
+            </span>
+        </div>
+
+      <div class="oh-sticky-table">
+      <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th">
+              <div class="d-flex">
+                <div class="">
+                  <input
+                    type="checkbox"
+                    class="oh-input oh-input__checkbox mt-1 mr-2 all-projects"
+                    title='{% trans "Select All" %}'
+                  />
+                </div>
+                <div
+                  hx-target="#section"
+                  hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list"
+                >
+                  {% trans "Project" %}
+                </div>
+              </div>
+            </div>
+            <div class="oh-sticky-table__th">{% trans "Project Manager" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Project Members" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "File" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Description" %}</div>
+            <div class="oh-sticky-table__th"></div>
+          </div>
+        </div>
+
+         {% for project in projects %}
+          <div class="oh-sticky-table__tr ui-sortable-handle" data-url="{% url 'task-view' project.id %}?view=list">
+              <div class="oh-sticky-table__sd {% if project.status == 'new'%} row-status--cyan
+                                              {% elif project.status == 'in_progress' %} row-status--blue
+                                              {% elif project.status == 'completed' %} row-status--yellow
+                                              {% elif project.status == 'on_hold' %} row-status--orange
+                                              {% elif project.status == 'cancelled' %} row-status--red
+                                              {% else %} row-status--gray
+                                              {% endif %}" >
+                  <div onclick="event.stopPropagation();">
+                    <input
+                        type="checkbox"
+                        id="{{project.id}}"
+                        class="oh-input oh-input__checkbox mt-1 mr-2 all-project-row"
+                    />
+                    {{project.title}}
+                  </div>
+              </div>
+
+            <div class="oh-sticky-table__td">{{project.manager}}</div>
+            <div class="oh-sticky-table__td">
+              {% for employee in project.members.all %} {{employee}}<br />
+              {% endfor %}
+            </div>
+            <div class="oh-sticky-table__td">{{project.get_status_display}}</div>
+            <div class="oh-sticky-table__td">{{project.start_date}}</div>
+            <div class="oh-sticky-table__td">{% if project.end_date %}{{project.end_date}}{% endif %}</div>
+            <div class="oh-sticky-table__td">{% if project.document %}<a href="{{ project.document.url }}" target="_blank" onclick="event.stopPropagation();"><img style="width: 25px;margin: 5px auto ;" src="{% static 'images/ui/project/document.png' %}" class="" alt="document"/>{% endif %}</a></div>
+            <div class="oh-sticky-table__td">{{project.description}}</div>
+
+            <div class="oh-sticky-table__td">
+              <div class="oh-btn-group">
+                <a
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                data-toggle="oh-modal-toggle"
+                data-target="#ProjectModal"
+                hx-get="{% url 'update-project' project.id %}"
+                hx-target="#ProjectFormTarget"
+                onclick="event.stopPropagation();"
+                >
+                  <ion-icon
+                    name="create-outline"
+                    role="img"
+                    class="md hydrated"
+                    style="color: blue"
+                    aria-label="create outline"
+                  ></ion-icon>
+                </a>
+                <a
+                  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                  href="{% url 'delete-project' project.id %}?view=list"
+                  onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this project?' %}`)"
+                >
+                  <ion-icon
+                    name="trash-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="trash outline"
+                  ></ion-icon>
+                </a>
+              </div>
+            </div>
+    </div>
+        {% endfor %}
+  {% else %}
+        <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+            <div style="" class="">
+            <img style="display: block;width: 200px;margin: 10px auto ;" src="{% static 'images/ui/project/project.png' %}" class="" alt="Page not found. 404."/>
+            <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "There are currently no available projects; please create a new one." %}</h3>
+            </div>
+        </div>
+
+  {% endif %}
+
+    </div>
+  </div>
+</div>
+  {% comment %} <div class="oh-pagination">
+    <span class="oh-pagination__page">
+      {% trans "Page" %} {{ allowances.number }} {% trans "of" %} {{
+      allowances.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+        <input
+          type="number"
+          name="page"
+          class="oh-pagination__input"
+          value="{{allowances.number}}"
+          hx-get="{% url 'filter-allowance' %}?{{pd}}"
+          hx-target="#payroll-allowance-container"
+          min="1"
+        />
+        <span class="oh-pagination__label"
+          >{% trans "of" %} {{allowances.paginator.num_pages}}</span
+        >
+      </div>
+      <ul class="oh-pagination__items">
+        {% if allowances.has_previous %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-target="#payroll-allowance-container"
+            hx-get="{% url 'filter-allowance' %}?{{pd}}&page=1"
+            class="oh-pagination__link"
+            >{% trans "First" %}</a
+          >
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-target="#payroll-allowance-container"
+            hx-get="{% url 'filter-allowance' %}?{{pd}}&page={{ allowances.previous_page_number }}"
+            class="oh-pagination__link"
+            >{% trans "Previous" %}</a
+          >
+        </li>
+        {% endif %} {% if allowances.has_next %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-target="#payroll-allowance-container"
+            hx-get="{% url 'filter-allowance' %}?{{pd}}&page={{ allowances.next_page_number }}"
+            class="oh-pagination__link"
+            >{% trans "Next" %}</a
+          >
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a
+            hx-target="#payroll-allowance-container"
+            hx-get="{% url 'filter-allowance' %}?{{pd}}&page={{ allowances.paginator.num_pages }}"
+            class="oh-pagination__link"
+            >{% trans "Last" %}</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div> {% endcomment %}
+</div>
+
+
+{% comment %} js scripts {% endcomment %}
+<script src="{% static '/project/project_view.js' %}"></script>
+<script>
+  const tableRows = document.querySelectorAll('.oh-sticky-table__tr');
+  tableRows.forEach(row => {
+    row.addEventListener('click', event => {
+      if (event.target.closest('.oh-sticky-table__thead')) {
+        return;
+      }
+      const url = row.getAttribute('data-url');
+      window.location.href = url;
+    });
+  });
+</script>
+
+<script src="{% static '/project/project_action.js' %}"></script>
+<script src="{% static '/project/import.js' %}"></script>

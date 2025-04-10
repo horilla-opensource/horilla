@@ -1,0 +1,149 @@
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+<style>
+  .expired--dot{
+    background-color:gray;
+  }
+  .cancelled--dot{
+    background-color:red;
+  }
+  .on-hold--dot{
+    background-color:orange;
+  }
+  .completed--dot{
+    background-color:yellowgreen;
+  }
+  .in-progress--dot{
+    background-color: rgb(103, 171, 238);
+  }
+  .new--dot{
+    background-color: cyan;
+  }
+  .status-completed{
+    border-left: 3.4px solid yellowgreen !important;
+    border-radius: 4px 0 0 4px;
+
+  }
+  .status-cancelled {
+
+    border-left: 3.4px solid red !important;
+    border-radius: 4px 0 0 4px;
+
+  }
+  .status-expired {
+
+    border-left: 3.4px solid gray !important;
+    border-radius: 4px 0 0 4px;
+
+  }
+  .status-on_hold {
+
+    border-left: 3.4px solid orange !important;
+    border-radius: 4px 0 0 4px;
+
+  }
+  .status-in_progress {
+
+    border-left: 3.4px solid rgb(103, 171, 238); !important;
+    border-radius: 4px 0 0 4px;
+
+  }
+  .status-new {
+
+    border-left: 3.4px solid cyan !important;
+    border-radius: 4px 0 0 4px;
+
+  }
+</style>
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+ <div hx-get="{% url 'project-nav-view' %}?{{request.GET.urlencode}}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="projectImport"
+  role="dialog"
+  aria-labelledby="projectImport"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="projectImportLavel">
+        {% trans "Import Project" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div class="oh-modal__dialog-body p-0 pt-2" id="projectImportModalBody">
+        <form
+
+          id="projectImportForm"
+          enctype="multipart/form-data"
+        >
+        <div id="loading" style="display: none;">
+          <div id="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <p id="progress-text">{% trans "Uploading..." %}</p>
+        </div>
+
+        <div id="error-container" style='color:red;'></div>
+
+          <div class="modal-body">
+
+            {% csrf_token %}
+
+            <div class="oh-dropdown__import-form">
+              <label class="oh-dropdown__import-label" for="uploadFile">
+                  <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon md hydrated" role="img" aria-label="cloud upload"></ion-icon>
+                  <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                  <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+              </label>
+              <input type="file" name="file" id="projectImportFile" />
+          </div>
+          </div>
+          <div class="modal-footer d-flex flex-row-reverse">
+            <input
+              type="submit"
+              class="oh-btn oh-btn--secondary"
+              value='{% trans "Upload" %}'
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+<script src="{% static '/project/import.js' %}"></script>
+<script src="{% static '/project/project_action.js' %}"></script>
+
+
+
+{% endblock %}

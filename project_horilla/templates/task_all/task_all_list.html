@@ -1,0 +1,180 @@
+{% load i18n %}
+{% load static %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% include "filter_tags.html" %}
+{% if tasks %}
+  <div class="oh-tabs__content oh-tabs__content--active" style="padding-top: 10px;">
+    {% comment %} easy filters {% endcomment %}
+    <div class="d-flex flex-row-reverse">
+      <span class="m-3 draft" hx-get="{% url 'task-all-filter' %}?{{pd}}&status=to_do&view=list" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+        {% trans "To Do" %}
+      </span>
+      <span class="m-3 draft" hx-get="{% url 'task-all-filter' %}?{{pd}}&status=in_progress&view=list" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:Orange"></span>
+        {% trans "In progress" %}
+      </span>
+      <span class="m-3 draft" hx-get="{% url 'task-all-filter' %}?{{pd}}&status=completed&view=list" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:DodgerBlue"></span>
+        {% trans "Completed" %}
+      </span>
+      <span class="m-3 draft" hx-get="{% url 'task-all-filter' %}?{{pd}}&status=expired&view=list" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:Tomato"></span>
+        {% trans "Expired" %}
+      </span>
+    </div>
+    <div class="oh-sticky-table">
+      <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+          <div class="oh-sticky-table__tr">
+            <div class="oh-sticky-table__th"  >
+              <div class="d-flex">
+                <div class="">
+                  <input type="checkbox" class="oh-input oh-input__checkbox mt-1 mr-2 all-task-all" />
+                </div>
+                <div hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&orderby=name&view=list">
+                  {% trans "Task" %}
+                </div>
+              </div>
+            </div>
+            <div class="oh-sticky-table__th">{% trans "Project" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Mangers" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Members" %}</div>
+            <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+            <div class="oh-sticky-table__th">{% trans "Description" %}</div>
+            {% comment %} <div class="oh-sticky-table__th"></div> {% endcomment %}
+            <div class="oh-sticky-table__th"></div>
+          </div>
+        </div>
+        {% for task in tasks %}
+        <div class="oh-sticky-table__tbody ui-sortable" hx-get="{% url 'task-details' task.id %}" hx-target="#TaskDetailsTarget" data-toggle='oh-modal-toggle' data-target = '#TaskModal'>
+          <div class="oh-sticky-table__tr ui-sortable-handle">
+            <div class="oh-sticky-table__sd {% if task.status == 'to_do'%} to-do-task
+                                            {% elif task.status == 'in_progress' %} in-progress-task
+                                            {% elif task.status == 'completed' %} completed-task
+                                            {% else %} expired-task
+                                            {% endif %}">
+              <div class="d-flex">
+                <div onclick="event.stopPropagation();">
+                  <input
+                    type="checkbox"
+                    id="{{task.id}}"
+                    class="oh-input candidate-checkbox oh-input__checkbox mt-2 mr-2 all-task-all-row"
+                  />
+                </div>
+                <div class="oh-profile oh-profile--md">
+                  <span class="oh-profile__name oh-text--dark">{{task.title}}</span>
+                </div>
+              </div>
+            </div>
+
+            <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.project}}</a>
+            <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.stage}}</a>
+
+              <a href="#" style="color: inherit;text-decoration: none;"
+              class="oh-sticky-table__td">{{task.task_manager}} </a>
+              <a href="#" style="color: inherit;text-decoration: none;"
+              class="oh-sticky-table__td">
+                {% for member in task.task_members.all %}
+                  {{member}},
+                {% endfor %}
+              </a>
+
+            <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.end_date}}</a>
+            <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.get_status_display}}</a>
+            <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">{{task.description}}</a>
+
+            {% comment %} <a href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
+              {% if perms.recruitment.view_history %}
+              <button hx-get="{% url 'candidate-history' cand.id %}" hx-target='#section'
+                class="oh-btn oh-btn--info">history</button>
+              {% endif %}
+            </a> {% endcomment %}
+            <div href="#" style="color: inherit;text-decoration: none;" class="oh-sticky-table__td">
+              <div class="oh-btn-group">
+                {% comment %} {% if perms.recruitment.change_candidate %} {% endcomment %}
+                <a hx-get="{% url 'update-task-all' task.id %}" hx-target='#TaskDetailsTarget' data-toggle = 'oh-modal-toggle' data-target="#TaskModal"  hx-swap='innerHTML'
+                  class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
+                {% comment %} {% endif %} {% endcomment %}
+                {% comment %} {% if perms.recruitment.delete_candidate %} {% endcomment %}
+                <form action="{% url 'delete-task' task.id  %}?task_all=true" method='post'
+                  onsubmit="Are you sure want to delete this candidate?">
+                  {% csrf_token %}
+                  <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                    title="Remove"><ion-icon name="trash-outline"></ion-icon></button>
+                </form>
+                {% comment %} {% endif %} {% endcomment %}
+              </div>
+            </div>
+
+            </a>
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% comment %} pagination {% endcomment %}
+  <div class="oh-pagination">
+    <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">
+      {% trans "Page" %} {{ data.number }} {% trans "of" %} {{ data.paginator.num_pages }}.
+    </span>
+    <nav class="oh-pagination__nav">
+      <div class="oh-pagination__input-container me-3">
+        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+
+        <input type="number" name="page" class="oh-pagination__input" value="{{data.number}}"
+          hx-get="{% url 'search-candidate' %}?{{pd}}&view=list" hx-target="#section" min="1" />
+        <span class="oh-pagination__label">{% trans "of" %} {{data.paginator.num_pages}}</span>
+      </div>
+
+      <ul class="oh-pagination__items">
+        {% if data.has_previous %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&page=1&view=list"
+            class="oh-pagination__link">{% trans "First" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target='#section'
+            hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ data.previous_page_number }}&view=list"
+            class="oh-pagination__link">{% trans "Previous" %}</a>
+        </li>
+        {% endif %}
+        {% if data.has_next %}
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target='#section' hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ data.next_page_number }}&view=list"
+            class="oh-pagination__link">{% trans "Next" %}</a>
+        </li>
+        <li class="oh-pagination__item oh-pagination__item--wide">
+          <a hx-target='#section'
+            hx-get="{% url 'search-candidate' %}?{{pd}}&page={{ data.paginator.num_pages }}&view=list"
+            class="oh-pagination__link">{% trans "Last" %}</a>
+        </li>
+        {% endif %}
+
+      </ul>
+    </nav>
+  </div>
+{% else %}
+  <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+    <div style="" class="">
+      <img style="display: block;width: 200px;margin: 10px auto ;" src="{% static 'images/ui/project/task.png' %}" class="" alt="Page not found. 404."/>
+      <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "There are currently no available tasks; please create a new one." %}</h3>
+    </div>
+  </div>
+{% endif %}
+
+<script src="{% static '/task_all/task_all_action.js' %}"></script>

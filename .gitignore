@@ -152,3 +152,7 @@ whoosh_index/
 
 #PyCharm
 .idea/
+myenv/
+
+
+horilla/settings.py

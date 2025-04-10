@@ -1,0 +1,33 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+        {% include 'project/new/navbar.html' %}
+    </main>
+
+    <div id="view-container" class="oh-wrapper">
+
+        {% if view_type == 'list' %}
+            {% include 'project/new/project_list_view.html' %}
+
+        {% else %}
+            {% include 'project/new/project_kanban_view.html' %}
+        {% endif %}
+    </div>
+
+    <div
+        class="oh-modal"
+        id="ProjectModal"
+        role="dialog"
+        aria-labelledby="ProjectModal"
+        aria-hidden="true"
+        >
+        <div
+            class="oh-modal__dialog"
+            style="max-width: 550px"
+            id="ProjectFormTarget"
+        ></div>
+    </div>
+
+{% endblock content %}

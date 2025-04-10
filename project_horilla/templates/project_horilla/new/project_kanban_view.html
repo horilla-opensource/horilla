@@ -1,0 +1,201 @@
+
+{% load static %}
+
+{% load i18n %}{% load horillafilters %}
+{% load basefilters %}
+
+
+{% comment %} for showing messages {% endcomment %}
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% include "filter_tags.html" %}
+{% comment %} easy filters {% endcomment %}
+<div class="d-flex flex-row-reverse">
+    <span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=new&view=card" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:cyan"></span>
+        {% trans "New" %}
+    </span>
+    <span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=in_progress&view=card" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:rgb(103, 171, 238)"></span>
+        {% trans "In progress" %}
+    </span>
+    <span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=completed&view=card" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
+        {% trans "Completed" %}
+    </span><span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=on_hold&view=card" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:orange"></span>
+        {% trans "On Hold" %}
+    </span>
+    </span><span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=cancelled&view=card" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:Red"></span>
+        {% trans "Cancelled" %}
+    </span>
+    </span><span class="m-3 draft" hx-get="{% url 'project-filter' %}?{{pd}}&status=expired&view=card" hx-target="#view-container" style="cursor: pointer">
+        <span class="oh-dot oh-dot--small me-1" style="background-color:gray"></span>
+        {% trans "Expired" %}
+    </span>
+</div>
+
+
+    {% comment %} kanban view {% endcomment %}
+    {% if projects %}
+    <div class="oh-layout--grid-3">
+        {% for project in projects %}
+            <div  class="oh-kanban-card {% if project.status == 'new'%} row-status--cyan
+                                        {% elif project.status == 'in_progress' %} row-status--blue
+                                        {% elif project.status == 'completed' %} row-status--yellow
+                                        {% elif project.status == 'on_hold' %} row-status--orange
+                                        {% elif project.status == 'cancelled' %} row-status--red
+                                        {% else %} row-status--gray
+                                        {% endif %}"
+                                        style="color: inherit;text-decoration: none;">
+
+                {% comment %} url link {% endcomment %}
+                <a href="{% url 'task-view' project.id %}?view=card" style="color: inherit;text-decoration: none; display: flex;width:600px;">
+
+                    {% comment %} placing image {% endcomment %}
+                    <div class="oh-kanban-card__avatar">
+                        <div class="oh-kanban-card__profile-container">
+                            {% if project.image %}
+                                <img
+                                src="{{emp.employee_profile.url}}"
+                                class="oh-kanban-card__profile-image"
+                                alt="Username"
+                                />
+                            {% else %}
+                                <img
+                                src="https://ui-avatars.com/api/?name={{project.title}}&background=random"
+                                class="oh-kanban-card__profile-image"
+                                alt="Username"
+                                />
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="oh-kanban-card__details">
+                        <span class="oh-kanban-card__title">{{project.title}}</span>
+                        <span class="oh-kanban-card__subtitle">{% trans "Project manager" %} : {{project.manager}}</span><br>
+                        <span class="oh-kanban-card__subtitle"> {% trans "Status" %}: {{project.get_status_display}}</span><br>
+                        <span class="oh-kanban-card__subtitle">{% trans "End date" %} : {{project.end_date}}</span>
+                    </div>
+                </a>
+                <div class="oh-tabs__input-badge-container">
+                <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1" title="{{ project.task_set.all|length}} Tasks">
+                    {{ project.task_set.all|length}}
+                </span>
+                </div>
+                <div class="oh-kanban-card__dots">
+
+                    {% comment %} dropdown {% endcomment %}
+                    <div class="oh-dropdown" x-data="{show: false}">
+                        <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show">
+                            <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon>
+                        </button>
+                        {% comment %} dropdown menu {% endcomment %}
+
+                        <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show" @click.outside="show = false" style="display: none;">
+                            <ul class="oh-dropdown__items">
+                                {% comment %} {% if perms.project.change_project %} {% endcomment %}
+                                    <li class="oh-dropdown__item">
+                                        <a
+                                            hx-get='{% url "update-project" project.id %}'
+                                            hx-target='#ProjectFormTarget' class="oh-dropdown__link"
+                                            data-toggle="oh-modal-toggle"
+                                            data-target="#ProjectModal"
+                                            data-key=".oh-kanban__section"
+                                            >{% trans "Edit" %}
+                                        </a>
+                                    </li>
+                                {% comment %} {% endif %}  {% endcomment %}
+                                 {% comment %} {% if perms.employee.delete_employee %} {% endcomment %}
+                                    <li class="oh-dropdown__item">
+                                        {% if project.is_active %}
+                                            <a href="{% url 'project-archive' project.id %}" onclick="return confirm('{% trans 'Do you want to archive this project?' %}')" class="oh-dropdown__link">
+                                                {% trans "Archive" %}
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'project-archive' project.id %}" onclick="return confirm('{% trans 'Do you want to un archive this project?' %}')" class="oh-dropdown__link">
+                                            {% trans "Un-Archive" %}
+                                            </a>
+                                        {% endif %}
+
+                                    </li>
+                               {% comment %} {% endif %} {% endcomment %}
+                                {% comment %} {% if perms.employee.delete_employee %} {% endcomment %}
+                                    <li class="oh-dropdown__item">
+                                        <form action="{% url 'delete-project' project.id %}?view=card" method="post" onsubmit="return confirm('{% trans 'Do you want to delete this employee?' %}')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</button>
+                                        </form>
+                                    </li>
+                                {% comment %} {% endif %} {% endcomment %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% comment %} pagination {% endcomment %}
+    <div class="oh-pagination">
+        <span
+            class="oh-pagination__page"
+            >
+            {% trans "Page" %} {{ projects.number }} {% trans "of" %} {{ projects.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                    <input
+                        type="number"
+                        name="page"
+                        class="oh-pagination__input"
+                        value="{{projects.number}}"
+                        hx-get="{% url 'project-filter' %}?view=card?page="
+                        hx-target="#view-container"
+                        min="1"
+                    />
+                <span class="oh-pagination__label">{% trans "of" %} {{projects.paginator.num_pages}}</span>
+            </div>
+            <ul class="oh-pagination__items">
+                {% if projects.has_previous %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#view-container' hx-get="{% url 'project-filter' %}?view=card&?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#view-container' hx-get="{% url 'project-filter' %}?view=card&?{{pd}}&page={{ projects.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
+                    </li>
+                {% endif %}
+                {% if projects.has_next %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#view-container' hx-get="{% url 'project-filter' %}?view=card&?{{pd}}&page={{ projects.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target='#view-container' hx-get="{% url 'project-filter' %}?view=card&?{{pd}}&page={{ projects.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+{% comment %} </div> {% endcomment %}
+
+{% else %}
+    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+        <div style="" class="">
+        <img style="display: block;width: 200px;margin: 10px auto ;" src="{% static 'images/ui/project/project.png' %}" class="" alt="Page not found. 404."/>
+        <h3 style="font-size:20px" class="oh-404__subtitle">{% trans "There are currently no available projects; please create a new one." %}</h3>
+        </div>
+    </div>
+{% endif %}
+
+
+{% comment %} js scripts {% endcomment %}
+<script src="{% static '/project/project_view.js' %}"></script>
+<script src="{% static '/project/import.js' %}"></script>

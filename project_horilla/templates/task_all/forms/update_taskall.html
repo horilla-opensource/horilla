@@ -1,0 +1,110 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+  <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+    <h5>{% trans "Task" %}</h5>
+    <br />
+  </span>
+  <button
+    type="button"
+    class="oh-modal__close"
+    data-dismiss="oh-modal"
+    aria-label="Close"
+    data-toggle="oh-modal-toggle"
+    hx-target="#TaskFormTarget"
+    onclick="location.reload()"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <form
+    hx-post="{%url 'update-task-all' task_id %}"
+    hx-target="#TaskUpdateTarget"
+    hx-encoding="multipart/form-data"
+  >
+    {% csrf_token %} {{ form.as_p }}
+    <div class="oh-modal__dialog-footer">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        {% trans "Save" %}
+      </button>
+    </div>
+  </form>
+</div>
+{% comment %} modals for showing new project and new task creation {% endcomment %}
+<div
+  class="oh-modal"
+  id="ProjectModal"
+  role="dialog"
+  aria-labelledby="ProjectModal"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog"
+    style="max-width: 550px"
+    id="ProjectFormTarget"
+  ></div>
+</div>
+<div
+  class="oh-modal"
+  id="ProjectStageModal"
+  role="dialog"
+  aria-labelledby="ProjectStageModal"
+  aria-hidden="true"
+>
+  <div
+    class="oh-modal__dialog"
+    style="max-width: 550px"
+    id="ProjectStageFormTarget"
+  ></div>
+</div>
+<script>
+$(document).ready(function(){
+  {% comment %} $("#project_stage").html("<option>-------</option>");  {% endcomment %}
+  $(document).on("change","#id_project",function(){
+    project_id = $(this).val()
+    if (project_id === 'create_new_project'){
+      $.ajax({
+          type: "GET",
+          url: '/project/create-project-time-sheet',
+          success: function (response) {
+            $("#ProjectModal").addClass("oh-modal--show");
+            $("#ProjectFormTarget").html(response);
+          },
+        });0
+    }
+    if ($.isNumeric(project_id)) {
+      $.ajax({
+        type:"GET",
+        url:"/project/get-stages",
+        data:{'project_id':project_id},
+        beforeSend: function () {
+            $(".errorlist").remove();
+        },
+        success:function(response){
+          $('#project_stage').html("<option>---------</option>");
+          for (let i = 0; i < response.data.length; i++) {
+              const element = response.data[i];
+              $("#project_stage").append("<option value="+ element.id + ">"+element.title+"</option>");
+            }
+            $("#project_stage").append( "<option value='create_new_stage'>Create a new Stage</option>");
+        }
+        });
+      } else {
+        $("#project_stage").html("<option>---------</option>");
+        $("#project_stage").append( "<option value='create_new_stage'>Create a new Stage</option>")
+      }
+  });
+  $(document).on("change","#project_stage",function(e){
+    task_id = $(this).val()
+      if (task_id === "create_new_stage") {
+        $.ajax({
+          type: "GET",
+          url: '/project/create-stage-taskall',
+          data: { project_id: project_id },
+          success: function (response) {
+            $("#ProjectStageModal").addClass("oh-modal--show");
+            $("#ProjectStageFormTarget").html(response);
+          },
+        });
+      }
+  });
+});
+</script>

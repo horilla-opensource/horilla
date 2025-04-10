@@ -1,0 +1,137 @@
+{% load i18n %} {% load horillafilters %} {% load static %}
+
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">
+        <h5 style="margin-bottom: 20px;">Time Sheet</h5>
+    </span>
+    {% comment %} for add timesheet {% endcomment %}
+        <div class="oh-main__titlebar-button-container">
+          <div class="oh-btn-group ml-2">
+            <div>
+              <a
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+                data-toggle="oh-modal-toggle"
+                data-target="#TimesheetUpdateModal"
+                hx-get="{% url 'create-timesheet-task' task_id %}"
+                hx-target="#TimesheetUpdateTarget"
+              >
+                <ion-icon class="me-2" name="add-outline"></ion-icon>{% trans " Add" %}
+              </a>
+            </div>
+          </div>
+        </div>
+      <button
+        type="button"
+        style="
+          border: none;
+          background: none;
+          font-size: 1.5rem;
+          opacity: 0.7;
+          position: absolute;
+          top: 25px;
+          right: 15px;
+          cursor: pointer;
+          -webkit-transition: all 0.3s ease-in-out;
+          transition: all 0.3s ease-in-out;"
+        onclick="event.stopPropagation(); $(this).parents().find('.oh-modal--show:last').toggleClass('oh-modal--show')"
+        id="close"
+      >
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    {% if time_sheets %}
+      <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table oh-table--sortable">
+            <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">
+                <div class="d-flex">
+                    <div>{% trans "Employee" %}</div>
+                </div>
+                </div>
+                {% comment %}
+                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                {% endcomment %}
+                <div class="oh-sticky-table__th">{% trans "Project" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Task" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Date" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Time Spent" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Description" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+            </div>
+            </div>
+
+            {% for time_sheet in time_sheets %}
+            <div class="oh-sticky-table__tr ui-sortable-handle"
+            data-toggle="oh-modal-toggle"
+            data-target="#TimeSheetModal"
+            hx-get="{% url 'view-single-time-sheet' time_sheet.id %}"
+            hx-target="#TimeSheetFormTarget"
+            >
+            <div class="oh-sticky-table__sd">
+                <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                    <img
+                    src="{{time_sheet.employee_id.get_avatar}}"
+                    class="oh-kanban-card__profile-image"
+                    alt="Username"
+                    />
+                </div>
+                <span class="oh-profile__name oh-text--dark"
+                    >{{time_sheet.employee_id.employee_first_name}}
+                    {{time_sheet.employee_id.employee_last_name|default:""}}
+                </span>
+                </div>
+            </div>
+            <div class="oh-sticky-table__td">{{time_sheet.project_id.title}}</div>
+
+            <div class="oh-sticky-table__td">{{time_sheet.task_id}}</div>
+            <div class="oh-sticky-table__td">{{time_sheet.date}}</div>
+            <div class="oh-sticky-table__td">{{time_sheet.time_spent}}</div>
+            <div class="oh-sticky-table__td">{{time_sheet.get_status_display}}</div>
+            <div class="oh-sticky-table__td">{{time_sheet.description|truncatechars:15}}</div>
+            <div class="oh-sticky-table__td" onclick="event.stopPropagation();">
+                <div class="oh-btn-group " >
+                <a
+                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#TimesheetUpdateModal"
+                    hx-get="{% url 'update-timesheet-task' time_sheet.id %}"
+                    hx-target="#TimesheetUpdateTarget"
+
+                >
+                    <ion-icon
+                    name="create-outline"
+                    role="img"
+                    class="md hydrated"
+                    style="color: blue"
+                    aria-label="create outline"
+                    ></ion-icon>
+                </a>
+                <button
+                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                    id="time_sheet.id"
+                    onclick=" deleteTimeSheet(this,{{time_sheet.id}});"
+                >
+                    <ion-icon
+                    name="trash-outline"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="trash outline"
+                    ></ion-icon>
+                </button>
+                </div>
+            </div>
+            </div>
+            {% endfor %}
+        </div>
+      </div>
+    {% else %}
+      <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+        <div style="" class="">
+          <img style="display: block;width: 80px;margin: 10px auto ;" src="{% static 'images/ui/project/timesheet.png' %}" class="" alt="Page not found. 404."/>
+          <h3 style="font-size:15px" class="oh-404__subtitle">{% trans "There are currently no available timesheets; please create a new one." %}</h3>
+        </div>
+      </div>
+    {% endif %}
+</div>
