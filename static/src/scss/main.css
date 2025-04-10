@@ -10230,7 +10230,7 @@ select.oh-select--lg {
 }
 
 .oh-sidebar {
-  background-color: hsl(0, 0%, 13%);
+  background-color: hsl(82, 51%, 50%);
   color: hsl(0, 0%, 100%);
   max-width: 250px;
   min-height: 100vh;
@@ -10259,7 +10259,7 @@ select.oh-select--lg {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: hsl(8, 77%, 56%);
+  background-color: hsl(82, 51%, 50%);
   font-size: 1.25rem;
   border-radius: 0.15rem;
 }

@@ -1,10 +1,4 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#: .\leave\views.py:2878
-#, fuzzy
+
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -878,7 +872,7 @@ msgstr "Actions"
 #: .\accessibility\templates\accessibility\accessibility.html:53
 #: .\dynamic_fields\templates\dynamic_fields\df.html:31
 msgid "You won't be able to revert this!"
-msgstr ""
+msgstr "Vous ne pourrez pas revenir en arrière !"
 
 #: .\accessibility\templates\accessibility\accessibility.html:58
 #: .\base\methods.py:518 .\base\templatetags\horillafilters.py:283
