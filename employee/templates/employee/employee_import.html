@@ -1,0 +1,49 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title">
+        {% trans "Import Employee" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+    <div class="oh-modal__dialog-body p-0 pb-4">
+        <form hx-post="{% url 'work-info-import' %}" hx-target="#objectCreateModalTarget" hx-encoding="multipart/form-data" class="oh-profile-section">
+            {% csrf_token %}
+            <div class="oh-modal__dialog-body mr-5" id="uploading" style="display: none">
+                <div class="loader-container">
+                    <div class="loader"></div>
+                    <div class="loader-text">{% trans "Uploading..." %}</div>
+                </div>
+            </div>
+
+            <div id="error-container" style="color: red"></div>
+
+            <div class="modal-body">
+                <div class="oh-dropdown__import-form">
+                    {% if error_message %}
+                        <ul class="errorlist">
+                            <li>{{error_message}}</li>
+                        </ul>
+                    {% endif %}
+                    <label class="oh-dropdown__import-label">
+                        <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon md hydrated" role="img"
+                            aria-label="cloud upload"></ion-icon>
+                        <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                        <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+                    </label>
+                    <input type="file" name="file"/ required>
+                    <div class="d-inline float-end">
+                        <a href="#" style="text-decoration:none; display: inline-block;" class="oh-dropdown__link" hx-on:click="template_download(event)">
+                            <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;" role="img" class="md hydrated"></ion-icon>
+                            <span>{% trans "Download Template" %}</span>
+                        </a>
+                      </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex flex-row-reverse">
+                <input type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
+                    value="{% trans 'Upload' %}" />
+            </div>
+        </form>
+    </div>
+</div>

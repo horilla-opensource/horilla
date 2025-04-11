@@ -168,6 +168,11 @@ urlpatterns = [
     path("employee-import", views.employee_import, name="employee-import"),
     path("employee-export", views.employee_export, name="employee-export"),
     path("work-info-import", views.work_info_import, name="work-info-import"),
+    path(
+        "work-info-import-file",
+        views.work_info_import_file,
+        name="work-info-import-file",
+    ),
     path("work-info-export", views.work_info_export, name="work-info-export"),
     path("get-birthday", views.get_employees_birthday, name="get-birthday"),
     path("dashboard", views.dashboard, name="dashboard"),
