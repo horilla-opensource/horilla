@@ -85,7 +85,7 @@
 </div>
 
 
-<div class="oh-wrapper" hx-get="{% url "user-request-filter" %}?{{request.GET.urlencode}}"
+<div class="oh-wrapper" hx-trigger="load" hx-get="{% url "user-request-filter" %}?{{request.GET.urlencode}}"
    id="listContainer">
   <div class="animated-background">
 </div>

@@ -1485,11 +1485,13 @@ def feedback_creation(request):
         it will return feedback creation html.
     """
     form = FeedbackForm()
+    form.fields["manager_id"].required = False
     context = {
         "feedback_form": form,
     }
     if request.method == "POST":
         form = FeedbackForm(request.POST)
+        form.fields["manager_id"].required = False
         if form.is_valid():
             employees = form.data.getlist("subordinate_id")
             if key_result_ids := request.POST.getlist("employee_key_results_id"):

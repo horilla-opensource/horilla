@@ -2840,6 +2840,18 @@ class AnnouncementForm(ModelForm):
     Announcement Form
     """
 
+    employees = HorillaMultiSelectField(
+        queryset=Employee.objects.all(),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+            required=True,
+        ),
+        label="Employees",
+    )
+
     cols = {
         "title": 12,
         "description": 12,

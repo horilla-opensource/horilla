@@ -280,7 +280,6 @@ class MyLeaveRequestForm(HorillaFormView):
 
         context["form"] = self.form
         context["view_id"] = "myleaverequest"
-        print("CONTEXTTTTT")
 
         return context
 
@@ -300,7 +299,6 @@ class MyLeaveRequestForm(HorillaFormView):
         form = self.form_class(
             self.request.POST, instance=self.form.instance, employee=emp
         )
-        print(">>>>>>>>>>>>>>>>>>>>")
         if form.is_valid():
             self.form_class(
                 self.request.POST, self.request.FILES, instance=self.form.instance
@@ -440,7 +438,6 @@ class MyLeaveRequestForm(HorillaFormView):
                     messages.error(self.request, _("You don't have permission"))
 
             return HttpResponse("<script>location.reload();</script>")
-        print("YESSSSSSSSSSSS")
         return super().form_valid(form)
 
 
