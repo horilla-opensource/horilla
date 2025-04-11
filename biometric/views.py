@@ -174,7 +174,7 @@ class ZKBioAttendance(Thread):
                                 device.last_fetch_time = time
                                 device.save()
                                 bio_id = BiometricEmployees.objects.filter(
-                                    user_id=user_id
+                                    user_id=user_id, device_id=device
                                 ).first()
                                 if bio_id:
                                     if punch_code in {0, 3, 4}:
@@ -2129,13 +2129,17 @@ def zk_biometric_attendance_logs(device):
         device.last_fetch_date = last_attendance_datetime.date()
         device.last_fetch_time = last_attendance_datetime.time()
         device.save()
+        bio_id_map = {
+            bio.user_id: bio
+            for bio in BiometricEmployees.objects.filter(device_id=device)
+        }
         for attendance in filtered_attendances:
             user_id = attendance.user_id
             punch_code = attendance.punch
             date_time = django_timezone.make_aware(attendance.timestamp)
             date = date_time.date()
             time = date_time.time()
-            bio_id = BiometricEmployees.objects.filter(user_id=user_id).first()
+            bio_id = bio_id_map.get(user_id)
             if bio_id:
                 request_data = Request(
                     user=bio_id.employee_id.employee_user_id,

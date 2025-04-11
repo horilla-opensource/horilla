@@ -492,6 +492,7 @@ $("#deleteEmployees").click(function (e) {
         }).then(function (result) {
             if (result.isConfirmed) {
                 e.preventDefault();
+                $("#view-container").html(`<div class="animated-background"></div>`);
 
                 ids = [];
                 ids.push($("#selectedInstances").attr("data-ids"));
