@@ -3,14 +3,16 @@ employee/methods.py
 """
 
 import logging
+import re
 import threading
-from datetime import datetime
+from datetime import date, datetime
 from itertools import groupby
 
 import pandas as pd
 from django.apps import apps
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import gettext as _
 
 from base.context_processors import get_initial_prefix
 from base.models import (
@@ -25,6 +27,72 @@ from base.models import (
 from employee.models import Employee, EmployeeWorkInformation
 
 logger = logging.getLogger(__name__)
+
+error_data_template = {
+    field: []
+    for field in [
+        "Badge ID",
+        "First Name",
+        "Last Name",
+        "Phone",
+        "Email",
+        "Gender",
+        "Department",
+        "Job Position",
+        "Job Role",
+        "Work Type",
+        "Shift",
+        "Employee Type",
+        "Reporting Manager",
+        "Company",
+        "Location",
+        "Date Joining",
+        "Contract End Date",
+        "Basic Salary",
+        "Salary Hour",
+        "Email Error",
+        "First Name Error",
+        "Name and Email Error",
+        "Phone Error",
+        "Gender Error",
+        "Joining Date Error",
+        "Contract Date Error",
+        "Badge ID Error",
+        "Basic Salary Error",
+        "Salary Hour Error",
+        "User ID Error",
+        "Company Error",
+    ]
+}
+
+
+def normalize_phone(phone):
+    phone = str(phone).strip()
+    if phone.startswith("+"):
+        return "+" + re.sub(r"\D", "", phone[1:])
+    return re.sub(r"\D", "", phone)
+
+
+def import_valid_date(date_value, field_label, errors_dict, error_key):
+    if pd.isna(date_value) or date_value is None or str(date_value).strip() == "":
+        return None
+
+    if isinstance(date_value, datetime):
+        return date_value.date()
+
+    date_str = str(date_value).strip()
+    date_formats = ["%Y-%m-%d", "%d/%m/%Y", "%m/%d/%Y"]
+
+    for fmt in date_formats:
+        try:
+            return datetime.strptime(date_str, fmt).date()
+        except ValueError:
+            continue
+
+    errors_dict[error_key] = (
+        f"{field_label} is not a valid date. Expected formats: YYYY-MM-DD, DD/MM/YYYY"
+    )
+    return None
 
 
 def convert_nan(field, dicts):
@@ -117,6 +185,172 @@ def check_relationship_with_employee_model(model):
     return related_fields
 
 
+def valid_import_file_headers(data_frame):
+    if data_frame.empty:
+        message = _("The uploaded file is empty, Not contain records.")
+        return False, message
+
+    required_keys = [
+        "Badge ID",
+        "First Name",
+        "Last Name",
+        "Phone",
+        "Email",
+        "Gender",
+        "Department",
+        "Job Position",
+        "Job Role",
+        "Work Type",
+        "Shift",
+        "Employee Type",
+        "Reporting Manager",
+        "Company",
+        "Location",
+        "Date Joining",
+        "Contract End Date",
+        "Basic Salary",
+        "Salary Hour",
+    ]
+
+    missing_keys = [key for key in required_keys if key not in data_frame.columns]
+    if missing_keys:
+        message = _(
+            "These required headers are missing in the uploaded file: "
+        ) + ", ".join(missing_keys)
+        return False, message
+    return True, ""
+
+
+def process_employee_records(data_frame):
+    created_count = 0
+    success_list, error_list = [], []
+    employee_dicts = data_frame.to_dict("records")
+    email_regex = re.compile(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$")
+    phone_regex = re.compile(r"^\+?\d{10,15}$")
+    allowed_genders = {choice[0] for choice in Employee.choice_gender}
+
+    existing_badge_ids = set(Employee.objects.values_list("badge_id", flat=True))
+    existing_usernames = set(User.objects.values_list("username", flat=True))
+    existing_name_emails = set(
+        Employee.objects.values_list(
+            "employee_first_name", "employee_last_name", "email"
+        )
+    )
+    existing_companies = set(Company.objects.values_list("company", flat=True))
+
+    for emp in employee_dicts:
+        errors, save = {}, True
+
+        email = emp.get("Email", "").strip()
+        raw_phone = emp.get("Phone", "")
+        phone = normalize_phone(raw_phone)
+        badge_id = str(emp.get("Badge ID", "") or "").strip()
+        first_name = convert_nan("First Name", emp)
+        last_name = convert_nan("Last Name", emp)
+        gender = emp.get("Gender", "").strip().lower()
+        company = convert_nan("Company", emp)
+        basic_salary = convert_nan("Basic Salary", emp)
+        salary_hour = convert_nan("Salary Hour", emp)
+
+        joining_date = import_valid_date(
+            emp.get("Date Joining"), "Joining Date", errors, "Joining Date Error"
+        )
+        if "Joining Date Error" in errors:
+            save = False
+        if joining_date and joining_date > date.today():
+            errors["Joining Date Error"] = "Joining date cannot be in the future."
+            save = False
+
+        contract_end_date = import_valid_date(
+            emp.get("Contract End Date"),
+            "Contract End Date",
+            errors,
+            "Contract Date Error",
+        )
+        if "Contract Error" in errors:
+            save = False
+        if contract_end_date and joining_date and contract_end_date < joining_date:
+            errors["Contract Date Error"] = (
+                "Contract end date cannot be before joining date."
+            )
+            save = False
+
+        if not email or not email_regex.match(email):
+            errors["Email Error"] = "Invalid email address."
+            save = False
+
+        if not first_name:
+            errors["First Name Error"] = "First name cannot be empty."
+            save = False
+
+        if not phone_regex.match(phone):
+            errors["Phone Error"] = "Invalid phone number format."
+            save = False
+
+        if badge_id in existing_badge_ids:
+            errors["Badge ID Error"] = "An employee with this badge ID already exists."
+            save = False
+        else:
+            existing_badge_ids.add(badge_id)
+
+        if email in existing_usernames:
+            errors["User ID Error"] = "User with this email already exists."
+            save = False
+        else:
+            existing_usernames.add(email)
+
+        name_email_tuple = (first_name, last_name, email)
+        if name_email_tuple in existing_name_emails:
+            errors["Name and Email Error"] = (
+                "This employee already exists in the system."
+            )
+            save = False
+        else:
+            existing_name_emails.add(name_email_tuple)
+
+        if gender and gender not in allowed_genders:
+            errors["Gender Error"] = (
+                f"Invalid gender. Allowed values: {', '.join(allowed_genders)}."
+            )
+            save = False
+
+        if company and company not in existing_companies:
+            errors["Company Error"] = f"Company '{company}' does not exist."
+            save = False
+
+        if basic_salary not in [None, ""]:
+            try:
+                basic_salary_val = float(basic_salary)
+                if basic_salary_val <= 0:
+                    raise ValueError
+            except (ValueError, TypeError):
+                errors["Basic Salary Error"] = "Basic salary must be a positive number."
+                save = False
+
+        if salary_hour not in [None, ""]:
+            try:
+                salary_hour_val = float(salary_hour)
+                if salary_hour_val < 0:
+                    raise ValueError
+            except (ValueError, TypeError):
+                errors["Salary Hour Error"] = (
+                    "Salary hour must be a non-negative number."
+                )
+                save = False
+
+        if save:
+            emp["Phone"] = phone
+            emp["Date Joining"] = joining_date
+            emp["Contract End Date"] = contract_end_date
+            success_list.append(emp)
+            created_count += 1
+        else:
+            emp.update(errors)
+            error_list.append(emp)
+
+    return success_list, error_list, created_count
+
+
 def bulk_create_user_import(success_lists):
     """
     Bulk creation of user instances based on the excel import of employees
@@ -166,7 +400,7 @@ def bulk_create_employee_import(success_lists):
         if not user:
             continue
 
-        badge_id = work_info["Badge id"]
+        badge_id = work_info["Badge ID"]
         first_name = convert_nan("First Name", work_info)
         last_name = convert_nan("Last Name", work_info)
         phone = work_info["Phone"]
@@ -203,7 +437,7 @@ def set_initial_password(employees):
     logger.info("initial password configured")
 
 
-def optimize_reporting_manager_lookup(success_lists):
+def optimize_reporting_manager_lookup():
     """
     Optimizes the lookup of reporting managers from a list of work information.
 
@@ -212,21 +446,8 @@ def optimize_reporting_manager_lookup(success_lists):
     single database query, and creates a dictionary for quick lookups based
     on the full name of the reporting managers.
     """
-    # Step 1: Collect unique reporting manager names
-    unique_managers = set()
-    for work_info in success_lists:
-        reporting_manager = convert_nan("Reporting Manager", work_info)
-        if isinstance(reporting_manager, str) and " " in reporting_manager:
-            unique_managers.add(reporting_manager)
+    employees = Employee.objects.entire()
 
-    # Step 2: Query all relevant Employee objects in one go
-    manager_names = list(unique_managers)
-    employees = Employee.objects.filter(
-        employee_first_name__in=[name.split(" ")[0] for name in manager_names],
-        employee_last_name__in=[name.split(" ")[1] for name in manager_names],
-    )
-
-    # Step 3: Create a dictionary for quick lookups
     employee_dict = {
         f"{employee.employee_first_name} {employee.employee_last_name}": employee
         for employee in employees
@@ -434,8 +655,7 @@ def bulk_create_work_info_import(success_lists):
     new_work_info_list = []
     update_work_info_list = []
 
-    # Filtered data for required lookups
-    badge_ids = [row["Badge id"] for row in success_lists]
+    badge_ids = [row["Badge ID"] for row in success_lists]
     departments = set(row.get("Department") for row in success_lists)
     job_positions = set(row.get("Job Position") for row in success_lists)
     job_roles = set(row.get("Job Role") for row in success_lists)
@@ -444,7 +664,6 @@ def bulk_create_work_info_import(success_lists):
     shifts = set(row.get("Shift") for row in success_lists)
     companies = set(row.get("Company") for row in success_lists)
 
-    # Bulk fetch related objects and reduce repeated DB calls
     existing_employees = {
         emp.badge_id: emp
         for emp in Employee.objects.entire()
@@ -495,17 +714,25 @@ def bulk_create_work_info_import(success_lists):
         comp.company: comp
         for comp in Company.objects.filter(company__in=companies).only("company")
     }
-    reporting_manager_dict = optimize_reporting_manager_lookup(success_lists)
+    reporting_manager_dict = optimize_reporting_manager_lookup()
+
     for work_info in success_lists:
         email = work_info["Email"]
-        badge_id = work_info["Badge id"]
+        badge_id = work_info["Badge ID"]
         department_obj = existing_departments.get(work_info.get("Department"))
-        key = (
+
+        job_position_key = (
             existing_departments.get(work_info.get("Department")),
             work_info.get("Job Position"),
         )
-        job_position_obj = existing_job_positions.get(key)
-        job_role_obj = existing_job_roles.get(work_info.get("Job Role"))
+        job_position_obj = existing_job_positions.get(job_position_key)
+
+        job_role_key = (
+            job_position_obj,
+            work_info.get("Job Role"),
+        )
+        job_role_obj = existing_job_roles.get(job_role_key)
+
         work_type_obj = existing_work_types.get(work_info.get("Work Type"))
         employee_type_obj = existing_employee_types.get(work_info.get("Employee Type"))
         shift_obj = existing_shifts.get(work_info.get("Shift"))
@@ -520,8 +747,8 @@ def bulk_create_work_info_import(success_lists):
 
         # Parsing dates and salary
         date_joining = (
-            work_info["Date joining"]
-            if not pd.isnull(work_info["Date joining"])
+            work_info["Date Joining"]
+            if not pd.isnull(work_info["Date Joining"])
             else datetime.today()
         )
 

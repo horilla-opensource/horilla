@@ -1,0 +1,120 @@
+name: Feature Request
+description: Suggest an idea to enhance Horilla
+title: "[Feature] <short description>"
+labels: ["enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature for Horilla! Please fill out the fields below to help us understand your idea. Search existing issues first to avoid duplicates.
+  - type: dropdown
+    id: module
+    attributes:
+      label: Target Module
+      description: Which Horilla module would this feature apply to?
+      options:
+        - Recruitment
+        - Employee Onboarding
+        - Attendance
+        - Leave Management
+        - Payroll
+        - Performance Management
+        - Asset Management
+        - General (cross-module)
+        - Other (specify below)
+      default: 0
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A brief description of the new feature you're requesting.
+      placeholder: "E.g., Add a shift scheduling tool to the Attendance module."
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case
+      description: Explain how this feature would be useful and how it fits into Horilla's context.
+      placeholder: "E.g., Managers need to assign shifts for employees working in multiple time zones."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Optional - Provide ideas on how this feature could be implemented.
+      placeholder: "E.g., Add a new 'Shifts' tab with a calendar view and drag-and-drop scheduling."
+    validations:
+      required: false
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: Highlight the value this feature would bring to users or the project.
+      placeholder: "E.g., Simplifies scheduling, reduces manual errors, and improves employee satisfaction."
+    validations:
+      required: true
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any other details, examples, or mockups related to the feature request.
+      placeholder: "E.g., Similar feature seen in [other HRMS]. Attach mockups here."
+    validations:
+      required: false
+  - type: dropdown
+    id: labels
+    attributes:
+      label: Labels
+      description: Suggest labels for this feature request.
+      multiple: true
+      options:
+        - enhancement
+        - feature request
+        - needs discussion
+        - documentation
+      default: 0
+    validations:
+      required: false
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Specify the priority level for this feature.
+      options:
+        - High
+        - Medium
+        - Low
+      default: 1
+    validations:
+      required: true
+  - type: input
+    id: assignees
+    attributes:
+      label: Assignees
+      description: Optional - Suggest GitHub usernames to assign this request (e.g., @username).
+      placeholder: "E.g., @horilla-dev"
+    validations:
+      required: false
+  - type: textarea
+    id: related
+    attributes:
+      label: Related Issues
+      description: Optional - Mention related issues or pull requests.
+      placeholder: "E.g., Related to #123 or PR #456"
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Submission Checklist
+      description: Confirm these before submitting.
+      options:
+        - label: I have searched for duplicate feature requests
+          required: true
+        - label: I have provided clear and concise information
+          required: true

@@ -1,0 +1,87 @@
+{% load static i18n offboarding_filter %}
+
+<div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+    <span class="oh-card-dashboard__title"
+        >{% trans "Not Returned Assets" %}</span
+    >
+</div>
+<div class="oh-card-dashboard__body h-75 overflow-auto position-relative">
+    {% if assets %}
+    <div
+        class="oh-sticky-table__table"
+        style="border: 1px solid hsl(213, 22%, 93%)"
+    >
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Asset" %}</div>
+                <div class="oh-sticky-table__th text-center">
+                    {% trans "Reminder" %}
+                </div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for asset in assets %}
+            <div
+                class="oh-sticky-table__tr oh-multiple-table-sort__movable"
+                onclick="
+                    localStorage.setItem('activeTabAsset','#tab_2');
+                    window.location.href = '{% url 'asset-request-allocation-view' %}?assigned_to_employee_id={{asset.assigned_to_employee_id.id}}'
+                "
+            >
+                <div class="oh-sticky-table__sd">
+                    <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                            <img
+                                src="{{ asset.assigned_to_employee_id.get_avatar }}"
+                                class="oh-profile__image"
+                            />
+                        </div>
+                        <span class="oh-profile__name oh-text--dark"
+                            >{{ asset.assigned_to_employee_id.get_full_name}}
+                        </span>
+                    </div>
+                </div>
+                <div class="oh-sticky-table__td">
+                    {{asset.asset_id.asset_name}} -
+                    {{asset.asset_id.asset_category_id}}
+                </div>
+                <div
+                    class="oh-sticky-table__td text-center"
+                    onclick="event.stopPropagation()"
+                >
+                    <a
+                        hx-get="{% url 'send-mail-employee' asset.assigned_to_employee_id.id %}"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#sendMailModal"
+                        title="{% trans 'Send Mail' %}"
+                        hx-target="#mail-content"
+                    >
+                        <ion-icon name="mail-outline"></ion-icon>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="oh-404">
+        <img
+            style="display: block; width: 120px; margin: 20px auto"
+            src="{% static 'images/ui/asset.png' %}"
+            class=""
+        />
+        <h3 style="font-size: 16px" class="oh-404__subtitle">
+            {% trans "No Assets Due for Return from Offboarding Employees." %}
+        </h3>
+    </div>
+    {% endif %}
+</div>
+<script>
+    $(document).ready(function () {
+        $("[data-toggle='oh-modal-toggle']").on("click", function () {
+            var target = $(this).data("target");
+            $(target).toggleClass("oh-modal--show");
+        });
+    });
+</script>

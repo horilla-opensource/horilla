@@ -15,7 +15,9 @@ def employeeworkinformation_pre_save(sender, instance, **_kwargs):
     This method is used to override the save method for EmployeeWorkInformation Model
     """
     active_employee = (
-        instance.employee_id if instance.employee_id.is_active == True else None
+        instance.employee_id
+        if instance.employee_id and instance.employee_id.is_active == True
+        else None
     )
     if active_employee is not None:
         all_contracts = Contract.objects.entire()

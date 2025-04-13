@@ -3,7 +3,7 @@
     "model": "payroll.loanaccount",
     "pk": 1,
     "fields": {
-      "created_at": "2024-12-12T09:45:26.097Z",
+      "created_at": "2025-03-12T09:45:26.097Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
@@ -11,7 +11,7 @@
       "title": "Medical Loan",
       "employee_id": 18,
       "loan_amount": 60000.0,
-      "provided_date": "2024-12-01",
+      "provided_date": "2025-03-01",
       "allowance_id": 5,
       "description": "Loan for parents medical case",
       "is_fixed": true,

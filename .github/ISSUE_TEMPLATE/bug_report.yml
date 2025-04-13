@@ -1,0 +1,154 @@
+name: Bug Report
+description: Create a report to help us improve Horilla
+title: "[Bug] <short description>"
+labels: ["bug"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Horilla! Please provide detailed information below to assist us in resolving the issue. Search existing issues first to avoid duplicates.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A brief description of the bug or issue you're encountering.
+      placeholder: "E.g., Attendance report crashes when filtering by date."
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed step-by-step instructions to reproduce the issue.
+      placeholder: |
+        1. Go to Attendance module
+        2. Select 'Filter by Date'
+        3. Enter '2025-04-01' to '2025-04-10'
+        4. Click 'Apply'
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen.
+      placeholder: "E.g., A report listing all attendance records for the date range."
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened.
+      placeholder: "E.g., Page crashes with a 500 Internal Server Error."
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, drag and drop screenshots illustrating the issue.
+      placeholder: "E.g., Upload an image of the error page."
+    validations:
+      required: false
+  - type: input
+    id: django-version
+    attributes:
+      label: Django Version
+      description: The Django version you're using.
+      placeholder: "E.g., 3.2.1"
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: Python Version
+      description: The Python version you're using.
+      placeholder: "E.g., 3.9"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      description: Your operating system.
+      placeholder: "E.g., Ubuntu 20.04"
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser
+      description: If applicable, specify the browser and version.
+      placeholder: "E.g., Chrome 123.0"
+    validations:
+      required: false
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any logs, error messages, or context that might help.
+      placeholder: "E.g., Error log: 'Traceback: ValueError at /attendance...'"
+    validations:
+      required: false
+  - type: textarea
+    id: solution
+    attributes:
+      label: Possible Solution
+      description: Optional - Suggest how this might be fixed.
+      placeholder: "E.g., Check date parsing logic in attendance/views.py."
+    validations:
+      required: false
+  - type: dropdown
+    id: labels
+    attributes:
+      label: Labels
+      description: Suggest labels for this issue.
+      multiple: true
+      options:
+        - bug
+        - needs investigation
+        - documentation
+        - enhancement
+      default: 0
+    validations:
+      required: false
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Specify the priority level for this issue.
+      options:
+        - High
+        - Medium
+        - Low
+      default: 1
+    validations:
+      required: true
+  - type: input
+    id: assignees
+    attributes:
+      label: Assignees
+      description: Optional - Suggest GitHub usernames to assign this issue (e.g., @username).
+      placeholder: "E.g., @horilla-dev"
+    validations:
+      required: false
+  - type: textarea
+    id: related
+    attributes:
+      label: Related Issues
+      description: Optional - Mention related issues or pull requests.
+      placeholder: "E.g., Related to #123 or PR #456"
+    validations:
+      required: false
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Submission Checklist
+      description: Confirm these before submitting.
+      options:
+        - label: I have searched for duplicate issues
+          required: true
+        - label: I have provided as much detail as possible
+          required: true

@@ -134,7 +134,21 @@
             <div class="company-name">{{ white_label_company }}</div>
         {% endif %}
     </div>
-
+    <script src="{% static '/build/js/web.frontend.min.js' %}"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script type="module"  src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        $(document).ready(function () {
+            if ($(".oh-alert--warning").length > 0) {
+                Swal.fire({
+                    title: 'Access Denied !',
+                    text: 'Your login credentials are currently blocked. Please contact HR administrators for assistance.',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                });
+            }
+        });
+    </script>
 </body>
 </html>
