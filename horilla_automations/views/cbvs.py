@@ -16,7 +16,7 @@ from horilla_views.generic.cbv import views
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("automations.view_mailautomation"), name="dispatch"
 )
 class AutomationSectionView(views.HorillaSectionView):
     """
@@ -36,7 +36,7 @@ class AutomationSectionView(views.HorillaSectionView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("automations.view_mailautomation"), name="dispatch"
 )
 class AutomationNavView(views.HorillaNavView):
     """
@@ -92,7 +92,7 @@ class AutomationFormView(views.HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("automations.view_mailautomation"), name="dispatch"
 )
 class AutomationListView(views.HorillaListView):
     """
@@ -144,7 +144,7 @@ class AutomationListView(views.HorillaListView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("automations.view_mailautomation"), name="dispatch"
 )
 class AutomationDetailedView(views.HorillaDetailedView):
     """

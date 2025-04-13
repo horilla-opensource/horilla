@@ -3,9 +3,10 @@ from django.apps import AppConfig
 from horilla_automations.signals import start_automation
 
 
-class HorillaAutomationConfig(AppConfig):
+class AutomationsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_automations"
+    verbose_name = "Automations"
 
     def ready(self) -> None:
         ready = super().ready()

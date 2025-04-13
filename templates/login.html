@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Login - {{white_label_company_name}} Dashboard</title>
+    <title>Login - REED SIRH Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="{% static 'images/ui/Favicon-32x32.png' %}" />
     <style>
@@ -128,10 +128,10 @@
 
         <img class="company-logo"
              src="{% if white_label_company.icon %}{{ white_label_company.icon.url }}{% else %}{% static 'images/ui/auth-logo.png' %}{% endif %}"
-             alt="{{ white_label_company_name }}" />
+             alt="REED SIRH" />
 
         {% if white_label_company %}
-            <div class="company-name">{{ white_label_company }}</div>
+            <div class="company-name">REED SIRH</div>
         {% endif %}
     </div>
     <script src="{% static '/build/js/web.frontend.min.js' %}"></script>

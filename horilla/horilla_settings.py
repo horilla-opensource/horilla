@@ -50,8 +50,8 @@ APP_URLS = [
 APPS = [
     "base",
     "employee",
-    "horilla_documents",
-    "horilla_automations",
+    "documents",
+    "automations",
 ]
 
 NO_PERMISSION_MODALS = [

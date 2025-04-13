@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="oh-onboarding-card__header">
-    <span class="oh-onboarding-card__company-name">Horilla HRMS</span>
+    <span class="oh-onboarding-card__company-name">REED SIRH</span>
     <ul class="oh-onboarding-card__step">
         <li class="oh-onboarding-card__step">
             <div class="oh-onboarding-card__count">1</div>
@@ -28,7 +28,7 @@
     {% trans "Sign Up" %}
 </h1>
 <p class="text-muted text-center">
-    {% trans "Please sign up to access the Horilla HRMS." %}
+    {% trans "Please sign up to access the REED SIRH." %}
 </p>
 <form hx-post="{% url 'initialize-database-user' %}" hx-target="#ohAuthCard" class="oh-form-group">
     {% csrf_token %}
@@ -52,7 +52,7 @@
         <div class="col-12 col-sm-12 col-md-6 col-lg-6">
             <div class="oh-input-group">
                 <label class="oh-label" for="email">{% trans "Email" %}</label>
-                <input type="text" id="email" name="email" class="oh-input w-100" placeholder="e.g. adam.luis@horilla.com"
+                <input type="text" id="email" name="email" class="oh-input w-100" placeholder="e.g. adam.luis@reedsirh.com"
                     required />
             </div>
         </div>
@@ -76,7 +76,7 @@
             <div class="oh-input-group">
                 <label class="oh-label" for="username">{% trans "Username" %}</label>
                 <input type="text" id="username" name="username" class="oh-input w-100"
-                    placeholder="e.g. adam.luis@horilla.com" required />
+                    placeholder="e.g. adam.luis@reedsirh.com" required />
             </div>
         </div>
     </div>

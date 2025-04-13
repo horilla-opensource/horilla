@@ -74,7 +74,7 @@ def profile_accessibility(request, submenu, user_perms, *args, **kwargs):
 
 def document_accessibility(request, submenu, user_perms, *args, **kwargs):
     return request.user.has_perm(
-        "horilla_documents.view_documentrequest"
+        "documents.view_documentrequest"
     ) or is_reportingmanager(request.user)
 
 

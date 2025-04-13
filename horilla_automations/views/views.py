@@ -43,7 +43,7 @@ def get_to_field(request):
 
 
 @login_required
-@permission_required("horilla_automation")
+@permission_required("automations")
 def delete_automation(request, pk):
     """
     Automation delete view
