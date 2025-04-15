@@ -98,7 +98,9 @@ from pms.models import (
     QuestionOptions,
     QuestionTemplate,
 )
-
+from attendance.methods.utils import (
+    is_reportingmanger
+)
 logger = logging.getLogger(__name__)
 
 
@@ -381,6 +383,7 @@ def kr_create_or_update(request, kr_id=None):
     Returns:
     Renders a form to create or update a Key Result.
     """
+    
     form = KRForm()
     kr = False
     key_result = False
@@ -388,17 +391,21 @@ def kr_create_or_update(request, kr_id=None):
         key_result = KeyResult.objects.filter(id=kr_id).first()
         form = KRForm(instance=key_result)
     if request.method == "POST":
+        print(is_reportingmanger(request, key_result))
         if key_result:
-            form = KRForm(request.POST, instance=key_result)
-            if form.is_valid():
-                instance = form.save()
-                messages.success(
-                    request,
-                    _("Key result %(key_result)s updated successfully")
-                    % {"key_result": instance},
-                )
+            if not is_reportingmanger(request, key_result):
+                form = KRForm(request.POST, instance=key_result)
+                if form.is_valid():
+                    instance = form.save()
+                    messages.success(
+                        request,
+                        _("Key result %(key_result)s updated successfully")
+                        % {"key_result": instance},
+                    )
+                    return HttpResponse("<script>window.location.reload()</script>")
+            else:
+                messages.error(request, 'You dont have permission for this feature')
                 return HttpResponse("<script>window.location.reload()</script>")
-
         else:
             form = KRForm(request.POST)
             if form.is_valid():
@@ -409,7 +416,6 @@ def kr_create_or_update(request, kr_id=None):
                     % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
-
     return render(request, "okr/key_result/real_kr_form.html", {"form": form})
 
 
