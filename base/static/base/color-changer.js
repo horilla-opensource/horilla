@@ -1,0 +1,219 @@
+// Utility Function: Convert HSL to Hex
+function hslToHex(hsl) {
+    const hslRegex = /hsl\((\d+),\s*([\d.]+)%,\s*([\d.]+)%\)/;
+    const match = hsl.match(hslRegex);
+    if (!match) return '#000000'; // Default fallback
+
+    let h = parseInt(match[1]);
+    let s = parseFloat(match[2]) / 100;
+    let l = parseFloat(match[3]) / 100;
+
+    let c = (1 - Math.abs(2 * l - 1)) * s;
+    let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    let m = l - c / 2;
+
+    let r, g, b;
+    if (h >= 0 && h < 60) [r, g, b] = [c, x, 0];
+    else if (h < 120) [r, g, b] = [x, c, 0];
+    else if (h < 180) [r, g, b] = [0, c, x];
+    else if (h < 240) [r, g, b] = [0, x, c];
+    else if (h < 300) [r, g, b] = [x, 0, c];
+    else [r, g, b] = [c, 0, x];
+
+    r = Math.round((r + m) * 255).toString(16).padStart(2, '0');
+    g = Math.round((g + m) * 255).toString(16).padStart(2, '0');
+    b = Math.round((b + m) * 255).toString(16).padStart(2, '0');
+
+    return `#${r}${g}${b}`;
+}
+
+// Utility Function: Convert Hex to HSL
+function hexToHsl(hex) {
+    let r = parseInt(hex.slice(1, 3), 16) / 255;
+    let g = parseInt(hex.slice(3, 5), 16) / 255;
+    let b = parseInt(hex.slice(5, 7), 16) / 255;
+
+    let max = Math.max(r, g, b),
+        min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) h = s = 0; // Achromatic
+    else {
+        let d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        h =
+            max === r
+                ? (g - b) / d + (g < b ? 6 : 0)
+                : max === g
+                ? (b - r) / d + 2
+                : (r - g) / d + 4;
+        h /= 6;
+    }
+    h = Math.round(h * 360);
+    s = Math.round(s * 100);
+    l = Math.round(l * 100);
+
+    return `hsl(${h}, ${s}%, ${l}%)`;
+}
+
+// Controls and their default values
+const controls = [
+    { id: 'sbar', cssClass: '.oh-sidebar', property: 'background-color', default: 'hsl(0, 0%, 13%)' },
+    { id: 'company-bg', cssClass: '.oh-sidebar__company', property: 'background-color', default: 'hsl(0, 0%, 20%)' },
+    { id: 'menu-link', cssClass: '.oh-sidebar__menu-link', property: 'background-color', default: 'hsl(0, 0%, 20%)' },
+    { id: 'active-menu-link', cssClass: '.oh-sidebar__menu-link--active', property: 'background-color', default: 'hsl(8, 77%, 56%)' },
+    { id: 'submenu', cssClass: '.oh-sidebar__submenu', property: 'background-color', default: 'hsl(0, 0%, 20%)' },
+    { id: 'submenu-link', cssClass: '.oh-sidebar__submenu-link', property: 'color', default: 'hsl(0, 0%, 100%)' },
+    { id: 'submenu-link-active', cssClass: '.oh-sidebar__submenu-link.active', property: 'color', default: 'hsl(0, 0%, 70%)' },
+    { id: 'secondary-btn', cssClass: '.oh-btn--secondary', property: 'background-color', default: 'hsl(8, 77%, 56%)' },
+    { id: 'page-bg', cssClass: 'body', property: 'background-color', default: 'hsl(0, 0%, 97.5%)' }
+  ];
+  
+  // Function to fetch company colors from the backend
+  async function fetchCompanyColors(companyId) {
+    try {
+      const response = await fetch(`/get-company-colors/?company_id=${companyId}`);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Fetched Company Colors:', data);
+        return data;
+      } else {
+        console.error('Error fetching company colors:', await response.text());
+        return {};
+      }
+    } catch (error) {
+      console.error('Error during fetchCompanyColors:', error);
+      return {};
+    }
+  }
+  
+  // Function to update a single color dynamically and send the update to the backend
+  async function updateColor(colorId, hexValue) {
+    const hslValue = hexToHsl(hexValue);
+  
+    // Update the page styles
+    const control = controls.find(c => c.id === colorId);
+    if (control) {
+      document.querySelectorAll(control.cssClass).forEach(element => {
+        element.style[control.property] = hexValue;
+      });
+  
+
+      // Update the displayed HSL value next to the picker
+      const display = document.getElementById(`${colorId}-val`);
+      if (display) {
+        display.textContent = hslValue;
+      }
+
+      // Send the new color to the backend to save it in the database
+      try {
+        const response = await fetch('/update-company-color/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            color_id: colorId,
+            color_value: hexValue // Saving the Hex value in the database
+          })
+        });
+    
+        if (!response.ok) {
+          console.error('Error saving color to the database:', await response.text());
+        } else {
+          console.log(`Color ${colorId} successfully saved to the database.`);
+        }
+      } catch (error) {
+        console.error('Error during save to the backend:', error);
+      }
+    }
+  
+  }
+  
+  // Function to apply colors to the color pickers and the page elements
+  function applyColors(colors) {
+    controls.forEach(({ id, cssClass, property, default: defaultColor }) => {
+      // Use the fetched color or fall back to the default
+      const color = colors[id] || defaultColor;
+      // Convert HSL to Hex for the input type="color"
+      const hexValue = color.startsWith('hsl') ? hslToHex(color) : color;
+      const picker = document.getElementById(id);
+      const display = document.getElementById(`${id}-val`);
+  
+      // Set the picker's value
+      if (picker) {
+        picker.value = hexValue;
+  
+        // Attach an event listener for real-time updates and saving changes
+        picker.addEventListener('input', (e) => {
+          const newHexValue = e.target.value;
+          updateColor(id, newHexValue);
+        });
+      }
+  
+      // Update the displayed color (in HSL)
+      if (display) {
+        display.textContent = color;
+      }
+  
+      // Apply the color to the corresponding page elements
+      document.querySelectorAll(cssClass).forEach(element => {
+        element.style[property] = hexValue;
+      });
+    });
+  }
+  
+  // Function to reset all colors to their default values and update the backend
+  async function resetColorsToDefault() {
+    // Update the UI with default colors
+    controls.forEach(({ id, cssClass, property, default: defaultColor }) => {
+      const defaultHex = defaultColor.startsWith('hsl') ? hslToHex(defaultColor) : defaultColor;
+      const picker = document.getElementById(id);
+      const display = document.getElementById(`${id}-val`);
+      if (picker) picker.value = defaultHex;
+      if (display) display.textContent = defaultColor;
+      document.querySelectorAll(cssClass).forEach(element => {
+        element.style[property] = defaultHex;
+      });
+    });
+  
+    // Send updates for all controls to the backend
+    try {
+      const savePromises = controls.map(({ id, default: defaultColor }) => {
+        const defaultHex = defaultColor.startsWith('hsl') ? hslToHex(defaultColor) : defaultColor;
+        return fetch('/update-company-color/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            color_id: id,
+            color_value: defaultHex
+          })
+        });
+      });
+      await Promise.all(savePromises);
+      console.log("All colors successfully reset to defaults and saved to the backend.");
+    } catch (error) {
+      console.error("Error saving default colors to the backend:", error);
+    }
+  
+    // Optionally, reload the page to guarantee a fresh state
+    location.reload();
+  }
+  
+  // Main Initialization
+  document.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const companyId = urlParams.get('company_id') || 'all';
+  
+    // Fetch colors for the current company and apply them
+    const colors = await fetchCompanyColors(companyId);
+    applyColors(colors);
+  
+    // Attach reset functionality to the "Reset All" button
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', resetColorsToDefault);
+    }
+  });
