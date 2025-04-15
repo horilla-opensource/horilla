@@ -2,8 +2,10 @@
 horilla/cbv_methods.py
 """
 
+import json
 import types
 import uuid
+from io import BytesIO
 from typing import Any
 from urllib.parse import urlencode
 from venv import logger
@@ -28,7 +30,10 @@ from django.urls import reverse
 from django.utils.functional import lazy
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.utils import get_column_letter
 
 from horilla import settings
 from horilla.horilla_middlewares import _thread_locals
@@ -210,7 +215,7 @@ def check_feature_enabled(function, feature_name, model_class: models.Model):
         enabled = getattr(general_setting, feature_name, False)
         if enabled:
             return function(self, request, *args, **kwargs)
-        messages.info(request, _trans("Feature is not enabled on the settings"))
+        messages.info(request, _("Feature is not enabled on the settings"))
         previous_url = request.META.get("HTTP_REFERER", "/")
         key = "HTTP_HX_REQUEST"
         if key in request.META.keys():
@@ -510,3 +515,147 @@ def merge_dicts(dict1, dict2):
             merged_dict[key] = value
 
     return merged_dict
+
+
+def flatten_dict(d, parent_key=""):
+    """Recursively flattens a nested dictionary"""
+    items = []
+    for k, v in d.items():
+        new_key = k
+        if isinstance(v, dict):
+            items.extend(flatten_dict(v, new_key).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
+
+
+def export_xlsx(json_data, columns):
+    """
+    Quick export method
+    """
+    top_fields = [col[0] for col in columns if len(col) == 2]
+
+    nested_fields = [
+        col for col in columns if len(col) == 3 and isinstance(col[2], dict)
+    ]
+
+    # Discover dynamic keys for each nested column
+    dynamic_columns = {}
+    for title, key, mappings in nested_fields:
+        dyn_keys = set()
+        for entry in json_data:
+            try:
+                nested_data = json.loads(entry.get(key, "[]").replace("'", '"'))
+                for item in nested_data:
+                    flat = flatten_dict(item)
+                    dyn_keys.update(flat.keys())
+            except Exception:
+                continue
+        dynamic_columns[key] = {
+            "title": title,
+            "keys": [k for k in mappings if k in dyn_keys],
+            "display_names": mappings,
+        }
+
+    # Create workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Quick Export"
+
+    # Header row
+    header = top_fields[:]
+    for nested_info in dynamic_columns.values():
+        for dyn_key in nested_info["keys"]:
+            display_name = nested_info["display_names"].get(dyn_key, dyn_key)
+            header.append(display_name)
+    ws.append(list(str(title) for title in header))
+
+    # Style definitions
+    header_fill = PatternFill(
+        start_color="FFD700", end_color="FFD700", fill_type="solid"
+    )
+    bold_font = Font(bold=True)
+    thin_border = Border(
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin"),
+    )
+
+    # Apply styles to header
+    for col_idx, title in enumerate(header, 1):
+        cell = ws.cell(row=1, column=col_idx)
+        cell.font = bold_font
+        cell.fill = header_fill
+        cell.border = thin_border
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    row_index = 2
+
+    for entry in json_data:
+        all_nested_records = []
+        max_nested_rows = 1
+
+        for key, nested_info in dynamic_columns.items():
+            try:
+                nested_data = json.loads(entry.get(key, "[]").replace("'", '"'))
+                if not isinstance(nested_data, list):
+                    nested_data = []
+            except Exception:
+                nested_data = []
+            all_nested_records.append(nested_data)
+            max_nested_rows = max(max_nested_rows, len(nested_data))
+
+        for i in range(max_nested_rows):
+            row = []
+
+            # Top fields
+            for tf in top_fields:
+                row.append(entry.get(tf, "") if i == 0 else "")
+
+            # Nested fields
+            for idx, (key, nested_info) in enumerate(dynamic_columns.items()):
+                nested_data = all_nested_records[idx]
+                flat_ans = flatten_dict(nested_data[i]) if i < len(nested_data) else {}
+                for dyn_key in nested_info["keys"]:
+                    row.append(flat_ans.get(dyn_key, ""))
+
+            ws.append(row)
+
+            # Apply border to row
+            for col_idx in range(1, len(row) + 1):
+                cell = ws.cell(row=row_index, column=col_idx)
+                cell.border = thin_border
+
+            row_index += 1
+
+        # Merge top fields if needed
+        if max_nested_rows > 1:
+            for col_idx in range(1, len(top_fields) + 1):
+                ws.merge_cells(
+                    start_row=row_index - max_nested_rows,
+                    start_column=col_idx,
+                    end_row=row_index - 1,
+                    end_column=col_idx,
+                )
+                top_cell = ws.cell(row=row_index - max_nested_rows, column=col_idx)
+                top_cell.alignment = Alignment(vertical="center")
+                top_cell.border = thin_border  # Re-apply border
+
+    # Auto-fit column widths
+    for col in ws.columns:
+        max_len = max(len(str(cell.value or "")) for cell in col)
+        col_letter = get_column_letter(col[0].column)
+        ws.column_dimensions[col_letter].width = min(max_len + 2, 50)
+
+    # Output file
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    response = HttpResponse(
+        output.read(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = 'attachment; filename="quick_export.xlsx"'
+    return response
