@@ -7366,7 +7366,6 @@ def view_penalties(request):
     return render(request, "penalty/penalty_view.html", {"records": records})
 
 
-########
 @login_required
 def get_company_colors(request):
     try:
