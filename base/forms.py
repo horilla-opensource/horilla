@@ -2912,6 +2912,18 @@ class AnnouncementForm(ModelForm):
         context = {"form": self}
         return render_to_string("announcement/as_p.html", context)
 
+    def clean(self):
+        cleaned_data = super().clean()
+        if isinstance(self.fields["employees"], HorillaMultiSelectField):
+            self.errors.pop("employees", None)
+
+            employee_data = self.fields["employees"].queryset.filter(
+                id__in=self.data.getlist("employees")
+            )
+            cleaned_data["employees"] = employee_data
+
+        return cleaned_data
+
 
 class AnnouncementCommentForm(ModelForm):
     """

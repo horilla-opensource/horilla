@@ -9,6 +9,8 @@ from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Value
+from django.db.models.functions import Concat
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.http import JsonResponse
 from django.urls import reverse, reverse_lazy
@@ -1162,6 +1164,28 @@ class Feedback(HorillaModel):
             employees.append(owner)
 
         return employees
+
+    def question_answer(self):
+        """
+        Returns all the values list of question inside the template
+        """
+        # Employee.objects.select_related()
+        return list(
+            self.feedback_answer.annotate(
+                answer_by=Concat(
+                    "employee_id__employee_first_name",
+                    Value(" "),
+                    "employee_id__employee_last_name",
+                    Value(" ("),
+                    "employee_id__badge_id",
+                    Value(")"),
+                ),
+            ).values(
+                "question_id__question",
+                "answer",
+                "answer_by",
+            )
+        )
 
 
 class AnonymousFeedback(models.Model):

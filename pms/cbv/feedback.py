@@ -60,7 +60,17 @@ class FeedbackListView(HorillaListView):
         (_("Start Date"), "start_date"),
         (_("Due On"), "get_feedback_due_date"),
     ]
-
+    export_fields = [
+        (
+            _("Answers"),
+            "question_answer",
+            {
+                "question_id__question": "Question",
+                "answer": "Answer",
+                "answer_by": "Answered By",
+            },
+        ),
+    ]
     action_method = "custom_actions_col"
 
     header_attrs = {
