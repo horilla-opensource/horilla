@@ -37,11 +37,19 @@
             <input type="submit" hidden />
         </form>
     </div>
+    <div id="confirmationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <p id="confirmationMessage"></p>
+            <button id="confirmButton">Yes</button>
+            <button id="cancelButton">No</button>
+        </div>
+    </div>
     <div>
         <form
+            id="enableProfileEditForm"
             hx-post="{% url 'enable-profile-edit-feature' %}"
             hx-swap="none"
-            hx-trigger="change from:#enableProfileEditUnblock"
+            hx-include="#enableProfileEditUnblock"
             hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 70);"
         >
             {% csrf_token %}
@@ -71,3 +79,109 @@
     </div>
 </div>
 <div class="oh-inner-sidebar-content__footer"></div>
+<style>
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+}
+</style>
+
+<script>
+document.getElementById("enableProfileEditUnblock").addEventListener("change", function (e) {
+    const checkbox = this;
+    const form = document.getElementById('enableProfileEditForm');
+
+    // Set the confirmation message based on the checkbox state
+    const confirmMsg = checkbox.checked
+        ? "{{ _('Are you sure you want to allow profile editing?') }}"
+        : "{{ _('Are you sure you want to restrict profile editing?') }}";
+
+    // Show custom confirmation modal with the message
+    showConfirmationModal(confirmMsg, function(confirmed) {
+        if (confirmed) {
+            // If user clicks "Yes" (confirmed), submit the form
+            console.log('User confirmed the action.');
+
+            // Create FormData from the form
+            const formData = new FormData(form);
+
+            // Manually add CSRF token to the form data
+            const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+            formData.append('csrfmiddlewaretoken', csrfToken);
+
+            // Make the manual POST request using fetch
+            fetch("{% url 'enable-profile-edit-feature' %}", {
+                method: 'POST',
+                headers: {
+                    'HX-Request': 'true',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Handle success
+                    console.log('Profile editing status updated successfully.');
+                    reloadMessage();  // Call your custom reload function if needed
+                } else {
+                    // Handle error
+                    console.error('Error: Unable to update profile editing status.');
+                }
+            })
+            .catch(error => {
+                console.error('Request failed', error);
+            });
+        } else {
+            // If user clicks "No", revert the checkbox state
+            checkbox.checked = !checkbox.checked;
+            console.log('User cancelled the action.');
+        }
+    });
+});
+
+// Function to show the custom confirmation modal
+function showConfirmationModal(message, callback) {
+    const modal = document.getElementById("confirmationModal");
+    const messageElement = document.getElementById("confirmationMessage");
+    const confirmButton = document.getElementById("confirmButton");
+    const cancelButton = document.getElementById("cancelButton");
+
+    // Set the message in the modal
+    messageElement.textContent = message;
+
+    // Show the modal
+    modal.style.display = 'flex';
+
+    // When the user clicks "Yes" (confirm)
+    confirmButton.onclick = function() {
+        modal.style.display = 'none';  // Close the modal
+        callback(true);  // Pass 'true' to the callback
+    };
+
+    // When the user clicks "No" (cancel)
+    cancelButton.onclick = function() {
+        modal.style.display = 'none';  // Close the modal
+        callback(false);  // Pass 'false' to the callback
+    };
+}
+</script>
