@@ -13,7 +13,7 @@
     </div>
 </div>
 {% endif %}
-<form method="post" action="" enctype="multipart/form-data">
+<form method="post" action="{% url 'gdrive' %}" enctype="multipart/form-data">
     {% csrf_token %}
     {{form.as_p}}
  </form>

@@ -5,13 +5,13 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8005:8005
+      - 8000:8000
     restart: unless-stopped
     environment:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
     command: ./entrypoint.sh
     volumes:
-      - ./horilla_forked:/app/horilla_forked
+      - ./horilla:/app/horilla
     depends_on:
       db:
         condition: service_healthy
@@ -19,7 +19,7 @@ services:
   db:
     image: postgres:16-bullseye
     environment:
-      POSTGRES_DB: horilla_forked
+      POSTGRES_DB: horilla
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
