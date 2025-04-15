@@ -110,7 +110,7 @@ button {
 document.getElementById("enableProfileEditUnblock").addEventListener("change", function (e) {
     const checkbox = this;
     const form = document.getElementById('enableProfileEditForm');
-    
+
     // Set the confirmation message based on the checkbox state
     const confirmMsg = checkbox.checked
         ? "{{ _('Are you sure you want to allow profile editing?') }}"
@@ -132,7 +132,11 @@ document.getElementById("enableProfileEditUnblock").addEventListener("change", f
             // Make the manual POST request using fetch
             fetch("{% url 'enable-profile-edit-feature' %}", {
                 method: 'POST',
-                body: formData,  // Attach form data
+                headers: {
+                    'HX-Request': 'true',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: formData
             })
             .then(response => {
                 if (response.ok) {
