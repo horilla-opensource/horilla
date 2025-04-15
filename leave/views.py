@@ -1666,6 +1666,8 @@ def assign_leave_type_import(request):
         "Badge ID Error": [],
         "Leave Type Error": [],
         "Assigned Error": [],
+        "Available Days": [],
+        "Carry Forward Days": [],
         "Other Errors": [],
     }
 
@@ -1675,7 +1677,9 @@ def assign_leave_type_import(request):
         assign_leave_dicts = data_frame.to_dict("records")
 
         # Pre-fetch all employees and leave types
-        employees = {emp.badge_id.lower(): emp for emp in Employee.objects.all()}
+        employees = {
+            emp.badge_id.lower(): emp for emp in Employee.objects.all() if emp.badge_id
+        }
         leave_types = {lt.name.lower(): lt for lt in LeaveType.objects.all()}
         available_leaves = {
             (al.leave_type_id.id, al.employee_id.id): al
@@ -1688,6 +1692,8 @@ def assign_leave_type_import(request):
         for assign_leave in assign_leave_dicts:
             badge_id = assign_leave.get("Employee Badge ID", "").strip().lower()
             assign_leave_type = assign_leave.get("Leave Type", "").strip().lower()
+            available_days = assign_leave.get("Available Days", "0")
+            cfd = assign_leave.get("Carry Forward Days", "0")
             employee = employees.get(badge_id)
             leave_type = leave_types.get(assign_leave_type)
 
@@ -1712,13 +1718,26 @@ def assign_leave_type_import(request):
                 continue
 
             # If no errors, create the AvailableLeave instance
-            assign_leave_list.append(
-                AvailableLeave(
-                    leave_type_id=leave_type,
-                    employee_id=employee,
-                    available_days=leave_type.total_days,
-                )
+            if available_days == 0:
+                available_days = leave_type.total_days
+
+            available_leave = AvailableLeave(
+                leave_type_id=leave_type,
+                employee_id=employee,
+                available_days=available_days,
             )
+            if cfd:
+                available_leave.carryforward_days = cfd
+                available_leave.expired_date = leave_type.carryforward_expire_date
+                try:
+                    available_leave.reset_date = leave_type.leave_type_next_reset_date()
+                except:
+                    pass
+                available_leave.assigned_date = datetime.today()
+                available_leave.total_leave_days = (
+                    available_leave.carryforward_days + available_leave.available_days
+                )
+            assign_leave_list.append(available_leave)
 
         # Bulk create available leaves
         if assign_leave_list:
