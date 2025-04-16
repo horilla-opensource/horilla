@@ -55,6 +55,7 @@
             @click.outside="show = false"
             >
             <ul class="oh-dropdown__items">
+            {% if not request.user.is_superuser %}
                 <li class="oh-dropdown__item">
                 <a onclick="event.stopPropagation();"
                   data-toggle="oh-modal-toggle"
@@ -63,6 +64,7 @@
                   hx-target="#objectUpdateModalTarget"
                 >{% trans "Edit" %}</a>
                 </li>
+                {% endif %}
                 <li class="oh-dropdown__item">
                 <a class="text-danger"
                   onclick = "event.preventDefault();event.stopPropagation();"
