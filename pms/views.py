@@ -98,9 +98,7 @@ from pms.models import (
     QuestionOptions,
     QuestionTemplate,
 )
-from attendance.methods.utils import (
-    is_reportingmanger
-)
+from base.methods import is_reportingmanager
 logger = logging.getLogger(__name__)
 
 
@@ -391,9 +389,8 @@ def kr_create_or_update(request, kr_id=None):
         key_result = KeyResult.objects.filter(id=kr_id).first()
         form = KRForm(instance=key_result)
     if request.method == "POST":
-        print(is_reportingmanger(request, key_result))
         if key_result:
-            if not is_reportingmanger(request, key_result):
+            if not is_reportingmanager(request):
                 form = KRForm(request.POST, instance=key_result)
                 if form.is_valid():
                     instance = form.save()
