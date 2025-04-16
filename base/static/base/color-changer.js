@@ -58,161 +58,181 @@ function hexToHsl(hex) {
 
 // Controls and their default values
 const controls = [
-    { id: 'sbar', cssClass: '.oh-sidebar', property: 'background-color', default: 'hsl(0, 0%, 13%)' },
-    { id: 'company-bg', cssClass: '.oh-sidebar__company', property: 'background-color', default: 'hsl(0, 0%, 20%)' },
-    { id: 'menu-link', cssClass: '.oh-sidebar__menu-link', property: 'background-color', default: 'hsl(0, 0%, 20%)' },
-    { id: 'active-menu-link', cssClass: '.oh-sidebar__menu-link--active', property: 'background-color', default: 'hsl(8, 77%, 56%)' },
-    { id: 'submenu', cssClass: '.oh-sidebar__submenu', property: 'background-color', default: 'hsl(0, 0%, 20%)' },
-    { id: 'submenu-link', cssClass: '.oh-sidebar__submenu-link', property: 'color', default: 'hsl(0, 0%, 100%)' },
-    { id: 'submenu-link-active', cssClass: '.oh-sidebar__submenu-link.active', property: 'color', default: 'hsl(0, 0%, 70%)' },
-    { id: 'secondary-btn', cssClass: '.oh-btn--secondary', property: 'background-color', default: 'hsl(8, 77%, 56%)' },
-    { id: 'page-bg', cssClass: 'body', property: 'background-color', default: 'hsl(0, 0%, 97.5%)' }
-  ];
+  { id: 'sbar', cssClass: '.oh-sidebar', property: 'background-color', default: 'hsl(0, 0%, 13%)' },
+  { id: 'company-bg', cssClass: '.oh-sidebar__company', property: 'background-color', default: 'hsl(0, 0%, 20%)' },
+  { id: 'menu-link', cssClass: '.oh-sidebar__menu-link', property: 'background-color', default: 'hsl(0, 0%, 20%)' },
+  { id: 'active-menu-link', cssClass: '.oh-sidebar__menu-link--active', property: 'background-color', default: 'hsl(8, 77%, 56%)' },
+  { id: 'submenu', cssClass: '.oh-sidebar__submenu', property: 'background-color', default: 'hsl(0, 0%, 20%)' },
+  { id: 'submenu-link', cssClass: '.oh-sidebar__submenu-link', property: 'color', default: 'hsl(0, 0%, 100%)' },
+  { id: 'submenu-link-active', cssClass: '.oh-sidebar__submenu-link.active', property: 'color', default: 'hsl(0, 0%, 70%)' },
+  { id: 'secondary-btn', cssClass: '.oh-btn--secondary', property: 'background-color', default: 'hsl(8, 77%, 56%)' },
+  { id: 'page-bg', cssClass: 'body', property: 'background-color', default: 'hsl(0, 0%, 97.5%)' }
+];
   
-  // Function to fetch company colors from the backend
-  async function fetchCompanyColors(companyId) {
-    try {
-      const response = await fetch(`/get-company-colors/?company_id=${companyId}`);
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Fetched Company Colors:', data);
-        return data;
-      } else {
-        console.error('Error fetching company colors:', await response.text());
-        return {};
-      }
-    } catch (error) {
-      console.error('Error during fetchCompanyColors:', error);
+// Fetch company colors from the backend using the company ID.
+async function fetchCompanyColors(companyId) {
+  try {
+    const response = await fetch(`/get-company-colors/?company_id=${companyId}`);
+    if (response.ok) {
+      const data = await response.json();
+      console.log('Fetched Company Colors:', data);
+      return data;
+    } else {
+      console.error('Error fetching company colors:', await response.text());
       return {};
     }
+  } catch (error) {
+    console.error('Error during fetchCompanyColors:', error);
+    return {};
   }
+}
   
-  // Function to update a single color dynamically and send the update to the backend
-  async function updateColor(colorId, hexValue) {
-    const hslValue = hexToHsl(hexValue);
-  
-    // Update the page styles
-    const control = controls.find(c => c.id === colorId);
-    if (control) {
-      document.querySelectorAll(control.cssClass).forEach(element => {
-        element.style[control.property] = hexValue;
-      });
-  
-      // Update the displayed HSL value next to the picker
-      const display = document.getElementById(`${colorId}-val`);
-      if (display) {
-        display.textContent = hslValue;
-      }
+// Update a single color dynamically and send the update to the backend.
+async function updateColor(colorId, hexValue) {
+  const hslValue = hexToHsl(hexValue);
 
-      // Sends to back end if the company id is not "all"
-      try {
-        const response = await fetch('/update-company-color/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            color_id: colorId,
-            color_value: hexValue // Saving the Hex value in the database
-          })
-        });
-
-        if (!response.ok) {
-          console.error('Error saving color to the database:', await response.text());
-        } else {
-          console.log(`Color ${colorId} successfully saved to the database.`);
-        }
-      } catch (error) {
-        console.error('Error during save to the backend:', error);
-      }
+  // Update page styles
+  const control = controls.find(c => c.id === colorId);
+  if (control) {
+    document.querySelectorAll(control.cssClass).forEach(element => {
+      element.style.setProperty(control.property, hexValue, 'important');
+    });
+    
+    // Update the displayed HSL value near the picker
+    const display = document.getElementById(`${colorId}-val`);
+    if (display) {
+      display.textContent = hslValue;
     }
-  }
 
-  
-  // Function to apply colors to the color pickers and the page elements
-  function applyColors(colors) {
-    controls.forEach(({ id, cssClass, property, default: defaultColor }) => {
-      // Use the fetched color or fall back to the default
-      const color = colors[id] || defaultColor;
-      // Convert HSL to Hex for the input type="color"
-      const hexValue = color.startsWith('hsl') ? hslToHex(color) : color;
-      const picker = document.getElementById(id);
-      const display = document.getElementById(`${id}-val`);
-  
-      // Set the picker's value
-      if (picker) {
-        picker.value = hexValue;
-  
-        // Attach an event listener for real-time updates and saving changes
-        picker.addEventListener('input', (e) => {
-          const newHexValue = e.target.value;
-          updateColor(id, newHexValue);
-        });
-      }
-  
-      // Update the displayed color (in HSL)
-      if (display) {
-        display.textContent = color;
-      }
-  
-      // Apply the color to the corresponding page elements
-      document.querySelectorAll(cssClass).forEach(element => {
-        element.style[property] = hexValue;
-      });
-    });
-  }
-  
-  // Function to reset all colors to their default values and update the backend
-  async function resetColorsToDefault() {
-    // Update the UI with default colors
-    controls.forEach(({ id, cssClass, property, default: defaultColor }) => {
-      const defaultHex = defaultColor.startsWith('hsl') ? hslToHex(defaultColor) : defaultColor;
-      const picker = document.getElementById(id);
-      const display = document.getElementById(`${id}-val`);
-      if (picker) picker.value = defaultHex;
-      if (display) display.textContent = defaultColor;
-      document.querySelectorAll(cssClass).forEach(element => {
-        element.style[property] = defaultHex;
-      });
-    });
-  
-    // Send updates for all controls to the backend
+    // Send update to the backend (if company id is not "all")
     try {
-      const savePromises = controls.map(({ id, default: defaultColor }) => {
-        const defaultHex = defaultColor.startsWith('hsl') ? hslToHex(defaultColor) : defaultColor;
-        return fetch('/update-company-color/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            color_id: id,
-            color_value: defaultHex
-          })
-        });
+      const response = await fetch('/update-company-color/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          color_id: colorId,
+          color_value: hexValue // Save the Hex value in the database
+        })
       });
-      await Promise.all(savePromises);
-      console.log("All colors successfully reset to defaults and saved to the backend.");
+
+      if (!response.ok) {
+        console.error('Error saving color to the database:', await response.text());
+      } else {
+        console.log(`Color ${colorId} successfully saved to the database.`);
+      }
     } catch (error) {
-      console.error("Error saving default colors to the backend:", error);
+      console.error('Error during save to the backend:', error);
+    }
+  }
+}
+  
+// Apply colors within modals using the "controls" mapping
+function applyColorsToModal(modal, colors) {
+  controls.forEach(({ id, cssClass, property, default: defaultColor }) => {
+    // Get the color using the control id; fallback to default if not available.
+    const color = colors[id] || defaultColor;
+    // Apply styles (using the control's defined property) to matching elements within the modal.
+    modal.querySelectorAll(cssClass).forEach(element => {
+      element.style.setProperty(property, color, 'important');
+      console.log(`Applying color ${color} to ${cssClass} (property ${property}) in modal ${modal.id}`);
+    });
+  });
+}
+  
+// Apply colors to global page elements and color pickers.
+function applyColors(colors) {
+  controls.forEach(({ id, cssClass, property, default: defaultColor }) => {
+    const color = colors[id] || defaultColor;
+    const hexValue = color.startsWith('hsl') ? hslToHex(color) : color;
+    const picker = document.getElementById(id);
+    const display = document.getElementById(`${id}-val`);
+  
+    // Set the picker's value.
+    if (picker) {
+      picker.value = hexValue;
+      picker.addEventListener('input', (e) => {
+        const newHexValue = e.target.value;
+        updateColor(id, newHexValue);
+      });
     }
   
-    // Optionally, reload the page to guarantee a fresh state
-    location.reload();
+    // Update the displayed color (in HSL format).
+    if (display) {
+      display.textContent = color;
+    }
+  
+    // Apply the color to the corresponding global page elements.
+    document.querySelectorAll(cssClass).forEach(element => {
+      element.style.setProperty(property, hexValue, 'important');
+    });
+  });
+}
+  
+// Reset all colors to their default values and update the backend.
+async function resetColorsToDefault() {
+  controls.forEach(({ id, cssClass, property, default: defaultColor }) => {
+    const defaultHex = defaultColor.startsWith('hsl') ? hslToHex(defaultColor) : defaultColor;
+    const picker = document.getElementById(id);
+    const display = document.getElementById(`${id}-val`);
+    if (picker) picker.value = defaultHex;
+    if (display) display.textContent = defaultColor;
+    document.querySelectorAll(cssClass).forEach(element => {
+      element.style[property] = defaultHex;
+    });
+  });
+  
+  // Send updates for all controls to the backend.
+  try {
+    const savePromises = controls.map(({ id, default: defaultColor }) => {
+      const defaultHex = defaultColor.startsWith('hsl') ? hslToHex(defaultColor) : defaultColor;
+      return fetch('/update-company-color/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          color_id: id,
+          color_value: defaultHex
+        })
+      });
+    });
+    await Promise.all(savePromises);
+    console.log("All colors successfully reset to defaults and saved to the backend.");
+  } catch (error) {
+    console.error("Error saving default colors to the backend:", error);
   }
   
-  // Main Initialization
-  document.addEventListener('DOMContentLoaded', async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const companyId = urlParams.get('company_id') || 'all';
+  location.reload();
+}
   
-    // Fetch colors for the current company and apply them
-    const colors = await fetchCompanyColors(companyId);
-    applyColors(colors);
+// Main Initialization
+document.addEventListener('DOMContentLoaded', async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const companyId = urlParams.get('company_id') || 'all'; // Identify the active company ID.
   
-    // Attach reset functionality to the "Reset All" button
-    const resetBtn = document.getElementById('reset-btn');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', resetColorsToDefault);
-    }
+  // Fetch colors from the backend based on the active company ID.
+  const colors = await fetchCompanyColors(companyId);
+  
+  // Apply global colors to the page.
+  applyColors(colors);
+  
+  // Configure modals: apply colors dynamically and monitor changes.
+  document.querySelectorAll('[id*="Modal"]').forEach(modal => {
+  
+    const observer = new MutationObserver(() => {
+      applyColorsToModal(modal, colors);
+    });
+  
+    observer.observe(modal, { childList: true, subtree: true });
+  
+    applyColorsToModal(modal, colors);
   });
+  
+  // Configure the "Reset All" button, if present.
+  const resetBtn = document.getElementById('reset-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', resetColorsToDefault);
+  }
+});
