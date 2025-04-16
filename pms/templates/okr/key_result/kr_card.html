@@ -55,7 +55,7 @@
             @click.outside="show = false"
             >
             <ul class="oh-dropdown__items">
-            {% if not request.user.is_superuser %}
+            {% if perms.pms.add_key_result %}
                 <li class="oh-dropdown__item">
                 <a onclick="event.stopPropagation();"
                   data-toggle="oh-modal-toggle"

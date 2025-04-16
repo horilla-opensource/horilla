@@ -104,7 +104,7 @@
                 </div>
                 <div class="oh-sticky-table__td oh-sticky-table__right">
                 <div class="oh-btn-group">
-                    {% if not request.user.is_superuser %}
+                    {% if perms.pms.add_key_result %}
                     <a
                     onclick="event.stopPropagation();"
                     class="oh-btn oh-btn--light-bkg w-100"
