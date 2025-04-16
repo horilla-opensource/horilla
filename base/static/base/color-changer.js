@@ -98,14 +98,20 @@ const controls = [
         element.style[control.property] = hexValue;
       });
   
-
       // Update the displayed HSL value next to the picker
       const display = document.getElementById(`${colorId}-val`);
       if (display) {
         display.textContent = hslValue;
       }
 
-      // Send the new color to the backend to save it in the database
+      // Verifica se a empresa selecionada é "all"
+      const currentCompany = sessionStorage.getItem('selectedCompany');
+      if (currentCompany === 'all') {
+        console.log('Actual company is "all" — Your colors will not be send to the back end.');
+        return;
+      }
+
+      // Sends to back end if the company id is not "all"
       try {
         const response = await fetch('/update-company-color/', {
           method: 'POST',
@@ -117,7 +123,7 @@ const controls = [
             color_value: hexValue // Saving the Hex value in the database
           })
         });
-    
+
         if (!response.ok) {
           console.error('Error saving color to the database:', await response.text());
         } else {
@@ -127,8 +133,8 @@ const controls = [
         console.error('Error during save to the backend:', error);
       }
     }
-  
   }
+
   
   // Function to apply colors to the color pickers and the page elements
   function applyColors(colors) {
