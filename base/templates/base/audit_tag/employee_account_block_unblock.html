@@ -1,187 +1,99 @@
-{% load i18n %} {% csrf_token %}
+{% load i18n %}
 <div class="oh-inner-sidebar-content__header mt-4">
     <h2 class="oh-inner-sidebar-content__title">
         {% trans 'Employee Account Restrictions' %}
     </h2>
 </div>
+
 <div class="d-flex">
+    <!-- Restrict Login Account Switch -->
     <div class="me-4">
-        <form
-            hx-post="{% url 'enable-account-block-unblock' %}"
-            hx-swap="none"
-            hx-trigger="change from:#enableBlockUnblock"
-            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 70);"
-        >
+        <form hx-post="{% url 'enable-account-block-unblock' %}" hx-swap="none"
+            hx-trigger="change from:#enableBlockUnblock" hx-on-htmx-after-request="setTimeout(reloadMessage, 70);">
             {% csrf_token %}
-            <div class="oh-label__info" for="enable_block_unblock">
-                <label class="oh-label" for="enable_block_unblock"
-                    >{% trans "Restrict Login Account" %}</label
-                >
-                <span
-                    class="oh-info mr-2"
-                    title="{% trans 'By enabling this feature, you can block or unblock an employee account.' %}"
-                >
+            <div class="oh-label__info">
+                <label class="oh-label" for="enableBlockUnblock">
+                    {% trans "Restrict Login Account" %}
+                </label>
+                <span class="oh-info mr-2"
+                    title="{% trans 'By enabling this feature, you can block or unblock an employee account.' %}">
                 </span>
             </div>
             <div class="oh-switch p-3">
-                <input
-                    type="checkbox"
-                    class="oh-switch__checkbox"
-                    name="enable_block_account"
-                    id="enableBlockUnblock"
-                    {% if enabled_block_unblock %}
-                    checked
-                    {% endif %}
-                />
+                <input type="checkbox" class="oh-switch__checkbox" name="enable_block_account" id="enableBlockUnblock"
+                    {% if enabled_block_unblock %} checked {% endif %} />
             </div>
-            <input type="submit" hidden />
         </form>
     </div>
-    <div id="confirmationModal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <p id="confirmationMessage"></p>
-            <button id="confirmButton">Yes</button>
-            <button id="cancelButton">No</button>
-        </div>
-    </div>
+
+    <!-- Restrict Profile Edit Switch -->
     <div>
-        <form
-            id="enableProfileEditForm"
-            hx-post="{% url 'enable-profile-edit-feature' %}"
-            hx-swap="none"
-            hx-include="#enableProfileEditUnblock"
-            hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 70);"
-        >
+        <form id="enableProfileEditForm" hx-post="{% url 'enable-profile-edit-feature' %}" hx-swap="none"
+            hx-include="#enableProfileEditUnblock" hx-on-htmx-after-request="setTimeout(reloadMessage, 70);">
             {% csrf_token %}
-            <div class="oh-label__info" for="enable_block_unblock">
-                <label class="oh-label" for="enable_block_unblock"
-                    >{% trans "Restrict Profile Edit" %}</label
-                >
-                <span
-                    class="oh-info mr-2"
-                    title="{% trans 'By enabling this feature, you can restrict an employee from editing their profile.' %}"
-                >
+            <div class="oh-label__info">
+                <label class="oh-label" for="enableProfileEditUnblock">
+                    {% trans "Restrict Profile Edit" %}
+                </label>
+                <span class="oh-info mr-2"
+                    title="{% trans 'By enabling this feature, you can restrict an employee from editing their profile.' %}">
                 </span>
             </div>
             <div class="oh-switch p-3">
-                <input
-                    type="checkbox"
-                    class="oh-switch__checkbox"
-                    name="enable_profile_edit"
-                    id="enableProfileEditUnblock"
-                    {% if enabled_profile_edit %}
-                    checked
-                    {% endif %}
-                />
+                <input type="checkbox" class="oh-switch__checkbox" name="enable_profile_edit"
+                    id="enableProfileEditUnblock" {% if enabled_profile_edit %} checked {% endif %} />
             </div>
-            <input type="submit" hidden />
         </form>
     </div>
 </div>
-<div class="oh-inner-sidebar-content__footer"></div>
-<style>
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
 
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-}
-
-button {
-    padding: 10px;
-    margin: 5px;
-    cursor: pointer;
-}
-</style>
 
 <script>
-document.getElementById("enableProfileEditUnblock").addEventListener("change", function (e) {
-    const checkbox = this;
-    const form = document.getElementById('enableProfileEditForm');
+    $(document).ready(function () {
+        $('#enableProfileEditUnblock').on('change', function (e) {
+            const $checkbox = $(this);
+            const $form = $('#enableProfileEditForm');
 
-    // Set the confirmation message based on the checkbox state
-    const confirmMsg = checkbox.checked
-        ? "{{ _('Are you sure you want to allow profile editing?') }}"
-        : "{{ _('Are you sure you want to restrict profile editing?') }}";
+            const message = $checkbox.is(':checked')
+                ? "{{ _('Are you sure you want to restrict all employees from editing their profiles?') }}"
+                : "{{ _('Are you sure you want to allow all employees to edit their profiles?') }}";
 
-    // Show custom confirmation modal with the message
-    showConfirmationModal(confirmMsg, function(confirmed) {
-        if (confirmed) {
-            // If user clicks "Yes" (confirmed), submit the form
-            console.log('User confirmed the action.');
 
-            // Create FormData from the form
-            const formData = new FormData(form);
+            Swal.fire({
+                title: "{{ _('Please Confirm') }}",
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "{{ _('Confirm') }}",
+                cancelButtonText: "{{ _('Cancel') }}",
+                confirmButtonColor: 'rgb(0, 128, 0)',
+                cancelButtonColor: 'rgb(221, 51, 51)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData($form[0]);
+                    formData.append('csrfmiddlewaretoken', $('[name="csrfmiddlewaretoken"]').val());
 
-            // Manually add CSRF token to the form data
-            const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
-            formData.append('csrfmiddlewaretoken', csrfToken);
-
-            // Make the manual POST request using fetch
-            fetch("{% url 'enable-profile-edit-feature' %}", {
-                method: 'POST',
-                headers: {
-                    'HX-Request': 'true',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Handle success
-                    console.log('Profile editing status updated successfully.');
-                    reloadMessage();  // Call your custom reload function if needed
+                    $.ajax({
+                        url: "{% url 'enable-profile-edit-feature' %}",
+                        type: 'POST',
+                        headers: {
+                            'HX-Request': 'true',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            reloadMessage();
+                        },
+                        error: function () {
+                            Swal.fire("{{ _('Error') }}", "{{ _('Something went wrong while updating.') }}", "error");
+                        }
+                    });
                 } else {
-                    // Handle error
-                    console.error('Error: Unable to update profile editing status.');
+                    $checkbox.prop('checked', !$checkbox.is(':checked'));
                 }
-            })
-            .catch(error => {
-                console.error('Request failed', error);
             });
-        } else {
-            // If user clicks "No", revert the checkbox state
-            checkbox.checked = !checkbox.checked;
-            console.log('User cancelled the action.');
-        }
+        });
     });
-});
-
-// Function to show the custom confirmation modal
-function showConfirmationModal(message, callback) {
-    const modal = document.getElementById("confirmationModal");
-    const messageElement = document.getElementById("confirmationMessage");
-    const confirmButton = document.getElementById("confirmButton");
-    const cancelButton = document.getElementById("cancelButton");
-
-    // Set the message in the modal
-    messageElement.textContent = message;
-
-    // Show the modal
-    modal.style.display = 'flex';
-
-    // When the user clicks "Yes" (confirm)
-    confirmButton.onclick = function() {
-        modal.style.display = 'none';  // Close the modal
-        callback(true);  // Pass 'true' to the callback
-    };
-
-    // When the user clicks "No" (cancel)
-    cancelButton.onclick = function() {
-        modal.style.display = 'none';  // Close the modal
-        callback(false);  // Pass 'false' to the callback
-    };
-}
 </script>
