@@ -7373,7 +7373,7 @@ def get_company_colors(request):
         company_id = request.session.get('selected_company')
         if not company_id or company_id == 'all':
             # Return default theme for "all"
-            return JsonResponse(DEFAULT_THEME_COLORS)
+            return JsonResponse({'error': 'Cannot update colors for all companies, you have to hardcode it if you need'}, status=400)
 
         # Fetch company-specific colors
         company = Company.objects.get(id=company_id)
@@ -7394,6 +7394,7 @@ def get_company_colors(request):
         print(f"Error getting company colors: {e}")
         return JsonResponse({'error': str(e)}, status=400)
 
+
 @csrf_exempt
 @login_required
 def update_company_color(request):
@@ -7404,8 +7405,10 @@ def update_company_color(request):
 
         # Get the current company (from session or user's default)
         company_id = request.session.get('selected_company')
+
+        
         if not company_id or company_id == 'all':
-            company_id = request.user.employee_get.employee_work_info.company_id.id
+            return JsonResponse({'ignored': 'color wont be changed — Reason company_id = "all".'}, status=200)
 
         company = Company.objects.get(id=company_id)
 
@@ -7434,6 +7437,7 @@ def update_company_color(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
 
 def theme_personalization_view(request):
     
