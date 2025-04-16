@@ -123,6 +123,7 @@
                     ></ion-icon>
                     </a>
                     {% endif %}
+                    {% if perms.pms.delete_key_result %}
                     <a
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                     onclick = "event.preventDefault();event.stopPropagation();"
@@ -138,6 +139,7 @@
                         aria-label="trash outline"
                     ></ion-icon>
                     </a>
+                    {% endif %}
                 </div>
                 </div>
             </div>
