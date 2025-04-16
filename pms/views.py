@@ -390,18 +390,14 @@ def kr_create_or_update(request, kr_id=None):
         form = KRForm(instance=key_result)
     if request.method == "POST":
         if key_result:
-            if not is_reportingmanager(request):
-                form = KRForm(request.POST, instance=key_result)
-                if form.is_valid():
-                    instance = form.save()
-                    messages.success(
-                        request,
-                        _("Key result %(key_result)s updated successfully")
-                        % {"key_result": instance},
-                    )
-                    return HttpResponse("<script>window.location.reload()</script>")
-            else:
-                messages.error(request, 'You dont have permission for this feature')
+            form = KRForm(request.POST, instance=key_result)
+            if form.is_valid():
+                instance = form.save()
+                messages.success(
+                    request,
+                    _("Key result %(key_result)s updated successfully")
+                    % {"key_result": instance},
+                )
                 return HttpResponse("<script>window.location.reload()</script>")
         else:
             form = KRForm(request.POST)
