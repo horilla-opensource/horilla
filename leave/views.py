@@ -10,7 +10,8 @@ from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs, unquote
 
 import pandas as pd
-import pdfkit
+from weasyprint import HTML
+from django.conf import settings
 from django.apps import apps
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -640,25 +641,8 @@ def generate_leave_request_pdf(template_path, context, html=False):
         # Render the HTML content from the template and context
         html_content = render_to_string(template_path, context)
 
-        # Return raw HTML if requested
-        if html:
-            return HttpResponse(html_content, content_type="text/html")
-
-        # PDF options for pdfkit
-        pdf_options = {
-            "page-size": "A4",
-            "margin-top": "10mm",
-            "margin-bottom": "10mm",
-            "margin-left": "10mm",
-            "margin-right": "10mm",
-            "encoding": "UTF-8",
-            "enable-local-file-access": None,  # Required to load local CSS/images
-            "dpi": 120,
-            "zoom": 1.3,
-        }
-
-        # Generate the PDF as binary content
-        pdf = pdfkit.from_string(html_content, False, options=pdf_options)
+        # Generate the PDF file
+        pdf = HTML(string=html_content, base_url=settings.STATIC_ROOT).write_pdf()
 
         # Return an HttpResponse containing the PDF content
         response = HttpResponse(pdf, content_type="application/pdf")
