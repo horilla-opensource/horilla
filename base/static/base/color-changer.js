@@ -104,13 +104,6 @@ const controls = [
         display.textContent = hslValue;
       }
 
-      // Verifica se a empresa selecionada é "all"
-      const currentCompany = sessionStorage.getItem('selectedCompany');
-      if (currentCompany === 'all') {
-        console.log('Actual company is "all" — Your colors will not be send to the back end.');
-        return;
-      }
-
       // Sends to back end if the company id is not "all"
       try {
         const response = await fetch('/update-company-color/', {
