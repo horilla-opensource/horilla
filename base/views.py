@@ -6761,7 +6761,8 @@ def generate_error_report(error_list, error_data, file_name):
     path_info = f"error-sheet-{uuid.uuid4()}"
     urlpatterns.append(path(path_info, get_error_sheet, name=path_info))
     DYNAMIC_URL_PATTERNS.append(path_info)
-
+    for key in error_data:
+        error_data[key] = []
     return path_info
 
 
