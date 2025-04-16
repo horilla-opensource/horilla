@@ -98,7 +98,7 @@ from pms.models import (
     QuestionOptions,
     QuestionTemplate,
 )
-
+from base.methods import is_reportingmanager
 logger = logging.getLogger(__name__)
 
 
@@ -381,6 +381,7 @@ def kr_create_or_update(request, kr_id=None):
     Returns:
     Renders a form to create or update a Key Result.
     """
+    
     form = KRForm()
     kr = False
     key_result = False
@@ -398,7 +399,6 @@ def kr_create_or_update(request, kr_id=None):
                     % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
-
         else:
             form = KRForm(request.POST)
             if form.is_valid():
@@ -409,7 +409,6 @@ def kr_create_or_update(request, kr_id=None):
                     % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
-
     return render(request, "okr/key_result/real_kr_form.html", {"form": form})
 
 

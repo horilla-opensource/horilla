@@ -9,7 +9,8 @@ from payroll.methods.deductions import create_deductions
 from payroll.models.models import Allowance, Contract, Deduction, LoanAccount, Payslip
 
 
-@receiver(pre_save, sender=EmployeeWorkInformation)
+
+@receiver(post_save, sender=EmployeeWorkInformation)
 def employeeworkinformation_pre_save(sender, instance, **_kwargs):
     """
     This method is used to override the save method for EmployeeWorkInformation Model
@@ -20,8 +21,7 @@ def employeeworkinformation_pre_save(sender, instance, **_kwargs):
         else None
     )
     if active_employee is not None:
-        all_contracts = Contract.objects.entire()
-        contract_exists = all_contracts.filter(employee_id_id=active_employee).exists()
+        contract_exists = active_employee.contract_set.exists()
         if not contract_exists:
             contract = Contract()
             contract.contract_name = f"{active_employee}'s Contract"

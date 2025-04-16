@@ -25,6 +25,7 @@ from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views import models
 from horilla_views.cbv_methods import (  # update_initial_cache,
+    export_xlsx,
     get_short_uuid,
     hx_request_required,
     paginator_qry,
@@ -488,12 +489,12 @@ class HorillaListView(ListView):
                 return instance.pk
 
             for field_tuple in _columns:
-                dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'))"
+                dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'),{field_tuple})"
                 exec(dynamic_fn_str)
                 dynamic_fn = locals()[f"dehydrate_{field_tuple[1]}"]
                 locals()[field_tuple[1]] = fields.Field(column_name=field_tuple[0])
 
-            def remove_extra_spaces(self, text):
+            def remove_extra_spaces(self, text, field_tuple):
                 """
                 Remove blank space but keep line breaks and add new lines for <li> tags.
                 """
@@ -512,15 +513,46 @@ class HorillaListView(ListView):
         # Export the data using the resource
         dataset = book_resource.export(queryset)
 
-        excel_data = dataset.export("xls")
+        # excel_data = dataset.export("xls")
 
         # Set the response headers
-        file_name = self.export_file_name
-        if not file_name:
-            file_name = "quick_export"
-        response = HttpResponse(excel_data, content_type="application/vnd.ms-excel")
-        response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
-        return response
+        # file_name = self.export_file_name
+        # if not file_name:
+        #     file_name = "quick_export"
+        # response = HttpResponse(excel_data, content_type="application/vnd.ms-excel")
+        # response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
+        # return response
+        json_data = json.loads(dataset.export("json"))
+        merged = [
+            (
+                [
+                    *item,
+                    next(
+                        (
+                            m
+                            for (t, k, m) in self.export_fields
+                            if t == item[0] and k == item[1]
+                        ),
+                        {},
+                    ),
+                ]
+                if len(item) == 2
+                and any(
+                    t == item[0] and k == item[1] for (t, k, _) in self.export_fields
+                )
+                else item
+            )
+            for item in _columns
+        ]
+        columns = []
+        for column in merged:
+            if len(column) >= 3 and isinstance(column[2], dict):
+                column = (column[0], column[0], column[2])
+            elif len(column) >= 3:
+                column = (column[0], column[1])
+            columns.append(column)
+
+        return export_xlsx(json_data, columns)
 
 
 class HorillaSectionView(TemplateView):
