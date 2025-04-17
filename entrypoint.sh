@@ -5,5 +5,5 @@ python3 manage.py makemigrations
 python3 manage.py migrate
 python3 manage.py collectstatic --noinput
 #python3 manage.py createhorillauser --first_name admin --last_name admin --username admin --password admin --email admin@example.com --phone 1234567890
-gunicorn --workers 4 --bind 0.0.0.0:8000 horilla.wsgi:application
-# uvicorn horilla.asgi:application --host 0.0.0.0 --port 8000 --workers 4 
+# gunicorn --workers 4 --bind 0.0.0.0:8000 horilla.wsgi:application
+uvicorn horilla.asgi:application --host 0.0.0.0 --port 8000 --workers 4 
