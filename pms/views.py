@@ -295,7 +295,7 @@ def view_key_result(request):
 
 @login_required
 @hx_request_required
-@permission_required("pms.view_key_result")
+# @permission_required("pms.view_key_result")
 def filter_key_result(request):
     """
     Filter and retrieve a list of key results based on the provided query parameters.

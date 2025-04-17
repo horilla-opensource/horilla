@@ -28,6 +28,7 @@ from onboarding import models as onboarding_models
 from onboarding.cbv_decorators import all_manager_can_enter, stage_manager_can_enter
 from onboarding.templatetags.onboardingfilters import stage_manages
 from recruitment import models as recruitment_models
+from recruitment.cbv.candidates import CandidateDetail
 from recruitment.methods import recruitment_manages
 
 
@@ -277,6 +278,28 @@ def stage_drop_down(self):
 onboarding_models.CandidateStage.stage_drop_down = stage_drop_down
 
 
+def get_detail_url_pipeline(self):
+    """
+    Get detail url pipeline
+    """
+    return reverse("onboarding-cand-detail-view", kwargs={"pk": self.candidate_id.pk})
+
+
+onboarding_models.CandidateStage.get_detail_url_pipeline = get_detail_url_pipeline
+
+
+class CandidateOnboardingDetail(CandidateDetail):
+    """
+    Extended candidate detail view
+    """
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}{instance.onboarding_stage.onboarding_stage_id.pk}"
+        response = super().get(request, *args, **kwargs)
+        return response
+
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
     all_manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
@@ -327,7 +350,7 @@ class CandidateList(HorillaListView):
     ]
 
     row_attrs = """
-                hx-get='{candidate_id__get_details_candidate}'
+                hx-get='{get_detail_url_pipeline}'
                 data-toggle="oh-modal-toggle"
                 data-target="#genericModal"
                 hx-target="#genericModalBody"
@@ -446,7 +469,7 @@ class CandidateList(HorillaListView):
             for key, value in request.POST.items()
             if re.search(r"bulk_task_status_(\d+)", key)
         }
-        instance_ids = request.GET.get("instance_ids", "[]")
+        instance_ids = request.POST.get("instance_ids", "[]")
         instance_ids = eval_validate(instance_ids)
         for pk, status in mapped_data.items():
             onboarding_models.CandidateTask.objects.filter(
@@ -458,6 +481,7 @@ class CandidateList(HorillaListView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.ordered_ids_key = f"ordered_ids_{recruitment_models.Candidate.__name__.lower()}{self.request.GET['onboarding_stage_id']}"
         self.search_url = self.request.path
 
         self.managing_onboarding_tasks = (
@@ -542,6 +566,9 @@ class CandidateList(HorillaListView):
             """,
                 "",
             )
+        )
+        self.request.session[self.ordered_ids_key] = list(
+            self.queryset.values_list("candidate_id__pk", flat=True)
         )
         return context
 

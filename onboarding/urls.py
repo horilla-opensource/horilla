@@ -28,6 +28,11 @@ urlpatterns = [
         name="task-creation",
     ),
     path(
+        "onboarding-cand-detail-view/<int:pk>/",
+        pipeline.CandidateOnboardingDetail.as_view(),
+        name="onboarding-cand-detail-view",
+    ),
+    path(
         "task-update/<int:pk>/",
         onboarding_view.TaskUpdateFormView.as_view(),
         name="task-update",
