@@ -51,3 +51,20 @@ def update_compensation_deduction(
         "deductions": deductions,
         "difference_amount": difference_amount,
     }
+
+
+def create_deductions(instance, amount, date):
+    installment = Deduction()
+    installment.title = f"{instance.title} - {date}"
+    installment.include_active_employees = False
+    installment.amount = amount
+    installment.is_fixed = True
+    installment.one_time_date = date
+    installment.only_show_under_employee = True
+    installment.is_installment = True
+    installment.save()
+    installment.include_active_employees = False
+    installment.specific_employees.add(instance.employee_id)
+    installment.save()
+
+    return installment

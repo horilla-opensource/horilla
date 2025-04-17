@@ -52,6 +52,24 @@ def permission_required(function, perm):
     return _function
 
 
+@decorator_with_arguments
+def any_permission_required(function, perms):
+    def _function(request, *args, **kwargs):
+        if any(request.user.has_perm(perm) for perm in perms):
+            return function(request, *args, **kwargs)
+
+        else:
+            messages.info(request, "You dont have permission.")
+            previous_url = request.META.get("HTTP_REFERER", "/")
+            key = "HTTP_HX_REQUEST"
+            if key in request.META.keys():
+                return render(request, "decorator_404.html")
+            script = f'<script>window.location.href = "{previous_url}"</script>'
+            return HttpResponse(script)
+
+    return _function
+
+
 decorator_with_arguments = (
     lambda decorator: lambda *args, **kwargs: lambda func: decorator(
         func, *args, **kwargs
@@ -223,7 +241,7 @@ def login_required(view_func):
         request.session["title"] = res
         if path == "" or path == "/":
             request.session["title"] = "Dashboard".upper()
-        if not request.user.is_authenticated:
+        if not request.user.is_authenticated or not request.user.is_active:
             login_url = reverse("login")
             params = urlencode(request.GET)
             url = f"{login_url}?next={request.path}"

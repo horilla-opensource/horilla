@@ -1,37 +1,22 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
-  <span class="oh-modal__dialog-title" id="createModal1ModalLabel"
-    >
-    {% if shift.id %}
-      {% trans "Update Employee Shift" %}
-    {% else %}
-      {% trans "Create Employee Shift" %}
-    {% endif %}
+    <span class="oh-modal__dialog-title" id="createModal1ModalLabel">
+        {% if shift.id %} {% trans "Update" %} {% else %} {% trans "Create" %} {% endif %} {{form.verbose_name}}
     </span>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form
-    {% if shift.id %}
-      hx-post="{% url 'employee-shift-update' shift.id %}"
-    {% else %}
-      hx-post="{% url 'employee-shift-create' %}?dynamic={{dynamic}}"
-    {% endif %}
-    {% if dynamic %}
-      hx-target="#dynamicCreateModalBody"
-    {% else %}
-      hx-target="#shiftForm"
-    {% endif %}
-    class="oh-profile-section"
-    >
-    {% csrf_token %} {{form.non_field_errors}}
-    {{form.as_p}}
-    <div class="oh-modal__dialog-footer p-0 mt-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form hx-post="{{ request.get_full_path }}"
+        hx-target="{% if dynamic %} #dynamicCreateModalBody {% else %} #shiftForm {% endif %}"
+        class="oh-profile-section">
+        {% csrf_token %} {{form.non_field_errors}}
+        {{form.as_p}}
+        <div class="oh-modal__dialog-footer p-0 mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>

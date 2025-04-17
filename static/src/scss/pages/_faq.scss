@@ -1,0 +1,259 @@
+.oh-faq {
+  background-color: $white;
+  border: 1px solid $border-light-color;
+}
+
+.oh-faq__items {
+  padding-left: 0;
+  list-style: none;
+}
+
+.oh-faq__item {
+  background-color: $white;
+  padding: 1.5rem;
+  padding-bottom: 0;
+}
+
+.oh-faq__item-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid $border-light-color;
+}
+
+.oh-faq__item-title {
+  font-weight: bold;
+  display: block;
+}
+
+.oh-faq__item-body {
+  border-bottom: 1px solid $border-light-color;
+}
+
+.oh-faq__item.oh-faq__item--show {
+  &:last-child {
+    .oh-faq__item-body {
+      border-bottom: none;
+    }
+  }
+}
+
+.oh-faq__tags {
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.oh-faq__tag {
+  padding: 0.3rem 1rem;
+  background-color: $border-light-color;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $background-color;
+  }
+}
+
+.oh-faq__item-header__right {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.oh-faq__item {
+  &--show {
+    .oh-faq__item-header {
+      border-bottom: none;
+    }
+
+    .oh-faq__item-body {
+      max-height: 200px;
+    }
+  }
+}
+
+.oh-faq__item:not(.oh-faq__item--show) {
+  &:last-child {
+    .oh-faq__item-header {
+      border-bottom: none;
+    }
+  }
+}
+
+.oh-faq__item-body {
+  max-height: 0px;
+}
+
+.oh-faq-cards {
+  display: grid;
+  // grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(4, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .oh-faq-cards {
+      grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (max-width: 1316px) {
+  .oh-faq-cards {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+
+.oh-faq-card{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.oh-faq-card {
+  background-color: $white;
+  border: 1px solid $border-light-color;
+  padding: 1.5rem;
+  transition: all 0.3s linear;
+
+  &:hover {
+    border: 1px solid $border-color;
+    transition: all 0.3s linear;
+    box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+  }
+}
+
+.oh-faq-card__title {
+  font-size: 1.15rem;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+}
+
+.oh-faq-card__desc {
+  color: $light-text-color;
+  min-height: 60px;
+  margin-bottom: 1.25rem;
+  max-height: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Custom Styles */
+
+.oh-faq__item-body {
+  border-bottom: 1px solid hsl(213deg, 22%, 93%);
+}
+
+.oh-faq__item.oh-faq__item--show:last-child .oh-faq__item-body {
+  border-bottom: none;
+}
+
+.oh-faq__tags {
+  padding-left: 0;
+  list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+.oh-faq__tag {
+  padding: 0.3rem 1rem;
+  background-color: hsl(213deg, 22%, 93%);
+  cursor: pointer;
+}
+
+.oh-faq__tag:hover {
+  background-color: hsl(0deg, 0%, 97.5%);
+}
+
+.oh-faq__item-header__right {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: start;
+  -ms-flex-align: start;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.oh-faq__item--show .oh-faq__item-header {
+  border-bottom: none;
+}
+
+.oh-faq__item--show .oh-faq__item-body {
+  padding: 1rem;
+  max-height: 200px;
+}
+
+.oh-faq__item:not(.oh-faq__item--show):last-child .oh-faq__item-header {
+  border-bottom: none;
+}
+
+.oh-faq__item-body {
+  max-height: 0px;
+}
+
+.oh-faq__input-search {
+  width: 100%;
+  margin: 1rem 0 2rem 0;
+}
+
+.oh-search_input {
+  width: 100%;
+}
+
+.oh-faq_search--icon {
+  position: absolute;
+  top: 15px;
+  left: 10px;
+}
+
+.oh-autocomplete-suggestions {
+  position: absolute;
+  list-style: none;
+  margin: 0;
+  background-color: $white-color;
+  max-height: 150px;
+  overflow-y: auto;
+  width: 100%;
+  display: none;
+  border: 1px solid $border-light-color;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
+    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+  z-index: 9999;
+}
+
+.oh-select-faq {
+  width: 35%;
+  margin: 1rem 0 2rem 0;
+  height: 48px;
+  padding: 0.8rem;
+
+  &:last-child {
+    margin: 1rem 0 2rem 0;
+  }
+}
+
+.autocomplete-suggestion {
+  padding: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $background-color;
+  }
+
+}
+.oh-title_faq__main-header{
+  gap: 1rem;
+}

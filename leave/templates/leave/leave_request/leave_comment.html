@@ -42,7 +42,7 @@
 				<span class="oh-activity-sidebar__q">{{ comment.comment }}
 					{% if request.user.employee_get == comment.employee_id or perms.leave.delete_leaverequestcomment or request.user|is_reportingmanager %}
 						<span class="float-end" hx-get="{% url 'leave-request-delete-comment' comment.id %}" hx-swap="outerHTML"
-							hx-target="#leaveReqCommentItem{{comment.id}}"
+							hx-target="closest li"
 							hx-on:click="setTimeout(() => {reloadMessage(this);},100);">
 							<ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated"
 								aria-label="close outline"></ion-icon>

@@ -13,20 +13,15 @@ class ImageUpload {
     $(".oh-remove-image").on("click", this.removeImage.bind(this));
   }
 
-  // Methods
-
   /**
    *  Upload Image
    */
+
   uploadImage(e) {
     let inputEl = e.target.closest('.oh-upload-input');
     let targetSelector = inputEl.dataset.target;
-
     this.readUploadPath(inputEl, targetSelector);
   }
-  /**
-   *  Read Uploaded Image Path
-   */
   readUploadPath(input, renderTarget) {
     if (input.files && input.files[0]) {
       var reader = new FileReader();

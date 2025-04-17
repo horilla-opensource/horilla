@@ -80,6 +80,11 @@
     margin-bottom: 1.5rem;
   }
 }
+.d-md-flex-wrap {
+  @media (max-width: 767.98px) {
+    flex-wrap: wrap;
+  }
+}
 // Custom Flex
 .oh-d-flex-column--resp {
   @media (max-width: 767.98px) {

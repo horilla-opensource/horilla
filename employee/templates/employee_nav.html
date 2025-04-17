@@ -1,578 +1,389 @@
 {% load static %} {% load i18n %}
 
 <style>
-  #progress {
-    width: 300px;
-    height: 30px;
-    border: 1px solid #ccc;
-    background-color: #f0f0f0;
-    margin-bottom: 10px;
-    position: relative;
-    overflow: hidden;
-  }
+    #progress {
+        width: 300px;
+        height: 30px;
+        border: 1px solid #ccc;
+        background-color: #f0f0f0;
+        margin-bottom: 10px;
+        position: relative;
+        overflow: hidden;
+    }
 
-  .progress-bar {
-    height: 100%;
-    background-color: #4caf50;
-    position: absolute;
-    top: 0;
-    left: 0;
-    transition: width 0.2s ease-in-out;
-  }
+    .progress-bar {
+        height: 100%;
+        background-color: #4caf50;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: width 0.2s ease-in-out;
+    }
 
-  #progress-text {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-  }
-  .custom-swal-container .swal2-styled {
-    display:block;
-    width:70%;
-  }
+    #progress-text {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .custom-swal-container .swal2-styled {
+        display: block;
+        width: 70%;
+    }
 </style>
-{% if perms.employee.add_employee %}
-<div
-  class="oh-modal"
-  id="workInfoImport"
-  role="dialog"
-  aria-labelledby="workInfoImport"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="workInfoImportLavel">
-        {% trans "Import Employee" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div class="oh-modal__dialog-body p-0 pt-2" id="workInfoImportModalBody">
-        <form
-          action="#"
-          id="workInfoImportForm"
-          enctype="multipart/form-data"
-        >
-          <div
-            class="oh-modal__dialog-body mr-5"
-            id="uploading"
-            style="display: none"
-          >
-            <div class="loader-container">
-              <div class="loader"></div>
-              <div class="loader-text">{% trans "Uploading..." %}</div>
-            </div>
-          </div>
-
-          <div id="error-container" style="color: red"></div>
-
-          <div class="modal-body">
-            {% csrf_token %}
-            <div class="oh-dropdown__import-form">
-              <label class="oh-dropdown__import-label" for="workInfoImportFile">
-                <ion-icon
-                  name="cloud-upload"
-                  class="oh-dropdown__import-form-icon md hydrated"
-                  role="img"
-                  aria-label="cloud upload"
-                ></ion-icon>
-                <span class="oh-dropdown__import-form-title"
-                  >{% trans "Upload a File" %}</span
-                >
-                <span class="oh-dropdown__import-form-text"
-                  >{% trans "Drag and drop files here" %}</span
-                >
-              </label>
-              <input type="file" name="file" id="workInfoImportFile" />
-              <div class="d-inline float-end">
-                <a
-                  href="#"
-                  style="text-decoration:none; display: inline-block;"
-                  class="oh-dropdown__link"
-                  id="work-info-import-download"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#workInfoImport"
-                >
-                  <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;"></ion-icon>
-                  <span>{% trans "Download Template" %}</span>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer d-flex flex-row-reverse">
-            <input
-            onclick="
-              validateFile($(this),'workInfoImportFile',true);
-              "
-              type="submit"
-              class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
-              value="{% trans 'Upload' %}"
-            />
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div id="employeeExport" class="oh-modal" role="dialog" aria-labelledby="employeeExport" aria-hidden="true">
-  <div id="employeeExportTarget" class="oh-modal__dialog" style="max-width: 750px" ></div>
+    <div id="employeeExportTarget" class="oh-modal__dialog" style="max-width: 750px"></div>
 </div>
-
-{% endif %}
 {% if perms.employee.change_employee %}
-<div
-  class="oh-modal"
-  id="bulkUpdateModal"
-  role="dialog"
-  aria-labelledby="bulkUpdateModal"
-  aria-hidden="true"
-  >
-  <div class="oh-modal__dialog" style="max-width: 750px">
-    <div class="oh-modal__dialog-header">
-      <h2 class="oh-modal__dialog-title" id="bulkUpdateModalLavel">
-        {% trans "Bulk Update Employees" %}
-      </h2>
-      <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
-      <div class="oh-modal__dialog-body p-0 pt-2 pb-4" id="bulkUpdateModalBody">
-        <form
-          action="{%url 'employee-bulk-update' %}"
-          method="post"
-          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-          id="bulkUpdateModalForm"
-          class="oh-profile-section"
-        >
-          {% csrf_token %} {{update_fields_form.update_fields.label}}
-          {{update_fields_form.update_fields}}
-          {{update_fields_form.bulk_employee_ids}}
-          <div class="oh-modal__dialog-footer p-0 pt-4">
-            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-                {% trans "Update" %}
-            </button>
-          </div>
-        </form>
-      </div>
+    <div class="oh-modal" id="bulkUpdateModal" role="dialog" aria-labelledby="bulkUpdateModal" aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 750px">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="bulkUpdateModalLavel">
+                    {% trans "Bulk Update Employees" %}
+                </h2>
+                <button class="oh-modal__close" aria-label="Close">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+                <div class="oh-modal__dialog-body p-0 pt-2 pb-4" id="bulkUpdateModalBody">
+                    <form action="{%url 'employee-bulk-update' %}" method="post"
+                        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+                        id="bulkUpdateModalForm" class="oh-profile-section">
+                        {% csrf_token %} {{update_fields_form.update_fields.label}}
+                        {{update_fields_form.update_fields}}
+                        {{update_fields_form.bulk_employee_ids}}
+                        <div class="oh-modal__dialog-footer p-0 pt-4">
+                            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                                {% trans "Update" %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 {% endif %}
 
 <section class="oh-wrapper oh-main__topbar pb-3" x-data="{searchShow: false}">
-  <div class="oh-main__titlebar oh-main__titlebar--left">
-    <a
-      href="{% url 'employee-view' %}"
-      class="oh-main__titlebar-title fw-bold mb-0 text-dark"
-      hx-target="#view-container"
-      style="cursor: pointer"
-      >{% trans "Employees" %}</a
-    >
-    <a
-      class="oh-main__titlebar-search-toggle"
-      role="button"
-      aria-label="Toggle Search"
-      @click="searchShow = !searchShow"
-    >
-      <ion-icon
-        name="search-outline"
-        class="oh-main__titlebar-serach-icon"
-      ></ion-icon>
-    </a>
-  </div>
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <a href="{% url 'employee-view' %}" class="oh-main__titlebar-title fw-bold mb-0 text-dark"
+            hx-target="#view-container" style="cursor: pointer">{% trans "Employees" %}</a>
+        <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+            @click="searchShow = !searchShow">
+            <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+        </a>
+    </div>
 
-  <div class="oh-main__titlebar oh-main__titlebar--right">
-    <form
-      hx-get='{% url "employee-filter-view" %}'
-      id="filterForm"
-      hx-target="#view-container"
-      class="d-flex"
-      onsubmit="event.preventDefault()"
-    >
-      {% if emp %}
-      <div
-        class="oh-input-group oh-input__search-group"
-        :class="searchShow ? 'oh-input__search-group--show' : ''"
-      >
-        <ion-icon
-          name="search-outline"
-          class="oh-input-group__icon oh-input-group__icon--left"
-        ></ion-icon>
-        <input
-          type="text"
-          placeholder="{% trans 'Search' %}"
-          name="search"
-          id="employee-search"
-          class="oh-input oh-input__icon"
-          aria-label="Search Input"
-          onkeyup="$('.filterButton')[0].click();if(this.value) {
-            $('.search_text').html(this.value)
-            $(this).parent().find('#dropdown').show()
-          }else{
-            $(this).parent().find('#dropdown').hide()
-          }"
-          onfocus="
-          if (this.value) {
-            $(this).parent().find('#dropdown').show()
-          }"
-          onfocusout="
-          setTimeout(function() {
-            $('#dropdown').hide()
-          }, 300);
-          "
-        />
-        <input type="text" hidden name="search_field">
-        <div class="custom-dropdown" id="dropdown">
-          <ul class="search_content">
-            <li>
-              <a href="#" onclick="$('[name=search_field]').val('reporting_manager'); $('.filterButton')[0].click()">
-                {% trans "Search" %} <b>{% trans "Reporting Manager" %}</b> {% trans "for:" %}
-                <b class="search_text"></b>
-              </a>
-            </li>
-            <li>
-              <a href="#" onclick="$('[name=search_field]').val('department'); $('.filterButton')[0].click()">
-                {% trans "Search" %} <b>{% trans "Department" %}</b> {% trans "for:" %}
-                <b class="search_text"></b>
-              </a>
-            </li>
-            <li>
-              <a href="#" onclick="$('[name=search_field]').val('job_position'); $('.filterButton')[0].click()">
-                {% trans "Search" %} <b>{% trans "Job Position" %}</b> {% trans "for:" %}
-                <b class="search_text"></b>
-              </a>
-            </li>
-            <li>
-              <a href="#" onclick="$('[name=search_field]').val('job_role'); $('.filterButton')[0].click()">
-                {% trans "Search" %} <b>{% trans "Job Role" %}</b> {% trans "for:" %}
-                <b class="search_text"></b>
-              </a>
-            </li>
-            <li>
-              <a href="#" onclick="$('[name=search_field]').val('shift'); $('.filterButton')[0].click()">
-                {% trans "Search" %} <b>{% trans "Shift" %}</b> {% trans "for:" %}
-                <b class="search_text"></b>
-              </a>
-            </li>
-            <li>
-              <a href="#" onclick="$('[name=search_field]').val('work_type'); $('.filterButton')[0].click()">
-                {% trans "Search" %} <b>{% trans "Work Type" %}</b> {% trans "for:" %}
-                <b class="search_text"></b>
-              </a>
-            </li>
-            <li>
-              <a href="#" onclick="$('[name=search_field]').val('company'); $('.filterButton')[0].click()">
-                {% trans "Search" %} <b>{% trans "Company" %}</b> {% trans "for:" %}
-                <b class="search_text"></b>
-              </a>
-            </li>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <form hx-get='{% url "employee-filter-view" %}' id="filterForm" hx-target="#view-container" class="d-flex"
+            onsubmit="event.preventDefault()">
+            {% if emp %}
+                <div class="oh-input-group oh-input__search-group"
+                    :class="searchShow ? 'oh-input__search-group--show' : ''">
+                    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+                    <input type="text" placeholder="{% trans 'Search' %}" name="search" id="employee-search"
+                        class="oh-input oh-input__icon" aria-label="Search Input" onkeyup="$('.filterButton')[0].click();if(this.value) {
+                            $('.search_text').html(this.value)
+                            $(this).parent().find('#dropdown').show()
+                        }else{
+                            $(this).parent().find('#dropdown').hide()
+                        }" onfocus="
+                        if (this.value) {
+                            $(this).parent().find('#dropdown').show()
+                        }" onfocusout="
+                        setTimeout(function() {
+                            $('#dropdown').hide()
+                        }, 300);
+                        "
+                    />
+                    <input type="text" hidden name="search_field">
+                    <div class="custom-dropdown" id="dropdown">
+                        <ul class="search_content">
+                            <li>
+                                <a href="#"
+                                    onclick="$('[name=search_field]').val('reporting_manager'); $('.filterButton')[0].click()">
+                                    {% trans "Search" %} <b>{% trans "Reporting Manager" %}</b> {% trans "for:" %}
+                                    <b class="search_text"></b>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    onclick="$('[name=search_field]').val('department'); $('.filterButton')[0].click()">
+                                    {% trans "Search" %} <b>{% trans "Department" %}</b> {% trans "for:" %}
+                                    <b class="search_text"></b>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    onclick="$('[name=search_field]').val('job_position'); $('.filterButton')[0].click()">
+                                    {% trans "Search" %} <b>{% trans "Job Position" %}</b> {% trans "for:" %}
+                                    <b class="search_text"></b>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    onclick="$('[name=search_field]').val('job_role'); $('.filterButton')[0].click()">
+                                    {% trans "Search" %} <b>{% trans "Job Role" %}</b> {% trans "for:" %}
+                                    <b class="search_text"></b>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" onclick="$('[name=search_field]').val('shift'); $('.filterButton')[0].click()">
+                                    {% trans "Search" %} <b>{% trans "Shift" %}</b> {% trans "for:" %}
+                                    <b class="search_text"></b>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    onclick="$('[name=search_field]').val('work_type'); $('.filterButton')[0].click()">
+                                    {% trans "Search" %} <b>{% trans "Work Type" %}</b> {% trans "for:" %}
+                                    <b class="search_text"></b>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#"
+                                    onclick="$('[name=search_field]').val('company'); $('.filterButton')[0].click()">
+                                    {% trans "Search" %} <b>{% trans "Company" %}</b> {% trans "for:" %}
+                                    <b class="search_text"></b>
+                                </a>
+                            </li>
 
-          </ul>
-        </div>
-      </div>
-      {% endif %}
-
-      <div class="oh-main__titlebar-button-container">
-        {% if emp %}
-        <input
-          type="hidden"
-          name="view"
-          value="{{request.GET.view}}"
-          id="employeeViewType"
-        />
-        <ul class="oh-view-types ml-2" style="margin-bottom: 0">
-          <li class="oh-view-type employee-view-type" data-view="list">
-            <a
-              id="list"
-              onclick="$('#employeeViewType').val('list');setTimeout(() => {
-              $('.filterButton')[0].click();
-              }, 10);"
-              class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
-              title='{% trans "List" %}'
-              ><ion-icon name="list-outline"></ion-icon
-            ></a>
-          </li>
-          <li class="oh-view-type employee-view-type" data-view="card">
-            <a
-              id="card"
-              onclick="$('#employeeViewType').val('card');setTimeout(() => {
-              $('.filterButton')[0].click();
-              }, 10);"
-              class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
-              title='{% trans "Card" %}'
-              ><ion-icon name="grid-outline"></ion-icon
-            ></a>
-          </li>
-        </ul>
-        {% endif %} {% if emp %}
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn ml-2"
-            @click="open = !open"
-            onclick="event.preventDefault()"
-          >
-            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-            <div id="filterCount"></div>
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-            x-show="open"
-            @click.outside="open = false"
-            style="display: none"
-          >
-            {% include 'employee_filters.html' %}
-            <div class="oh-dropdown__filter-footer">
-              <button
-                class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-                id="#employeeFilter"
-                onclick="employeeFilter(this)"
-              >
-                {% trans "Filter" %}
-              </button>
-            </div>
-          </div>
-        </div>
-        <div class="oh-dropdown" x-data="{open: false}">
-          <button
-            class="oh-btn ml-2"
-            @click="open = !open"
-            onclick="event.preventDefault()"
-          >
-            <ion-icon name="library-outline" class="mr-1"></ion-icon>
-            {% trans "Group By" %}
-            <div id="filterCount"></div>
-          </button>
-          <div
-            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-            x-show="open"
-            @click.outside="open = false"
-            style="display: none"
-          >
-            <div class="oh-accordion">
-              <label for="id_field">{% trans "Group By" %}</label>
-              <div class="row">
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <label class="oh-label" for="id_field"
-                      >{% trans "Field" %}</label
-                    >
-                  </div>
+                        </ul>
+                    </div>
                 </div>
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                  <div class="oh-input-group">
-                    <select
-                      class="oh-select mt-1 w-100"
-                      id="id_field"
-                      name="field"
-                      class="select2-selection select2-selection--single"
-                    >
-                      {% for field in gp_fields %}
-                      <option value="{{ field.0 }}">{% trans field.1 %}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endif %}
-        {% if perms.employee.change_employee or perms.employee.add_employee or perms.employee.delete_employee %}
-        <div class="oh-btn-group ml-2" onclick="event.preventDefault();">
-          <div class="oh-dropdown" x-data="{open: false}">
-            <button
-              class="oh-btn oh-btn--dropdown"
-              @click="open = !open"
-              @click.outside="open = false"
-            >
-              {% trans "Actions" %}
-            </button>
-            <div
-              class="oh-dropdown__menu oh-dropdown__menu--right"
-              x-show="open"
-              style="display: none"
-            >
-              <ul class="oh-dropdown__items">
-                {% if perms.employee.add_employee %}
-                  <li class="oh-dropdown__item">
-                    <a
-                      href="#"
-                      class="oh-dropdown__link"
-                      id="work-info-import"
-                      data-toggle="oh-modal-toggle"
-                      data-target="#workInfoImport"
-                    >
-                      {% trans "Import" %}
-                    </a>
-                  </li>
+            {% endif %}
+
+            <div class="oh-main__titlebar-button-container">
+                {% if emp %}
+                    <input type="hidden" name="view" value="{{request.GET.view}}" id="employeeViewType" />
+                    <ul class="oh-view-types ml-2" style="margin-bottom: 0">
+                        <li class="oh-view-type employee-view-type" data-view="list">
+                            <a id="list" onclick="$('#employeeViewType').val('list');setTimeout(() => { $('.filterButton')[0].click(); }, 10);"
+                                class="oh-btn oh-btn--view {% if request.GET.view == 'list' %} oh-btn--view-active {% endif %}"
+                                title='{% trans "List" %}'>
+                                <ion-icon name="list-outline"></ion-icon>
+                            </a>
+                        </li>
+                        <li class="oh-view-type employee-view-type" data-view="card">
+                            <a id="card" onclick="$('#employeeViewType').val('card');setTimeout(() => { $('.filterButton')[0].click(); }, 10);"
+                                class="oh-btn oh-btn--view {% if request.GET.view != 'list' %} oh-btn--view-active {% endif %}"
+                                title='{% trans "Card" %}'>
+                                <ion-icon name="grid-outline"></ion-icon>
+                            </a>
+                        </li>
+                    </ul>
                 {% endif %}
                 {% if emp %}
-                  {% if perms.employee.add_employee %}
-                    <li class="oh-dropdown__item">
-                      <a
-                        href="#"
-                        class="oh-dropdown__link"
-                        id="employee-info-export"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#employeeExport"
-                        hx-get="{% url 'work-info-export' %}"
-                        hx-target="#employeeExportTarget"
-                      >
-                        {% trans "Export" %}
-                      </a>
-                    </li>
-                  {% endif %}
-                  {% if perms.employee.change_employee %}
-                    <li class="oh-dropdown__item">
-                      <a href="#" class="oh-dropdown__link" id="archiveEmployees">
-                        {% trans "Archive" %}
-                      </a>
-                    </li>
-                    <li class="oh-dropdown__item">
-                      <a href="#" class="oh-dropdown__link" id="unArchiveEmployees">
-                        {% trans "Un-Archive" %}
-                      </a>
-                    </li>
-                    <li class="oh-dropdown__item">
-                      <a
-                        hx-get="{% url 'employee-bulk-mail' %}"
-                        hx-target="#mail-content"
-                        href="#"
-                        class="oh-dropdown__link "
-                        data-toggle="oh-modal-toggle"
-                        data-target="#sendMailModal"
-                      >
-                        {% trans "Bulk Mail" %}
-                      </a>
-                    </li>
-                    <li class="oh-dropdown__item">
-                      <a
-                        href="#"
-                        class="oh-dropdown__link"
-                        id="employeeBulkUpdateId"
-                      >
-                        {% trans "Bulk Update" %}
-                      </a>
-                    </li>
-                  {% endif %}
-                  {% if perms.employee.delete_employee %}
-                    <li class="oh-dropdown__item">
-                      <a
-                        href="#"
-                        class="oh-dropdown__link oh-dropdown__link--danger"
-                        data-action="delete"
-                        id="deleteEmployees"
-                      >
-                        {% trans "Delete" %}
-                      </a>
-                    </li>
-                  {% endif %}
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                            <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                            @click.outside="open = false" style="display: none">
+                            {% include 'employee_filters.html' %}
+                            <div class="oh-dropdown__filter-footer">
+                                <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                                    id="#employeeFilter" onclick="employeeFilter(this)">
+                                    {% trans "Filter" %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="oh-dropdown" x-data="{open: false}">
+                        <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                            <ion-icon name="library-outline" class="mr-1"></ion-icon>
+                            {% trans "Group By" %}
+                            <div id="filterCount"></div>
+                        </button>
+                        <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                            @click.outside="open = false" style="display: none">
+                            <div class="oh-accordion">
+                                <label for="id_field">{% trans "Group By" %}</label>
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label" for="id_field">{% trans "Field" %}</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <select class="oh-select mt-1 w-100" id="id_field" name="field"
+                                                class="select2-selection select2-selection--single">
+                                                {% for field in gp_fields %}
+                                                <option value="{{ field.0 }}">{% trans field.1 %}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 {% endif %}
-              </ul>
+                {% if perms.employee.change_employee or perms.employee.add_employee or perms.employee.delete_employee %}
+                    <div class="oh-btn-group ml-2" onclick="event.preventDefault();">
+                        <div class="oh-dropdown" x-data="{open: false}">
+                            <button class="oh-btn oh-btn--dropdown" @click="open = !open" @click.outside="open = false">
+                                {% trans "Actions" %}
+                            </button>
+                            <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
+                                <ul class="oh-dropdown__items">
+                                    {% if perms.employee.add_employee %}
+                                        <li class="oh-dropdown__item">
+                                            <a href="#" class="oh-dropdown__link"
+                                                data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                                hx-get="{% url 'work-info-import' %}" hx-target="#objectCreateModalTarget"
+                                                hx-on-htmx-after-request="setTimeout(() => {template_download(event);},100);">
+                                                {% trans "Import" %}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% if emp %}
+                                        {% if perms.employee.add_employee %}
+                                            <li class="oh-dropdown__item">
+                                                <a href="#" class="oh-dropdown__link" id="employee-info-export"
+                                                    data-toggle="oh-modal-toggle" data-target="#employeeExport"
+                                                    hx-get="{% url 'work-info-export' %}" hx-target="#employeeExportTarget">
+                                                    {% trans "Export" %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        {% if perms.employee.change_employee %}
+                                            <li class="oh-dropdown__item">
+                                                <a href="#" class="oh-dropdown__link" id="archiveEmployees">
+                                                    {% trans "Archive" %}
+                                                </a>
+                                            </li>
+                                            <li class="oh-dropdown__item">
+                                                <a href="#" class="oh-dropdown__link" id="unArchiveEmployees">
+                                                    {% trans "Un-Archive" %}
+                                                </a>
+                                            </li>
+                                            <li class="oh-dropdown__item">
+                                                <a hx-get="{% url 'employee-bulk-mail' %}" hx-target="#mail-content" href="#"
+                                                    class="oh-dropdown__link " data-toggle="oh-modal-toggle"
+                                                    data-target="#sendMailModal">
+                                                    {% trans "Bulk Mail" %}
+                                                </a>
+                                            </li>
+                                            <li class="oh-dropdown__item">
+                                                <a href="#" class="oh-dropdown__link" id="employeeBulkUpdateId">
+                                                    {% trans "Bulk Update" %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        {% if perms.employee.delete_employee %}
+                                            <li class="oh-dropdown__item">
+                                                <a href="#" class="oh-dropdown__link oh-dropdown__link--danger" data-action="delete"
+                                                    id="deleteEmployees">
+                                                    {% trans "Delete" %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if perms.employee.add_employee %}
+                    <div class="oh-btn-group ml-2">
+                        <div class="oh-dropdown">
+                            <a href='{% url "employee-view-new" %}' class="oh-btn oh-btn--secondary">
+                                <ion-icon name="add-outline"></ion-icon>
+                                {% trans "Create" %}
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
-          </div>
-        </div>
-        {% endif %}
-        {% if perms.employee.add_employee %}
-        <div class="oh-btn-group ml-2">
-          <div class="oh-dropdown">
-            <a
-              href='{% url "employee-view-new" %}'
-              class="oh-btn oh-btn--secondary"
-            >
-              <ion-icon name="add-outline"></ion-icon>
-              {% trans "Create" %}
-            </a>
-          </div>
-        </div>
-        {% endif %}
-      </div>
-    </form>
-  </div>
+        </form>
+    </div>
 </section>
 <script>
-  function clearFilterFromTag(element) {
-    let field_id = element.attr("data-x-field");
-    $(`[name=${field_id}]`).val("");
-    $(`[name=${field_id}]`).change();
-    // Update all elements with the same ID to have null values
-    let elementId = $(`[name=${field_id}]:last`).attr("id");
-    let spanElement = $(
-      `.oh-dropdown__filter-body:first #select2-id_${field_id}-container, #select2-${elementId}-container`
-    );
-    if (spanElement.length) {
-      spanElement.attr("title", "---------");
-      spanElement.text("---------");
-    }
-    $(".filterButton").click();
-  }
-  function clearAllFilter(element) {
-    $('[role="tooltip"]').remove();
-    let field_ids = $("[data-x-field]");
-    for (var i = 0; i < field_ids.length; i++) {
-      let item_id = field_ids[i].getAttribute("data-x-field");
-
-      $(`[name=${item_id}]`).val("");
-      $(`[name=${item_id}]`).change();
-      let elementId = $(`[name=${item_id}]:last`).attr("id");
-      let spanElement = $(
-        `.oh-dropdown__filter-body:first #select2-id_${item_id}-container, #select2-${elementId}-container`
-      );
-      if (spanElement.length) {
-        spanElement.attr("title", "---------");
-        spanElement.text("---------");
-      }
-      $(".filterButton").click();
-      localStorage.removeItem("savedFilters");
-      var url = window.location.href.split("?")[0];
-      window.history.replaceState({}, document.title, url);
-    }
-  }
-  function fieldLabel(value, field) {
-    if (field == "field") {
-      return $(`[value="${value}"]`).html();
-    }
-    return value;
-  }
-  $(document).ready(function () {
-    $("#employee-search").on("keyup", function () {
-      var searchFieldDiv = $("#searchFieldDiv");
-      var selectedField = searchFieldDiv.find(":selected");
-      if ($(this).val().trim() !== "") {
-        searchFieldDiv.show();
-      } else {
-        searchFieldDiv.hide();
-        selectedField.prop("selected", false);
-      }
-      $(".filterButton").eq(0).click();
-    });
-    $("#id_field").on("change", function () {
-      $(".filterButton")[0].click();
-    });
-    function filterFormSubmit(formId) {
-      var formData = $("#" + formId).serialize();
-      var count = 0;
-      formData.split("&").forEach(function (field) {
-        var parts = field.split("=");
-        var value = parts[1];
-        if (
-          value &&
-          value !== "unknown" &&
-          parts[0] != "field" &&
-          parts[0] != "view"
-        ) {
-          count++;
+    function clearFilterFromTag(element) {
+        let field_id = element.attr("data-x-field");
+        $(`[name=${field_id}]`).val("");
+        $(`[name=${field_id}]`).change();
+        // Update all elements with the same ID to have null values
+        let elementId = $(`[name=${field_id}]:last`).attr("id");
+        let spanElement = $(
+            `.oh-dropdown__filter-body:first #select2-id_${field_id}-container, #select2-${elementId}-container`
+        );
+        if (spanElement.length) {
+            spanElement.attr("title", "---------");
+            spanElement.text("---------");
         }
-      });
-      $("#filterCount").empty();
-      if (count > 0) {
-        $("#filterCount").text(`(${count})`);
-      }
+        $(".filterButton").click();
     }
+    function clearAllFilter(element) {
+        $('[role="tooltip"]').remove();
+        let field_ids = $("[data-x-field]");
+        for (var i = 0; i < field_ids.length; i++) {
+            let item_id = field_ids[i].getAttribute("data-x-field");
 
-    $("#filterForm").submit(function (e) {
-      filterFormSubmit("filterForm");
+            $(`[name=${item_id}]`).val("");
+            $(`[name=${item_id}]`).change();
+            let elementId = $(`[name=${item_id}]:last`).attr("id");
+            let spanElement = $(
+                `.oh-dropdown__filter-body:first #select2-id_${item_id}-container, #select2-${elementId}-container`
+            );
+            if (spanElement.length) {
+                spanElement.attr("title", "---------");
+                spanElement.text("---------");
+            }
+            $(".filterButton").click();
+            localStorage.removeItem("savedFilters");
+            var url = window.location.href.split("?")[0];
+            window.history.replaceState({}, document.title, url);
+        }
+    }
+    function fieldLabel(value, field) {
+        if (field == "field") {
+            return $(`[value="${value}"]`).html();
+        }
+        return value;
+    }
+    $(document).ready(function () {
+        $("#employee-search").on("keyup", function () {
+            var searchFieldDiv = $("#searchFieldDiv");
+            var selectedField = searchFieldDiv.find(":selected");
+            if ($(this).val().trim() !== "") {
+                searchFieldDiv.show();
+            } else {
+                searchFieldDiv.hide();
+                selectedField.prop("selected", false);
+            }
+            $(".filterButton").eq(0).click();
+        });
+        $("#id_field").on("change", function () {
+            $(".filterButton")[0].click();
+        });
+        function filterFormSubmit(formId) {
+            var formData = $("#" + formId).serialize();
+            var count = 0;
+            formData.split("&").forEach(function (field) {
+                var parts = field.split("=");
+                var value = parts[1];
+                if (
+                    value &&
+                    value !== "unknown" &&
+                    parts[0] != "field" &&
+                    parts[0] != "view"
+                ) {
+                    count++;
+                }
+            });
+            $("#filterCount").empty();
+            if (count > 0) {
+                $("#filterCount").text(`(${count})`);
+            }
+        }
+
+        $("#filterForm").submit(function (e) {
+            filterFormSubmit("filterForm");
+        });
     });
-  });
 </script>
 <script src="{% static 'employee/importExport.js' %}"></script>
 <script src="{% static 'employee/search.js' %}"></script>

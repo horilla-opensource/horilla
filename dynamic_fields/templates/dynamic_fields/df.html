@@ -15,11 +15,11 @@
     <div class="oh-hover-btn-drawer">
         {% if form.df_user_has_change_perm %}
         <button
-        hx-get="{% url "edit-verbose-name" widget.attrs.pk %}?df_model_path={{form.df_form_model_path}}" 
+        hx-get="{% url "edit-verbose-name" widget.attrs.pk %}?df_model_path={{form.df_form_model_path}}"
         hx-target="[id='dfModalBody{{ form.df_form_model_path }}']"
         onclick="$(`[id='dfModal{{ form.df_form_model_path }}']:first`).addClass('oh-modal--show')"
-        type="button" 
-        class="oh-hover-btn__small" 
+        type="button"
+        class="oh-hover-btn__small"
         onclick=""><ion-icon name="create-outline"></ion-icon></button>
         {% endif %}
         {% if form.df_user_has_delete_perm %}
@@ -54,7 +54,7 @@
                                     window.location.reload()
                                 }, 1500);
                             }
-                            
+
                         });
                     }
                 });

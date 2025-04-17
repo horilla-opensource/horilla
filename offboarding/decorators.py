@@ -21,8 +21,13 @@ from offboarding.models import (
 def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
     def _function(request, *args, **kwargs):
         employee = request.user.employee_get
+        permissions = perm
+        has_permission = False
+        if not isinstance(permissions, (list, tuple, set)):
+            permissions = [permissions]
+        has_permission = any(request.user.has_perm(perm) for perm in permissions)
         if (
-            request.user.has_perm(perm)
+            has_permission
             or offboarding_employee_can_enter
             or (
                 Offboarding.objects.filter(managers=employee).exists()
@@ -32,6 +37,7 @@ def any_manager_can_enter(function, perm, offboarding_employee_can_enter=False):
         ):
             return function(request, *args, **kwargs)
         else:
+            messages.info(request, "You don't have permission.")
             previous_url = request.META.get("HTTP_REFERER", "/")
             script = f'<script>window.location.href = "{previous_url}"</script>'
             key = "HTTP_HX_REQUEST"

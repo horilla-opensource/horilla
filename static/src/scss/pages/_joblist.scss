@@ -1,0 +1,176 @@
+.oh-job__page-container {
+    max-width: 80%;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.oh-joblisting__title-container {
+    margin: 3rem 0;
+}
+
+.oh-jobs__container--list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1%;
+    row-gap: 1rem;
+    justify-content: space-between;
+    padding-top: 5rem;
+}
+
+.oh-joblist__header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+}
+
+.oh-job_recruit--detail {
+    display: flex;
+}
+
+.oh-recruitment-company {
+    width: 64px;
+    height: 64px;
+    border-radius: 6px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    padding: 0.5rem;
+    margin-right: 0.8rem;
+}
+
+.oh-job-list_company-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+
+}
+
+.oh-recuritment_company-name {
+    color: $text-color;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.oh-joblist_card {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.oh-job__post {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 1rem 0;
+}
+
+.oh-job_post--posteddate {
+    font-size: 0.8rem;
+}
+
+.oh-recuritment__progress-bar {
+    //  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);
+    width: 100%;
+    height: 8px;
+    border-radius: 30px;
+    margin: 0.75rem 0;
+    background-color: $border-light-color ;
+    position: relative;
+}
+
+.oh-progress-bar__state {
+    background-color: $org-chart-primary ;
+    position: absolute;
+    left: 0px;
+    height: 8px;
+    border-radius: 30px;
+}
+
+.oh-recuritment_application-count {
+    color: $text-color;
+}
+
+.oh-recuritment_application {
+    color: $light-text-color;
+    font-size: 0.8rem;
+}
+
+.oh-job__apply-btn {
+    display: flex;
+    justify-content: end;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.oh-apply_btn {
+    font-weight: 500;
+    border: 1px solid $org-chart-primary;
+    background-color: $background-color;
+    color: $org-chart-primary;
+    text-decoration: none;
+    &:active{
+        background-color: $org-chart-primary;
+        color: $white-color;
+    }
+    &:focus{
+        background-color: $org-chart-primary;
+        color: $white-color;
+        border: none;
+        outline: none;
+    }
+}
+
+.oh-apply_btn:hover {
+    background-color: $org-chart-primary;
+    color: $white-color;
+    text-decoration: none;
+}
+.oh-recuritment_tag{
+    background-color: hsl(0,75%,97%);
+    color:$danger-color;
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.2rem;
+    margin-right: 0.2rem;
+    font-size: 0.8rem;
+    height: fit-content;
+}
+.oh-job-selected_detail {
+    position: fixed;
+    right: 0px;
+    width: 400px;
+    background-color: $white-color;
+    top: 0px;
+    height: 100%;
+    @media (max-width: 575.98px) {
+        width: 100%;
+    }
+
+}
+.oh-job-selected__detail--container{
+    padding: 2.5rem 1.5rem;
+}
+.oh-job__post_description{
+    line-height: 1.8rem;
+}
+.oh-job__description-list{
+
+  .oh-job__description-list_item{
+    line-height: 1.8rem;
+    color: $text-color;
+
+    position: relative;
+    list-style: none;
+    &::before{
+        content: '';
+       position: absolute;
+       display: block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        left: -26px;
+        background-color: $secondary-color;
+        top: 10px;
+      }
+
+  }
+
+}

@@ -124,3 +124,48 @@
 .oh-accordion-meta__btn, .oh-accordion-meta__btn-icon{
   color: $text-color;
 }
+.centered-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.oh-user_permission-list_item{
+  position: relative;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid $border-light-color;
+  background-color: $white;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+  &:hover{
+    background-color: rgba($border-light-color, 0.4);
+  }
+}
+
+.oh-user_permission-list_profile{
+ display: flex;
+ align-items: center;
+ gap: 0.2rem;
+}
+.oh-user_permission_list-text{
+  font-size: 0.75rem;
+}
+.oh-user_permission--profile{
+  width: 46px;
+  height: 46px;
+}
+.oh-user_permssion-dropdownbtn{
+  color: $text-color;
+  background-color: transparent;
+  padding: 0px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+   padding: 0.8rem 1.25rem;
+
+}

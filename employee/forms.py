@@ -191,6 +191,34 @@ class EmployeeForm(ModelForm):
         context = {"form": self}
         return render_to_string("employee/create_form/personal_info_as_p.html", context)
 
+    def clean(self):
+        super().clean()
+        email = self.cleaned_data["email"]
+        query = Employee.objects.entire().filter(email=email)
+        if self.instance and self.instance.id:
+            query = query.exclude(id=self.instance.id)
+
+        existing_employee = query.first()
+
+        if existing_employee:
+            company_id = None
+            if (
+                hasattr(existing_employee, "employee_work_info")
+                and existing_employee.employee_work_info
+            ):
+                company_id = existing_employee.employee_work_info.company_id
+
+            if company_id:
+                error_message = _(
+                    "An Employee with this Email already exists in company {}".format(
+                        company_id
+                    )
+                )
+            else:
+                error_message = _("An Employee with this Email already exists")
+
+            raise forms.ValidationError({"email": error_message})
+
     def get_next_badge_id(self):
         """
         This method is used to generate badge id
@@ -248,7 +276,7 @@ class EmployeeForm(ModelForm):
         """
         badge_id = self.cleaned_data["badge_id"]
         if badge_id:
-            all_employees = Employee.objects.get_all()
+            all_employees = Employee.objects.entire()
             queryset = all_employees.filter(badge_id=badge_id).exclude(
                 pk=self.instance.pk if self.instance else None
             )
@@ -272,25 +300,8 @@ class EmployeeWorkInformationForm(ModelForm):
         """
 
         model = EmployeeWorkInformation
-        fields = (
-            "department_id",
-            "job_position_id",
-            "job_role_id",
-            "shift_id",
-            "work_type_id",
-            "employee_type_id",
-            "reporting_manager_id",
-            "company_id",
-            "location",
-            "email",
-            "mobile",
-            "date_joining",
-            "contract_end_date",
-            "tags",
-            "basic_salary",
-            "salary_hour",
-        )
-        exclude = ("employee_id",)
+        fields = "__all__"
+        exclude = ("employee_id", "additional_info", "experience")
 
         widgets = {
             "date_joining": DateInput(attrs={"type": "date"}),
@@ -481,8 +492,11 @@ excel_columns = [
     ("employee_work_info__work_type_id", trans("Work Type")),
     ("employee_work_info__reporting_manager_id", trans("Reporting Manager")),
     ("employee_work_info__employee_type_id", trans("Employee Type")),
-    ("employee_work_info__location", trans("Work Location")),
+    ("employee_work_info__location", trans("Location")),
     ("employee_work_info__date_joining", trans("Date Joining")),
+    ("employee_work_info__basic_salary", trans("Basic Salary")),
+    ("employee_work_info__salary_hour", trans("Salary Hour")),
+    ("employee_work_info__contract_end_date", trans("Contract End Date")),
     ("employee_work_info__company_id", trans("Company")),
     ("employee_bank_details__bank_name", trans("Bank Name")),
     ("employee_bank_details__branch", trans("Branch")),
@@ -663,7 +677,7 @@ class BonusPointRedeemForm(ModelForm):
         available_points = BonusPoint.objects.filter(
             employee_id=self.instance.employee_id
         ).first()
-        if available_points.points < cleaned_data["points"]:
+        if not available_points or available_points.points < cleaned_data["points"]:
             raise forms.ValidationError({"points": "Not enough bonus points to redeem"})
         if cleaned_data["points"] <= 0:
             raise forms.ValidationError(

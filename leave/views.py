@@ -619,6 +619,7 @@ def leave_requests_export(request):
         filter_class=LeaveRequestFilter,
         form_class=LeaveRequestExportForm,
         file_name="Leave_requests",
+        perm="leave.view_leaverequest",
     )
 
 
@@ -867,6 +868,7 @@ def leave_request_approve(request, id, emp_id=None):
     total_available_leave = (
         available_leave.available_days + available_leave.carryforward_days
     )
+    send_notification = False
     if leave_request.status != "approved":
         if total_available_leave >= leave_request.requested_days:
             if leave_request.requested_days > available_leave.carryforward_days:
@@ -885,6 +887,7 @@ def leave_request_approve(request, id, emp_id=None):
             if not leave_request.multiple_approvals():
                 super(AvailableLeave, available_leave).save()
                 leave_request.save()
+                send_notification = True
             else:
                 if request.user.is_superuser:
                     LeaveRequestConditionApproval.objects.filter(
@@ -892,15 +895,19 @@ def leave_request_approve(request, id, emp_id=None):
                     ).update(is_approved=True)
                     super(AvailableLeave, available_leave).save()
                     leave_request.save()
+                    send_notification = True
                 else:
                     conditional_requests = leave_request.multiple_approvals()
-                    approver = [
-                        manager
-                        for manager in conditional_requests["managers"]
-                        if manager.employee_user_id == request.user
-                    ]
+                    approver = next(
+                        (
+                            manager
+                            for manager in conditional_requests["managers"]
+                            if manager == request.user.employee_get
+                        ),
+                        None,
+                    )
                     condition_approval = LeaveRequestConditionApproval.objects.filter(
-                        manager_id=approver[0], leave_request_id=leave_request
+                        manager_id=approver, leave_request_id=leave_request
                     ).first()
                     condition_approval.is_approved = True
                     managers = []
@@ -921,25 +928,30 @@ def leave_request_approve(request, id, emp_id=None):
                             )
 
                     condition_approval.save()
-                    if approver[0] == conditional_requests["managers"][-1]:
+                    if approver == conditional_requests["managers"][-1]:
                         super(AvailableLeave, available_leave).save()
                         leave_request.save()
+                        send_notification = True
             messages.success(request, _("Leave request approved successfully.."))
-            with contextlib.suppress(Exception):
-                notify.send(
-                    request.user.employee_get,
-                    recipient=leave_request.employee_id.employee_user_id,
-                    verb="Your Leave request has been approved",
-                    verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
-                    verb_de="Ihr Urlaubsantrag wurde genehmigt",
-                    verb_es="Se ha aprobado su solicitud de permiso",
-                    verb_fr="Votre demande de congé a été approuvée",
-                    icon="people-circle",
-                    redirect=reverse("user-request-view") + f"?id={leave_request.id}",
-                )
+            if send_notification:
+                with contextlib.suppress(Exception):
+                    notify.send(
+                        request.user.employee_get,
+                        recipient=leave_request.employee_id.employee_user_id,
+                        verb="Your Leave request has been approved",
+                        verb_ar="تمت الموافقة على طلب الإجازة الخاص بك",
+                        verb_de="Ihr Urlaubsantrag wurde genehmigt",
+                        verb_es="Se ha aprobado su solicitud de permiso",
+                        verb_fr="Votre demande de congé a été approuvée",
+                        icon="people-circle",
+                        redirect=reverse("user-request-view")
+                        + f"?id={leave_request.id}",
+                    )
 
-            mail_thread = LeaveMailSendThread(request, leave_request, type="approve")
-            mail_thread.start()
+                mail_thread = LeaveMailSendThread(
+                    request, leave_request, type="approve"
+                )
+                mail_thread.start()
         else:
             messages.error(
                 request,
@@ -1469,13 +1481,13 @@ def leave_assign(request):
                 for leave_type in leave_types:
                     assignment_key = (leave_type.id, employee.id)
                     if assignment_key not in existing_assignments:
-                        new_assignments.append(
-                            AvailableLeave(
-                                leave_type_id=leave_type,
-                                employee_id=employee,
-                                available_days=leave_type.total_days,
-                            )
+                        new_assignment = AvailableLeave(
+                            leave_type_id=leave_type,
+                            employee_id=employee,
+                            available_days=leave_type.total_days,
                         )
+                        new_assignments.append(new_assignment)
+                        new_assignment.pre_save_processing()
                         success_messages.add(employee.employee_user_id)
                     else:
                         info_messages.add(employee.employee_user_id)
@@ -1654,6 +1666,8 @@ def assign_leave_type_import(request):
         "Badge ID Error": [],
         "Leave Type Error": [],
         "Assigned Error": [],
+        "Available Days": [],
+        "Carry Forward Days": [],
         "Other Errors": [],
     }
 
@@ -1663,7 +1677,9 @@ def assign_leave_type_import(request):
         assign_leave_dicts = data_frame.to_dict("records")
 
         # Pre-fetch all employees and leave types
-        employees = {emp.badge_id.lower(): emp for emp in Employee.objects.all()}
+        employees = {
+            emp.badge_id.lower(): emp for emp in Employee.objects.all() if emp.badge_id
+        }
         leave_types = {lt.name.lower(): lt for lt in LeaveType.objects.all()}
         available_leaves = {
             (al.leave_type_id.id, al.employee_id.id): al
@@ -1676,6 +1692,8 @@ def assign_leave_type_import(request):
         for assign_leave in assign_leave_dicts:
             badge_id = assign_leave.get("Employee Badge ID", "").strip().lower()
             assign_leave_type = assign_leave.get("Leave Type", "").strip().lower()
+            available_days = assign_leave.get("Available Days", "0")
+            cfd = assign_leave.get("Carry Forward Days", "0")
             employee = employees.get(badge_id)
             leave_type = leave_types.get(assign_leave_type)
 
@@ -1700,13 +1718,26 @@ def assign_leave_type_import(request):
                 continue
 
             # If no errors, create the AvailableLeave instance
-            assign_leave_list.append(
-                AvailableLeave(
-                    leave_type_id=leave_type,
-                    employee_id=employee,
-                    available_days=leave_type.total_days,
-                )
+            if available_days == 0:
+                available_days = leave_type.total_days
+
+            available_leave = AvailableLeave(
+                leave_type_id=leave_type,
+                employee_id=employee,
+                available_days=available_days,
             )
+            if cfd:
+                available_leave.carryforward_days = cfd
+                available_leave.expired_date = leave_type.carryforward_expire_date
+                try:
+                    available_leave.reset_date = leave_type.leave_type_next_reset_date()
+                except:
+                    pass
+                available_leave.assigned_date = datetime.today()
+                available_leave.total_leave_days = (
+                    available_leave.carryforward_days + available_leave.available_days
+                )
+            assign_leave_list.append(available_leave)
 
         # Bulk create available leaves
         if assign_leave_list:
@@ -1750,6 +1781,7 @@ def assigned_leaves_export(request):
         filter_class=AssignedLeaveFilter,
         form_class=AvailableLeaveColumnExportForm,
         file_name="Assign_Leave",
+        perm="leave.view_availableleave",
     )
 
 
@@ -2648,7 +2680,7 @@ def dashboard(request):
         "rejected": rejected,
         "next_holiday": next_holiday,
         "dashboard": "dashboard",
-        "today": today,
+        "today": today.strftime("%Y-%m-%d"),
         "first_day": today.replace(day=1).strftime("%Y-%m-%d"),
         "last_day": date(
             today.year, today.month, calendar.monthrange(today.year, today.month)[1]

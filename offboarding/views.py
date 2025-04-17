@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import intial_notice_period
 from base.methods import closest_numbers, eval_validate, paginator_qry, sortby
+from base.models import Department, JobPosition
 from base.views import general_settings
 from employee.models import Employee
 from horilla.decorators import (
@@ -73,9 +74,7 @@ def pipeline_grouper(filters={}, offboardings=[]):
             all_stages_grouper.append({"grouper": stage, "list": []})
             stage_employees = PipelineEmployeeFilter(
                 filters,
-                OffboardingEmployee.objects.filter(
-                    stage_id=stage, employee_id__is_active=True
-                ),
+                OffboardingEmployee.objects.filter(stage_id=stage),
             ).qs.order_by("stage_id__id")
             page_name = "page" + stage.title + str(offboarding.id)
             employee_grouper = group_by(
@@ -400,10 +399,10 @@ def change_stage(request):
     for employee in employees:
         employee.stage_id = stage
         employee.save()
-    # if stage.type == "archived":
-    #     Employee.objects.filter(
-    #         id__in=employees.values_list("employee_id__id", flat=True)
-    #     ).update(is_active=False)
+    if stage.type == "archived":
+        Employee.objects.filter(
+            id__in=employees.values_list("employee_id__id", flat=True)
+        ).update(is_active=False)
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
         offboarding=stage.offboarding_id
@@ -997,3 +996,206 @@ def get_notice_period_end_date(request):
         "end_date": end_date,
     }
     return JsonResponse(response)
+
+
+@login_required
+@any_manager_can_enter(
+    perm=[
+        "offboarding.view_offboarding",
+        "offboarding.view_offboardingtask",
+        "offboarding.view_offboardingemployee",
+    ]
+)
+def offboarding_dashboard(request):
+    """
+    This method is used to render the offboarding dashboard page.
+    """
+
+    onboarding_employees = []
+    if apps.is_installed("recruitment"):
+        Candidate = get_horilla_model_class("recruitment", "candidate")
+        onboarding_employees = Candidate.objects.filter(
+            onboarding_stage__isnull=False, converted_employee_id__isnull=True
+        )
+
+    employees = Employee.objects.entire()
+    offboarding_employees = OffboardingEmployee.objects.entire()
+    archived_employees = offboarding_employees.filter(stage_id__type="archived")
+    resigning_employees = employees.filter(resignationletter__isnull=False).exclude(
+        offboardingemployee__stage_id__type="archived"
+    )
+
+    exit_ratio = (
+        (archived_employees.count() / employees.count()) if employees.count() > 0 else 0
+    )
+
+    context = {
+        "exit_ratio": round(exit_ratio, 4),
+        "employees": employees,
+        "archived_employees": archived_employees,
+        "resigning_employees": resigning_employees,
+        "onboarding_employees": len(onboarding_employees),
+    }
+    return render(request, "offboarding/dashboard/dashboard.html", context)
+
+
+@login_required
+@any_manager_can_enter(
+    ["offboarding.view_offboarding", "offboarding.view_offboardingtask"]
+)
+def dashboard_task_table(request):
+    """
+    This method is used to render the employee task table page in the dashboard.
+    """
+
+    employees = OffboardingEmployee.objects.entire()
+    return render(
+        request,
+        "offboarding/dashboard/employee_task_table.html",
+        {
+            "employees": employees,
+        },
+    )
+
+
+if apps.is_installed("asset"):
+
+    @login_required
+    @any_manager_can_enter(["offboarding.view_offboarding"])
+    def dashboard_asset_table(request):
+        """
+        This method is used to render the employee assets table page in the dashboard.
+        """
+        AssetAssignment = get_horilla_model_class(
+            app_label="asset", model="assetassignment"
+        )
+
+        offboarding_employees = OffboardingEmployee.objects.entire().values_list(
+            "employee_id__id", flat=True
+        )
+        assets = AssetAssignment.objects.entire().filter(
+            return_status__isnull=True,
+            assigned_to_employee_id__in=offboarding_employees,
+        )
+        return render(
+            request,
+            "offboarding/dashboard/asset_returned_table.html",
+            {"assets": assets},
+        )
+
+
+if apps.is_installed("pms"):
+
+    @login_required
+    @any_manager_can_enter("offboarding.view_offboarding")
+    def dashboard_feedback_table(request):
+        """
+        This method is used to render the employee assets table page in the dashboard.
+        """
+
+        Feedback = get_horilla_model_class(app_label="pms", model="feedback")
+
+        offboarding_employees = OffboardingEmployee.objects.entire().values_list(
+            "employee_id__id", "notice_period_starts"
+        )
+
+        if offboarding_employees:
+            id_list, date_list = map(list, zip(*offboarding_employees))
+        else:
+            id_list, date_list = [], []
+
+        feedbacks = (
+            Feedback.objects.entire()
+            .filter(employee_id__in=id_list)
+            .exclude(status="Closed")
+        )
+        return render(
+            request,
+            "offboarding/dashboard/employee_feedback_table.html",
+            {"feedbacks": feedbacks},
+        )
+
+
+@login_required
+@any_manager_can_enter("offboarding.view_offboarding")
+def dashboard_join_chart(request):
+    """
+    This method is used to render the joining - offboarding chart.
+    """
+
+    employees = Employee.objects.entire()
+    offboarding_employees = OffboardingEmployee.objects.entire()
+    archived_employees = offboarding_employees.filter(stage_id__type="archived")
+    resigning_employees = employees.filter(resignationletter__isnull=False).exclude(
+        offboardingemployee__stage_id__type="archived"
+    )
+
+    labels = ["resigning", "archived"]
+    items = [
+        resigning_employees.count(),
+        archived_employees.count(),
+    ]
+    if apps.is_installed("recruitment"):
+        Candidate = get_horilla_model_class(app_label="recruitment", model="candidate")
+        onboarding_employees = Candidate.objects.filter(
+            onboarding_stage__isnull=False, converted_employee_id__isnull=True
+        )
+        labels.append("New")
+        items.append(onboarding_employees.count())
+
+    response = {
+        "labels": labels,
+        "items": items,
+    }
+    return JsonResponse(response)
+
+
+@login_required
+@any_manager_can_enter("offboarding.view_offboarding")
+def department_job_postion_chart(request):
+    """
+    This method is used to render the department - job position chart.
+    """
+
+    departments = Department.objects.all()
+    offboarding_employees = OffboardingEmployee.objects.entire()
+
+    selected_departments = [
+        dept
+        for dept in departments
+        if offboarding_employees.filter(
+            employee_id__employee_work_info__department_id=dept.id
+        ).exists()
+    ]
+
+    job_positions = JobPosition.objects.filter(
+        id__in=offboarding_employees.values(
+            "employee_id__employee_work_info__job_position_id"
+        ).distinct()
+    )
+
+    labels = [dept.department for dept in selected_departments]
+
+    datasets = []
+    for job in job_positions:
+        job_dept = job.department_id
+        if job_dept not in selected_departments:
+            continue
+
+        data = [0] * len(selected_departments)
+        dept_index = labels.index(job_dept.department)
+
+        count = offboarding_employees.filter(
+            employee_id__employee_work_info__job_position_id=job.id
+        ).count()
+        data[dept_index] = count
+
+        datasets.append(
+            {
+                "label": f"{job.job_position} ({job_dept.department})",
+                "data": data,
+                "backgroundColor": f"hsl({hash(job.job_position) % 360}, 70%, 50%, 0.6)",
+            }
+        )
+
+    return JsonResponse({"labels": labels, "datasets": datasets})

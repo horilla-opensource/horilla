@@ -1,0 +1,13 @@
+<script>
+    Swal.fire({
+        title: "{{ title }}",
+        text: "{{ text }}",
+        icon: "{{ icon }}",
+        showConfirmButton: false,
+        timer: 3500,
+        timerProgressBar: true,
+        didClose: () => {
+            location.reload();
+        },
+    });
+</script>

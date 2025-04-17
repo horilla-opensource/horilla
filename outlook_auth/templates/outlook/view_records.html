@@ -1,0 +1,21 @@
+{% extends "settings.html" %}
+{% block settings %}
+{% load i18n %}
+{% include "generic/components.html" %}
+<div class="oh-modal" id="mailServerModal" role="dialog" aria-labelledby="mailServerModal" aria-hidden="true">
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+				{% trans "Mail Server" %}
+			</h2>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="mailServerModalBody"></div>
+	</div>
+</div>
+<div style="display: none;" data-ids="[]" id="selectedRecords"></div>
+<div hx-get="{% url "outlook_server_nav" %}" hx-trigger="load"></div>
+<div class="oh-wrapper" hx-get="{% url "outlook_server_list" %}" hx-trigger="load"></div>
+{% endblock settings %}

@@ -10,6 +10,9 @@
 }
 .oh-navbar__page-title {
   font-size: 1.15rem;
+  @media (max-width: 1199.98px) {
+    display: none;
+  }
   @media (max-width: 767.98px) {
     font-size: 0.98rem;
   }
@@ -20,8 +23,14 @@
   }
 }
 .oh-navbar {
+  // position: fixed;
+  // top: 0px;
+  z-index: 999;
   height: 65px;
-  width: 100%;
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: -webkit-fill-available;
+  width: fill-available;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -90,20 +99,36 @@
   height: 100%;
   object-fit: cover;
 }
-.oh-navbar__notification-link, .oh-navbar__action-icons-link {
+.oh-navbar__time {
+  @media screen and (max-width: 1055.99px) {
+    display: none !important;
+  }
+}
+.oh-navbar__notification-link,
+.oh-navbar__action-icons-link {
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 0px;
 }
-.oh-navbar__notification-beacon{
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+.oh-navbar__notification-beacon {
+  min-width: 18px;
+  min-height: 18px;
+  border-radius: 30px;
   background-color: $secondary-color;
+  color: $white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: bold;
   position: absolute;
-  top: 20px;
-  right: 23px;
+  top: 15px;
+  right: 10px;
+  width: fit-content;
+
+    padding: 0.1rem 0.4rem;
+    height: fit-content;
 }
 .oh-navbar__icon {
   width: 24px;
@@ -114,7 +139,7 @@
     height: 18px;
   }
 }
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
   .oh-navbar__user-name {
     display: none;
   }
@@ -123,11 +148,12 @@
 /**
 * Notifications
 */
-.oh-navbar__notifications, .oh-navbar__action-icons {
+.oh-navbar__notifications,
+.oh-navbar__action-icons {
   position: relative;
   display: flex;
   height: 100%;
-  padding: 0.5rem 1.5rem;
+  padding: 0.4rem 1rem;
   border-left: 1px solid #eee;
   border-right: 1px solid #eee;
 
@@ -141,7 +167,7 @@
     justify-content: center;
     border-left: none;
     border-right: none;
-    &:hover{
+    &:hover {
       background-color: transparent;
     }
   }
@@ -319,7 +345,9 @@
   height: 100%;
   transition: all 0 linear;
   border-left: 1px solid $border-light-color;
-  &:hover, &:focus, &:focus-visible {
+  &:hover,
+  &:focus,
+  &:focus-visible {
     background-color: $light-button-color;
     text-decoration: none;
     transition: all 0 linear;
@@ -329,12 +357,14 @@
     width: 50px;
     justify-content: center;
     border-left: none;
-    &:hover, &:focus, &:focus-visible {
+    &:hover,
+    &:focus,
+    &:focus-visible {
       background-color: transparent;
     }
   }
 }
-.oh-navbar__clock-icon{
+.oh-navbar__clock-icon {
   color: $icon-grey;
 
   @media (max-width: 767.98px) {
@@ -342,15 +372,68 @@
   }
 }
 @media (max-width: 767.98px) {
-  .oh-navbar__clock-text{
+  .oh-navbar__clock-text {
     display: none;
   }
-  .oh-navbar__clock-icon{
+  .oh-navbar__clock-icon {
     font-size: 1.5rem;
   }
 }
 @media (max-width: 575.98px) {
-  .oh-navbar__clock-icon{
+  .oh-navbar__clock-icon {
     font-size: 1.2rem;
   }
 }
+.oh-navbar__toggle-container {
+  display: flex;
+  align-items: center;
+}
+/**
+* Breadcrumb
+*/
+.oh-navbar__breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  margin-bottom: 0;
+  padding-left: 10px;
+
+  @media screen and (max-width: 991.98px) {
+    display: none;
+  }
+}
+.oh-navbar__breadcrumb-item {
+  margin-right: 25px;
+  position: relative;
+
+  &::after {
+    content: "";
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDQiIGhlaWdodD0iNDQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzczNzM3MyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjEuNSIgdmlld0JveD0iMCAwIDI0IDI0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGQ9Im04LjYyNSA1LjI1IDYuNzUgNi43NS02Ljc1IDYuNzUiPjwvcGF0aD4KPC9zdmc+");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 3px;
+    right: -20px;
+  }
+  &:last-child {
+    margin-right: 0;
+    &::after {
+      content: unset;
+    }
+  }
+}
+.oh-navbar__breadcrumb-link {
+  color: $light-text-color;
+  &:hover {
+    text-decoration: none;
+  }
+}
+.oh-navbar__breadcrumb-link.active {
+  color: $text-color;
+}
+
+// ad-banner-style

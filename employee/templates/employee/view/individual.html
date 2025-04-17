@@ -218,8 +218,8 @@
 						<div class="oh-profile__avatar">
 							<img src="{{employee.get_avatar}}" class="oh-profile-section__avatar"
 								style="border-radius: 10%;" alt="Username" {% if employee.employee_profile %}
-								onmouseover="enlargeImage(this)
-								$('#enlargeImageContainer').addClass('enlarge-image-container');" onmouseout="hideEnlargeImage()
+								onmouseover="enlargeImager(this)
+								$('#enlargeImageContainer').addClass('enlarge-image-container');" onmouseout="hideEnlargeImager()
 								$('#enlargeImageContainer').removeClass('enlarge-image-container');" {% endif %} />
 						</div>
 						{% if "attendance"|app_installed %}
