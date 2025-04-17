@@ -42,7 +42,16 @@
     <script src="{% static 'build/js/driver.js' %}"></script>
     <script src="{% static 'build/js/clearFilter.js' %}"></script>
     <script src="{% static '/base/color-changer.js' %}"></script> 
-
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          if (!document.querySelector('script[src="/static/base/color-changer.js"]')) {
+            const script = document.createElement('script');
+            script.src = '/static/base/color-changer.js';
+            script.defer = true;
+            document.head.appendChild(script);
+          }
+        });
+    </script>
 
 
     <!-- Popper.JS -->
