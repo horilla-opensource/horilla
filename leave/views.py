@@ -10,8 +10,8 @@ from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs, unquote
 
 import pandas as pd
-from weasyprint import HTML
-from django.conf import settings
+from xhtml2pdf import pisa
+from io import BytesIO
 from django.apps import apps
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -638,20 +638,26 @@ def generate_leave_request_pdf(template_path, context, html=False):
         HttpResponse: A response with the generated PDF file or raw HTML.
     """
     try:
-        # Render the HTML content from the template and context
         html_content = render_to_string(template_path, context)
 
-        # Generate the PDF file
-        pdf = HTML(string=html_content, base_url=settings.STATIC_ROOT).write_pdf()
+        if html:
+            return HttpResponse(html_content)
 
-        # Return an HttpResponse containing the PDF content
-        response = HttpResponse(pdf, content_type="application/pdf")
-        response["Content-Disposition"] = "inline; filename=leave_request.pdf"
+        result = BytesIO()
+        pdf_status = pisa.CreatePDF(src=html_content, dest=result)
+
+        if pdf_status.err:
+            logger.error("Error creating PDF")
+            return HttpResponse("Error generating PDF", status=500)
+
+        response = HttpResponse(result.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="leave_request.pdf"'
         return response
+
     except Exception as e:
-        # Handle errors gracefully
         logger.exception("Error generating PDF")
         return HttpResponse(f"Error generating PDF: {str(e)}", status=500)
+
 
 @login_required
 @manager_can_enter("leave.view_leaverequest")
