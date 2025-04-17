@@ -197,7 +197,13 @@ class ModelForm(forms.ModelForm):
 
             if isinstance(
                 widget,
-                (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
+                (
+                    forms.NumberInput,
+                    forms.EmailInput,
+                    forms.TextInput,
+                    forms.FileInput,
+                    forms.URLInput,
+                ),
             ):
                 label = ""
                 if field.label is not None:
@@ -244,6 +250,18 @@ class ModelForm(forms.ModelForm):
                 )
             except:
                 pass
+
+    def verbose_name(self):
+        """
+        Returns the verbose name of the model associated with the form.
+        Provides fallback values if no model or verbose name is defined.
+        """
+        if hasattr(self, "_meta") and hasattr(self._meta, "model"):
+            model = self._meta.model
+            if hasattr(model._meta, "verbose_name") and model._meta.verbose_name:
+                return model._meta.verbose_name
+            return model.__name__
+        return ""
 
 
 class Form(forms.Form):
@@ -484,20 +502,21 @@ class JobPositionMultiForm(ModelForm):
     JobPosition model's form
     """
 
-    department_id = HorillaMultiSelectField(queryset=Department.objects.all())
+    department_id = HorillaMultiSelectField(
+        queryset=Department.objects.all(),
+        label=JobPosition._meta.get_field("department_id").verbose_name,
+        widget=forms.SelectMultiple(
+            attrs={
+                "class": "oh-select oh-select2 w-100",
+                "style": "height:45px;",
+            }
+        ),
+    )
 
     class Meta:
         model = JobPosition
         fields = "__all__"
         exclude = ["department_id", "is_active"]
-        widgets = {
-            "department_id": forms.SelectMultiple(
-                attrs={
-                    "class": "oh-select oh-select2 w-100",
-                    "style": "height:45px;",
-                }
-            ),
-        }
 
     def clean(self):
         """
@@ -559,7 +578,8 @@ class JobRoleForm(ModelForm):
         super().__init__(*args, **kwargs)
         if not self.instance.pk:
             self.fields["job_position_id"] = forms.ModelMultipleChoiceField(
-                queryset=self.fields["job_position_id"].queryset
+                queryset=self.fields["job_position_id"].queryset,
+                label=JobRole._meta.get_field("job_position_id").verbose_name,
             )
             attrs = self.fields["job_position_id"].widget.attrs
             attrs["class"] = "oh-select oh-select2 w-100"
@@ -875,7 +895,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
                 employee.employee_work_info.work_type_id
             )
             rotating_work_type_assign.next_work_type = rotating_work_type.work_type1
-            rotating_work_type_assign.additional_data["next_shift_index"] = 1
+            rotating_work_type_assign.additional_data["next_work_type_index"] = 1
             based_on = self.cleaned_data["based_on"]
             start_date = self.cleaned_data["start_date"]
             if based_on == "weekly":
@@ -2227,6 +2247,25 @@ class MailTemplateForm(ModelForm):
         }
         return mail_data
 
+    def get_employee_template_language(self):
+        mail_data = {
+            "Receiver|Full name": "instance.get_full_name",
+            "Sender|Full name": "self.get_full_name",
+            "Receiver|Recruitment": "instance.recruitment_id",
+            "Sender|Recruitment": "self.recruitment_id",
+            "Receiver|Company": "instance.get_company",
+            "Sender|Company": "self.get_company",
+            "Receiver|Job position": "instance.get_job_position",
+            "Sender|Job position": "self.get_job_position",
+            "Receiver|Email": "instance.get_mail",
+            "Sender|Email": "self.get_mail",
+            "Receiver|Employee Type": "instance.get_employee_type",
+            "Sender|Employee Type": "self.get_employee_type",
+            "Receiver|Work Type": "instance.get_work_type",
+            "Sender|Work Type": "self.get_work_type",
+        }
+        return mail_data
+
 
 class MultipleApproveConditionForm(ModelForm):
     CONDITION_CHOICE = [
@@ -2309,6 +2348,18 @@ class AnnouncementForm(ModelForm):
     Announcement Form
     """
 
+    employees = HorillaMultiSelectField(
+        queryset=Employee.objects.all(),
+        widget=HorillaMultiSelectWidget(
+            filter_route_name="employee-widget-filter",
+            filter_class=EmployeeFilter,
+            filter_instance_contex_name="f",
+            filter_template_path="employee_filters.html",
+            required=True,
+        ),
+        label="Employees",
+    )
+
     class Meta:
         """
         Meta class for additional options
@@ -2332,7 +2383,7 @@ class AnnouncementForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["attachments"] = MultipleFileField(label="Attachments ")
+        self.fields["attachments"] = MultipleFileField(label=_("Attachments"))
         self.fields["attachments"].required = False
         self.fields["description"].required = False
 
@@ -2354,6 +2405,22 @@ class AnnouncementForm(ModelForm):
         if commit:
             instance.attachements.add(*multiple_attachment_ids)
         return instance, multiple_attachment_ids
+
+    def as_p(self, *args, **kwargs):
+        context = {"form": self}
+        return render_to_string("announcement/as_p.html", context)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if isinstance(self.fields["employees"], HorillaMultiSelectField):
+            self.errors.pop("employees", None)
+
+            employee_data = self.fields["employees"].queryset.filter(
+                id__in=self.data.getlist("employees")
+            )
+            cleaned_data["employees"] = employee_data
+
+        return cleaned_data
 
 
 class AnnouncementCommentForm(ModelForm):

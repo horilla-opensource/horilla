@@ -6,20 +6,18 @@ horilla_automations/methods/methods.py
 import operator
 
 from django.core.exceptions import FieldDoesNotExist
+from django.db import models as django_models
 from django.http import QueryDict
 
 from base.templatetags.horillafilters import app_installed
 from employee.models import Employee
 from horilla.models import HorillaModel
-from horilla_views.templatetags.generic_template_filters import getattribute
 
 recruitment_installed = False
 if app_installed("recruitment"):
     from recruitment.models import Candidate
 
     recruitment_installed = True
-
-app_installed
 
 
 def get_related_models(model: HorillaModel) -> list:
@@ -51,10 +49,13 @@ def generate_choices(model_path):
                     f"{field.name}__get_email",
                     f"{field.verbose_name.capitalize().replace(' id','')} mail field ",
                 )
-                mail_detail = (
-                    f"{field.name}__pk",
-                    field.verbose_name.capitalize().replace(" id", ""),
-                )
+                mail_detail = None
+                if not isinstance(field, django_models.ManyToManyField):
+                    mail_detail = (
+                        f"{field.name}__pk",
+                        field.verbose_name.capitalize().replace(" id", "")
+                        + "(Template context)",
+                    )
                 if field.related_model == Employee:
                     to_fields.append(
                         (
@@ -62,15 +63,19 @@ def generate_choices(model_path):
                             f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager",
                         )
                     )
-                    mail_details_choice.append(
-                        (
-                            f"{field.name}__employee_work_info__reporting_manager_id__pk",
-                            f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager",
+                    if not isinstance(field, django_models.ManyToManyField):
+                        mail_details_choice.append(
+                            (
+                                f"{field.name}__employee_work_info__reporting_manager_id__pk",
+                                f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager (Template context)",
+                            )
                         )
-                    )
 
                 to_fields.append(email_field)
-                mail_details_choice.append(mail_detail)
+                if mail_detail:
+                    mail_details_choice.append(mail_detail)
+    text_area_fields = get_textfield_paths(model_class)
+    mail_details_choice = mail_details_choice + text_area_fields
     models = [Employee]
     if recruitment_installed:
         models.append(Candidate)
@@ -153,3 +158,25 @@ def get_related_field_model(model: Employee, field_path):
             # If the part is a non-relation field, break the loop
             break
     return model
+
+
+def get_textfield_paths(model):
+    """
+    get all text field mapping / or relation
+    """
+    paths = []
+
+    def traverse(model, prefix=""):
+        for field in model._meta.get_fields():
+            if isinstance(field, django_models.TextField):
+                paths.append(
+                    (
+                        prefix + field.name,
+                        f"{(prefix.capitalize() + field.name.capitalize()).replace('__',' > ').replace('_id','').replace('_',' ')} (As a mail template)",
+                    )
+                )
+            elif isinstance(field, django_models.ForeignKey):
+                traverse(field.related_model, prefix + field.name + "__")
+
+    traverse(model)
+    return paths

@@ -27,6 +27,11 @@
 </div>
 <script>
     {% include 'country.js' %}
+    populateCountries("country", "state");
+    $("#id_country").val("{{form.instance.country}}").change()
+    $("#id_state").val("{{form.instance.state}}").change()
+    $("#country").val("{{bank_form.instance.country}}").change()
+    $("#state").val("{{bank_form.instance.state}}").change()
     $(document).ready(function() {
       $('#id_profile').change(function (e) {
 

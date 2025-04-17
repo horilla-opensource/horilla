@@ -112,7 +112,7 @@
                             ><ion-icon name="create-outline"></ion-icon
                         ></a>
                         {% endif %}
-                        {% if employee.employee_id.get_archive_condition %}
+                        {% if employee.employee_id and employee.employee_id.get_archive_condition %}
                         <a
                             type="button"
                             title="{% trans 'Show managing records' %}"

@@ -24,6 +24,7 @@ def shutdown_function():
         local_backup.active = False
         local_backup.save()
 
+
 try:
     atexit.register(shutdown_function)
 except:

@@ -70,7 +70,7 @@
             <div data-cell-index="2" class="oh-sticky-table__td">{{available_leave.leave_type_id}}</div>
             <div data-cell-index="3" class="oh-sticky-table__td">{% if available_leave.leave_type_id.limit_leave %} {{available_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</div>
             <div data-cell-index="4" class="oh-sticky-table__td">{{available_leave.carryforward_days}}</div>
-            <div data-cell-index="5" class="oh-sticky-table__td">{% if available_leave.leave_type_id.limit_leave %} {{available_leave.available_days}}{% else %}{% trans "No Limit" %}{% endif %}</div>
+            <div data-cell-index="5" class="oh-sticky-table__td">{% if available_leave.leave_type_id.limit_leave %} {{available_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</div>
             <div data-cell-index="6" class="oh-sticky-table__td">{{available_leave.leave_taken}}</div>
             <div data-cell-index="7" class="oh-sticky-table__td dateformat_changer">{{available_leave.assigned_date}}</div>
             {% if perms.leave.change_availableleave or perms.leave.delete_availableleave or request.user|is_reportingmanager %}

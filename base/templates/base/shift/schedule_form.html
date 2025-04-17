@@ -1,26 +1,21 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header pb-0">
     <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
-        {% if shift_schedule.id %}
-            {% trans "Update Employee Shift Schedule" %}
-        {% else %}
-            {% trans "Create Employee Shift Schedule" %}
-        {% endif %}
+        {% if shift_schedule.id %} {% trans "Update" %} {% else %} {% trans "Create" %} {% endif %} {{form.verbose_name}}
     </h2>
     <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <form {% if shift_schedule.id %} hx-post="{% url 'employee-shift-schedule-update' shift_schedule.id %}"
-        hx-target="#objectUpdateModalTarget" {% else %} hx-post="{% url 'employee-shift-schedule-create' %}"
-        hx-target="#objectCreateModalTarget" {% endif %}>
+    <form hx-post="{{ request.get_full_path }}"
+        hx-target="{% if shift_schedule.id %} #objectUpdateModalTarget {% else %} #objectCreateModalTarget {% endif %}">
         {% csrf_token %} {{ form.non_field_errors}}
         {{form.as_p}}
     </form>
 </div>
 <script>
-    $(document).ready(function(e){
+    $(document).ready(function (e) {
         $("[name=is_auto_punch_out_enabled]").change();
     });
 </script>

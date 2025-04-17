@@ -1,0 +1,176 @@
+.oh-payslip {
+  max-width: 1200px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid $border-color;
+
+  @media (max-width: 991.98px) {
+    margin: 0;
+    border: none;
+  }
+}
+.oh-payslip__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid $border-color;
+}
+.oh-payslip__title {
+  font-weight: bold;
+}
+.oh-payslip__title--h1 {
+  font-size: 1.5rem;
+}
+.oh-payslip__title--h2 {
+  font-size: 1rem;
+}
+.oh-payslip__employee-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: $table-text-color;
+}
+.oh-payslip__employee-details {
+  padding-left: 0;
+  list-style-type: none;
+}
+.oh-payslip__employee-detail {
+  font-size: 0.9rem;
+  padding-top: 0.95rem;
+  display: flex;
+}
+.oh-payslip__employee-detail-title {
+  position: relative;
+  color: $light-text-color;
+  display: block;
+  min-width: 180px;
+  margin-right: 1rem;
+  &::after {
+    content: ": ";
+    position: absolute;
+    color: $light-text-color;
+    font-size: 0.9rem;
+    right: 0;
+  }
+}
+.oh-payslip__summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  @media (max-width: 991.98px) {
+    flex-direction: column-reverse;
+  }
+}
+.oh-payslip__netpay {
+  text-align: right;
+  width: 300px;
+  padding: 1rem;
+
+  @media (max-width: 991.98px) {
+    width: 100%;
+    text-align: left;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 1.5rem;
+  }
+}
+.oh-payslip__netpay-title {
+  color: $table-text-color;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.oh-payslip__netpay-amount {
+  font-size: 2rem;
+}
+.oh-payslip__table-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 1.5rem;
+
+  @media (max-width: 991.98px) {
+    flex-direction: column;
+  }
+}
+.oh-payslip__user-detail{
+  @media (max-width: 991.98px) {
+    margin-bottom: 1rem;
+  }
+}
+.oh-payslip__table {
+  width: 100%;
+  border: 1px solid $border-light-color;
+  margin-right: 1rem;
+
+  &:last-child {
+    margin-right: 0;
+  }
+
+  @media (max-width: 991.98px) {
+    margin-bottom: 1rem;
+  }
+}
+.oh-payslip__table-th,
+.oh-payslip__table-td,
+.oh-payslip__table-tf {
+  padding: 0.75rem;
+}
+.oh-payslip__table-th {
+  border-bottom: 1px solid $border-light-color;
+}
+.oh-payslip__net-payable {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  border: 1px solid $border-light-color;
+  height: 75px;
+
+  @media (max-width: 991.98px) {
+    flex-direction: column;
+    height: auto;
+  }
+}
+.oh-payslip__net-payable-title {
+  font-size: 1.15rem;
+  font-weight: bold;
+  line-height: 1rem;
+}
+.oh-payslip__net-payable-subtext {
+  font-size: 0.95rem;
+  color: $light-text-color;
+  margin-bottom: 0;
+}
+.oh-payslip__net-payable-amount {
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+.oh-payslip__net-payable-left,
+.oh-payslip__net-payable-right {
+  padding: 1rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.oh-payslip__net-payable-right {
+  background-color: $border-light-color;
+  min-width: 200px;
+  @media (max-width: 991.98px) {
+    width: 100%;
+  }
+}
+.oh-payslip__net-payable-left {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.oh-payslip__net-payable-subtext {
+  font-size: 0.85rem;
+}
+.oh-payroll__component-title {
+  font-size: 1.35rem;
+  font-weight: bold;
+}
