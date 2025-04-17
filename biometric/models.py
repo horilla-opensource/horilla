@@ -1,4 +1,3 @@
-# pylint: disable=too-few-public-methods
 """
 This module contains Django models for managing biometric devices
 and employee attendance within a company.
@@ -12,7 +11,6 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
 from employee.models import Employee
 from horilla.models import HorillaModel
@@ -51,39 +49,23 @@ class BiometricDevices(HorillaModel):
         ("zk", _("ZKTeco Biometric")),
         ("anviz", _("Anviz Biometric")),
         ("cosec", _("Matrix COSEC Biometric")),
-        ("dahua", _("Dahua Biometric")),
-        ("etimeoffice", _("e-Time Office")),
     ]
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    name = models.CharField(max_length=100, verbose_name=_("Name"))
+    name = models.CharField(max_length=100)
     machine_type = models.CharField(
-        max_length=18, choices=BIO_DEVICE_TYPE, null=True, verbose_name=_("Device Type")
+        max_length=18,
+        choices=BIO_DEVICE_TYPE,
+        null=True,
     )
-    machine_ip = models.CharField(
-        max_length=150, null=True, blank=True, default="", verbose_name=_("Machine IP")
-    )
-    port = models.IntegerField(null=True, blank=True, verbose_name=_("Port No"))
-    zk_password = models.CharField(
-        max_length=100, null=True, blank=True, default="0", verbose_name=_("Password")
-    )
-    bio_username = models.CharField(
-        max_length=100, null=True, blank=True, default="", verbose_name=_("Username")
-    )
-    bio_password = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name=_("Password")
-    )
-    anviz_request_id = models.CharField(
-        max_length=200, null=True, blank=True, verbose_name=_("Request ID")
-    )
-    api_url = models.CharField(
-        max_length=200, null=True, blank=True, verbose_name=_("API Url")
-    )
-    api_key = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name=_("API Key")
-    )
-    api_secret = models.CharField(
-        max_length=100, null=True, blank=True, verbose_name=_("API Secret")
-    )
+    machine_ip = models.CharField(max_length=15, null=True, blank=True, default="")
+    port = models.IntegerField(null=True, blank=True)
+    zk_password = models.CharField(max_length=100, null=True, blank=True, default="0")
+    cosec_username = models.CharField(max_length=100, null=True, blank=True, default="")
+    cosec_password = models.CharField(max_length=100, null=True, blank=True)
+    anviz_request_id = models.CharField(max_length=200, null=True, blank=True)
+    api_url = models.CharField(max_length=200, null=True, blank=True)
+    api_key = models.CharField(max_length=100, null=True, blank=True)
+    api_secret = models.CharField(max_length=100, null=True, blank=True)
     api_token = models.CharField(max_length=500, null=True, blank=True)
     api_expires = models.CharField(max_length=100, null=True, blank=True)
     is_live = models.BooleanField(default=False)
@@ -97,72 +79,91 @@ class BiometricDevices(HorillaModel):
     last_fetch_date = models.DateField(null=True, blank=True)
     last_fetch_time = models.TimeField(null=True, blank=True)
     company_id = models.ForeignKey(
-        Company,
-        null=True,
-        editable=True,
-        on_delete=models.PROTECT,
-        verbose_name=_("Company"),
+        Company, null=True, editable=False, on_delete=models.PROTECT
     )
 
-    objects = HorillaCompanyManager()
+    objects = models.Manager()
 
     def __str__(self):
         return f"{self.name} - {self.machine_type}"
 
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
-        required_fields = {}
-
-        if self.machine_type in ("zk", "cosec", "dahua"):
+        if self.machine_type in ("zk", "cosec"):
             if not self.machine_ip:
-                required_fields["machine_ip"] = _(
-                    "The Machine IP is required for the selected biometric device."
+                raise ValidationError(
+                    {
+                        "machine_ip": _(
+                            "The Machine IP is required for ZKTeco Biometric\
+                            & Matrix COSEC Biometric"
+                        )
+                    }
                 )
             if not self.port:
-                required_fields["port"] = _(
-                    "The Port Number is required for the selected biometric device."
+                raise ValidationError(
+                    {"port": _("The Port No is required for ZKTeco Biometric")}
                 )
-
         if self.machine_type == "zk":
             if not self.zk_password:
-                required_fields["zk_password"] = _(
-                    "The password is required for ZKTeco Biometric Device."
+                raise ValidationError(
+                    {
+                        "zk_password": _(
+                            "The password is required for ZKTeco Biometric Device"
+                        )
+                    }
                 )
-            else:
-                try:
-                    int(self.zk_password)
-                except ValueError:
-                    required_fields["zk_password"] = _(
-                        "The password must be an integer (numeric) value for\
-                            ZKTeco Biometric Device."
-                    )
-
-        if self.machine_type in ("cosec", "dahua"):
-            if not self.bio_username:
-                required_fields["bio_username"] = _(
-                    "The Username is required for the selected biometric device."
-                )
-            if not self.bio_password:
-                required_fields["bio_password"] = _(
-                    "The Password is required for the selected biometric device."
+            try:
+                int(self.zk_password)
+            except ValueError:
+                raise ValidationError(
+                    {
+                        "zk_password": _(
+                            "The password must be an integer (numeric) value for ZKTeco Biometric Device"
+                        )
+                    }
                 )
 
+        if self.machine_type == "cosec":
+            if not self.cosec_username:
+                raise ValidationError(
+                    {
+                        "cosec_username": _(
+                            "The username is required for Matrix COSEC Biometric"
+                        )
+                    }
+                )
+            if not self.cosec_password:
+                raise ValidationError(
+                    {
+                        "cosec_username": _(
+                            "The password is required for Matrix COSEC Biometric"
+                        )
+                    }
+                )
         if self.machine_type == "anviz":
             if not self.anviz_request_id:
-                required_fields["anviz_request_id"] = _(
-                    "The Request ID is required for the Anviz Biometric Device."
+                raise ValidationError(
+                    {
+                        "anviz_request_id": _(
+                            "The Request ID required for the Anviz Biometric Device."
+                        )
+                    }
                 )
             if not self.api_url:
-                required_fields["api_url"] = _(
-                    "The API URL is required for Anviz Biometric Device."
+                raise ValidationError(
+                    {"api_url": _("The API Url required for Anviz Biometric Device")}
                 )
             if not self.api_key:
-                required_fields["api_key"] = _(
-                    "The API Key is required for Anviz Biometric Device."
+                raise ValidationError(
+                    {"api_key": _("The API Key required for Anviz Biometric Device")}
                 )
             if not self.api_secret:
-                required_fields["api_secret"] = _(
-                    "The API Secret is required for Anviz Biometric Device."
+                raise ValidationError(
+                    {
+                        "api_secret": _(
+                            "The API Secret is required for Anviz Biometric Device"
+                        )
+                    }
                 )
             if self.anviz_request_id and self.api_key and self.api_secret:
                 payload = {
@@ -215,8 +216,6 @@ class BiometricDevices(HorillaModel):
                             )
                         }
                     ) from exc
-        if required_fields:
-            raise ValidationError(required_fields)
 
     class Meta:
         """
@@ -242,18 +241,15 @@ class BiometricEmployees(models.Model):
     ref_user_id = models.IntegerField(
         null=True, blank=True, validators=[MaxValueValidator(99999999)]
     )
-    user_id = models.CharField(max_length=100, verbose_name=_("User ID"))
-    dahua_card_no = models.CharField(max_length=100, null=True, blank=True)
-    employee_id = models.ForeignKey(
-        Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
-    )
+    user_id = models.CharField(max_length=100)
+    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
     device_id = models.ForeignKey(
         BiometricDevices, on_delete=models.CASCADE, null=True, blank=True
     )
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.employee_id} - {self.user_id} - {self.device_id}"
+        return f"{self.employee_id} - {self.user_id}"
 
     class Meta:
         """

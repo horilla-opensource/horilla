@@ -36,9 +36,9 @@
                             <a
                               onclick="event.stopPropagation();"
                               hx-get="{% url 'skill-zone-update' skill_zone.grouper.id %}"
-                              hx-target="#objectUpdateModalTarget"
+                              hx-target="#createTarget"
                               data-toggle="oh-modal-toggle"
-                              data-target="#objectUpdateModal"
+                              data-target="#createModal"
                               class="oh-btn oh-btn--light-bkg w-100"
                               title="{% trans 'Edit' %}"
                               ><ion-icon name="create-outline"></ion-icon
@@ -76,8 +76,8 @@
                           {% endif %}
                           {% if perms.recruitment.delete_skillzone %}
                             <form
-                            hx-post="{% url 'skill-zone-delete' skill_zone.grouper.id %}?view=list"
-                            hx-confirm="{% trans 'Are you sure want to delete this skill zone?' %}" > {% csrf_token %}
+                            action="{% url 'skill-zone-delete' skill_zone.grouper.id %}?view=list"
+                            onsubmit="return confirm('{% trans "Are you sure want to delete this skill zone?" %}')" method="post" > {% csrf_token %}
                               <button
                                 onclick="event.stopPropagation();"
 

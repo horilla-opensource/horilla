@@ -1,0 +1,19 @@
+{% load i18n %}
+{% if form.errors %}
+  <!-- form errors -->
+  <div class="oh-wrapper">
+    <div class="oh-alert-container">
+      {% for error in form.non_field_errors %}
+        <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+<form hx-post="{% url 'skill-zone-create' %}" id="skillform" hx-encoding="multipart/form-data">
+  {% csrf_token %}
+  {{ form.as_p }}
+</form>
+
+<script>
+    $("#skillform .col-md-6").toggleClass("col-md-6");
+</script>

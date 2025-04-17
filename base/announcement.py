@@ -9,7 +9,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -20,7 +20,6 @@ from base.models import (
     AnnouncementComment,
     AnnouncementExpire,
     AnnouncementView,
-    Attachment,
 )
 from employee.models import Employee
 from horilla.decorators import hx_request_required, login_required, permission_required
@@ -179,23 +178,13 @@ def update_announcement(request, anoun_id):
 
     announcement = Announcement.objects.get(id=anoun_id)
     form = AnnouncementForm(instance=announcement)
-    existing_attachments = list(announcement.attachments.all())
-
     instance_ids = request.GET.get("instance_ids")
-
     if request.method == "POST":
         form = AnnouncementForm(request.POST, request.FILES, instance=announcement)
         if form.is_valid():
             anou, attachment_ids = form.save(commit=False)
-            anou.save()
-            if attachment_ids:
-                all_attachments = set(existing_attachments) | set(
-                    Attachment.objects.filter(id__in=attachment_ids)
-                )
-                anou.attachments.set(all_attachments)
-            else:
-                anou.attachments.set(existing_attachments)
-
+            announcement = anou.save()
+            anou.attachments.set(attachment_ids)
             employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
             job_positions = form.cleaned_data["job_position"]
@@ -245,23 +234,8 @@ def update_announcement(request, anoun_id):
     return render(
         request,
         "announcement/announcement_update_form.html",
-        {
-            "form": form,
-            "instance_ids": instance_ids,
-            "hx_target": request.META.get("HTTP_HX_TARGET", ""),
-        },
+        {"form": form, "instance_ids": instance_ids},
     )
-
-
-@login_required
-@hx_request_required
-def remove_announcement_file(request, obj_id, attachment_id):
-    announcement = get_object_or_404(Announcement, id=obj_id)
-    attachment = get_object_or_404(Attachment, id=attachment_id)
-
-    announcement.attachments.remove(attachment)
-    messages.success(request, _("The file has been successfully deleted."))
-    return HttpResponse("<script>reloadMessage();</script>")
 
 
 @login_required

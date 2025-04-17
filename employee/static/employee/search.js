@@ -63,7 +63,7 @@ function employeeFilter(element) {
 
 // Profile picture enlarging
 
-function enlargeImager(image) {
+function enlargeImage(image) {
   var enlargeImageContainer = document.getElementById('enlargeImageContainer');
   enlargeImageContainer.innerHTML = '';
 
@@ -76,7 +76,7 @@ function enlargeImager(image) {
   }, 250);
 }
 
-function hideEnlargeImager() {
+function hideEnlargeImage() {
   var enlargeImageContainer = document.getElementById('enlargeImageContainer');
   enlargeImageContainer.innerHTML = '';
   enlargeImageContainer.style.display = 'none';

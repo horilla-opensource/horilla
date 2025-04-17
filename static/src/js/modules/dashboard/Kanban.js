@@ -47,7 +47,7 @@ class Kanban {
   registerKanbanEvents() {
     // Remove existing event listers to avoid conflict.
     $(
-      ".oh-kanban__dropdown-toggle, .oh-kanban__section-delete, .oh-kanban__add-card-btn, .oh-kanban__add-card-cancel-btn, input[name='kanban-card-name'], .oh-kanban__card-body-collapse"
+      ".oh-kanban__dropdown-toggle, .oh-kanban__section-delete, .oh-kanban__add-card-btn, .oh-kanban__add-card-cancel-btn, input[name='kanban-card-name']"
     ).off("click");
 
     // Add New Card Form Handler
@@ -91,9 +91,6 @@ class Kanban {
 
     // Hide Dropdown
     $(window).on("click", this.hideKanbanDropdown.bind(this));
-
-    // Kanban Toggle
-    $('.oh-kanban__card-body-collapse').on("click", this.toggleKanbanCardBody.bind(this));
   }
 
   // Methods
@@ -260,17 +257,6 @@ class Kanban {
 
                       </div>
             </div>
-            <div class="oh-kanban__card-body">
-              <button class="oh-kanban__card-body-collapse" aria-label="Toggle Options"></button>
-              <div class="oh-kanban__card-content">
-                <label class="oh-label oh-label--sm d-block">Label</label>
-                <select class="oh-select oh-select--sm oh-select-no-search">
-                  <option>Status #1</option>
-                  <option>Status #2</option>
-                  <option>Status #3</option>
-                </select>
-              </div>
-            </div>
             <div class="oh-kanban__card-footer py-0">
               <select class="oh-kanban__select oh-select oh-select--sm oh-select-2 oh-select-no-search">
                 <option value='1'>Assigned</option>
@@ -320,17 +306,6 @@ class Kanban {
 
                         </div>
               </div>
-              <div class="oh-kanban__card-body">
-              <button class="oh-kanban__card-body-collapse" aria-label="Toggle Options"></button>
-              <div class="oh-kanban__card-content">
-                <label class="oh-label oh-label--sm d-block">Label</label>
-                <select class="oh-select oh-select--sm oh-select-no-search">
-                  <option>Status #1</option>
-                  <option>Status #2</option>
-                  <option>Status #3</option>
-                </select>
-              </div>
-            </div>
               <div class="oh-kanban__card-footer">
                 <span class="oh-kanban__card-footer-text oh-text--light"
                   >Candidate</span
@@ -400,23 +375,10 @@ class Kanban {
   }
 
   /**
-   * Kanban Card Body Collapse
-   */
-  toggleKanbanCardBody(e){
-    e.preventDefault();
-    const cardBodyEl = $(e.target).parents('.oh-kanban__card-body').find('.oh-kanban__card-content');
-    const cardCollapseBtn = $(e.target).parents('.oh-kanban__card-body').find('.oh-kanban__card-body-collapse');
-    if(cardBodyEl.length > 0){
-      cardBodyEl.toggleClass('oh-kanban__card-content--hide')
-      cardCollapseBtn.toggleClass('oh-kanban__card-collapse--down')
-    }
-  }
-  /**
    * Kanban Card Form
    */
   showKanbanCardForm(e) {
-    console.log('Hello');
-    const clickedEl = $(e.target).closest(".oh-kanban__add-card-btn");
+    let clickedEl = $(e.target).closest(".oh-kanban__add-card-btn");
     if (clickedEl.length > 0) {
       clickedEl
         .parents(".oh-kanban__section")
@@ -430,6 +392,7 @@ class Kanban {
    */
   showKanbanCardGroup(e) {
     e.stopPropagation();
+    console.log("hello");
     let clickedEl = $(e.target).closest(".oh-kanban-group__add-card");
     if (clickedEl.length > 0) {
       clickedEl

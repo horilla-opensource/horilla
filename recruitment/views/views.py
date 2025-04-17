@@ -1398,7 +1398,7 @@ def interview_filter_view(request):
 
     previous_data = request.GET.urlencode()
 
-    if request.user.has_perm("recruitment.view_interviewschedule"):
+    if request.user.has_perm("view_interviewschedule"):
         interviews = InterviewSchedule.objects.all().order_by("-interview_date")
     else:
         interviews = InterviewSchedule.objects.filter(
@@ -1434,7 +1434,7 @@ def interview_view(request):
     """
     previous_data = request.GET.urlencode()
 
-    if request.user.has_perm("recruitment.view_interviewschedule"):
+    if request.user.has_perm("view_interviewschedule"):
         interviews = InterviewSchedule.objects.all().order_by("-interview_date")
     else:
         interviews = InterviewSchedule.objects.filter(
@@ -1861,6 +1861,7 @@ def create_interview_schedule(request):
             )
 
             messages.success(request, "Interview Scheduled successfully.")
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(request, template, {"form": form})
 
 
@@ -1869,23 +1870,18 @@ def create_interview_schedule(request):
 @manager_can_enter(perm="recruitment.delete_interviewschedule")
 def interview_delete(request, interview_id):
     """
-    Deletes an interview schedule.
+    This method is used to delete interview
     Args:
-        interview_id: InterviewSchedule instance ID
+        interview_id : interview schedule instance id
     """
-    view = request.GET.get("view", "false")
-
-    try:
-        InterviewSchedule.objects.get(id=interview_id).delete()
-        messages.success(request, _("Interview deleted successfully."))
-    except:
-        messages.error(request, _("Scheduled Interview not found"))
-
-    return HttpResponse(
-        "<script>$('.filterButton')[0].click()</script>"
-        if view == "true"
-        else "<script>window.location.reload()</script>"
-    )
+    view = request.GET["view"]
+    interview = InterviewSchedule.objects.get(id=interview_id)
+    interview.delete()
+    messages.success(request, "Interview deleted successfully.")
+    if view == "true":
+        return redirect(interview_filter_view)
+    else:
+        return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -1975,7 +1971,9 @@ def send_acknowledgement(request):
     candidates = Candidate.objects.filter(id__in=candidate_ids)
 
     other_attachments = request.FILES.getlist("other_attachments")
-
+    attachments = [
+        (file.name, file.read(), file.content_type) for file in other_attachments
+    ]
     if candidate_id:
         candidate_obj = Candidate.objects.filter(id=candidate_id)
     else:
@@ -1984,9 +1982,6 @@ def send_acknowledgement(request):
 
     template_attachment_ids = request.POST.getlist("template_attachments")
     for candidate in candidates:
-        attachments = [
-            (file.name, file.read(), file.content_type) for file in other_attachments
-        ]
         bodys = list(
             HorillaMailTemplate.objects.filter(
                 id__in=template_attachment_ids
@@ -2166,12 +2161,11 @@ def skill_zone_view(request):
         template = "skill_zone/empty_skill_zone.html"
 
     context = {
-        "pd": previous_data,
-        "filter_dict": data_dict,
-        "model": SkillZone(),
-        "f": SkillZoneCandFilter(),
         "skill_zones": skill_groups,
         "page": request.GET.get("page"),
+        "pd": previous_data,
+        "f": SkillZoneCandFilter(),
+        "filter_dict": data_dict,
     }
     return render(request, template, context=context)
 
@@ -2189,11 +2183,10 @@ def skill_zone_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Skill Zone created successfully."))
-            form = SkillZoneCreateForm()
-
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
-        "skill_zone/skill_zone_form.html",
+        "skill_zone/skill_zone_create.html",
         {"form": form},
     )
 
@@ -2212,9 +2205,10 @@ def skill_zone_update(request, sz_id):
         if form.is_valid():
             form.save()
             messages.success(request, _("Skill Zone updated successfully."))
+            return HttpResponse("<script>window.location.reload()</script>")
     return render(
         request,
-        "skill_zone/skill_zone_form.html",
+        "skill_zone/skill_zone_update.html",
         {"form": form, "sz_id": sz_id},
     )
 
@@ -2241,9 +2235,7 @@ def skill_zone_delete(request, sz_id):
             messages.error(request, _("Skill zone not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
-    return HttpResponse(
-        "<script>$('.filterButton')[0].click();reloadMessage();</script>"
-    )
+    return redirect(skill_zone_view)
 
 
 @login_required

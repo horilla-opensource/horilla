@@ -1,1 +1,0 @@
-System.register(["./p-e7ae1e74.system.js","./p-621fab66.system.js"],(function(e){"use strict";return{setters:[function(t){e("setAssetPath",t.a)},function(t){e("addIcons",t.a)}],execute:function(){}}}));

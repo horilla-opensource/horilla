@@ -153,6 +153,7 @@ class Tabs extends Tables {
   // Add Tab with Config.
   addConfigTab(e) {
     e.preventDefault();
+    console.log('Hello');
     let formEl = e.target.closest("form");
     let tabTitle = formEl[formEl.dataset.title].value;
 

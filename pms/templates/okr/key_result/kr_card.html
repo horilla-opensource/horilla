@@ -55,7 +55,6 @@
             @click.outside="show = false"
             >
             <ul class="oh-dropdown__items">
-            {% if perms.pms.add_key_result %}
                 <li class="oh-dropdown__item">
                 <a onclick="event.stopPropagation();"
                   data-toggle="oh-modal-toggle"
@@ -64,8 +63,6 @@
                   hx-target="#objectUpdateModalTarget"
                 >{% trans "Edit" %}</a>
                 </li>
-                {% endif %}
-                {% if perms.pms.delete_key_result %}
                 <li class="oh-dropdown__item">
                 <a class="text-danger"
                   onclick = "event.preventDefault();event.stopPropagation();"
@@ -77,7 +74,6 @@
                 >{% trans "Delete" %}</a
                 >
                 </li>
-                {% endif %}
             </ul>
             </div>
         </div>

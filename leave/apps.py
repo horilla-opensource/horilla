@@ -1,4 +1,4 @@
-from django.apps import AppConfig, apps
+from django.apps import AppConfig
 
 
 class LeaveConfig(AppConfig):
@@ -10,7 +10,6 @@ class LeaveConfig(AppConfig):
 
         from horilla.horilla_settings import APPS
         from horilla.urls import urlpatterns
-        from leave import signals
 
         APPS.append("leave")
         urlpatterns.append(

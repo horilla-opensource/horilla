@@ -20,7 +20,6 @@ class PayrollConfig(AppConfig):
 
         from horilla.horilla_settings import APPS
         from horilla.urls import urlpatterns
-        from payroll import signals
 
         APPS.append("payroll")
         urlpatterns.append(

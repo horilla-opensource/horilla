@@ -7,7 +7,6 @@ This module is used to write dashboard related views
 import datetime
 
 from django.core import serializers
-from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
@@ -105,8 +104,8 @@ def dashboard(request):
         if stage_chart_count >= 1:
             stage_chart_count = 1
 
-    accepted = Candidate.objects.filter(offer_letter_status="accepted")
-    accepted_count = accepted.count()
+    onboarding_count = Candidate.objects.filter(start_onboard=True)
+    onboarding_count = onboarding_count.count()
 
     recruitment_manager_mapping = {}
 
@@ -127,9 +126,7 @@ def dashboard(request):
         else:
             total_vacancy += openings.vacancy
 
-    hired_candidates = candidates.filter(
-        Q(hired=True) | Q(stage_id__stage_type="hired")
-    ).distinct()
+    hired_candidates = candidates.filter(hired=True)
     total_candidates = len(candidates)
     total_hired_candidates = len(hired_candidates)
     conversion_ratio = 0
@@ -142,7 +139,7 @@ def dashboard(request):
         hired_ratio = f"{((total_hired_candidates / total_vacancy) * 100):.1f}"
         total_candidate_ratio = f"{((total_candidates / total_vacancy) * 100):.1f}"
     if total_hired_candidates != 0:
-        acceptance_ratio = f"{((accepted_count / total_hired_candidates) * 100):.1f}"
+        acceptance_ratio = f"{((onboarding_count / total_hired_candidates) * 100):.1f}"
 
     skill_zone = SkillZone.objects.filter(is_active=True)
     return render(
@@ -154,9 +151,7 @@ def dashboard(request):
             "total_hired_candidates": total_hired_candidates,
             "conversion_ratio": conversion_ratio,
             "acceptance_ratio": acceptance_ratio,
-            "onboard_candidates": hired_candidates.filter(
-                onboarding_stage__isnull=False
-            ),
+            "onboard_candidates": hired_candidates.filter(start_onboard=True),
             "job_data": job_data,
             "total_vacancy": total_vacancy,
             "recruitment_manager_mapping": recruitment_manager_mapping,
@@ -164,9 +159,7 @@ def dashboard(request):
             "joining": joining,
             "dep_vacancy": dep_vacancy,
             "stage_chart_count": stage_chart_count,
-            "onboarding_count": hired_candidates.filter(
-                onboarding_stage__isnull=False
-            ).count(),
+            "onboarding_count": onboarding_count,
             "total_candidates": total_candidates,
             "skill_zone": skill_zone,
         },

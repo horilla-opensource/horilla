@@ -13,11 +13,11 @@ from django import forms
 from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.forms import ModelForm
 from django.forms.widgets import TextInput
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-from base.forms import ModelForm as BaseModelForm
 from base.methods import filtersubordinatesemployeemodel, reload_queryset
 from base.models import CompanyLeaves, Holidays
 from employee.filters import EmployeeFilter
@@ -47,6 +47,67 @@ from leave.models import (
 
 CHOICES = [("yes", _("Yes")), ("no", _("No"))]
 LEAVE_MAX_LIMIT = 1e5
+
+
+class ModelForm(forms.ModelForm):
+    """
+    Customized ModelForm class with additional functionality for field customization
+    based on the type of widget and setting initial values based on the current request.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initializes the ModelForm instance.
+
+        This method customizes field attributes such as CSS classes and placeholders
+        based on the type of widget. It also sets initial values for specific fields
+        based on the current request, particularly for 'employee_id' and 'company_id' fields.
+        """
+        super().__init__(*args, **kwargs)
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        reload_queryset(self.fields)
+        for field_name, field in self.fields.items():
+            widget = field.widget
+
+            if isinstance(widget, (forms.DateInput)):
+                field.widget.attrs.update({"class": "oh-input oh-calendar-input w-100"})
+                field.initial = date.today()
+            elif isinstance(
+                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
+            ):
+                field.widget.attrs.update(
+                    {"class": "oh-input w-100", "placeholder": field.label}
+                )
+            elif isinstance(widget, (forms.Select,)):
+                field.widget.attrs.update(
+                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
+                )
+            elif isinstance(widget, (forms.Textarea)):
+                field.widget.attrs.update(
+                    {
+                        "class": "oh-input w-100",
+                        "placeholder": field.label,
+                        "rows": 2,
+                        "cols": 40,
+                    }
+                )
+            elif isinstance(
+                widget,
+                (
+                    forms.CheckboxInput,
+                    forms.CheckboxSelectMultiple,
+                ),
+            ):
+                field.widget.attrs.update({"class": "oh-switch__checkbox"})
+        try:
+            self.fields["employee_id"].initial = request.user.employee_get
+        except:
+            pass
+
+        try:
+            self.fields["company_id"].initial = request.user.employee_get.get_company
+        except:
+            pass
 
 
 class ConditionForm(forms.ModelForm):
@@ -109,7 +170,7 @@ class LeaveTypeForm(ConditionForm):
             filter_template_path="employee_filters.html",
             required=False,
         ),
-        label=_("Employee"),
+        label="Employee",
     )
 
     class Meta:
@@ -132,6 +193,7 @@ class LeaveTypeForm(ConditionForm):
             del self.errors["employee_id"]
         if "exceed_days" in self.errors:
             del self.errors["exceed_days"]
+        cleaned_data["total_days"] = round(cleaned_data["total_days"] * 2) / 2
         if not cleaned_data["limit_leave"]:
             cleaned_data["total_days"] = LEAVE_MAX_LIMIT
             cleaned_data["reset"] = True
@@ -192,6 +254,7 @@ class UpdateLeaveTypeForm(ConditionForm):
         cleaned_data = super().clean()
         if "exceed_days" in self.errors:
             del self.errors["exceed_days"]
+        cleaned_data["count"] = round(cleaned_data["count"] * 2) / 2
         if not cleaned_data["limit_leave"]:
             cleaned_data["total_days"] = LEAVE_MAX_LIMIT
             cleaned_data["reset"] = True
@@ -244,6 +307,7 @@ def leaveoverlaping(
     )
     if len(overlapping_requests) == 1:
         existing_leave = overlapping_requests.first()
+        print("existing_leave =", existing_leave)
 
         if (
             existing_leave.start_date == start_date
@@ -256,7 +320,7 @@ def leaveoverlaping(
     return overlapping_requests
 
 
-class LeaveRequestCreationForm(BaseModelForm):
+class LeaveRequestCreationForm(ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
@@ -396,7 +460,7 @@ class LeaveRequestCreationForm(BaseModelForm):
         ]
 
 
-class LeaveRequestUpdationForm(BaseModelForm):
+class LeaveRequestUpdationForm(ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
@@ -525,7 +589,7 @@ class LeaveRequestUpdationForm(BaseModelForm):
         ]
 
 
-class AvailableLeaveForm(BaseModelForm):
+class AvailableLeaveForm(ModelForm):
     """
     Form for managing available leave data.
 
@@ -589,7 +653,7 @@ class LeaveOneAssignForm(HorillaModelForm):
         reload_queryset(self.fields)
 
 
-class AvailableLeaveUpdateForm(BaseModelForm):
+class AvailableLeaveUpdateForm(ModelForm):
     """
     Form for updating available leave data.
 
@@ -611,7 +675,31 @@ class AvailableLeaveUpdateForm(BaseModelForm):
         fields = ["available_days", "carryforward_days", "is_active"]
 
 
-class UserLeaveRequestForm(BaseModelForm):
+class CompanyLeaveForm(ModelForm):
+    """
+    Form for managing company leave data.
+
+    This form allows users to manage company leave data by including all fields from
+    the CompanyLeaves model except for is_active.
+
+    Attributes:
+        - Meta: Inner class defining metadata options.
+            - model: The model associated with the form (CompanyLeaves).
+            - fields: A special value indicating all fields should be included in the form.
+            - exclude: A list of fields to exclude from the form (is_active).
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = CompanyLeaves
+        fields = "__all__"
+        exclude = ["is_active"]
+
+
+class UserLeaveRequestForm(ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     description = forms.CharField(label=_("Description"), widget=forms.Textarea)
@@ -792,7 +880,7 @@ class RejectForm(forms.Form):
         fields = ["reject_reason"]
 
 
-class UserLeaveRequestCreationForm(BaseModelForm):
+class UserLeaveRequestCreationForm(ModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
@@ -904,7 +992,7 @@ class UserLeaveRequestCreationForm(BaseModelForm):
         }
 
 
-class LeaveAllocationRequestForm(BaseModelForm):
+class LeaveAllocationRequestForm(ModelForm):
     """
     Form for creating a leave allocation request.
 
@@ -1045,7 +1133,7 @@ class AssignLeaveForm(HorillaForm):
         self.fields["leave_type_id"].label = "Leave Type"
 
 
-class LeaverequestcommentForm(BaseModelForm):
+class LeaverequestcommentForm(ModelForm):
     """
     LeaverequestComment form
     """
@@ -1059,7 +1147,7 @@ class LeaverequestcommentForm(BaseModelForm):
         fields = ("comment",)
 
 
-class LeaveCommentForm(BaseModelForm):
+class LeaveCommentForm(ModelForm):
     """
     Leave request comment model form
     """
@@ -1107,7 +1195,7 @@ class LeaveCommentForm(BaseModelForm):
         return instance, files
 
 
-class LeaveallocationrequestcommentForm(BaseModelForm):
+class LeaveallocationrequestcommentForm(ModelForm):
     """
     Leave Allocation Requestcomment form
     """
@@ -1121,7 +1209,7 @@ class LeaveallocationrequestcommentForm(BaseModelForm):
         fields = ("comment",)
 
 
-class LeaveAllocationCommentForm(BaseModelForm):
+class LeaveAllocationCommentForm(ModelForm):
     """
     Leave request comment model form
     """
@@ -1167,7 +1255,14 @@ class LeaveAllocationCommentForm(BaseModelForm):
         return instance, files
 
 
-class RestrictLeaveForm(BaseModelForm):
+class RestrictLeaveForm(ModelForm):
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+
     def clean_end_date(self):
         start_date = self.cleaned_data.get("start_date")
         end_date = self.cleaned_data.get("end_date")
@@ -1183,16 +1278,13 @@ class RestrictLeaveForm(BaseModelForm):
         model = RestrictLeave
         fields = "__all__"
         exclude = ["is_active"]
+        labels = {
+            "title": _("Title"),
+        }
 
     def __init__(self, *args, **kwargs):
         super(RestrictLeaveForm, self).__init__(*args, **kwargs)
         self.fields["title"].widget.attrs["autocomplete"] = "title"
-        self.fields["start_date"].widget = forms.DateInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
-        )
-        self.fields["end_date"].widget = forms.DateInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
-        )
         self.fields["department"].widget.attrs.update(
             {
                 "hx-include": "#leaveRestrictForm",
@@ -1206,7 +1298,7 @@ class RestrictLeaveForm(BaseModelForm):
 if apps.is_installed("attendance"):
     from .models import CompensatoryLeaveRequest, CompensatoryLeaverequestComment
 
-    class CompensatoryLeaveForm(BaseModelForm):
+    class CompensatoryLeaveForm(ModelForm):
         """
         Form for creating a leave allocation request.
 
@@ -1327,7 +1419,7 @@ if apps.is_installed("attendance"):
             model = CompensatoryLeaveRequest
             fields = ["reject_reason"]
 
-    class CompensatoryLeaveRequestcommentForm(BaseModelForm):
+    class CompensatoryLeaveRequestcommentForm(ModelForm):
         """
         LeaverequestComment form
         """

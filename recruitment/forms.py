@@ -34,7 +34,6 @@ from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import Form
-from base.forms import ModelForm as BaseModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee
@@ -975,7 +974,8 @@ class CandidateExportForm(forms.Form):
     )
 
 
-class SkillZoneCreateForm(BaseModelForm):
+class SkillZoneCreateForm(ModelForm):
+    verbose_name = "Skill Zone"
 
     class Meta:
         """
@@ -985,6 +985,14 @@ class SkillZoneCreateForm(BaseModelForm):
         model = SkillZone
         fields = "__all__"
         exclude = ["is_active"]
+
+    def as_p(self, *args, **kwargs):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
 
 
 class SkillZoneCandidateForm(ModelForm):

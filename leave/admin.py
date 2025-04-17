@@ -9,6 +9,8 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from .models import (
     AvailableLeave,
+    CompanyLeave,
+    Holiday,
     LeaveAllocationRequest,
     LeaveallocationrequestComment,
     LeaveGeneralSetting,
@@ -23,6 +25,8 @@ from .models import (
 admin.site.register(LeaveType)
 admin.site.register(LeaveRequest)
 admin.site.register(AvailableLeave)
+admin.site.register(Holiday)
+admin.site.register(CompanyLeave)
 admin.site.register(LeaveAllocationRequest, SimpleHistoryAdmin)
 admin.site.register(LeaveRequestConditionApproval)
 admin.site.register(LeaverequestComment)

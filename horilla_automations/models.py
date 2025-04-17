@@ -38,16 +38,14 @@ class MailAutomation(HorillaModel):
     mail_details = models.CharField(
         max_length=250,
         help_text=_trans(
-            "Fill mail template details(reciever/instance, `self` will be the person who trigger the automation), `As template` option will sent instead of the mail template"
+            "Fill mail template details(reciever/instance, `self` will be the person who trigger the automation)"
         ),
     )
     mail_detail_choice = models.TextField(default="", editable=False)
     trigger = models.CharField(max_length=10, choices=choices)
     # udpate the on_update logic to if and only if when
     # changes in the previous and current value
-    mail_template = models.ForeignKey(
-        HorillaMailTemplate, on_delete=models.CASCADE, null=True, blank=True
-    )
+    mail_template = models.ForeignKey(HorillaMailTemplate, on_delete=models.CASCADE)
     also_sent_to = models.ManyToManyField(
         Employee,
         blank=True,

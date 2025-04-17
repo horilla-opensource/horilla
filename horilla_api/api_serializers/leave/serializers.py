@@ -460,13 +460,13 @@ class LeaveAllocationRequestGetSerializer(serializers.ModelSerializer):
 
 class CompanyLeaveSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CompanyLeaves
+        model = CompanyLeave
         exclude = ["company_id"]
 
 
 class HoildaySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Holidays
+        model = Holiday
         exclude = ["company_id"]
 
     def validate(self, data):

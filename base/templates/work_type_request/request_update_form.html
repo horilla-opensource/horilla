@@ -1,0 +1,33 @@
+{% load i18n %}
+{% if messages %}
+<div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+          {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+<form
+  hx-post="{% url 'work-type-request-update' form.instance.id %}"
+  hx-target="#workTypeRequestUpdateModalBody"
+>
+  {{form.as_p}}
+</form>
+<script>
+function toggleFunctionWorkTypeRequestForm(){
+  if ($("#id_is_permanent_work_type").is(":checked")) {
+    $("#id_requested_till").parent().hide();
+  } else {
+    $("#id_requested_till").parent().show();
+  }
+}
+
+  $(document).ready(function(){
+    $("[type=checkbox]").change(function (e) {
+    e.preventDefault();
+    toggleFunctionWorkTypeRequestForm();
+    });
+  })
+  toggleFunctionWorkTypeRequestForm();
+</script>

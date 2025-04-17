@@ -8,6 +8,7 @@ class Generic {
   constructor() {
     this.events();
   }
+
   // Events
   events() {
     // Select 2 Trigger
@@ -43,13 +44,6 @@ class Generic {
     $("#sidebar").on("mouseover", this.sidebarReveal.bind(this));
     // Navbar Toggler
     $(".oh-navbar__toggle-link").on("click", this.sidebarToggle.bind(this));
-    // Navbar Toggler
-    $(".oh-onboarding-card__collapse-header").on(
-      "click",
-      this.registrationCollapse.bind(this)
-    );
-    // Toggle Dropdown
-    $(".oh-dropdown--trigger").on("click", this.dropDownTrigger.bind(this));
     // Remove Keayboard
     $(window).on("keyup", this.keyboardRemove.bind(this));
 
@@ -92,51 +86,11 @@ class Generic {
    * Initialize Select 2
    */
   loadSelect2() {
-    function matchCustom(params, data) {
-      // If there are no search terms, return all of the data
-      if ($.trim(params.term) === "") {
-        return data;
-      }
-
-      if (typeof data.text === "undefined") {
-        return null;
-      }
-
-      const searchText = params.term.toLowerCase();
-      const dataText = data.text.toLowerCase();
-
-      // Check if dataText starts with "create new"
-      if (dataText.startsWith("create")) {
-        return data;
-      }
-
-      // If searchText is included in dataText
-      if (dataText.includes(searchText)) {
-        return data;
-      }
-
-      return null;
-    }
-
-    $(".oh-select-2").select2({
-      matcher: matchCustom,
+    $(".oh-select-2").select2();
+    // Select2 Autofocus
+    $(document).on("select2:open", () => {
+      document.querySelector(".select2-search__field").focus();
     });
-    $(".oh--dynamic-select-2")
-      .select2({
-        tags: true,
-        tokenSeparators: [",", " "],
-      })
-      .on("select2:select", function (e) {
-        var selectedText = e.params.data.text;
-        var tags = selectedText.split(/[, ]+/);
-        var ajaxMethod = $(this).attr("data-ajax-name");
-        console.log(ajaxMethod);
-        let optionElement = $(this).find(`option[value=${tags[0]}]`);
-        if (ajaxMethod) {
-          window[ajaxMethod](optionElement);
-        }
-      });
-
     // Select 2 with image
     $(".oh-select-image").select2({
       placeholder: "Search",
@@ -157,10 +111,10 @@ class Generic {
     }
     var $state = $(
       '<span><img src="' +
-      $(state.element).attr("data-src") +
-      '" class="oh-select-image__img" /> ' +
-      state.text +
-      "</span>"
+        $(state.element).attr("data-src") +
+        '" class="oh-select-image__img" /> ' +
+        state.text +
+        "</span>"
     );
     return $state;
   }
@@ -294,40 +248,14 @@ class Generic {
     e.preventDefault();
     let sidebarContainer = $(".oh-wrapper-main");
 
+    console.log(sidebarContainer.hasClass("oh-wrapper-main--closed"));
+
     if (sidebarContainer.hasClass("oh-wrapper-main--closed")) {
       sidebarContainer.removeClass("oh-wrapper-main--closed");
-    } else {
+    }else{
       sidebarContainer.addClass("oh-wrapper-main--closed");
     }
   }
-  /**
-   * Registration Collapse
-   */
-  registrationCollapse(e) {
-    let collapseEl = $(e.target)
-      .closest(".oh-onboarding-card__collapse-header")
-      .parent(".oh-onboarding-card__collapse");
-
-    $(collapseEl).toggleClass("oh-onboarding-card__collapse--show");
-  }
-
-  /**
-   * Toggle Dropdown
-   */
-  dropDownTrigger(e) {
-    let clickedEl = $(e.target).closest(".oh-dropdown--trigger");
-    let dropdownEl = clickedEl.children(".oh-dropdown__menu");
-
-    if (
-      dropdownEl &&
-      ($(e.target).hasClass("oh-dropdown--button") ||
-        $(e.target).parent().hasClass("oh-dropdown--button"))
-    ) {
-      // Get the height of dropdown
-      dropdownEl.toggleClass("oh-dropdown__menu--hidden");
-    }
-  }
 }
-
 
 export default Generic;

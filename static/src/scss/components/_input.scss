@@ -74,7 +74,7 @@ select {
   left: 30px;
 }
 .oh-input__search-group {
-  @media (max-width: 1000px) {
+  @media (max-width: 767.98px) {
     display: none;
     position: absolute;
     padding: 15px;
@@ -86,7 +86,7 @@ select {
   }
 }
 .oh-input__search-group--show {
-  @media (max-width: 1000px) {
+  @media (max-width: 767.98px) {
     display: block !important;
   }
 }
@@ -94,16 +94,12 @@ select {
   border: 1px solid $border-color;
   padding: 0.3rem 0.8rem 0.3rem 0.3rem;
   border-radius: 0rem;
-  background-color: #fff;
 }
-.oh-select--sm,
-.oh-select--xs-forced {
+.oh-select--sm, .oh-select--xs-forced {
   font-size: 0.8rem;
   padding-top: 0.25rem;
 }
-.oh-select--xs-forced
-  + .select2-container
-  .select2-selection.select2-selection--single {
+.oh-select--xs-forced + .select2-container .select2-selection.select2-selection--single{
   height: 29.03px !important;
   font-size: 0.8rem !important;
 }
@@ -148,29 +144,10 @@ select {
   margin-bottom: 0.5rem;
   margin-top: 1rem;
 }
-.oh-info {
-  display: flex;
-  align-items: center;
-  position: relative;
-  top: 3px;
-  left: 3px;
-  width: 16px;
-  height: 16px;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9IiM5YzljOWMiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJDNi40ODYgMiAyIDYuNDg2IDIgMTJzNC40ODYgMTAgMTAgMTAgMTAtNC40ODYgMTAtMTBTMTcuNTE0IDIgMTIgMlptMSAxNWgtMnYtNmgydjZabTAtOGgtMlY3aDJ2MloiPjwvcGF0aD4KPC9zdmc+");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  cursor: pointer;
-}
-.oh-label__info {
-  display: flex;
-  align-items: center;
-}
-.oh-label--question {
+.oh-label--question{
   display: block;
   font-weight: bold;
 }
-
 .oh-editable-input {
   width: auto;
   padding-top: 0.5rem;
@@ -186,9 +163,9 @@ select.oh-select--lg {
   display: flex;
   align-items: center;
 }
-.oh-input-picker-group--resp {
+.oh-input-picker-group--resp{
   @media (max-width: 767.98px) {
-    flex-direction: column;
+  flex-direction: column;
   }
 }
 .oh-input-picker {
@@ -216,7 +193,7 @@ select.oh-select--lg {
   align-items: center;
   justify-content: center;
 }
-.oh-input-picker--likert {
+.oh-input-picker--likert{
   font-size: 0.85rem;
   padding-left: 1.25rem;
   padding-right: 1.25rem;
@@ -226,19 +203,19 @@ select.oh-select--lg {
     text-align: center;
   }
 }
-.oh-input-picker--1.oh-input-picker--selected {
-  background-color: $danger-color;
+.oh-input-picker--1.oh-input-picker--selected{
+   background-color: $danger-color;
 }
-.oh-input-picker--2.oh-input-picker--selected {
+.oh-input-picker--2.oh-input-picker--selected{
   background-color: $orange;
 }
-.oh-input-picker--3.oh-input-picker--selected {
+.oh-input-picker--3.oh-input-picker--selected{
   background-color: $yellow;
 }
-.oh-input-picker--4.oh-input-picker--selected {
+.oh-input-picker--4.oh-input-picker--selected{
   background-color: $green;
 }
-.oh-input-picker--5.oh-input-picker--selected {
+.oh-input-picker--5.oh-input-picker--selected{
   background-color: $success-color-dark;
 }
 .oh-input-picker--selected {
@@ -303,9 +280,7 @@ select.oh-select--lg {
   display: flex;
   align-items: center;
 
-  &:focus,
-  &:focus-visible,
-  &:active {
+  &:focus, &:focus-visible, &:active{
     border: 2px solid $brand-color !important;
   }
 }
@@ -477,6 +452,8 @@ select.oh-select--lg {
   font-size: 1.25rem;
 }
 
+
+
 /* ===============================
 *     RADIO, ANSWERS & oh-rate
 * ==============================*/
@@ -501,9 +478,6 @@ select.oh-select--lg {
   position: absolute;
   opacity: 0;
   cursor: pointer;
-  left: 0;
-  top: 9px;
-  z-index: 5;
 }
 
 .oh-radio__checkmark {
@@ -514,7 +488,6 @@ select.oh-select--lg {
   width: 16px;
   background-color: #eee;
   border-radius: 50%;
-  z-index: initial;
 }
 
 .oh-radio:hover input ~ .oh-radio__checkmark {
@@ -587,11 +560,12 @@ select.oh-select--lg {
   color: #c59b08;
 }
 
+
 /* ===============================
 *     REGISTRATION - PHOTO
 * ==============================*/
 
-.oh-profile-photo {
+.oh-profile-photo{
   font-size: 2rem;
   width: 80px;
   height: 80px;
@@ -605,11 +579,11 @@ select.oh-select--lg {
   background: rgba($border-light-color, 0.2);
   cursor: pointer;
 
-  &:hover {
+  &:hover{
     background: rgba($border-light-color, 0.4);
   }
 }
 
-.oh-profile-photo__input {
+.oh-profile-photo__input{
   display: none;
 }

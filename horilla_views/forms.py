@@ -10,7 +10,7 @@ from django.core.files.storage import default_storage
 from django.db import transaction
 from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _trans
 
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views import models
@@ -29,7 +29,7 @@ class ToggleColumnForm(forms.Form):
     Toggle column form
     """
 
-    def __init__(self, columns, default_columns, hidden_fields: list, *args, **kwargs):
+    def __init__(self, columns, hidden_fields: list, *args, **kwargs):
         request = getattr(_thread_locals, "request", {})
         self.request = request
         super().__init__(*args, **kwargs)
@@ -37,9 +37,7 @@ class ToggleColumnForm(forms.Form):
             initial = True
             if column[1] in hidden_fields:
                 initial = False
-            if not hidden_fields:
-                if column not in default_columns:
-                    initial = False
+
             self.fields[column[1]] = forms.BooleanField(
                 label=column[0], initial=initial
             )
@@ -98,7 +96,7 @@ class DynamicBulkUpdateForm(forms.Form):
     DynamicBulkUpdateForm
     """
 
-    verbose_name = _("Bulk Update")
+    verbose_name = _trans("Bulk Update")
 
     def __init__(
         self,

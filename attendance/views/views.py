@@ -101,14 +101,17 @@ from attendance.models import (
 )
 from attendance.views.handle_attendance_errors import handle_attendance_errors
 from attendance.views.process_attendance_data import process_attendance_data
-from base.forms import AttendanceAllowedIPForm, TrackLateComeEarlyOutForm
+from base.forms import (
+    AttendanceAllowedIPForm,
+    AttendanceAllowedIPUpdateForm,
+    TrackLateComeEarlyOutForm,
+)
 from base.methods import (
     choosesubordinates,
     closest_numbers,
     eval_validate,
     export_data,
     filtersubordinates,
-    filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
 )
@@ -2249,6 +2252,7 @@ def delete_comment_file(request):
 def work_records(request):
     today = date.today()
     previous_data = request.GET.urlencode()
+
     context = {
         "current_date": today,
         "pd": previous_data,
@@ -2262,54 +2266,77 @@ def work_records(request):
 @hx_request_required
 def work_records_change_month(request):
     previous_data = request.GET.urlencode()
-    employee_filter_form = EmployeeFilter(request.GET or None)
+    employee_filter_form = EmployeeFilter()
+    if request.GET.get("month"):
+        date_obj = request.GET.get("month")
+        month = int(date_obj.split("-")[1])
+        year = int(date_obj.split("-")[0])
+    else:
+        month = date.today().month
+        year = date.today().year
 
-    employees = filtersubordinatesemployeemodel(
-        request, employee_filter_form.qs, "attendance.view_attendance"
-    )
+    schedules = list(EmployeeShiftSchedule.objects.all())
+    employees = list(Employee.objects.filter(is_active=True))
+    employee_filter_form = EmployeeFilter(request.GET)
+    employees = list(employee_filter_form.qs)
+    data = []
+    month_matrix = calendar.monthcalendar(year, month)
 
-    month_str = request.GET.get("month", f"{date.today().year}-{date.today().month}")
-    try:
-        year, month = map(int, month_str.split("-"))
-    except ValueError:
-        year, month = date.today().year, date.today().month
+    days = [day for week in month_matrix for day in week if day != 0]
+    current_month_date_list = [datetime(year, month, day).date() for day in days]
 
-    employees = [request.user.employee_get] + list(employees)
+    all_work_records = WorkRecords.objects.filter(
+        date__in=current_month_date_list
+    ).select_related("employee_id")
 
-    month_dates = [
-        datetime(year, month, day).date()
-        for week in calendar.monthcalendar(year, month)
-        for day in week
-        if day
-    ]
+    work_records_dict = defaultdict(lambda: defaultdict(lambda: None))
+    for record in all_work_records:
+        work_records_dict[record.employee_id.id][record.date] = record
 
-    work_records = WorkRecords.objects.filter(
-        date__in=month_dates, employee_id__in=employees
-    ).select_related("employee_id", "shift_id", "attendance_id")
+    schedules_dict = defaultdict(dict)
+    for schedule in schedules:
+        schedules_dict[schedule.shift_id][schedule.day.day.lower()] = schedule
 
-    work_records_dict = {(wr.employee_id.id, wr.date): wr for wr in work_records}
+    for employee in employees:
+        shift = getattr(getattr(employee, "employee_work_info", None), "shift_id", None)
+        work_record_list = []
 
-    data = {
-        employee: [
-            work_records_dict.get((employee.id, current_date))
-            for current_date in month_dates
-        ]
-        for employee in employees
-    }
+        for current_date in current_month_date_list:
+            day = current_date.strftime("%A").lower()
+            schedule = schedules_dict.get(shift, {}).get(day, None)
+            work_record = work_records_dict[employee.id].get(current_date, None)
 
-    paginator = Paginator(list(data.items()), get_pagination())
-    page = paginator.get_page(request.GET.get("page"))
+            if not work_record:
+                work_record = (
+                    None
+                    if not schedule or schedule.minimum_working_hour == "00:00"
+                    else "EW"
+                )
+            work_record_list.append(work_record)
+
+        data.append(
+            {
+                "employee": employee,
+                "work_record": work_record_list,
+            }
+        )
+
+    leave_dates = monthly_leave_days(month, year)
+    page_number = request.GET.get("page")
+    paginator = Paginator(data, get_pagination())
+    data = paginator.get_page(page_number)
 
     context = {
-        "current_month_dates_list": month_dates,
-        "leave_dates": monthly_leave_days(month, year),
-        "data": page,
+        "current_month_dates_list": current_month_date_list,
+        "leave_dates": leave_dates,
+        "data": data,
         "pd": previous_data,
         "current_date": date.today(),
         "f": employee_filter_form,
     }
-
-    return render(request, "attendance/work_record/work_record_list.html", context)
+    return render(
+        request, "attendance/work_record/work_record_list.html", context=context
+    )
 
 
 @login_required
@@ -2342,10 +2369,9 @@ def work_record_export(request):
         row_data = {"Employee": employee}
         for day, formatted_day in zip(all_date_objects, formatted_dates):
             if not day in leave_dates and day < date.today():
-                row_data[formatted_day] = record_lookup.get((employee, day), "DFT")
+                row_data[formatted_day] = record_lookup.get((employee, day), "EW")
             else:
-                data = record_lookup.get((employee, day), "")
-                row_data[formatted_day] = data if data != "DFT" else ""
+                row_data[formatted_day] = record_lookup.get((employee, day), "")
         data_rows.append(row_data)
 
     columns = ["Employee"] + formatted_dates
@@ -2370,9 +2396,7 @@ def work_record_export(request):
             "CONF": workbook.add_format(
                 {"bg_color": "#ed4c4c", "font_color": "#ffffff"}
             ),
-            "DFT": workbook.add_format(
-                {"bg_color": "#a8b1ff", "font_color": "#ffffff"}
-            ),
+            "EW": workbook.add_format({"bg_color": "#a8b1ff", "font_color": "#ffffff"}),
         }
 
         for row_idx, row in enumerate(df.itertuples(index=False), start=1):

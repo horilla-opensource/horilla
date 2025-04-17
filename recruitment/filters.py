@@ -34,9 +34,6 @@ class CandidateFilter(FilterSet):
     """
 
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
-    start_onboard = django_filters.CharFilter(
-        method="start_onboard_method", lookup_expr="icontains"
-    )
 
     candidate = django_filters.ModelMultipleChoiceFilter(
         queryset=Candidate.objects.all(),
@@ -77,10 +74,6 @@ class CandidateFilter(FilterSet):
         field_name="schedule_date",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-    hired_date = django_filters.DateFilter(
-        field_name="hired_date",
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
     interview_date = django_filters.DateFilter(
         field_name="candidate_interview__interview_date",
         widget=forms.DateInput(attrs={"type": "date"}),
@@ -115,13 +108,6 @@ class CandidateFilter(FilterSet):
             | queryset.filter(stage_id__recruitment_id__title__icontains=value)
         ).distinct()
         return queryset
-
-    def start_onboard_method(self, queryset, _, value):
-        """
-        This method will include the candidates whether they are on the onboarding pipline stage
-        """
-
-        return queryset.filter(onboarding_stage__isnull=False)
 
     class Meta:
         """

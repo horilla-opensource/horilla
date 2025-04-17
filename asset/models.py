@@ -20,23 +20,11 @@ class AssetCategory(HorillaModel):
     Represents a category for different types of assets.
     """
 
-    asset_category_name = models.CharField(
-        max_length=255, unique=True, verbose_name=_("Name")
-    )
-    asset_category_description = models.TextField(
-        max_length=255, verbose_name=_("Description")
-    )
+    asset_category_name = models.CharField(max_length=255, unique=True)
+    asset_category_description = models.TextField(max_length=255)
     objects = models.Manager()
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager("company_id")
-
-    class Meta:
-        """
-        Meta class to add additional options
-        """
-
-        verbose_name = _("Asset Category")
-        verbose_name_plural = _("Asset Categories")
 
     def __str__(self):
         return f"{self.asset_category_name}"
@@ -47,16 +35,8 @@ class AssetLot(HorillaModel):
     Represents a lot associated with a collection of assets.
     """
 
-    lot_number = models.CharField(
-        max_length=30,
-        null=False,
-        blank=False,
-        unique=True,
-        verbose_name=_("Batch Number"),
-    )
-    lot_description = models.TextField(
-        null=True, blank=True, max_length=255, verbose_name=_("Description")
-    )
+    lot_number = models.CharField(max_length=30, null=False, blank=False, unique=True)
+    lot_description = models.TextField(null=True, blank=True, max_length=255)
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
 
@@ -65,7 +45,6 @@ class AssetLot(HorillaModel):
         Meta class to add additional options
         """
 
-        ordering = ["-created_at"]
         verbose_name = _("Asset Batch")
         verbose_name_plural = _("Asset Batches")
 
@@ -83,50 +62,25 @@ class Asset(HorillaModel):
         ("Available", _("Available")),
         ("Not-Available", _("Not-Available")),
     ]
-    asset_name = models.CharField(max_length=255, verbose_name=_("Asset Name"))
-    owner = models.ForeignKey(
-        Employee,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        verbose_name=_("Current User"),
-    )
-    asset_description = models.TextField(
-        null=True, blank=True, max_length=255, verbose_name=_("Description")
-    )
-    asset_tracking_id = models.CharField(
-        max_length=30, null=False, unique=True, verbose_name=_("Tracking Id")
-    )
-    asset_purchase_date = models.DateField(verbose_name=_("Purchase Date"))
-    asset_purchase_cost = models.DecimalField(
-        max_digits=10, decimal_places=2, verbose_name=_("Cost")
-    )
-    asset_category_id = models.ForeignKey(
-        AssetCategory, on_delete=models.PROTECT, verbose_name=_("Category")
-    )
+    asset_name = models.CharField(max_length=255)
+    owner = models.ForeignKey(Employee, on_delete=models.PROTECT, null=True, blank=True)
+    asset_description = models.TextField(null=True, blank=True, max_length=255)
+    asset_tracking_id = models.CharField(max_length=30, null=False, unique=True)
+    asset_purchase_date = models.DateField()
+    asset_purchase_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    asset_category_id = models.ForeignKey(AssetCategory, on_delete=models.PROTECT)
     asset_status = models.CharField(
-        choices=ASSET_STATUS,
-        default="Available",
-        max_length=40,
-        verbose_name=_("Status"),
+        choices=ASSET_STATUS, default="Available", max_length=40
     )
     asset_lot_number_id = models.ForeignKey(
-        AssetLot,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        verbose_name=_("Batch No"),
+        AssetLot, on_delete=models.PROTECT, null=True, blank=True
     )
-    expiry_date = models.DateField(null=True, blank=True, verbose_name=_("Expiry Date"))
-    notify_before = models.IntegerField(
-        default=1, null=True, verbose_name=_("Notify Before (days)")
-    )
+    expiry_date = models.DateField(null=True, blank=True)
+    notify_before = models.IntegerField(default=1, null=True)
     objects = HorillaCompanyManager("asset_category_id__company_id")
 
     class Meta:
         ordering = ["-created_at"]
-        verbose_name = _("Asset")
-        verbose_name_plural = _("Assets")
 
     def __str__(self):
         return f"{self.asset_name}-{self.asset_tracking_id}"
@@ -219,31 +173,19 @@ class AssetAssignment(HorillaModel):
         ("Healthy", _("Healthy")),
     ]
     asset_id = models.ForeignKey(
-        Asset, on_delete=models.PROTECT, verbose_name=_("Asset")
+        Asset, on_delete=models.PROTECT, verbose_name=_("asset")
     )
     assigned_to_employee_id = models.ForeignKey(
-        Employee,
-        on_delete=models.PROTECT,
-        related_name="allocated_employee",
-        verbose_name=_("Assigned To"),
+        Employee, on_delete=models.PROTECT, related_name="allocated_employee"
     )
     assigned_date = models.DateField(auto_now_add=True)
     assigned_by_employee_id = models.ForeignKey(
-        Employee,
-        on_delete=models.PROTECT,
-        related_name="assigned_by",
-        verbose_name=_("Assigned By"),
+        Employee, on_delete=models.PROTECT, related_name="assigned_by"
     )
-    return_date = models.DateField(null=True, blank=True, verbose_name=_("Return Date"))
-    return_condition = models.TextField(
-        null=True, blank=True, max_length=255, verbose_name=_("Return Condition")
-    )
+    return_date = models.DateField(null=True, blank=True)
+    return_condition = models.TextField(null=True, blank=True, max_length=255)
     return_status = models.CharField(
-        choices=STATUS,
-        max_length=30,
-        null=True,
-        blank=True,
-        verbose_name=_("Return Status"),
+        choices=STATUS, max_length=30, null=True, blank=True
     )
     return_request = models.BooleanField(default=False)
     objects = HorillaCompanyManager("asset_id__asset_lot_number_id__company_id")
@@ -251,10 +193,7 @@ class AssetAssignment(HorillaModel):
         ReturnImages, blank=True, related_name="return_images"
     )
     assign_images = models.ManyToManyField(
-        ReturnImages,
-        blank=True,
-        related_name="assign_images",
-        verbose_name=_("Assign Condition Images"),
+        ReturnImages, blank=True, related_name="assign_images"
     )
     objects = HorillaCompanyManager(
         "assigned_to_employee_id__employee_work_info__company_id"
@@ -264,8 +203,6 @@ class AssetAssignment(HorillaModel):
         """Meta class for AssetAssignment model"""
 
         ordering = ["-id"]
-        verbose_name = _("Asset Allocation")
-        verbose_name_plural = _("Asset Allocations")
 
     def __str__(self):
         return f"{self.assigned_to_employee_id} --- {self.asset_id} --- {self.return_status}"
@@ -287,15 +224,12 @@ class AssetRequest(HorillaModel):
         related_name="requested_employee",
         null=False,
         blank=False,
-        verbose_name=_("Requesting User"),
     )
     asset_category_id = models.ForeignKey(
         AssetCategory, on_delete=models.PROTECT, verbose_name=_("Asset Category")
     )
     asset_request_date = models.DateField(auto_now_add=True)
-    description = models.TextField(
-        null=True, blank=True, max_length=255, verbose_name=_("Description")
-    )
+    description = models.TextField(null=True, blank=True, max_length=255)
     asset_request_status = models.CharField(
         max_length=30, choices=STATUS, default="Requested", null=True, blank=True
     )
@@ -307,8 +241,6 @@ class AssetRequest(HorillaModel):
         """Meta class for AssetRequest model"""
 
         ordering = ["-id"]
-        verbose_name = _("Asset Request")
-        verbose_name_plural = _("Asset Requests")
 
     def status_html_class(self):
         COLOR_CLASS = {

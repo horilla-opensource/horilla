@@ -52,6 +52,8 @@ class DocumentRequestForm(ModelForm):
 class DocumentForm(ModelForm):
     """form to create a new Document"""
 
+    verbose_name = "Document"
+
     class Meta:
         model = Document
         fields = "__all__"
@@ -77,6 +79,8 @@ class DocumentForm(ModelForm):
 
 class DocumentUpdateForm(ModelForm):
     """form to Update a Document"""
+
+    verbose_name = "Document"
 
     class Meta:
         model = Document

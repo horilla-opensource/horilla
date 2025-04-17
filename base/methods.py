@@ -6,7 +6,6 @@ import random
 from datetime import date, datetime, time, timedelta
 
 import pandas as pd
-import pdfkit
 from django.apps import apps
 from django.conf import settings
 from django.contrib.staticfiles import finders
@@ -17,52 +16,23 @@ from django.db.models import ForeignKey, ManyToManyField, OneToOneField, Q
 from django.db.models.functions import Lower
 from django.forms.models import ModelChoiceField
 from django.http import HttpResponse
-from django.template.loader import render_to_string
+from django.template.loader import get_template
 from django.utils.translation import gettext as _
+from xhtml2pdf import pisa
 
 from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.horilla_apps import NESTED_SUBORDINATE_VISIBILITY
 from horilla.horilla_middlewares import _thread_locals
 from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 
 
-def filtersubordinates(request, queryset, perm=None, field="employee_id"):
+def filtersubordinates(request, queryset, perm=None, field=None):
     """
     This method is used to filter out subordinates queryset element.
     """
     user = request.user
     if user.has_perm(perm):
         return queryset
-
-    if not request:
-        return queryset
-    if NESTED_SUBORDINATE_VISIBILITY:
-        current_managers = [
-            request.user.employee_get.id,
-        ]
-        all_subordinates = Q(
-            **{
-                f"{field}__employee_work_info__reporting_manager_id__in": current_managers
-            }
-        )
-
-        while True:
-            sub_managers = queryset.filter(
-                **{
-                    f"{field}__employee_work_info__reporting_manager_id__in": current_managers
-                }
-            ).values_list(f"{field}__id", flat=True)
-            if not sub_managers.exists():
-                break
-            current_managers = sub_managers
-            all_subordinates |= Q(
-                **{
-                    f"{field}__employee_work_info__reporting_manager_id__in": sub_managers
-                }
-            )
-
-        return queryset.filter(all_subordinates)
 
     manager = Employee.objects.filter(employee_user_id=user).first()
 
@@ -103,41 +73,11 @@ def filter_own_and_subordinate_recordes(request, queryset, perm=None):
 
 def filtersubordinatesemployeemodel(request, queryset, perm=None):
     """
-    This method is used to filter out all subordinates in the entire reporting chain.
+    This method is used to filter out subordinates queryset element.
     """
     user = request.user
     if user.has_perm(perm):
         return queryset
-
-    if not request:
-        return queryset
-
-    if NESTED_SUBORDINATE_VISIBILITY:
-        # Initialize the set of subordinates with the current manager(s)
-        current_managers = [
-            request.user.employee_get.id,
-        ]
-        all_subordinates = Q(
-            employee_work_info__reporting_manager_id__in=current_managers
-        )
-
-        # Iteratively find subordinates in the chain
-        while True:
-            sub_managers = queryset.filter(
-                employee_work_info__reporting_manager_id__in=current_managers
-            ).values_list("id", flat=True)
-
-            if not sub_managers.exists():
-                break
-
-            current_managers = sub_managers
-            all_subordinates |= Q(
-                employee_work_info__reporting_manager_id__in=sub_managers
-            )
-
-        # Apply the filter to the queryset
-        return queryset.filter(all_subordinates).distinct()
-
     manager = Employee.objects.filter(employee_user_id=user).first()
     queryset = queryset.filter(employee_work_info__reporting_manager_id=manager)
     return queryset
@@ -511,7 +451,7 @@ def format_export_value(value, employee):
     return value
 
 
-def export_data(request, model, form_class, filter_class, file_name, perm=None):
+def export_data(request, model, form_class, filter_class, file_name):
     fields_mapping = {
         "male": _("Male"),
         "female": _("Female"),
@@ -548,8 +488,6 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
     form = form_class()
     model_fields = model._meta.get_fields()
     export_objects = filter_class(request.GET).qs
-    if perm:
-        export_objects = filtersubordinates(request, export_objects, perm)
     selected_fields = request.GET.getlist("selected_fields")
 
     if not selected_fields:
@@ -614,20 +552,13 @@ def reload_queryset(fields):
         "Employee": {"is_active": True},
         "Candidate": {"is_active": True} if apps.is_installed("recruitment") else None,
     }
-    request = getattr(_thread_locals, "request", None)
 
-    selected_company = request.session.get("selected_company") if request else None
     for field in fields.values():
         if isinstance(field, ModelChoiceField):
             model_name = field.queryset.model.__name__
             filter_criteria = model_filters.get(model_name)
             if filter_criteria is not None:
                 field.queryset = field.queryset.model.objects.filter(**filter_criteria)
-            # Future updation for company select field options when select a comapany from navbar
-            elif selected_company and not selected_company == "all":
-                field.queryset = field.queryset.model.objects.filter(
-                    id=selected_company
-                )
             else:
                 field.queryset = field.queryset.model.objects.all()
 
@@ -687,44 +618,32 @@ def link_callback(uri, rel):
     return path
 
 
-# def generate_pdf(template_path, context, path=True, title=None, html=True):
-#     template_path = template_path
-#     context_data = context
-#     title = (
-#         f"""{context_data.get("employee")}'s payslip for {context_data.get("range")}.pdf"""
-#         if not title
-#         else title
-#     )
-#     response = HttpResponse(content_type="application/pdf")
-#     response["Content-Disposition"] = f"attachment; filename={title}"
-
-#     if html:
-#         html = template_path
-#     else:
-#         template = get_template(template_path)
-#         html = template.render(context_data)
-
-#     pisa_status = pisa.CreatePDF(
-#         html.encode("utf-8"),
-#         dest=response,
-#         link_callback=link_callback,
-#     )
-
-#     if pisa_status.err:
-#         return HttpResponse("We had some errors <pre>" + html + "</pre>")
-
-#     return response
-
-
 def generate_pdf(template_path, context, path=True, title=None, html=True):
-    title = "Document" if not title else title
+    template_path = template_path
+    context_data = context
+    title = (
+        f"""{context_data.get("employee")}'s payslip for {context_data.get("range")}.pdf"""
+        if not title
+        else title
+    )
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f"attachment; filename={title}"
 
     if html:
         html = template_path
     else:
-        html = render_to_string(template_path, context)
+        template = get_template(template_path)
+        html = template.render(context_data)
 
-    response = template_pdf(template=html, html=True, filename=title)
+    pisa_status = pisa.CreatePDF(
+        html.encode("utf-8"),
+        dest=response,
+        link_callback=link_callback,
+    )
+
+    if pisa_status.err:
+        return HttpResponse("We had some errors <pre>" + html + "</pre>")
 
     return response
 
@@ -967,41 +886,3 @@ def eval_validate(value):
     """
     value = ast.literal_eval(value)
     return value
-
-
-def template_pdf(template, context={}, html=False, filename="payslip.pdf"):
-    """
-    Generate a PDF file from an HTML template and context data.
-
-    Args:
-        template_path (str): The path to the HTML template.
-        context (dict): The context data to render the template.
-        html (bool): If True, return raw HTML instead of a PDF.
-
-    Returns:
-        HttpResponse: A response with the generated PDF file or raw HTML.
-    """
-    try:
-        bootstrap_css = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">'
-        html_content = f"{bootstrap_css}\n{template}"
-
-        pdf_options = {
-            "page-size": "A4",
-            "margin-top": "10mm",
-            "margin-bottom": "10mm",
-            "margin-left": "10mm",
-            "margin-right": "10mm",
-            "encoding": "UTF-8",
-            "enable-local-file-access": None,
-            "dpi": 300,
-            "zoom": 1.3,
-            "footer-center": "[page]/[topage]",
-        }
-
-        pdf = pdfkit.from_string(html_content, False, options=pdf_options)
-
-        response = HttpResponse(pdf, content_type="application/pdf")
-        response["Content-Disposition"] = f"inline; filename={filename}"
-        return response
-    except Exception as e:
-        return HttpResponse(f"Error generating PDF: {str(e)}", status=500)

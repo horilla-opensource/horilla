@@ -21,7 +21,7 @@ from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
 from horilla import horilla_middlewares
 from horilla.methods import get_horilla_model_class
-from horilla_widgets.forms import HorillaForm, default_select_option_template
+from horilla_widgets.forms import HorillaForm, orginal_template_name
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from notifications.signals import notify
@@ -153,11 +153,6 @@ class AllowanceForm(forms.ModelForm):
             cleaned_data["end_range"] = None
 
     def save(self, commit: bool = ...) -> Any:
-        specific_employees = self.data.getlist("specific_employees")
-        include_all = self.data.get("include_active_employees")
-        condition_based = self.data.get("is_condition_based")
-        if not specific_employees and not include_all and not condition_based:
-            self.instance.include_active_employees = True
         super().save(commit)
         other_conditions = self.data.getlist("other_conditions")
         other_fields = self.data.getlist("other_fields")
@@ -235,7 +230,7 @@ class DeductionForm(forms.ModelForm):
         self.fields["style"].widget = widget.StyleWidget(form=self)
         for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.Select):
-                field.widget.option_template_name = default_select_option_template
+                field.widget.option_template_name = orginal_template_name
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)
@@ -320,11 +315,6 @@ class DeductionForm(forms.ModelForm):
         return table_html
 
     def save(self, commit: bool = ...) -> Any:
-        specific_employees = self.data.getlist("specific_employees")
-        include_all = self.data.get("include_active_employees")
-        condition_based = self.data.get("is_condition_based")
-        if not specific_employees and not include_all and not condition_based:
-            self.instance.include_active_employees = True
         super().save(commit)
         other_conditions = self.data.getlist("other_conditions")
         other_fields = self.data.getlist("other_fields")

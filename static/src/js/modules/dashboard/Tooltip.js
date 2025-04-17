@@ -14,8 +14,7 @@ class Tooltip {
   // Events
   events() {
     // Initialize tooltip.
-    $('*').tooltip();
-    $('.oh-no-tooltip').tooltip('disable');
+    $( document ).tooltip();
   }
 
   // Methods

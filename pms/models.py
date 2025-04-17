@@ -497,16 +497,13 @@ class Feedback(HorillaModel):
         ("months", _("Months")),
         ("years", _("Years")),
     )
-    review_cycle = models.CharField(
-        max_length=100, null=False, blank=False, verbose_name=_("Title")
-    )
+    review_cycle = models.CharField(max_length=100, null=False, blank=False)
     manager_id = models.ForeignKey(
         Employee,
         related_name="feedback_manager",
         on_delete=models.DO_NOTHING,
         null=True,
         blank=False,
-        verbose_name=_("Manager"),
     )
     employee_id = models.ForeignKey(
         Employee,
@@ -514,19 +511,12 @@ class Feedback(HorillaModel):
         related_name="feedback_employee",
         null=False,
         blank=False,
-        verbose_name=_("Employee"),
     )
     colleague_id = models.ManyToManyField(
-        Employee,
-        related_name="feedback_colleague",
-        blank=True,
-        verbose_name=_("Colleague"),
+        Employee, related_name="feedback_colleague", blank=True
     )
     subordinate_id = models.ManyToManyField(
-        Employee,
-        related_name="feedback_subordinate",
-        blank=True,
-        verbose_name=_("Subordinates"),
+        Employee, related_name="feedback_subordinate", blank=True
     )
     question_template_id = models.ForeignKey(
         QuestionTemplate,
@@ -534,23 +524,19 @@ class Feedback(HorillaModel):
         related_name="feedback_question_template",
         null=False,
         blank=False,
-        verbose_name=_("Question Template"),
     )
     status = models.CharField(
         max_length=50, choices=STATUS_CHOICES, default="Not Started"
     )
     archive = models.BooleanField(null=True, blank=True, default=False)
-    start_date = models.DateField(null=False, blank=False, verbose_name=_("Start Date"))
-    end_date = models.DateField(null=True, blank=False, verbose_name=_("End Date"))
+    start_date = models.DateField(null=False, blank=False)
+    end_date = models.DateField(null=True, blank=False)
     employee_key_results_id = models.ManyToManyField(
-        EmployeeKeyResult, blank=True, verbose_name=_("Key Result")
+        EmployeeKeyResult,
+        blank=True,
     )
-    cyclic_feedback = models.BooleanField(
-        default=False, verbose_name=_("Is Cyclic Feedback")
-    )
-    cyclic_feedback_days_count = models.IntegerField(
-        blank=True, null=True, verbose_name=_("Cycle Period")
-    )
+    cyclic_feedback = models.BooleanField(default=False)
+    cyclic_feedback_days_count = models.IntegerField(blank=True, null=True)
     cyclic_feedback_period = models.CharField(
         max_length=50, choices=PERIOD, blank=True, null=True
     )
@@ -561,8 +547,6 @@ class Feedback(HorillaModel):
 
     class Meta:
         ordering = ["-id"]
-        verbose_name = _("Feedback")
-        verbose_name_plural = _("Feedbacks")
 
     def save(self, *args, **kwargs):
         start_date = self.start_date

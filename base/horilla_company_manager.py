@@ -104,7 +104,7 @@ class HorillaCompanyManager(models.Manager):
         setattr(_thread_locals, "queryset_filter", queryset)
         return queryset
 
-    def entire(self):
+    def get_all(self):
         """
         Fetch all datas from a model without applying any company filter.
         """

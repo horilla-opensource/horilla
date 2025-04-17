@@ -33,7 +33,6 @@ from base.methods import (
     paginator_qry,
     sortby,
 )
-from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
 from horilla.decorators import (
     hx_request_required,
@@ -98,7 +97,7 @@ from pms.models import (
     QuestionOptions,
     QuestionTemplate,
 )
-from base.methods import is_reportingmanager
+
 logger = logging.getLogger(__name__)
 
 
@@ -381,7 +380,6 @@ def kr_create_or_update(request, kr_id=None):
     Returns:
     Renders a form to create or update a Key Result.
     """
-    
     form = KRForm()
     kr = False
     key_result = False
@@ -399,6 +397,7 @@ def kr_create_or_update(request, kr_id=None):
                     % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
+
         else:
             form = KRForm(request.POST)
             if form.is_valid():
@@ -409,6 +408,7 @@ def kr_create_or_update(request, kr_id=None):
                     % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
+
     return render(request, "okr/key_result/real_kr_form.html", {"form": form})
 
 
@@ -2133,7 +2133,7 @@ def get_collegues(request):
             elif request.GET.get("data") == "keyresults":
                 employees_queryset = EmployeeKeyResult.objects.filter(
                     employee_objective_id__employee_id=employee
-                )
+                ).values_list("id", "key_result_id__title")
             # Convert QuerySets to a list
             employees = [(employee.id, employee) for employee in employees_queryset]
             context = {"employees": employees}
@@ -2323,20 +2323,19 @@ def question_delete(request, id):
         QuestionOptions.objects.filter(question_id=question).delete()
         question.delete()
         messages.success(request, _("Question deleted successfully!"))
-        return HttpResponse("<script>reloadMessage();</script>")
+        return redirect(question_template_detailed_view, temp_id)
 
-    except Question.DoesNotExist:
-        messages.error(request, _("Question not found."))
     except IntegrityError:
+        # Code to handle the FOREIGN KEY constraint failed error
         messages.error(
             request, _("Failed to delete question: Question template is in use.")
         )
-    except ProtectedError:
-        messages.error(request, _("Related entries exist."))
-    except Exception as e:
-        messages.error(request, _(f"Unexpected error: {str(e)}"))
 
-    return HttpResponse("<script>window.location.reload();</script>")
+    except Question.DoesNotExist:
+        messages.error(request, _("Question not found."))
+    except ProtectedError:
+        messages.error(request, _("Related entries exists"))
+    return redirect(question_template_detailed_view, temp_id)
 
 
 @login_required
@@ -2352,13 +2351,20 @@ def question_template_creation(request):
     if request.method == "POST":
         form = QuestionTemplateForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, _("Question template created successfully!"))
-    return render(
-        request,
-        "feedback/question_template/question_template_form.html",
-        {"form": form},
-    )
+            instance = form.save()
+            return redirect(question_template_detailed_view, instance.id)
+        else:
+            messages.error(
+                request,
+                "\n".join(
+                    [
+                        f"{field}: {error}"
+                        for field, errors in form.errors.items()
+                        for error in errors
+                    ]
+                ),
+            )
+            return redirect(question_template_view)
 
 
 @login_required
@@ -2440,16 +2446,17 @@ def question_template_update(request, template_id):
 
     """
     question_template = QuestionTemplate.objects.filter(id=template_id).first()
-    form = QuestionTemplateForm(instance=question_template)
-    context = {"form": form}
+    question_update_form = QuestionTemplateForm(instance=question_template)
+    context = {"question_update_form": question_update_form}
     if request.method == "POST":
         form = QuestionTemplateForm(request.POST, instance=question_template)
         if form.is_valid():
             form.save()
-            messages.success(request, _("Question template updated"))
-        context["form"] = form
+            messages.info(request, _("Question template updated"))
+            # return redirect(question_template_view)
+        context["question_update_form"] = form
     return render(
-        request, "feedback/question_template/question_template_form.html", context
+        request, "feedback/question_template/question_template_update.html", context
     )
 
 
@@ -2733,19 +2740,11 @@ def create_period(request):
     This is an ajax method to return json response to create stage related
     to the project in the task-all form fields
     """
-    company_id = request.session.get("selected_company")
-    companies = (
-        Company.objects.filter(id=company_id)
-        if company_id != "all"
-        else Company.objects.all()
-    )
 
     if request.method == "GET":
-        form = PeriodForm(initial={"company_id": companies})
+        form = PeriodForm()
     if request.method == "POST":
-        data = request.POST.copy()
-        data.setlist("company_id", list(companies.values_list("id", flat=True)))
-        form = PeriodForm(data)
+        form = PeriodForm(request.POST)
         if form.is_valid():
             instance = form.save()
             return JsonResponse(

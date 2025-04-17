@@ -42,26 +42,14 @@ def document_create(instance):
 
 
 class DocumentRequest(HorillaModel):
-    title = models.CharField(max_length=100, verbose_name=_("Title"))
-    employee_id = models.ManyToManyField(Employee, verbose_name=_("Employees"))
-    format = models.CharField(choices=FORMATS, max_length=10, verbose_name=_("Format"))
-    max_size = models.IntegerField(
-        blank=True, null=True, verbose_name=_("Max size (In MB)")
-    )
-    description = models.TextField(
-        blank=True, null=True, max_length=255, verbose_name=_("Description")
-    )
+    title = models.CharField(max_length=100)
+    employee_id = models.ManyToManyField(Employee)
+    format = models.CharField(choices=FORMATS, max_length=10)
+    max_size = models.IntegerField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True, max_length=255)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-
-    class Meta:
-        """
-        Meta class to add additional options
-        """
-
-        verbose_name = _("Document Request")
-        verbose_name_plural = _("Document Requests")
 
     def __str__(self):
         return self.title
@@ -78,18 +66,12 @@ def document_request_m2m_changed(sender, instance, action, **kwargs):
 
 class Document(HorillaModel):
     title = models.CharField(max_length=250)
-    employee_id = models.ForeignKey(
-        Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
-    )
+    employee_id = models.ForeignKey(Employee, on_delete=models.PROTECT)
     document_request_id = models.ForeignKey(
         DocumentRequest, on_delete=models.PROTECT, null=True
     )
-    document = models.FileField(
-        upload_to="employee/documents", null=True, verbose_name=_("Document")
-    )
-    status = models.CharField(
-        choices=STATUS, max_length=10, default="requested", verbose_name=_("Status")
-    )
+    document = models.FileField(upload_to="employee/documents", null=True)
+    status = models.CharField(choices=STATUS, max_length=10, default="requested")
     reject_reason = models.TextField(blank=True, null=True, max_length=255)
     issue_date = models.DateField(null=True, blank=True, verbose_name=_("Issue Date"))
     expiry_date = models.DateField(null=True, blank=True, verbose_name=_("Expiry Date"))
@@ -102,14 +84,6 @@ class Document(HorillaModel):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-
-    class Meta:
-        """
-        Meta class to add additional options
-        """
-
-        verbose_name = _("Document")
-        verbose_name_plural = _("Documents")
 
     def __str__(self) -> str:
         return f"{self.title}"

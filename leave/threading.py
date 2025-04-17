@@ -54,7 +54,7 @@ class LeaveMailSendThread(Thread):
                     subject=subject,
                     body=html_message,
                     from_email=display_email_name,
-                    to=[recipient.get_mail()],
+                    to=[recipient.email],
                     reply_to=[display_email_name],
                 )
                 email.content_subtype = "html"

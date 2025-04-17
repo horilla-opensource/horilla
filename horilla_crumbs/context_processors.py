@@ -151,7 +151,6 @@ sidebar_urls = [
     "user-accessibility",
     "asset-batch-view",
     "task-all",
-    "gdrive",
 ]
 remove_urls = [
     "feedback-detailed-view",
@@ -326,5 +325,4 @@ urlpatterns.append(
 )
 urlpatterns.append(path("payroll/", lambda request: redirect("view-payroll-dashboard")))
 urlpatterns.append(path("pms/", lambda request: redirect("dashboard-view")))
-urlpatterns.append(path("asset/", lambda request: redirect("asset-dashboard")))
 urlpatterns.append(path("project/", lambda request: redirect("project-dashboard-view")))

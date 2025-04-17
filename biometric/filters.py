@@ -1,4 +1,3 @@
-# pylint: disable=too-few-public-methods
 """
 Module for defining filters related to biometric devices.
 

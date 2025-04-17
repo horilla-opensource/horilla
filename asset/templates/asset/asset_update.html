@@ -67,9 +67,7 @@
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         {% endif %}
-        <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
-            <h5>{% trans "Update" %} {{asset_form.verbose_name}}</h5>
-        </span>
+        <span class="oh-modal__dialog-title " id="addEmployeeObjectiveModalLabel"> {% trans "Asset Update" %}</span>
     </div>
     <div class="oh-modal__dialog-body">
         <form hx-post="{%url 'asset-update' asset_id=asset_form.instance.id %}?requests_ids={{requests_ids}}&{{pg}}"
@@ -84,10 +82,10 @@
                         <div class="my-3" id="keyResultCard">
                             <div class=" " id="assetUpdateFormContainer">
                                 <div class="row">
-                                    <div class="col-12 {% if instance.asset_status == "In use" and instance.assetassignment_set.last %}col-sm-12 col-md-6 col-lg-6 {% endif %}">
+                                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                                         <div class="oh-input__group">
                                             <label class="oh-input__label" for="{{asset_form.asset_name.id_for_label}}">
-                                                {{asset_form.asset_name.label}}
+                                                {% trans "Asset Name" %}
                                             </label>
                                             {{asset_form.asset_name}}
                                             {{asset_form.asset_name.errors}}
@@ -97,7 +95,7 @@
                                         <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                                             <div class="oh-input__group">
                                                 <label class="oh-input__label" for="{{asset_form.owner.id_for_label}}">
-                                                    {{asset_form.owner.label}}
+                                                    {% trans "Current User" %}
                                                 </label>
                                                 {% with assigned=instance.assetassignment_set.last %}
                                                 <input type="text" class="oh-input w-100"
@@ -109,7 +107,7 @@
                                 </div>
                                 <div class="oh-input__group ">
                                     <label class="oh-input__label" for="{{asset_form.asset_description.id_for_label}}">
-                                        {{asset_form.asset_description.label}}
+                                        {% trans "Asset Description" %}
                                     </label>
                                     {{asset_form.asset_description}}
                                     {{asset_form.asset_description.errors}}
@@ -119,7 +117,7 @@
                                         <div class="oh-input__group">
                                             <label class="oh-input__label"
                                                 for="{{asset_form.asset_tracking_id.id_for_label}}">
-                                                {{asset_form.asset_tracking_id.label}}
+                                                {% trans "Tracking Id" %}
                                             </label>
                                             {{asset_form.asset_tracking_id}}
                                             {{asset_form.asset_tracking_id.errors}}
@@ -129,7 +127,7 @@
                                         <div class="oh-input__group">
                                             <label class="oh-input__label"
                                                 for="{{asset_form.asset_category_id.id_for_label}}">
-                                                {{asset_form.asset_category_id.label }}
+                                                {% trans "Category" %}
                                             </label>
                                             {{asset_form.asset_category_id }}
                                             {{asset_form.asset_category_id.errors }}
@@ -141,7 +139,7 @@
                                         <div class="oh-input__group">
                                             <label class="oh-input__label"
                                                 for="{{asset_form.asset_purchase_date.id_for_label}}">
-                                                {{asset_form.asset_purchase_date.label}}
+                                                {% trans "Purchase Date" %}
                                             </label>
                                             {{asset_form.asset_purchase_date }}
                                             {{asset_form.asset_purchase_date.errors }}
@@ -151,7 +149,7 @@
                                         <div class="oh-input__group">
                                             <label class="oh-input__label"
                                                 for="{{asset_form.asset_purchase_cost.id_for_label}}">
-                                                {{asset_form.asset_purchase_cost.label}}
+                                                {% trans "Cost" %}
                                             </label>
                                             {{asset_form.asset_purchase_cost}}
                                             {{asset_form.asset_purchase_cost.errors}}
@@ -162,7 +160,7 @@
                                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                                         <div class="oh-input__group">
                                             <label class="oh-input__label" for="{{asset_form.asset_status.id_for_label}}">
-                                                {{asset_form.asset_status.label}}
+                                                {% trans "Status" %}
                                             </label>
                                             {{asset_form.asset_status}}
                                             {{asset_form.asset_status.errors}}
@@ -172,7 +170,7 @@
                                         <div class="oh-input__group">
                                             <label class="oh-input__label"
                                                 for="{{asset_form.asset_lot_number_id.id_for_label}}">
-                                                {{asset_form.asset_lot_number_id.label}}
+                                                {% trans "Batch No" %}
                                             </label>
                                             {{asset_form.asset_lot_number_id}}
                                             {{asset_form.asset_lot_number_id.errors}}
@@ -183,7 +181,7 @@
                                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                                         <div class="oh-input__group">
                                             <label class="oh-input__label" for="{{asset_form.expiry_date.id_for_label}}">
-                                                {{asset_form.expiry_date.label}}
+                                                {% trans "Expiry Date" %}
                                             </label>
                                             {{asset_form.expiry_date}}
                                             {{asset_form.expiry_date.errors}}
@@ -194,7 +192,7 @@
                                         <div class="oh-input__group">
                                             <label class="oh-input__label"
                                                 for="{{asset_form.notify_before.id_for_label}}">
-                                                {{asset_form.notify_before.label}}
+                                                {% trans "Notify Before(days)" %}
                                             </label>
                                             {{asset_form.notify_before}}
                                             {{asset_form.notify_before.errors}}

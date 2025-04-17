@@ -3,7 +3,6 @@ horilla/generic/views.py
 """
 
 import json
-import logging
 from typing import Any
 from urllib.parse import parse_qs
 
@@ -25,7 +24,6 @@ from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views import models
 from horilla_views.cbv_methods import (  # update_initial_cache,
-    export_xlsx,
     get_short_uuid,
     hx_request_required,
     paginator_qry,
@@ -35,8 +33,6 @@ from horilla_views.cbv_methods import (  # update_initial_cache,
 )
 from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
 from horilla_views.templatetags.generic_template_filters import getattribute
-
-logger = logging.getLogger(__name__)
 
 
 @method_decorator(hx_request_required, name="dispatch")
@@ -55,7 +51,6 @@ class HorillaListView(ListView):
     context_object_name = "queryset"
     # column = [("Verbose Name","field_name","avatar_mapping")], opt: avatar_mapping
     columns: list = []
-    default_columns: list = []
     search_url: str = ""
     bulk_select_option: bool = True
     filter_selected: bool = True
@@ -102,9 +97,9 @@ class HorillaListView(ListView):
     records_per_page: int = 50
     export_fields: list = []
     verbose_name: str = ""
+
     bulk_update_fields: list = []
     bulk_template: str = "generic/bulk_form.html"
-    records_count_in_tab: bool = True
 
     header_attrs: dict = {}
 
@@ -134,22 +129,10 @@ class HorillaListView(ListView):
 
         self.visible_column = self.columns.copy()
 
-        if not existing_instance:
-            if not self.default_columns:
-                self.default_columns = self.columns
-            self.toggle_form = ToggleColumnForm(
-                self.columns, self.default_columns, hidden_fields
-            )
-            for column in self.columns:
-                if column not in self.default_columns:
-                    self.visible_column.remove(column)
-        else:
-            self.toggle_form = ToggleColumnForm(
-                self.columns, self.default_columns, hidden_fields
-            )
-            for column in self.columns:
-                if column[1] in hidden_fields:
-                    self.visible_column.remove(column)
+        self.toggle_form = ToggleColumnForm(self.columns, hidden_fields)
+        for column in self.columns:
+            if column[1] in hidden_fields:
+                self.visible_column.remove(column)
 
     def bulk_update_accessibility(self) -> bool:
         """
@@ -166,13 +149,15 @@ class HorillaListView(ListView):
 
         if not self.bulk_update_accessibility():
             return HttpResponse("You dont have permission")
-        ids = eval_validate(request.POST.get("instance_ids", "[]"))
         form = self.get_bulk_form()
-        form.verbose_name = form.verbose_name + f" ({len((ids))} {_('Records')})"
+        form.verbose_name = (
+            form.verbose_name
+            + f" ({len((eval_validate(request.GET.get('instance_ids','[]'))))} {_('Records')})"
+        )
         return render(
             request,
             self.bulk_template,
-            {"form": form, "post_bulk_path": self.post_bulk_path, "instance_ids": ids},
+            {"form": form, "post_bulk_path": self.post_bulk_path},
         )
 
     def handle_bulk_submission(self, request: HttpRequest) -> HttpRequest:
@@ -182,7 +167,7 @@ class HorillaListView(ListView):
         if not self.bulk_update_accessibility():
             return HttpResponse("You dont have permission")
 
-        instance_ids = request.POST.get("instance_ids", "[]")
+        instance_ids = request.GET.get("instance_ids", "[]")
         instance_ids = eval_validate(instance_ids)
         form = DynamicBulkUpdateForm(
             request.POST,
@@ -200,7 +185,6 @@ class HorillaListView(ListView):
                 f"""
                 <script id="{script_id}">
                     $("#{script_id}").closest(".oh-modal--show").removeClass("oh-modal--show");
-                    $("#{self.selected_instances_key_id}").attr("data-ids", "[]");
                     $(".reload-record").click()
                     $("#reloadMessagesButton").click()
                 </script>
@@ -325,7 +309,6 @@ class HorillaListView(ListView):
         context["model_name"] = self.verbose_name
         context["export_fields"] = self.export_fields
         context["custom_empty_template"] = self.custom_empty_template
-        context["records_count_in_tab"] = self.records_count_in_tab
         referrer = self.request.GET.get("referrer", "")
         if referrer:
             # Remove the protocol and domain part
@@ -489,12 +472,12 @@ class HorillaListView(ListView):
                 return instance.pk
 
             for field_tuple in _columns:
-                dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'),{field_tuple})"
+                dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'))"
                 exec(dynamic_fn_str)
                 dynamic_fn = locals()[f"dehydrate_{field_tuple[1]}"]
                 locals()[field_tuple[1]] = fields.Field(column_name=field_tuple[0])
 
-            def remove_extra_spaces(self, text, field_tuple):
+            def remove_extra_spaces(self, text):
                 """
                 Remove blank space but keep line breaks and add new lines for <li> tags.
                 """
@@ -513,46 +496,15 @@ class HorillaListView(ListView):
         # Export the data using the resource
         dataset = book_resource.export(queryset)
 
-        # excel_data = dataset.export("xls")
+        excel_data = dataset.export("xls")
 
         # Set the response headers
-        # file_name = self.export_file_name
-        # if not file_name:
-        #     file_name = "quick_export"
-        # response = HttpResponse(excel_data, content_type="application/vnd.ms-excel")
-        # response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
-        # return response
-        json_data = json.loads(dataset.export("json"))
-        merged = [
-            (
-                [
-                    *item,
-                    next(
-                        (
-                            m
-                            for (t, k, m) in self.export_fields
-                            if t == item[0] and k == item[1]
-                        ),
-                        {},
-                    ),
-                ]
-                if len(item) == 2
-                and any(
-                    t == item[0] and k == item[1] for (t, k, _) in self.export_fields
-                )
-                else item
-            )
-            for item in _columns
-        ]
-        columns = []
-        for column in merged:
-            if len(column) >= 3 and isinstance(column[2], dict):
-                column = (column[0], column[0], column[2])
-            elif len(column) >= 3:
-                column = (column[0], column[1])
-            columns.append(column)
-
-        return export_xlsx(json_data, columns)
+        file_name = self.export_file_name
+        if not file_name:
+            file_name = "quick_export"
+        response = HttpResponse(excel_data, content_type="application/vnd.ms-excel")
+        response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
+        return response
 
 
 class HorillaSectionView(TemplateView):
@@ -605,26 +557,8 @@ class HorillaDetailedView(DetailView):
     action_method: list = []
     actions: list = []
     cols: dict = {}
-    instance = None
-    empty_template = None
 
     ids_key: str = "instance_ids"
-
-    def get_object(self, queryset=None):
-        try:
-            self.instance = super().get_object(queryset)
-        except Exception as e:
-            logger.error(f"Error getting object: {e}")
-        return self.instance
-
-    def get(self, request, *args, **kwargs):
-        response = super().get(request, *args, **kwargs)
-        if not self.instance and self.empty_template:
-            return render(request, self.empty_template, context=self.get_context_data())
-        elif not self.instance:
-            messages.info(request, "No record found...")
-            return HttpResponse("<script>window.location.reload()</script>")
-        return response
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -637,8 +571,6 @@ class HorillaDetailedView(DetailView):
         instance_ids = self.request.session.get(
             f"ordered_ids_{self.model.__name__.lower()}", []
         )
-        if not context.get("object", False):
-            return context
 
         pk = context["object"].pk
         # if instance_ids:
@@ -1268,7 +1200,6 @@ class HorillaProfileView(DetailView):
         self.toggle_form = ToggleColumnForm(
             self.tabs_list,
             hidden_tabs,
-            hidden_fields=[],
         )
         for column in self.tabs_list:
             if column[1] in hidden_tabs:

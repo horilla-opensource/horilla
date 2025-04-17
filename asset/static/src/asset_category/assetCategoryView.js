@@ -102,7 +102,7 @@ $(document).ready(function () {
 		var csrf_token = $('input[name="csrfmiddlewaretoken"]').attr("value");
 		$.ajax({
 			type: "POST",
-			url: "/asset/asset-count-update",
+			url: "asset-count-update",
 			data: {
 				asset_category_id: assetCategoryId,
 				csrfmiddlewaretoken: csrf_token,

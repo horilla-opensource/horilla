@@ -1,0 +1,22 @@
+{% load i18n %}
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    setTimeout(function () {
+        $('.oh-modal__close').click()
+      }, 1000);
+  </script>
+</div>
+{% endif %}
+<form hx-post="{% url 'question-template-update' template_id=question_update_form.instance.id %}" hx-target="#questionTemplateUpdateModalTarget"
+      class="oh-profile-section">
+  {% csrf_token %}{{question_update_form.errors}}
+  {{question_update_form.as_p}}
+</form>

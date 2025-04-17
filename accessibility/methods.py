@@ -17,9 +17,7 @@ def check_is_accessible(feature, cache_key, employee):
     if not employee:
         return False
 
-    accessibility = DefaultAccessibility.objects.filter(
-        feature=feature, is_enabled=True
-    ).first()
+    accessibility = DefaultAccessibility.objects.filter(feature=feature).first()
 
     if accessibility and accessibility.exclude_all:
         return False
