@@ -118,6 +118,7 @@ class HorillaListView(ListView):
         if not self.view_id:
             self.view_id = get_short_uuid(4)
         super().__init__(**kwargs)
+        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
 
         request = getattr(_thread_locals, "request", None)
         self.request = request
@@ -390,8 +391,7 @@ class HorillaListView(ListView):
         if not self._saved_filters.get("field"):
             for instance in queryset:
                 ordered_ids.append(instance.pk)
-
-        self.request.session[f"ordered_ids_{self.model.__name__.lower()}"] = ordered_ids
+        self.request.session[self.ordered_ids_key] = ordered_ids
         context["queryset"] = paginator_qry(
             queryset, self._saved_filters.get("page"), self.records_per_page
         )
@@ -523,27 +523,38 @@ class HorillaListView(ListView):
         # response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
         # return response
         json_data = json.loads(dataset.export("json"))
-        merged = [
-            (
-                [
-                    *item,
-                    next(
-                        (
-                            m
-                            for (t, k, m) in self.export_fields
-                            if t == item[0] and k == item[1]
-                        ),
-                        {},
-                    ),
-                ]
-                if len(item) == 2
-                and any(
-                    t == item[0] and k == item[1] for (t, k, _) in self.export_fields
+        merged = []
+
+        for item in _columns:
+            # Check if item has exactly 2 elements
+            if len(item) == 2:
+                # Check if there's a matching (type, key) in export_fields (t, k, _)
+                match_found = any(
+                    export_item[0] == item[0] and export_item[1] == item[1]
+                    for export_item in self.export_fields
                 )
-                else item
-            )
-            for item in _columns
-        ]
+
+                if match_found:
+                    # Find the first matching metadata or use {} as fallback
+                    try:
+                        metadata = next(
+                            (
+                                export_item[2]
+                                for export_item in self.export_fields
+                                if export_item[0] == item[0]
+                                and export_item[1] == item[1]
+                            ),
+                            {},
+                        )
+                    except Exception as e:
+                        merged.append(item)
+                        continue
+
+                    merged.append([*item, metadata])
+                else:
+                    merged.append(item)
+            else:
+                merged.append(item)
         columns = []
         for column in merged:
             if len(column) >= 3 and isinstance(column[2], dict):
@@ -628,15 +639,14 @@ class HorillaDetailedView(DetailView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         request = getattr(_thread_locals, "request", None)
         self.request = request
         # update_initial_cache(request, CACHE, HorillaDetailedView)
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
-        instance_ids = self.request.session.get(
-            f"ordered_ids_{self.model.__name__.lower()}", []
-        )
+        instance_ids = self.request.session.get(self.ordered_ids_key, [])
         if not context.get("object", False):
             return context
 
@@ -758,6 +768,7 @@ class HorillaCardView(ListView):
         self.request = request
         # update_initial_cache(request, CACHE, HorillaCardView)
         self._saved_filters = QueryDict()
+        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
 
     def get_queryset(self):
         if not self.queryset:
@@ -831,7 +842,7 @@ class HorillaCardView(ListView):
         if not self._saved_filters.get("field"):
             for instance in queryset:
                 ordered_ids.append(instance.pk)
-        self.request.session[f"ordered_ids_{self.model.__name__.lower()}"] = ordered_ids
+        self.request.session[self.ordered_ids_key] = ordered_ids
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaCardView] = context
         referrer = self.request.GET.get("referrer", "")
@@ -946,6 +957,7 @@ class HorillaFormView(FormView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         request = getattr(_thread_locals, "request", None)
+        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         self.request = request
         if not self.success_url:
             self.success_url = self.request.path
@@ -995,9 +1007,7 @@ class HorillaFormView(FormView):
             pk = self.form.instance.pk
         # next/previous option in the forms
         if pk and self.request.GET.get(self.ids_key):
-            instance_ids = self.request.session.get(
-                f"ordered_ids_{self.model.__name__.lower()}", []
-            )
+            instance_ids = self.request.session.get(self.ordered_ids_key, [])
             url = resolve(self.request.path)
             key = list(url.kwargs.keys())[0]
             url_name = url.url_name
@@ -1237,6 +1247,7 @@ class HorillaProfileView(DetailView):
 
         request = getattr(_thread_locals, "request", None)
         self.request = request
+        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         # update_initial_cache(request, CACHE, HorillaProfileView)
 
         from horilla.urls import path, urlpatterns
@@ -1312,9 +1323,7 @@ class HorillaProfileView(DetailView):
         if active_tab:
             context["active_target"] = active_tab.tab_target
 
-        instance_ids = self.request.session.get(
-            f"ordered_ids_{self.model.__name__.lower()}", []
-        )
+        instance_ids = self.request.session.get(self.ordered_ids_key, [])
 
         if instance_ids:
             CACHE.set(

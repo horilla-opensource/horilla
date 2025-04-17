@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 """
 This module contains Django models for managing biometric devices
 and employee attendance within a company.
@@ -11,6 +12,7 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
 from employee.models import Employee
 from horilla.models import HorillaModel
@@ -53,25 +55,35 @@ class BiometricDevices(HorillaModel):
         ("etimeoffice", _("e-Time Office")),
     ]
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, verbose_name=_("Name"))
     machine_type = models.CharField(
-        max_length=18,
-        choices=BIO_DEVICE_TYPE,
-        null=True,
+        max_length=18, choices=BIO_DEVICE_TYPE, null=True, verbose_name=_("Device Type")
     )
-    machine_ip = models.CharField(max_length=150, null=True, blank=True, default="")
-    port = models.IntegerField(null=True, blank=True)
-    zk_password = models.CharField(max_length=100, null=True, blank=True, default="0")
+    machine_ip = models.CharField(
+        max_length=150, null=True, blank=True, default="", verbose_name=_("Machine IP")
+    )
+    port = models.IntegerField(null=True, blank=True, verbose_name=_("Port No"))
+    zk_password = models.CharField(
+        max_length=100, null=True, blank=True, default="0", verbose_name=_("Password")
+    )
     bio_username = models.CharField(
         max_length=100, null=True, blank=True, default="", verbose_name=_("Username")
     )
     bio_password = models.CharField(
         max_length=100, null=True, blank=True, verbose_name=_("Password")
     )
-    anviz_request_id = models.CharField(max_length=200, null=True, blank=True)
-    api_url = models.CharField(max_length=200, null=True, blank=True)
-    api_key = models.CharField(max_length=100, null=True, blank=True)
-    api_secret = models.CharField(max_length=100, null=True, blank=True)
+    anviz_request_id = models.CharField(
+        max_length=200, null=True, blank=True, verbose_name=_("Request ID")
+    )
+    api_url = models.CharField(
+        max_length=200, null=True, blank=True, verbose_name=_("API Url")
+    )
+    api_key = models.CharField(
+        max_length=100, null=True, blank=True, verbose_name=_("API Key")
+    )
+    api_secret = models.CharField(
+        max_length=100, null=True, blank=True, verbose_name=_("API Secret")
+    )
     api_token = models.CharField(max_length=500, null=True, blank=True)
     api_expires = models.CharField(max_length=100, null=True, blank=True)
     is_live = models.BooleanField(default=False)
@@ -85,10 +97,14 @@ class BiometricDevices(HorillaModel):
     last_fetch_date = models.DateField(null=True, blank=True)
     last_fetch_time = models.TimeField(null=True, blank=True)
     company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
+        Company,
+        null=True,
+        editable=True,
+        on_delete=models.PROTECT,
+        verbose_name=_("Company"),
     )
 
-    objects = models.Manager()
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return f"{self.name} - {self.machine_type}"
@@ -117,7 +133,8 @@ class BiometricDevices(HorillaModel):
                     int(self.zk_password)
                 except ValueError:
                     required_fields["zk_password"] = _(
-                        "The password must be an integer (numeric) value for ZKTeco Biometric Device."
+                        "The password must be an integer (numeric) value for\
+                            ZKTeco Biometric Device."
                     )
 
         if self.machine_type in ("cosec", "dahua"):
@@ -236,7 +253,7 @@ class BiometricEmployees(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.employee_id} - {self.user_id}"
+        return f"{self.employee_id} - {self.user_id} - {self.device_id}"
 
     class Meta:
         """

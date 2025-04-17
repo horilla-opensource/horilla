@@ -12,7 +12,7 @@ from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.models import MODEL_CHOICES, MailAutomation
-from horilla_widgets.forms import orginal_template_name
+from horilla_widgets.forms import default_select_option_template
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
@@ -73,7 +73,7 @@ class AutomationForm(ModelForm):
             )
         for _field_name, field in self.fields.items():
             if isinstance(field.widget, forms.Select):
-                field.widget.option_template_name = orginal_template_name
+                field.widget.option_template_name = default_select_option_template
 
     class Meta:
         model = MailAutomation

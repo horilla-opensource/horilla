@@ -9,7 +9,7 @@ and supports basic operations such as system reboot, setting time, and language 
 
 import re
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Dict
 
 import requests
