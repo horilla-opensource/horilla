@@ -4,7 +4,7 @@
         <ion-icon name="close-outline"></ion-icon>
     </button>
     <span class="oh-modal__dialog-title ml-5" id="addEmployeeObjectiveModalLabel">
-        <h5>{% trans "Asset Approve" %}</h5>
+        <h5>{{asset_allocation_form.verbose_name}}</h5>
     </span>
 </div>
 <div class="oh-modal__dialog-body">
@@ -15,14 +15,14 @@
         <div class="oh-profile-section pt-0">
             <div class="oh-input__group">
                 <label class="oh-input__label" for="{{asset_allocation_form.asset_id.id_for_label}}">
-                    {% trans "Asset" %}
+                    {{asset_allocation_form.asset_id.label}}
                 </label>
                 {{asset_allocation_form.asset_id}}
                 {{asset_allocation_form.asset_id.errors}}
             </div>
             <div class="oh-input__group">
                 <label class="oh-input__label" for="{{asset_allocation_form.assign_images.id_for_label}}">
-                    {% trans "Assign Condition Images" %}
+                    {{asset_allocation_form.assign_images.label}}
                 </label>
                 {{asset_allocation_form.assign_images}}
                 {{asset_allocation_form.assign_images.errors}}

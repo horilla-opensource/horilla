@@ -3,6 +3,7 @@ dynamic_fields/urls.py
 """
 
 from django.urls import path
+
 from dynamic_fields import views
 
 urlpatterns = [

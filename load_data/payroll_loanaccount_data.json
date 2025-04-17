@@ -1,0 +1,29 @@
+[
+  {
+    "model": "payroll.loanaccount",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-03-12T09:45:26.097Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": true,
+      "type": "loan",
+      "title": "Medical Loan",
+      "employee_id": 18,
+      "loan_amount": 60000.0,
+      "provided_date": "2025-03-01",
+      "allowance_id": 5,
+      "description": "Loan for parents medical case",
+      "is_fixed": true,
+      "rate": 0.0,
+      "installment_amount": 5000.0,
+      "installments": 12,
+      "installment_start_date": "2025-01-01",
+      "apply_on": "end_of_month",
+      "settled": false,
+      "settled_date": null,
+      "asset_id": null,
+      "deduction_ids": [1,2,3]
+    }
+  }
+]

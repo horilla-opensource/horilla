@@ -1,44 +1,120 @@
 {% load i18n %} {% load widget_tweaks %}
 <h2 class="oh-inner-sidebar-content__title">{% trans "Send Test Email" %}</h2>
-<form hx-post="{% url "mail-server-test-email" %}?instance_id={{instance_id}}">
+<form hx-post="{{ request.get_full_path }}"
+    hx-on="htmx:afterSwap: checkValidationErrors" hx-target="#mailServerModalBody">
     {% csrf_token %}
     {% for field in form %}
-    {% if field.field.widget.is_hidden %}
-      {{ field }}
-    {% endif %}
-  {% endfor %}
+        {% if field.field.widget.is_hidden %}
+            {{ field }}
+        {% endif %}
+    {% endfor %}
     <div class="oh-general__tab-target oh-profile-section" id="test_email">
         <div class="oh-profile-section__card">
-          <div class="row">
-            <div class="col-12">{{form.non_field_errors}}</div>
-            {% for field in form.visible_fields %}
-            <div class="col-12 col-md-6" id="id_{{ field.name }}_parent_div">
-              <label
-                class="oh-label {% if field.field.required %} required-star{% endif %}"
-                for="id_{{ field.name }}"
-                title="{{ field.help_text|safe }}">
-                {% trans field.label %}
-                </label>
-                {{ field|add_class:"oh-input w-100 form-control" }}
-
-                {{field.errors}}
+            <div class="row">
+                <div class="col-12">{{form.non_field_errors}}</div>
+                {% for field in form.visible_fields %}
+                    <div class="col-12" id="id_{{ field.name }}_parent_div">
+                        <label class="oh-label {% if field.field.required %} required-star{% endif %}"
+                            for="id_{{ field.name }}" title="{{ field.help_text|safe }}">
+                            {% trans field.label %}
+                        </label>
+                        {{ field|add_class:"oh-input w-100 form-control" }}
+                        {{field.errors}}
+                    </div>
+                {% endfor %}
             </div>
-            {% endfor %}
 
-          </div>
-
-          <div class="oh-modal__dialog-footer p-0 mt-3">
-            <button
-              type="submit"
-              class="oh-btn oh-btn--secondary oh-btn--shadow"
-            >
-              {% trans "Send Email" %}
-            </button>
-          </div>
+            <div class="oh-modal__dialog-footer p-0 mt-3">
+                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                    {% trans "Send Email" %}
+                </button>
+            </div>
         </div>
-      </div>
-
+    </div>
 </form>
 <p>
     {{send_test_mail_result}}
 </p>
+
+<div id="loading-overlay" class="loading-overlay d-none">
+    <dotlottie-player src="https://lottie.host/8d113289-1471-4cbc-8bab-33e90da32727/1hzz3KiKas.lottie"
+        background="transparent" speed="1" style="width: 300px; height: 400px;" loop autoplay>
+    </dotlottie-player>
+    <p class="loading-text">{% trans "Sending email..." %}</p>
+</div>
+
+<style>
+    d-none {
+        display: none: !important
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        backdrop-filter: blur(5px);
+        z-index: 9999;
+    }
+
+    /* Loading Text */
+    .loading-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: white;
+        margin-top: -120px;
+        animation: blinkText 1s infinite alternate;
+    }
+
+    @keyframes blinkText {
+        0% {
+            opacity: 2;
+        }
+
+        100% {
+            opacity: 0.5;
+        }
+    }
+</style>
+
+<script>
+    // Show the loading overlay immediately when the request starts
+    document.body.addEventListener("htmx:beforeRequest", function (event) {
+        // Show the loading overlay before the request is sent
+        const overlay = $("#loading-overlay");
+        overlay.removeClass('d-none')
+    });
+
+    // Function to check if there are any validation errors in the form after HTMX updates it
+    document.body.addEventListener("htmx:afterSwap", function (event) {
+        // Only check for errors if the updated content is a form
+        if (event.target.closest("form")) {
+            checkValidationErrors(event.target);
+        }
+    });
+
+    function checkValidationErrors(form) {
+        const errorList = form.querySelector(".errorlist");
+        const overlay = $("#loading-overlay");
+        const formContainer = form.closest('#mailServerModalBody'); // Assuming the form is inside a section
+
+        // Check if errorList exists and contains errors
+        if (errorList && errorList.children.length > 0) {
+            // Hide the loading overlay if there are validation errors
+            overlay.addClass("d-none");
+        } else {
+            // Show the loading overlay and hide the form if there are no validation errors
+            overlay.removeClass("d-none");
+            formContainer.addClass("d-none");  // Hide form if no validation errors
+        }
+    }
+</script>
+
+<script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>

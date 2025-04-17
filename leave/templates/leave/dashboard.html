@@ -24,6 +24,15 @@
     .dash-card {
         padding-bottom: 30px;
     }
+    .tooltip {
+		position: absolute;
+		background-color: #000;
+		color: #fff;
+		padding: 5px;
+		border-radius: 5px;
+		display: block;
+		margin-top:80px;
+	}
 </style>
 <div class="oh-wrapper mb-4">
     <div class="d-none mt-5" id="back_button" style="width:10%">
@@ -39,6 +48,10 @@
                         id="requestedLeaves">
                         <div class="oh-card-dashboard__header">
                             <span class="oh-card-dashboard__title">{% trans "Requests to Approve" %}</span>
+                            <div onmouseover="helptextView(event, 'Leave requests in &quot;Requested&quot; status from today.')" class="d-inline position-relative">
+                                <ion-icon name="help-circle-outline" id="offerhelptext"></ion-icon>
+                                <div id="tooltip" class="tooltip-text d-none"></div>
+                            </div>
                         </div>
                         <div class="oh-card-dashboard__body">
                             <div class="oh-card-dashboard__counts">
@@ -134,6 +147,10 @@
                 style="">
                 <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                     <span class="oh-card-dashboard__title">{% trans "Upcoming holidays" %}</span>
+                    <div onmouseover="helptextView(event, 'Upcoming holidays in this year.')" class="d-inline position-relative">
+                        <ion-icon name="help-circle-outline" ></ion-icon>
+                        <div id="tooltip" class="tooltip-text d-none"></div>
+                    </div>
                 </div>
                 <div class="oh-card-dashboard__body" hx-get="{% url 'get-upcoming-holidays' %}" hx-trigger="load"
                     id="upcomingHolidaysList">
@@ -223,5 +240,25 @@
         })
     })
 
+    function helptextView(event,text) {
+        event = event || window.event;
+        const icon = event.target || event.srcElement;
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = text; // Help text
+
+        // Position the tooltip relative to the icon
+        const rect = icon.getBoundingClientRect();
+        tooltip.style.top = rect.top + icon.offsetHeight + 'px';
+        tooltip.style.left = rect.left + 'px';
+
+        // Append tooltip to the body
+        document.body.appendChild(tooltip);
+
+        // Remove tooltip when mouse is moved away from the icon
+        icon.addEventListener('mouseout', function () {
+            document.body.removeChild(tooltip);
+        });
+    }
 </script>
 {% endblock %}

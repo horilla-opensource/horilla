@@ -324,7 +324,7 @@ function checkSequence(element) {
 
     if (
         stageOrder.indexOf(parseInt(stageId)) !=
-            stageOrder.indexOf(parseInt(preStageId)) + 1 &&
+        stageOrder.indexOf(parseInt(preStageId)) + 1 &&
         stage.type != "cancelled"
     ) {
         Swal.fire({
@@ -404,7 +404,7 @@ window.confirm = function (message) {
         if (result.isConfirmed) {
             var path = event.target["htmx-internal-data"]?.path;
             var verb = event.target["htmx-internal-data"]?.verb;
-            var hxTarget = $(event.target).attr("hx-target");
+            var hxTarget = handleHtmxTarget(event, path, verb)
             var hxVals = $(event.target).attr("hx-vals")
                 ? JSON.parse($(event.target).attr("hx-vals"))
                 : {};
@@ -486,6 +486,39 @@ window.confirm = function (message) {
     });
 };
 
+function handleHtmxTarget(event, path, verb) {
+    var targetElement;
+    var hxTarget = $(event.target).attr("hx-target");
+    if (hxTarget) {
+        if (hxTarget === "this") {
+            targetElement = $(event.target);
+        } else if (hxTarget.startsWith("closest ")) {
+            var selector = hxTarget.replace("closest ", "").trim();
+            targetElement = $(event.target).closest(selector);
+        } else if (hxTarget.startsWith("find ")) {
+            var selector = hxTarget.replace("find ", "").trim();
+            targetElement = $(event.target).find(selector).first();
+        } else if (hxTarget === "next") {
+            targetElement = $(event.target).next();
+        } else if (hxTarget.startsWith("next ")) {
+            var selector = hxTarget.replace("next ", "").trim();
+            targetElement = $(event.target).nextAll(selector).first();
+        } else if (hxTarget === "previous") {
+            targetElement = $(event.target).prev();
+        } else if (hxTarget.startsWith("previous ")) {
+            var selector = hxTarget.replace("previous ", "").trim();
+            targetElement = $(event.target).prevAll(selector).first();
+        } else {
+            targetElement = $(hxTarget);
+        }
+        hxTarget = targetElement.length ? targetElement[0] : null;
+
+    } else if (path && verb) {
+        hxTarget = event.target;
+    }
+    return hxTarget
+}
+
 var excludeIds = "#employeeSearch";
 // To exclude more elements, add their IDs (prefixed with '#') or class names (prefixed with '.'), separated by commas to 'excludeIds'.
 setTimeout(() => {
@@ -534,6 +567,12 @@ $(document).on("htmx:beforeRequest", function (event, data) {
         ) {
             target.html(`<div class="animated-background"></div>`);
         }
+    }
+});
+
+$(document).on('click', '.select2-selection__choice__remove', function (event) {
+    if ($('[role="tooltip"]:visible').length) {
+        $('[role="tooltip"]').hide();
     }
 });
 
@@ -673,3 +712,18 @@ $(document).on("click", function (event) {
 function submitForm(elem) {
     $(elem).siblings(".add_more_submit").click();
 }
+
+$(document).on('htmx:afterSwap', function () {
+    if ( $('[data-summernote]').length > 0 ) {
+        $('[data-summernote]').summernote({
+            height: 300,
+            codeviewFilter: false,
+            codeviewIframeFilter: false,
+            callbacks: {
+                onChange: function(contents) {
+                    $('[name="body"]').val(contents);
+                }
+            }
+        });
+    }
+});

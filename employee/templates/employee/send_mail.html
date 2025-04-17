@@ -43,7 +43,7 @@
       <label for="template">
         <h6>{% trans "Template" %}</h6>
       </label>
-      <select name="template" class="w-100 oh-select" id="template">
+      <select name="template" class="w-100 oh-select" id="template" onchange="templateChange($(this))">
         <option value="">----</option>
         {% for template in templates %}
         <option value="{{template.id}}">{{template.title}}</option>
@@ -54,8 +54,25 @@
       <label for="body">
         <h6>{% trans "Message Body" %}</h6>
       </label>
-      <textarea hidden data-summernote name="body" required class="oh-input w-100" id="body" cols="30"
-        rows="2"></textarea>
+      <div class="oh-input__group">
+        <div class="oh-tabs__view-buttons mt-2">
+            <span class="tab-btn active" data-tab="write">
+                <span>{% trans "Write" %}</span>
+            </span>
+            <span class="tab-btn" onclick="previewMail()" data-tab="preview">
+                <span>{% trans "Preview" %}</span>
+            </span>
+        </div>
+        <div id="write" class="oh-tabs__view active">
+            <textarea id="writeField" data-summernote name="body" required class="oh-input oh-input--textarea" placeholder="Type something here..."></textarea>
+        </div>
+        <div id="preview" class="oh-tabs__view">
+            <div id="previewField" disabled class="oh-input oh-input--textarea" placeholder="preview..."></div>
+        </div>
+    </div>
+    </div>
+    <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
+      {% trans "Hint: Type '{' to get sender or receiver data" %}
     </div>
     <div class="form-group mt-2">
       <label for="template_attachments">
@@ -78,7 +95,6 @@
         name="submit" id="submit" onclick="sendMail()" value="{% trans 'Send Mail' %}">
     </div>
 </form>
-
 
 
 <script>
@@ -121,23 +137,50 @@
   };
 
   $(document).ready(function () {
-    $("#template").change(function (e) {
-      var id = $(this).val();
-      if (id.length) {
-        $.ajax({
-          type: "get",
-          url: `/employee/get-template/${id}/`,
-          data: { "instance_id": "{{employee.id}}" },
-          dataType: "Json",
-          success: function (response) {
-            $('#ack-form-{{employee.id}} [name="body"]').html(response.body).change()
-            $('#ack-form-{{employee.id}} [class="note-editable"]').html(response.body)
-          }
-        });
-      }
-    });
     var selectedIds = JSON.parse($("#selectedInstances").attr("data-ids"));
     $("#employees[name=employees]select[multiple]").val(selectedIds).change()
 
   });
+  function templateChange(e) {
+    var id = e.val();
+    if (id.length) {
+      $.ajax({
+        type: "get",
+        url: `/employee/get-template/${id}/`,
+        data: { "instance_id": "{{employee.id}}" },
+        dataType: "Json",
+        success: function (response) {
+          $('#ack-form-{{employee.id}} [name="body"]').html(response.body).change()
+          $('#ack-form-{{employee.id}} [class="note-editable"]').html(response.body)
+        }
+      });
+    }
+  };
+  function previewMail(){
+    var id = $('#template').val();
+    var body = $('#ack-form-{{employee.id}} [name="body"]').val()
+    if (body && body.trim() !== '') {
+      $.ajax({
+        type: "get",
+        url: "{% url 'get-employee-mail-preview' %}" ,
+        data: {"body":body,"emp_id":{{employee.id}} },
+        dataType: "Json",
+        success: function (response) {
+          $('#previewField').html(response.body)
+        }
+      });
+    }
+  }
+  initializeSummernote({{employee.id}},{{ searchWords|safe }});
+  const buttons = document.querySelectorAll(".tab-btn");
+    const contents = document.querySelectorAll(".oh-tabs__view ");
+    buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+            buttons.forEach((btn) => btn.classList.remove("active"));
+            button.classList.add("active");
+
+            contents.forEach((content) => content.classList.remove("active"));
+            document.getElementById(button.dataset.tab).classList.add("active");
+        });
+    });
 </script>

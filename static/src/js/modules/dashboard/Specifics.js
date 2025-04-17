@@ -18,12 +18,13 @@ class Specifics {
   /**
    * Initialize Select 2
    */
+
   loadSelect2() {
     $(".oh-select--qa-change").each(function (item, element) {
       let targetDiv = element.closest(".oh-section-edit");
       let optionDiv = targetDiv.querySelector(".oh-link__expanded");
-      let selectedValue = element.options[element.selectedIndex].text;
-      if (selectedValue == "Multi-choices") {
+      let selectedValue = element.options[element.selectedIndex].value;
+      if (selectedValue == "4") {
         optionDiv.classList.remove("d-none");
       } else {
         optionDiv.classList.add("d-none");
@@ -34,7 +35,7 @@ class Specifics {
       let data = e.params.data;
       let targetDiv = e.target.closest(".oh-section-edit");
       let optionDiv = targetDiv.querySelector(".oh-link__expanded");
-      if (data.text == "Multi-choices") {
+      if (data.id == "4") {
         optionDiv.classList.remove("d-none");
       } else {
         optionDiv.classList.add("d-none");
@@ -42,5 +43,7 @@ class Specifics {
     });
   }
 }
+
+
 
 export default Specifics;
