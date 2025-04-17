@@ -1,9 +1,7 @@
 version: "3.8"
 services:
   server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/invotyx/horilla:master
     ports:
       - 8000:8000
     restart: unless-stopped
