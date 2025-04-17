@@ -224,7 +224,7 @@ def rotate_shift():
 
     rotating_shifts = RotatingShiftAssign.objects.filter(is_active=True)
     today = datetime.now().date()
-    r_shifts = rotating_shifts.filter(start_date=today)
+    r_shifts = rotating_shifts.filter(start_date__lte=today)
     rotating_shifts_modified = None
     for r_shift in r_shifts:
         emp_shift = rotating_shifts.filter(

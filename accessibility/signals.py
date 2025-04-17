@@ -32,16 +32,18 @@ def _clear_bulk_employees_cache(queryset):
 @receiver(post_save, sender=EmployeeWorkInformation)
 def monitor_employee_update(sender, instance, created, **kwargs):
     """
-    This method to track employee instance update
+    This method tracks updates to an employee's work information instance.
     """
 
     _sender = sender
     _created = created
-    cache_keys = ACCESSIBILITY_CACHE_USER_KEYS.copy().get(
-        instance.employee_id.employee_user_id.id, []
-    )
-    for key in cache_keys:
-        cache.delete(key)
+
+    if instance.employee_id and instance.employee_id.employee_user_id:
+        user_id = instance.employee_id.employee_user_id.id
+        cache_keys = ACCESSIBILITY_CACHE_USER_KEYS.get(user_id, [])
+
+        for key in cache_keys:
+            cache.delete(key)
 
 
 @receiver(post_save, sender=DefaultAccessibility)

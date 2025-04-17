@@ -1,0 +1,175 @@
+.oh-modal__dialog--custom {
+  max-width: 800px;
+  .oh-modal__dialog-header {
+    display: flex;
+    justify-content: space-between;
+  }
+  .oh-modal__close--custom {
+    background-color: transparent;
+    border: none;
+  }
+  .oh-general__tab {
+    .oh-general__tab-link {
+      padding: 0;
+      transition: 0s;
+    }
+    .oh-general__tab-link--active {
+      background-color: #e54f38;
+      border: 1px solid #e54f38;
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 23px;
+      transition: none;
+    }
+  }
+  .oh-inner-sidebar {
+    height: 100%;
+  }
+}
+
+// modal-tab-process
+
+.oh-modal__dialog-process {
+  max-width: 900px;
+  .oh-modal__dialog-body-process {
+    .oh-inner-sidebar {
+      padding: 0px 14px 14px 0;
+      .oh-profile {
+        align-items: start;
+      }
+      .oh-card--no-shadow {
+        border: 1px solid transparent !important;
+        border-bottom: 1px solid #e9edf1 !important;
+        margin-bottom: 10px;
+      }
+      .oh-timeoff-modal__profile-info {
+        align-items: start;
+        .oh-timeoff-modal__user {
+          font-size: 16px;
+          margin-top: 0;
+        }
+      }
+    }
+
+    .oh-inner-sidebar-content {
+      .oh-profile__avatar {
+        img {
+          width: 90px;
+          height: 90px;
+        }
+      }
+
+      .oh-profile_info-card {
+        border-bottom: 1px solid hsl(213, 22%, 93%);
+        padding-bottom: 16px;
+        .oh-profile__info-designation {
+          text-align: center;
+        }
+      }
+    }
+
+    .oh-layout--grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(275px, 1fr)) !important;
+      gap: 1%;
+      // row-gap: 1rem;
+      -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+      justify-content: space-between;
+    }
+
+    .oh-profile__image {
+      width: 36px;
+      height: 36px;
+    }
+
+    .oh-general__custom-tabs {
+      border-bottom: none;
+    }
+  }
+}
+
+.oh-kanban-card-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  transition: border-color 0.2s ease-in-out;
+  cursor: pointer;
+  position: relative;
+
+  &__checkbox {
+    position: absolute;
+    opacity: 0; // Hide default checkbox
+    pointer-events: none;
+  }
+
+  // Custom checkbox styling
+  &__checkbox-label {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    transition: all 0.2s ease-in-out;
+
+    &::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      background: transparent;
+      border-radius: 12px;
+      transition: background 0.2s ease-in-out;
+    }
+  }
+
+  &:has(.oh-kanban-card-action__checkbox:checked) {
+    border-color: #ffa89b;
+    background: #fff2f0;
+  }
+
+  .oh-kanban-card-action__checkbox:checked
+    + .oh-kanban-card-action__checkbox-label {
+    &::before {
+      background: #e54f38;
+      border-radius: 12px;
+    }
+  }
+}
+
+.oh-layout_horizontal {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  gap: 12px;
+  margin: 16px 0;
+  padding-bottom: 8px;
+
+  .oh-kanban-card {
+    background-color: #fff;
+    border: 1px solid #cdd5df;
+    border-radius: 16px;
+    min-width: 200px;
+    padding: 0.7rem;
+    align-items: start;
+  }
+  .oh-kanban-card__profile-container {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+.oh-modal__dialog-process
+  .oh-modal__dialog-body-process
+  .oh-inner-sidebar-content
+  .oh-profile__avatar
+  .oh-table-img {
+  width: 30px !important;
+  height: 30px !important;
+}

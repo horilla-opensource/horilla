@@ -1,61 +1,51 @@
-{% load i18n %} {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+{% load i18n %}
+{% if messages %}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+        <script>
+            setTimeout(function () {
+                $(".oh-modal__close--custom").click();
+            }, 1000);
+        </script>
     </div>
-  </div>
-  {% endfor %}
-  <script>
-    setTimeout(function () {
-      $(".oh-modal__close--custom").click();
-    }, 1000);
-  </script>
-</div>
-{% endif %} {% if form.errors %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-  <div class="oh-alert-container">
-    {% for error in form.non_field_errors %}
-    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
-    {% endfor %}
-  </div>
-</div>
+{% endif %}
+{% if form.errors %}
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}
 <div class="oh-modal__dialog-header">
-  <span class="oh-modal__dialog-title" id="updateAssignLeaveModalLabel"
-    >{% trans "Update Available Leave" %}</span
-  >
-  <button
-    class="oh-modal__close--custom"
-    onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
-    aria-label="Close"
-    {% if messages %}
-      hx-get="{% url 'assign-filter' %}?{{pd}}"
-      hx-target="#assignedLeaves"
-    {% endif %}
-    >
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+    <span class="oh-modal__dialog-title" id="updateAssignLeaveModalLabel">{% trans "Update Available Leave" %}</span>
+    <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+        aria-label="Close" {% if messages %} hx-get="{% url 'assign-filter' %}?{{pd}}" hx-target="#assignedLeaves" {% endif %}>
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
-  <form hx-post="{% url 'available-leave-update' id %}?{{pd}}"
-    hx-target="#objectUpdateModalTarget"
-    class="oh-profile-section p-0"
-    >
-    <div class="oh-modal__dialog-body pb-2">
-      <label class="oh-label d-block">{% trans "Available Days" %}</label>
-      {{form.available_days}} {{form.available_days.errors}}
-    </div>
-    <div class="oh-modal__dialog-body pb-2">
-      <label class="oh-label d-block">{% trans "Carryforward Days" %}</label>
-      {{form.carryforward_days}} {{form.carryforward_days.errors}}
-    </div>
-    <div class="oh-modal__dialog-footer pb-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
-        {% trans "Save" %}
-      </button>
-    </div>
-  </form>
+    <form hx-post="{% url 'available-leave-update' id %}?{{pd}}" hx-target="#objectUpdateModalTarget"
+        class="oh-profile-section p-0">
+        <div class="oh-modal__dialog-body pb-2">
+            <label for="{{form.available_days.id_for_label}}" class="oh-label d-block">{{form.available_days.label}}</label>
+            {{form.available_days}} {{form.available_days.errors}}
+        </div>
+        <div class="oh-modal__dialog-body pb-2">
+            <label for="{{form.carryforward_days.id_for_label}}" class="oh-label d-block">{{form.carryforward_days.label}}</label>
+            {{form.carryforward_days}} {{form.carryforward_days.errors}}
+        </div>
+        <div class="oh-modal__dialog-footer pb-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
 </div>

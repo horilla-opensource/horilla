@@ -1,118 +1,63 @@
-{% extends 'index.html' %} {% block content %}
-{% load i18n %}
-{% load widget_tweaks %} {% load basefilters %}
-
-{% if messages %}
-<ul class="messages">
-  {% for message in messages %}
-  <div class="oh-wrapper">
-    <div class="oh-alert-container">
-      <div class="oh-alert oh-alert--animated oh-alert--warning">
-        {{message}}
-      </div>
-    </div>
-  </div>
-
-  {% endfor %}
-</ul>
-{% endif %}
-
+{% extends 'index.html' %} {% block content %} {% load i18n %} {% load widget_tweaks %} {% load basefilters %}
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-  <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-    <div class="oh-main__titlebar oh-main__titlebar--left">
-      <h1 class="oh-main__titlebar-title fw-bold">{% trans "Question Template" %}
-      </h1>
-      <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
-        @click="searchShow = !searchShow">
-        <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
-      </a>
-    </div>
-    <div class="oh-main__titlebar oh-main__titlebar--right">
-      <div class="oh-main__titlebar-button-container">
-        <div class="oh-btn-group ml-2">
-          {% if perms.pms.add_questiontemplate or request.user|filtersubordinates %}
-            <div>
-              <button class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
-                data-target="#questionTemplateModal">
-                <ion-icon name="add-outline"></ion-icon>
-                {% trans "Create" %}
-              </button>
+    <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold">
+                {% trans "Question Template" %}
+            </h1>
+            <a class="oh-main__titlebar-search-toggle" role="button" aria-label="Toggle Search"
+                @click="searchShow = !searchShow">
+                <ion-icon name="search-outline" class="oh-main__titlebar-serach-icon"></ion-icon>
+            </a>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--right">
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-btn-group ml-2">
+                    {% if perms.pms.add_questiontemplate or request.user|filtersubordinates %}
+                        <div>
+                            <button class="oh-btn oh-btn--secondary" role="button" data-toggle="oh-modal-toggle"
+                                data-target="#objectCreateModal" hx-get="{% url 'question-template-creation' %}"
+                                hx-target="#objectCreateModalTarget">
+                                <ion-icon name="add-outline"></ion-icon>
+                                {% trans "Create" %}
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-          {% endif %}
         </div>
-
-      </div>
-    </div>
-  </section>
-  <div class="oh-wrapper">
-    <!-- question template table start -->
-    <div id="questionTemplateList">
-      {% include "feedback/question_template/question_template_list.html" %}
-    </div>
-    <!-- question template table end -->
-
-    <!-- question template create modal start -->
-    <div class="oh-modal" id="questionTemplateModal" role="dialog" aria-labelledby="questionTemplateModal"
-      aria-hidden="true">
-      <div class="oh-modal__dialog " >
-        <div class="oh-modal__dialog-header">
-          <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Question Template" %}</span>
-          <button type="button" class="oh-modal__close" aria-label="Close">
-            <ion-icon name="close-outline"></ion-icon>
-          </button>
+    </section>
+    <div class="oh-wrapper">
+        <div id="questionTemplateList">
+            {% include "feedback/question_template/question_template_list.html" %}
         </div>
-        <form method="post" action="{% url 'question-template-creation' %}">
-          {% csrf_token %}
-          <div class="oh-modal__dialog-body m-3w oh-profile-section">
-            {{form.as_p}}
-          </div>
-        </form>
-      </div>
     </div>
-    <!-- question template modal end -->
-    <!-- question template update modal start -->
-    <div class="oh-modal" id="questionTemplateUpdateModal" role="dialog" aria-labelledby="questionTemplateUpdateModal"
-      aria-hidden="true">
-      <div class="oh-modal__dialog " >
-        <div class="oh-modal__dialog-header">
-          <span class="oh-modal__dialog-title" id="questionTemplateUpdateModalLabel">{% trans "Question Template" %}</span>
-          <button type="button" class="oh-modal__close" aria-label="Close"
-                  hx-get="{% url 'question-template-hx-view' %}" hx-target="#questionTemplateList"
-            >
-            <ion-icon name="close-outline"></ion-icon>
-          </button>
-        </div>
-        <div id="questionTemplateUpdateModalTarget"></div>
-      </div>
-    </div>
-  </div>  <!-- question template modal end -->
 </main>
 
 <script>
-  var errorElement = $('#id_question_template_error')
-  $(errorElement).hide()
+    var errorElement = $("#id_question_template_error");
+    $(errorElement).hide();
 
-  $('form').on('submit', function (event) {
-    event.preventDefault();
+    $("form").on("submit", function (event) {
+        event.preventDefault();
 
-    var fieldValue = $('#id_question_template').val();
+        var fieldValue = $("#id_question_template").val();
 
-    if (fieldValue.trim() === '') {
-      $(errorElement).show()
-      errorElement.text('This field is required.');
-      errorElement.insertAfter($('#id_question_template'));
-    } else if (fieldValue.length > 100) {
-      $(errorElement).show()
-      errorElement.text('The field cannot contain more than 100 characters.');
-      errorElement.insertAfter($('#id_question_template'));
-    } else {
-      errorElement.text('');
-      errorElement.remove();
-      // Submit the form
-      this.submit();
-    }
-  });
-
+        if (fieldValue.trim() === "") {
+            $(errorElement).show();
+            errorElement.text("This field is required.");
+            errorElement.insertAfter($("#id_question_template"));
+        } else if (fieldValue.length > 100) {
+            $(errorElement).show();
+            errorElement.text("The field cannot contain more than 100 characters.");
+            errorElement.insertAfter($("#id_question_template"));
+        } else {
+            errorElement.text("");
+            errorElement.remove();
+            // Submit the form
+            this.submit();
+        }
+    });
 </script>
 
 {% endblock content %}

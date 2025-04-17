@@ -1,116 +1,115 @@
 {% extends 'index.html' %} {% block content %} {% load static %}
 <div id="contractFormTarget">
-  <div class="oh-wrapper d-flex justify-content-center mt-4 mb-4">
-    <form action="" hx-swap="none" class="oh-onboarding-card" method="post">
-      {% csrf_token %} {{form.as_p}}
-    </form>
-  </div>
-  <script>
-      var rangeToggle = () => {
-        if ($("[name = 'if_condition']").val() == "range") {
+    <div class="oh-wrapper d-flex justify-content-center mt-4 mb-4">
+        <form action="" hx-swap="none" class="oh-onboarding-card" method="post" enctype="multipart/form-data">
+            {% csrf_token %} {{form.as_p}}
+        </form>
+    </div>
+    <script>
+        var rangeToggle = () => {
+            if ($("[name = 'if_condition']").val() == "range") {
 
-          $("[name = 'if_amount']").parent().hide();
-          $("[name = 'start_range']").parent().show();
-          $("[name = 'end_range']").parent().show();
-        } else {
+                $("[name = 'if_amount']").parent().hide();
+                $("[name = 'start_range']").parent().show();
+                $("[name = 'end_range']").parent().show();
+            } else {
 
-          $("[name = 'if_amount']").parent().show();
-          $("[name = 'start_range']").parent().hide();
-          $("[name = 'end_range']").parent().hide();
+                $("[name = 'if_amount']").parent().show();
+                $("[name = 'start_range']").parent().hide();
+                $("[name = 'end_range']").parent().hide();
+            }
         }
-      }
-      function toggleFunction() {
-        if ($("#id_calculate_daily_leave_amount").is(":checked")) {
-          $(
-            "#id_deduction_for_one_leave_amount,[for=id_deduction_for_one_leave_amount]"
-          ).hide();
-        } else {
-          $(
-            "#id_deduction_for_one_leave_amount,[for=id_deduction_for_one_leave_amount]"
-          ).show();
+        function toggleFunction() {
+            if ($("#id_calculate_daily_leave_amount").is(":checked")) {
+                $(
+                    "#id_deduction_for_one_leave_amount,[for=id_deduction_for_one_leave_amount]"
+                ).hide();
+            } else {
+                $(
+                    "#id_deduction_for_one_leave_amount,[for=id_deduction_for_one_leave_amount]"
+                ).show();
+            }
+            if ($("#id_calculate_daily_leave_amount").is(":checked")) {
+                $("#id_deduction_for_one_leave_amount").parent().hide();
+            } else {
+                $("#id_deduction_for_one_leave_amount").parent().show();
+            }
         }
-        if ($("#id_calculate_daily_leave_amount").is(":checked")) {
-          $("#id_deduction_for_one_leave_amount").parent().hide();
-        } else {
-          $("#id_deduction_for_one_leave_amount").parent().show();
+        function contractInitial(element) {
+            var employee_id = $(element).val();
+            $.ajax({
+                type: "GET",
+                url: "{% url 'contract-info-initial' %}",
+                data: { employee_id: employee_id },
+                success: function (response) {
+                    var data;
+                    data = response;
+                    const change = new Event('change');
+                    $("#id_department").val(data.department);
+                    document.getElementById("id_department").dispatchEvent(change)
+                    $("#id_job_position").val(data.job_position);
+                    document.getElementById("id_job_position").dispatchEvent(change)
+                    $("#id_job_role").val(data.job_role);
+                    document.getElementById("id_job_role").dispatchEvent(change)
+                    $("#id_shift").val(data.shift);
+                    document.getElementById("id_shift").dispatchEvent(change)
+                    $("#id_work_type").val(data.work_type);
+                    document.getElementById("id_work_type").dispatchEvent(change)
+                    $("#id_wage").val(data.wage);
+                    document.getElementById("id_wage").dispatchEvent(change)
+                    $("#id_contract_start_date").val(data.contract_start_date);
+                    document.getElementById("id_contract_start_date").dispatchEvent(change)
+                    $("#id_contract_end_date").val(data.contract_end_date);
+                    document.getElementById("id_contract_end_date").dispatchEvent(change)
+                },
+            });
         }
-      }
-      function contractInitial(element) {
-        var employee_id = $(element).val();
-        $.ajax({
-          type: "GET",
-          url: "{% url 'contract-info-initial' %}",
-          data: { employee_id: employee_id },
-          success: function (response) {
-            var data;
-            data = response;
-            const change = new Event('change');
-            $("#id_department").val(data.department);
-            document.getElementById("id_department").dispatchEvent(change)
-            $("#id_job_position").val(data.job_position);
-            document.getElementById("id_job_position").dispatchEvent(change)
-            $("#id_job_role").val(data.job_role);
-            document.getElementById("id_job_role").dispatchEvent(change)
-            $("#id_shift").val(data.shift);
-            document.getElementById("id_shift").dispatchEvent(change)
-            $("#id_work_type").val(data.work_type);
-            document.getElementById("id_work_type").dispatchEvent(change)
-            $("#id_wage").val(data.wage);
-            document.getElementById("id_wage").dispatchEvent(change)
-            $("#id_contract_start_date").val(data.contract_start_date);
-            document.getElementById("id_contract_start_date").dispatchEvent(change)
-            $("#id_contract_end_date").val(data.contract_end_date);
-            document.getElementById("id_contract_end_date").dispatchEvent(change)
-          },
+
+        $(document).ready(function () {
+            $("[type=checkbox]").change(function (e) {
+                e.preventDefault();
+                toggleFunction();
+                rangeToggle()
+            });
+
+            $("#id_is_condition_based").change()
+
         });
-      }
-
-      $(document).ready(function () {
-        $("[type=checkbox]").change(function (e) {
-          e.preventDefault();
-          toggleFunction();
-          rangeToggle()
-        });
-
-          $("#id_is_condition_based").change()
-
-      });
-      toggleFunction();
-    {% if form.instance.pk %}
-
-    {% for condition in form.instance.other_conditions.all %}
-    conditionSet = $(
-      `
-      <div class="row">
-        <div class="col-12 col-md-4 condition-highlight">
-          ${$("[for=id_field]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
-          ${$("#id_field").clone().attr("data-initial-value", "{{condition.field}}").attr("name", "other_fields").attr("class", "style-widget form-control").prop("outerHTML")}
-        </div>
-        <div class="col-12 col-md-4 condition-highlight">
-          ${$("[for=id_condition]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
-          ${$("#id_condition").clone().attr("data-initial-value", "{{condition.condition}}").attr("class", "style-widget form-control").attr("name", "other_conditions").attr("class", "style-widget form-control").prop("outerHTML")}
-        </div>
-        <div class="col-12 col-md-4 condition-highlight">
-          <div class="d-flex">
-            ${$("[for=id_value]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
-            <div class="m-1 p-1"  onclick="$(this).closest('.row').remove()" align="center" style="border-radius:15px; width:25px;border:solid 1px red;cursor:pointer;display:inline;">
-              -
-            </div>
-          </div>
-          ${$("#id_value").clone().attr("data-initial-value", "{{condition.value}}").attr("name", "other_values").attr("value", "{{condition.value}}").change().attr("class", "style-widget form-control").prop("outerHTML")}
-        </div>
-      </div>
-      `
-    );
-    $("#conditionContainer").prepend(conditionSet)
-    {% endfor %}
-    function initialData () {
-      $.each($("[name=other_fields],[name=other_conditions]"), function (indexInArray, valueOfElement) {
-         $(valueOfElement).val($(valueOfElement).attr("data-initial-value")).change()
-      });
-    }
-    initialData()
-    {% endif %}
-  </script>
+        toggleFunction();
+        {% if form.instance.pk %}
+            {% for condition in form.instance.other_conditions.all %}
+                conditionSet = $(
+                    `
+                        <div class="row">
+                            <div class="col-12 col-md-4 condition-highlight">
+                            ${$("[for=id_field]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
+                            ${$("#id_field").clone().attr("data-initial-value", "{{condition.field}}").attr("name", "other_fields").attr("class", "style-widget form-control").prop("outerHTML")}
+                            </div>
+                            <div class="col-12 col-md-4 condition-highlight">
+                            ${$("[for=id_condition]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
+                            ${$("#id_condition").clone().attr("data-initial-value", "{{condition.condition}}").attr("class", "style-widget form-control").attr("name", "other_conditions").attr("class", "style-widget form-control").prop("outerHTML")}
+                            </div>
+                            <div class="col-12 col-md-4 condition-highlight">
+                            <div class="d-flex">
+                                ${$("[for=id_value]").clone().attr("class", "style-widget form-control oh-label__info").prop("outerHTML")}
+                                <div class="m-1 p-1"  onclick="$(this).closest('.row').remove()" align="center" style="border-radius:15px; width:25px;border:solid 1px red;cursor:pointer;display:inline;">
+                                -
+                                </div>
+                            </div>
+                            ${$("#id_value").clone().attr("data-initial-value", "{{condition.value}}").attr("name", "other_values").attr("value", "{{condition.value}}").change().attr("class", "style-widget form-control").prop("outerHTML")}
+                            </div>
+                        </div>
+                    `
+                );
+                $("#conditionContainer").prepend(conditionSet)
+            {% endfor %}
+            function initialData() {
+                $.each($("[name=other_fields],[name=other_conditions]"), function (indexInArray, valueOfElement) {
+                    $(valueOfElement).val($(valueOfElement).attr("data-initial-value")).change()
+                });
+            }
+            initialData()
+        {% endif %}
+    </script>
 </div>
 {% endblock content %}

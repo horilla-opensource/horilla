@@ -20,3 +20,4 @@ class DefaultAccessibility(HorillaModel):
     employees = models.ManyToManyField(
         Employee, blank=True, related_name="default_accessibility"
     )
+    is_enabled = models.BooleanField(default=True)

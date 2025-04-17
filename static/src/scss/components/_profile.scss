@@ -5,7 +5,6 @@
     align-items: center;
   }
   .oh-profile__avatar {
-    overflow: hidden;
     border-radius: 50%;
     flex-shrink: 0;
   }
@@ -13,6 +12,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+    border-radius: 50%;
   }
   .oh-profile__active-badge{
     width: 15px;
@@ -34,6 +34,17 @@
       height: 30px;
     }
     .oh-profile__name {
+      font-size: 0.8rem;
+    }
+  }
+
+  // Size: Large
+  .oh-profile--base {
+    .oh-profile__avatar {
+      width: 42px;
+      height: 42px;
+    }
+    .oh-profile__name {
       font-size: 0.95rem;
     }
   }
@@ -48,6 +59,8 @@
       font-size: 0.95rem;
     }
   }
+
+
 
 
   // Misc. Profile Components
@@ -139,4 +152,14 @@
     &:last-child{
       margin-bottom: 0;
     }
+  }
+
+  .oh-profile__subtext{
+    font-size: 0.8rem;
+    color: $light-text-color;
+    margin-bottom: 0;
+  }
+
+  .oh-profile__meta{
+    margin-left: 0.3rem;
   }

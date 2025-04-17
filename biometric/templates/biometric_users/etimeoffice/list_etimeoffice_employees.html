@@ -1,0 +1,63 @@
+{% load i18n %} {% load static %}
+<div class="oh-sticky-table">
+    <div class="oh-sticky-table__table oh-table--sortable">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th" style="width: 10px">
+                    <div class="centered-div">
+                        <input type="checkbox" class="oh-input oh-input__checkbox all-bio-employee"
+                            data-device="{{device_id}}" id="allBioEmployee" hx-on:click="selectAllETimeOfficeUsers(event)" />
+                    </div>
+                </div>
+                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Badge ID" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Emp Code" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Work Email" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Phone" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Job Position" %}</div>
+                <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 210px;">
+                    {% trans "Actions" %}
+                </div>
+            </div>
+        </div>
+        {% for employee in employees %}
+            <div class="oh-sticky-table__tbody ui-sortable fade-me-out" id="eTimeOfficeUser{{employee.id}}">
+                <div class="oh-sticky-table__tr ui-sortable-handle">
+                    <div class="oh-sticky-table__sd">
+                        <div class="centered-div">
+                            <input type="checkbox" id="{{employee.user_id}}"
+                                class="form-check-input all-bio-employee-row" />
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        {{employee.employee_id.get_full_name}}
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        {{employee.employee_id.badge_id}}
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        {{employee.user_id}}
+                    </div>
+                    <div class="oh-sticky-table__td">
+                        {{employee.employee_id.employee_work_info.email}}
+                    </div>
+                    <div class="oh-sticky-table__td">{{employee.employee_id.phone}}</div>
+                    <div class="oh-sticky-table__td">
+                        {{employee.employee_id.get_job_position}}
+                    </div>
+                    <div class="oh-sticky-table__td oh-sticky-table__right">
+                        <div class="oh-btn-group">
+                            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                hx-confirm="{% trans 'Are you sure you want to delete this user?' %}"
+                                hx-post="{% url 'delete-etimeoffice-user' employee.id %}" hx-target="#eTimeOfficeUser{{employee.id}}"
+                                hx-swap="outerHTML swap:.5s">
+                                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline">
+                                </ion-icon>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

@@ -7,25 +7,24 @@ This module is used to write methods to the component_urls patterns respectively
 import json
 import operator
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from itertools import groupby
 from urllib.parse import parse_qs
 
 import pandas as pd
 from django.apps import apps
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import never_cache
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, Side
 from openpyxl.utils import get_column_letter
 
-import payroll.models.models
 from base.backends import ConfiguredEmailBackend
 from base.methods import (
     closest_numbers,
@@ -58,7 +57,7 @@ from payroll.filters import (
     ReimbursementFilter,
 )
 from payroll.forms import component_forms as forms
-from payroll.methods.deductions import update_compensation_deduction
+from payroll.methods.deductions import create_deductions, update_compensation_deduction
 from payroll.methods.methods import (
     calculate_employer_contribution,
     compute_net_pay,
@@ -84,10 +83,8 @@ from payroll.models.models import (
     Payslip,
     Reimbursement,
     ReimbursementMultipleAttachment,
-    _create_deductions,
 )
 from payroll.threadings.mail import MailSendThread
-from payroll.views.views import view_created_payslip
 
 
 def return_none(a, b):
@@ -708,9 +705,6 @@ def delete_deduction(request, deduction_id, emp_id=None):
     return HttpResponseRedirect(default_redirect)
 
 
-from datetime import date, timedelta
-
-
 def get_month_start_end(year):
     start_end_dates = []
     for month in range(1, 13):
@@ -1003,6 +997,7 @@ def view_individual_payslip(request, employee_id, start_date, end_date):
 
 
 @login_required
+@never_cache
 def view_payslip(request):
     """
     This method is used to render the template for viewing a payslip.
@@ -1463,7 +1458,7 @@ def edit_installment_amount(request):
 
         if len(deductions_after) == 0 and new_installment != 0:
             date = get_next_month_same_date(deduction.one_time_date)
-            installment = _create_deductions(loan, new_installment, date)
+            installment = create_deductions(loan, new_installment, date)
             loan.deduction_ids.add(installment)
 
         messages.success(request, "Installment amount updated successfully")

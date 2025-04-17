@@ -4,6 +4,7 @@ offboarding/urls.py
 This module is used to register url mappings to functions
 """
 
+from django.apps import apps
 from django.urls import path
 
 from offboarding import views
@@ -96,4 +97,42 @@ urlpatterns = [
         views.filter_pipeline,
         name="offboarding-pipeline-filter",
     ),
+    path(
+        "dashboard",
+        views.offboarding_dashboard,
+        name="offboarding-dashboard",
+    ),
+    path(
+        "dashboard-task-table",
+        views.dashboard_task_table,
+        name="dashboard-task-table",
+    ),
+    path(
+        "dashboard-department-chart",
+        views.department_job_postion_chart,
+        name="dashboard-department-chart",
+    ),
+    path(
+        "dashboard-join-chart",
+        views.dashboard_join_chart,
+        name="dashboard-join-chart",
+    ),
 ]
+
+if apps.is_installed("asset"):
+    urlpatterns += [
+        path(
+            "dashboard-asset-table",
+            views.dashboard_asset_table,
+            name="dashboard-asset-table",
+        ),
+    ]
+
+if apps.is_installed("pms"):
+    urlpatterns += [
+        path(
+            "dashboard-feedback-table",
+            views.dashboard_feedback_table,
+            name="dashboard-feedback-table",
+        ),
+    ]

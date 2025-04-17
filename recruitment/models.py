@@ -76,7 +76,7 @@ class SurveyTemplate(HorillaModel):
     SurveyTemplate Model
     """
 
-    title = models.CharField(max_length=30, unique=True)
+    title = models.CharField(max_length=50, unique=True)
     description = models.TextField(null=True, blank=True)
     is_general_template = models.BooleanField(default=False, editable=False)
     company_id = models.ForeignKey(
@@ -109,7 +109,7 @@ class Recruitment(HorillaModel):
     Recruitment model
     """
 
-    title = models.CharField(max_length=30, null=True, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(null=True)
     is_event_based = models.BooleanField(
         default=False,
@@ -244,27 +244,6 @@ class Recruitment(HorillaModel):
             hired_candidate = hired_stage.candidate_set.all().exclude(canceled=True)
             if len(hired_candidate) >= self.vacancy:
                 return True
-
-
-@receiver(post_save, sender=Recruitment)
-def create_initial_stage(sender, instance, created, **kwargs):
-    """
-    This is post save method, used to create initial stage for the recruitment
-    """
-    if created:
-        applied_stage = Stage()
-        applied_stage.sequence = 0
-        applied_stage.recruitment_id = instance
-        applied_stage.stage = "Applied"
-        applied_stage.stage_type = "applied"
-        applied_stage.save()
-
-        initial_stage = Stage()
-        initial_stage.sequence = 1
-        initial_stage.recruitment_id = instance
-        initial_stage.stage = "Initial"
-        initial_stage.stage_type = "initial"
-        initial_stage.save()
 
 
 class Stage(HorillaModel):
@@ -452,6 +431,7 @@ class Candidate(HorillaModel):
         ("stage_id__stage_managers__get_mail", "Stage Managers"),
         ("recruitment_id__recruitment_managers__get_mail", "Recruitment Managers"),
     ]
+    hired_date = models.DateField(null=True, blank=True, editable=False)
 
     def __str__(self):
         return f"{self.name}"
@@ -511,6 +491,9 @@ class Candidate(HorillaModel):
     def get_mail(self):
         """ """
         return self.get_email()
+
+    def phone(self):
+        return self.mobile
 
     def tracking(self):
         """
@@ -614,16 +597,13 @@ class Candidate(HorillaModel):
         ordering = ["sequence"]
 
 
-from horilla.signals import pre_bulk_update
-
-
 class RejectReason(HorillaModel):
     """
     RejectReason
     """
 
     title = models.CharField(
-        max_length=20,
+        max_length=50,
     )
     description = models.TextField(null=True, blank=True, max_length=255)
     company_id = models.ForeignKey(
@@ -817,21 +797,6 @@ class RecruitmentSurveyAnswer(HorillaModel):
         return f"{self.candidate_id.name}-{self.recruitment_id}"
 
 
-class RecruitmentMailTemplate(HorillaModel):
-    title = models.CharField(max_length=25, unique=True)
-    body = models.TextField()
-    company_id = models.ForeignKey(
-        Company,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        verbose_name=_("Company"),
-    )
-
-    def __str__(self) -> str:
-        return f"{self.title}"
-
-
 class SkillZone(HorillaModel):
     """ "
     Model for talent pool
@@ -847,6 +812,10 @@ class SkillZone(HorillaModel):
         verbose_name=_("Company"),
     )
     objects = HorillaCompanyManager()
+
+    class Meta:
+        verbose_name = _("Skill Zone")
+        verbose_name_plural = _("Skill Zones")
 
     def get_active(self):
         return SkillZoneCandidate.objects.filter(is_active=True, skill_zone_id=self)
@@ -1051,24 +1020,3 @@ class CandidateDocument(HorillaModel):
                 raise ValidationError(
                     {"document": _("Please upload {} file only.").format(format)}
                 )
-
-
-@receiver(m2m_changed, sender=CandidateDocumentRequest.candidate_id.through)
-def document_request_m2m_changed(sender, instance, action, **kwargs):
-    if action == "post_add":
-        candidate_document_create(instance)
-
-    elif action == "post_remove":
-        candidate_document_create(instance)
-
-
-def candidate_document_create(instance):
-    candidates = instance.candidate_id.all()
-    for candidate in candidates:
-        document, created = CandidateDocument.objects.get_or_create(
-            candidate_id=candidate,
-            document_request_id=instance,
-            defaults={"title": f"Upload {instance.title}"},
-        )
-        document.title = f"Upload {instance.title}"
-        document.save()

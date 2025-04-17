@@ -33,8 +33,8 @@ class ModalDialog {
   /**
    *  Close modal dialog
    */
-  closeModal() {
-    $('.oh-modal--show').removeClass('oh-modal--show');
+  closeModal(e) {
+    $(e.target).closest(".oh-modal--show").removeClass('oh-modal--show');
   }
 
   /**

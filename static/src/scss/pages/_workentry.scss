@@ -1,0 +1,46 @@
+.oh-we-calendar__row {
+  display: flex;
+
+  .oh-we-calendar__cell {
+    border-right: none;
+
+    &:last-child {
+      border-right: 1px solid $border-color;
+    }
+  }
+}
+.oh-we-calendar__header {
+  display: flex;
+}
+.oh-we-calendar__header-cell {
+  width: 40px;
+  text-align: center;
+  font-weight: bold;
+}
+.oh-we-calendar--week .oh-we-calendar__header-cell.oh-we-calendar__header-cell--title, .oh-we-calendar--week .oh-we-calendar__cell.oh-we-calendar__cell--name{
+  width: 300px;
+}
+.oh-we-calendar--week .oh-we-calendar__header-cell, .oh-we-calendar--week .oh-we-calendar__cell{
+  width: 140px;
+}
+.oh-we-calendar__header-cell--title{
+    padding: 10px !important;
+    text-align: left;
+}
+.oh-we-calendar__header-cell {
+    padding: 10px 0;
+}
+.oh-we-calendar__cell {
+    border: 1px solid $border-color;
+    width: 40px;
+    min-height: 50px;
+}
+.oh-we-calendar__cell--name{
+    padding: 10px !important;
+}
+.oh-we-calendar__cell{
+    padding: 2px;
+}
+.oh-we-calendar__cell--name, .oh-we-calendar__header-cell--title{
+    width: 300px;
+}
