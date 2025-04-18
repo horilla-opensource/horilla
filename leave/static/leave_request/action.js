@@ -62,6 +62,15 @@ var excelMessages = {
   fr: "Voulez-vous télécharger le fichier Excel?",
 };
 
+var leaveReportCreate = {
+  ar: "هل ترغب في تنزيل ملف PDF",
+  de: "Möchten Sie die PDF-Datei herunterladen?",
+  es: "¿Desea descargar el archivo de PDF?",
+  en: "Do you wish to create a Leave Report?",
+  fr: "Voulez-vous télécharger le fichier PDF?",
+};
+
+
 tickLeaverequestsCheckboxes();
 function makeLeaverequestsListUnique(list) {
   return Array.from(new Set(list));
@@ -287,6 +296,48 @@ function exportLeaverequests() {
             const link = document.createElement("a");
             link.href = url;
             link.download = "Leave_requests" + currentDate + ".xlsx";
+            document.body.appendChild(link);
+            link.click();
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            console.error("Error downloading file:", errorThrown);
+          },
+        });
+      }
+    });
+  });
+}
+
+function createLeaveReport() {
+  var currentDate = new Date().toISOString().slice(0, 10);
+  var language_code = null;
+  getCurrentLanguageCode(function (code) {
+    language_code = code;
+    var confirmMessage = leaveReportCreate[language_code];
+    Swal.fire({
+      text: confirmMessage,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#008000",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Confirm",
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "GET",
+          url: "/leave/create-leave-report",
+          dataType: "binary",
+          xhrFields: {
+            responseType: "blob",
+          },
+          success: function (response) {
+            const file = new Blob([response], {
+              type: "application/pdf",
+            });
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "LeaveRequestReport" + currentDate + ".pdf";
             document.body.appendChild(link);
             link.click();
           },
