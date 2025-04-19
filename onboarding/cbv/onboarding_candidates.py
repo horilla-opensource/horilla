@@ -70,7 +70,7 @@ class OnboardingCandidatesList(HorillaListView):
                 )
                 .filter(Q(hired=True) | Q(stage_id__stage_type="hired"))
                 .distinct()
-            )
+            ).order_by("-id")
 
         return self.queryset
 

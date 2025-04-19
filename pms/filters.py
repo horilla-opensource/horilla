@@ -233,6 +233,9 @@ class FeedbackFilter(HorillaFilterSet):
         method="filter_due_date",
         widget=forms.HiddenInput(),  # We'll trigger this via pills
     )
+    offboarding_employees = django_filters.BooleanFilter(
+        method="filter_offboarding_employees",
+    )
 
     search = django_filters.CharFilter(method="search_method")
     review_cycle = django_filters.CharFilter(lookup_expr="icontains")
@@ -311,6 +314,15 @@ class FeedbackFilter(HorillaFilterSet):
             last_day = (first_day + relativedelta(months=1)) - timedelta(days=1)
             return queryset.filter(end_date__range=(first_day, last_day))
         return queryset
+
+    def filter_offboarding_employees(self, queryset, name, value):
+        """
+        Filter offboarding employees
+        """
+        queryset = queryset.filter(
+            employee_id__offboardingemployee__isnull=not value
+        ) | queryset.filter(employee_id__resignationletter__isnull=not value)
+        return queryset.distinct()
 
     def search_method(self, queryset, _, value: str):
         """

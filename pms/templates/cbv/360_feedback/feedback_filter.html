@@ -58,13 +58,19 @@
               {{feedback_filter_form.end_date}}
             </div>
           </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="col-sm-12 col-md-12 col-lg-4">
             <div class="oh-input-group">
               <label class="oh-label" for="{{feedback_filter_form.status.id_for_label}}">{% trans "Status" %}</label>
               {{feedback_filter_form.status}}
             </div>
           </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="col-sm-12 col-md-12 col-lg-4">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.offboarding_employees.id_for_label}}">{% trans "In Offboarding?" %}</label>
+              {{feedback_filter_form.offboarding_employees}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-4">
             <div class="oh-input-group">
               <label class="oh-label" for="{{feedback_filter_form.archive.id_for_label}}">{% trans "Archive" %}</label>
               {{feedback_filter_form.archive}}

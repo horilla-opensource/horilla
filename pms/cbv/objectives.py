@@ -627,6 +627,17 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                 data-kr-id = "{get_instance_id}"
                 """
 
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        """
+        Get querysetmethod
+        """
+        self.queryset = (
+            super()
+            .get_queryset(queryset, filtered, *args, **kwargs)
+            .filter(employee_objective_id=self.kwargs["emp_objective_id"])
+        )
+        return self.queryset
+
 
 class EKRTab(EmployeeObjectiveKeyResultDetailListView):
     """
