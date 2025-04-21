@@ -7,11 +7,10 @@ import contextlib
 import json
 from collections import defaultdict
 from datetime import date, datetime, timedelta
+from io import BytesIO
 from urllib.parse import parse_qs, unquote
 
 import pandas as pd
-from xhtml2pdf import pisa
-from io import BytesIO
 from django.apps import apps
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -24,6 +23,7 @@ from django.utils.encoding import force_str
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
+from xhtml2pdf import pisa
 
 from base.filters import PenaltyFilter
 from base.forms import PenaltyAccountForm
@@ -416,6 +416,8 @@ def leave_request_creation(request, type_id=None, emp_id=None):
     form = choosesubordinates(request, form, "leave.add_leaverequest")
     if request.method == "POST":
         form = LeaveRequestCreationForm(request.POST, request.FILES)
+        # Set the queryset again on the bound form for the validation
+        form.fields["leave_type_id"].queryset = assigned_leave_types
         form = choosesubordinates(request, form, "leave.add_leaverequest")
         if form.is_valid():
             leave_request = form.save(commit=False)
@@ -650,8 +652,8 @@ def generate_leave_request_pdf(template_path, context, html=False):
             logger.error("Error creating PDF")
             return HttpResponse("Error generating PDF", status=500)
 
-        response = HttpResponse(result.getvalue(), content_type='application/pdf')
-        response['Content-Disposition'] = 'inline; filename="leave_request.pdf"'
+        response = HttpResponse(result.getvalue(), content_type="application/pdf")
+        response["Content-Disposition"] = 'inline; filename="leave_request.pdf"'
         return response
 
     except Exception as e:
@@ -675,15 +677,20 @@ def create_leave_report(request):
     company_id = request.session.get("selected_company")
     if company_id == "all" or not company_id:
         company = Company.objects.all()
-    else:    
-        company = Company.objects.filter(id=company_id).first() 
-        
-    leave_requests = LeaveRequest.objects.filter(status="approved").select_related("employee_id", "leave_type_id")
+    else:
+        company = Company.objects.filter(id=company_id).first()
+
+    leave_requests = LeaveRequest.objects.filter(status="approved").select_related(
+        "employee_id", "leave_type_id"
+    )
     used_days_map = defaultdict(float)
     leave_request_map = defaultdict(list)
 
     for lreq in leave_requests:
-        key = (lreq.employee_id.id, lreq.leave_type_id.id if lreq.leave_type_id else None)
+        key = (
+            lreq.employee_id.id,
+            lreq.leave_type_id.id if lreq.leave_type_id else None,
+        )
         used_days_map[key] += lreq.requested_days
         leave_request_map[lreq.employee_id.id].append(lreq)
 
@@ -714,7 +721,7 @@ def create_leave_report(request):
             leave_type_id = leave_type.id
 
             if leave_type_id in emp_data["leave_types_counted"]:
-                continue  
+                continue
 
             emp_data["leave_types_counted"].add(leave_type_id)
 
@@ -724,9 +731,15 @@ def create_leave_report(request):
             used_days = used_days_map.get((employee_id, leave_type_id), 0)
             emp_data["used_leave_days"] += used_days
 
-        emp_data["remaining_leave_days"] = emp_data["total_leave_days"] - emp_data["used_leave_days"]
+        emp_data["remaining_leave_days"] = (
+            emp_data["total_leave_days"] - emp_data["used_leave_days"]
+        )
 
-        sorted_reqs = sorted(emp_data["leave_requests"], key=lambda x: (x.end_date - x.start_date).days, reverse=True)
+        sorted_reqs = sorted(
+            emp_data["leave_requests"],
+            key=lambda x: (x.end_date - x.start_date).days,
+            reverse=True,
+        )
         for i in range(3):
             if i < len(sorted_reqs):
                 emp_data[f"period{i+1}_start"] = sorted_reqs[i].start_date
@@ -744,11 +757,12 @@ def create_leave_report(request):
         "employee_data": final_employee_data,
         "company_data": company,
         "report_creation_date": date.today(),
-        "request": request
+        "request": request,
     }
 
     template_path = "leave/leave_request/leave_request_pdf.html"
     return generate_leave_request_pdf(template_path, context=context, html=False)
+
 
 @login_required
 @hx_request_required

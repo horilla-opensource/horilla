@@ -10,7 +10,7 @@
             size: landscape;
             margin: 5mm;
         }
-        
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -19,41 +19,41 @@
             color: #333;
             line-height: 1.2;
         }
-        
+
         .header-section {
             display: table;
             width: 100%;
             margin-bottom: 5px;
         }
-        
+
         .logo-cell {
             display: table-cell;
             width: 80px;
             vertical-align: top;
         }
-        
+
         .info-cell {
             display: table-cell;
             vertical-align: top;
             padding-left: 5px;
         }
-        
+
         .year-info {
             text-align: right;
             margin-bottom: 2px;
             font-weight: bold;
         }
-        
+
         .company-info div {
             margin-bottom: 1px;
         }
-        
+
         .company-logo {
             width: 70px;
             height: 70px;
             object-fit: contain;
         }
-        
+
         .report-title {
             text-align: center;
             background-color: #6c757d;
@@ -62,12 +62,12 @@
             margin: 8px 0 10px 0;
             font-size: 12px;
         }
-        
+
         .table-container {
             width: 100%;
             margin: 0 auto;
         }
-        
+
         table {
             width: 100%;
             font-size: 10px;
@@ -75,7 +75,7 @@
             table-layout: fixed;
             margin: 0 auto;
         }
-        
+
         th, td {
             padding: 4px 2px;
             text-align: center;
@@ -83,54 +83,54 @@
             word-break: break-word;
             overflow: hidden;
         }
-        
+
         th {
             background-color: #f2f2f2;
             font-weight: bold;
         }
-        
+
         .col-employee {
             width: 16%;
         }
-        
+
         .col-total {
             width: 8%;
         }
-        
+
         .col-period {
             width: 10%;
         }
-        
+
         .col-used {
             width: 8%;
         }
-        
+
         .col-remaining {
             width: 8%;
         }
-        
+
         .periods-header {
             border: 2px solid #000;
             vertical-align: middle;
             padding: 4px;
         }
-        
+
         .other-cell {
             border: 2px solid #000;
         }
-        
+
         .period-cell-l {
             border-top: 2px solid #000;
             border-left: 2px solid #000;
             border-bottom: 2px solid #000;
         }
-        
+
         .period-cell-r {
             border-top: 2px solid #000;
             border-right: 2px solid #000;
             border-bottom: 2px solid #000;
         }
-        
+
         .footer {
             margin-top: 10px;
             font-size: 10px;
@@ -138,22 +138,22 @@
             margin-left: auto;
             margin-right: auto;
         }
-        
+
         .footer-note {
             margin-bottom: 3px;
         }
-        
+
         .footer-date {
             float: left;
             width: 50%;
         }
-        
+
         .footer-signature {
             float: right;
             width: 50%;
             text-align: right;
         }
-        
+
         .clearfix::after {
             content: "";
             clear: both;
@@ -206,7 +206,7 @@
                 <tr>
                     <td class="other-cell col-employee">
                         {% if employee.new_hire %}
-                            * {{ employee.employee.get_full_name }} 
+                            * {{ employee.employee.get_full_name }}
                         {% else %}
                             {{ employee.employee.get_full_name }}
                         {% endif %}
