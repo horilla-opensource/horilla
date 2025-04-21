@@ -10,8 +10,7 @@ from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from attendance.forms import ModelForm
-from base.forms import Form
+from base.forms import Form, ModelForm
 from base.methods import reload_queryset
 from employee.models import Employee
 from horilla.horilla_middlewares import _thread_locals
