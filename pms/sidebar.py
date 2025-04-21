@@ -51,9 +51,7 @@ SUBMENUS = [
 
 
 def key_result_accessibility(request, submenu, user_perms, *args, **kwargs):
-    return request.user.has_perm("pms.view_keyresult") or is_reportingmanager(
-        request.user
-    )
+    return request.user.has_perm("pms.view_keyresult")
 
 
 def period_accessibility(request, submenu, user_perms, *args, **kwargs):

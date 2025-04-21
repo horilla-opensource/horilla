@@ -98,7 +98,7 @@ from pms.models import (
     QuestionOptions,
     QuestionTemplate,
 )
-from base.methods import is_reportingmanager
+
 logger = logging.getLogger(__name__)
 
 
@@ -276,7 +276,7 @@ def objective_update(request, obj_id):
 
 # key result
 @login_required
-@manager_can_enter("pms.view_keyresult")
+@permission_required("pms.view_keyresult")
 def view_key_result(request):
     """
     This method is used render template to view all the key result instances
@@ -295,7 +295,7 @@ def view_key_result(request):
 
 @login_required
 @hx_request_required
-@permission_required("pms.view_key_result")
+# @permission_required("pms.view_key_result")
 def filter_key_result(request):
     """
     Filter and retrieve a list of key results based on the provided query parameters.
@@ -381,7 +381,6 @@ def kr_create_or_update(request, kr_id=None):
     Returns:
     Renders a form to create or update a Key Result.
     """
-    
     form = KRForm()
     kr = False
     key_result = False
@@ -399,6 +398,7 @@ def kr_create_or_update(request, kr_id=None):
                     % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
+
         else:
             form = KRForm(request.POST)
             if form.is_valid():
@@ -409,6 +409,7 @@ def kr_create_or_update(request, kr_id=None):
                     % {"key_result": instance},
                 )
                 return HttpResponse("<script>window.location.reload()</script>")
+
     return render(request, "okr/key_result/real_kr_form.html", {"form": form})
 
 
@@ -1533,7 +1534,7 @@ def feedback_creation(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter(perm="pms.change_feedback")
+@permission_required(perm="pms.change_feedback")
 def feedback_update(request, id):
     """
     This view is used to  update the feedback.
@@ -1958,7 +1959,7 @@ def feedback_answer_view(request, id, **kwargs):
 
 
 @login_required
-@manager_can_enter(perm="pms.delete_feedback")
+@permission_required(perm="pms.delete_feedback")
 def feedback_delete(request, id):
     """
     This view is used to  delete the feedback.
@@ -2101,50 +2102,49 @@ def get_collegues(request):
     try:
         employee_id = request.GET.get("employee_id")
         employee = Employee.objects.get(id=int(employee_id)) if employee_id else None
-
-        if employee:
-            employees_queryset = Employee.objects.none()
-            reporting_manager = (
-                employee.employee_work_info.reporting_manager_id
-                if employee.employee_work_info
-                else None
+        employees_queryset = Employee.objects.none()
+        reporting_manager = (
+            employee.employee_work_info.reporting_manager_id
+            if employee and employee.employee_work_info
+            else None
+        )
+        if request.GET.get("data") == "keyresults":
+            employees_queryset = EmployeeKeyResult.objects.filter(
+                employee_objective_id__employee_id=employee
             )
-
-            if request.GET.get("data") == "colleagues":
-                department = employee.get_department()
-                # employee ids to exclude from collegue list
-                exclude_ids = [employee.id]
-                if reporting_manager:
-                    exclude_ids.append(reporting_manager.id)
-
-                # Get employees in the same department as the employee
-                employees_queryset = Employee.objects.filter(
-                    is_active=True, employee_work_info__department_id=department
-                ).exclude(id__in=exclude_ids)
-            elif request.GET.get("data") == "manager":
-                if reporting_manager:
-                    employees_queryset = Employee.objects.filter(
-                        id=reporting_manager.id
-                    )
-            elif request.GET.get("data") == "subordinates":
-                employees_queryset = Employee.objects.filter(
-                    is_active=True, employee_work_info__reporting_manager_id=employee
-                )
-            elif request.GET.get("data") == "keyresults":
-                employees_queryset = EmployeeKeyResult.objects.filter(
-                    employee_objective_id__employee_id=employee
-                )
-            # Convert QuerySets to a list
-            employees = [(employee.id, employee) for employee in employees_queryset]
-            context = {"employees": employees}
-            employee_html = render_to_string("employee/employees_select.html", context)
-            return HttpResponse(employee_html)
         else:
-            return JsonResponse({"error": "Employee not found"}, status=404)
-    except Employee.DoesNotExist:
-        return JsonResponse({"error": "Invalid Employee ID"}, status=400)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+            if employee and employee.employee_work_info:
+                if request.GET.get("data") == "colleagues":
+                    department = employee.get_department()
+                    # employee ids to exclude from collegue list
+                    exclude_ids = [employee.id]
+                    if reporting_manager:
+                        exclude_ids.append(reporting_manager.id)
+
+                    # Get employees in the same department as the employee
+                    employees_queryset = Employee.objects.filter(
+                        is_active=True, employee_work_info__department_id=department
+                    ).exclude(id__in=exclude_ids)
+                elif request.GET.get("data") == "manager":
+                    if reporting_manager:
+                        employees_queryset = Employee.objects.filter(
+                            id=reporting_manager.id
+                        )
+                elif request.GET.get("data") == "subordinates":
+                    employees_queryset = Employee.objects.filter(
+                        is_active=True,
+                        employee_work_info__reporting_manager_id=employee,
+                    )
+
+        # Convert QuerySets to a list
+        employees = [(employee.id, employee) for employee in employees_queryset]
+        context = {"employees": employees}
+        employee_html = render_to_string("employee/employees_select.html", context)
+        return HttpResponse(employee_html)
+    except:
+        context = {"employees": []}
+        employee_html = render_to_string("employee/employees_select.html", context)
+        return HttpResponse(employee_html)
 
 
 @login_required
