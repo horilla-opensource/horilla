@@ -722,8 +722,9 @@ form label {
 
 .display-justify-center {
     display: flex !important;
-    justify-content: center !important;
+    justify-content: space-between !important;
     align-items: center !important;
+
 }
 
 #ObjectiveDetailedViewContainer .avatars {
@@ -798,4 +799,28 @@ form label {
     top: 100px;
     height: 200px;
     width: 200px;
+}
+
+.oh-custom-select {
+    width: 90%;
+    color: hsl(0, 0%, 11%);
+    background-color: transparent;
+    height: 100%;
+    border: 1px solid transparent;
+}
+
+.oh-dot--color-completed {
+    background-color: #21c06b
+}
+
+.oh-dot--color-stuck {
+    background-color: #ff0400
+}
+
+.oh-dot--color-in_progress {
+    background-color: #3398db
+}
+
+.oh-dot--color-todo {
+    background-color: #e3b75f80
 }

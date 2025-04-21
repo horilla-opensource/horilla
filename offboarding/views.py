@@ -399,10 +399,10 @@ def change_stage(request):
     for employee in employees:
         employee.stage_id = stage
         employee.save()
-    if stage.type == "archived":
-        Employee.objects.filter(
-            id__in=employees.values_list("employee_id__id", flat=True)
-        ).update(is_active=False)
+    # if stage.type == "archived":
+    #     Employee.objects.filter(
+    #         id__in=employees.values_list("employee_id__id", flat=True)
+    #     ).update(is_active=False)
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
         offboarding=stage.offboarding_id
@@ -433,6 +433,51 @@ def change_stage(request):
             "today": datetime.today().date(),
         },
     )
+
+
+@login_required
+@hx_request_required
+@any_manager_can_enter("offboarding.change_offboarding")
+def change_offboarding_stage(request):
+    """
+    This method is used to update the stages of the employee
+    """
+    employee_ids = request.GET.getlist("employee_ids")
+    stage_id = request.GET["stage_id"]
+    employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
+    stage = OffboardingStage.objects.get(id=stage_id)
+    # This wont trigger the save method inside the offboarding employee
+    # employees.update(stage_id=stage)
+    for employee in employees:
+        employee.stage_id = stage
+        employee.save()
+    if stage.type == "archived":
+        Employee.objects.filter(
+            id__in=employees.values_list("employee_id__id", flat=True)
+        ).update(is_active=False)
+    stage_forms = {}
+    stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
+        offboarding=stage.offboarding_id
+    )
+    notify.send(
+        request.user.employee_get,
+        recipient=User.objects.filter(
+            id__in=employees.values_list("employee_id__employee_user_id", flat=True)
+        ),
+        verb=f"Offboarding stage has been changed",
+        verb_ar=f"تم تغيير مرحلة إنهاء الخدمة",
+        verb_de=f"Die Offboarding-Stufe wurde geändert",
+        verb_es=f"Se ha cambiado la etapa de offboarding",
+        verb_fr=f"L'étape d'offboarding a été changée",
+        redirect=reverse("offboarding-pipeline"),
+        icon="information",
+    )
+    groups = pipeline_grouper({}, [stage.offboarding_id])
+    for item in groups:
+        setattr(item["offboarding"], "stages", item["stages"])
+    from horilla_views.generic.cbv.views import HorillaFormView
+
+    return HorillaFormView.HttpResponse()
 
 
 @login_required
@@ -571,14 +616,15 @@ def update_task_status(request, *args, **kwargs):
     """
     This method is used to update the assigned tasks status
     """
-    stage_id = request.GET["stage_id"]
+    stage_id = request.GET.get("stage_id")
     employee_ids = request.GET.getlist("employee_ids")
-    task_id = request.GET["task_id"]
-    status = request.GET["task_status"]
+    task_id = request.GET.get("task_id")
+    status = request.GET.get("task_status")
     employee_task = EmployeeTask.objects.filter(
         employee_id__id__in=employee_ids, task_id__id=task_id
     )
     employee_task.update(status=status)
+    messages.success(request, _("Task status updated successfully..."))
     notify.send(
         request.user.employee_get,
         recipient=User.objects.filter(

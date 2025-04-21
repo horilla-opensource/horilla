@@ -132,7 +132,7 @@ class StageSelectForm(ModelForm):
         super().__init__(*args, **kwargs)
         attrs = self.fields["stage_id"].widget.attrs
         attrs["onchange"] = "offboardingUpdateStage($(this))"
-        attrs["class"] = "w-100 oh-select-custom"
+        attrs["class"] = "w-100 oh-custom-select"
         self.fields["stage_id"].widget.attrs.update(attrs)
         self.fields["stage_id"].empty_label = None
         self.fields["stage_id"].queryset = OffboardingStage.objects.filter(

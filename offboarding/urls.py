@@ -18,7 +18,11 @@ urlpatterns = [
         resignation_tab.ResignationTabView.as_view(),
         name="individual-resignation-tab-list",
     ),
-    path("offboarding-pipeline", views.pipeline, name="offboarding-pipeline"),
+    path(
+        "offboarding-pipeline",
+        exit_process.OffboardingPipelineView.as_view(),
+        name="offboarding-pipeline",
+    ),
     # path("create-offboarding", views.create_offboarding, name="create-offboarding"),
     path(
         "create-offboarding",
@@ -39,6 +43,21 @@ urlpatterns = [
     #     "create-offboarding-stage", views.create_stage, name="create-offboarding-stage"
     # ),
     path(
+        "get-offboarding-stage/<int:offboarding_id>/",
+        exit_process.OffboardingPipelineStage.as_view(),
+        name="get-offboarding-stage",
+    ),
+    path(
+        "get-offboarding-employees-cbv",
+        exit_process.OffboardingEmployeeList.as_view(),
+        name="get-offboarding-employees-cbv",
+    ),
+    path(
+        "get-offboarding-tab",
+        exit_process.PipeLineTabView.as_view(),
+        name="get-offboarding-tab",
+    ),
+    path(
         "create-offboarding-stage",
         exit_process.OffboardingStageFormView.as_view(),
         name="create-offboarding-stage",
@@ -48,11 +67,21 @@ urlpatterns = [
         exit_process.OffboardingStageFormView.as_view(),
         name="create-offboarding-stage",
     ),
+    path(
+        "offboarding-pipeline-nav/",
+        exit_process.OffboardingPipelineNav.as_view(),
+        name="offboarding-pipeline-nav",
+    ),
     # path("add-employee", views.add_employee, name="add-employee"),
     path(
         "add-employee",
         exit_process.OffboardingStageAddEmployeeForm.as_view(),
         name="add-employee",
+    ),
+    path(
+        "add-offboarding-employee",
+        exit_process.OffboardingStageAddEmployeeForm.as_view(),
+        name="add-offboarding-employee",
     ),
     path(
         "add-employee/<int:pk>/",
@@ -64,6 +93,11 @@ urlpatterns = [
     ),
     path(
         "offboarding-change-stage", views.change_stage, name="offboarding-change-stage"
+    ),
+    path(
+        "change-offboarding-stage",
+        views.change_offboarding_stage,
+        name="change-offboarding-stage",
     ),
     path(
         "view-offboarding-note/<int:employee_id>/",

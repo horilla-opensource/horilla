@@ -17,6 +17,11 @@ from . import models, views
 
 urlpatterns = [
     path(
+        "ekr-history/<int:pk>",
+        key_result.EKRHistory.as_view(),
+        name="ekr-history",
+    ),
+    path(
         "individual-performance-tab-list/<int:pk>/",
         feedback.PerformanceTab.as_view(),
         name="individual-performance-tab-list",

@@ -73,7 +73,7 @@ EmployeeProfileView.add_tab(
         {
             "title": "Resignation",
             "view": ResignationTabView.as_view(),
-            "accessibility": "offboarding.cbv.acessibility.resignation_accessibility",
+            "accessibility": "offboarding.cbv.accessibility.resignation_accessibility",
         },
     ]
 )

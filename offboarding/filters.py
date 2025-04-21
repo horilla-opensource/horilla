@@ -111,6 +111,9 @@ class PipelineEmployeeFilter(HorillaFilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    offboarding_stage_id = django_filters.CharFilter(
+        field_name="stage_id",
+    )
 
     class Meta:
         model = OffboardingEmployee

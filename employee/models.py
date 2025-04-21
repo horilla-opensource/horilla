@@ -206,6 +206,17 @@ class Employee(models.Model):
         """
         return getattr(getattr(self, "employee_work_info", None), "shift_id", None)
 
+    def get_shift_schedule(self):
+        """
+        This method is used to check if the employee has a shift assigned
+        """
+        shift = self.get_shift()
+        day = datetime.today().strftime("%A").lower()
+        if not shift:
+            return None
+        schedule = shift.employeeshiftschedule_set.filter(day__day=day).first()
+        return schedule if schedule else None
+
     def get_mail(self):
         """
         This method is used to return the employee's email, checking work email first

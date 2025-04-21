@@ -727,3 +727,7 @@ $(document).on('htmx:afterSwap', function () {
         });
     }
 });
+function offboardingUpdateStage($element) {
+    submitButton = $element.closest("form").find("input[type=submit]")
+    submitButton.click()
+}

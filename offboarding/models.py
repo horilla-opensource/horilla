@@ -1,3 +1,4 @@
+from ast import literal_eval
 from collections.abc import Iterable
 from datetime import date, timedelta
 
@@ -7,6 +8,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse_lazy
+from django.utils.timesince import timesince
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -94,6 +96,26 @@ class OffboardingStage(HorillaModel):
         """
         return self.type == "archived"
 
+    def get_delete_url(self):
+        """
+        This method is used to get delete url
+        """
+        return f"{reverse_lazy('generic-delete')}?model=offboarding.OffboardingStage&pk={self.pk}"
+
+    def get_update_url(self):
+        """
+        This method is used to get update url
+        """
+        return f'{reverse_lazy("create-offboarding-stage", kwargs={"pk": self.pk})}?offboarding_id={self.offboarding_id.pk}'
+
+    def get_add_employee_url(self):
+        """
+        This method is used to get add employee url
+        """
+        url = f'{reverse_lazy("add-offboarding-employee")}?stage_id={self.id}'
+
+        return url
+
 
 @receiver(post_save, sender=Offboarding)
 def create_initial_stage(sender, instance, created, **kwargs):
@@ -145,6 +167,20 @@ class OffboardingEmployee(HorillaModel):
         """
         return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
 
+    def detail_view_task_custom(self):
+        """
+        This method for get custom column for stage in detail view.
+        """
+        tasks = self.employeetask_set.all()
+
+        return render_template(
+            path="cbv/exit_process/detail_view_tasks.html",
+            context={
+                "instance": self,
+                "tasks": tasks,
+            },
+        )
+
     def detail_view_stage_custom(self):
         """
         This method for get custom column for stage in detail view.
@@ -164,6 +200,96 @@ class OffboardingEmployee(HorillaModel):
                 "stage_forms": stage_forms,
             },
         )
+
+    def get_individual_url(self):
+        """
+        This method is used to get update url
+        """
+        return f'{reverse_lazy("offboarding-individual-view", kwargs={"pk": self.pk})}'
+
+    def get_notice_period_col(self):
+        """
+        This method for get custom column for notice period in detail view.
+        """
+
+        notice_period_ends = self.notice_period_ends
+        today = date.today()
+
+        if notice_period_ends:
+            col = (
+                _("today")
+                if notice_period_ends == today
+                else (
+                    _("Notice period ended")
+                    if notice_period_ends < today
+                    else (
+                        _("In") + " " + timesince(today, notice_period_ends)
+                        if notice_period_ends
+                        else ""
+                    )
+                )
+            )
+
+        return col if notice_period_ends else ""
+
+    def get_stage_col(self):
+        """
+        This method for get custom column for stage in Pipeline view.
+        """
+        from offboarding.forms import StageSelectForm
+
+        return render_template(
+            path="cbv/exit_process/pipeline_stage_col.html",
+            context={
+                "employee": self,
+                "stage_form": StageSelectForm(
+                    offboarding=self.stage_id.offboarding_id,
+                    initial={"stage_id": self.stage_id.pk},
+                ),
+                "stages": self.stage_id.offboarding_id.offboardingstage_set.all(),
+            },
+        )
+
+    def get_task_status_col(self):
+        """
+        This method for get custom column for task status in Pipeline view.
+        """
+        completed_tasks = self.employeetask_set.filter(status="completed").count()
+        total_tasks = self.employeetask_set.all().count()
+
+        task_status = f"{completed_tasks} / {total_tasks}"
+        col = f"""
+            <div class="oh-checkpoint-badge oh-checkpoint-badge--primary" title="Completed {completed_tasks} of {total_tasks} tasks">
+                {task_status}
+            </div>
+        """
+        return col
+
+    def get_action_col(self):
+        """
+        This method for get custom column for action in Pipeline view.
+        """
+        return render_template(
+            path="cbv/exit_process/pipeline_action_col.html",
+            context={"employee": self, "stage": self.stage_id},
+        )
+
+    def __getattribute__(self, name):
+        if name.startswith("get_") and name.endswith("_task"):
+            task_id = literal_eval(name[4:-5])
+            task = EmployeeTask.objects.filter(
+                task_id__id=task_id,
+                employee_id_id=self.id,
+                task_id__stage_id=self.stage_id,
+            ).first()
+
+            return render_template(
+                "cbv/exit_process/tasks_cols.html",
+                {"instance": self, "task": task, "task_id": task_id},
+            )
+        value = super().__getattribute__(name)
+
+        return value
 
 
 class ResignationLetter(HorillaModel):

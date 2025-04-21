@@ -16,6 +16,7 @@ from django.views import View
 from base.methods import closest_numbers
 from horilla.decorators import manager_can_enter
 from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.history import HorillaHistoryView
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
     HorillaDetailedView,
@@ -26,7 +27,7 @@ from horilla_views.generic.cbv.views import (
 )
 from pms.filters import ActualKeyResultFilter
 from pms.forms import KRForm
-from pms.models import KeyResult
+from pms.models import EmployeeKeyResult, KeyResult
 
 
 @method_decorator(login_required, name="dispatch")
@@ -284,3 +285,18 @@ class DeleteKeyResults(View):
         http_hx_target = self.request.META.get("HTTP_HX_TARGET")
         redirected_path = paths.get(http_hx_target)
         return redirect(redirected_path)
+
+
+@method_decorator(login_required, name="dispatch")
+class EKRHistory(HorillaHistoryView):
+    """
+    EKR History
+    """
+
+    model = EmployeeKeyResult
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.has_perm_to_revert = self.request.user.has_perm(
+            "pms.change_employeekeyresult"
+        )

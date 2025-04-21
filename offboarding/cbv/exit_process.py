@@ -2,23 +2,38 @@
 This page handles the cbv methods for existing process
 """
 
+import re
 from datetime import datetime, timedelta
 
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import intial_notice_period
+from base.methods import eval_validate
 from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaFormView
+from horilla_views.generic.cbv.pipeline import Pipeline
+from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+    HorillaSectionView,
+    HorillaTabView,
+)
 from notifications.signals import notify
 from offboarding.cbv_decorators import (
     any_manager_can_enter,
     offboarding_manager_can_enter,
     offboarding_or_stage_manager_can_enter,
+)
+from offboarding.filters import (
+    PipelineEmployeeFilter,
+    PipelineFilter,
+    PipelineStageFilter,
 )
 from offboarding.forms import (
     OffboardingEmployeeForm,
@@ -27,10 +42,15 @@ from offboarding.forms import (
     TaskForm,
 )
 from offboarding.models import (
+    EmployeeTask,
     Offboarding,
     OffboardingEmployee,
     OffboardingStage,
     OffboardingTask,
+)
+from offboarding.templatetags.offboarding_filter import (
+    any_manager,
+    is_offboarding_manager,
 )
 
 
@@ -197,10 +217,11 @@ class OffboardingTaskFormView(HorillaFormView):
             form.save()
 
             messages.success(self.request, message)
-            return HttpResponse("<script>window.location.reload()</script>")
+            return self.HttpResponse()
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class ExitProcessDetailView(HorillaDetailedView):
     """
     detail view
@@ -213,6 +234,7 @@ class ExitProcessDetailView(HorillaDetailedView):
         "subtitle": "detail_subtitle",
         "avatar": "employee_id__get_avatar",
     }
+    empty_template = "cbv/exit_process/detailed_page_empty.html"
     body = [
         (_("Email"), "employee_id__employee_work_info__email"),
         (_("Job Position"), "employee_id__employee_work_info__job_position_id"),
@@ -220,4 +242,356 @@ class ExitProcessDetailView(HorillaDetailedView):
         (_("Notice Period start Date"), "notice_period_starts"),
         (_("Notice Period end Date"), "notice_period_ends"),
         (_("Stage"), "detail_view_stage_custom"),
+        (_("Tasks"), "detail_view_task_custom", "custom_template"),
     ]
+    cols = {
+        "detail_view_task_custom": 12,
+    }
+
+
+@method_decorator(login_required, name="dispatch")
+class OffboardingPipelineView(HorillaSectionView):
+    """
+    Offboarding Pipeline View
+    """
+
+    template_name = "cbv/exit_process/pipeline_view.html"
+    nav_url = reverse_lazy("offboarding-pipeline-nav")
+    view_url = reverse_lazy("get-offboarding-tab")
+    view_container_id = "pipelineContainer"
+
+
+@method_decorator(login_required, name="dispatch")
+class OffboardingPipelineNav(HorillaNavView):
+    """
+    Offboarding Pipeline Navigation View
+    """
+
+    nav_title = "Pipeline"
+    search_swap_target = "#pipelineContainer"
+    search_url = reverse_lazy("get-offboarding-tab")
+    filter_body_template = "offboarding/pipeline/filter.html"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.request.user.has_perm("offboarding.create-offboarding"):
+            self.create_attrs = f"""
+                class="oh-btn oh-btn--secondary"
+                hx-get="{reverse_lazy("create-offboarding")}"
+                hx-target="#objectDetailsModalTarget"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModal"
+            """
+
+
+@method_decorator(login_required, name="dispatch")
+class PipeLineTabView(HorillaTabView):
+    """
+    Pipeline List View
+    """
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        offboardings = PipelineFilter(self.request.GET).qs.filter(is_active=True)
+
+        self.tabs = []
+        for offboarding in offboardings:
+            tab = {}
+            tab["actions"] = []
+            tab["title"] = offboarding.title
+            tab["url"] = reverse(
+                "get-offboarding-stage", kwargs={"offboarding_id": offboarding.pk}
+            )
+            tab["badge_label"] = _("Stages")
+            if self.request.user.has_perm(
+                "offboarding.add_offboardingstage"
+            ) or is_offboarding_manager(self.request.user.employee_get):
+                tab["actions"].append(
+                    {
+                        "action": _("Add Stage"),
+                        "attrs": f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{reverse("create-offboarding-stage")}?offboarding_id={offboarding.pk}"
+                            hx-target="#genericModalBody"
+                            style="cursor: pointer;"
+                        """,
+                    }
+                )
+            if self.request.user.has_perm(
+                "offboarding.change_offboarding"
+            ) or is_offboarding_manager(self.request.user.employee_get):
+                tab["actions"].append(
+                    {
+                        "action": _("Edit"),
+                        "attrs": f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{reverse("update-offboarding", kwargs={"pk": offboarding.pk})}"
+                            hx-target="#genericModalBody"
+                            style="cursor: pointer;"
+                        """,
+                    }
+                )
+            if self.request.user.has_perm("offboarding.delete_offboarding"):
+                tab["actions"].append(
+                    {
+                        "action": _("Delete"),
+                        "attrs": f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#deleteConfirmation"
+                            hx-get="{reverse('generic-delete')}?model=offboarding.Offboarding&pk={offboarding.pk}"
+                            hx-target="#deleteConfirmationBody"
+                            style="cursor: pointer;"
+                        """,
+                    }
+                )
+
+            self.tabs.append(tab)
+
+
+@method_decorator(login_required, name="dispatch")
+class OffboardingPipelineStage(Pipeline):
+    """
+    Offboarding Pipeline Stage
+    """
+
+    model = OffboardingEmployee
+    filter_class = PipelineEmployeeFilter
+    grouper = "stage_id"
+    selected_instances_key_name = "OffboardingEmployeeRecords"
+    allowed_fields = [
+        {
+            "field": "stage_id",
+            "model": OffboardingStage,
+            "filter": PipelineStageFilter,
+            "url": reverse_lazy("get-offboarding-employees-cbv"),
+            "parameters": [
+                "offboarding_stage_id={pk}",
+                "offboarding_id={offboarding_id__pk}",
+            ],
+            "actions": [
+                {
+                    "action": "Add Employee",
+                    "accessibility": "offboarding.cbv.accessibility.add_employee_accessibility",
+                    "attrs": """
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                        hx-get="{get_add_employee_url}"
+                        hx-target="#genericModalBody"
+                        class="oh-dropdown__link"
+                    """,
+                },
+                {
+                    "action": "Edit",
+                    "accessibility": "offboarding.cbv.accessibility.edit_stage_accessibility",
+                    "attrs": """
+                        hx-target="#genericModalBody"
+                        hx-get="{get_update_url}"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                    """,
+                },
+                {
+                    "action": "Delete",
+                    "accessibility": "offboarding.cbv.accessibility.delete_stage_accessibility",
+                    "attrs": """
+                        data-target="#deleteConfirmation"
+                        data-toggle="oh-modal-toggle"
+                        hx-get="{get_delete_url}"
+                        hx-target="#deleteConfirmationBody"
+                    """,
+                },
+            ],
+        }
+    ]
+
+
+@method_decorator(login_required, name="dispatch")
+class OffboardingEmployeeList(HorillaListView):
+    """
+    Offboarding Employee List View
+    """
+
+    model = OffboardingEmployee
+    filter_class = PipelineEmployeeFilter
+    search_url = reverse_lazy("get-offboarding-tab")
+    filter_keys_to_remove = ["offboarding_stage_id", "offboarding_id"]
+    next_prev = False
+    quick_export = False
+    filter_selected = False
+    custom_empty_template = "cbv/pipeline/empty.html"
+    columns = [
+        ("Employee", "employee_id", "employee_id__get_avatar"),
+        ("Notice Period", "get_notice_period_col"),
+        ("Start Date", "notice_period_starts"),
+        ("End Date", "notice_period_ends"),
+        ("Stage", "get_stage_col"),
+        ("Task Status", "get_task_status_col"),
+    ]
+
+    action_method = """get_action_col"""
+
+    row_attrs = """
+        class = "fw-bold"
+        hx-get='{get_individual_url}'
+        hx-target='#genericModalBody'
+        data-toggle = 'oh-modal-toggle'
+        data-target="#genericModal"
+    """
+    bulk_update_fields = ["stage_id"]
+
+    def get(self, request, *args, **kwargs):
+        self.selected_instances_key_id = (
+            f"OffboardingEmployeeRecords{self.request.GET['offboarding_stage_id']}"
+        )
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        if not getattr(self, "queryset", None):
+            qs = OffboardingEmployee.objects.entire()
+            queryset = super().get_queryset(qs, filtered, *args, **kwargs)
+            if not (
+                self.request.user.has_perm("offboarding.view_offboarding")
+                or any_manager(self.request.user.employee_get)
+            ):
+                queryset = queryset.filter(employee_id=self.request.user.employee_get)
+            self.queryset = queryset
+        return self.queryset
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.view_id = (
+            f"offboardingStageContainer{self.request.GET.get('offboarding_stage_id')}"
+        )
+        self.managing_offboarding_tasks = OffboardingTask.objects.filter(
+            managers__employee_user_id=self.request.user
+        ).values_list("pk", flat=True)
+        self.request.managing_offboarding_tasks = self.managing_offboarding_tasks
+
+        self.managing_offboarding_stages = OffboardingStage.objects.filter(
+            managers__employee_user_id=self.request.user
+        ).values_list("pk", flat=True)
+        self.request.managing_offboarding_stages = self.managing_offboarding_stages
+
+        self.managing_offboardings = Offboarding.objects.filter(
+            managers__employee_user_id=self.request.user
+        ).values_list("pk", flat=True)
+        self.request.managing_offboardings = self.managing_offboardings
+
+    def get_context_data(self, **kwargs):
+        stage_id = self.request.GET["offboarding_stage_id"]
+        tasks = OffboardingTask.objects.filter(stage_id=stage_id)
+        context = super().get_context_data(**kwargs)
+        for task in tasks:
+            context["columns"].append(
+                (
+                    f"""
+                        <div class="oh-hover-btn-container position-relative">
+                            <button class="oh-hover-btn fw-bold"
+                                style="border: none !important;"
+                            >
+                                {task.title}
+                            </button>
+                            <div class="oh-hover-btn-drawer oh-hover-btn-table-drawer">
+                                <button
+                                    hx-get="{reverse("offboarding-update-task",kwargs={"pk":task.pk})}"
+                                    hx-target="#genericModalBody"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#genericModal"
+                                    class="oh-hover-btn__small"
+                                    style="
+                                        border:1px hsl(8,77%,56%) solid;
+                                    "
+                                    title="Edit"
+                                >
+                                    <ion-icon name="create-outline"></ion-icon>
+                                </button>
+                                <a
+                                    hx-get="{reverse("generic-delete")}?model=offboarding.OffboardingTask&pk={task.id}"
+                                    hx-target="#deleteConfirmationBody"
+                                    data-target="#deleteConfirmation"
+                                    data-toggle="oh-modal-toggle"
+                                    class="oh-hover-btn__small"
+                                    style="
+                                        border:1px hsl(8,77%,56%) solid;
+                                    "
+                                    title="Delete"
+                                >
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                </a>
+                            </div>
+                        </div>
+                    """,
+                    f"get_{task.pk}_task",
+                )
+            )
+        if self.request.user.has_perm(
+            "perms.offboarding.add_offboardingtask"
+        ) or any_manager(self.request.user.employee_get):
+            context["columns"].append(
+                (
+                    f"""
+                        <button
+                            class="oh-checkpoint-badge text-success"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{reverse('offboarding-add-task')}?stage_id={stage_id}"
+                            hx-target="#genericModalBody"
+                            >
+                            + Task
+                        </button>
+                        """,
+                    "",
+                )
+            )
+        return context
+
+    def bulk_update_accessibility(self):
+        if self.request.method == "GET":
+            return False
+        return (
+            self.request.user.has_perm("offboarding.change_offboardingstage")
+            or self.request.user.has_perm("offboarding.change_offboarding")
+            or any_manager(self.request.employee_get)
+        )
+
+    def get_bulk_form(self):
+        form = super().get_bulk_form()
+        offboarding_id = self.request.GET.get("offboarding_id")
+        offboarding_stage_id = self.request.GET.get("offboarding_stage_id")
+        form.fields.get("stage_id").queryset = form.fields.get(
+            "stage_id"
+        ).queryset.filter(offboarding_id=offboarding_id)
+
+        tasks = OffboardingTask.objects.filter(stage_id=offboarding_stage_id)
+        for task in tasks:
+            form.fields[f"bulk_task_status_{task.pk}"] = forms.ChoiceField(
+                choices=[
+                    ("", "----------"),
+                ]
+                + list(EmployeeTask.statuses),
+                label=task.title,
+                required=False,
+                widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
+            )
+
+        if not self.bulk_update_accessibility():
+            del form["stage_id"]
+
+        return form
+
+    def handle_bulk_submission(self, request):
+        response = super().handle_bulk_submission(request)
+        mapped_data = {
+            int(re.search(r"bulk_task_status_(\d+)", key).group(1)): value
+            for key, value in request.POST.items()
+            if re.search(r"bulk_task_status_(\d+)", key)
+        }
+        instance_ids = request.POST.get("instance_ids", "[]")
+        instance_ids = eval_validate(instance_ids)
+        for pk, status in mapped_data.items():
+            EmployeeTask.objects.filter(
+                employee_id__in=instance_ids, task_id=pk
+            ).update(status=status)
+        return response

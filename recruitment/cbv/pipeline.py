@@ -254,6 +254,11 @@ class CandidateList(HorillaListView):
                 hx-target="#genericModalBody"
                 """
 
+    header_attrs = {
+        "option": """
+    style="width:280px !important"
+    """
+    }
     actions = [
         {
             "action": _("Schedule Interview"),

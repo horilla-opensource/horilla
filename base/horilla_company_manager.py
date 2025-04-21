@@ -83,6 +83,8 @@ class HorillaCompanyManager(models.Manager):
                         request = getattr(_thread_locals, "request", None)
                         if not getattr(request, "is_filtering", None):
                             queryset = queryset.filter(is_active=True)
+                    elif model_name == "offboardingemployee":
+                        return queryset
                     else:
                         for field in queryset.model._meta.fields:
                             if isinstance(field, models.ForeignKey):

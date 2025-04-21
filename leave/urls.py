@@ -163,7 +163,11 @@ urlpatterns = [
         views.leave_requests_export,
         name="leave-requests-info-export",
     ),
-    # path("request-view/", views.leave_request_view, name="request-view"),
+    path(
+        "create-leave-report",
+        views.create_leave_report,
+        name="create-leave-report",
+    ),
     path(
         "request-approve/<int:id>", views.leave_request_approve, name="request-approve"
     ),

@@ -40,6 +40,7 @@ class ObjectivesView(TemplateView):
     template_name = "cbv/objectives/objectives.html"
 
 
+@method_decorator(login_required, name="dispatch")
 class ObjectivesList(HorillaListView):
     """
     List view of the page
@@ -108,6 +109,7 @@ class MyObjectives(ObjectivesList):
         return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class AllObjectives(ObjectivesList):
     """
     List view of all objectives
@@ -140,6 +142,7 @@ class AllObjectives(ObjectivesList):
         return queryset.distinct()
 
 
+@method_decorator(login_required, name="dispatch")
 class ObjectivesTab(HorillaTabView):
     """
     Tab View
@@ -189,6 +192,7 @@ class ObjectivesTab(HorillaTabView):
             )
 
 
+@method_decorator(login_required, name="dispatch")
 class ObjectivesNav(HorillaNavView):
     """
     Nav bar
@@ -211,11 +215,13 @@ class ObjectivesNav(HorillaNavView):
     search_swap_target = "#listContainer"
 
 
+@method_decorator(login_required, name="dispatch")
 class DynamicKeyResultCreateForm(KeyResultFormView):
 
     is_dynamic_create_view = True
 
 
+@method_decorator(login_required, name="dispatch")
 class CreateEmployeeObjectiveForm(HorillaFormView):
     """
     form view for create employee objective
@@ -269,6 +275,7 @@ class CreateEmployeeObjectiveForm(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class CreateObjectiveFormView(HorillaFormView):
     """
     form view for create objectives
@@ -393,6 +400,7 @@ class CreateObjectiveFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class AddAssigneesFormView(HorillaFormView):
     """
     form view for add assignees
@@ -460,6 +468,7 @@ class AddAssigneesFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class CreateEmployeeKeyResultFormView(HorillaFormView):
     """
     form view for create employee key result form
@@ -537,6 +546,7 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class EmployeeObjectiveDetailView(HorillaDetailedView):
     """
     Generic Detail view of page
@@ -561,6 +571,17 @@ class EmployeeObjectiveDetailView(HorillaDetailedView):
     action_method = "emp_obj_action"
 
 
+def get_history_url(self):
+    """
+    History url
+    """
+    return reverse("ekr-history", kwargs={"pk": self.pk})
+
+
+EmployeeKeyResult.get_history_url = get_history_url
+
+
+@method_decorator(login_required, name="dispatch")
 class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
     """
     List view of the page
@@ -584,6 +605,9 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.search_url = self.request.path
+        emp_objective = EmployeeObjective.objects.filter(
+            pk=self.request.GET.get("employee_objective_id")
+        ).first()
         self.selected_instances_key_id = (
             f'ekrIds{self.request.GET.get("employee_objective_id")}'
         )
@@ -617,10 +641,33 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                 }
             )
 
+        if (
+            emp_objective
+            and self.request.user.employee_get
+            in emp_objective.objective_id.managers.all()
+            or self.request.user.has_perm("pms.view_employeekeyresult")
+        ):
+            self.actions.append(
+                {
+                    "action": "History",
+                    "icon": "hourglass-outline",
+                    "attrs": """
+                hx-get='{get_history_url}'
+                hx-target="#genericOffCanvas"
+                data-target='#genericSidebar'
+                class="oh-btn oh-btn--danger-outline w-100 oh-activity-sidebar__open"
+                style="cursor: pointer;"
+                """,
+                }
+            )
+
     header_attrs = {
         "title_col": """
                       style="width:200px !important;"
-                      """
+                      """,
+        "action": """
+            style="width:180px !important;"
+        """,
     }
     row_attrs = """
                 class = "oh-employee-okr-row"
@@ -639,6 +686,7 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
         return self.queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class EKRTab(EmployeeObjectiveKeyResultDetailListView):
     """
     EKR tab
@@ -663,11 +711,9 @@ class EKRTab(EmployeeObjectiveKeyResultDetailListView):
     filter_selected = False
 
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
-        self.queryset = (
-            super()
-            .get_queryset(queryset, filtered, *args, **kwargs)
-            .filter(employee_objective_id__employee_id__pk=self.kwargs["pk"])
-        )
+        self.queryset = HorillaListView.get_queryset(
+            self, queryset, filtered, *args, **kwargs
+        ).filter(employee_objective_id__employee_id__pk=self.kwargs["pk"])
         self._saved_filters = self._saved_filters.copy()
         self._saved_filters["field"] = "employee_objective_id"
         return self.queryset

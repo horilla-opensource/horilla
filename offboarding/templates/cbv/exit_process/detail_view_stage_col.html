@@ -1,4 +1,5 @@
 {% load i18n offboarding_filter %}
+
 <div class="oh-timeoff-modal__stat">
     <span class="oh-timeoff-modal__stat-count">
         {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager %}
@@ -13,5 +14,4 @@
             </span>
         {% endif %}
     </span>
-</div>
 </div>
