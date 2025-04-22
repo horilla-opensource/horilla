@@ -624,10 +624,11 @@ def reload_queryset(fields):
             if filter_criteria is not None:
                 field.queryset = field.queryset.model.objects.filter(**filter_criteria)
             # Future updation for company select field options when select a comapany from navbar
-            elif selected_company and not selected_company == "all":
-                field.queryset = field.queryset.model.objects.filter(
-                    id=selected_company
-                )
+            # Comment this line to ensure dynamically update the list of departments
+            # based on the company selected from the navbar.
+            # on the /employee-view-update/<int:id>/ page
+            # elif selected_company and not selected_company == 'all':
+            #     field.queryset = field.queryset.model.objects.filter(id=selected_company)
             else:
                 field.queryset = field.queryset.model.objects.all()
 
