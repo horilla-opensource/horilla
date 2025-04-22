@@ -4,6 +4,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    links:
+      - db
     ports:
       - 8000:8000
     restart: unless-stopped
@@ -24,8 +26,8 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       PGDATA: /var/lib/postgresql/data/pgdata
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
     restart: unless-stopped
     volumes:
       - horilla-data:/var/lib/postgresql/data
