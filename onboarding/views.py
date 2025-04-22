@@ -1717,7 +1717,6 @@ def update_offer_letter_status(request):
     try:
         candidate = Candidate.objects.get(id=candidate_id)
     except Candidate.DoesNotExist:
-        print('---- inside this check')
         messages.error(request, 'Candidate not found')
         return redirect("candidate-view")
     if status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
