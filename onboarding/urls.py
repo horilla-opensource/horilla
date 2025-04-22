@@ -137,7 +137,6 @@ urlpatterns = [
         views.update_offer_letter_status,
         name="update-offer-letter-status",
     ),
-    # Me Rahul is about to start the work
     path(
         "add-to-rejected-candidates",
         views.add_to_rejected_candidates,
