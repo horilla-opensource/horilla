@@ -41,9 +41,9 @@ urlpatterns = [
         name="leave-requests-info-export",
     ),
     path(
-      "create-leave-report",
-       views.create_leave_report, 
-       name="create-leave-report",  
+        "create-leave-report",
+        views.create_leave_report,
+        name="create-leave-report",
     ),
     path("request-view/", views.leave_request_view, name="request-view"),
     path(

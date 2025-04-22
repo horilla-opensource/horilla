@@ -505,7 +505,7 @@ class Feedback(HorillaModel):
         related_name="feedback_manager",
         on_delete=models.DO_NOTHING,
         null=True,
-        blank=False,
+        blank=True,
         verbose_name=_("Manager"),
     )
     employee_id = models.ForeignKey(

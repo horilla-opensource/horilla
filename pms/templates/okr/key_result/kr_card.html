@@ -1,144 +1,120 @@
 {% load i18n %} {% load horillafilters %} {% load static %}
 {% include 'filter_tags.html' %}
 {% if messages %}
-<div class="oh-wrapper">
-  {% for message in messages %}
-  <div class="oh-alert-container">
-    <div class="oh-alert oh-alert--animated {{message.tags}}">
-      {{ message }}
+    <div class="oh-wrapper">
+        {% for message in messages %}
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
     </div>
-  </div>
-  {% endfor %}
-</div>
 {% endif %}
 {% if krs %}
-  <div class="oh-layout--grid-3">
+<div class="oh-layout--grid-3">
     {% for kr in krs %}
-    <div class="oh-kanban-card "
-    >
-        <div class="oh-kanban-card__avatar">
-        <div class="oh-kanban-card__profile-container">
-            <img
-            src="https://ui-avatars.com/api/?name={{kr}}&background=random"
-            class="oh-kanban-card__profile-image"
-            alt="Username"
-            />
-        </div>
-        </div>
-        <div class="oh-kanban-card__details">
-        <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{kr}}</span>
-        <div class="oh-timeoff-modal__stats-container mb-1">
-          <div class="oh-timeoff-modal__stat mt-2">
-            <span class="oh-timeoff-modal__stat-title fw-bold text-dark" style="width:135px;">{% trans "Target Value" %}</span>
-              <span class="oh-timeoff-modal__stat-title">
-                {{kr.target_value}} {{kr.progress_type}}
-              </span>
-          </div>
-          <div class="oh-timeoff-modal__stat mt-2">
-            <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Duration" %}</span>
-            <span class="oh-timeoff-modal__stat-title">{{kr.duration}}{% trans " Days" %}</span>
-          </div>
-        </div>
+        <div class="oh-kanban-card ">
+            <div class="oh-kanban-card__avatar">
+                <div class="oh-kanban-card__profile-container">
+                    <img src="https://ui-avatars.com/api/?name={{kr}}&background=random"
+                        class="oh-kanban-card__profile-image" alt="Username" />
+                </div>
+            </div>
+            <div class="oh-kanban-card__details">
+                <span class="oh-card__title oh-card__title--sm fw-bold" style="font-size:18px;">{{kr}}</span>
+                <div class="oh-timeoff-modal__stats-container mb-1">
+                    <div class="oh-timeoff-modal__stat mt-2">
+                        <span class="oh-timeoff-modal__stat-title fw-bold text-dark" style="width:135px;">{% trans "Target Value" %}</span>
+                        <span class="oh-timeoff-modal__stat-title">
+                            {{kr.target_value}} {{kr.progress_type}}
+                        </span>
+                    </div>
+                    <div class="oh-timeoff-modal__stat mt-2">
+                        <span class="oh-timeoff-modal__stat-title fw-bold text-dark">{% trans "Duration" %}</span>
+                        <span class="oh-timeoff-modal__stat-title">{{kr.duration}}{% trans " Days" %}</span>
+                    </div>
+                </div>
 
-        </div>
-        <div class="oh-kanban-card__dots">
-        <div class="oh-dropdown" x-data="{show: false}" onclick="event.stopPropagation()">
-            <button
-            class="oh-btn oh-btn--transparent text-muted p-3"
-            @click="show = !show"
-            title='{% trans "Actions" %}'>
-            <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
-            </button>
-            <div
-            class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
-            x-show="show"
-            @click.outside="show = false"
-            >
-            <ul class="oh-dropdown__items">
-            {% if perms.pms.add_key_result %}
-                <li class="oh-dropdown__item">
-                <a onclick="event.stopPropagation();"
-                  data-toggle="oh-modal-toggle"
-                  data-target="#objectUpdateModal"
-                  hx-get="{% url 'update-key-result' kr.id %}"
-                  hx-target="#objectUpdateModalTarget"
-                >{% trans "Edit" %}</a>
-                </li>
-                {% endif %}
-                {% if perms.pms.delete_key_result %}
-                <li class="oh-dropdown__item">
-                <a class="text-danger"
-                  onclick = "event.preventDefault();event.stopPropagation();"
-                  hx-confirm="{% trans 'Do you want to delete this Key result?' %}"
-                  hx-post="{% url 'delete-key-result' kr.id %}?{{pd}}"
-                  hx-target="#krs-container"
-                  title="{% trans 'Delete' %}"
-
-                >{% trans "Delete" %}</a
-                >
-                </li>
-                {% endif %}
-            </ul>
+            </div>
+            <div class="oh-kanban-card__dots">
+                <div class="oh-dropdown" x-data="{show: false}" onclick="event.stopPropagation()">
+                    <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show"
+                        title='{% trans "Actions" %}'>
+                        <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right" x-show="show"
+                        @click.outside="show = false">
+                        <ul class="oh-dropdown__items">
+                            {% if perms.pms.add_key_result %}
+                                <li class="oh-dropdown__item">
+                                    <a onclick="event.stopPropagation();" data-toggle="oh-modal-toggle"
+                                        data-target="#objectUpdateModal" hx-get="{% url 'update-key-result' kr.id %}"
+                                        hx-target="#objectUpdateModalTarget">{% trans "Edit" %}</a>
+                                </li>
+                            {% endif %}
+                            {% if perms.pms.delete_key_result %}
+                                <li class="oh-dropdown__item">
+                                    <a class="text-danger" onclick="event.preventDefault();event.stopPropagation();"
+                                        hx-confirm="{% trans 'Do you want to delete this Key result?' %}"
+                                        hx-post="{% url 'delete-key-result' kr.id %}?{{pd}}" hx-target="#krs-container"
+                                        title="{% trans 'Delete' %}">{% trans "Delete" %}</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-        </div>
-    </div>
     {% endfor %}
-  </div>
+</div>
 
-  <div class="oh-pagination">
-    <span
-      class="oh-pagination__page"
-      >
-      {% trans "Page" %} {{ krs.number }} {% trans "of" %} {{ krs.paginator.num_pages }}.
-      </span
-    >
+<div class="oh-pagination">
+    <span class="oh-pagination__page">
+        {% trans "Page" %} {{ krs.number }} {% trans "of" %} {{ krs.paginator.num_pages }}.
+    </span>
     <nav class="oh-pagination__nav">
-      <div class="oh-pagination__input-container me-3">
-        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-        <input
-          type="number"
-          name="page"
-          class="oh-pagination__input"
-          value="{{krs.number}}"
-          hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card"
-          hx-target="#krs-container"
-          min="1"
-        />
-        <span class="oh-pagination__label">{% trans "of" %} {{krs.paginator.num_pages}}</span>
-      </div>
-      <ul class="oh-pagination__items">
-        {% if krs.has_previous %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#krs-container' hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#krs-container' hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card&page={{ krs.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-        </li>
-        {% endif %}
-        {% if krs.has_next %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#krs-container' hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card&page={{ krs.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target='#krs-container' hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card&page={{ krs.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-        </li>
-        {% endif %}
+        <div class="oh-pagination__input-container me-3">
+            <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+            <input type="number" name="page" class="oh-pagination__input" value="{{krs.number}}"
+                hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card" hx-target="#krs-container" min="1" />
+            <span class="oh-pagination__label">{% trans "of" %} {{krs.paginator.num_pages}}</span>
+        </div>
+        <ul class="oh-pagination__items">
+            {% if krs.has_previous %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#krs-container' hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card&page=1"
+                        class="oh-pagination__link">{% trans "First" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#krs-container'
+                        hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card&page={{ krs.previous_page_number }}"
+                        class="oh-pagination__link">{% trans "Previous" %}</a>
+                </li>
+            {% endif %}
+            {% if krs.has_next %}
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#krs-container'
+                        hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card&page={{ krs.next_page_number }}"
+                        class="oh-pagination__link">{% trans "Next" %}</a>
+                </li>
+                <li class="oh-pagination__item oh-pagination__item--wide">
+                    <a hx-target='#krs-container'
+                        hx-get="{% url 'filter-key-result' %}?{{pd}}&view=card&page={{ krs.paginator.num_pages }}"
+                        class="oh-pagination__link">{% trans "Last" %}</a>
+                </li>
+            {% endif %}
 
-      </ul>
+        </ul>
     </nav>
-  </div>
+</div>
 {% else %}
 <!-- start of empty page -->
 <div class="oh-404">
-  <img
-    style="width: 150px; height: 150px"
-    src="{% static 'images/ui/no-results.png' %}"
-    class="oh-404__image mb-4"
-  />
-  <h5 class="oh-404__subtitle">
-    {% trans "No search result found!" %}
-  </h5>
+    <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}" class="oh-404__image mb-4" />
+    <h5 class="oh-404__subtitle">
+        {% trans "No search result found!" %}
+    </h5>
 </div>
 <!-- end of empty page -->
 {% endif %}
