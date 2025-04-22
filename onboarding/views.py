@@ -1713,7 +1713,13 @@ def update_offer_letter_status(request):
     """
     candidate_id = request.GET["candidate_id"]
     status = request.GET["status"]
-    candidate = Candidate.objects.get(id=candidate_id)
+    candidate = None
+    try:
+        candidate = Candidate.objects.get(id=candidate_id)
+    except Candidate.DoesNotExist:
+        print('---- inside this check')
+        messages.error(request, 'Candidate not found')
+        return redirect("candidate-view")
     if status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
         candidate.offer_letter_status = status
         candidate.save()
