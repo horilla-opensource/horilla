@@ -112,23 +112,25 @@
                    {% trans feedback.get_status_display %}
                 </label>
               {% endif %}
-              {% if perms.pms.change_feedback or perms.pms.delete_feedback or request.user|is_reportingmanager  %}
+              {% if perms.pms.change_feedback or perms.pms.delete_feedback  %}
               <div class="oh-btn-group m-2">
                   {% if not feedback_started %}
-                    {% if perms.pms.change_feedback or request.user|is_reportingmanager %}
+                    {% if perms.pms.change_feedback %}
                       <div class="d-flex flex-row-reverse">
                         <button
                           data-toggle="oh-modal-toggle"
                           class="oh-btn oh-btn--light-bkg w-100"
                           data-target="#feedbackModalPopup"
                           hx-get="{% url 'feedback-update' id=feedback.id %}"
-                          hx-target="#feedbackModalTarget">
+                          hx-target="#feedbackModalTarget"
+                          title = {% trans "Edit" %}>
                           <ion-icon name="create-outline" class="me-1" ></ion-icon>
                         </button>
                       </div>
                     {% endif %}
                   {% endif %}
-                  {% if perms.pms.delete_feedback or request.user|is_reportingmanager %}
+
+                  {% if perms.pms.delete_feedback %}
                     <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
                       <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important">
                         {% csrf_token %}
@@ -171,12 +173,14 @@
           <div class="d-flex justify-content-between custom-scroll">
             <div class="avatars" id="avatarsContainer">
               {% for employee in employee_statics.yes %}
-              <a
-                href="{% url 'employee-view-individual' employee.id %}"
-                class="avatars__item"
-                title="{{employee}}"
-                ><img class="avatar" src="{{employee.get_avatar}}" alt=""
-              /></a>
+                {% if employee %}
+                  <a
+                    href="{% url 'employee-view-individual' employee.id %}"
+                    class="avatars__item"
+                    title="{{employee}}"
+                    ><img class="avatar" src="{{employee.get_avatar}}" alt=""
+                  /></a>
+                {% endif %}
               {% endfor %}
             </div>
           </div>
@@ -186,12 +190,14 @@
           <div class="d-flex justify-content-between custom-scroll">
             <div class="avatars" id="avatarsContainer">
               {% for employee in employee_statics.no %}
-              <a
-                href="{% url 'employee-view-individual' employee.id %}"
-                class="avatars__item"
-                title="{{employee}}"
-                ><img class="avatar" src="{{employee.get_avatar}}" alt=""
-              /></a>
+                {% if employee %}
+                  <a
+                    href="{% url 'employee-view-individual' employee.id %}"
+                    class="avatars__item"
+                    title="{{employee}}"
+                    ><img class="avatar" src="{{employee.get_avatar}}" alt=""
+                  /></a>
+                {% endif %}
               {% endfor %}
             </div>
           </div>
@@ -298,46 +304,48 @@
                         </div>
                       </div>
                       <div class="oh-sticky-table__tbody">
-                        <div class="oh-sticky-table__tr">
-                          <div class="oh-sticky-table__sd">
-                            <ul class="oh-sticky-table___profile-list">
-                              <li class="oh-sticky-table__profile-item">
-                                <div class="oh-profile oh-profile--md">
-                                  <div class="oh-profile__avatar mr-1">
-                                    <img src="{{feedback.manager_id.get_avatar}}"
-                                      class="oh-profile__image" alt="{{feedback.employee_id}}" />
-                                  </div>
-                                  <span class="oh-profile__name oh-text--dark"> {{feedback.manager_id}}</span>
+                          {% if feedback.manager_id %}
+                            <div class="oh-sticky-table__tr">
+                              <div class="oh-sticky-table__sd">
+                                <ul class="oh-sticky-table___profile-list">
+                                  <li class="oh-sticky-table__profile-item">
+                                    <div class="oh-profile oh-profile--md">
+                                      <div class="oh-profile__avatar mr-1">
+                                        <img src="{{feedback.manager_id.get_avatar}}"
+                                          class="oh-profile__image" alt="{{feedback.employee_id}}" />
+                                      </div>
+                                      <span class="oh-profile__name oh-text--dark"> {{feedback.manager_id}}</span>
+                                    </div>
+                                  </li>
+                                </ul>
+                              </div>
+                              <div class="oh-sticky-table__td">
+                                <div class="d-flex align-items-center">
+                                  <span class=""></span><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.manager_id.id}}"></span>
                                 </div>
-                              </li>
-                            </ul>
+                              </div>
+                              <div class="oh-sticky-table__td"><button
+                                class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
+                                data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.manager_id.id %}" hx-target="#answerView">{% trans "Answer View" %}
+                                </button></div>
                           </div>
-                          <div class="oh-sticky-table__td">
-                            <div class="d-flex align-items-center">
-                              <span class=""></span><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.manager_id.id}}"></span>
+                          <!-- manager answer off canvas -->
+                          <div class="oh-activity-sidebar" id="managerAnswer">
+                            <div class="oh-activity-sidebar__header">
+                              <ion-icon name="chevron-back-outline"
+                                class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+                                data-target="#managerAnswer"></ion-icon>
+                              <span class="oh-activity-sidebar__title"> {% trans "Answers" %}</span>
+                            </div>
+                            <div class="oh-activity-sidebar__body">
+                              <ol class="oh-activity-sidebar__qa-list" role="list">
+                                {% for answer in manager_answers %}
+                                {% include 'feedback/feedback_detailed_view_answer.html' %}
+                                {%endfor %}
+                              </ol>
                             </div>
                           </div>
-                          <div class="oh-sticky-table__td"><button
-                            class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
-                            data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.manager_id.id %}" hx-target="#answerView">{% trans "Answer View" %}
-                            </button></div>
-                      </div>
-                      <!-- manager answer off canvas -->
-                      <div class="oh-activity-sidebar" id="managerAnswer">
-                        <div class="oh-activity-sidebar__header">
-                          <ion-icon name="chevron-back-outline"
-                            class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
-                            data-target="#managerAnswer"></ion-icon>
-                          <span class="oh-activity-sidebar__title"> {% trans "Answers" %}</span>
-                        </div>
-                        <div class="oh-activity-sidebar__body">
-                          <ol class="oh-activity-sidebar__qa-list" role="list">
-                            {% for answer in manager_answers %}
-                            {% include 'feedback/feedback_detailed_view_answer.html' %}
-                            {%endfor %}
-                          </ol>
-                        </div>
-                      </div>
+                        {% endif %}
                         <!-- endof  manager answer off canvas -->
                       </div>
                     </div>
