@@ -1711,14 +1711,20 @@ def update_offer_letter_status(request):
     """
     This method is used to update the offer letter status
     """
-    candidate_id = request.GET["candidate_id"]
-    status = request.GET["status"]
+    candidate_id = request.GET.get("candidate_id")
+    status = request.GET.get("status")
     candidate = None
+    if not candidate_id or not status:
+        messages.error(request, 'candidate or status is missing')
+        return redirect("/onboarding/candidates-view/")
+    if not status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
+        messages.error(request, 'Please Pass valid status')
+        return redirect("/onboarding/candidates-view/")
     try:
         candidate = Candidate.objects.get(id=candidate_id)
     except Candidate.DoesNotExist:
         messages.error(request, 'Candidate not found')
-        return redirect("candidate-view")
+        return redirect("/onboarding/candidates-view/")
     if status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
         candidate.offer_letter_status = status
         candidate.save()
