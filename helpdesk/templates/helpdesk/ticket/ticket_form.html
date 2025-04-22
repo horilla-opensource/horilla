@@ -1,63 +1,50 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-	<h2 class="oh-modal__dialog-title" id="createTitle">
-		{% if ticket_id %} {% trans "Update Ticket" %} {% else %} {% trans "Create Ticket" %} {% endif %}
-	</h2>
+    <h2 class="oh-modal__dialog-title" id="createTitle">
+        {% if ticket_id %} {% trans "Update" %} {% else %} {% trans "Create" %} {% endif %}
+    {{form.verbose_name}}
+    </h2>
     <button type="button" class="oh-modal__close" aria-label="Close">
-      <ion-icon name="close-outline"></ion-icon>
+        <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 
 <!-- htmx form -->
-<div
-	class="oh-modal__dialog-body"
->
-	{% if form.errors %}
-		<!-- form errors  -->
-		<div class="oh-wrapper">
-			<div class="oh-alert-container">
-				{% for error in form.non_field_errors %}
-				<div class="oh-alert oh-alert--animated oh-alert--danger">
-					{{ error }}
-				</div>
-				{% endfor %}
-			</div>
-		</div>
-	{% endif %}
-	<div hidden id="cur_raised_on" value="{{form.instance.raised_on}}">
-		{{form.instance.raised_on}}
-	</div>
-	<form
-		{% if ticket_id %}
-			hx-post="{% url 'ticket-update' ticket_id %}"
-		{% else %}
-			hx-post="{% url 'ticket-create' %}"
-		{% endif %}
-		hx-target="#objectCreateModalTarget"
-		hx-encoding="multipart/form-data"
-	>
-		{% csrf_token %} {{form.as_p}}
-	</form>
+<div class="oh-modal__dialog-body">
+    {% if form.errors %}
+        <!-- form errors  -->
+        <div class="oh-wrapper">
+            <div class="oh-alert-container">
+                {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    <div hidden id="cur_raised_on" value="{{form.instance.raised_on}}">
+        {{form.instance.raised_on}}
+    </div>
+    <form {% if ticket_id %} hx-post="{% url 'ticket-update' ticket_id %}" {% else %}
+        hx-post="{% url 'ticket-create' %}" {% endif %} hx-target="#objectCreateModalTarget"
+        hx-encoding="multipart/form-data">
+        {% csrf_token %} {{form.as_p}}
+    </form>
 </div>
 <!-- start of create tag modal. -->
 <div id="addTagModal">
     <div id="addTagTarget"></div>
 </div>
-<div
-    class="oh-modal"
-    id="createTagModal"
-    role="dialog"
-    aria-labelledby="editDialogModal"
-    aria-hidden="true"
->
+
+<div class="oh-modal" id="createTagModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
     <div class="oh-modal__dialog">
         <div class="oh-modal__dialog-header pb-0">
             <h2 class="oh-modal__dialog-title" id="editTitle">
                 {% trans "Create Tag" %}
             </h2>
 
-            <button
-                style="
+            <button style="
                     border: none;
                     background: none;
                     font-size: 1.5rem;
@@ -68,10 +55,8 @@
                     cursor: pointer;
                     -webkit-transition: all 0.3s ease-in-out;
                     transition: all 0.3s ease-in-out;
-                "
-                aria-label="Close"
-                onclick="event.stopPropagation(); $('#createTagModal').removeClass('oh-modal--show'); $('#id_tags option[value=\'create_new_tag\']').prop('selected', false);"
-            >
+                " aria-label="Close"
+                onclick="event.stopPropagation(); $('#createTagModal').removeClass('oh-modal--show'); $('#id_tags option[value=\'create_new_tag\']').prop('selected', false);">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -80,38 +65,17 @@
                 {% csrf_token %}
 
                 <label class="oh-label">{% trans "Title" %}</label>
-                <input
-                    type="text"
-                    name="title"
-                    maxlength="30"
-                    class="oh-input w-100"
-                    placeholder="Title"
-                    required=""
-                    id="id_tag_title"
-                />
+                <input type="text" name="title" maxlength="30" class="oh-input w-100" placeholder="Title" required=""
+                    id="id_tag_title" />
 
                 <label class="oh-label">{% trans "Color" %}</label>
-                <input
-                    type="color"
-                    name="color"
-                    style="height: 50px"
-                    maxlength="30"
-                    class="oh-input w-100"
-                    placeholder="Color"
-                    required=""
-                    id="id_tag_color"
-                />
-                <input
-                    type="checkbox"
-                    name="is_active"
-                    class="oh-switch__checkbox"
-                    id="id_tag_is_active"
-                    checked
-                    style="display: none"
-                />
+                <input type="color" name="color" style="height: 50px" maxlength="30" class="oh-input w-100"
+                    placeholder="Color" required="" id="id_tag_color" />
+                <input type="checkbox" name="is_active" class="oh-switch__checkbox" id="id_tag_is_active" checked
+                    style="display: none" />
 
                 <div class="oh-modal__dialog-footer p-0 mt-3">
-                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" >
+                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
                         {% trans "Save" %}
                     </button>
                 </div>
@@ -125,23 +89,14 @@
 <div id="addTicketTypeModal">
     <div id="addTicketTypeTarget"></div>
 </div>
-<div
-    class="oh-modal"
-    id="createTicketTypeModal"
-    role="dialog"
-    aria-labelledby="editDialogModal"
-    aria-hidden="true"
->
+<div class="oh-modal" id="createTicketTypeModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
     <div class="oh-modal__dialog">
         <div class="oh-modal__dialog-header">
             <h2 class="oh-modal__dialog-title" id="editTitle">
-                {% trans "Create Ticket Type" %}
+                {% trans "Create" %} {{t_type_form.verbose_name}}
             </h2>
-            <button
-                class="oh-modal__close--custom"
-                onclick="$('#createTicketTypeModal').removeClass('oh-modal--show')"
-                aria-label="Close"
-            >
+            <button class="oh-modal__close--custom" onclick="$('#createTicketTypeModal').removeClass('oh-modal--show')"
+                aria-label="Close">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -149,34 +104,28 @@
             <form onsubmit="saveTicketType();event.preventDefault();" class="oh-profile-section">
                 {% csrf_token %}
 
-                <label class="oh-label">{% trans "Title" %}</label>
-                <input
-                    type="text"
-                    name="title"
-                    maxlength="30"
-                    class="oh-input w-100"
-                    placeholder="Title"
-                    required=""
-                    id="id_ticket_type_title"
-                />
-                <label class="oh-label">{% trans "Type" %}</label>
-                {{ t_type_form.type }}
-                <label class="oh-label">{% trans "Prefix" %}</label>
-                {{ t_type_form.prefix }}
-                <input
-                    type="checkbox"
-                    name="is_active"
-                    class="oh-switch__checkbox"
-                    id="id_ticket_type_is_active"
-                    checked
-                    style="display: none"
-                />
+                <div class="oh-input-group">
+                    <label class="oh-label" for="{{t_type_form.title.id_for_label}}">{{t_type_form.title.label}}</label>
+                    <input type="text" name="title" maxlength="30" class="oh-input w-100" placeholder="Title"
+                        required="" id="id_ticket_type_title" />
+                </div>
+
+                <div class="oh-input-group">
+                    <label class="oh-label" for="{{t_type_form.type.id_for_label}}">{{t_type_form.type.label}}</label>
+                    {{t_type_form.type}}
+                </div>
+
+                <div class="oh-input-group">
+                    <label class="oh-label"
+                        for="{{t_type_form.prefix.id_for_label}}">{{t_type_form.prefix.label}}</label>
+                    {{t_type_form.prefix}}
+                </div>
+
+                <input type="checkbox" name="is_active" class="oh-switch__checkbox" id="id_ticket_type_is_active"
+                    checked style="display: none" />
 
                 <div class="d-flex flex-row-reverse">
-                    <button
-                        type="submit"
-                        class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
-                    >
+                    <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
                         {% trans "Save" %}
                     </button>
                 </div>
@@ -208,12 +157,12 @@
                         // looping all raised_on
                         var options = $(
                             '<option value="' +
-                                obj.id +
-                                '" ' +
-                                (obj.id == cur_raised_on
-                                    ? 'selected="selected"'
-                                    : "") +
-                                ">"
+                            obj.id +
+                            '" ' +
+                            (obj.id == cur_raised_on
+                                ? 'selected="selected"'
+                                : "") +
+                            ">"
                         ).text(obj.name);
                         $("#id_raised_on").append(options);
                     });

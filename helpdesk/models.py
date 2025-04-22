@@ -46,13 +46,13 @@ TICKET_STATUS = [
 class DepartmentManager(HorillaModel):
     manager = models.ForeignKey(
         Employee,
-        verbose_name="Manager",
+        verbose_name=_("Manager"),
         related_name="dep_manager",
         on_delete=models.CASCADE,
     )
     department = models.ForeignKey(
         Department,
-        verbose_name="Department",
+        verbose_name=_("Department"),
         related_name="dept_manager",
         on_delete=models.CASCADE,
     )
@@ -63,6 +63,8 @@ class DepartmentManager(HorillaModel):
 
     class Meta:
         unique_together = ("department", "manager")
+        verbose_name = _("Department Manager")
+        verbose_name_plural = _("Department Managers")
 
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
@@ -71,9 +73,9 @@ class DepartmentManager(HorillaModel):
 
 
 class TicketType(HorillaModel):
-    title = models.CharField(max_length=100, unique=True)
-    type = models.CharField(choices=TICKET_TYPES, max_length=50)
-    prefix = models.CharField(max_length=3, unique=True)
+    title = models.CharField(max_length=100, unique=True, verbose_name=_("Title"))
+    type = models.CharField(choices=TICKET_TYPES, max_length=50, verbose_name=_("Type"))
+    prefix = models.CharField(max_length=3, unique=True, verbose_name=_("Prefix"))
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
@@ -81,6 +83,10 @@ class TicketType(HorillaModel):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        verbose_name = _("Ticket Type")
+        verbose_name_plural = _("Ticket Types")
 
 
 class Ticket(HorillaModel):
@@ -98,8 +104,10 @@ class Ticket(HorillaModel):
     priority = models.CharField(choices=PRIORITY, max_length=100, default="low")
     created_date = models.DateField(auto_now_add=True)
     resolved_date = models.DateField(blank=True, null=True)
-    assigning_type = models.CharField(choices=MANAGER_TYPES, max_length=100)
-    raised_on = models.CharField(max_length=100, verbose_name="Forward To")
+    assigning_type = models.CharField(
+        choices=MANAGER_TYPES, max_length=100, verbose_name=_("Assigning Type")
+    )
+    raised_on = models.CharField(max_length=100, verbose_name=_("Forward To"))
     assigned_to = models.ManyToManyField(
         Employee, blank=True, related_name="ticket_assigned_to"
     )
@@ -118,6 +126,8 @@ class Ticket(HorillaModel):
 
     class Meta:
         ordering = ["-created_date"]
+        verbose_name = _("Ticket")
+        verbose_name_plural = _("Tickets")
 
     def clean(self, *args, **kwargs):
         super().clean(*args, **kwargs)
@@ -244,6 +254,10 @@ class FAQCategory(HorillaModel):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = _("FAQ Category")
+        verbose_name_plural = _("FAQ Categories")
+
 
 class FAQ(HorillaModel):
     question = models.CharField(max_length=255)
@@ -257,6 +271,10 @@ class FAQ(HorillaModel):
 
     def __str__(self):
         return self.question
+
+    class Meta:
+        verbose_name = _("FAQ")
+        verbose_name_plural = _("FAQs")
 
 
 # updating the faq search index when a new faq is created or deleted

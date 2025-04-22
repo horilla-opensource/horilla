@@ -82,6 +82,7 @@ def faq_category_view(request):
     context = {
         "faq_categories": faq_categories,
         "f": FAQFilter(request.GET),
+        "model": FAQCategory,
     }
 
     return render(request, "helpdesk/faq/faq_view.html", context=context)
@@ -1492,21 +1493,6 @@ def tickets_bulk_delete(request):
 
 
 @login_required
-def add_department_manager(request):
-    form = DepartmentManagerCreateForm()
-    if request.method == "POST":
-        form = DepartmentManagerCreateForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-
-            return HttpResponse("<script>window.location.reload()</script>")
-    context = {
-        "form": form,
-    }
-    return render(request, "helpdesk/faq/department_managers_form.html", context)
-
-
-@login_required
 @hx_request_required
 def create_department_manager(request):
     form = DepartmentManagerCreateForm()
@@ -1676,9 +1662,11 @@ def ticket_type_delete(request, t_type_id):
 @login_required
 @permission_required("helpdesk.view_departmentmanager")
 def view_department_managers(request):
-    department_managers = DepartmentManager.objects.all()
+    model_class = DepartmentManager
+    department_managers = model_class.objects.all()
 
     context = {
+        "model": model_class,
         "department_managers": department_managers,
     }
     return render(request, "department_managers/department_managers.html", context)
