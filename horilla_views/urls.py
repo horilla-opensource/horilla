@@ -5,6 +5,7 @@ horilla_views/urls.py
 from django.urls import path
 
 from horilla_views import views
+from horilla_views.generic.cbv import history
 from horilla_views.generic.cbv.views import ReloadMessages
 
 urlpatterns = [
@@ -43,5 +44,10 @@ urlpatterns = [
         "generic-delete",
         views.HorillaDeleteConfirmationView.as_view(),
         name="generic-delete",
+    ),
+    path(
+        "horilla-history-revert/<int:pk>/<int:history_id>/",
+        history.HorillaHistoryView.as_view(),
+        name="history-revert",
     ),
 ]

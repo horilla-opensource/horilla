@@ -1,10 +1,5 @@
 {% load i18n %}
 {% load static %}
-<style>
-    ion-icon {
-        color: blue;
-    }
-</style>
 <div id="{{hx_target}}"
     style="height: 40px; {% if not available_leave and not leave_type_id %}display:none;{% endif %}">
     {% if not leave_type_id %}

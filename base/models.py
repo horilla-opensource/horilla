@@ -1162,7 +1162,7 @@ class Tags(HorillaModel):
 
 
 class HorillaMailTemplate(HorillaModel):
-    title = models.CharField(max_length=25, unique=True)
+    title = models.CharField(max_length=100, unique=True)
     body = models.TextField()
     company_id = models.ForeignKey(
         Company,
