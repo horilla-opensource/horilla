@@ -1728,7 +1728,15 @@ def update_offer_letter_status(request):
     if status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
         candidate.offer_letter_status = status
         candidate.save()
-    return HttpResponse("Success")
+    messages.success(request, 'Status of offer letter updated successfully')
+    url = '/onboarding/candidates-view/'
+    return HttpResponse(
+                f"""
+                <script>
+                window.location.href="{url}"
+                </script>
+                """
+            )
 
 
 @login_required
