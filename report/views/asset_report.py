@@ -1,7 +1,9 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from asset.filters import AssetFilter
 from asset.models import Asset
+from base.models import Company
 from horilla_views.cbv_methods import login_required
 
 
@@ -10,7 +12,21 @@ def asset_report(request):
 
     if not request.user.is_superuser:
         return render(request, "404.html")
-    return render(request, "report/asset_report.html")
+    company = "all"
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        company = Company.objects.filter(id=selected_company).first()
+
+    asset_filter_form = AssetFilter()
+
+    return render(
+        request,
+        "report/asset_report.html",
+        {
+            "company": company,
+            "asset_filter_form": asset_filter_form.form,
+        },
+    )
 
 
 @login_required
@@ -19,26 +35,45 @@ def asset_pivot(request):
     if not request.user.is_superuser:
         return render(request, "404.html")
 
-    data = Asset.objects.values(
-        "asset_name",
-        "asset_purchase_date",
-        "asset_tracking_id",
-        "asset_purchase_cost",
-        "asset_status",
-        "asset_category_id__asset_category_name",
-        "asset_lot_number_id__lot_number",
-        "expiry_date",
-        "assetassignment__assigned_by_employee_id__employee_work_info__department_id__department",
-        "assetassignment__assigned_by_employee_id__employee_work_info__job_position_id__job_position",
-        "assetassignment__assigned_by_employee_id__employee_work_info__job_role_id__job_role",
-        "assetassignment__assigned_by_employee_id__email",
-        "assetassignment__assigned_by_employee_id__phone",
-        "assetassignment__assigned_by_employee_id__gender",
-        "assetassignment__assigned_by_employee_id__employee_first_name",
-        "assetassignment__assigned_by_employee_id__employee_last_name",
-        "assetassignment__assigned_date",
-        "assetassignment__return_date",
-        "assetassignment__return_status",
+    qs = Asset.objects.all()
+
+    if asset_name := request.GET.get("asset_name"):
+        qs = qs.filter(asset_name=asset_name)
+    if asset_tracking_id := request.GET.get("asset_tracking_id"):
+        qs = qs.filter(asset_tracking_id=asset_tracking_id)
+    if asset_purchase_cost := request.GET.get("asset_purchase_cost"):
+        qs = qs.filter(asset_purchase_cost=asset_purchase_cost)
+    if asset_lot_number_id := request.GET.get("asset_lot_number_id"):
+        qs = qs.filter(asset_lot_number_id=asset_lot_number_id)
+    if asset_category_id := request.GET.get("asset_category_id"):
+        qs = qs.filter(asset_category_id=asset_category_id)
+    if asset_status := request.GET.get("asset_status"):
+        qs = qs.filter(asset_status=asset_status)
+    if asset_purchase_date := request.GET.get("asset_purchase_date"):
+        qs = qs.filter(asset_purchase_date=asset_purchase_date)
+
+    data = list(
+        qs.values(
+            "asset_name",
+            "asset_purchase_date",
+            "asset_tracking_id",
+            "asset_purchase_cost",
+            "asset_status",
+            "asset_category_id__asset_category_name",
+            "asset_lot_number_id__lot_number",
+            "expiry_date",
+            "assetassignment__assigned_by_employee_id__employee_work_info__department_id__department",
+            "assetassignment__assigned_by_employee_id__employee_work_info__job_position_id__job_position",
+            "assetassignment__assigned_by_employee_id__employee_work_info__job_role_id__job_role",
+            "assetassignment__assigned_by_employee_id__email",
+            "assetassignment__assigned_by_employee_id__phone",
+            "assetassignment__assigned_by_employee_id__gender",
+            "assetassignment__assigned_by_employee_id__employee_first_name",
+            "assetassignment__assigned_by_employee_id__employee_last_name",
+            "assetassignment__assigned_date",
+            "assetassignment__return_date",
+            "assetassignment__return_status",
+        )
     )
     data_list = [
         {
@@ -110,7 +145,7 @@ def asset_pivot(request):
                 else "-"
             ),
             "Category": item["asset_category_id__asset_category_name"],
-            "Lot Number": item["asset_lot_number_id__lot_number"],
+            "Batch Number": item["asset_lot_number_id__lot_number"],
             "Tracking ID": item["asset_tracking_id"],
             "Expiry Date": item["expiry_date"] if item["expiry_date"] else "-",
         }

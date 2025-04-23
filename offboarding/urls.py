@@ -68,6 +68,11 @@ urlpatterns = [
         name="create-offboarding-stage",
     ),
     path(
+        "update-stage-sequence/<int:pk>/",
+        views.update_stage_order,
+        name="update-stage-sequence",
+    ),
+    path(
         "offboarding-pipeline-nav/",
         exit_process.OffboardingPipelineNav.as_view(),
         name="offboarding-pipeline-nav",

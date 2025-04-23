@@ -200,6 +200,39 @@ def stage_update(request, stage_id, recruitment_id):
 
 
 @login_required
+@recruitment_manager_can_enter("onboarding.change_onboardingstage")
+def update_stage_order(request, pk):
+    """
+    This method is used to update the stage sequence of the onboarding
+    """
+    recruitment = Recruitment.objects.get(id=pk)
+
+    if request.method == "POST":
+        try:
+            order = json.loads(request.POST.get("order", "[]"))
+            for index, stage_id in enumerate(order):
+                stage = recruitment.onboarding_stage.get(id=stage_id)
+                stage.sequence = index + 1
+                stage.save()
+            messages.success(request, "Sequence Updated Successfully")
+            return JsonResponse({"status": "success"})
+        except Exception as e:
+            messages.error(request, "Error Updating Sequence..")
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+    stages = recruitment.onboarding_stage.order_by("sequence")
+
+    return render(
+        request,
+        "cbv/pipeline/onboarding/stage_order.html",
+        {
+            "stages": stages,
+            "recruitment": recruitment,
+        },
+    )
+
+
+@login_required
 @permission_required("onboarding.delete_onboardingstage")
 @recruitment_manager_can_enter("onboarding.delete_onboardingstage")
 def stage_delete(request, stage_id):
@@ -1716,20 +1749,31 @@ def update_offer_letter_status(request):
     """
     This method is used to update the offer letter status
     """
-    candidate_id = request.GET["candidate_id"]
-    status = request.GET["status"]
-    candidate = Candidate.objects.get(id=candidate_id)
+    candidate_id = request.GET.get("candidate_id")
+    status = request.GET.get("status")
+    candidate = None
+    if not candidate_id or not status:
+        messages.error(request, "candidate or status is missing")
+        return redirect("/onboarding/candidates-view/")
+    if not status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
+        messages.error(request, "Please Pass valid status")
+        return redirect("/onboarding/candidates-view/")
+    try:
+        candidate = Candidate.objects.get(id=candidate_id)
+    except Candidate.DoesNotExist:
+        messages.error(request, "Candidate not found")
+        return redirect("/onboarding/candidates-view/")
     if status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
         candidate.offer_letter_status = status
         candidate.save()
-    # return HttpResponse("Success")
-    return JsonResponse(
-        {
-            "type": "success",
-            "message": _("{candidate}'s Offer letter status updated").format(
-                candidate=candidate.name
-            ),
-        }
+    messages.success(request, "Status of offer letter updated successfully")
+    url = "/onboarding/candidates-view/"
+    return HttpResponse(
+        f"""
+                <script>
+                window.location.href="{url}"
+                </script>
+                """
     )
 
 

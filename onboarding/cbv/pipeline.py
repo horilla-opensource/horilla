@@ -116,14 +116,24 @@ class RecruitmentTabView(HorillaTabView):
                     {
                         "action": _("Add Stage"),
                         "attrs": f"""
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#genericModal"
-                                    hx-get="{reverse("stage-creation", kwargs={"obj_id": rec.pk})}"
-                                    hx-target="#genericModalBody"
-                                    style="cursor: pointer;"
-                                    onclick="
-                                    "
-                                    """,
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{reverse("stage-creation", kwargs={"obj_id": rec.pk})}"
+                            hx-target="#genericModalBody"
+                            style="cursor: pointer;"
+                        """,
+                    }
+                )
+                tab["actions"].append(
+                    {
+                        "action": _("Manage Stage Order"),
+                        "attrs": f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{reverse("onboarding-stage-sequence-update", kwargs={"pk": rec.pk})}"
+                            hx-target="#genericModalBody"
+                            style="cursor: pointer;"
+                        """,
                     }
                 )
             if self.request.user.has_perm("recruitment.change_recruitment"):
@@ -251,6 +261,11 @@ class CandidatePipeline(Pipeline):
         },
     ]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.queryset = queryset.order_by("sequence")
+        return self.queryset
+
 
 def stage_drop_down(self):
     """
@@ -288,10 +303,37 @@ def get_detail_url_pipeline(self):
 onboarding_models.CandidateStage.get_detail_url_pipeline = get_detail_url_pipeline
 
 
+def task_fetch(self):
+    """
+    task fetch
+    """
+    return f"""
+    <div id="selectedInstanceIds" data-ids="[]"></div>
+    <div style="width:220% !important;" hx-get="{reverse('get-cand-task',kwargs={"pk":self.pk})}?field=stage_id" hx-trigger="load">
+    </div>
+"""
+
+
+recruitment_models.Candidate.task_fetch = task_fetch
+
+
 class CandidateOnboardingDetail(CandidateDetail):
     """
     Extended candidate detail view
     """
+
+    body = [
+        ("Gender", "gender"),
+        ("Phone", "mobile"),
+        ("Stage", "stage_drop_down"),
+        ("Rating", "rating_bar"),
+        ("Recruitment", "recruitment_id"),
+        ("Job Position", "job_position_id"),
+        ("Tasks", "task_fetch", True),
+    ]
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -317,18 +359,10 @@ class CandidateList(HorillaListView):
     filter_keys_to_remove = ["onboarding_stage_id", "rec_id", "recruitment_id"]
     custom_empty_template = "cbv/pipeline/empty.html"
     header_attrs = {
-        "action": """
-        style="width:313px;"
-""",
-        "mobile": """
-        style="width:100px;"
-""",
-        "Stage": """
-        style="width:100px;"
-""",
-        "get_interview_count": """
-        style="width:200px;"
-""",
+        "action": "style='width:313px;'",
+        "mobile": "style='width:100px;'",
+        "Stage": "style='width:100px;'",
+        "get_interview_count": "style='width:200px;'",
     }
     columns = [
         ("Name", "candidate_id__candidate_name", "candidate_id__get_avatar"),
@@ -618,11 +652,14 @@ class AssignTask(View):
         candidate_task.stage_id = candidate.onboarding_stage_id
         candidate_task.onboarding_task_id = task
         candidate_task.save()
-        select_html = getattr(candidate, f"get_{task.pk}_task", "")
         messages.success(self.request, "Task Allocated")
 
         return HttpResponse(
-            select_html + "<script>$('#reloadMessagesButton').click();</script>"
+            f"""
+            <div id="taskHidden{candidate_task.pk}"></div>
+            <script>$('#taskHidden{candidate_task.pk}').closest('.hlv-container').find(".reload-record").click();</script>
+            <script>$('#reloadMessagesButton').click();</script>
+            """
         )
 
     def post(self, *args, **kwargs):
@@ -639,11 +676,12 @@ class AssignTask(View):
         candidate_task.status = status
         candidate_task.save()
 
-        select_html = getattr(
-            candidate, f"get_{candidate_task.onboarding_task_id.pk}_task", ""
-        )
         messages.success(self.request, "Status updated")
 
         return HttpResponse(
-            select_html + "<script>$('#reloadMessagesButton').click();</script>"
+            f"""
+            <div id="taskHidden{candidate_task.pk}"></div>
+            <script>$('#taskHidden{candidate_task.pk}').closest('.hlv-container').find(".reload-record").click();</script>
+            <script>$('#reloadMessagesButton').click();</script>
+            """
         )

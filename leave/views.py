@@ -416,6 +416,8 @@ def leave_request_creation(request, type_id=None, emp_id=None):
     form = choosesubordinates(request, form, "leave.add_leaverequest")
     if request.method == "POST":
         form = LeaveRequestCreationForm(request.POST, request.FILES)
+        # Set the queryset again on the bound form for the validation
+        form.fields["leave_type_id"].queryset = assigned_leave_types
         form = choosesubordinates(request, form, "leave.add_leaverequest")
         if form.is_valid():
             leave_request = form.save(commit=False)

@@ -241,7 +241,7 @@ class ExitProcessDetailView(HorillaDetailedView):
         (_("Contact"), "employee_id__phone"),
         (_("Notice Period start Date"), "notice_period_starts"),
         (_("Notice Period end Date"), "notice_period_ends"),
-        (_("Stage"), "detail_view_stage_custom"),
+        (_("Stage"), "get_stage_col"),
         (_("Tasks"), "detail_view_task_custom", "custom_template"),
     ]
     cols = {
@@ -270,7 +270,7 @@ class OffboardingPipelineNav(HorillaNavView):
     nav_title = "Pipeline"
     search_swap_target = "#pipelineContainer"
     search_url = reverse_lazy("get-offboarding-tab")
-    filter_body_template = "offboarding/pipeline/filter.html"
+    filter_body_template = "cbv/exit_process/pipeline_filter.html"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -282,6 +282,15 @@ class OffboardingPipelineNav(HorillaNavView):
                 data-toggle="oh-modal-toggle"
                 data-target="#objectDetailsModal"
             """
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        context["employee_filter"] = PipelineEmployeeFilter()
+        context["pipeline_filter"] = PipelineFilter()
+        context["stage_filter"] = PipelineStageFilter()
+
+        return context
 
 
 @method_decorator(login_required, name="dispatch")
@@ -313,6 +322,18 @@ class PipeLineTabView(HorillaTabView):
                             data-toggle="oh-modal-toggle"
                             data-target="#genericModal"
                             hx-get="{reverse("create-offboarding-stage")}?offboarding_id={offboarding.pk}"
+                            hx-target="#genericModalBody"
+                            style="cursor: pointer;"
+                        """,
+                    }
+                )
+                tab["actions"].append(
+                    {
+                        "action": _("Manage Stage Order"),
+                        "attrs": f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{reverse("update-stage-sequence",kwargs={"pk": offboarding.pk})}"
                             hx-target="#genericModalBody"
                             style="cursor: pointer;"
                         """,
@@ -405,6 +426,11 @@ class OffboardingPipelineStage(Pipeline):
             ],
         }
     ]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.queryset = queryset.order_by("sequence")
+        return self.queryset
 
 
 @method_decorator(login_required, name="dispatch")
@@ -548,12 +574,10 @@ class OffboardingEmployeeList(HorillaListView):
         return context
 
     def bulk_update_accessibility(self):
-        if self.request.method == "GET":
-            return False
         return (
             self.request.user.has_perm("offboarding.change_offboardingstage")
             or self.request.user.has_perm("offboarding.change_offboarding")
-            or any_manager(self.request.employee_get)
+            or any_manager(self.request.user.employee_get)
         )
 
     def get_bulk_form(self):

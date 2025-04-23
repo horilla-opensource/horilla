@@ -6,14 +6,30 @@ from typing import Any
 
 from django.db.models import Q
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from accessibility.cbv_decorators import enter_if_accessible
 from base.filters import MailLogFilter
 from base.models import EmailLog
 from employee.models import Employee
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaListView
 
 
+def _check_reporting_manager(request, *args, **kwargs):
+    return request.user.employee_get.reporting_manager.exists()
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    enter_if_accessible(
+        feature="view_mail_log",
+        perm="employee.view_employee",
+        method=_check_reporting_manager,
+    ),
+    name="dispatch",
+)
 class MailLogTabList(HorillaListView):
     """
     list view for mail log  tab
@@ -68,6 +84,15 @@ class MailLogTabList(HorillaListView):
                 """
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    enter_if_accessible(
+        feature="view_mail_log",
+        perm="employee.view_employee",
+        method=_check_reporting_manager,
+    ),
+    name="dispatch",
+)
 class MailLogDetailView(HorillaDetailedView):
     """
     detail view for mail log tab

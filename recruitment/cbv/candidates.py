@@ -31,6 +31,7 @@ from horilla_views.generic.cbv.views import (
 )
 from horilla_views.templatetags.generic_template_filters import getattribute
 from recruitment.cbv.candidate_reject_reason import DynamicRejectReasonFormView
+from recruitment.cbv_decorators import all_manager_can_enter, manager_can_enter
 from recruitment.filters import CandidateFilter
 from recruitment.forms import (
     CandidateExportForm,
@@ -77,6 +78,7 @@ class CandidatesView(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter(perm="recruitment.view_candidate"), name="dispatch")
 class ListCandidates(HorillaListView):
     """
     List view of candidates
@@ -399,6 +401,7 @@ class ListCandidates(HorillaListView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter(perm="recruitment.view_candidate"), name="dispatch")
 class CardCandidates(HorillaCardView):
     """
     For card view
@@ -554,6 +557,7 @@ class CardCandidates(HorillaCardView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter(perm="recruitment.view_candidate"), name="dispatch")
 class CandidateNav(HorillaNavView):
     """
     For nav bar
@@ -656,6 +660,7 @@ class CandidateNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter(perm="recruitment.view_candidate"), name="dispatch")
 class ExportView(TemplateView):
     """
     For candidate export
@@ -677,6 +682,7 @@ class ExportView(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter(perm="recruitment.view_candidate"), name="dispatch")
 class AddToRejectedCandidatesView(View):
     """
     Class for Add to reject candidate
@@ -717,6 +723,10 @@ class AddToRejectedCandidatesView(View):
         return render(request, self.template_name, {"form": form})
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    all_manager_can_enter(perm="recruitment.view_candidate"), name="dispatch"
+)
 class CandidateDetail(HorillaDetailedView):
     """
     Candidate detail

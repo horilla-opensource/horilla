@@ -7,7 +7,12 @@ from django.contrib.auth.models import User
 
 from base.methods import check_manager
 from employee.models import Employee
-from recruitment.methods import is_recruitmentmanager, is_stagemanager, stage_manages
+from recruitment.methods import (
+    in_all_managers,
+    is_recruitmentmanager,
+    is_stagemanager,
+    stage_manages,
+)
 from recruitment.models import Candidate, RecruitmentGeneralSetting, RejectedCandidate
 
 
@@ -95,7 +100,7 @@ def onboarding_accessibility(
     accessibility for onboarding tab in candidate individual view
     """
     candidate = Candidate.objects.get(pk=instance.pk)
-    if candidate.hired:
+    if candidate.cand_onboarding_task.exists() and in_all_managers(request):
         return True
     return False
 
@@ -111,6 +116,13 @@ def rating_accessibility(
     if stage_manage or request.user.has_perm("recruitment.view_candidate"):
         return True
     return False
+
+
+def if_manager_accessibility(request, instance, *args, **kwargs):
+    """
+    If manager accessibility
+    """
+    return is_recruitmentmanager(request) or is_stagemanager(request)
 
 
 def empl_scheduled_interview_accessibility(

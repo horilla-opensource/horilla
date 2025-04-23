@@ -39,7 +39,7 @@
 		<span class="oh-activity-sidebar__title fw-bold">{{cand}}'s {% trans "Notes" %}</span>
 	</div>
 
-{% if perms.recruitment.add_stagenote or request.user|is_stagemanager %}
+{% if perms.recruitment.add_stagenote or request|is_any_manager %}
 	<form hx-target="#noteContainerList" hx-select=".oh-activity-sidebar__qa-list" hx-post="{% url 'create-note' cand.id %}" id="commentForm"
 		hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();">
 		{% csrf_token %}

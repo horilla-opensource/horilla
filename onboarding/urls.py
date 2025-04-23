@@ -23,6 +23,11 @@ urlpatterns = [
         name="stage-update",
     ),
     path(
+        "onboarding-stage-sequence-update/<int:pk>/",
+        views.update_stage_order,
+        name="onboarding-stage-sequence-update",
+    ),
+    path(
         "task-creation/<int:obj_id>/",
         onboarding_view.TaskCreateForm.as_view(),
         name="task-creation",

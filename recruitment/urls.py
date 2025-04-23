@@ -35,6 +35,11 @@ urlpatterns = [
         "interview-view/", interview.InterviewViewPage.as_view(), name="interview-view"
     ),
     path(
+        "get-cand-tasks/<int:pk>/",
+        candidate_profile.CandidateProfileTasks.as_view(),
+        name="get-cand-task",
+    ),
+    path(
         "interview-nav-view/",
         interview.InterviewNavView.as_view(),
         name="interview-nav-view",
@@ -162,6 +167,11 @@ urlpatterns = [
     ),
     # path("stage-create", views.stage, name="rec-stage-create"),
     path("stage-create", stage_view.StageFormView.as_view(), name="rec-stage-create"),
+    path(
+        "update-stage-seq/<int:pk>/",
+        views.update_stage_order,
+        name="rec-update-stage-seq",
+    ),
     # path("stage-view", views.stage_view, name="rec-stage-view"),
     path("stage-data/<int:rec_id>/", views.stage_data, name="stage-data"),
     path("stage-search", recruitment.views.search.stage_search, name="stage-search"),

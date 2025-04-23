@@ -181,26 +181,6 @@ class OffboardingEmployee(HorillaModel):
             },
         )
 
-    def detail_view_stage_custom(self):
-        """
-        This method for get custom column for stage in detail view.
-        """
-        from offboarding.forms import StageSelectForm
-
-        employee = OffboardingEmployee.objects.get(id=self.pk)
-        stage_forms = {}
-        stage_forms[str(employee.stage_id.offboarding_id.id)] = StageSelectForm(
-            offboarding=employee.stage_id.offboarding_id
-        )
-        return render_template(
-            path="cbv/exit_process/detail_view_stage_col.html",
-            context={
-                "instance": self,
-                "employee": employee,
-                "stage_forms": stage_forms,
-            },
-        )
-
     def get_individual_url(self):
         """
         This method is used to get update url

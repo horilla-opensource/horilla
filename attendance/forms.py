@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 """
 forms.py
 
@@ -54,6 +55,7 @@ from attendance.models import (
     strtime_seconds,
     validate_time_format,
 )
+from base.forms import ModelForm as BaseModelForm
 from base.forms import MultipleFileField
 from base.methods import (
     filtersubordinatesemployeemodel,
@@ -71,84 +73,7 @@ from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 logger = logging.getLogger(__name__)
 
 
-class ModelForm(forms.ModelForm):
-    """
-    Overriding django default model form to apply some styles
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        class_name = self.__class__.__name__
-        self.container_id = f"{class_name[0].lower()}{class_name[1:]}Fields"
-        reload_queryset(self.fields)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-
-        for field_name, field in self.fields.items():
-            widget = field.widget
-            if isinstance(widget, (forms.DateInput)):
-                field.initial = datetime.date.today()
-
-            if isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-            ):
-                label = _(field.label.title())
-
-                field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": label}
-                )
-            elif isinstance(widget, (forms.Select,)):
-                label = ""
-                if field.label is not None:
-                    label = _(field.label)
-                field.empty_label = _("---Choose {label}---").format(label=label)
-                self.fields[field_name].widget.attrs.update(
-                    {
-                        "class": "oh-select oh-select-2 w-100",
-                        "id": uuid.uuid4(),
-                        "style": "height:50px;border-radius:0;",
-                    }
-                )
-            elif isinstance(widget, (forms.Textarea)):
-                label = _(field.label)
-                field.widget.attrs.update(
-                    {
-                        "class": "oh-input w-100",
-                        "placeholder": label,
-                        "rows": 2,
-                        "cols": 40,
-                    }
-                )
-            elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
-            ):
-                field.widget.attrs.update({"class": "oh-switch__checkbox"})
-            if isinstance(widget, forms.DateInput):
-                field.widget = forms.DateInput(
-                    attrs={"type": "date", "class": "oh-input w-100"}
-                )
-            if isinstance(widget, forms.TimeInput):
-                field.widget = forms.DateInput(
-                    attrs={"type": "time", "class": "oh-input w-100"}
-                )
-
-            try:
-                self.fields["employee_id"].initial = request.user.employee_get
-            except Exception:
-                pass
-
-            try:
-                self.fields["company_id"].initial = (
-                    request.user.employee_get.get_company
-                )
-            except Exception:
-                pass
-
-
-class AttendanceUpdateForm(ModelForm):
+class AttendanceUpdateForm(BaseModelForm):
     """
     This model form is used to direct save the validated query dict to attendance model
     from AttendanceUpdateForm. This form can be used to update existing attendance.
@@ -247,8 +172,6 @@ class AttendanceUpdateForm(ModelForm):
         )
         self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
-        self.fields["attendance_overtime_approve"].label = _("Approve overtime?")
-        self.fields["attendance_validated"].label = _("Validate Attendance?")
         if (
             instance is not None
             and not instance.attendance_overtime_approve
@@ -271,12 +194,13 @@ class AttendanceUpdateForm(ModelForm):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
-        context = {"form": self, "id": "attendanceUpdateFormFields"}
+        _ = args, kwargs  # Explicitly mark as used for pylint
+        context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
 
 
-class AttendanceForm(ModelForm):
+class AttendanceForm(BaseModelForm):
     """
     Model form for Attendance model
     """
@@ -427,6 +351,7 @@ class AttendanceForm(ModelForm):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
+        _ = args, kwargs  # Explicitly mark as used for pylint
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
@@ -478,7 +403,7 @@ class AttendanceForm(ModelForm):
         return employee.first()
 
 
-class AttendanceActivityForm(ModelForm):
+class AttendanceActivityForm(BaseModelForm):
     """
     Model form for AttendanceActivity model
     """
@@ -526,7 +451,7 @@ class MonthSelectField(forms.ChoiceField):
         super().__init__(choices=choices, *args, **kwargs)
 
 
-class AttendanceOverTimeForm(ModelForm):
+class AttendanceOverTimeForm(BaseModelForm):
     """
     Model form for AttendanceOverTime model
     """
@@ -563,12 +488,13 @@ class AttendanceOverTimeForm(ModelForm):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
+        _ = args, kwargs  # Explicitly mark as used for pylint
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
 
 
-class AttendanceLateComeEarlyOutForm(ModelForm):
+class AttendanceLateComeEarlyOutForm(BaseModelForm):
     """
     Model form for attendance AttendanceLateComeEarlyOut
     """
@@ -631,12 +557,16 @@ class AttendanceValidationConditionForm(forms.ModelForm):
     )
 
     class Meta:
+        """
+        Meta class for additional options
+        """
+
         model = AttendanceValidationCondition
         fields = "__all__"
         exclude = ["is_active"]
 
 
-class AttendanceRequestForm(ModelForm):
+class AttendanceRequestForm(BaseModelForm):
     """
     AttendanceRequestForm
     """
@@ -735,6 +665,7 @@ class AttendanceRequestForm(ModelForm):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
+        _ = args, kwargs  # Explicitly mark as used for pylint
         context = {"form": self}
         table_html = render_to_string("attendance_form.html", context)
         return table_html
@@ -782,7 +713,6 @@ class NewRequestForm(AttendanceRequestForm):
                 ),
             ),
         }
-        self.fields["request_description"].label = _("Request description")
         new_dict.update(old_dict)
         self.fields = new_dict
         kwargs["initial"] = view_initial
@@ -791,6 +721,7 @@ class NewRequestForm(AttendanceRequestForm):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
+        _ = args, kwargs  # Explicitly mark as used for pylint
         context = {"form": self}
         form_html = render_to_string(
             "requests/attendance/request_new_form.html", context
@@ -997,7 +928,7 @@ class AttendanceOverTimeExportForm(forms.Form):
     )
 
 
-class GraceTimeForm(ModelForm):
+class GraceTimeForm(BaseModelForm):
     """
     Form for create or update Grace time
     """
@@ -1039,6 +970,7 @@ class GraceTimeAssignForm(forms.Form):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
+        _ = args, kwargs  # Explicitly mark as used for pylint
         context = {"form": self}
         form_html = render_to_string("common_form.html", context)
         return form_html
@@ -1048,7 +980,7 @@ class GraceTimeAssignForm(forms.Form):
         self.fields["shifts"].widget.attrs["class"] = "oh-select w-100 oh-select-2"
 
 
-class AttendanceRequestCommentForm(ModelForm):
+class AttendanceRequestCommentForm(BaseModelForm):
     """
     AttendanceRequestComment form
     """
@@ -1112,7 +1044,7 @@ def get_date_list(employee_id, from_date, to_date):
     return date_list
 
 
-class BulkAttendanceRequestForm(ModelForm):
+class BulkAttendanceRequestForm(BaseModelForm):
     """
     Bulk attendance request create form
     """
@@ -1314,7 +1246,7 @@ class BulkAttendanceRequestForm(ModelForm):
         return instance
 
 
-class WorkRecordsForm(ModelForm):
+class WorkRecordsForm(BaseModelForm):
     """
     WorkRecordForm
     """
@@ -1328,7 +1260,7 @@ class WorkRecordsForm(ModelForm):
         model = WorkRecords
 
 
-class BatchAttendanceForm(ModelForm):
+class BatchAttendanceForm(BaseModelForm):
     """
     BatchAttendanceForm
     """
@@ -1348,6 +1280,7 @@ class BatchAttendanceForm(ModelForm):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
+        _ = args, kwargs  # Explicitly mark as used for pylint
         context = {"form": self}
         form_html = render_to_string("common_form.html", context)
         return form_html
@@ -1356,4 +1289,4 @@ class BatchAttendanceForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         if self.instance.pk:
-            self.verbose_name = _("Update batch attendance")
+            self.verbose_name = _("Update attendance batch")

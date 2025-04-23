@@ -1,7 +1,10 @@
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.dateparse import parse_date
 
+from base.models import Company
 from horilla_views.cbv_methods import login_required
+from payroll.filters import PayslipFilter
 from payroll.models.models import Payslip
 
 
@@ -10,7 +13,21 @@ def payroll_report(request):
 
     if not request.user.is_superuser:
         return render(request, "404.html")
-    return render(request, "report/payroll_report.html")
+    company = "all"
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        company = Company.objects.filter(id=selected_company).first()
+
+    if request.user.has_perm("payroll.view_payslip"):
+        payslips = Payslip.objects.all()
+    else:
+        payslips = Payslip.objects.filter(employee_id__employee_user_id=request.user)
+
+    filter_form = PayslipFilter(request.GET, payslips)
+
+    return render(
+        request, "report/payroll_report.html", {"company": company, "f": filter_form}
+    )
 
 
 @login_required
@@ -22,28 +39,78 @@ def payroll_pivot(request):
     model_type = request.GET.get("model", "payslip")
 
     if model_type == "payslip":
-        data = Payslip.objects.values(
-            "id",  # Include payslip ID to fetch pay_head_data later
-            "employee_id__employee_first_name",
-            "employee_id__employee_last_name",
-            "employee_id__gender",
-            "employee_id__email",
-            "employee_id__phone",
-            "start_date",
-            "end_date",
-            "contract_wage",
-            "basic_pay",
-            "gross_pay",
-            "deduction",
-            "net_pay",
-            "status",
-            "employee_id__employee_work_info__department_id__department",
-            "employee_id__employee_work_info__job_role_id__job_role",
-            "employee_id__employee_work_info__job_position_id__job_position",
-            "employee_id__employee_work_info__work_type_id__work_type",
-            "employee_id__employee_work_info__shift_id__employee_shift",
-            "employee_id__employee_work_info__employee_type_id__employee_type",
-            "employee_id__employee_work_info__experience",
+        qs = Payslip.objects.all()
+
+        if employee_id := request.GET.getlist("employee_id"):
+            qs = qs.filter(employee_id__id__in=employee_id)
+        if status := request.GET.get("status"):
+            qs = qs.filter(status=status)
+        if group_name := request.GET.get("group_name"):
+            qs = qs.filter(group_name=group_name)
+
+        start_date_from = parse_date(request.GET.get("start_date_from", ""))
+        start_date_to = parse_date(request.GET.get("start_date_till", ""))
+        if start_date_from:
+            qs = qs.filter(start_date__gte=start_date_from)
+        if start_date_to:
+            qs = qs.filter(start_date__lte=start_date_to)
+
+        end_date_from = parse_date(request.GET.get("end_date_from", ""))
+        end_date_to = parse_date(request.GET.get("end_date_till", ""))
+        if end_date_from:
+            qs = qs.filter(end_date__gte=end_date_from)
+        if end_date_to:
+            qs = qs.filter(end_date__lte=end_date_to)
+
+        # Gross Pay Range
+        gross_pay_gte = request.GET.get("gross_pay__gte")
+        gross_pay_lte = request.GET.get("gross_pay__lte")
+        if gross_pay_gte:
+            qs = qs.filter(gross_pay__gte=gross_pay_gte)
+        if gross_pay_lte:
+            qs = qs.filter(gross_pay__lte=gross_pay_lte)
+
+        # Deduction Range
+        deduction_gte = request.GET.get("deduction__gte")
+        deduction_lte = request.GET.get("deduction__lte")
+        if deduction_gte:
+            qs = qs.filter(deduction__gte=deduction_gte)
+        if deduction_lte:
+            qs = qs.filter(deduction__lte=deduction_lte)
+
+        # Net Pay Range
+        net_pay_gte = request.GET.get("net_pay__gte")
+        net_pay_lte = request.GET.get("net_pay__lte")
+        if net_pay_gte:
+            qs = qs.filter(net_pay__gte=net_pay_gte)
+        if net_pay_lte:
+            qs = qs.filter(net_pay__lte=net_pay_lte)
+
+        data = list(
+            qs.values(
+                "id",  # Include payslip ID to fetch pay_head_data later
+                "employee_id__employee_first_name",
+                "employee_id__employee_last_name",
+                "employee_id__gender",
+                "employee_id__email",
+                "employee_id__phone",
+                "start_date",
+                "end_date",
+                "contract_wage",
+                "basic_pay",
+                "gross_pay",
+                "deduction",
+                "net_pay",
+                "group_name",
+                "status",
+                "employee_id__employee_work_info__department_id__department",
+                "employee_id__employee_work_info__job_role_id__job_role",
+                "employee_id__employee_work_info__job_position_id__job_position",
+                "employee_id__employee_work_info__work_type_id__work_type",
+                "employee_id__employee_work_info__shift_id__employee_shift",
+                "employee_id__employee_work_info__employee_type_id__employee_type",
+                "employee_id__employee_work_info__experience",
+            )
         )
 
         choice_gender = {
@@ -174,6 +241,7 @@ def payroll_pivot(request):
                     ),
                     "Payslip Start Date": item["start_date"],
                     "Payslip End Date": item["end_date"],
+                    "Batch Name": item["group_name"] if item["group_name"] else "-",
                     "Contract Wage": round(float(item["contract_wage"] or 0), 2),
                     "Basic Salary": round(float(item["basic_pay"] or 0), 2),
                     "Gross Pay": round(float(item["gross_pay"] or 0), 2),
@@ -193,21 +261,29 @@ def payroll_pivot(request):
             )
 
     elif model_type == "allowance":
-        data = Payslip.objects.values(
-            "id",  # Include payslip ID to fetch pay_head_data later
-            "employee_id__employee_first_name",
-            "employee_id__employee_last_name",
-            "employee_id__gender",
-            "employee_id__email",
-            "employee_id__phone",
-            "start_date",
-            "end_date",
-            "status",
-            "employee_id__employee_work_info__department_id__department",
-            "employee_id__employee_work_info__job_role_id__job_role",
-            "employee_id__employee_work_info__job_position_id__job_position",
-            "employee_id__employee_work_info__work_type_id__work_type",
-            "employee_id__employee_work_info__shift_id__employee_shift",
+
+        payslips = Payslip.objects.all()
+
+        payslip_filter = PayslipFilter(request.GET, queryset=payslips)
+        filtered_qs = payslip_filter.qs  # This uses all custom filters you defined
+
+        data = list(
+            filtered_qs.values(
+                "id",  # Include payslip ID to fetch pay_head_data later
+                "employee_id__employee_first_name",
+                "employee_id__employee_last_name",
+                "employee_id__gender",
+                "employee_id__email",
+                "employee_id__phone",
+                "start_date",
+                "end_date",
+                "status",
+                "employee_id__employee_work_info__department_id__department",
+                "employee_id__employee_work_info__job_role_id__job_role",
+                "employee_id__employee_work_info__job_position_id__job_position",
+                "employee_id__employee_work_info__work_type_id__work_type",
+                "employee_id__employee_work_info__shift_id__employee_shift",
+            )
         )
 
         choice_gender = {
@@ -245,7 +321,7 @@ def payroll_pivot(request):
                     {
                         "Pay Type": "Allowance",
                         "Title": allowance["title"],
-                        "Amount": allowance["amount"],
+                        "Amount": round(float(allowance["amount"] or 0), 2),
                     }
                 )
 
@@ -257,7 +333,7 @@ def payroll_pivot(request):
                     {
                         "Pay Type": "Deduction",
                         "Title": deduction["title"],
-                        "Amount": deduction["amount"],
+                        "Amount": round(float(deduction["amount"] or 0), 2),
                     }
                 )
 

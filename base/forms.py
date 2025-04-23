@@ -245,8 +245,12 @@ class ModelForm(forms.ModelForm):
                 pass
 
             try:
-                self.fields["company_id"].initial = (
-                    request.user.employee_get.get_company
+                company_field = self.fields["company_id"]
+                company = request.user.employee_get.get_company
+                company_queryset = company_field.queryset
+
+                company_field.initial = (
+                    company if company in company_queryset else company_queryset.first()
                 )
             except:
                 pass

@@ -291,6 +291,39 @@ def create_stage(request):
 
 
 @login_required
+@offboarding_manager_can_enter("offboarding.change_offboardingstage")
+def update_stage_order(request, pk):
+    """
+    This method is used to update the stage sequence of the offboarding
+    """
+    offboarding = Offboarding.objects.get(id=pk)
+
+    if request.method == "POST":
+        try:
+            order = json.loads(request.POST.get("order", "[]"))
+            for index, stage_id in enumerate(order):
+                stage = offboarding.offboardingstage_set.get(id=stage_id)
+                stage.sequence = index + 1
+                stage.save()
+            messages.success(request, "Sequence Updated Successfully")
+            return JsonResponse({"status": "success"})
+        except Exception as e:
+            messages.error(request, "Error Updating Sequence..")
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+    stages = offboarding.offboardingstage_set.order_by("sequence")
+
+    return render(
+        request,
+        "cbv/exit_process/stage_order.html",
+        {
+            "stages": stages,
+            "offboarding": offboarding,
+        },
+    )
+
+
+@login_required
 @any_manager_can_enter("offboarding.add_offboardingemployee")
 def add_employee(request):
     """

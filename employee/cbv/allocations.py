@@ -523,6 +523,12 @@ if app_installed("leave"):
 
             return context
 
+        def dispatch(self, request, *args, **kwargs):
+            """
+            To avoide parent permissions
+            """
+            return super(LeaveTypeListView, self).dispatch(request, *args, **kwargs)
+
         def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
             if not getattr(self.queryset, "queryset", None):
                 queryset = (
@@ -984,6 +990,12 @@ if app_installed("payroll"):
             )
             return self.queryset
 
+        def dispatch(self, request, *args, **kwargs):
+            """
+            To avoide parent permissions
+            """
+            return super(AllowanceListView, self).dispatch(request, *args, **kwargs)
+
     def deduction_allocation_metod(self):
         """
         Allocation method
@@ -1089,17 +1101,17 @@ if app_installed("payroll"):
             )
             return self.queryset
 
+        def dispatch(self, request, *args, **kwargs):
+            """
+            To avoide parent permissions
+            """
+            return super(DeductionListView, self).dispatch(request, *args, **kwargs)
+
 
 def is_any_recruitment_manager(request, instance, *args, **kwargs):
     """
     check the user is a recruitment manager
     """
-    print(
-        request.user.has_perm("recruitment.change_recruitment")
-        or request.user.has_perm("auth.add_group")
-        or request.user.has_perm("auth.add_permission")
-        or request.user.employee_get.recruitment_set.exists()
-    )
     return (
         request.user.has_perm("recruitment.change_recruitment")
         or request.user.has_perm("auth.add_group")

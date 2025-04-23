@@ -1,8 +1,11 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 
+from base.models import Company
 from horilla_views.cbv_methods import login_required
-from pms.models import EmployeeKeyResult, Feedback, Objective
+from pms.filters import EmployeeObjectiveFilter, FeedbackFilter
+from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback, Objective
+from pms.views import objective_filter_pagination
 
 
 @login_required
@@ -10,7 +13,36 @@ def pms_report(request):
 
     if not request.user.is_superuser:
         return render(request, "404.html")
-    return render(request, "report/pms_report.html")
+    company = "all"
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        company = Company.objects.filter(id=selected_company).first()
+    employee = request.user.employee_get
+    objective_own = EmployeeObjective.objects.filter(
+        employee_id=employee, archive=False
+    )
+    objective_own = objective_own.distinct()
+
+    feedback = request.GET.get("search")  # if the search is none the filter will works
+    if feedback is None:
+        feedback = ""
+    self_feedback = Feedback.objects.filter(employee_id=employee).filter(
+        review_cycle__icontains=feedback
+    )
+    initial_data = {"archive": False}
+    feedback_filter_own = FeedbackFilter(
+        request.GET or initial_data, queryset=self_feedback
+    )
+
+    context = objective_filter_pagination(request, objective_own)
+    cm = {
+        "company": company,
+        "feedback_filter_form": feedback_filter_own.form,
+        "emp_obj_form": EmployeeObjectiveFilter(),
+    }
+    context.update(cm)
+
+    return render(request, "report/pms_report.html", context)
 
 
 @login_required
@@ -21,22 +53,35 @@ def pms_pivot(request):
 
     model_type = request.GET.get("model", "objective")
     if model_type == "objective":
-        data = Objective.objects.values(
-            "title",
-            "managers__employee_first_name",
-            "managers__employee_last_name",
-            "assignees__employee_first_name",
-            "assignees__employee_last_name",
-            "key_result_id__title",
-            "key_result_id__target_value",
-            "duration_unit",
-            "duration",
-            "company_id__company",
-            "key_result_id__progress_type",
-            "key_result_id__duration",
-            "assignees__employee_work_info__department_id__department",
-            "assignees__employee_work_info__job_role_id__job_role",
-            "assignees__employee_work_info__job_position_id__job_position",
+        qs = Objective.objects.all()
+
+        if managers := request.GET.getlist("managers"):
+            qs = qs.filter(managers__id__in=managers)
+        if assignees := request.GET.getlist("assignees"):
+            qs = qs.filter(assignees__id__in=assignees)
+        if duration := request.GET.get("duration"):
+            qs = qs.filter(duration=duration)
+        if key_result_id := request.GET.get("employee_objective__key_result_id"):
+            qs = qs.filter(key_result_id=key_result_id)
+
+        data = list(
+            qs.values(
+                "title",
+                "managers__employee_first_name",
+                "managers__employee_last_name",
+                "assignees__employee_first_name",
+                "assignees__employee_last_name",
+                "key_result_id__title",
+                "key_result_id__target_value",
+                "duration_unit",
+                "duration",
+                "company_id__company",
+                "key_result_id__progress_type",
+                "key_result_id__duration",
+                "assignees__employee_work_info__department_id__department",
+                "assignees__employee_work_info__job_role_id__job_role",
+                "assignees__employee_work_info__job_position_id__job_position",
+            )
         )
         DURATION_UNIT = {
             "days": "Days",
@@ -102,6 +147,24 @@ def pms_pivot(request):
             "feedback_answer__employee_id",
         )
 
+        # ✅ FILTERS added here
+        if review_cycle := request.GET.get("review_cycle"):
+            feedbacks = feedbacks.filter(review_cycle=review_cycle)
+        if status := request.GET.get("status"):
+            feedbacks = feedbacks.filter(status=status)
+        if employee_id := request.GET.get("employee_id"):
+            feedbacks = feedbacks.filter(employee_id=employee_id)
+        if manager_id := request.GET.get("manager_id"):
+            feedbacks = feedbacks.filter(manager_id=manager_id)
+        if colleague_id := request.GET.get("colleague_id"):
+            feedbacks = feedbacks.filter(colleague_id=colleague_id)
+        if subordinate_id := request.GET.get("subordinate_id"):
+            feedbacks = feedbacks.filter(subordinate_id=subordinate_id)
+        if start_date := request.GET.get("start_date"):
+            feedbacks = feedbacks.filter(created_at__date__gte=start_date)
+        if end_date := request.GET.get("end_date"):
+            feedbacks = feedbacks.filter(created_at__date__lte=end_date)
+
         for feedback in feedbacks:
             manager = (
                 f"{feedback.manager_id.employee_first_name} {feedback.manager_id.employee_last_name}"
@@ -141,6 +204,7 @@ def pms_pivot(request):
                 if not question_answers:
                     data_list.append(
                         {
+                            "Title": feedback.review_cycle,
                             "Manager": manager,
                             "Employee": employee,
                             "Answerable Employees": answerable_names,
@@ -170,6 +234,7 @@ def pms_pivot(request):
                         )
                         data_list.append(
                             {
+                                "Title": feedback.review_cycle,
                                 "Manager": manager,
                                 "Employee": employee,
                                 "Answerable Employees": answerable_names,
@@ -190,23 +255,52 @@ def pms_pivot(request):
                             }
                         )
     elif model_type == "employeeobjective":
-        data = EmployeeKeyResult.objects.values(
-            "key_result",
-            "employee_objective_id__employee_id__employee_first_name",
-            "employee_objective_id__employee_id__employee_last_name",
-            "employee_objective_id__objective_id__title",
-            "employee_objective_id__objective_id__duration_unit",
-            "employee_objective_id__objective_id__duration",
-            "start_value",
-            "current_value",
-            "target_value",
-            "start_date",
-            "end_date",
-            "status",
-            "progress_type",
-            "employee_objective_id__employee_id__employee_work_info__department_id__department",
-            "employee_objective_id__employee_id__employee_work_info__job_role_id__job_role",
-            "employee_objective_id__employee_id__employee_work_info__job_position_id__job_position",
+
+        from django.utils.dateparse import parse_date
+
+        qs = EmployeeKeyResult.objects.all()
+
+        # Filter section
+        if assignees := request.GET.getlist("employee_id"):
+            qs = qs.filter(employee_objective_id__employee_id__id__in=assignees)
+        if key_result_id := request.GET.get("key_result_id"):
+            qs = qs.filter(key_result_id__id=key_result_id)
+        if status := request.GET.get("status"):
+            qs = qs.filter(status=status)
+
+        start_date_from = parse_date(request.GET.get("start_date_from", ""))
+        start_date_to = parse_date(request.GET.get("start_date_till", ""))
+        if start_date_from:
+            qs = qs.filter(start_date__gte=start_date_from)
+        if start_date_to:
+            qs = qs.filter(start_date__lte=start_date_to)
+
+        end_date_from = parse_date(request.GET.get("end_date_from", ""))
+        end_date_to = parse_date(request.GET.get("end_date_till", ""))
+        if end_date_from:
+            qs = qs.filter(end_date__gte=end_date_from)
+        if end_date_to:
+            qs = qs.filter(end_date__lte=end_date_to)
+
+        data = list(
+            qs.values(
+                "key_result",
+                "employee_objective_id__employee_id__employee_first_name",
+                "employee_objective_id__employee_id__employee_last_name",
+                "employee_objective_id__objective_id__title",
+                "employee_objective_id__objective_id__duration_unit",
+                "employee_objective_id__objective_id__duration",
+                "start_value",
+                "current_value",
+                "target_value",
+                "start_date",
+                "end_date",
+                "status",
+                "progress_type",
+                "employee_objective_id__employee_id__employee_work_info__department_id__department",
+                "employee_objective_id__employee_id__employee_work_info__job_role_id__job_role",
+                "employee_objective_id__employee_id__employee_work_info__job_position_id__job_position",
+            )
         )
         DURATION_UNIT = {
             "days": "Days",
@@ -270,4 +364,5 @@ def pms_pivot(request):
 
     else:
         data_list = []
+
     return JsonResponse(data_list, safe=False)

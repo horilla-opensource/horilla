@@ -40,7 +40,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="oh-input__group">
-                        <label class="oh-input__label" for="{{ form.allowed_time.id_for_label }}">{% trans 'Allowed Time' %}</label>
+                        <label class="oh-input__label" for="{{ form.allowed_time.id_for_label }}">{{ form.allowed_time.label }}</label>
                         {{ form.allowed_time }}
                         {{ form.allowed_time.errors }}
                     </div>
@@ -50,7 +50,7 @@
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                     <div class="oh-input__group">
                         <div style="display: flex;">
-                            <label class="oh-input__label" for="{{ form.allowed_clock_in.id_for_label }}">{% trans 'Allowed Clock-In' %}</label>
+                            <label class="oh-input__label" for="{{ form.allowed_clock_in.id_for_label }}">{{ form.allowed_clock_in.label }}</label>
                             <span class="oh-info mt-2" title="{{form.allowed_clock_in.help_text|safe }}"></span>
                         </div>
                         <div class="oh-switch p-2 pt-0">
@@ -62,7 +62,7 @@
                 <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                     <div class="oh-input__group">
                         <div style="display: flex;">
-                            <label class="oh-input__label" for="{{ form.allowed_clock_out.id_for_label }}">{% trans 'Allowed Clock-Out' %}</label>
+                            <label class="oh-input__label" for="{{ form.allowed_clock_out.id_for_label }}">{{ form.allowed_clock_out.label }}</label>
                             <span class="oh-info mt-2" title="{{form.allowed_clock_out.help_text|safe }}"></span>
                         </div>
                         <div class="oh-switch p-2 pt-0">

@@ -608,28 +608,30 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
 
 def reload_queryset(fields):
     """
-    This method is used to reload the querysets in the form
+    Reloads querysets in the form based on active filters and selected company.
     """
+    request = getattr(_thread_locals, "request", None)
+    selected_company = request.session.get("selected_company") if request else None
+
+    recruitment_installed = apps.is_installed("recruitment")
     model_filters = {
         "Employee": {"is_active": True},
-        "Candidate": {"is_active": True} if apps.is_installed("recruitment") else None,
+        "Candidate": {"is_active": True} if recruitment_installed else None,
     }
-    request = getattr(_thread_locals, "request", None)
 
-    selected_company = request.session.get("selected_company") if request else None
     for field in fields.values():
-        if isinstance(field, ModelChoiceField):
-            model_name = field.queryset.model.__name__
-            filter_criteria = model_filters.get(model_name)
-            if filter_criteria is not None:
-                field.queryset = field.queryset.model.objects.filter(**filter_criteria)
-            # Future updation for company select field options when select a comapany from navbar
-            elif selected_company and not selected_company == "all":
-                field.queryset = field.queryset.model.objects.filter(
-                    id=selected_company
-                )
-            else:
-                field.queryset = field.queryset.model.objects.all()
+        if not isinstance(field, ModelChoiceField):
+            continue
+
+        model = field.queryset.model
+        model_name = model.__name__
+
+        if model_name == "Company" and selected_company and selected_company != "all":
+            field.queryset = model.objects.filter(id=selected_company)
+        elif (filters := model_filters.get(model_name)) is not None:
+            field.queryset = model.objects.filter(**filters)
+        else:
+            field.queryset = model.objects.all()
 
     return fields
 

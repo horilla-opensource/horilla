@@ -61,55 +61,19 @@
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
             <label class="oh-label">{% trans 'Country' %}</label>
-            <select
-              name="country"
-              class="oh-select-2 w-100 country"
-              id="country"
-            ></select>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans 'Reject Reason' %}</label>
-              {{ candidate_filter_obj.form.rejected_candidate__reject_reason_id }}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans 'Is Hired' %}</label>
-              {{ candidate_filter_obj.form.hired }}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans 'Gender' %}</label>
-              {{ candidate_filter_obj.form.gender }}
-            </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans 'Job Position' %}</label>
-              {{ candidate_filter_obj.form.job_position_id }}
-            </div>
+            <select name="country" class="oh-select-2 w-100 country" id="country"></select>
           </div>
         </div>
         <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
             <label class="oh-label">{% trans 'State' %}</label>
-            <select
-              name="state"
-              class="oh-select-2 w-100 country"
-              id="state"
-            ></select>
+            <select name="state" class="oh-select-2 w-100 country" id="state"></select>
           </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
           <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Offer Status' %}</label>
-            {{ candidate_filter_obj.form.offer_letter_status }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Is Canceled' %}</label>
-            {{ candidate_filter_obj.form.canceled }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Rating' %}</label>
-            {{ candidate_filter_obj.form.candidate_rating__rating }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Department' %}</label>
-            {{ candidate_filter_obj.form.job_position_id__department_id }}
+            <label class="oh-label">{% trans 'Taks' %}</label>
+            {{ candidate_filter_obj.form.tasks }}
           </div>
         </div>
       </div>
@@ -122,17 +86,23 @@
     <div class="oh-accordion-body">
       <div class="row">
         <div class="col-sm-12 col-md-12">
-            <div class="col-sm-12 col-md-12 col-lg-12 mb-2" style="width: 100%;">
-              <div class="oh-input-group" >
-                <label class="oh-label">{% trans 'Stage Managers' %}</label>
-              </div>
-              {{ stage_filter_obj.form.employee_id }}
+          <div class="col-sm-12 col-md-12 col-lg-12 mb-2" style="width: 100%;">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans 'Stage Managers' %}</label>
             </div>
+            {{ stage_filter_obj.form.employee_id }}
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+<script>
+  $(document).ready(function () {
+    {% include "country.js" %}
+    populateCountries("country","state")
+  });
+</script>
 {% comment %} <div class="oh-dropdown__filter-footer">
   <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="">{% trans 'Filter' %}</button>
 </div> {% endcomment %}

@@ -10,6 +10,7 @@ import django_filters
 from django import forms
 
 from base.filters import FilterSet
+from employee.models import Employee
 from horilla.filters import HorillaFilterSet
 from offboarding.models import (
     Offboarding,
@@ -48,6 +49,9 @@ class PipelineFilter(HorillaFilterSet):
     """
 
     search = django_filters.CharFilter(method="search_method", lookup_expr="icontains")
+    offboarding_manager = django_filters.ModelChoiceFilter(
+        field_name="managers", queryset=Employee.objects.all()
+    )
 
     class Meta:
         model = Offboarding

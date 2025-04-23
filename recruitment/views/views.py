@@ -65,6 +65,7 @@ from horilla_documents.models import Document
 from notifications.signals import notify
 from recruitment.auth import CandidateAuthenticationBackend
 from recruitment.decorators import (
+    all_manager_can_enter,
     candidate_login_required,
     manager_can_enter,
     recruitment_manager_can_enter,
@@ -895,7 +896,7 @@ def candidate_stage_update(request, cand_id):
 
 @login_required
 @hx_request_required
-@manager_can_enter(perm="recruitment.view_stagenote")
+@all_manager_can_enter(perm="recruitment.view_stagenote")
 def view_note(request, cand_id):
     """
     This method renders a template components to view candidate remark or note
@@ -1250,6 +1251,39 @@ def stage_update(request, stage_id):
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
             )
     return render(request, "stage/stage_update_form.html", {"form": form})
+
+
+@login_required
+@recruitment_manager_can_enter("recruitment.change_stage")
+def update_stage_order(request, pk):
+    """
+    This method is used to update the stage sequence of the onboarding
+    """
+    recruitment = Recruitment.objects.get(id=pk)
+
+    if request.method == "POST":
+        try:
+            order = json.loads(request.POST.get("order", "[]"))
+            for index, stage_id in enumerate(order):
+                stage = recruitment.stage_set.get(id=stage_id)
+                stage.sequence = index + 1
+                stage.save()
+            messages.success(request, "Sequence Updated Successfully")
+            return JsonResponse({"status": "success"})
+        except Exception as e:
+            messages.error(request, "Error Updating Sequence..")
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+
+    stages = recruitment.stage_set.order_by("sequence")
+
+    return render(
+        request,
+        "cbv/pipeline/stage_order.html",
+        {
+            "stages": stages,
+            "recruitment": recruitment,
+        },
+    )
 
 
 @login_required
@@ -1650,7 +1684,7 @@ def candidate_history_tab(request, pk, **kwargs):
 
 
 @login_required
-@manager_can_enter(perm="recruitment.view_candidate")
+@all_manager_can_enter(perm="recruitment.view_candidate")
 def candidate_onboarding_tab(request, pk, **kwargs):
     """
     method for rendering onboarding tab
@@ -1667,7 +1701,7 @@ def candidate_onboarding_tab(request, pk, **kwargs):
 
 
 @login_required
-@manager_can_enter(perm="recruitment.view_candidate")
+@all_manager_can_enter(perm="recruitment.view_candidate")
 def candidate_rating_tab(request, pk, **kwargs):
     """
     method for rendering rating tab
@@ -1716,7 +1750,7 @@ def scheduled_interview_tab(request, pk, **kwargs):
 
 
 @login_required
-@manager_can_enter(perm="recruitment.view_candidate")
+@all_manager_can_enter(perm="recruitment.view_candidate")
 def candidate_view_individual(request, cand_id, **kwargs):
     """
     This method is used to view profile of candidate.

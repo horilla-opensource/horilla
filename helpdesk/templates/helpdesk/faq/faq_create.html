@@ -10,10 +10,11 @@
 	<div class="oh-modal__dialog-header">
 		<h2 class="oh-modal__dialog-title" id="faqCreateModalLabel">
 			{% if faq %}
-				{% trans "FAQ Update" %}
+				{% trans "Update" %}
 			{% else %}
-				{% trans "FAQ Create" %}
+				{% trans "Create" %}
 			{% endif %}
+			{{form.verbose_name}}
 		</h2>
 		<button class="oh-modal__close" aria-label="Close">
 			<ion-icon name="close-outline"></ion-icon>

@@ -126,7 +126,7 @@ else:
                 "DB_NAME",
                 default=os.path.join(
                     BASE_DIR,
-                    "TestDB_Horilla.sqlite3",
+                    "TestDB.sqlite3",
                 ),
             ),
             "USER": env("DB_USER", default=""),
@@ -208,8 +208,6 @@ LANGUAGES = (
     ("es", "Español"),
     ("fr", "France"),
     ("ar", "عربى"),
-    ("pt-br", "Português (Brasil)"),
-    ("zh-hans", "Simplified Chinese"),
 )
 
 LOCALE_PATHS = [
@@ -241,3 +239,30 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+# LDAP Configuration
+# import ldap
+# from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+
+AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1:389"  # Replace with your LDAP server address
+
+# Bind credentials, if required
+AUTH_LDAP_BIND_DN = "cn=admin,dc=horilla,dc=com"  # Replace with your bind DN
+AUTH_LDAP_BIND_PASSWORD = "your_password"  # Replace with your LDAP bind password
+
+# Define the search base and user lookup
+# AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=horilla,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+
+# Map LDAP fields to Django user fields
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail",
+}
+
+AUTHENTICATION_BACKENDS = [
+    #    "django_auth_ldap.backend.LDAPBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+AUTH_LDAP_ALWAYS_UPDATE_USER = True

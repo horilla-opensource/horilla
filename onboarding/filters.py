@@ -9,9 +9,28 @@ from django_filters import filters
 
 from base.filters import FilterSet
 from horilla.filters import HorillaFilterSet
-from onboarding.models import CandidateStage, OnboardingStage, OnboardingTask
+from onboarding.models import (
+    CandidateStage,
+    CandidateTask,
+    OnboardingStage,
+    OnboardingTask,
+)
 from recruitment.filters import RecruitmentFilter
 from recruitment.models import Candidate, Recruitment
+
+
+class CandidateTaskFilter(HorillaFilterSet):
+    """
+    Task filter class
+    """
+
+    class Meta:
+        """
+        Meta
+        """
+
+        model = CandidateTask
+        fields = "__all__"
 
 
 class RecruitmentFilter(RecruitmentFilter):
@@ -70,7 +89,14 @@ class PipelineCandidateFilter(FilterSet):
     """
 
     search = django_filters.CharFilter(method="search_by_name", lookup_expr="icontains")
-
+    tasks = filters.ModelMultipleChoiceFilter(
+        field_name="candidate_id__candidate_task__onboarding_task_id",
+        queryset=OnboardingTask.objects.all(),
+    )
+    task_status = filters.ChoiceFilter(
+        field_name="candidate_id__candidate_task__onboarding_task_id__status",
+        choices=CandidateTask.choice,
+    )
     candidate = django_filters.ModelMultipleChoiceFilter(
         queryset=Candidate.objects.all(),
         field_name="name",
@@ -245,10 +271,20 @@ class OnboardingCandidateFilter(FilterSet):
         field_name="candidate_id__name", lookup_expr="icontains"
     )
     stage_id = filters.CharFilter(field_name="onboarding_stage_id")
+    country = filters.CharFilter(field_name="candidate_id___country")
+    state = filters.CharFilter(field_name="candidate_id___state")
+    tasks = filters.ModelMultipleChoiceFilter(
+        field_name="candidate_id__candidate_task__onboarding_task_id",
+        queryset=OnboardingTask.objects.all(),
+    )
 
     class Meta:
         model = CandidateStage
         fields = "__all__"
+
+    def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
+        super().__init__(data, queryset, request=request, prefix=prefix)
+        self.form.fields["tasks"].widget.attrs.update({"style": "width:100%;"})
 
 
 class OnboardingTaskFilter(FilterSet):
