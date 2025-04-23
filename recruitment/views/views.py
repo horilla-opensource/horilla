@@ -322,7 +322,12 @@ def recruitment_update(request, rec_id):
     Args:
         id : recruitment_id
     """
-    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    recruitment_obj = Recruitment.find(rec_id)
+    if not recruitment_obj:
+        messages.error(
+            request, _("The recruitment entry you are trying to edit does not exist.")
+        )
+        return HttpResponse("<script>window.location.reload();</script>")
     survey_template_list = []
     survey_templates = RecruitmentSurvey.objects.filter(
         recruitment_ids=rec_id
