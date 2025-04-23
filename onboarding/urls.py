@@ -123,7 +123,7 @@ urlpatterns = [
         name="onboarding-send-mail",
     ),
     path(
-        "update-probotion-end", views.update_probation_end, name="update-probotion-end"
+        "update-probation-end", views.update_probation_end, name="update-probation-end"
     ),
     path("task-report-onboarding", views.task_report, name="task-report-onboarding"),
     path(
