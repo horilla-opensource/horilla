@@ -339,14 +339,23 @@ def application_form(request):
     resume_id = request.GET.get("resumeId")
     resume_obj = Resume.objects.filter(id=resume_id).first()
 
+    if request.method == "GET" and not recruitment_id:
+        messages.error(request, _("Recruitment ID is missing"))
+        return redirect("open-recruitments")
+
+    try:
+        recruitment = Recruitment.objects.filter(id=recruitment_id).first()
+        if not recruitment:
+            messages.error(request, _("Recruitment not found"))
+            return redirect("open-recruitments")
+    except (ValueError, OverflowError):
+        messages.error(request, _("Invalid Recruitment ID"))
+        return redirect("open-recruitments")
+
     if resume_obj:
         initial_data = {"resume": resume_obj.file.url if resume_obj else None}
         form = ApplicationForm(initial=initial_data)
 
-    if recruitment_id is not None:
-        recruitment = Recruitment.objects.filter(id=recruitment_id)
-        if recruitment.exists():
-            recruitment = recruitment.first()
     if request.POST:
 
         if "resume" not in request.FILES and resume_id:
