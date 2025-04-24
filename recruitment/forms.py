@@ -1035,26 +1035,24 @@ class SkillZoneCandidateForm(ModelForm):
                 + self.instance.skill_zone_id.title
             )
 
-    def save(self, commit: bool = ...) -> Any:
-        super().save(commit)
-        other_candidates = list(
-            set(self.data.getlist("candidate_id"))
-            - {
-                str(self.instance.candidate_id.id),
-            }
-        )
-        if commit:
-            cand = self.instance
-            for id in other_candidates:
-                cand.pk = cand.pk + 1
-                cand.id = cand.pk
-                cand.candidate_id = Candidate.objects.get(id=id)
-                try:
-                    super(SkillZoneCandidate, cand).save()
-                except Exception as e:
-                    logger.error(e)
+    def save(self, commit: bool = True) -> SkillZoneCandidate:
 
-        return other_candidates
+        if not self.instance.pk:
+            candidates = Candidate.objects.filter(
+                id__in=list((self.data.getlist("candidate_id")))
+            )
+            skill_zone = self.cleaned_data["skill_zone_id"]
+            reason = self.cleaned_data["reason"]
+            for candidate in candidates:
+                zone_cand = SkillZoneCandidate()
+                zone_cand.skill_zone_id = skill_zone
+                zone_cand.candidate_id = candidate
+                zone_cand.reason = reason
+                zone_cand.save()
+        else:
+            instance = super().save()
+
+        return self.instance
 
 
 class ToSkillZoneForm(ModelForm):
