@@ -1154,3 +1154,40 @@ class EmployeeBonusPointForm(HorillaModelForm):
                 {"bonus_point": _("Point should be greater than zero.")}
             )
         return cleaned_data
+
+
+class EmployeeFeedbackForm(HorillaModelForm):
+
+    cols = {"others_id": 12}
+
+    class Meta:
+        model = Feedback
+        fields = ["others_id"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["others_id"] = HorillaMultiSelectField(
+            queryset=Employee.objects.filter(employee_work_info__isnull=False),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                form=self,
+                instance=self.instance,
+            ),
+            label=_("Employees"),
+        )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if isinstance(self.fields["others_id"], HorillaMultiSelectField):
+            self.errors.pop("others_id", None)
+
+            employee_data = self.fields["others_id"].queryset.filter(
+                id__in=self.data.getlist("others_id")
+            )
+
+            cleaned_data["others_id"] = employee_data
+
+        return cleaned_data

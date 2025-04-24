@@ -528,6 +528,12 @@ class Feedback(HorillaModel):
         blank=True,
         verbose_name=_("Subordinates"),
     )
+    others_id = models.ManyToManyField(
+        Employee,
+        related_name="feedback_others",
+        blank=True,
+        verbose_name=_("Employees"),
+    )
     question_template_id = models.ForeignKey(
         QuestionTemplate,
         on_delete=models.DO_NOTHING,
@@ -598,24 +604,14 @@ class Feedback(HorillaModel):
         return f"{self.employee_id.employee_first_name} - {self.review_cycle}"
 
     def requested_employees(self):
-        manager = self.manager_id
-        colleagues = self.colleague_id.all()
-        subordinates = self.subordinate_id.all()
-        owner = self.employee_id
-
-        employees = [employee for employee in subordinates]
-
-        for employee in colleagues:
-            if employee not in employees:
-                employees.append(employee)
-
-        if manager not in employees:
-            employees.append(manager)
-
-        if owner not in employees:
-            employees.append(owner)
-
-        return employees
+        employees = set(self.subordinate_id.all())
+        employees.update(self.colleague_id.all())
+        employees.update(self.others_id.all())
+        if self.manager_id:
+            employees.add(self.manager_id)
+        if self.employee_id:
+            employees.add(self.employee_id)
+        return list(employees)
 
 
 class AnonymousFeedback(models.Model):

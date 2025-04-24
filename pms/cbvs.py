@@ -8,12 +8,18 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _trans
 
 from base.methods import filter_own_and_subordinate_recordes, is_reportingmanager
+from employee.forms import EmployeeForm
 from horilla import horilla_middlewares
 from horilla.decorators import login_required, permission_required
 from horilla_views.generic.cbv import views
 from pms import models
 from pms.filters import BonusPointSettingFilter, EmployeeBonusPointFilter
-from pms.forms import BonusPointSettingForm, EmployeeBonusPointForm
+from pms.forms import (
+    BonusPointSettingForm,
+    EmployeeBonusPointForm,
+    EmployeeFeedbackForm,
+)
+from pms.methods import check_duplication
 
 
 # ================Models for BonusPointSetting==============
@@ -264,3 +270,45 @@ class EmployeeBonusPointListView(views.HorillaListView):
             )
         else:
             return queryset.filter(employee_id=request.user.employee_get)
+
+
+####################### Feedback ########################################
+
+
+# @method_decorator(login_required, name="dispatch")
+# @method_decorator(
+#     permission_required("pms.change_feedback"), name="dispatch"
+# )
+class FeedbackEmployeeFormView(views.HorillaFormView):
+    """
+    Feedback other employee form View
+    """
+
+    form_class = EmployeeFeedbackForm
+    model = models.Feedback
+    new_display_title = _trans("Share Feedback request ")
+    # template_name = "bonus/bonus_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def form_invalid(self, form: Any) -> HttpResponse:
+        if not form.is_valid():
+            errors = form.errors.as_data()
+            return render(
+                self.request, self.template_name, {"form": form, "errors": errors}
+            )
+        return super().form_invalid(form)
+
+    def form_valid(self, form: EmployeeForm) -> views.HttpResponse:
+        if form.is_valid():
+            message = "Feedback request sent."
+            other_employees = check_duplication(
+                form.instance, form.cleaned_data.get("others_id", [])
+            )
+            form.cleaned_data["others_id"] = other_employees
+            form.save()
+            messages.success(self.request, _trans(message))
+            return self.HttpResponse("<script>window.location.reload()</script>")
+        return super().form_valid(form)

@@ -135,6 +135,11 @@ urlpatterns = [
     path("feedback-archive/<int:id>", views.feedback_archive, name="feedback-archive"),
     path("get-collegues", views.get_collegues, name="get-collegues"),
     path(
+        "share-feedback/<int:pk>/",
+        cbvs.FeedbackEmployeeFormView.as_view(),
+        name="share-feedback",
+    ),
+    path(
         "feedback-answer-get/<int:id>",
         views.feedback_answer_get,
         name="feedback-answer-get",

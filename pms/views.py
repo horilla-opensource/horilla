@@ -75,6 +75,7 @@ from pms.forms import (
     QuestionTemplateForm,
 )
 from pms.methods import (
+    check_duplication,
     check_permission_feedback_detailed_view,
     get_anonymous_feedbacks,
     pms_owner_and_manager_can_enter,
@@ -1566,8 +1567,12 @@ def feedback_update(request, id):
                     ).first()
                     feedback_form = form.save()
                     feedback_form.employee_key_results_id.add(key_result)
-            instance = form.save()
+            instance = form.save(commit=False)
             instance.subordinate_id.set(employees)
+            other_employees = check_duplication(
+                form.instance, form.instance.others_id.all()
+            )
+            form.cleaned_data["others_id"] = other_employees
             form = form.save()
             messages.info(request, _("Feedback updated successfully!."))
             send_feedback_notifications(request, form)
@@ -1663,6 +1668,9 @@ def feedback_list_search(request):
     requested_feedback_ids.extend(
         [i.id for i in Feedback.objects.filter(subordinate_id=employee_id)]
     )
+    requested_feedback_ids.extend(
+        [i.id for i in Feedback.objects.filter(others_id=employee_id)]
+    )
     requested_feedback = Feedback.objects.filter(
         pk__in=requested_feedback_ids,
         review_cycle__icontains=feedback,
@@ -1712,7 +1720,10 @@ def feedback_list_view(request):
     )
     # feedbacks to answer
     feedback_requested = Feedback.objects.filter(
-        Q(manager_id=employee) | Q(colleague_id=employee) | Q(subordinate_id=employee),
+        Q(manager_id=employee)
+        | Q(colleague_id=employee)
+        | Q(subordinate_id=employee)
+        | Q(others_id=employee),
         start_date__lte=datetime.date.today(),
         end_date__gte=datetime.date.today(),
     ).distinct()
@@ -1855,6 +1866,7 @@ def feedback_answer_get(request, id, **kwargs):
         + [feedback.manager_id]
         + list(feedback.colleague_id.all())
         + list(feedback.subordinate_id.all())
+        + list(feedback.others_id.all())
     )
     if not employee in feedback_employees:
         messages.info(request, _("You are not allowed to answer"))
