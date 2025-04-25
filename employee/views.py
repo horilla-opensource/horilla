@@ -1339,24 +1339,40 @@ def employee_view_update(request, obj_id, **kwargs):
     """
     This method is used to render update form for employee.
     """
-    company = request.session["selected_company"]
+    selected_company_id = request.session["selected_company"]
     user = Employee.objects.filter(employee_user_id=request.user).first()
-    work_info = HistoryTrackingFields.objects.first()
-    work_info_history = False
-    if work_info and work_info.work_info_track == True:
-        work_info_history = True
+    work_info_history = HistoryTrackingFields.objects.filter(
+        work_info_track=True
+    ).exists()
 
     employee = Employee.objects.filter(id=obj_id).first()
-    all_employees = Employee.objects.entire()
-    emp = all_employees.filter(id=obj_id).first()
+    emp = Employee.objects.entire().filter(id=obj_id).first()
+    if not employee and emp and hasattr(emp, "employee_work_info"):
+        if (
+            emp.employee_work_info
+            and emp.employee_work_info.company_id
+            and emp.employee_work_info.company_id_id != selected_company_id
+        ):
+
+            messages.error(
+                request, _("Employee is not working in the selected company.")
+            )
+            return redirect(employee_view)
+
     if employee is None:
         employee = emp
-        all_work_info = EmployeeWorkInformation.objects.entire()
-        cmpny = Company.objects.get(id=company)
-        work = all_work_info.filter(employee_id=employee).first()
-        if company != "all":
+        cmpny = Company.objects.get(id=selected_company_id)
+
+        work = (
+            EmployeeWorkInformation.objects.entire()
+            .filter(employee_id=employee)
+            .first()
+        )
+
+        if work and selected_company_id != "all":
             work.company_id = cmpny
             work.save()
+
         employee.save()
 
     if (
