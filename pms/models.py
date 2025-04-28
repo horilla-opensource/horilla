@@ -128,6 +128,7 @@ class Objective(HorillaModel):
         verbose_name=_("Company"),
         on_delete=models.CASCADE,
     )
+    self_employee_progress_update = models.BooleanField(default=True)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
