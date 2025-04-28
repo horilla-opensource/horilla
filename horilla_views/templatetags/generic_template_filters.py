@@ -6,6 +6,7 @@ This module is used to write custom template filters.
 """
 
 import datetime
+import functools
 import re
 import types
 
@@ -74,7 +75,7 @@ def getattribute(value, attr: str):
                 result.append(getattribute(record, attr))
         elif hasattr(value, str(attr)):
             result = getattr(value, attr)
-            if isinstance(result, types.MethodType):
+            if isinstance(result, (types.MethodType, functools.partial)):
                 result = result()
             value = result
         else:
