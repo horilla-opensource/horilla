@@ -25,7 +25,6 @@
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
     <link rel="icon" type="image/png" sizes="16x16"
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css">
 
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
@@ -235,9 +234,6 @@
             event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
         })
     </script>
-
-    {% comment %} <script type="module" src="{% static 'images/ion-icons/ionicons/ionicons.esm.js' %}"></script>
-    <script nomodule src="{% static 'images/ion-icons/ionicons/ionicons.js' %}"></script> {% endcomment %}
     <!-- this is the master js  -->
     <script src="{% static '/index/index.js' %}"></script>
     <script src="{% static '/index/saveFilters.js' %}"></script>
@@ -248,7 +244,6 @@
     <script src="{% static 'build/js/moment.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"></script>
 
-
     <script src="{% static '/base/date_settings.js' %}"></script>
     <script src="{% static '/base/time_formatting.js' %}"></script>
     <script src="{% static '/base/time_settings.js' %}"></script>
@@ -258,7 +253,6 @@
     {% endif %}
     <script type="module"  src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
     <script src="{% static '/build/js/sweetAlert.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Clear all query parameters from the URL
