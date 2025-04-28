@@ -482,14 +482,30 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.view_id = "empKeyrsult"
+        emp_obj_id = self.kwargs.get("emp_obj_id")
+        self.emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
+
+    def get(self, request, *args, pk=None, **kwargs):
+        if (
+            self.request.user.has_perm("pms.change_objective")
+            or self.request.user.has_perm("pms.change_employeeobjective")
+            or self.request.user.has_perm("pms.change_employeekeyresult")
+            or self.request.user.employee_get
+            in self.emp_objective.objective_id.managers.all()
+            or (
+                self.emp_objective.objective_id.self_employee_progress_update
+                and (self.emp_objective.employee_id == self.request.user.employee_get)
+            )
+        ):
+            return super().get(request, *args, pk=pk, **kwargs)
+        messages.info(request, "You dont have permission")
+        return HttpResponse("<script>window.location.reload()</script>")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if not self.form.instance.pk:
-            emp_obj_id = self.kwargs.get("emp_obj_id")
-            emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
-            employee = emp_objective.employee_id
-            self.form.fields["employee_objective_id"].initial = emp_objective.pk
+            employee = self.emp_objective.employee_id
+            self.form.fields["employee_objective_id"].initial = self.emp_objective.pk
             self.form_class.verbose_name = _(f"Create Key result for {employee}")
         if self.form.instance.pk:
             self.form_class.verbose_name = _(
@@ -611,11 +627,23 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
         self.selected_instances_key_id = (
             f'ekrIds{self.request.GET.get("employee_objective_id")}'
         )
-        self.actions = [
-            {
-                "action": "Edit",
-                "icon": "create-outline",
-                "attrs": """
+        self.actions = []
+        if (
+            self.request.user.has_perm("pms.change_objective")
+            or self.request.user.has_perm("pms.change_employeeobjective")
+            or self.request.user.has_perm("pms.change_employeekeyresult")
+            or self.request.user.employee_get
+            in emp_objective.objective_id.managers.all()
+            or (
+                emp_objective.objective_id.self_employee_progress_update
+                and (emp_objective.employee_id == self.request.user.employee_get)
+            )
+        ):
+            self.actions.append(
+                {
+                    "action": "Edit",
+                    "icon": "create-outline",
+                    "attrs": """
                     hx-get='{get_update_url}'
                     class="oh-btn w-100"
                     data-toggle="oh-modal-toggle"
@@ -623,8 +651,8 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                     hx-target="#genericModalBody"
                     style="cursor: pointer;"
                     """,
-            },
-        ]
+                },
+            )
         if self.request.user.has_perm("pms.delete_employeekeyresult"):
             self.actions.append(
                 {

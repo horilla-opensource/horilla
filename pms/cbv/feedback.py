@@ -229,6 +229,7 @@ class RequestedFeedbackTab(FeedbackListView):
         super().__init__(**kwargs)
         self.search_url = reverse("requested-feedback-tab")
         self.request.request_feedback = "request_feedback"
+        self.row_attrs = ""
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -238,6 +239,7 @@ class RequestedFeedbackTab(FeedbackListView):
             Q(manager_id=employee, manager_id__is_active=True)
             | Q(colleague_id=employee, colleague_id__is_active=True)
             | Q(subordinate_id=employee, subordinate_id__is_active=True)
+            | Q(others_id=employee, others_id__is_active=True)
         ).values_list("id", flat=True)
 
         queryset = queryset.filter(pk__in=feedback_requested_ids).filter(

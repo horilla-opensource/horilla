@@ -113,16 +113,16 @@
                    {% trans feedback.get_status_display %}
                 </label>
               {% endif %}
-              {% if perms.pms.change_feedback or perms.pms.delete_feedback  %}
+              {% if perms.pms.change_feedback or perms.pms.delete_feedback or request.user.employee_get == feedback.created_by or perms.pms.change_feedback %}
               <div class="oh-btn-group m-2">
                   {% if not feedback_started %}
-                    {% if perms.pms.change_feedback %}
+                    {% if perms.pms.change_feedback or request.user.employee_get == feedback.created_by %}
                       <div class="d-flex flex-row-reverse">
                         <button
                           data-toggle="oh-modal-toggle"
                           class="oh-btn oh-btn--light-bkg w-100"
                           data-target="#feedbackModalPopup"
-                          hx-get="{% url 'feedback-update' id=feedback.id %}"
+                          hx-get="{% url 'feedback-update' feedback.id %}"
                           hx-target="#feedbackModalTarget"
                           title = {% trans "Edit" %}>
                           <ion-icon name="create-outline" class="me-1" ></ion-icon>
@@ -130,7 +130,15 @@
                       </div>
                     {% endif %}
                   {% endif %}
-
+                  {% if request.user.employee_get == feedback.employee_id or perms.pms.change_feedback %}
+                    <a hx-get="{% url "share-feedback" feedback.id %}"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#objectCreateModal"
+                      hx-target="#objectCreateModalTarget"
+                      class="oh-btn oh-btn--light-bkg w-100" title="{% trans "Share Link" %}">
+                      <ion-icon name="share-social-outline"></ion-icon>
+                    </a>
+                  {% endif %}
                   {% if perms.pms.delete_feedback %}
                     <form action="{% url 'feedback-archive' id=feedback.id %}" method="post" onsubmit="return confirm('{% trans "Do you want archive this Feedback ?" %}')" >
                       <button class="oh-btn  w-100 "  title="{% trans 'Archive' %}" style="background-color: white;!important">
@@ -459,19 +467,70 @@
               </div>
             </div>
           </div>
+          <!-- endof colleague section -->
+
+           <!-- Other employees section -->
+
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+              <div class="m-2">
+                <div class="oh-card__body">
+                  <div class="oh-sticky-table">
+                    <div class="oh-sticky-table__table">
+                      <div class="oh-sticky-table__thead">
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__th">{% trans "Other Employees" %}</div>
+                          <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                          <div class="oh-sticky-table__th"></div>
+                        </div>
+                      </div>
+                      <div class="oh-sticky-table__tbody">
+                        {% for employee in feedback.others_id.all %}
+                        <div class="oh-sticky-table__tr">
+                          <div class="oh-sticky-table__sd">
+                            <ul class="oh-sticky-table___profile-list">
+                              <li class="oh-sticky-table__profile-item">
+                                <div class="oh-profile oh-profile--md">
+                                  <div class="oh-profile__avatar mr-1">
+                                    <img src="{{employee.get_avatar}}"
+                                      class="oh-profile__image" alt="" />
+                                  </div>
+                                  <span class="oh-profile__name oh-text--dark"> {{employee}}</span>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="oh-sticky-table__td">
+                            <div class="d-flex align-items-center">
+                              <span class=""></span><span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
+                            </div>
+                          </div>
+                          <div class="oh-sticky-table__td"><button
+                              class="oh-btn  oh-btn--secondary oh-activity-sidebar__open"
+                              data-target="#answerViewAccordion" hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}" hx-target="#answerView">{% trans "Answer View" %}
+                              </button></div>
+                        </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end of other employees section -->
         </div>
         </div>
-        <!-- endof colleague section -->
-      </div>
       <div class="oh-tabs__content" id="feedback-overview">
         <div id="feedback_overview_div">
-          <button hx-get="{% url 'get-feedback-overview' feedback.id %}"
-              hx-target="#feedback-overview" id="feedback-overview-button" hidden>
-          </button>
-      </div>
+        </div>
       </div>
     </div>
 </div>
+<button
+  hx-get="{% url 'get-feedback-overview' feedback.id %}"
+  hx-target="#feedback-overview" id="feedback-overview-button" hidden>
+</button>
 </main>
 
   <!-- answer off canvas -->
@@ -496,12 +555,6 @@
   <!-- update modal  -->
   <div class="oh-modal" id="feedbackModalPopup" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width:885px;" id="">
-      <div class="oh-modal__dialog-header">
-        <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">{% trans "Update Feedback" %}</span>
-        <button type="button" class="oh-modal__close reloadButton" aria-label="Close">
-            <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
       <div class="oh-modal__dialog-body" id="feedbackModalTarget">
       </div>
     </div>

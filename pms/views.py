@@ -75,6 +75,7 @@ from pms.forms import (
     QuestionTemplateForm,
 )
 from pms.methods import (
+    check_duplication,
     check_permission_feedback_detailed_view,
     get_anonymous_feedbacks,
     pms_owner_and_manager_can_enter,
@@ -1190,6 +1191,19 @@ def change_employee_objective_status(request):
     """
     emp_obj = request.GET.get("empObjId")
     emp_objective = EmployeeObjective.objects.filter(id=emp_obj).first()
+    if not (
+        request.user.has_perm("pms.change_objective")
+        or request.user.has_perm("pms.change_employeeobjective")
+        or request.user.has_perm("pms.change_employeekeyresult")
+        or request.user.employee_get in emp_objective.objective_id.managers.all()
+        or (
+            emp_objective.objective_id.self_employee_progress_update
+            and (emp_objective.employee_id == request.user.employee_get)
+        )
+    ):
+        messages.info(request, "You dont have permission")
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
     status = request.GET.get("status")
     if (
         request.user.has_perm("pms.change_employeeobjective")
@@ -1585,8 +1599,12 @@ def feedback_update(request, id):
                     ).first()
                     feedback_form = form.save()
                     feedback_form.employee_key_results_id.add(key_result)
-            instance = form.save()
+            instance = form.save(commit=False)
             instance.subordinate_id.set(employees)
+            other_employees = check_duplication(
+                form.instance, form.instance.others_id.all()
+            )
+            form.cleaned_data["others_id"] = other_employees
             form = form.save()
             messages.info(request, _("Feedback updated successfully!."))
             send_feedback_notifications(request, form)
@@ -1682,6 +1700,9 @@ def feedback_list_search(request):
     requested_feedback_ids.extend(
         [i.id for i in Feedback.objects.filter(subordinate_id=employee_id)]
     )
+    requested_feedback_ids.extend(
+        [i.id for i in Feedback.objects.filter(others_id=employee_id)]
+    )
     requested_feedback = Feedback.objects.filter(
         pk__in=requested_feedback_ids,
         review_cycle__icontains=feedback,
@@ -1731,7 +1752,10 @@ def feedback_list_view(request):
     )
     # feedbacks to answer
     feedback_requested = Feedback.objects.filter(
-        Q(manager_id=employee) | Q(colleague_id=employee) | Q(subordinate_id=employee),
+        Q(manager_id=employee)
+        | Q(colleague_id=employee)
+        | Q(subordinate_id=employee)
+        | Q(others_id=employee),
         start_date__lte=datetime.date.today(),
         end_date__gte=datetime.date.today(),
     ).distinct()
@@ -1874,6 +1898,7 @@ def feedback_answer_get(request, id, **kwargs):
         + [feedback.manager_id]
         + list(feedback.colleague_id.all())
         + list(feedback.subordinate_id.all())
+        + list(feedback.others_id.all())
     )
     if not employee in feedback_employees:
         messages.info(request, _("You are not allowed to answer"))
@@ -3306,13 +3331,27 @@ def employee_keyresult_update_status(request, kr_id):
             redirect to detailed of employee objective
     """
     emp_kr = EmployeeKeyResult.objects.get(id=kr_id)
-    status = request.POST.get("key_result_status")
-    emp_kr.status = status
-    emp_kr.save()
-    messages.success(request, _("Key result sattus changed to {}.").format(status))
-    return redirect(
-        f"/pms/kr-table-view/{emp_kr.employee_objective_id.id}?&objective_id={emp_kr.employee_objective_id.objective_id.id}"
-    )
+    if (
+        request.user.has_perm("pms.change_objective")
+        or request.user.has_perm("pms.change_employeeobjective")
+        or request.user.has_perm("pms.change_employeekeyresult")
+        or request.user.employee_get
+        in emp_kr.employee_objective_id.objective_id.managers.all()
+        or (
+            emp_kr.employee_objective_id.objective_id.self_employee_progress_update
+            and (emp_kr.employee_id == request.user.employee_get)
+        )
+    ):
+        status = request.POST.get("key_result_status")
+        emp_kr.status = status
+        emp_kr.save()
+        messages.success(request, _("Key result sattus changed to {}.").format(status))
+        return redirect(
+            f"/pms/kr-table-view/{emp_kr.employee_objective_id.id}?&objective_id={emp_kr.employee_objective_id.objective_id.id}"
+        )
+
+    messages.info(request, "You dont have permission")
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -3324,10 +3363,29 @@ def key_result_current_value_update(request):
         current_value = eval_validate(request.POST.get("current_value"))
         emp_kr_id = eval_validate(request.POST.get("emp_key_result_id"))
         emp_kr = EmployeeKeyResult.objects.get(id=emp_kr_id)
-        current_value = max(0, current_value)
-        emp_kr.current_value = current_value
-        emp_kr.save()
-        emp_kr.employee_objective_id.update_objective_progress()
+        if (
+            request.user.has_perm("pms.change_objective")
+            or request.user.has_perm("pms.change_employeeobjective")
+            or request.user.has_perm("pms.change_employeekeyresult")
+            or request.user.employee_get
+            in emp_kr.employee_objective_id.objective_id.managers.all()
+            or (
+                emp_kr.employee_objective_id.objective_id.self_employee_progress_update
+                and (
+                    emp_kr.employee_objective_id.employee_id
+                    == request.user.employee_get
+                )
+            )
+        ):
+            current_value = max(0, current_value)
+            emp_kr.current_value = current_value
+            emp_kr.save()
+            emp_kr.employee_objective_id.update_objective_progress()
+            messages.success(request, "Value updated")
+        else:
+            messages.info(
+                request, "You dont have permission to update the current value"
+            )
         return JsonResponse(
             {
                 "type": "sucess",

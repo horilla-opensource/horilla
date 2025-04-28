@@ -1,6 +1,5 @@
 {% load attendancefilters recruitmentfilters basefilters static i18n %}
 {% include 'filter_tags.html' %}
-<div id="ohMessages"></div>
 <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
     {% trans "Select All Candidates" %}
 </div>
@@ -84,9 +83,10 @@
                                     <input type="date" class="oh-input joining-date" style="width: 150px;" value={{candidate.joining_date|date:"Y-m-d"}}
                                       name="joining_date" data-candidate-id="{{candidate.id}}">
                                   </a>
-                                  <a data-cell-index="3" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-                                    <input type="date" class="oh-input" style="width: 150px;" value={{candidate.probation_end|date:"Y-m-d"}}
-                                      name="probation_end" onchange="probotionEnd($(this))" data-candidate-id="{{candidate.id}}">
+                                  <a data-cell-index="3" class="oh-sticky-table__td" style="color: inherit; text-decoration: none">
+                                    <input type="date" class="oh-input" style="width: 150px;"
+                                        value="{{ candidate.probation_end|date:'Y-m-d' }}" name="probation_end"
+                                        oninput="probationEnd($(this))" data-candidate-id="{{ candidate.id }}">
                                   </a>
                                   <a data-cell-index="4" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.job_position_id}}</a>
                                   <a data-cell-index="5" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.recruitment_id}}</a>
@@ -518,49 +518,78 @@
     updateCount()
     tickCandidateCheckboxes()
 
-    function probotionEnd($element){
-        candId = $element.attr("data-candidate-id");
-        dateVal = $element.val()
-        $.ajax({
-        type: "get",
-        url: "{% url 'update-probotion-end' %}",
-        data: {
-            "candidate_id":candId,
-            "probation_end":dateVal,
-        },
-        success: function (response) {
-            $("#ohMessages").append(`
-                <div class="oh-alert-container">
-                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                        ${response.message}
-					</div>
-                </div>`);
-        }
-        });
-    }
-    $(document).ready(function () {
-        $(".joining-date").change(function (e) {
-        let candId = $(this).attr("data-candidate-id");
-        var value = $(this).val();
+  function isValidDateFormat(dateStr) {
+      if (!dateStr) return true; // Allow empty (clearing)
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
+
+      const year = parseInt(dateStr.split("-")[0], 10);
+      return !(isNaN(year) || year < 1000 || year > 9999);
+  }
+
+  function probationEnd($element) {
+    const candId = $element.attr("data-candidate-id");
+    const dateVal = $element.val();
+
+    if (!candId || !isValidDateFormat(dateVal)) return;
+
+    sendProbationRequest(candId, dateVal || "");
+  }
+
+  function sendProbationRequest(candidateId, dateValue) {
+      const $input = $(`input[data-candidate-id="${candidateId}"]`);
+      $input.prop("disabled", true);
+
+      $.ajax({
+          type: "POST",
+          url: "{% url 'update-probation-end' %}",
+          data: {
+              "candidate_id": candidateId,
+              "probation_end": dateValue,
+              "csrfmiddlewaretoken": "{{ csrf_token }}"
+          },
+          success: function (response) {
+              $('#reloadMessagesButton').click();
+          },
+          error: function () {
+              $('#reloadMessagesButton').click();
+          },
+          complete: function () {
+              $input.prop("disabled", false);
+          }
+      });
+  }
+  $(document).ready(function () {
+    $(".joining-date").change(function (e) {
         e.preventDefault();
+        const $element = $(this);
+        const candId = $element.attr("data-candidate-id");
+        const value = $element.val();
+
+        if (!candId || !isValidDateFormat(value)) return;
+        updateJoiningDate(candId, value || "");
+    });
+
+    function updateJoiningDate(candId, dateValue) {
+        const $input = $(`input[data-candidate-id="${CSS.escape(candId)}"]`);
+        $input.prop("disabled", true);
         $.ajax({
             type: "POST",
             url: `/onboarding/update-joining`,
             data: {
-            csrfmiddlewaretoken: `{{ csrf_token }}`,
-            candId: candId,
-            date: value,
+                csrfmiddlewaretoken: `{{ csrf_token }}`,
+                candId: candId,
+                date: dateValue,
             },
             success: function (response) {
-            $("#ohMessages").append(`
-                <div class="oh-alert-container">
-                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                        ${response.message}
-					</div>
-                </div>`);
+                $('#reloadMessagesButton').click();
             },
+            error: function (xhr) {
+                $('#reloadMessagesButton').click();
+            },
+            complete: function () {
+                $input.prop("disabled", false);
+            }
         });
-        });
-
-    });
+    }
+});
   </script>

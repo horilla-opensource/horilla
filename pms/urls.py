@@ -206,7 +206,7 @@ urlpatterns = [
         name="objective-detailed-view-comment",
     ),
     path(
-        "kr-table-view/<int:emp_objective_id>",
+        "kr-table-view/<int:emp_objective_id>/",
         objectives.EmployeeObjectiveKeyResultDetailListView.as_view(),
         name="kr-table-view",
     ),
@@ -257,6 +257,11 @@ urlpatterns = [
     path("feedback-delete/<int:id>", views.feedback_delete, name="feedback-delete"),
     path("feedback-archive/<int:id>", views.feedback_archive, name="feedback-archive"),
     path("get-collegues", views.get_collegues, name="get-collegues"),
+    path(
+        "share-feedback/<int:pk>/",
+        cbvs.FeedbackEmployeeFormView.as_view(),
+        name="share-feedback",
+    ),
     path(
         "feedback-answer-get/<int:id>",
         views.feedback_answer_get,

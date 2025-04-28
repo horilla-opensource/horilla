@@ -24,7 +24,7 @@
             <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
               <ul class="oh-dropdown__items">
                 <li class="oh-dropdown__item">
-                  <a href="{% url 'survey-template-preview' grouper.grouper %}"  class="oh-dropdown__link">{% trans "Preview" %}</a>
+                  <a href="{% url 'survey-template-preview' %}?title={{grouper.grouper}}"  class="oh-dropdown__link">{% trans "Preview" %}</a>
                 </li>
                 {% if perms.recruitment.change_surveytemplate %}
                 <li class="oh-dropdown__item">

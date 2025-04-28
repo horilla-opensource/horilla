@@ -229,6 +229,7 @@ class Objective(HorillaModel):
         verbose_name=_("Company"),
         on_delete=models.CASCADE,
     )
+    self_employee_progress_update = models.BooleanField(default=True)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     class Meta:
@@ -704,18 +705,34 @@ class EmployeeKeyResult(models.Model):
         """
         For current value column
         """
-        col = f"""
-            <input
-                id = {self.id}
-                type="number" class="oh-input p-1"
-                style="width: 100px;"
-                min="0"
-                value="{self.current_value}"
-                name="current_value"
-                onchange="delayedProgress(this)"
-            />
-        """
-        return col
+        # request is required
+        request = _thread_locals.request
+        if (
+            request.user.has_perm("pms.change_objective")
+            or request.user.has_perm("pms.change_employeeobjective")
+            or request.user.has_perm("pms.change_employeekeyresult")
+            or request.user.employee_get
+            in self.employee_objective_id.objective_id.managers.all()
+            or (
+                self.employee_objective_id.objective_id.self_employee_progress_update
+                and (
+                    self.employee_objective_id.employee_id == request.user.employee_get
+                )
+            )
+        ):
+            col = f"""
+                <input
+                    id = "{self.id}"
+                    type="number" class="oh-input p-1"
+                    style="width: 100px;"
+                    min="0"
+                    value="{self.current_value}"
+                    name="current_value"
+                    onchange="delayedProgress(this)"
+                />
+            """
+            return col
+        return self.current_value
 
     def get_progress_col(self):
         """
@@ -993,6 +1010,12 @@ class Feedback(HorillaModel):
         blank=True,
         verbose_name=_("Subordinates"),
     )
+    others_id = models.ManyToManyField(
+        Employee,
+        related_name="feedback_others",
+        blank=True,
+        verbose_name=_("Employees"),
+    )
     question_template_id = models.ForeignKey(
         QuestionTemplate,
         on_delete=models.DO_NOTHING,
@@ -1146,24 +1169,14 @@ class Feedback(HorillaModel):
         )
 
     def requested_employees(self):
-        manager = self.manager_id
-        colleagues = self.colleague_id.all()
-        subordinates = self.subordinate_id.all()
-        owner = self.employee_id
-
-        employees = [employee for employee in subordinates]
-
-        for employee in colleagues:
-            if employee not in employees:
-                employees.append(employee)
-
-        if manager not in employees:
-            employees.append(manager)
-
-        if owner not in employees:
-            employees.append(owner)
-
-        return employees
+        employees = set(self.subordinate_id.all())
+        employees.update(self.colleague_id.all())
+        employees.update(self.others_id.all())
+        if self.manager_id:
+            employees.add(self.manager_id)
+        if self.employee_id:
+            employees.add(self.employee_id)
+        return list(employees)
 
     def question_answer(self):
         """

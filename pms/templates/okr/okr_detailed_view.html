@@ -226,6 +226,7 @@
               $(`#kr${response.pk}`).attr("style",`width:${response.progress}% !important;`)
               $(`#kr${response.pk}Html`).html(`${response.progress}%`)
               $(progressCol).html(`${response.kr_progress}%`)
+              $("#reloadMessagesButton").click()
             }
           },
         });
