@@ -3,10 +3,18 @@
   <input type="hidden" name="path" value="{{request.path_info}}">
   <ul class="oh-dropdown__items">
     <div class="oh-dropdown_btn-header">
-      <button class="oh-btn oh-btn--success-outline">
+      <button onclick="
+      $(this).closest('form').find('[type=checkbox]').prop('checked',true);
+      $(this).closest('form').find('[type=checkbox]').siblings('input[type=hidden]').val('');
+      $(this).closest('form').find('[type=submit]').click();
+      " class="oh-btn oh-btn--success-outline">
         {% trans "Select All Records" %}
       </button>
-      <button class="oh-btn oh-btn--primary-outline">
+      <button onclick="
+      $(this).closest('form').find('[type=checkbox]').prop('checked',false);
+      $(this).closest('form').find('[type=checkbox]').siblings('input[type=hidden]').val('off');
+      $(this).closest('form').find('[type=submit]').click();
+      " class="oh-btn oh-btn--primary-outline">
         {% trans "Unselect All Records" %}
       </button>
     </div>
@@ -28,5 +36,5 @@
     </li>
     {% endfor %}
   </ul>
-  <input type="submit" hidden>
+  <input type="submit">
 </form>
