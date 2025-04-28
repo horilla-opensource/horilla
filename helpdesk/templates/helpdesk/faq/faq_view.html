@@ -1,143 +1,62 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
-{% include 'helpdesk/faq/faq_category_nav.html'%}
-<style>
-	.oh-faq__item-body {
-		background: #e9dfec9c;
-		opacity: 0.7;
-	}
-	.oh-faq__tag {
-		border-radius: 10px;
-		font-weight: 600;
-	}
-	.oh-faq__item-body {
-		max-height: 0;
-		transition: max-height 0.3s ease,padding 0.3s ease;
-		overflow-y: auto;
-	}
 
-	.oh-faq__item--show .oh-faq__item-body {
-		max-height: 200px; /* Adjust the max-height as needed */
-	}
-	.oh-title_faq__main-header {
-		width:70%;
-	}
-	.oh-select-faq {
-		width:12%;
-	}
-	.oh-select-faq , .oh-select-faq:last-child , .oh-faq__input-search {
-		margin :1rem 0;
-	}
+<div id="faqContainer">
+    {% include 'helpdesk/faq/faq_category_nav.html'%}
+    <div class="oh-wrapper">
+        <div id="faqCategoryList">
+            {% include "helpdesk/faq/faq_category_list.html" %}
+        </div>
+    </div>
 
-	h1.oh-main__titlebar-title{
-		margin-bottom:0;
-	}
-	.oh-faq_search--icon{
-		top:17px;
-	}
-</style>
-<div class="oh-wrapper">
-	{% if faq_categories %}
-	<div id="faqCategoryList">
-
-		{% include "helpdesk/faq/faq_category_list.html" %}
-	</div>
-	{% else %}
-	<div
-		style="
-			height: 70vh;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		"
-		class=""
-	>
-		<div style="" class="oh-404">
-			<img
-				style="display: block; width: 150px; height: 150px; margin: 10px auto"
-				src="{% static 'images/ui/faq.png' %}"
-				class="mb-4"
-				alt=""
-			/>
-			<h3 style="font-size: 20px" class="oh-404__subtitle">
-				{% trans "There are no FAQs at the moment." %}
-			</h3>
-		</div>
-	</div>
-	{% endif %}
-	<!-- Sticky Table -->
+    <div
+        class="oh-modal"
+        id="faqCategoryCreate"
+        role="dialog"
+        aria-labelledby="faqCategoryCreate"
+        aria-hidden="true"
+    ></div>
+    <div
+        class="oh-modal"
+        id="faqCreate"
+        role="dialog"
+        aria-labelledby="faqCreate"
+        aria-hidden="true"
+    ></div>
 </div>
-
-<!-- create FAQ  modal -->
-<div
-	class="oh-modal"
-	id="faqCategoryCreate"
-	role="dialog"
-	aria-labelledby="faqCategoryCreate"
-	aria-hidden="true"
-></div>
-<!--  modal -->
-<!-- create FAQ  modal -->
-<div
-	class="oh-modal"
-	id="faqCreate"
-	role="dialog"
-	aria-labelledby="faqCreate"
-	aria-hidden="true"
-></div>
-<!--  modal -->
 <script>
-	function completeSuggestion (element) {
-		$('.oh-search_input').val($(element).text());
-		$("#suggestion_box").hide();
-	}
+    var get_faqs = () => {
+        var FAQList = {{ questions|safe }};
+        $(function () {
+            $("[name='search']").autocomplete({
+                source: FAQList,
+                appendTo:".oh-faq__input-search",
+                select: function (event, ui) {
+                    $(this).val(ui.item.value);
+                    $(this).blur();
+                },
+                open: function () {
+                    $(".ui-autocomplete").addClass("oh-autocomplete-suggestions");
+                    $(".ui-autocomplete li").addClass("autocomplete-suggestion");
+                }
+            });
+        });
+    };
 
-	function show_answer(element){
-		if ($(element).parent(".oh-faq__item--show").length !=0){
-			$(".oh-faq__item--show").removeClass("oh-faq__item--show");
-		} else {
-			$(".oh-faq__item--show").removeClass("oh-faq__item--show");
-			$(element).parent('.oh-faq__item').addClass("oh-faq__item--show");
-		}
-	}
+    $(document).ready(function () {
+        get_faqs();
+        let typingTimer;
+        var typingDelay = 1000;
 
-	$(document).ready(function () {
+        $("[name='search']").on("input", function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                this.dispatchEvent(new Event('change', { bubbles: true }));
+            }, typingDelay);
+        });
+    });
 
-    	var autocompleteSuggestions = $('.oh-autocomplete-suggestions');
-		var searchInput = $('.oh-search_input');
-
-		searchInput.on('input', function(){
-			let search = searchInput.val()
-			$.ajax({
-				type: "get",
-				url: `/helpdesk/faq-suggestion/`,
-				data: {
-				  csrfmiddlewaretoken: getCookie("csrftoken"),
-				  "search": search,
-				},
-				success: function (response) {
-					$("#suggestion_box").html("")
-						$.each(response.faqs, function(index,faq){
-							$("#suggestion_box").append(
-                                `<div class="autocomplete-suggestion" onclick=completeSuggestion(this)>${faq.question}</div>`
-                            )
-						}
-					)
-				},
-				error: function(){
-					console.log("error")
-				}
-			})
-		})
-
-		$(document).on('click', function (event) {
-			if (!searchInput.is(event.target) && !autocompleteSuggestions.is(event.target) && autocompleteSuggestions.has(event.target).length === 0) {
-				$("#suggestion_box").html('');
-			}
-		});
-	});
-
-	$(document).ready(function(){
-
-	});
+    $(document).on("htmx:afterRequest", function (e) {
+        get_faqs();
+    });
 </script>
 {% endblock %}

@@ -1,99 +1,44 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
-{% include 'helpdesk/faq/faq_nav.html'%}
-<style>
-	.oh-faq__item-body {
-		background: #e9dfec9c;
-		opacity: 0.7;
-	}
+<div id="faqContainer">
 
-	.oh-faq__tag {
-		border-radius: 10px;
-		font-weight: 600;
-	}
-
-	.oh-faq__item-body {
-		max-height: 0;
-		transition: max-height 0.3s ease, padding 0.3s ease;
-		overflow-y: auto;
-	}
-
-	.oh-faq__item--show .oh-faq__item-body {
-		max-height: 200px;
-		/* Adjust the max-height as needed */
-	}
-
-	.oh-title_faq__main-header {
-		width: 70%;
-	}
-
-	.oh-select-faq {
-		width: 12%;
-	}
-
-	.oh-select-faq,
-	.oh-select-faq:last-child,
-	.oh-faq__input-search {
-		margin: 1rem 0;
-	}
-
-	.oh-faq_search--icon {
-		top: 17px;
-	}
-</style>
-<div class="oh-wrapper">
-	{% if faqs %}
-	<div id="faqList">
-		{% include "helpdesk/faq/faq_list.html" %}
+	{% include 'helpdesk/faq/faq_nav.html'%}
+	<div class="oh-wrapper">
+		{% if faqs %}
+		<div id="faqList">
+			{% include "helpdesk/faq/faq_list.html" %}
+		</div>
+		{% endif %}
 	</div>
-	{% else %}
-	<div style="
-			height: 70vh;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		">
-		<div class="oh-404">
-			<img style="display: block; width: 150px; height: 150px; margin: 10px auto"
-				src="{% static 'images/ui/attendance.png' %}" class="mb-4" alt="" />
-			<h3 style="font-size: 20px" class="oh-404__subtitle">
-				{% trans "There are no FAQs at the moment." %}
-			</h3>
+
+	<div class="oh-modal" id="faqCreate" role="dialog" aria-labelledby="faqCreate" aria-hidden="true"></div>
+
+	<div id="addTagTargetModal">
+		<div id="addTagTarget">
 		</div>
 	</div>
-	{% endif %}
-</div>
 
-<!-- create FAQ  modal -->
-<div class="oh-modal" id="faqCreate" role="dialog" aria-labelledby="faqCreate" aria-hidden="true"></div>
-<!--  modal -->
-
-
-<div id="addTagTargetModal">
-	<div id="addTagTarget">
-	</div>
-</div>
-
-<div class="oh-modal" id="addTagModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true"
-	style="z-index: 1100;">
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="editTitle">
-				{% trans "Create Tag" %}
-			</h2>
-			<button class="oh-modal__close--custom"
-				onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="editTarget">
-			<form {% comment %} hx-post="{% url 'ticket-create-tag' %}" hx-target="#addTagTarget" method="post"
-				hx-encoding="multipart/form-data" {% endcomment %} id="addTagForm">
-				{% csrf_token %}
-				{{create_tag_f.as_p}}
-				{% comment %} <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
-					{% trans "Save" %}
-				</button> {% endcomment %}
-			</form>
+	<div class="oh-modal" id="addTagModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true"
+		style="z-index: 1100;">
+		<div class="oh-modal__dialog">
+			<div class="oh-modal__dialog-header">
+				<h2 class="oh-modal__dialog-title" id="editTitle">
+					{% trans "Create Tag" %}
+				</h2>
+				<button class="oh-modal__close--custom"
+					onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')" aria-label="Close">
+					<ion-icon name="close-outline"></ion-icon>
+				</button>
+			</div>
+			<div class="oh-modal__dialog-body" id="editTarget">
+				<form {% comment %} hx-post="{% url 'ticket-create-tag' %}" hx-target="#addTagTarget" method="post"
+					hx-encoding="multipart/form-data" {% endcomment %} id="addTagForm">
+					{% csrf_token %}
+					{{create_tag_f.as_p}}
+					{% comment %} <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp">
+						{% trans "Save" %}
+					</button> {% endcomment %}
+				</form>
+			</div>
 		</div>
 	</div>
 </div>
@@ -103,15 +48,6 @@
 		const selectedValues = Array.from(event.selectedOptions).map(option => option.value);
 		if (selectedValues.includes('create_new_tag')) {
 			$("#addTagModal").addClass("oh-modal--show");
-		}
-	}
-
-	function show_answer(element) {
-		if ($(element).parent(".oh-faq__item--show").length != 0) {
-			$(".oh-faq__item--show").removeClass("oh-faq__item--show");
-		} else {
-			$(".oh-faq__item--show").removeClass("oh-faq__item--show");
-			$(element).parent('.oh-faq__item').addClass("oh-faq__item--show");
 		}
 	}
 

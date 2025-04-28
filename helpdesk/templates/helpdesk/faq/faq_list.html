@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 {% include 'filter_tags.html' %}
 <div class="oh-card mb-4">
 	<div class="oh-faq">
@@ -40,6 +40,22 @@
 					</div>
 					<div class="oh-faq__item-body">{{faq.answer}}</div>
 				</li>
+			{% empty %}
+				<div style="
+					height: 70vh;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					position:relative;
+				">
+					<div class="oh-404">
+						<img style="display: block; width: 150px; height: 150px; margin: 10px auto"
+							src="{% static 'images/ui/faq.png' %}" class="mb-4" alt="" />
+						<h3 style="font-size: 20px" class="oh-404__subtitle">
+							{% trans "There are no FAQs at the moment." %}
+						</h3>
+					</div>
+				</div>
 			{% endfor %}
 		</ul>
 	</div>
