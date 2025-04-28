@@ -169,3 +169,21 @@ class DepartmentManagerFilter(HorillaFilterSet):
             (queryset.filter(department__department__icontains=value))
             | queryset.filter(manager__employee_first_name__icontains=value)
         ).distinct()
+
+
+class FaqSearch(FilterSet):
+    search = CharFilter(method="search_method", lookup_expr="icontains")
+
+    class Meta:
+        model = FAQ
+        fields = ["search"]
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to add custom search condition
+        """
+        return (
+            queryset.filter(question__icontains=value)
+            | queryset.filter(answer__icontains=value)
+            | queryset.filter(tags__title__icontains=value)
+        ).distinct()

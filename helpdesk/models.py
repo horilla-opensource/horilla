@@ -317,24 +317,3 @@ class FAQ(HorillaModel):
     class Meta:
         verbose_name = _("FAQ")
         verbose_name_plural = _("FAQs")
-
-
-# updating the faq search index when a new faq is created or deleted
-
-
-def update_index(sender, instance, **kwargs):
-    from .search_indexes import FAQIndex
-
-    index = FAQIndex()
-    index.update_object(instance)
-
-
-def remove_from_index(sender, instance, **kwargs):
-    from .search_indexes import FAQIndex
-
-    index = FAQIndex()
-    index.remove_object(instance)
-
-
-post_save.connect(update_index, sender=FAQ)
-post_delete.connect(remove_from_index, sender=FAQ)

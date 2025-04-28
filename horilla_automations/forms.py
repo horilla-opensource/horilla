@@ -27,6 +27,10 @@ class AutomationForm(ModelForm):
 
     cols = {"template_attachments": 12}
 
+    class Meta:
+        model = MailAutomation
+        fields = "__all__"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["also_sent_to"] = HorillaMultiSelectField(
@@ -75,9 +79,8 @@ class AutomationForm(ModelForm):
             if isinstance(field.widget, forms.Select):
                 field.widget.option_template_name = default_select_option_template
 
-    class Meta:
-        model = MailAutomation
-        fields = "__all__"
+        is_active_field = self.fields.pop("is_active")
+        self.fields["is_active"] = is_active_field
 
     def clean(self):
         cleaned_data = super().clean()

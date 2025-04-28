@@ -2,7 +2,7 @@
 <section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
     <div class="oh-main__titlebar oh-main__titlebar--left">
         <h1 class="oh-main__titlebar-title fw-bold">
-            {{model.get_verbose_name_plural}}
+            {% trans "FAQ Categories" %}
         </h1>
         <a
             class="oh-main__titlebar-search-toggle"
@@ -36,12 +36,9 @@
                 name="search"
                 placeholder="Search in FAQs..."
                 hx-get="{% url 'faq-search' %}?category=true"
-                hx-trigger="change delay:300ms"
-                onkeyup='$("#suggestion_box").show(); if ($(this).val() == "") {$("#suggestion_box").hide()}'
-				onfocusout = '$("#suggestion_box").fadeOut(500)'
+                hx-trigger="change"
                 hx-target="#faqCategoryList"
             />
-            <div class="oh-autocomplete-suggestions" id="suggestion_box"></div>
         </div>
         {% comment %}
         <select class="oh-select oh-select-faq oh-select--dropdown">

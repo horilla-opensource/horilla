@@ -7,15 +7,13 @@ from operator import itemgetter
 from urllib.parse import parse_qs
 
 from django.contrib import messages
-from django.core.paginator import Paginator
-from django.db.models import ProtectedError, Q
+from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
-from haystack.query import SearchQuerySet
 
 from base.forms import TagsForm
 from base.methods import (
@@ -30,7 +28,13 @@ from base.models import Department, JobPosition, Tags
 from employee.models import Employee
 from employee.views import get_content_type
 from helpdesk.decorators import ticket_owner_can_enter
-from helpdesk.filter import FAQCategoryFilter, FAQFilter, TicketFilter, TicketReGroup
+from helpdesk.filter import (
+    FAQCategoryFilter,
+    FAQFilter,
+    FaqSearch,
+    TicketFilter,
+    TicketReGroup,
+)
 from helpdesk.forms import (
     AttachmentForm,
     CommentForm,
@@ -80,10 +84,10 @@ def faq_category_view(request):
     """
 
     faq_categories = FAQCategory.objects.all()
+    questions = FAQ.objects.values_list("question", flat=True)
     context = {
         "faq_categories": faq_categories,
-        "f": FAQFilter(request.GET),
-        "model": FAQCategory,
+        "questions": list(questions),
     }
 
     return render(request, "helpdesk/faq/faq_view.html", context=context)
@@ -287,18 +291,11 @@ def faq_search(request):
     category = request.GET.get("category", "")
     previous_data = request.GET.urlencode()
     query = request.GET.get("search", "")
-    faqs = FAQ.objects.filter(is_active=True)
     data_dict = parse_qs(previous_data)
     get_key_instances(FAQ, data_dict)
 
     if query:
-        results_list = (
-            SearchQuerySet()
-            .filter(Q(question__icontains=query) | Q(answer__icontains=query))
-            .using("default")
-        )
-        result_pks = [result.pk for result in results_list]
-        faqs = FAQ.objects.filter(pk__in=result_pks)
+        faqs = FaqSearch(request.GET).qs
 
     else:
         faqs = FAQ.objects.filter(is_active=True)
@@ -310,6 +307,7 @@ def faq_search(request):
         faqs = faqs.filter(category=id)
     if category:
         data_dict.pop("category")
+
     context = {
         "faqs": faqs,
         "f": FAQFilter(request.GET),

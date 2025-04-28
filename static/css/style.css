@@ -824,3 +824,37 @@ form label {
 .oh-dot--color-todo {
     background-color: #e3b75f80
 }
+
+#faqContainer .oh-faq__item-body {
+    background: #e9dfec9c;
+    opacity: 0.7;
+}
+#faqContainer .oh-faq__tag {
+    border-radius: 10px;
+    font-weight: 600;
+}
+#faqContainer .oh-faq__item-body {
+    max-height: 0;
+    transition: max-height 0.3s ease,padding 0.3s ease;
+    overflow-y: auto;
+}
+
+#faqContainer .oh-faq__item--show .oh-faq__item-body {
+    max-height: 200px; /* Adjust the max-height as needed */
+}
+#faqContainer .oh-title_faq__main-header {
+    width:70%;
+}
+#faqContainer .oh-select-faq {
+    width:12%;
+}
+#faqContainer .oh-select-faq , .oh-select-faq:last-child , .oh-faq__input-search {
+    margin :1rem 0;
+}
+
+#faqContainer h1.oh-main__titlebar-title{
+    margin-bottom:0;
+}
+#faqContainer .oh-faq_search--icon{
+    top:17px;
+}
