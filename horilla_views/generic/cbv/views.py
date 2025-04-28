@@ -496,12 +496,38 @@ class HorillaListView(ListView):
 
             def remove_extra_spaces(self, text, field_tuple):
                 """
-                Remove blank space but keep line breaks and add new lines for <li> tags.
+                Clean the text:
+                - If it's a <select> element, extract the selected option's value.
+                - If it's an <input> or <textarea>, extract its 'value'.
+                - Otherwise, remove blank spaces, keep line breaks, and handle <li> tags.
                 """
                 soup = BeautifulSoup(str(text), "html.parser")
+
+                # Handle <select> tag
+                select_tag = soup.find("select")
+                if select_tag:
+                    selected_option = select_tag.find("option", selected=True)
+                    if selected_option:
+                        return selected_option["value"]
+                    else:
+                        first_option = select_tag.find("option")
+                        return first_option["value"] if first_option else ""
+
+                # Handle <input> tag
+                input_tag = soup.find("input")
+                if input_tag:
+                    return input_tag.get("value", "")
+
+                # Handle <textarea> tag
+                textarea_tag = soup.find("textarea")
+                if textarea_tag:
+                    return textarea_tag.text.strip()
+
+                # Default: clean normal text and <li> handling
                 for li in soup.find_all("li"):
                     li.insert_before("\n")
                     li.unwrap()
+
                 text = soup.get_text()
                 lines = text.splitlines()
                 non_blank_lines = [line.strip() for line in lines if line.strip()]
