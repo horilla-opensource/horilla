@@ -763,9 +763,8 @@
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                                 <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
                             </div>
-                            <div class=" oh-card-dashboard__body" id="onLeaveEmployee"  style="height:80%">
-                                <div class="oh-sticky-table h-100" hx-get="{% url 'dashboard-on-leave' %}" hx-trigger="load" style="border: none;">
-                                </div>
+                            <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load" style="height:300px;overflow-x: auto;">
+                                <div class="animated-background"></div>
                             </div>
                             {% comment %} <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load"></div> {% endcomment %}
                         </div>

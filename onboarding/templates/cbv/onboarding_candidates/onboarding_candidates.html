@@ -161,12 +161,7 @@
             csrfmiddlewaretoken: '{{ csrf_token }}'
           },
           success: function (response) {
-            $("#ohMessages").append(`
-                <div class="oh-alert-container">
-                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                    ${response.message}
-                    </div>
-                </div>`);
+            $("#reloadMessagesButton").click()
           }
         });
       }
@@ -175,19 +170,15 @@
         candId = $element.attr("data-candidate-id");
         dateVal = $element.val()
         $.ajax({
-          type: "get",
-          url: "{% url 'update-probotion-end' %}",
+          type: "POST",
+          url: "{% url 'update-probation-end' %}",
           data: {
             "candidate_id":candId,
             "probation_end":dateVal,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
           },
           success: function (response) {
-            $("#ohMessages").append(`
-                <div class="oh-alert-container">
-                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                    ${response.message}
-                    </div>
-                </div>`);
+            $("#reloadMessagesButton").click()
           }
         });
       }
@@ -197,12 +188,7 @@
           type: "get",
           url: url,
           success: function (response) {
-            $("#ohMessages").append(`
-                <div class="oh-alert-container">
-                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                        ${response.message}
-                    </div>
-                </div>`);
+            $("#reloadMessagesButton").click()
           }
         });
       }
