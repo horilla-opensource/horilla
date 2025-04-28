@@ -329,7 +329,12 @@ urlpatterns = [
         name="stage-sequence-update",
     ),
     path(
-        "survey-template-preview/<str:title>/",
+        "survey-template-preview/",
+        recruitment.views.surveys.survey_preview,
+        name="survey-template-preview",
+    ),
+    path(
+        "survey-template-preview/<int:pk>/",
         recruitment.views.surveys.survey_preview,
         name="survey-template-preview",
     ),

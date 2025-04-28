@@ -48,6 +48,8 @@ from recruitment.pipeline_grouper import group_by_queryset
 from recruitment.views.paginator_qry import paginator_qry
 
 
+@login_required
+@is_recruitment_manager(perm="recruitment.add_recruitmentsurvey")
 def survey_form(request):
     """
     This method is used to render survey wform
@@ -58,12 +60,14 @@ def survey_form(request):
     return render(request, "survey/form.html", {"form": form})
 
 
-def survey_preview(request, title):
+@login_required
+@is_recruitment_manager(perm="recruitment.add_recruitmentsurvey")
+def survey_preview(request, pk=None):
     """
     Used to render survey form to the candidate
     """
-    # title = request.GET.get("title")
-    template = SurveyTemplate.objects.get(title=str(title))
+    title = request.GET.get("title")
+    template = SurveyTemplate.objects.get(title=title)
 
     form = SurveyPreviewForm(template=template).form
     return render(
@@ -77,6 +81,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 @csrf_exempt
+@login_required
 def question_order_update(request):
     if request.method == "POST":
         # Extract data from the request
@@ -103,6 +108,8 @@ def question_order_update(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
+@login_required
+@is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
 def candidate_survey(request):
     """
     Used to render survey form to the candidate
@@ -503,7 +510,7 @@ def question_add(request):
     template = None
     title = request.GET.get("title")
     if title:
-        template = SurveyTemplate.objects.filter(title=title)
+        template = SurveyTemplate.objects.filter(title=title).first
 
     form = AddQuestionForm(initial={"template_ids": template})
     if request.method == "POST":
