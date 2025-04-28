@@ -97,6 +97,9 @@ class AttendanceActivity(HorillaModel):
 
         return time_difference.total_seconds()
 
+    def __str__(self):
+        return f"{self.employee_id} - {self.attendance_date} - {self.clock_in} - {self.clock_out}"
+
 
 class BatchAttendance(HorillaModel):
     """
