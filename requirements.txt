@@ -28,6 +28,7 @@ djangorestframework
 djangorestframework-simplejwt
 drf-yasg
 et-xmlfile
+geopy
 google-api-python-client
 google-cloud-storage==3.0.0
 html5lib
