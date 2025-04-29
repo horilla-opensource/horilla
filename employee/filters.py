@@ -29,7 +29,8 @@ class EmployeeFilter(HorillaFilterSet):
     Args:
         FilterSet (class): custom filter set class to apply styling
     """
-
+    
+    search = django_filters.CharFilter(method="filter_by_badge_id")
     search = django_filters.CharFilter(method="filter_by_name")
     search_field = django_filters.CharFilter(method="search_in")
     selected_search_field = django_filters.ChoiceFilter(
@@ -218,6 +219,21 @@ class EmployeeFilter(HorillaFilterSet):
         ids = list(filter(None, map(_icontains, queryset)))
         return queryset.filter(id__in=ids)
 
+    def filter_by_badge_id(self, queryset, name, value):
+        """
+        Employee search method
+        """
+        value = value.lower()
+
+        if self.data.get("search_field"):
+            return queryset
+
+        def _icontains(instance):
+            result = str(getattribute(instance, "badge_id")).lower()
+            return instance.pk if value in result else None
+
+        ids = list(filter(None, map(_icontains, queryset)))
+        return queryset.filter(id__in=ids)
 
 class EmployeeReGroup:
     """
