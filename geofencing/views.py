@@ -1,22 +1,23 @@
+from django.contrib.auth.decorators import permission_required
+from django.http import QueryDict
+from django.utils.decorators import method_decorator
 from geopy.distance import geodesic
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import GeoFencing
 from .serializers import *
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.pagination import PageNumberPagination
-from django.contrib.auth.decorators import permission_required
-from django.utils.decorators import method_decorator
-from django.http import QueryDict
-
 
 
 class GeoFencingSetupGetPostAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     @method_decorator(
-        permission_required("geofencing.view_geofencing", raise_exception=True), name="dispatch"
+        permission_required("geofencing.view_geofencing", raise_exception=True),
+        name="dispatch",
     )
     def get(self, request):
         if request.user.is_superuser:
@@ -29,9 +30,9 @@ class GeoFencingSetupGetPostAPIView(APIView):
         serializer = GeoFencingSetupSerializer(page, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
     @method_decorator(
-        permission_required("geofencing.add_geofencing", raise_exception=True), name="dispatch"
+        permission_required("geofencing.add_geofencing", raise_exception=True),
+        name="dispatch",
     )
     def post(self, request):
         data = request.data
@@ -40,51 +41,54 @@ class GeoFencingSetupGetPostAPIView(APIView):
                 data = data.dict()
             company = request.user.employee_get.get_company()
             if company:
-                data["company_id"] = company.id  
+                data["company_id"] = company.id
         serializer = GeoFencingSetupSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 class GeoFencingSetupPutDeleteAPIView(APIView):
     permission_classes = [IsAuthenticated]
-
 
     def get_location(self, pk):
         try:
             return GeoFencing.objects.get(pk=pk)
         except Exception as e:
             raise serializers.ValidationError(e)
-        
 
     @method_decorator(
-        permission_required("geofencing.change_geofencing", raise_exception=True), name="dispatch"
+        permission_required("geofencing.change_geofencing", raise_exception=True),
+        name="dispatch",
     )
     def put(self, request, pk):
         location = self.get_location(pk)
         company = request.user.employee_get.get_company()
         if request.user.is_superuser or company == location.company_id:
-            serializer = GeoFencingSetupSerializer(location, data=request.data, partial=True)
+            serializer = GeoFencingSetupSerializer(
+                location, data=request.data, partial=True
+            )
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         raise serializers.ValidationError("Access Denied..")
 
-
     @method_decorator(
-        permission_required("geofencing.delete_geofencing", raise_exception=True), name="dispatch"
+        permission_required("geofencing.delete_geofencing", raise_exception=True),
+        name="dispatch",
     )
     def delete(self, request, pk):
         location = self.get_location(pk)
         company = request.user.employee_get.get_company()
         if request.user.is_superuser or company == location.company_id:
             location.delete()
-            return Response({"message": "GeoFencing location deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {"message": "GeoFencing location deleted successfully"},
+                status=status.HTTP_204_NO_CONTENT,
+            )
         raise serializers.ValidationError("Access Denied..")
-
 
 
 class GeoFencingEmployeeLocationCheckAPIView(APIView):
@@ -100,21 +104,28 @@ class GeoFencingEmployeeLocationCheckAPIView(APIView):
     def get_company_location(self, request):
         company = self.get_company(request)
         try:
-            location = GeoFencing.objects.get(company_id=company)  
+            location = GeoFencing.objects.get(company_id=company)
             return location
         except Exception as e:
-            raise serializers.ValidationError(e)  
+            raise serializers.ValidationError(e)
 
     def post(self, request):
         serializer = EmployeeLocationSerializer(data=request.data)
         if serializer.is_valid():
             company_location = self.get_company_location(request)
             geofence_center = (company_location.latitude, company_location.longitude)
-            employee_location = (request.data.get("latitude"), request.data.get("longitude"))
+            employee_location = (
+                request.data.get("latitude"),
+                request.data.get("longitude"),
+            )
             distance = geodesic(geofence_center, employee_location).meters
             if distance <= company_location.radius_in_meters:
-                return Response({"message": "Inside the geofence"}, status=status.HTTP_200_OK)
-            return Response({"message": "Outside the geofence"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"message": "Inside the geofence"}, status=status.HTTP_200_OK
+                )
+            return Response(
+                {"message": "Outside the geofence"}, status=status.HTTP_400_BAD_REQUEST
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
