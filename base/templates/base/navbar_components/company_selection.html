@@ -1,7 +1,7 @@
 {% load static %}
 {% load i18n %}
 <input type="hidden" id="company-id" value="{{ request.session.selected_company|default:'all' }}">
-<div id="multCompany" class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="{% trans 'Companies' %}" data-selected-company="{{ request.session.selected_company|default:'all' }}"> -->
+<div id="multCompany" class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="{% trans 'Companies' %}" data-selected-company="{{ request.session.selected_company|default:'all' }}">
     <div class="oh-navbar__action-icons">
         <a href="#" class="oh-navbar__action-icons-link">
             <ion-icon name="business"></ion-icon>
