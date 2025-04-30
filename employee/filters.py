@@ -221,19 +221,11 @@ class EmployeeFilter(HorillaFilterSet):
 
     def filter_by_badge_id(self, queryset, name, value):
         """
-        Employee search method
+        Employee search with Badge ID
         """
-        value = value.lower()
-
         if self.data.get("search_field"):
             return queryset
-
-        def _icontains(instance):
-            result = str(getattribute(instance, "badge_id")).lower()
-            return instance.pk if value in result else None
-
-        ids = list(filter(None, map(_icontains, queryset)))
-        return queryset.filter(id__in=ids)
+        return queryset.filter(badge_id__icontains=value)
 
 class EmployeeReGroup:
     """
