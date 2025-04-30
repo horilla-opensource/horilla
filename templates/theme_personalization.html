@@ -1,0 +1,152 @@
+{% extends 'settings.html' %}
+{% load i18n static %}
+
+{% block settings %}
+<div class="oh-inner-sidebar-content__header mt-4">
+    <h2 class="oh-inner-sidebar-content__title">{% trans "Theme Personalization" %}</h2>
+</div>
+
+{% if user.is_staff %}
+<input type="hidden" id="company-id" value="{{ request.session.selected_company|default:'all' }}">
+
+<div class="text-center">
+    <h1>Theme Customization</h1>
+    
+    <div class="row mt-4">
+
+        <div class="control col-4">
+            <label>Sidebar</label>
+            <input class="elmt-dsbl" type="color" id="sbar" value="hsl(0, 0%, 13%)">
+            <span id="sbar-val">hsl(0, 0%, 13%)</span>
+        </div>
+        
+        <div class="control col-4">
+            <label>Company Area</label>
+            <input class="elmt-dsbl" type="color" id="company-bg" value="hsl(0, 0%, 20%)">
+            <span id="company-bg-val">hsl(0, 0%, 20%)</span>
+        </div>
+        
+        <div class="control col-4">
+            <label>Menu Links</label>
+            <input class="elmt-dsbl" type="color" id="menu-link" value="hsl(0, 0%, 20%)">
+            <span id="menu-link-val">hsl(0, 0%, 20%)</span>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="control col-4">
+            <label>Active Menu</label>
+            <input class="elmt-dsbl" type="color" id="active-menu-link" value="hsl(8, 77%, 56%)">
+            <span id="active-menu-link-val">hsl(8, 77%, 56%)</span>
+        </div>
+        
+        <div class="control col-4">
+            <label>Submenu</label>
+            <input class="elmt-dsbl" type="color" id="submenu" value="hsl(0, 0%, 20%)">
+            <span id="submenu-val">hsl(0, 0%, 20%)</span>
+        </div>
+        
+        <div class="control col-4">
+            <label>Submenu Links</label>
+            <input class="elmt-dsbl" type="color" id="submenu-link" value="hsl(0, 0%, 100%)">
+            <span id="submenu-link-val">hsl(0, 0%, 100%)</span>
+        </div>
+
+    </div>
+    
+    <div class="row">
+
+        <div class="control col-4">
+            <label>Submenu Active Links</label>
+            <input class="elmt-dsbl" type="color" id="submenu-link-active" value="hsl(0, 0%, 70%)">
+            <span id="submenu-link-active-val">hsl(0, 0%, 70%)</span>
+        </div>
+        
+        <div class="control col-4">
+            <label>Secondary Button</label>
+            <input class="elmt-dsbl" type="color" id="secondary-btn" value="hsl(8, 77%, 56%)">
+            <span id="secondary-btn-val">hsl(8, 77%, 56%)</span>
+        </div>
+    
+        <div class="control col-4">
+            <label>Page Background</label>
+            <input class="elmt-dsbl" type="color" id="page-bg" value="hsl(0, 0%, 97.5%)">
+            <span id="page-bg-val">hsl(0, 0%, 97.5%)</span>
+        </div>
+
+    </div>
+
+    <div class="text-center">
+        <button id="reset-btn" class="oh-btn--secondary elmt-dsbl">Reset All</button>
+    </div>
+</div>
+
+<style>
+    span[id$="-val"] {
+        display: none;
+    }
+
+        .container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.control {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    gap: 10px;
+}
+.control label {
+    width: 200px;
+    font-weight: bold;
+}
+input[type="color"] {
+    width: 100px;
+    height: 30px;
+    cursor: pointer;
+}
+#reset-btn {
+    padding: 8px 16px;
+    background: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.disabled-element {
+  pointer-events: none;
+  opacity: 0.6;
+  cursor: not-allowed;
+  display: inline-block; /* força a manter-se inline-block para poder ser centrado */
+  text-align: center; /* (opcional, mas normalmente não precisa para o botão) */
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const companyId = document.getElementById("company-id").value; // read company-id
+    
+      if (companyId === "all") {
+        // If companyId is 'all', Elements disabeled
+    // If companyId is 'all', disable Elements
+    document.querySelectorAll('.elmt-dsbl').forEach(elmt => {
+        elmt.classList.add("disabled-element");
+    });
+      } else {
+        console.log("Company ID:", companyId);
+      }
+    });
+</script>
+    
+{% endif %}
+{% endblock settings %}

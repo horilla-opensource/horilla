@@ -84,6 +84,16 @@ class Company(HorillaModel):
     objects = models.Manager()
     date_format = models.CharField(max_length=30, blank=True, null=True)
     time_format = models.CharField(max_length=20, blank=True, null=True)
+    #added new fields
+    sbar = models.CharField(max_length=20, default="hsl(0, 0%, 13%)", blank=True, null=True)  # Sidebar background
+    company_bg = models.CharField(max_length=20, default="hsl(0, 0%, 20%)", blank=True, null=True)  # Brand background
+    menu_link = models.CharField(max_length=20, default="hsl(0, 0%, 20%)", blank=True, null=True)  # Sidebar button
+    active_menu_link = models.CharField(max_length=20, default="hsl(8, 77%, 56%)", blank=True, null=True)  # Active sidebar button
+    submenu = models.CharField(max_length=20, default="hsl(0, 0%, 20%)", blank=True, null=True)  # Submenu base
+    submenu_link = models.CharField(max_length=20, default="hsl(0, 0%, 100%)", blank=True, null=True)  # Text submenu
+    submenu_link_active = models.CharField(max_length=20, default="hsl(0, 0%, 70%)", blank=True, null=True)  # Active text submenu
+    secondary_btn = models.CharField(max_length=20, default="hsl(8, 77%, 56%)", blank=True, null=True)  # Buttons
+    page_bg = models.CharField(max_length=20, default="hsl(0, 0%, 97.5%)", blank=True, null=True)  # Site background
 
     class Meta:
         """

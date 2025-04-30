@@ -7369,3 +7369,113 @@ def view_penalties(request):
     """
     records = PenaltyFilter(request.GET).qs
     return render(request, "penalty/penalty_view.html", {"records": records})
+
+
+@login_required
+def get_company_colors(request):
+    try:
+        # Resolve company_id from session or use 'all'
+        company_id = request.session.get('selected_company')
+        if not company_id or company_id == 'all':
+            # Return default theme for "all"
+            return JsonResponse({'error': 'Cannot update colors for all companies, you have to hardcode it if you need'}, status=400)
+
+        # Fetch company-specific colors
+        company = Company.objects.get(id=company_id)
+        return JsonResponse({
+            'sbar': company.sbar,
+            'company-bg': company.company_bg,
+            'menu-link': company.menu_link,
+            'active-menu-link': company.active_menu_link,
+            'submenu': company.submenu,
+            'submenu-link': company.submenu_link,
+            'submenu-link-active': company.submenu_link_active,
+            'secondary-btn': company.secondary_btn,
+            'page-bg': company.page_bg
+        })
+    except Company.DoesNotExist:
+        return JsonResponse({'error': 'Company not found'}, status=404)
+    except Exception as e:
+        print(f"Error getting company colors: {e}")
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+@csrf_exempt
+@login_required
+def update_company_color(request):
+    try:
+        data = json.loads(request.body)
+        color_id = data.get('color_id')
+        color_value = data.get('color_value')
+
+        # Get the current company (from session or user's default)
+        company_id = request.session.get('selected_company')
+
+        
+        if not company_id or company_id == 'all':
+            return JsonResponse({'ignored': 'color wont be changed — Reason company_id = "all".'}, status=200)
+
+        company = Company.objects.get(id=company_id)
+
+        # Map frontend color_id to model field
+        color_field_map = {
+            'sbar': 'sbar',
+            'company-bg': 'company_bg',
+            'menu-link': 'menu_link',
+            'active-menu-link': 'active_menu_link',
+            'submenu': 'submenu',
+            'submenu-link': 'submenu_link',
+            'submenu-link-active': 'submenu_link_active',
+            'secondary-btn': 'secondary_btn',
+            'page-bg': 'page_bg'
+        }
+
+        field_name = color_field_map.get(color_id)
+        if not field_name:
+            return JsonResponse({'error': 'Invalid color field'}, status=400)
+
+        # Update the field
+        setattr(company, field_name, color_value)
+        company.save()
+
+        return JsonResponse({'success': True})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+@login_required
+def reset_company_colors(request):
+    try:
+        company_id = request.session.get('selected_company')
+
+        if not company_id or company_id == 'all':
+            return JsonResponse({'error': 'Cannot reset colors for "all" companies.'}, status=400)
+        
+        company = Company.objects.get(id=company_id)
+
+        defaults = {
+            'sbar': "hsl(0, 0%, 13%)",
+            'company_bg': "hsl(0, 0%, 13%)",  # Adjust as needed!
+            'menu_link': "hsl(0, 0%, 20%)",
+            'active_menu_link': "hsl(0, 0%, 20%)",  # Adjust as needed!
+            'submenu': "hsl(0, 0%, 13%)",
+            'submenu_link': "hsl(0, 0%, 100%)",
+            'submenu_link_active': "hsl(0, 0%, 70%)",
+            'secondary_btn': "hsl(8, 77%, 56%)",
+            'page_bg': "hsl(0, 0%, 97.5%)"
+        }
+
+        for field, value in defaults.items():
+            setattr(company, field, value)
+        company.save()
+
+        return JsonResponse({'success': True, 'colors': defaults})
+    except Company.DoesNotExist:
+        return JsonResponse({'error': 'Company not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+def theme_personalization_view(request):
+    
+    return render(request, 'theme_personalization.html')

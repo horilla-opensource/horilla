@@ -71,6 +71,11 @@
 												{% endif %}
 											</div>
 											<div class="oh-input-group">
+												<a id="theme-personalization" href="{% url 'theme-personalization' %}" class="oh-inner-sidebar__link oh-dropdown__link">
+													{% trans "Theme Personalization" %}
+												</a>
+											</div>
+											<div class="oh-input-group">
 												{% if perms.auth.view_permission %}
 													<a
 														id="defaultAccessibility"

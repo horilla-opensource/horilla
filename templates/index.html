@@ -25,6 +25,7 @@
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
     <link rel="icon" type="image/png" sizes="16x16"
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css">
 
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
@@ -40,6 +41,17 @@
     <script src="{% static '/build/js/orgChart.js' %}"></script>
     <script src="{% static 'build/js/driver.js' %}"></script>
     <script src="{% static 'build/js/clearFilter.js' %}"></script>
+    <script src="{% static '/base/color-changer.js' %}"></script> 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          if (!document.querySelector('script[src="/static/base/color-changer.js"]')) {
+            const script = document.createElement('script');
+            script.src = '/static/base/color-changer.js';
+            script.defer = true;
+            document.head.appendChild(script);
+          }
+        });
+    </script>
 
 
 

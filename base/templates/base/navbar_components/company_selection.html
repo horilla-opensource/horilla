@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
-<div id="multCompany" class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="{% trans 'Companies' %}">
+<input type="hidden" id="company-id" value="{{ request.session.selected_company|default:'all' }}">
+<div id="multCompany" class="oh-dropdown" x-data="{open: false}" @click="open = !open" title="{% trans 'Companies' %}" data-selected-company="{{ request.session.selected_company|default:'all' }}"> -->
     <div class="oh-navbar__action-icons">
         <a href="#" class="oh-navbar__action-icons-link">
             <ion-icon name="business"></ion-icon>
@@ -10,7 +11,7 @@
             <ul class="oh-dropdown__items">
                 {% for company in all_companies %}
                     <li class="oh-dropdown__item">
-                        <a hx-get="{% url 'update-selected-company' %}?company_id={{company.0}}&next={{ request.path }}"class="oh-dropdown__link">
+                        <a hx-get="{% url 'update-selected-company' %}?company_id={{company.0}}&next={{ request.path }}" class="oh-dropdown__link">
                             <img src="{{company.2}}" class="oh-dropdown__lang-icon" style="border-radius: 50%;" />
                             {{company.1}}
                             {% if company.3 %}

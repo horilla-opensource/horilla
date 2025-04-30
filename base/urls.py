@@ -32,6 +32,13 @@ from base.models import (
     WorkType,
     WorkTypeRequest,
 )
+from base.views import (
+    get_company_colors,
+    theme_personalization_view,
+    update_company_color,
+
+)
+
 from horilla_audit.models import AuditTag
 
 urlpatterns = [
@@ -1068,4 +1075,12 @@ urlpatterns = [
         "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
     ),
     path("view-penalties", views.view_penalties, name="view-penalties"),
+
+    path('get-company-colors/', get_company_colors, name='get-company-colors'),
+
+    path('update-company-color/', update_company_color, name='update-company-color'),
+
+    path('reset-company-colors/', views.reset_company_colors, name='reset-company-colors'),
+
+    path('theme-settings/', theme_personalization_view, name='theme-personalization'),
 ]
