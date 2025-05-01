@@ -3293,33 +3293,31 @@ def employee_permission_assign(request):
 
     context = {}
     template = "base/auth/permission.html"
-    if request.GET.get("profile_tab"):
+    if request.GET.get("profile_tab") and request.GET.get("employee_id"):
         template = "tabs/group_permissions.html"
-        employees = Employee.objects.filter(id=request.GET["employee_id"]).distinct()
-        emoloyee = employees.first()
-        context["employee"] = emoloyee
+        employees = Employee.objects.filter(id=request.GET["employee_id"])
+        context["employee"] = employees.first()
     else:
         employees = Employee.objects.filter(
             employee_user_id__user_permissions__isnull=False
         ).distinct()
         context["show_assign"] = True
-    permissions = []
-    no_permission_models = NO_PERMISSION_MODALS
-    for app_name in APPS:
-        app_models = []
-        for model in get_models_in_app(app_name):
-            if model._meta.model_name not in no_permission_models:
-                app_models.append(
-                    {
-                        "verbose_name": model._meta.verbose_name.capitalize(),
-                        "model_name": model._meta.model_name,
-                    }
-                )
-        permissions.append(
-            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
-        )
+    permissions = [
+        {
+            "app": app_name.capitalize().replace("_", " "),
+            "app_models": [
+                {
+                    "verbose_name": model._meta.verbose_name.capitalize(),
+                    "model_name": model._meta.model_name,
+                }
+                for model in get_models_in_app(app_name)
+                if model._meta.model_name not in NO_PERMISSION_MODALS
+            ],
+        }
+        for app_name in APPS
+    ]
     context["permissions"] = permissions
-    context["no_permission_models"] = no_permission_models
+    context["no_permission_models"] = NO_PERMISSION_MODALS
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
@@ -3338,26 +3336,29 @@ def employee_permission_search(request, codename=None, uid=None):
     template = "base/auth/permission_lines.html"
     employees = EmployeeFilter(request.GET).qs
     if request.GET.get("profile_tab"):
-        template = "base/auth/permission_accordion.html"
-        employees = employees.filter(id=request.GET["employee_id"]).distinct()
+        employees = Employee.objects.filter(id=request.GET["employee_id"])
+        context["employee"] = employees.first()
     else:
         employees = employees.filter(
             employee_user_id__user_permissions__isnull=False
         ).distinct()
         context["show_assign"] = True
-    permissions = []
-    apps = APPS
-    for app_name in apps:
-        app_models = []
-        for model in get_models_in_app(app_name):
-            app_models.append(
+    permissions = [
+        {
+            "app": app_name.capitalize().replace("_", " "),
+            "app_models": [
                 {
                     "verbose_name": model._meta.verbose_name.capitalize(),
                     "model_name": model._meta.model_name,
                 }
-            )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+                for model in get_models_in_app(app_name)
+                if model._meta.model_name not in NO_PERMISSION_MODALS
+            ],
+        }
+        for app_name in APPS
+    ]
     context["permissions"] = permissions
+    context["no_permission_models"] = NO_PERMISSION_MODALS
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,

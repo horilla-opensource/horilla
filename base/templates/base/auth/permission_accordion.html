@@ -28,7 +28,9 @@
     </div>
 </div>
 <div id="permissionContainer">
-    {% include "base/auth/permission_lines.html" %}
+    <span hx-get="{% url 'permission-search' %}" hx-swap="outerHTML" hx-trigger="load" >
+        <div class="animated-background"></div>
+    </span>
 </div>
 <div class="oh-modal" id="Permissions" role="dialog" aria-labelledby="Permissions" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 880px">
