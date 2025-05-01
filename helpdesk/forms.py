@@ -106,6 +106,12 @@ class TicketForm(ModelForm):
             "raised_on": forms.Select(
                 attrs={"class": "oh-select oh-select-2", "required": "true"}
             ),
+            "description": forms.Textarea(
+                attrs={
+                    "data-summernote": True,
+                    "hidden": True,
+                }
+            ),
         }
 
     def as_p(self, *args, **kwargs):
