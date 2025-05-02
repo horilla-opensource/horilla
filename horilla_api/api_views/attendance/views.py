@@ -65,61 +65,73 @@ class ClockInAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        employee, work_info = employee_exists(request)
-        datetime_now = datetime.now()
-        if request.__dict__.get("datetime"):
-            datetime_now = request.datetime
-        if employee and work_info is not None:
-            shift = work_info.shift_id
-            date_today = date.today()
-            if request.__dict__.get("date"):
-                date_today = request.date
-            attendance_date = date_today
-            day = date_today.strftime("%A").lower()
-            day = EmployeeShiftDay.objects.get(day=day)
-            now = datetime.now().strftime("%H:%M")
-            if request.__dict__.get("time"):
-                now = request.time.strftime("%H:%M")
-            now_sec = strtime_seconds(now)
-            mid_day_sec = strtime_seconds("12:00")
-            minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
-                day=day, shift=shift
-            )
-            if start_time_sec > end_time_sec:
-                # night shift
-                # ------------------
-                # Night shift in Horilla consider a 24 hours from noon to next day noon,
-                # the shift day taken today if the attendance clocked in after 12 O clock.
+        if not request.user.employee_get.check_online():
+            try:
+                if request.user.employee_get.get_company().geo_fencing.start:
+                    from geofencing.views import GeoFencingEmployeeLocationCheckAPIView
 
-                if mid_day_sec > now_sec:
-                    # Here you need to create attendance for yesterday
+                    location_api_view = GeoFencingEmployeeLocationCheckAPIView()
+                    response = location_api_view.post(request)
+                    if response.status_code != 200:
+                        return response
+            except:
+                pass
+            employee, work_info = employee_exists(request)
+            datetime_now = datetime.now()
+            if request.__dict__.get("datetime"):
+                datetime_now = request.datetime
+            if employee and work_info is not None:
+                shift = work_info.shift_id
+                date_today = date.today()
+                if request.__dict__.get("date"):
+                    date_today = request.date
+                attendance_date = date_today
+                day = date_today.strftime("%A").lower()
+                day = EmployeeShiftDay.objects.get(day=day)
+                now = datetime.now().strftime("%H:%M")
+                if request.__dict__.get("time"):
+                    now = request.time.strftime("%H:%M")
+                now_sec = strtime_seconds(now)
+                mid_day_sec = strtime_seconds("12:00")
+                minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
+                    day=day, shift=shift
+                )
+                if start_time_sec > end_time_sec:
+                    # night shift
+                    # ------------------
+                    # Night shift in Horilla consider a 24 hours from noon to next day noon,
+                    # the shift day taken today if the attendance clocked in after 12 O clock.
 
-                    date_yesterday = date_today - timedelta(days=1)
-                    day_yesterday = date_yesterday.strftime("%A").lower()
-                    day_yesterday = EmployeeShiftDay.objects.get(day=day_yesterday)
-                    minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
-                        day=day_yesterday, shift=shift
-                    )
-                    attendance_date = date_yesterday
-                    day = day_yesterday
-            clock_in_attendance_and_activity(
-                employee=employee,
-                date_today=date_today,
-                attendance_date=attendance_date,
-                day=day,
-                now=now,
-                shift=shift,
-                minimum_hour=minimum_hour,
-                start_time=start_time_sec,
-                end_time=end_time_sec,
-                in_datetime=datetime_now,
+                    if mid_day_sec > now_sec:
+                        # Here you need to create attendance for yesterday
+
+                        date_yesterday = date_today - timedelta(days=1)
+                        day_yesterday = date_yesterday.strftime("%A").lower()
+                        day_yesterday = EmployeeShiftDay.objects.get(day=day_yesterday)
+                        minimum_hour, start_time_sec, end_time_sec = (
+                            shift_schedule_today(day=day_yesterday, shift=shift)
+                        )
+                        attendance_date = date_yesterday
+                        day = day_yesterday
+                clock_in_attendance_and_activity(
+                    employee=employee,
+                    date_today=date_today,
+                    attendance_date=attendance_date,
+                    day=day,
+                    now=now,
+                    shift=shift,
+                    minimum_hour=minimum_hour,
+                    start_time=start_time_sec,
+                    end_time=end_time_sec,
+                    in_datetime=datetime_now,
+                )
+                return Response({"message": "Clocked-In"}, status=200)
+            return Response(
+                {
+                    "error": "You Don't have work information filled or your employee detail neither entered "
+                }
             )
-            return Response({"message": "Clocked-In"}, status=200)
-        return Response(
-            {
-                "error": "You Don't have work information filled or your employee detail neither entered "
-            }
-        )
+        return Response({"message": "Already clocked-in"}, status=400)
 
 
 class ClockOutAPIView(APIView):
@@ -134,24 +146,36 @@ class ClockOutAPIView(APIView):
 
     def post(self, request):
 
-        current_date = date.today()
-        current_time = datetime.now().time()
-        current_datetime = datetime.now()
-
         try:
-            clock_out(
-                Request(
-                    user=request.user,
-                    date=current_date,
-                    time=current_time,
-                    datetime=current_datetime,
-                )
-            )
-            return Response({"message": "Clocked-Out"}, status=200)
+            if request.user.employee_get.get_company().geo_fencing.start:
+                from geofencing.views import GeoFencingEmployeeLocationCheckAPIView
 
-        except Exception as error:
-            logger.error("Got an error in clock_out", error)
-        return Response({"message": "Clocked-Out"}, status=200)
+                location_api_view = GeoFencingEmployeeLocationCheckAPIView()
+                response = location_api_view.post(request)
+                if response.status_code != 200:
+                    return response
+        except:
+            pass
+        if request.user.employee_get.check_online():
+            current_date = date.today()
+            current_time = datetime.now().time()
+            current_datetime = datetime.now()
+
+            try:
+                clock_out(
+                    Request(
+                        user=request.user,
+                        date=current_date,
+                        time=current_time,
+                        datetime=current_datetime,
+                    )
+                )
+                return Response({"message": "Clocked-Out"}, status=200)
+
+            except Exception as error:
+                logger.error("Got an error in clock_out", error)
+            return Response({"message": "Clocked-Out"}, status=200)
+        return Response({"message": "Already clocked-out"}, status=400)
 
 
 class AttendanceView(APIView):
