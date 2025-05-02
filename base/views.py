@@ -1653,9 +1653,12 @@ def company_view(request):
     """
     This method used to view created companies
     """
-
     companies = Company.objects.all()
-    return render(request, "base/company/company.html", {"companies": companies})
+    return render(
+        request,
+        "base/company/company.html",
+        {"companies": companies, "model": Company()},
+    )
 
 
 @login_required
