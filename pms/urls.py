@@ -312,6 +312,11 @@ urlpatterns = [
         name="create-employee-objective",
     ),
     path(
+        "get-objective-keyresult/",
+        views.get_objective_keyresults,
+        name="get-objective-keyresult",
+    ),
+    path(
         "update-employee-objective/<int:emp_obj_id>/",
         views.update_employee_objective,
         name="update-employee-objective",

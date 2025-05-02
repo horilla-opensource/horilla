@@ -315,6 +315,16 @@ class EmployeeObjectiveCreateForm(BaseForm):
         queryset=Objective.objects.all().exclude(archive=True),
         required=True,
         label=_("Objective"),
+        widget=forms.Select(
+            attrs={
+                "hx-include": "#empObjectiveCreateForm",
+                "hx-target": "#id_key_result_id_parent_div",
+                "hx-select": "#id_key_result_id_parent_div",
+                "hx-swap": "outerHTML",
+                "hx-trigger": "change",
+                "hx-get": "/pms/get-objective-keyresult",
+            }
+        ),
     )
 
     class Meta:
@@ -341,7 +351,7 @@ class EmployeeObjectiveCreateForm(BaseForm):
         super().__init__(*args, **kwargs)
         request = getattr(horilla_middlewares._thread_locals, "request", None)
 
-        if request.user.has_perm("pms.add_keyresult") or is_reportingmanager(request):
+        if request.user.has_perm("pms.add_keyresult"):
             self.fields["key_result_id"].choices = list(
                 self.fields["key_result_id"].choices
             )

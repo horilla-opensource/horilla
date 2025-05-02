@@ -143,6 +143,9 @@
       let dynamicKeyResult = $("#dynamicKeyResult");
       if (dataUrl) {
         dynamicKeyResult.attr("hx-vals", `{"data":"${view}","dataUrl":"${dataUrl}"}`);
+        // Remove 'create_new_key_result' from selected values (for multi-select support)
+        var newSelected = selectedValue.filter(val => val !== "create_new_key_result");
+        $(element).val(newSelected).change();
       }else{
         dynamicKeyResult.attr("hx-vals", `{"data":"${view}"}`);
       }
@@ -150,6 +153,9 @@
     }
   }
 
+  function ObjectiveChange(element){
+    var selectedObjective = $(element).val();
 
+  };
 </script>
 {% endblock content %}
