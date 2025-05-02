@@ -15,9 +15,27 @@ class LoginAPIView(APIView):
             if user:
                 refresh = RefreshToken.for_user(user)
                 employee = user.employee_get
+                face_detection = False
+                face_detection_image = None
+                geo_fencing = False
+                try:
+                    face_detection = employee.get_company().face_detection.start
+                except:
+                    pass
+                try:
+                    geo_fencing = employee.get_company().geo_fencing.start
+                except:
+                    pass
+                try:
+                    face_detection_image = employee.face_detection.image.url
+                except:
+                    pass
                 result = {
                     "employee": GetEmployeeSerializer(employee).data,
                     "access": str(refresh.access_token),
+                    "face_detection": face_detection,
+                    "face_detection_image": face_detection_image,
+                    "geo_fencing": geo_fencing,
                 }
                 return Response(result, status=200)
             else:

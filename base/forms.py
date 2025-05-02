@@ -450,7 +450,7 @@ class CompanyForm(ModelForm):
 
         model = Company
         fields = "__all__"
-        excluded_fields = ["date_format", "time_format", "is_active"]
+        exclude = ["date_format", "time_format", "is_active"]
 
     def validate_image(self, file):
         max_size = 5 * 1024 * 1024

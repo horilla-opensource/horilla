@@ -3,7 +3,10 @@
 <div class="oh-tabs__contents">
     <div class="oh-tabs__content oh-tabs__content--active" id="tab_1_permission">
         {% if employee %}
-        {% include "base/auth/permission_accordion.html" %}
+            <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+                <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Permissions" %}</h2>
+            </div>
+            {% include "base/auth/permission_lines.html" %}
         {% else %}
         {% include "base/auth/permission_table.html" %}
         {% endif %}

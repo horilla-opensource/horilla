@@ -134,8 +134,8 @@
                       data-toggle="oh-modal-toggle"
                       data-target="#objectCreateModal"
                       hx-target="#objectCreateModalTarget"
-                      class="oh-btn oh-btn--light-bkg w-100" title="{% trans "Share Link" %}">
-                      <ion-icon name="share-social-outline"></ion-icon>
+                      class="oh-btn oh-btn--light-bkg w-100" title="{% trans "Share Feedback" %}">
+                      <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
                     </a>
                   {% endif %}
                   {% if perms.pms.delete_feedback %}
@@ -604,6 +604,21 @@
         $("#id_cyclic_feedback_days_count").attr("required", false);
         $("#id_cyclic_feedback_period").attr("required", false);
     }
+  }
+  function copyLink(link){
+    var $temp = $("<input>");
+    var $url = $(location).attr('href');
+    $("body").append($temp);
+    $temp.val(link).select();
+    document.execCommand("copy");
+    $temp.remove();
+    Swal.fire({
+      text: `Link copied ${link}`,
+      icon: "success",
+      showConfirmButton: false,
+      timer: 3000, // Set the timer to 3000 milliseconds (3 seconds)
+      timerProgressBar: true, // Show a progress bar as the timer counts down
+    });
   }
 </script>
 
