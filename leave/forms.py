@@ -3,7 +3,6 @@ This module provides Horilla ModelForms for creating and managing leave-related 
 including leave type, leave request, leave allocation request, holidays and company leaves.
 """
 
-import math
 import re
 import uuid
 from datetime import date, datetime
@@ -19,7 +18,6 @@ from django.utils.translation import gettext_lazy as _
 
 from base.forms import ModelForm as BaseModelForm
 from base.methods import filtersubordinatesemployeemodel, reload_queryset
-from base.models import CompanyLeaves, Holidays
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
@@ -27,13 +25,7 @@ from horilla import horilla_middlewares
 from horilla_widgets.forms import HorillaForm, HorillaModelForm
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from leave.methods import (
-    calculate_requested_days,
-    company_leave_dates_list,
-    get_leave_day_attendance,
-    holiday_dates_list,
-    leave_requested_dates,
-)
+from leave.methods import get_leave_day_attendance
 from leave.models import (
     AvailableLeave,
     LeaveAllocationRequest,
@@ -205,144 +197,9 @@ class UpdateLeaveTypeForm(ConditionForm):
         leave_type = super().save(*args, **kwargs)
 
 
-def cal_effective_requested_days(start_date, end_date, leave_type_id, requested_days):
-    requested_dates = leave_requested_dates(start_date, end_date)
-    holidays = Holidays.objects.all()
-    holiday_dates = holiday_dates_list(holidays)
-    company_leaves = CompanyLeaves.objects.all()
-    company_leave_dates = company_leave_dates_list(company_leaves, start_date)
-    if (
-        leave_type_id.exclude_company_leave == "yes"
-        and leave_type_id.exclude_holiday == "yes"
-    ):
-        total_leaves = list(set(holiday_dates + company_leave_dates))
-        total_leave_count = sum(
-            requested_date in total_leaves for requested_date in requested_dates
-        )
-        requested_days = requested_days - total_leave_count
-    else:
-        holiday_count = 0
-        if leave_type_id.exclude_holiday == "yes":
-            for requested_date in requested_dates:
-                if requested_date in holiday_dates:
-                    holiday_count += 1
-            requested_days = requested_days - holiday_count
-        if leave_type_id.exclude_company_leave == "yes":
-            company_leave_count = sum(
-                requested_date in company_leave_dates
-                for requested_date in requested_dates
-            )
-            requested_days = requested_days - company_leave_count
-    return requested_days
-
-
-def leaveoverlaping(
-    employee_id, start_date, end_date, start_date_breakdown, end_date_breakdown
-):
-    overlapping_requests = LeaveRequest.objects.filter(
-        employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
-    )
-    if len(overlapping_requests) == 1:
-        existing_leave = overlapping_requests.first()
-
-        if (
-            existing_leave.start_date == start_date
-            and existing_leave.start_date_breakdown != "full_day"
-            and start_date_breakdown != "full_day"
-            and existing_leave.start_date_breakdown != start_date_breakdown
-            and existing_leave.end_date_breakdown != end_date_breakdown
-        ):
-            overlapping_requests = LeaveRequest.objects.none()
-    return overlapping_requests
-
-
 class LeaveRequestCreationForm(BaseModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-
-    def clean(self):
-        cleaned_data = super().clean()
-        start_date = cleaned_data.get("start_date")
-        end_date = cleaned_data.get("end_date")
-        employee_id = cleaned_data.get("employee_id")
-        leave_type_id = cleaned_data.get("leave_type_id")
-        start_date_breakdown = cleaned_data.get("start_date_breakdown")
-        end_date_breakdown = cleaned_data.get("end_date_breakdown")
-        attachment = cleaned_data.get("attachment")
-        overlapping_requests = leaveoverlaping(
-            employee_id, start_date, end_date, start_date_breakdown, end_date_breakdown
-        ).exclude(id=self.instance.id)
-        if leave_type_id.require_attachment == "yes":
-            if attachment is None:
-                raise forms.ValidationError(
-                    {
-                        "attachment": _(
-                            "An attachment is required for this leave request"
-                        )
-                    }
-                )
-        if not start_date <= end_date:
-            raise forms.ValidationError(
-                _("End date should not be less than start date.")
-            )
-        if start_date == end_date:
-            if start_date_breakdown != end_date_breakdown:
-                raise forms.ValidationError(
-                    _(
-                        "There is a mismatch in the breakdown of the start date and end date."
-                    )
-                )
-        if not AvailableLeave.objects.filter(
-            employee_id=employee_id, leave_type_id=leave_type_id
-        ).exists():
-            raise forms.ValidationError(_("Employee has no leave type.."))
-
-        if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
-            raise forms.ValidationError(
-                _("Employee has already a leave request for this date range.")
-            )
-
-        available_leave = AvailableLeave.objects.get(
-            employee_id=employee_id, leave_type_id=leave_type_id
-        )
-        total_leave_days = (
-            available_leave.available_days + available_leave.carryforward_days
-        )
-        requested_days = calculate_requested_days(
-            start_date, end_date, start_date_breakdown, end_date_breakdown
-        )
-        effective_requested_days = cal_effective_requested_days(
-            start_date=start_date,
-            end_date=end_date,
-            leave_type_id=leave_type_id,
-            requested_days=requested_days,
-        )
-        leave_dates = leave_requested_dates(start_date, end_date)
-        month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]
-        today = datetime.today()
-        unique_dates = list(set(month_year))
-        if f"{today.month}-{today.year}" in unique_dates:
-            unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
-
-        forcated_days = available_leave.forcasted_leaves(start_date)
-        total_leave_days = (
-            available_leave.leave_type_id.carryforward_max
-            if available_leave.leave_type_id.carryforward_type
-            in ["carryforward", "carryforward expire"]
-            and available_leave.leave_type_id.carryforward_max < total_leave_days
-            else total_leave_days
-        )
-        if (
-            available_leave.leave_type_id.carryforward_type == "no carryforward"
-            and available_leave.carryforward_days
-        ):
-            total_leave_days = total_leave_days - available_leave.carryforward_days
-        total_leave_days += forcated_days
-
-        if not effective_requested_days <= total_leave_days:
-            raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
-
-        return cleaned_data
 
     def __init__(self, *args, **kwargs):
 
@@ -399,78 +256,6 @@ class LeaveRequestCreationForm(BaseModelForm):
 class LeaveRequestUpdationForm(BaseModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-
-    def clean(self):
-        cleaned_data = super().clean()
-        start_date = cleaned_data.get("start_date")
-        end_date = cleaned_data.get("end_date")
-        employee_id = cleaned_data.get("employee_id")
-        leave_type_id = cleaned_data.get("leave_type_id")
-        start_date_breakdown = cleaned_data.get("start_date_breakdown")
-        end_date_breakdown = cleaned_data.get("end_date_breakdown")
-        overlapping_requests = LeaveRequest.objects.filter(
-            employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
-        ).exclude(id=self.instance.id)
-        if not start_date <= end_date:
-            raise forms.ValidationError(
-                _("End date should not be less than start date.")
-            )
-        if start_date == end_date:
-            if start_date_breakdown != end_date_breakdown:
-                raise forms.ValidationError(
-                    _(
-                        "There is a mismatch in the breakdown of the start date and end date."
-                    )
-                )
-        if not AvailableLeave.objects.filter(
-            employee_id=employee_id, leave_type_id=leave_type_id
-        ).exists():
-            raise forms.ValidationError(_("Employee has no leave type.."))
-        if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
-            raise forms.ValidationError(
-                _("Employee has already a leave request for this date range.")
-            )
-        available_leave = AvailableLeave.objects.get(
-            employee_id=employee_id, leave_type_id=leave_type_id
-        )
-        total_leave_days = (
-            available_leave.available_days + available_leave.carryforward_days
-        )
-        requested_days = calculate_requested_days(
-            start_date, end_date, start_date_breakdown, end_date_breakdown
-        )
-        effective_requested_days = cal_effective_requested_days(
-            start_date=start_date,
-            end_date=end_date,
-            leave_type_id=leave_type_id,
-            requested_days=requested_days,
-        )
-        leave_dates = leave_requested_dates(start_date, end_date)
-        month_year = [f"{date.year}-{date.strftime('%m')}" for date in leave_dates]
-        today = datetime.today()
-        unique_dates = list(set(month_year))
-        if f"{today.month}-{today.year}" in unique_dates:
-            unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
-
-        forcated_days = available_leave.forcasted_leaves(start_date)
-        total_leave_days = (
-            available_leave.leave_type_id.carryforward_max
-            if available_leave.leave_type_id.carryforward_type
-            in ["carryforward", "carryforward expire"]
-            and available_leave.leave_type_id.carryforward_max < total_leave_days
-            else total_leave_days
-        )
-        if (
-            available_leave.leave_type_id.carryforward_type == "no carryforward"
-            and available_leave.carryforward_days
-        ):
-            total_leave_days = total_leave_days - available_leave.carryforward_days
-        total_leave_days += forcated_days
-
-        if not effective_requested_days <= total_leave_days:
-            raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
-
-        return cleaned_data
 
     def __init__(self, *args, **kwargs):
 
@@ -615,66 +400,6 @@ class UserLeaveRequestForm(BaseModelForm):
     start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     description = forms.CharField(label=_("Description"), widget=forms.Textarea)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        start_date = cleaned_data.get("start_date")
-        end_date = cleaned_data.get("end_date")
-        employee_id = cleaned_data.get("employee_id")
-        start_date_breakdown = cleaned_data.get("start_date_breakdown")
-        end_date_breakdown = cleaned_data.get("end_date_breakdown")
-        leave_type_id = cleaned_data.get("leave_type_id")
-        overlapping_requests = leaveoverlaping(
-            employee_id, start_date, end_date, start_date_breakdown, end_date_breakdown
-        ).exclude(id=self.instance.id)
-        assigned_leave_types = AvailableLeave.objects.filter(employee_id=employee_id)
-        if not assigned_leave_types:
-            raise forms.ValidationError(
-                _("You dont have enough leave days to update the request.")
-            )
-        if leave_type_id.require_attachment == "yes":
-            attachment = cleaned_data.get("attachment")
-            if attachment is None:
-                raise forms.ValidationError(
-                    {
-                        "attachment": _(
-                            "An attachment is required for this leave request"
-                        )
-                    }
-                )
-        if start_date == end_date:
-            if start_date_breakdown != end_date_breakdown:
-                raise forms.ValidationError(
-                    _(
-                        "There is a mismatch in the breakdown of the start date and end date."
-                    )
-                )
-        if not start_date <= end_date:
-            raise forms.ValidationError(
-                _("End date should not be less than start date.")
-            )
-        if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
-            raise forms.ValidationError(
-                _("Employee has already a leave request for this date range.")
-            )
-        requested_days = calculate_requested_days(
-            start_date, end_date, start_date_breakdown, end_date_breakdown
-        )
-        available_leave = AvailableLeave.objects.get(
-            employee_id=employee_id, leave_type_id=leave_type_id
-        )
-        total_leave_days = (
-            available_leave.available_days + available_leave.carryforward_days
-        )
-        effective_requested_days = cal_effective_requested_days(
-            start_date=start_date,
-            end_date=end_date,
-            leave_type_id=leave_type_id,
-            requested_days=requested_days,
-        )
-        if not effective_requested_days <= total_leave_days:
-            raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
-        return cleaned_data
 
     def __init__(self, *args, **kwargs):
         leave_type = kwargs.pop("initial", None)
@@ -824,62 +549,6 @@ class UserLeaveRequestCreationForm(BaseModelForm):
             }
         )
         self.fields["employee_id"].initial = employee
-
-    def clean(self):
-        cleaned_data = super().clean()
-        start_date = cleaned_data.get("start_date")
-        end_date = cleaned_data.get("end_date")
-        employee_id = cleaned_data.get("employee_id")
-        leave_type_id = cleaned_data.get("leave_type_id")
-        start_date_breakdown = cleaned_data.get("start_date_breakdown")
-        end_date_breakdown = cleaned_data.get("end_date_breakdown")
-        overlapping_requests = LeaveRequest.objects.filter(
-            employee_id=employee_id, start_date__lte=end_date, end_date__gte=start_date
-        ).exclude(id=self.instance.id)
-        if not start_date <= end_date:
-            raise forms.ValidationError(
-                _("End date should not be less than start date.")
-            )
-        if leave_type_id.require_attachment == "yes":
-            attachment = cleaned_data.get("attachment")
-            if attachment is None:
-                raise forms.ValidationError(
-                    {
-                        "attachment": _(
-                            "An attachment is required for this leave request"
-                        )
-                    }
-                )
-        if start_date == end_date:
-            if start_date_breakdown != end_date_breakdown:
-                raise forms.ValidationError(
-                    _(
-                        "There is a mismatch in the breakdown of the start date and end date."
-                    )
-                )
-        if not AvailableLeave.objects.filter(
-            employee_id=employee_id, leave_type_id=leave_type_id
-        ).exists():
-            raise forms.ValidationError(_("Employee has no leave type.."))
-
-        if overlapping_requests.exclude(status__in=["cancelled", "rejected"]).exists():
-            raise forms.ValidationError(
-                _("Employee has already a leave request for this date range.")
-            )
-
-        available_leave = AvailableLeave.objects.get(
-            employee_id=employee_id, leave_type_id=leave_type_id
-        )
-        total_leave_days = (
-            available_leave.available_days + available_leave.carryforward_days
-        )
-        requested_days = (end_date - start_date).days + 1
-        cleaned_data["requested_days"] = requested_days
-
-        if not requested_days <= total_leave_days:
-            raise forms.ValidationError(_("Employee doesn't have enough leave days.."))
-
-        return cleaned_data
 
     class Meta:
         """
