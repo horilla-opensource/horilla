@@ -30,12 +30,17 @@ class LoginAPIView(APIView):
                     face_detection_image = employee.face_detection.image.url
                 except:
                     pass
+                try:
+                    company_id = employee.get_company().id
+                except:
+                    pass
                 result = {
                     "employee": GetEmployeeSerializer(employee).data,
                     "access": str(refresh.access_token),
                     "face_detection": face_detection,
                     "face_detection_image": face_detection_image,
                     "geo_fencing": geo_fencing,
+                    "company_id": company_id,
                 }
                 return Response(result, status=200)
             else:
