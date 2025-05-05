@@ -329,6 +329,8 @@ class ValidateAttendanceView(APIView):
         put(request, pk): Marks the attendance as validated and notifies the employee.
     """
 
+    permission_classes = [IsAuthenticated]
+
     def put(self, request, pk):
         attendance = Attendance.objects.filter(id=pk).update(attendance_validated=True)
         attendance = Attendance.objects.filter(id=pk).first()
@@ -357,6 +359,8 @@ class OvertimeApproveView(APIView):
     Method:
         put(request, pk): Marks the overtime as approved and notifies the employee.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
         try:
@@ -478,6 +482,8 @@ class AttendanceRequestApproveView(APIView):
         put(request, pk): Approves the attendance request, updates attendance records, and handles related activities.
     """
 
+    permission_classes = [IsAuthenticated]
+
     @manager_permission_required("attendance.change_attendance")
     def put(self, request, pk):
         try:
@@ -544,6 +550,8 @@ class AttendanceRequestCancelView(APIView):
     Method:
         put(request, pk): Cancels the attendance request, resetting its status and data, and deletes the request if it was a create request.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
         try:
@@ -661,6 +669,8 @@ class AttendanceActivityView(APIView):
         get(request, pk=None): Retrieves a list of all attendance activity records.
     """
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk=None):
         data = AttendanceActivity.objects.all()
         serializer = AttendanceActivitySerializer(data, many=True)
@@ -674,6 +684,8 @@ class TodayAttendance(APIView):
     Method:
         get(request): Calculates and returns the attendance ratio for today.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
 
@@ -706,6 +718,8 @@ class OfflineEmployeesCountView(APIView):
         get(request): Returns the number of active employees who are not yet clocked in.
     """
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         count = (
             EmployeeFilter({"not_in_yet": date.today()})
@@ -723,6 +737,8 @@ class OfflineEmployeesListView(APIView):
     Method:
         get(request): Retrieves and paginates a list of employees not clocked in today with their leave status.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         queryset = (
