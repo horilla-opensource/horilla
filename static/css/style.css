@@ -726,3 +726,9 @@ form label {
 #faqContainer .oh-faq_search--icon{
     top:17px;
 }
+.swal2-styled.swal2-confirm{
+    background-color: rgb(0, 128, 0);
+}
+.swal2-styled.swal2-cancel{
+    background-color : rgb(221, 51, 51);
+}
