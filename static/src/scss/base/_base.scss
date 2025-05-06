@@ -1,0 +1,113 @@
+// -----------------------------------------------------------------------------
+// This file contains very basic styles.
+// -----------------------------------------------------------------------------
+
+/**
+ * Set up a decent box model on the root element
+ */
+html {
+  box-sizing: border-box;
+}
+
+/**
+ * Make all elements from the DOM inherit from the parent box-sizing
+ * Since `*` has a specificity of 0, it does not override the `html` value
+ * making all elements inheriting from the root box-sizing value
+ * See: https://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+ */
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+body{
+  background-color: $background-color;
+}
+/**
+ * Basic styles for links
+ */
+a {
+  color: $brand-color;
+  text-decoration: none;
+  transition: all 0.4s ease-in-out;
+
+  &:focus-visible {
+    outline: rgba($white, 0.7) dashed 1px;
+  }
+
+  @include on-event {
+    color: $text-color;
+    text-decoration: underline;
+    transition: all 0.4s ease-in-out;
+  }
+}
+
+a.oh-link__unstyled{
+  text-decoration: none;
+
+  &:hover{
+    text-decoration: none;
+  }
+}
+
+#mainNav{
+  padding-bottom: 60px;
+}
+
+
+// 
+
+.custom-dropdown {
+  display: none;
+  position: absolute;
+  left: 15px;
+  padding: 5px;
+  z-index: 99;
+  width: 400px;
+  background-color: hsl(0,0%,100%);
+  border-radius: 0rem;
+  color: hsl(0,0%,11%);
+  border: 1px solid hsl(0,0%,95%);
+  -webkit-box-shadow: rgba(0,0,0,0.1) 0px 10px 15px -3px, rgba(0,0,0,0.05) 0px 4px 6px -2px;
+  box-shadow: rgba(0,0,0,0.1) 0px 10px 15px -3px, rgba(0,0,0,0.05) 0px 4px 6px -2px;
+}
+
+.custom-dropdown .search_content{
+    margin: 0;
+    padding: 0;
+}
+
+.custom-dropdown .search_content li{
+  list-style: none;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  word-break: break-word;
+}
+.custom-dropdown .search_content li:last-child{
+  border-bottom: unset;
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+*::-moz-scrollbar-thumb {
+  // background: #888; 
+  border-radius: 5px; 
+}
+*::-moz-scrollbar-thumb:hover {
+  // background: #555; 
+}
+
+.search_content{
+}
+
+.search_content li button{
+
+}
+
+.search_content li a .search_text{
+  color: hsl(8,77%,56%);
+}

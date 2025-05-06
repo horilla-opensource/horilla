@@ -1,24 +1,26 @@
 import importlib
 from collections import defaultdict
-
 from django import forms
-from django.apps import apps
-from django.contrib import messages
-from django.contrib.admin.utils import NestedObjects
-from django.core.cache import cache as CACHE
-from django.db import router
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
 from django.views import View
+from django.apps import apps
+from django.db import router
+from django.contrib.admin.utils import NestedObjects
+from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.core.cache import cache as CACHE
 from django.views.decorators.csrf import csrf_protect
-
-from base.methods import eval_validate
 from horilla.signals import post_generic_delete, pre_generic_delete
 from horilla_views import models
-from horilla_views.cbv_methods import get_short_uuid, login_required, merge_dicts
+from horilla_views.cbv_methods import get_short_uuid
 from horilla_views.forms import SavedFilterForm
-from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
+from horilla_views.generic.cbv.views import HorillaFormView
+from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import merge_dicts
+from horilla_views.generic.cbv.views import HorillaListView
+from base.methods import eval_validate
+
 
 # Create your views here.
 
@@ -308,7 +310,7 @@ class HorillaDeleteConfirmationView(View):
         """
         GET method
         """
-        from horilla.urls import path, urlpatterns
+        from horilla.urls import urlpatterns, path
 
         pk = self.request.GET["pk"]
 

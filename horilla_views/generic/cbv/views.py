@@ -6,34 +6,37 @@ import json
 import logging
 from typing import Any
 from urllib.parse import parse_qs
-
 from bs4 import BeautifulSoup
 from django import forms
-from django.contrib import messages
-from django.core.cache import cache as CACHE
-from django.core.paginator import Page
 from django.http import HttpRequest, HttpResponse, QueryDict
+from django.contrib import messages
 from django.shortcuts import render
 from django.urls import resolve, reverse
+from django.core.paginator import Page
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView, FormView, ListView, TemplateView
-
-from base.methods import closest_numbers, eval_validate, get_key_instances
-from horilla.filters import FilterSet
+from django.views.generic import ListView, DetailView, TemplateView, FormView
+from django.core.cache import cache as CACHE
+from base.methods import (
+    closest_numbers,
+    get_key_instances,
+    eval_validate,
+)
 from horilla.group_by import group_by_queryset
+from horilla.filters import FilterSet
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views import models
-from horilla_views.cbv_methods import (  # update_initial_cache,
+from horilla_views.cbv_methods import (
     export_xlsx,
     get_short_uuid,
-    hx_request_required,
     paginator_qry,
+    # update_initial_cache,
     sortby,
-    structured,
     update_saved_filter_cache,
+    hx_request_required,
+    structured,
 )
-from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
+from horilla_views.forms import ToggleColumnForm, DynamicBulkUpdateForm
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 logger = logging.getLogger(__name__)
@@ -72,7 +75,7 @@ class HorillaListView(ListView):
     )->bool:
         # True if accessible to the action else False
         return True
-
+        
     actions = [
         {
             "action": "Edit",
@@ -416,7 +419,7 @@ class HorillaListView(ListView):
             #         ordered_ids.append(instance.pk)
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
-        from horilla.urls import path, urlpatterns
+        from horilla.urls import urlpatterns, path
 
         self.export_path = f"export-list-view-{get_short_uuid(4)}/"
 
@@ -496,12 +499,38 @@ class HorillaListView(ListView):
 
             def remove_extra_spaces(self, text, field_tuple):
                 """
-                Remove blank space but keep line breaks and add new lines for <li> tags.
+                Clean the text:
+                - If it's a <select> element, extract the selected option's value.
+                - If it's an <input> or <textarea>, extract its 'value'.
+                - Otherwise, remove blank spaces, keep line breaks, and handle <li> tags.
                 """
                 soup = BeautifulSoup(str(text), "html.parser")
+
+                # Handle <select> tag
+                select_tag = soup.find("select")
+                if select_tag:
+                    selected_option = select_tag.find("option", selected=True)
+                    if selected_option:
+                        return selected_option["value"]
+                    else:
+                        first_option = select_tag.find("option")
+                        return first_option["value"] if first_option else ""
+
+                # Handle <input> tag
+                input_tag = soup.find("input")
+                if input_tag:
+                    return input_tag.get("value", "")
+
+                # Handle <textarea> tag
+                textarea_tag = soup.find("textarea")
+                if textarea_tag:
+                    return textarea_tag.text.strip()
+
+                # Default: clean normal text and <li> handling
                 for li in soup.find_all("li"):
                     li.insert_before("\n")
                     li.unwrap()
+
                 text = soup.get_text()
                 lines = text.splitlines()
                 non_blank_lines = [line.strip() for line in lines if line.strip()]
@@ -741,7 +770,7 @@ class HorillaCardView(ListView):
     )->bool:
         # True if accessible to the action else False
         return True
-
+        
     actions = [
         {
             "action": "Edit",
@@ -1086,9 +1115,8 @@ class HorillaFormView(FormView):
                         },
                     )
 
-                    from django.urls import path
-
                     from horilla.urls import urlpatterns
+                    from django.urls import path
 
                     urlpatterns.append(
                         path(
@@ -1250,7 +1278,7 @@ class HorillaProfileView(DetailView):
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         # update_initial_cache(request, CACHE, HorillaProfileView)
 
-        from horilla.urls import path, urlpatterns
+        from horilla.urls import urlpatterns, path
 
         for tab in self.tabs:
             if not tab.get("url"):

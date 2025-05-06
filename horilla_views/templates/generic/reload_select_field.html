@@ -8,7 +8,7 @@ $("#{{dynamic_id}} [name={{field.name}}]").val(dynamic_value).change()
 if (dynamic_value != "dynamic_create"){
   $("#{{dynamic_id}} [name={{field.name}}]").change()
 }
-$("#{{dynamic_id}} [name={{field.name}}]").change(function (e) {
+$("#{{dynamic_id}} [name={{field.name}}]").change(function (e) { 
     values = $(this).val();
     if (!values) {
       values = ""
@@ -22,11 +22,12 @@ $("#{{dynamic_id}} [name={{field.name}}]").change(function (e) {
       $("#modalButton{{field.name}}").parent().find('input[name=dynamic_initial]').val(values)
       $("#reload-field{{field.name}}{{request.GET.view_id}}").find('input[name=dynamic_initial]').val(values)
       $("#modalButton{{field.name}}").click()
-
+    
     }else {
       $("#modalButton{{field.name}}").parent().find('input[name=dynamic_initial]').val(values)
       $("#reload-field{{field.name}}{{view_id}}").find('input[name=dynamic_initial]').val(values)
-
+      
     }
 });
 </script>
+  

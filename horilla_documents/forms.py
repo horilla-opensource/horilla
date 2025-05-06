@@ -73,23 +73,27 @@ class DocumentForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
-
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["expiry_date"].widget.attrs.update(
-            {
-                "hx-target": "#id_notify_before_parent_div",
-                "hx-trigger": "load,change",
-                "hx-swap": "innerHTML",
-                "hx-get": "/employee/get-notify-field/",
-            }
-        )
+                {
+                    "hx-target": "#id_notify_before_parent_div",
+                    "hx-trigger": "load,change",
+                    "hx-swap": "innerHTML",
+                    "hx-get": "/employee/get-notify-field/",
+                }
+            )
 
 
 class DocumentUpdateForm(ModelForm):
     """form to Update a Document"""
 
-    cols = {"document": 12, "expiry_date": 12, "notify_before": 12}
+    cols = {
+        "document":12,
+        "expiry_date":12,
+        "notify_before":12
+    }
 
     verbose_name = "Document"
 
@@ -110,7 +114,9 @@ class DocumentUpdateForm(ModelForm):
 class DocumentRejectForm(ModelForm):
     """form to add rejection reason while rejecting a Document"""
 
-    cols = {"reject_reason": 12}
+    cols = {
+        "reject_reason":12
+    }
 
     class Meta:
         model = Document

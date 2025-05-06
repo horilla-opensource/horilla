@@ -65,7 +65,7 @@ class TicketSendThread(Thread):
                     "subject": subject,
                     "content": content,
                 },
-                request=self.request,
+                request=self.request
             )
 
             email = EmailMessage(
@@ -170,7 +170,7 @@ class AddAssigneeThread(Thread):
                     "subject": subject,
                     "content": content,
                 },
-                request=self.request,
+                request=self.request
             )
 
             email = EmailMessage(
@@ -229,7 +229,7 @@ class RemoveAssigneeThread(Thread):
                     "subject": subject,
                     "content": content,
                 },
-                request=self.request,
+                request=self.request
             )
 
             email = EmailMessage(

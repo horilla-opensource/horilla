@@ -45,7 +45,12 @@ from horilla import horilla_middlewares
 
 class TicketTypeForm(ModelForm):
 
-    cols = {"title": 12, "type": 12, "prefix": 12}
+    cols = {
+        "title": 12,
+        "type": 12,
+        "prefix" : 12
+
+    }
 
     class Meta:
         model = TicketType
@@ -63,7 +68,11 @@ class TicketTypeForm(ModelForm):
 
 class FAQForm(ModelForm):
 
-    cols = {"question": 12, "answer": 12, "tags": 12}
+    cols = {
+        "question":12,
+        "answer":12,
+        "tags":12
+    }
 
     class Meta:
         model = FAQ
@@ -91,7 +100,10 @@ class FAQForm(ModelForm):
 
 class TicketForm(ModelForm):
 
-    cols = {"description": 12, "tags": 12}
+    cols = {
+        "description":12,
+        "tags":12
+    }
     deadline = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
     class Meta:
@@ -112,6 +124,12 @@ class TicketForm(ModelForm):
         widgets = {
             "raised_on": forms.Select(
                 attrs={"class": "oh-select oh-select-2", "required": "true"}
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "data-summernote": True,
+                    "hidden": True,
+                }
             ),
         }
 
@@ -143,19 +161,14 @@ class TicketForm(ModelForm):
         ) | Employee.objects.filter(employee_user_id=request.user)
         self.fields["employee_id"].initial = employee
         # appending dynamic create option according to user
-        if is_reportingmanager(request) or request.user.has_perm(
-            "helpdesk.add_tickettype"
-        ):
-            self.fields["ticket_type"].choices = list(
-                self.fields["ticket_type"].choices
-            )
+        if is_reportingmanager(request) or request.user.has_perm('helpdesk.add_tickettype'):
+            self.fields["ticket_type"].choices = list(self.fields["ticket_type"].choices)
             # self.fields["ticket_type"].choices.append(
             #     ("create_new_ticket_type", "Create new ticket type")
             # )
-        if is_reportingmanager(request) or request.user.has_perm("base.add_tags"):
+        if is_reportingmanager(request) or request.user.has_perm('base.add_tags'):
             self.fields["tags"].choices = list(self.fields["tags"].choices)
             self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
-
 
 class TicketTagForm(ModelForm):
     class Meta:
@@ -204,8 +217,10 @@ class TicketAssigneesForm(ModelForm):
 
 
 class FAQCategoryForm(ModelForm):
-    cols = {"title": 12, "description": 12}
-
+    cols = {
+        "title": 12,
+        "description": 12
+    }
     class Meta:
         model = FAQCategory
         fields = "__all__"
@@ -243,8 +258,10 @@ class AttachmentForm(forms.ModelForm):
 
 class DepartmentManagerCreateForm(ModelForm):
 
-    cols = {"department": 12, "manager": 12}
-
+    cols = {
+        "department" : 12,
+        "manager" : 12
+    }
     class Meta:
         model = DepartmentManager
         fields = ["department", "manager"]
@@ -259,13 +276,11 @@ class DepartmentManagerCreateForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance.pk:
-            if "instance" in kwargs:
-                department = kwargs["instance"].department
+            if 'instance' in kwargs:
+                department = kwargs['instance'].department
                 # Get the employees related to this department
-                employees = department.employeeworkinformation_set.values_list(
-                    "employee_id", flat=True
-                )
+                employees = department.employeeworkinformation_set.values_list('employee_id', flat=True)
                 # Set the manager field queryset to be those employees
-                self.fields["manager"].queryset = Employee.objects.filter(
-                    id__in=employees
-                )
+                self.fields['manager'].queryset = Employee.objects.filter(id__in=employees)
+
+

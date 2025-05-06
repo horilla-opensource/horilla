@@ -1,0 +1,92 @@
+// -----------------------------------------------------------------------------
+// This file contains all application-wide Sass mixins.
+// -----------------------------------------------------------------------------
+
+/// Event wrapper
+/// @author Harry Roberts
+/// @param {Bool} $self [false] - Whether or not to include current selector
+/// @link https://twitter.com/csswizardry/status/478938530342006784 Original tweet from Harry Roberts
+@mixin on-event($self: false) {
+  @if $self {
+    &,
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-within {
+      @content;
+    }
+  } @else {
+    &:hover,
+    &:active,
+    &:focus,
+    &:focus-within {
+      @content;
+    }
+  }
+}
+
+/// Make a context based selector a little more friendly
+/// @author Kitty Giraudel
+/// @param {String} $context
+@mixin when-inside($context) {
+  #{$context} & {
+    @content;
+  }
+}
+
+/// Fade in Animation
+@mixin fade-in($duration, $delay) {
+  @keyframes fade-in-animation {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  animation: fade-in-animation $duration $delay ease-in-out forwards;
+}
+
+/// Slide in right Animation
+@mixin slide-right-in($duration, $delay) {
+  @keyframes slide-right-in-animation {
+    from {
+      transform: translate3d(100%, 0, 0);
+      visibility: visible;
+    }
+
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  animation: slide-right-in-animation $duration $delay ease-in-out forwards;
+}
+/// Slide in right pop Animation
+@mixin slide-right-in-pop($duration, $delay) {
+  @keyframes slide-right-in-pop-animation {
+    0% {
+      transform: translate3d(100%, 0, 0);
+      visibility: hidden;
+      opacity: 0;
+    }
+    30%{
+      transform: translate3d(0, 0, 0);
+      visibility: visible;
+      opacity: 1;
+    }
+    80%{
+      transform: translate3d(0, 0, 0);
+      visibility: visible;
+      opacity: 1;
+    }
+    100% {
+      transform: translate3d(-10%, 0, 0);
+      visibility: hidden;
+      opacity: 0;
+    }
+  }
+
+  animation: slide-right-in-pop-animation $duration $delay ease-in-out forwards;
+}

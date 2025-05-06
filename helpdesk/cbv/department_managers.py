@@ -1,15 +1,12 @@
 """
-This page handles the department managers page in settings
+This page handles the department managers page in settings 
 """
-
 from typing import Any
-
-from django.contrib import messages
 from django.http import HttpResponse
-from django.urls import reverse
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-
+from django.utils.decorators import method_decorator
+from django.urls import reverse
+from django.contrib import messages
 from helpdesk.filter import DepartmentManagerFilter
 from helpdesk.forms import DepartmentManagerCreateForm
 from helpdesk.models import DepartmentManager
@@ -46,12 +43,13 @@ class DepartmentManagersListView(HorillaListView):
     ]
 
     header_attrs = {
-        "department": """
+        "department" : """
                    style = "width:200px !important"
                    """,
-        "manager": """
+        "manager" : """
                    style = "width:200px !important"
                    """,
+       
     }
 
     sortby_mapping = [

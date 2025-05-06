@@ -3,18 +3,18 @@ horilla_automations/forms.py
 """
 
 from typing import Any
-
 from django import forms
 from django.utils.translation import gettext_lazy as _
-
-from base.forms import ModelForm
-from employee.filters import EmployeeFilter
-from employee.models import Employee
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.models import MODEL_CHOICES, MailAutomation
 from horilla_widgets.forms import default_select_option_template
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+
+from base.forms import ModelForm
+
+from employee.filters import EmployeeFilter
+from employee.models import Employee
 
 
 class AutomationForm(ModelForm):
@@ -79,8 +79,8 @@ class AutomationForm(ModelForm):
             if isinstance(field.widget, forms.Select):
                 field.widget.option_template_name = default_select_option_template
 
-        is_active_field = self.fields.pop("is_active")
-        self.fields["is_active"] = is_active_field
+        is_active_field = self.fields.pop('is_active')
+        self.fields['is_active'] = is_active_field
 
     def clean(self):
         cleaned_data = super().clean()

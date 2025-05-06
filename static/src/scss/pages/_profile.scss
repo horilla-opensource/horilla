@@ -1,0 +1,415 @@
+.oh-profile-section {
+  background-color: $white;
+  border: 1px solid $border-color;
+  padding: 1.25rem;
+}
+
+.oh-profile-section__sidebar {
+  height: 100%;
+  border-right: 1px solid $border-color;
+}
+
+.oh-profile-section__sidebar-items {
+  padding-left: 0px;
+  list-style-type: none;
+}
+
+.oh-profile-section__sidebar-item {
+  padding: 0.75rem 0;
+}
+
+.oh-profile-section__sidebar-item--active {
+  border-right: 4px solid $secondary-color;
+}
+
+.oh-profile-section__sidebar-link {
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    text-decoration: none;
+  }
+}
+
+.oh-profile-section__edit-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.4s ease-in-out;
+
+  &:hover {
+    &::after {
+      content: "Edit";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 30px;
+      display: flex;
+      justify-content: center;
+      color: $white;
+      background: rgba($black, 0.6);
+      padding: 0.25rem;
+      transition: all 0.4s ease-in-out;
+    }
+  }
+}
+
+.oh-profile-section__avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.oh-profile-section__topbar {
+  @media (max-width: 767.98px) {
+    flex-direction: row !important;
+  }
+
+  @media (max-width: 575.98px) {
+    padding-bottom: 0.75rem;
+    flex-direction: column !important;
+
+    .oh-profile-section__tab {
+      margin-top: 1.5rem;
+    }
+  }
+}
+
+.oh-profile-section__modal-avatar {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+
+  @media (max-width: 767.98px) {
+    max-width: 100px;
+    height: 100px;
+  }
+}
+
+.oh-profile-section__modal-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.oh-profile-section__image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+//History...............................................
+
+.oh-history_date {
+  position: relative;
+  text-align: center;
+  margin: 1.6rem 0;
+}
+
+.oh-history_date::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  left: 0;
+  right: 0;
+  background-color: $border-light-color;
+  top: 10px;
+}
+
+.oh-history_date-content {
+  z-index: 1;
+  padding: 6px 24px;
+  background-color: $white;
+  position: relative;
+}
+
+.oh-history_user-img {
+  width: 40px;
+  height: 40px;
+  margin-right: 0.6rem;
+  position: relative;
+}
+
+.oh-history_user-pic {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.oh-history_time {
+  color: $icon-grey;
+  font-size: 0.875em;
+}
+
+.oh-history__username {
+  font-size: 1rem;
+}
+
+.oh-history_msg-container {
+  background-color: $background-color;
+  border: 1px solid $border-light-color;
+  border-radius: 0 0.6rem 0.6rem 0.6rem;
+  padding: 0.8rem 1rem;
+  width: fit-content;
+  margin: 0.4rem 0;
+  font-size: 0.9rem;
+}
+
+.oh-history_msging-email {
+  background-color: $alert-color-bg-danger;
+  color: $danger-color;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.2rem;
+  margin-right: 0.2rem;
+  font-size: 0.8rem;
+}
+
+.oh-history_task-state {
+  color: $dark-grey;
+  font-size: 0.9rem;
+}
+
+.oh-progress_arrow {
+  width: 0.8rem;
+  height: auto;
+}
+
+.oh-history_task-tracker {
+  padding: 0.2rem 0;
+  font-size: 0.85rem;
+}
+
+.oh-history_task-list {
+  padding: 0.2rem 0;
+}
+
+.oh-history_tracking-value {
+  color: $danger-color;
+}
+
+.oh-history-task-state {
+  color: $icon-grey;
+}
+
+.oh-history_user-state {
+  position: absolute;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  right: 2px;
+  bottom: 0px;
+  cursor: pointer;
+}
+
+.oh-history_user-details {
+  flex: 1;
+}
+
+.oh-user_inactive {
+  background-color: $mid-grey;
+  border: 2px solid $white;
+}
+
+.oh-history_abt {
+  width: 50%;
+  margin-top: 0.2rem;
+  margin-bottom: 1.6rem;
+
+  @media (max-width: 767.98px) {
+    width: 100%;
+  }
+}
+
+.oh-history_tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.oh-history_tabs-items {
+  border-radius: 1rem;
+  border: 1px solid;
+  font-size: 0.7rem;
+}
+
+.oh-history_log-container {
+  margin-top: 2rem;
+  display: flex;
+}
+
+.oh-history-log_msg-section {
+  width: 100%;
+}
+
+.oh-history-log_msg-container {
+  border-radius: 0.6rem;
+  border: 1px solid $border-color;
+  width: 100%;
+  padding: 1rem;
+}
+
+.oh-history_textarea {
+  border: none;
+  outline: none;
+  width: 100%;
+  border-bottom: 1px solid $border-color;
+  font-size: 0.8rem;
+  padding: 0.4rem 0;
+  resize: none;
+}
+
+.oh-history_cust_btn {
+  display: flex;
+}
+
+.oh-history-log_buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.oh-history_iconbtn {
+  padding: 0 0.2rem;
+}
+
+.oh-history_tabs-items:hover {
+  color: $white;
+  text-decoration: none;
+  background-color: $secondary-color;
+}
+
+//sidebar updated...................
+
+.oh-wrapper-main--1 {
+  grid-template-columns: auto;
+}
+
+//.......................
+
+.members-container {
+  background-color: #f9f9f9;
+  border: 1px solid #e7e7e7;
+  padding: 8px;
+  max-width: fit-content;
+  border-radius: 45px;
+
+  .oh-faq_search--icon {
+    top: 12px;
+  }
+}
+
+.members-container ul li {
+  list-style: none;
+  float: left;
+
+  border: 2px solid #f9f9f9;
+}
+
+.members-container ul .li-last {
+  margin-right: 0px;
+  background-color: #f2f3f5;
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+}
+
+.members-container ul .li-last a {
+  text-decoration: none;
+  position: relative;
+}
+
+.img-right-arrow,
+.img-left-arrow {
+  float: right;
+  margin-right: 6px;
+}
+
+.members-container ul .active {
+  border: 2px solid #e54f38;
+  border-radius: 50%;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  top: 168px;
+  padding: 10px;
+  border-radius: 10px;
+
+  .oh-input {
+    padding: 0.4rem 1rem;
+    padding-left: 28px;
+  }
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 6px 10px;
+  text-decoration: none;
+  display: block;
+  border-radius: 10px;
+}
+
+.dropdown-content a span {
+  padding-left: 5px;
+}
+
+.dropdown-content a img {
+  width: 28px;
+}
+
+.dropdown-content a:hover {
+  background-color: #e7e7e9;
+  border-radius: 12px;
+}
+
+.show {
+  display: block;
+}
+
+a {
+  &.oh-profile-dropdown-link {
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+.oh-sorting-field {
+  .oh-card-dashboard--moveable {
+    &:hover {
+      cursor: grab;
+    }
+  }
+}
+.oh-card-dashboard--moveable {
+  position: relative;
+}
+.oh-state-highlight {
+  background-color: #f0f0f0;
+  border: 1px dashed #ccc;
+  line-height: 1.2em;
+  min-height: 2rem;
+  height: auto;
+  width: 100%;
+
+  margin-top: 1rem;
+  box-sizing: border-box;
+
+  @media (max-width: 992px) {
+    width: 100%;
+  }
+}

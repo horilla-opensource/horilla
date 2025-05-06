@@ -3,13 +3,14 @@ horilla_automation/signals.py
 
 """
 
+import time
 import copy
 import logging
 import threading
-import time
 import types
 
 from bs4 import BeautifulSoup
+
 from django import template
 from django.core.mail import EmailMessage
 from django.db import models
@@ -43,9 +44,9 @@ def start_automation():
     """
     Automation signals
     """
-    from base.models import HorillaMailTemplate
     from horilla_automations.methods.methods import get_model_class, split_query_string
     from horilla_automations.models import MailAutomation
+    from base.models import HorillaMailTemplate
 
     @receiver(post_delete, sender=MailAutomation)
     @receiver(post_save, sender=MailAutomation)
@@ -346,13 +347,14 @@ def send_mail(request, automation, instance):
     mail sending method
     """
     from base.backends import ConfiguredEmailBackend
-    from base.methods import eval_validate, generate_pdf
-    from employee.models import Employee
+    from base.methods import generate_pdf
     from horilla_automations.methods.methods import (
         get_model_class,
         get_related_field_model,
     )
     from horilla_views.templatetags.generic_template_filters import getattribute
+    from base.methods import eval_validate
+    from employee.models import Employee
 
     mail_template = automation.mail_template
     employees = []

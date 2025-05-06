@@ -3,25 +3,23 @@ horilla_views/forms.py
 """
 
 import os
-
 from django import forms
-from django.core.files.base import ContentFile
-from django.core.files.storage import default_storage
 from django.db import transaction
-from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
 from django.utils.translation import gettext_lazy as _
-
+from django.template.loader import render_to_string
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views import models
+from horilla_views.templatetags.generic_template_filters import getattribute
 from horilla_views.cbv_methods import (
-    BOOLEAN_CHOICES,
+    structured,
+    get_field_class_map,
     FIELD_WIDGET_MAP,
     MODEL_FORM_FIELD_MAP,
-    get_field_class_map,
-    structured,
+    BOOLEAN_CHOICES,
 )
-from horilla_views.templatetags.generic_template_filters import getattribute
 
 
 class ToggleColumnForm(forms.Form):

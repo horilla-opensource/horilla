@@ -42,7 +42,7 @@
     <div class="oh-accordion-meta">
       <div class="oh-accordion-meta__item">
         <div class="oh-accordion-meta__header"
-          data-field="{{saved_filters.field}}"
+          data-field="{{saved_filters.field}}" 
           data-path="{{request.path}}"
           data-group="{{forloop.counter}}"
           data-open=false
@@ -91,7 +91,7 @@
                   {% for cell in columns %}
                   {% with cell_attr=header_attrs|get_item:cell.1 %}
                   <th {% if cell.2 and not cell_attr %}style="width:220px!important;"{% endif %} {{cell_attr|safe}} id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header">
-                    <div
+                    <div 
                       {% for sort_map in sortby_mapping %}
                       {% if sort_map.0 == cell.0 %}
                       hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
@@ -127,7 +127,7 @@
               </thead>
               <tbody>
                 {% for instance in group.list %}
-                <tr
+                <tr 
                  data-instance-id="{{instance.id}}"
                  {{row_attrs|format:instance|safe}}
                 >
@@ -156,7 +156,7 @@
                   </td>
                   {% endif %}
                   {% for cell in columns %}
-                  {% with attribute=cell.1 index=forloop.counter %}
+                  {% with attribute=cell.1 index=forloop.counter %} 
                   <td>
                     {% if not cell.2 %}
                     {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
@@ -224,21 +224,21 @@
                 if (!attrAction){
                 let thWidth = 0;
                 const widths = [];
-
+          
                 $('#{{view_id}} .lastTd').each(function () {
                   widths.push(this.scrollWidth);
                   $(this).css('overflow', 'hidden');
                 });
-
+          
                 widths.sort().reverse();
-
+          
                 if (widths.length) {
                   thWidth = widths[0];
                 }
                 if (!thWidth) {
                   thWidth = 180
                 }
-
+          
                 $('#{{view_id}} .lastTh').css("width", `${thWidth}px`);
               }
               });
@@ -246,7 +246,7 @@
           </div>
           <div class="oh-pagination">
             <span class="oh-pagination__page">
-              {% trans "Page" %} {{ group.list.number }}
+              {% trans "Page" %} {{ group.list.number }} 
               {% trans "of" %} {{ group.list.paginator.num_pages }}.
             </span>
             <nav class="oh-pagination__nav">
@@ -375,9 +375,9 @@
     </script>
     {% endif %}
     {% endif %}
-
+    
 <script>
-  $(".oh-accordion-meta__header").click(function (e) {
+  $(".oh-accordion-meta__header").click(function (e) { 
     var open = $(this).attr("data-open");
     open = JSON.parse(open)
     if (!$(this).parent().parent().find(".oh-accordion-meta__body.d-none").length && !$(this).find(".oh-accordion-meta__header--show").length) {

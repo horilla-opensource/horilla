@@ -4,12 +4,11 @@ context_processor.py
 This module is used to register context processor`
 """
 
+from django.urls import path, include
 from django.http import JsonResponse
-from django.urls import include, path
-
-from horilla.urls import urlpatterns
 from horilla_audit.forms import HistoryForm
 from horilla_audit.models import AuditTag
+from horilla.urls import urlpatterns
 
 
 def history_form(request):

@@ -1,0 +1,120 @@
+// main{
+//   // overflow-y: auto;
+//   // height: calc(100vh - 62px);
+// }
+#main {
+  overflow-x: hidden;
+  // max-height: 100vh;
+}
+.oh-wrapper-main {
+  display: grid;
+  grid-template-columns: 230px auto;
+  transition: all 0.4s ease-in-out;
+}
+.oh-wrapper-main--no-grid{
+  display: unset;
+}
+.oh-wrapper-main--closed {
+  grid-template-columns: 90px auto;
+  @media (max-width: 767.98px) {
+    grid-template-columns: auto;
+  }
+}
+.oh-wrapper {
+  max-width: 95%;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.oh-layout--grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1%;
+  row-gap: 1rem;
+  justify-content: space-between;
+  // @media (max-width: 1199.98px) {
+  //   grid-template-columns: repeat(auto-fill, 49%);
+  // }
+  // @media (max-width: 991.98px) {
+  //   grid-template-columns: repeat(auto-fill, 100%);
+  // }
+}
+@media (min-width: 1500px) {
+  // .oh-wrapper {
+  //   // max-width:100%;
+  //   // width: 100%;
+  // }
+}
+
+/* Text */
+.oh-text--sm {
+  font-size: 0.9rem !important;
+}
+.oh-text--xs {
+  font-size: 0.75rem !important;
+}
+
+/* Text Colors*/
+.oh-text--dark {
+  color: $text-color;
+}
+.oh-text--light {
+  color: $light-text-color;
+}
+.oh-text--secondary {
+  color: $secondary-color;
+}
+
+/* Links */
+.oh-link {
+  display: flex;
+  align-items: center;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    text-decoration: none;
+  }
+}
+.oh-link--secondary {
+  color: $secondary-color;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    color: $secondary-color-dark;
+  }
+}
+
+.oh-resp-hidden--lg {
+  @media (max-width: 991.98px) {
+    display: none;
+  }
+}
+.oh-viewer {
+  width: 80%;
+  height: 900px;
+  left: 50%;
+  transform: translateX(-50%);
+  position: relative;
+}
+.oh-viewer--image {
+  width: 80%;
+  height: auto;
+  margin: 0 auto;
+  border: 1px solid $border-light-color;
+}
+.centered-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.oh-empty__title{
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+.oh-empty__subtitle{
+  color: $light-text-color;
+}

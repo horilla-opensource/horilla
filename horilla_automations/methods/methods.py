@@ -4,11 +4,9 @@ horilla_automations/methods/methods.py
 """
 
 import operator
-
-from django.core.exceptions import FieldDoesNotExist
 from django.db import models as django_models
 from django.http import QueryDict
-
+from django.core.exceptions import FieldDoesNotExist
 from base.templatetags.horillafilters import app_installed
 from employee.models import Employee
 from horilla.models import HorillaModel

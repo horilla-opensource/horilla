@@ -12,7 +12,7 @@
         hx-get="{{request.path}}?{{filter.urlencode}}"
         hx-target="#{{view_id|safe}}" hx-swap="outerHTML"
         >
-        <button
+        <button 
         hx-get="{% url "last-applied-filter" %}?{{filter.urlencode}}"
         hx-swap="none"
         class="oh-hover-btn" style="
@@ -40,10 +40,10 @@
       </span>
       {% endfor %}
     </div>
-    {% endif %}
-
+    {% endif %}  
+    
   </div>
-
+  
   <button class="reload-record" hidden hx-get="{{request.path}}?{{request.GET.urlencode}}" hx-target="#{{view_id|safe}}" hx-swap="outerHTML">
   </button>
     {% if show_filter_tags %}

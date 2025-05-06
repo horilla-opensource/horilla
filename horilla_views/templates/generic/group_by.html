@@ -37,7 +37,7 @@
     <div class="oh-accordion-meta">
       <div class="oh-accordion-meta__item">
         <div class="oh-accordion-meta__header"
-          data-field="{{saved_filters.field}}"
+          data-field="{{saved_filters.field}}" 
           data-path="{{request.path}}"
           data-group="{{forloop.counter}}"
           data-open=false
@@ -93,7 +93,7 @@
                   {% endif %}
                   {% for cell in columns %}
                   <div class="oh-sticky-table__th"
-
+                  
                   >{{cell.0}}</div>
                   {% endfor %}{% if options or option_method%}
                   <div class="oh-sticky-table__th" >
@@ -143,7 +143,7 @@
                     </div>
                   </div>
                   {% endif %}
-                  {% for cell in columns %}
+                  {% for cell in columns %} 
                   {% with attribute=cell.1 index=forloop.counter %} {% if not cell.2 %}
                   <div
                     class="{% if index == 1 %} oh-sticky-table__sd {% else %} oh-sticky-table__td{% endif %}"
@@ -171,7 +171,7 @@
                     {% if not option_method %}
                     <div class="oh-btn-group">
                       {% for option in options %}
-                        {% if option.accessibility|accessibility:instance %}
+                        {% if option.accessibility|accessibility:instance %}                          
                         <a
                           href="#"
                           title="{{option.option|safe}}"
@@ -210,7 +210,7 @@
           </div>
           <div class="oh-pagination">
             <span class="oh-pagination__page">
-              {% trans "Page" %} {{ group.list.number }}
+              {% trans "Page" %} {{ group.list.number }} 
               {% trans "of" %} {{ group.list.paginator.num_pages }}.
             </span>
             <nav class="oh-pagination__nav">
@@ -348,7 +348,7 @@
         ids = JSON.parse(
             $("#{{selected_instances_key_id}}").attr("data-ids") || "[]"
           );
-        ids = Array.from(new Set(ids));
+        ids = Array.from(new Set(ids));        
         let index = ids.indexOf(id);
         if (!ids.includes(id)) {
           ids.push(id);
@@ -360,13 +360,13 @@
         $("#{{selected_instances_key_id}}").attr("data-ids", JSON.stringify(ids));
         }
       );
-
+        
     </script>
     {% endif %}
     {% endif %}
-
+    
 <script>
-  $(".oh-accordion-meta__header").click(function (e) {
+  $(".oh-accordion-meta__header").click(function (e) { 
     var open = $(this).attr("data-open");
     open = JSON.parse(open)
     if (!$(this).parent().parent().find(".oh-accordion-meta__body.d-none").length && !$(this).find(".oh-accordion-meta__header--show").length) {

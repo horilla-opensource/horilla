@@ -1,9 +1,9 @@
+from pyexpat.errors import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from pyexpat.errors import messages
-
 from base.methods import check_manager
 from helpdesk.models import Ticket
+
 
 decorator_with_arguments = (
     lambda decorator: lambda *args, **kwargs: lambda func: decorator(
@@ -42,8 +42,8 @@ def ticket_owner_can_enter(function, perm: str, model: object, manager_access=Fa
                 if manager_access
                 else False
             )
-            or Ticket.objects.filter(assigned_to__in=[request.user.employee_get])
-            or Ticket.objects.filter(created_by=request.user)
+            or Ticket.objects.filter(assigned_to__in = [request.user.employee_get])
+            or Ticket.objects.filter(created_by = request.user)
         )
         if can_enter:
             return function(request, *args, **kwargs)

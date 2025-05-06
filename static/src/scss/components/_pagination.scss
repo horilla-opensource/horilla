@@ -1,0 +1,94 @@
+.oh-pagination {
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @media (max-width: 575.98px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.oh-pagination__page {
+  color: $text-color;
+  font-size: 0.9rem;
+}
+.oh-pagination__items {
+  display: flex;
+  align-items: center;
+  list-style-type: none;
+  padding-left: 0;
+}
+.oh-pagination__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 10px;
+  background-color: $white;
+  border: 1px solid $border-color;
+  border-right: 0px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  &:first-child {
+    border-radius: 0;
+  }
+  &:last-child {
+    border-right: 1px solid $border-color;
+    border-radius: 0;
+  }
+  &:hover {
+    background-color: $light-button-color;
+  }
+}
+.oh-pagination__item--wide {
+  width: fit-content;
+}
+.oh-pagination__link {
+  &:hover {
+    text-decoration: none;
+  }
+}
+.oh-pagination__link--active {
+  color: $secondary-color;
+}
+.oh-pagination__nav {
+  display: flex;
+}
+.oh-pagination__input-container {
+  margin-right: 1rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+
+  @media (max-width: 575.98px) {
+    margin-left: 0;
+  }
+}
+.oh-pagination__input-container .oh-pagination__label:first-child {
+  @media (max-width: 575.98px) {
+    display: none;
+  }
+}
+.oh-pagination__input {
+  width: 40px;
+  height: 40px;
+  border: 1px solid $border-color;
+  text-align: center;
+  border-radius: 0px;
+
+  &:hover,
+  &:focus,
+  &:focus-visible {
+    border: 2px solid $brand-color;
+    border-radius: 0;
+  }
+}
+.oh-pagination__label {
+  color: $text-color;
+  font-size: 0.85rem;
+}
+.oh-pagination__page{
+  margin-bottom: 0.75rem;
+}

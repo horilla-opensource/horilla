@@ -1,8 +1,4 @@
-from django.contrib import messages
-from django.db import connection
-from django.shortcuts import redirect, render
-from django.utils.translation import gettext_lazy as _
-
+from django.shortcuts import render, redirect
 from horilla.decorators import (
     hx_request_required,
     login_required,
@@ -10,17 +6,20 @@ from horilla.decorators import (
     owner_can_enter,
     permission_required,
 )
-
 from .forms import *
+from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+from .scheduler import *
 from .gdrive import *
 from .pgdump import *
-from .scheduler import *
 from .zip import *
+from django.db import connection
+
 
 # @login_required
 # @permission_required("backup.add_localbackup")
 # def local_setup(request):
-#     """
+#     """ 
 #     function used to setup local backup.
 
 #     Parameters:
@@ -40,13 +39,13 @@ from .zip import *
 #     if request.method == "POST":
 #         form = LocalBackupSetupForm(request.POST, request.FILES)
 #         if form.is_valid():
-#             form.save()
-#             stop_backup_job()
+#             form.save() 
+#             stop_backup_job()   
 #             messages.success(request, _("Local backup automation setup updated."))
-#             return redirect("local")
+#             return redirect("local")    
 #     return render(request, "backup/local_setup_form.html", {"form": form, "show":show, "active":active})
 
-
+    
 # @login_required
 # @permission_required("backup.change_localbackup")
 # def local_Backup_stop_or_start(request):
@@ -56,7 +55,7 @@ from .zip import *
 #     Parameters:
 #     request (HttpRequest): The HTTP request object.
 
-#     Returns:
+#     Returns:  
 #     GET : return local backup setup template
 #     POST : return settings
 #     """
@@ -99,7 +98,7 @@ from .zip import *
 @login_required
 @permission_required("backup.add_localbackup")
 def gdrive_setup(request):
-    """
+    """ 
     function used to setup gdrive backup.
 
     Parameters:
@@ -111,7 +110,7 @@ def gdrive_setup(request):
     """
     form = GdriveBackupSetupForm()
     show = False
-    active = False
+    active = False 
     if connection.vendor != "postgresql":
         return render(request, "backup/404.html")
     if GoogleDriveBackup.objects.exists():
@@ -122,29 +121,22 @@ def gdrive_setup(request):
         if request.method == "POST":
             form = GdriveBackupSetupForm(request.POST, request.FILES, instance=instance)
             if form.is_valid():
-                google_drive = form.save()
+                google_drive = form.save() 
                 google_drive.active = False
                 google_drive.save()
                 stop_gdrive_backup_job()
                 messages.success(request, _("gdrive backup automation setup updated."))
                 return redirect("gdrive")
-        return render(
-            request,
-            "backup/gdrive_setup_form.html",
-            {"form": form, "show": show, "active": active},
-        )
+        return render(request, "backup/gdrive_setup_form.html", {"form": form, "show":show, "active":active})
+
 
     if request.method == "POST":
         form = GdriveBackupSetupForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            form.save() 
             messages.success(request, _("gdrive backup automation setup Created."))
-            return redirect("gdrive")
-    return render(
-        request,
-        "backup/gdrive_setup_form.html",
-        {"form": form, "show": show, "active": active},
-    )
+            return redirect("gdrive")    
+    return render(request, "backup/gdrive_setup_form.html", {"form": form, "show":show, "active":active})
 
 
 @login_required
@@ -156,14 +148,14 @@ def gdrive_Backup_stop_or_start(request):
     Parameters:
     request (HttpRequest): The HTTP request object.
 
-    Returns:
+    Returns:  
     GET : return gdrive backup setup template
     POST : return gdrive backup update template
     """
-    if GoogleDriveBackup.objects.exists():
+    if GoogleDriveBackup.objects.exists():  
         gdive_backup = GoogleDriveBackup.objects.first()
-        if gdive_backup.active == True:
-            gdive_backup.active = False
+        if gdive_backup.active == True: 
+            gdive_backup.active = False 
             stop_gdrive_backup_job()
             message = "Gdrive Backup Automation Stopped Successfully."
         else:
@@ -192,4 +184,4 @@ def gdrive_Backup_delete(request):
         gdrive_backup.delete()
         stop_gdrive_backup_job()
         messages.success(request, _("Gdrive Backup Automation Removed Successfully."))
-    return redirect("gdrive")
+    return redirect("gdrive")       

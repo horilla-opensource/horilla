@@ -6,9 +6,9 @@ This module is used to write custom template filters.
 """
 
 import datetime
-import functools
 import re
 import types
+import functools
 
 from django import template
 from django.conf import settings

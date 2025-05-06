@@ -1,1 +1,1 @@
-default_app_config = "horilla_backup.apps.backupConfig"
+default_app_config = 'horilla_backup.apps.backupConfig'

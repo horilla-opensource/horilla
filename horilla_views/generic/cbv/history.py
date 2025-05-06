@@ -2,16 +2,15 @@
 horilla_views/generic/cbv/history.py
 """
 
-from django.apps import apps
-from django.contrib import messages
-from django.utils.decorators import method_decorator
 from django.views.generic import DetailView
+from django.contrib import messages
+from django.apps import apps
+from django.utils.decorators import method_decorator
 from simple_history.utils import get_history_model_for_model
-
-from horilla.horilla_middlewares import _thread_locals
-from horilla_views.cbv_methods import hx_request_required
-from horilla_views.generic.cbv.views import HorillaFormView
 from horilla_views.history_methods import get_diff
+from horilla_views.generic.cbv.views import HorillaFormView
+from horilla_views.cbv_methods import hx_request_required
+from horilla.horilla_middlewares import _thread_locals
 
 
 @method_decorator(hx_request_required, name="dispatch")

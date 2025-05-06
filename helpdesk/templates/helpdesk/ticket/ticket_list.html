@@ -1,6 +1,6 @@
 {% load i18n %} {% load i18n %} {% load static %} {% include 'filter_tags.html' %} {% load mathfilters %}
 {% load basefilters %} {% load helpdeskfilters %}
-{% if my_tickets or allocated_tickets or all_tickets %}
+{% if my_tickets or allocated_tickets or all_tickets %} 
 	<div class="oh-tabs__contents" id="view-container">
 		<div class="oh-tabs__content" id="tab_1">
 			{% if my_tickets %}
@@ -229,7 +229,7 @@
 															></ion-icon>
 														</button>
 													{% endif %}
-
+													
 												</div>
 											</div>
 										</div>
@@ -366,12 +366,12 @@
 								</div>
 								<div class="oh-sticky-table__tbody">
 									{% for ticket in allocated_tickets %}
-										<div class="oh-sticky-table__tr"
+										<div class="oh-sticky-table__tr" 
 											{% if request.user.employee_get in ticket.assigned_to.all %}
 												style = "background-color: lightgreen;"
 												onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
 											{% elif perms.helpdesk.view_ticket or request.user.employee_get|is_department_manager:ticket %}
-												onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
+												onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"	
 											{% else %}
 												hx-get = "{% url 'ticket-individual-view' ticket.id %}"
 												data-toggle="oh-modal-toggle"
@@ -506,7 +506,7 @@
 																hx-target="#objectDetailsModalTarget"
 																data-toggle="oh-modal-toggle"
 																data-target="#objectDetailsModal"
-																class="oh-btn oh-btn--light-bkg p-3 w-100"
+																class="oh-btn oh-btn--light-bkg p-3 w-100" 
 																title = "{% trans "Claim Requests" %}"
 															>
 															<ion-icon name="eye-outline"></ion-icon>
@@ -514,7 +514,7 @@
 															</button>
 														{% else %}
 															{% if ticket|calim_request_exists:request.user.employee_get or request.user.employee_get in ticket.assigned_to.all %}
-																<a
+																<a 
 																{% if request.user.employee_get in ticket.assigned_to.all %}
 																	style="background-color:rgb(74, 238, 60);"
 																{% endif %}
@@ -757,7 +757,7 @@
 									{% if perms.helpdesk.change_ticket or perms.helpdesk.delete_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
 										<div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
 									{% endif %}
-
+									
 								</div>
 							</div>
 							<div class="oh-sticky-table__tbody">

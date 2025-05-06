@@ -20,7 +20,7 @@
 
  <script>
     $(document).ready(function() {
-
+        
         $('.oh-payslip__header').append(`<div class="d-flex">
             {% if show %}
             {% if active %}
@@ -39,9 +39,9 @@
         if (!$('#id_fixed').is(':checked')) {
             $('#id_hour').parent().hide();``
             $('#id_minute').parent().hide();
-        }
+        }               
         $('#id_interval').change(function() {
-            if ($(this).is(':checked')) {
+            if ($(this).is(':checked')) { 
                 $('#id_fixed4').prop('checked', false);
                 $('#id_hour').parent().hide();
                 $('#id_minute').parent().hide();

@@ -1,101 +1,72 @@
+from employee.models import Actiontype, Policy
 from rest_framework import serializers
-
 from base.models import Department, EmployeeType, JobPosition
-from employee.models import (
-    Actiontype,
-    DisciplinaryAction,
-    Employee,
-    EmployeeBankDetails,
-    EmployeeWorkInformation,
-    Policy,
-)
-from horilla_documents.models import Document, DocumentRequest
 
+from employee.models import DisciplinaryAction, Employee, EmployeeBankDetails, EmployeeWorkInformation
 from ...api_methods.employee.methods import get_next_badge_id
+from horilla_documents.models import Document, DocumentRequest
 
 
 class ActiontypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Actiontype
-        fields = ["id", "title", "action_type"]
+        fields = ['id', 'title', 'action_type']
 
 
 class EmployeeListSerializer(serializers.ModelSerializer):
     job_position_name = serializers.CharField(
-        source="employee_work_info.job_position_id.job_position", read_only=True
-    )
+        source='employee_work_info.job_position_id.job_position', read_only=True)
     employee_work_info_id = serializers.CharField(
-        source="employee_work_info.id", read_only=True
-    )
+        source="employee_work_info.id", read_only=True)
     employee_bank_details_id = serializers.CharField(
-        source="employee_bank_details.id", read_only=True
-    )
+        source="employee_bank_details.id", read_only=True)
 
     class Meta:
         model = Employee
-        fields = [
-            "id",
-            "employee_first_name",
-            "employee_last_name",
-            "email",
-            "job_position_name",
-            "employee_work_info_id",
-            "employee_profile",
-            "employee_bank_details_id",
-        ]
+        fields = ['id','employee_first_name', 'employee_last_name',
+                  'email', 'job_position_name', 'employee_work_info_id', 'employee_profile', 'employee_bank_details_id']
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
     job_position_name = serializers.CharField(
-        source="employee_work_info.job_position_id.job_position", read_only=True
-    )
+        source='employee_work_info.job_position_id.job_position', read_only=True)
     job_position_id = serializers.CharField(
-        source="employee_work_info.job_position_id.id", read_only=True
-    )
+        source='employee_work_info.job_position_id.id', read_only=True)
     employee_work_info_id = serializers.CharField(
-        source="employee_work_info.id", read_only=True
-    )
+        source="employee_work_info.id", read_only=True)
     employee_bank_details_id = serializers.CharField(
-        source="employee_bank_details.id", read_only=True
-    )
+        source="employee_bank_details.id", read_only=True)
 
     class Meta:
         model = Employee
         fields = "__all__"
-
+ 
     def create(self, validated_data):
-        validated_data["badge_id"] = get_next_badge_id()
+        validated_data['badge_id'] = get_next_badge_id()
         return super().create(validated_data)
 
 
 class EmployeeWorkInformationSerializer(serializers.ModelSerializer):
     job_position_name = serializers.CharField(
-        source="job_position_id.job_position", read_only=True
-    )
+        source='job_position_id.job_position', read_only=True)
     department_name = serializers.CharField(
-        source="department_id.department", read_only=True
-    )
-    shift_name = serializers.CharField(source="shift_id.employee_shift", read_only=True)
+        source='department_id.department', read_only=True)
+    shift_name = serializers.CharField(
+        source='shift_id.employee_shift', read_only=True)
     employee_type_name = serializers.CharField(
-        source="employee_type_id.employee_type", read_only=True
-    )
+        source='employee_type_id.employee_type', read_only=True)
     reporting_manager_first_name = serializers.CharField(
-        source="reporting_manager_id.employee_first_name", read_only=True
-    )
+        source='reporting_manager_id.employee_first_name', read_only=True)
     reporting_manager_last_name = serializers.CharField(
-        source="reporting_manager_id.employee_last_name", read_only=True
-    )
+        source='reporting_manager_id.employee_last_name', read_only=True)
     work_type_name = serializers.CharField(
-        source="work_type_id.work_type", read_only=True
-    )
-    company_name = serializers.CharField(source="company_id.company", read_only=True)
+        source='work_type_id.work_type', read_only=True)
+    company_name = serializers.CharField(
+        source='company_id.company', read_only=True)
     tags = serializers.SerializerMethodField()
 
     def get_tags(self, obj):
-        return [
-            {"id": tag.id, "title": tag.title, "color": tag.color}
-            for tag in obj.tags.all()
-        ]
+        return [{'id': tag.id, 'title': tag.title,'color':tag.color} for tag in obj.tags.all()]  
 
     class Meta:
         model = EmployeeWorkInformation
@@ -105,13 +76,12 @@ class EmployeeWorkInformationSerializer(serializers.ModelSerializer):
 class EmployeeBankDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeBankDetails
-        fields = "__all__"
-
+        fields = '__all__'
 
 class EmployeeTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeType
-        fields = "__all__"
+        fields = '__all__'
 
 
 class EmployeeBulkUpdateSerializer(serializers.ModelSerializer):
@@ -132,41 +102,37 @@ class EmployeeBulkUpdateSerializer(serializers.ModelSerializer):
         #     'children',
         # ]
         fields = [
-            "employee_last_name",
+            'employee_last_name',
+
         ]
 
 
 class DisciplinaryActionSerializer(serializers.ModelSerializer):
     class Meta:
         model = DisciplinaryAction
-        fields = "__all__"
+        fields = '__all__'
 
 
 class PolicySerializer(serializers.ModelSerializer):
     class Meta:
         model = Policy
-        fields = "__all__"
+        fields = '__all__'
+
 
 
 class DocumentRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = DocumentRequest
-        fields = "__all__"
+        fields = '__all__'
 
 
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
-        fields = "__all__"
+        fields = '__all__'
 
 
 class EmployeeSelectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
-        fields = [
-            "id",
-            "employee_first_name",
-            "employee_last_name",
-            "badge_id",
-            "employee_profile",
-        ]
+        fields = ['id','employee_first_name','employee_last_name','badge_id','employee_profile']

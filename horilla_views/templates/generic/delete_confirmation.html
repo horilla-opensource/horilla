@@ -10,7 +10,7 @@
 
 <div class="oh-modal__dialog-body oh-modal__dialog-relative" style="padding-bottom: 0px">
   <div class="">
-
+    
     <div class="oh-card">
       <div class="row">
         <div class="col-12 col-sm-12 col-md-12 col-lg-12">
@@ -31,7 +31,7 @@
               margin: 0;
               padding-left: 1.2rem;
             }
-
+          
             .check-list li {
               position: relative;
               list-style-type: none;
@@ -45,7 +45,7 @@
             .confirmation-sidebar--item{
               cursor: pointer;
             }
-
+          
             /* Checkmark styling */
             .check-list li:not(li.x-marked):before {
               content: '';
@@ -61,7 +61,7 @@
               transform-origin: bottom left;
               transform: rotate(45deg);
             }
-
+          
             /* X-mark styling */
             .check-list .x-marked:before {
               content: '';
@@ -87,7 +87,7 @@
               );
             }
           </style>
-
+          
           <div>
             <h5 class="mt-3 mb-2">
               {% trans "Deleting the record" %} '{{delete_object}}' {% trans "would require managing the following related objects:" %}
@@ -142,7 +142,7 @@
                   <div class="mt-2">
                     <input type="checkbox" required id="confirm">
                     <label for="confirm">
-                      {% trans "Confirming to delete the related and protected records" %}
+                      {% trans "Confirming to delete the related and protected records" %} 
                     </label>
                   </div>
                 </div>
@@ -151,8 +151,8 @@
                 </div>
               </div>
             </form>
-          </div>
-
+          </div>         
+            
         </div>
         {% for key in model_map.keys %}
         <div class="oh-general__tab-target oh-profile__info-tab" id="{{key}}">
@@ -178,7 +178,7 @@
 
                             </li>
                             {% endfor %}
-                        {% endwith %}
+                        {% endwith %} 
                         </ul>
                     </div>
                 </div>
@@ -205,7 +205,7 @@
 <div class="oh-modal__dialog-footer"></div>
 
 <script>
-    $(".oh-general__tab-link").click(function (e) {
+    $(".oh-general__tab-link").click(function (e) { 
         e.preventDefault();
         $("#deleteConfirmationBody .oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
         $(this).addClass("oh-general__tab-link--active");
@@ -214,7 +214,7 @@
         $(`#deleteConfirmationBody ${target}`).removeClass("d-none");
         localStorage.setItem("deleteConfirmation",target)
     });
-    $(".confirmation-sidebar--item").click(function (e) {
+    $(".confirmation-sidebar--item").click(function (e) { 
         e.preventDefault();
         $(this).closest("ul").find(".oh-inner-sidebar__link--active").removeClass("oh-inner-sidebar__link--active");
         $(this).addClass("oh-inner-sidebar__link--active");

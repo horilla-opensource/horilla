@@ -7,7 +7,6 @@ class HorillaApiConfig(AppConfig):
 
     def ready(self):
         from django.urls import include, path
-
         from horilla.urls import urlpatterns
 
         urlpatterns.append(

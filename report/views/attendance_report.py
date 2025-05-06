@@ -1,11 +1,12 @@
-from datetime import datetime, time
+from datetime import time,datetime
 
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from attendance.models import Attendance
+from attendance.filters import AttendanceFilters
+from base.models import Company
 from horilla_views.cbv_methods import login_required
-
+from attendance.models import Attendance
 
 def convert_time_to_decimal_w(time_str):
     try:
@@ -15,12 +16,13 @@ def convert_time_to_decimal_w(time_str):
             hours, minutes = time_str.hour, time_str.minute
         else:
             return "00.00"
-
+        
         # Format as HH.MM
         formatted_time = f"{hours:02}.{minutes:02}"
         return formatted_time
     except (ValueError, TypeError):
         return "00.00"
+
 
 
 def convert_time_to_decimal(time_str):
@@ -39,43 +41,36 @@ def convert_time_to_decimal(time_str):
     except Exception:
         return "00.00"
 
-
-@login_required
+@login_required 
 def attendance_report(request):
-
+    
     if not request.user.is_superuser:
         return render(request, "404.html")
-    return render(request, "report/attendance_report.html")
+    company = 'all'
+    selected_company = request.session.get("selected_company")
+    if selected_company != 'all':
+        company = Company.objects.filter(id=selected_company).first()
 
+    return render(request, "report/attendance_report.html",{'company':company,"f": AttendanceFilters() })
 
 @login_required
 def attendance_pivot(request):
 
     if not request.user.is_superuser:
         return render(request, "404.html")
+    
+    qs =Attendance.objects.all()
+    filter_obj = AttendanceFilters(request.GET, queryset=qs)
+    qs = filter_obj.qs
 
-    data = Attendance.objects.values(
-        "employee_id__employee_first_name",
-        "employee_id__employee_last_name",
-        "attendance_date",
-        "attendance_clock_in",
-        "attendance_clock_out",
-        "attendance_worked_hour",
-        "minimum_hour",
-        "attendance_overtime",
-        "at_work_second",
-        "work_type_id__work_type",
-        "shift_id__employee_shift",
-        "attendance_day__day",
-        "employee_id__gender",
-        "employee_id__email",
-        "employee_id__phone",
-        "employee_id__employee_work_info__department_id__department",
-        "employee_id__employee_work_info__job_role_id__job_role",
-        "employee_id__employee_work_info__job_position_id__job_position",
-        "employee_id__employee_work_info__employee_type_id__employee_type",
-        "employee_id__employee_work_info__experience",
-    )
+    data = list(qs.values(
+        'employee_id__employee_first_name','employee_id__employee_last_name','attendance_date','attendance_clock_in','attendance_clock_out',
+        'attendance_worked_hour','minimum_hour','attendance_overtime','at_work_second','work_type_id__work_type','shift_id__employee_shift',
+        'attendance_day__day','employee_id__gender','employee_id__email','employee_id__phone','employee_id__employee_work_info__department_id__department', 
+        'employee_id__employee_work_info__job_role_id__job_role','employee_id__employee_work_info__company_id__company',
+        'employee_id__employee_work_info__job_position_id__job_position', 'employee_id__employee_work_info__employee_type_id__employee_type',
+        'employee_id__employee_work_info__experience', 'batch_attendance_id__title',
+    ))
     DAY = {
         "monday": "Monday",
         "tuesday": "Tuesday",
@@ -96,53 +91,31 @@ def attendance_pivot(request):
             "Gender": choice_gender.get(item["employee_id__gender"]),
             "Email": item["employee_id__email"],
             "Phone": item["employee_id__phone"],
-            "Department": (
-                item["employee_id__employee_work_info__department_id__department"]
-                if item["employee_id__employee_work_info__department_id__department"]
-                else "-"
-            ),
-            "Job Position": (
-                item["employee_id__employee_work_info__job_position_id__job_position"]
-                if item[
-                    "employee_id__employee_work_info__job_position_id__job_position"
-                ]
-                else "-"
-            ),
-            "Job Role": (
-                item["employee_id__employee_work_info__job_role_id__job_role"]
-                if item["employee_id__employee_work_info__job_role_id__job_role"]
-                else "-"
-            ),
-            "Work Type": (
-                item["work_type_id__work_type"]
-                if item["work_type_id__work_type"]
-                else "-"
-            ),
-            "Shift": (
-                item["shift_id__employee_shift"]
-                if item["shift_id__employee_shift"]
-                else "-"
-            ),
+            "Department": item["employee_id__employee_work_info__department_id__department"] if item["employee_id__employee_work_info__department_id__department"] else "-",
+            "Job Position": item["employee_id__employee_work_info__job_position_id__job_position"] if item["employee_id__employee_work_info__job_position_id__job_position"] else "-",
+            "Job Role": item["employee_id__employee_work_info__job_role_id__job_role"] if item["employee_id__employee_work_info__job_role_id__job_role"] else "-",
+            "Work Type": item["work_type_id__work_type"] if item["work_type_id__work_type"] else "-",
+            "Shift": item["shift_id__employee_shift"] if item["shift_id__employee_shift"] else "-",
             "Experience": item["employee_id__employee_work_info__experience"],
-            "Attendance Date": item["attendance_date"],
-            "Attendance Day": DAY.get(item["attendance_day__day"]),
-            "Clock-in": format_time(item["attendance_clock_in"]),
-            "Clock-out": format_time(item["attendance_clock_out"]),
-            "At Work": format_seconds_to_time(item["at_work_second"]),
-            "Worked Hour": item["attendance_worked_hour"],
-            "Minimum Hour": item["minimum_hour"],
-            "Overtime": item["attendance_overtime"],
+            "Attendance Date": item['attendance_date'],
+            "Attendance Day": DAY.get(item['attendance_day__day']),
+            "Clock-in": format_time(item['attendance_clock_in']),
+            "Clock-out": format_time(item['attendance_clock_out']),
+            "At Work": format_seconds_to_time(item['at_work_second']),
+            "Worked Hour": item['attendance_worked_hour'],
+            "Minimum Hour": item['minimum_hour'],
+            "Overtime": item['attendance_overtime'],
+            "Batch":item['batch_attendance_id__title'] if item['batch_attendance_id__title'] else "-",
+            "Company":item['employee_id__employee_work_info__company_id__company'],
+
             # For correct total
-            "Clock-in Decimal": convert_time_to_decimal(item["attendance_clock_in"]),
+            "Clock-in Decimal": convert_time_to_decimal(item["attendance_clock_in"]),  
             "Clock-out Decimal": convert_time_to_decimal(item["attendance_clock_out"]),
-            "At Work Decimal": convert_time_to_decimal_w(
-                format_seconds_to_time(item["at_work_second"])
-            ),
-            "Worked Hour Decimal": convert_time_to_decimal_w(
-                item["attendance_worked_hour"]
-            ),
-            "Minimum Hour Decimal": convert_time_to_decimal_w(item["minimum_hour"]),
-            "Overtime Decimal": convert_time_to_decimal_w(item["attendance_overtime"]),
+            "At Work Decimal": convert_time_to_decimal_w(format_seconds_to_time(item['at_work_second'])),
+            "Worked Hour Decimal": convert_time_to_decimal_w(item["attendance_worked_hour"]), 
+            "Minimum Hour Decimal": convert_time_to_decimal_w(item["minimum_hour"]), 
+            "Overtime Decimal": convert_time_to_decimal_w(item['attendance_overtime']),
+
         }
         for item in data
     ]
@@ -165,3 +138,4 @@ def format_seconds_to_time(seconds):
         return f"{hours:02}:{minutes:02}"
     except (ValueError, TypeError):
         return "00:00"
+

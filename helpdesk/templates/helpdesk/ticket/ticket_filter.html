@@ -2,7 +2,7 @@
 <!-- start of filter  -->
 <form
     hx-get="{% url 'ticket-filter' %}?view={{view}}"
-    hx-target="#ticket_list"
+    hx-target="#ticket_list" 
     id="filterForm"
     class="d-flex"
     onsubmit="event.preventDefault()"
@@ -187,4 +187,4 @@
 			$(".filterButton")[0].click();
 		});
 	{% comment %} }); {% endcomment %}
-</script>
+</script> 

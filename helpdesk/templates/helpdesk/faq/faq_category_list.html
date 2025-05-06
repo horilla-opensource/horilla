@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n static %} 
 {% include 'filter_tags.html' %}
 <div class="oh-faq-cards">
     {% for category in faq_categories %}
@@ -38,7 +38,7 @@
                                 >{% trans "Edit" %}</a
                             >
                         </li>
-                        {% endif %}
+                        {% endif %} 
                         {% if perms.helpdesk.delete_faqcategory %}
                         <li class="oh-dropdown__item">
                             <form

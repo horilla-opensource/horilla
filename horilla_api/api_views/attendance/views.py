@@ -1,36 +1,26 @@
-from datetime import date, datetime, timedelta, timezone
-
-from django import template
-from django.conf import settings
-from django.core.mail import EmailMessage
-from django.db.models import Case, CharField, F, Value, When
+from django.db.models import Case, Value, When, F, CharField
 from django.http import QueryDict
-from django.shortcuts import get_object_or_404
-from django.utils.decorators import method_decorator
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
+from attendance.models import AttendanceActivity
 from rest_framework.views import APIView
-
-from attendance.models import Attendance, AttendanceActivity, EmployeeShiftDay
-from attendance.views.clock_in_out import *
-from attendance.views.clock_in_out import clock_out
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from datetime import date, datetime, timedelta, timezone
+from attendance.models import EmployeeShiftDay
 from attendance.views.dashboard import (
     find_expected_attendances,
     find_late_come,
     find_on_time,
 )
 from attendance.views.views import *
-from base.backends import ConfiguredEmailBackend
-from base.methods import generate_pdf, is_reportingmanager
+from attendance.views.clock_in_out import *
+from django.shortcuts import get_object_or_404
+from rest_framework.response import Response
+from attendance.models import Attendance
+from base.methods import is_reportingmanager
 from base.models import HorillaMailTemplate
-from employee.filters import EmployeeFilter
-
-from ...api_decorators.base.decorators import (
-    manager_permission_required,
-    permission_required,
-)
+from ...api_decorators.base.decorators import manager_permission_required,permission_required
 from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
+from employee.filters import EmployeeFilter
 from ...api_serializers.attendance.serializers import (
     AttendanceActivitySerializer,
     AttendanceLateComeEarlyOutSerializer,
@@ -39,6 +29,14 @@ from ...api_serializers.attendance.serializers import (
     AttendanceSerializer,
     MailTemplateSerializer,
 )
+from rest_framework.pagination import PageNumberPagination
+from django.utils.decorators import method_decorator
+from django.conf import settings
+from django.core.mail import EmailMessage
+from base.backends import ConfiguredEmailBackend
+from django import template
+from base.methods import generate_pdf
+from attendance.views.clock_in_out  import clock_out
 
 # Create your views here.
 
@@ -133,11 +131,11 @@ class ClockOutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-
+        
         current_date = date.today()
         current_time = datetime.now().time()
         current_datetime = datetime.now()
-
+        
         try:
             clock_out(
                 Request(
@@ -146,11 +144,13 @@ class ClockOutAPIView(APIView):
                     time=current_time,
                     datetime=current_datetime,
                 )
-            )
+            )        
             return Response({"message": "Clocked-Out"}, status=200)
 
         except Exception as error:
-            logger.error("Got an error in clock_out", error)
+            logger.error(
+                "Got an error in clock_out", error
+            )
         return Response({"message": "Clocked-Out"}, status=200)
 
 
@@ -223,22 +223,15 @@ class AttendanceView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
-        employee_id = request.data.get("employee_id")
-        attendance_date = request.data.get("attendance_date", date.today())
-        if Attendance.objects.filter(
-            employee_id=employee_id, attendance_date=attendance_date
-        ).exists():
-            return Response(
-                {
-                    "error": [
-                        "Attendance for this employee on the current date already exists."
-                    ]
-                },
-                status=400,
-            )
+        employee_id = request.data.get('employee_id')
+        attendance_date = request.data.get('attendance_date', date.today())
+        if Attendance.objects.filter(employee_id=employee_id, attendance_date=attendance_date).exists():
+            return Response({"error":["Attendance for this employee on the current date already exists."]},status=400)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(permission_required("attendance.change_attendance"))
+    @method_decorator(
+        permission_required("attendance.change_attendance")
+    )
     def put(self, request, pk):
         try:
             attendance = Attendance.objects.get(id=pk)
@@ -265,7 +258,9 @@ class AttendanceView(APIView):
                 }
         return Response(serializer_errors, status=400)
 
-    @method_decorator(permission_required("attendance.delete_attendance"))
+    @method_decorator(
+        permission_required("attendance.delete_attendance")
+    )
     def delete(self, request, pk):
         attendance = Attendance.objects.get(id=pk)
         month = attendance.attendance_date
@@ -409,19 +404,10 @@ class AttendanceRequestView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
-        employee_id = request.data.get("employee_id")
-        attendance_date = request.data.get("attendance_date", date.today())
-        if Attendance.objects.filter(
-            employee_id=employee_id, attendance_date=attendance_date
-        ).exists():
-            return Response(
-                {
-                    "error": [
-                        "Attendance for this employee on the current date already exists."
-                    ]
-                },
-                status=400,
-            )
+        employee_id = request.data.get('employee_id')
+        attendance_date = request.data.get('attendance_date', date.today())
+        if Attendance.objects.filter(employee_id=employee_id, attendance_date=attendance_date).exists():
+            return Response({"error":["Attendance for this employee on the current date already exists."]},status=400)
         return Response(serializer.errors, status=404)
 
     @manager_permission_required("attendance.update_attendance")
@@ -599,7 +585,10 @@ class AttendanceOverTimeView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(permission_required("attendance.delete_attendanceovertime"))
+    @method_decorator(
+        permission_required(
+            "attendance.delete_attendanceovertime")
+    )
     def delete(self, request, pk):
         attendance = get_object_or_404(AttendanceOverTime, pk=pk)
         attendance.delete()

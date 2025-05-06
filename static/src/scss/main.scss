@@ -1,0 +1,35 @@
+@charset "UTF-8";
+
+// 1. Configuration and helpers
+@import "abstracts/variables", "abstracts/functions", "abstracts/mixins";
+
+// 2. Vendors
+@import "vendors/normalize", "vendors/orgchart", "vendors/bootstrap/bootstrap";
+
+// 3. Base stuff
+@import "base/base", "base/fonts", "base/typography", "base/helpers";
+
+// 4. Layout-related sections
+@import "layout/header", "layout/general", "layout/footer";
+
+// 5. Components
+@import "components/accordion", "components/alert", "components/badges",
+  "components/button", "components/card", "components/dropdown",
+  "components/input", "components/kanban", "components/modal",
+  "components/pagination", "components/profile", "components/progress",
+  "components/sidebar", "components/table", "components/tabs",
+  "components/timeoff", "components/tooltip", "components/tag",
+  "components/modal-custom", "components/hands";
+
+// 6. Page-specific styles
+@import "pages/dashboard", "pages/profile", "pages/onboarding", "pages/feedback",
+  "pages/payslip", "pages/auth", "pages/404", "pages/workentry", "pages/chat",
+  "pages/helpdesk", "pages/faq", "pages/survey", "pages/joblist",
+  "pages/announcement";
+
+// 7. Themes
+@import "themes/default";
+
+// 7. Overrides
+@import "overrides/datepicker", "overrides/fullcalendar", "overrides/responsive",
+  "overrides/summernote";

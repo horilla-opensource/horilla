@@ -67,11 +67,11 @@
               </div>
               <div id="profileSearch">
                 {% for object in instances|slice:"6:9" %}
-                <a
+                <a 
                 hx-get="{{object.get_profile_url}}"
                 hx-target="#{{view_id|safe}}"
                 hx-swap="outerHTML"
-                  ><img
+                  ><img 
                     {% if instance.pk == object.pk %} class="active" {% endif %}
                     style="border-radius :30px ;overflow :hidden;"
                     src="{{object.get_avatar}}" />
@@ -85,12 +85,12 @@
 
         </ul>
       </div>
-
+    
       <div class="d-flex align-items-center gap-3">
         {% if instances %}
         <div class="container-right-left-arrows float-right">
           <a
-
+            
           hx-get="{{previous_url}}?instance_ids={{instance_ids}}"
           {% if push_url %}
           hx-push-url = "{{object.get_push_url}}"
@@ -128,7 +128,7 @@
               aria-label="arrow forward circle outline"
             ></ion-icon>
           </a>
-
+         
         </div>
         {% endif %}
         {% if actions %}
@@ -270,7 +270,7 @@
     </div>
   </div>
   <script>
-    $(".oh-general__tab-link").click(function (e) {
+    $(".oh-general__tab-link").click(function (e) { 
       var target = `[data-target="${$(this).attr('data-target')}"]`
       e.preventDefault();
       $.ajax({
@@ -281,7 +281,7 @@
           "target":target,
         },
         success: function (response) {
-
+          
         }
       });
     });
@@ -323,6 +323,6 @@
         }
       }
     };
-
+    
   </script>
 </div>

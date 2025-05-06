@@ -3,10 +3,12 @@ horilla_views/urls.py
 """
 
 from django.urls import path
-
 from horilla_views import views
+from horilla_views.generic.cbv.views import (
+    ReloadMessages,
+)
 from horilla_views.generic.cbv import history
-from horilla_views.generic.cbv.views import ReloadMessages
+
 
 urlpatterns = [
     path("toggle-columns", views.ToggleColumn.as_view(), name="toggle-columns"),
