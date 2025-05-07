@@ -19,6 +19,7 @@ from django.utils.translation import gettext_lazy as _
 
 from employee.models import Employee
 from horilla.horilla_middlewares import _thread_locals
+from horilla.models import HorillaModel
 from horilla_views.cbv_methods import render_template
 
 # Create your models here.
@@ -43,7 +44,7 @@ def validate_time_format(value):
         raise ValidationError(_("Invalid format")) from error
 
 
-class Project(models.Model):
+class Project(HorillaModel):
     PROJECT_STATUS = [
         ("new", "New"),
         ("in_progress", "In Progress"),
@@ -52,28 +53,28 @@ class Project(models.Model):
         ("cancelled", "Cancelled"),
         ("expired", "Expired"),
     ]
-    title = models.CharField(max_length=200, unique=True, verbose_name="Name")
+    title = models.CharField(max_length=200, unique=True, verbose_name=_("Name"))
     managers = models.ManyToManyField(
         Employee,
         blank=True,
         related_name="project_managers",
-        verbose_name="Project Managers",
+        verbose_name=_("Project Managers"),
     )
     members = models.ManyToManyField(
         Employee,
         blank=True,
         related_name="project_members",
-        verbose_name="Project Members",
+        verbose_name=_("Project Members"),
     )
-    status = models.CharField(choices=PROJECT_STATUS, max_length=250, default="new")
-    start_date = models.DateField()
-    end_date = models.DateField(null=True, blank=True)
+    status = models.CharField(
+        choices=PROJECT_STATUS, max_length=250, default="new", verbose_name=_("Status")
+    )
+    start_date = models.DateField(verbose_name=_("Start Date"))
+    end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     document = models.FileField(
-        upload_to="project/files", blank=True, null=True, verbose_name="Project File"
+        upload_to="project/files", blank=True, null=True, verbose_name=_("Project File")
     )
-    is_active = models.BooleanField(default=True)
-    description = models.TextField()
-    objects = models.Manager()
+    description = models.TextField(verbose_name=_("Description"))
 
     def get_description(self, length=50):
         """
@@ -190,7 +191,7 @@ class Project(models.Model):
         This method to get delete url
         """
         url = reverse_lazy("delete-project", kwargs={"project_id": self.pk})
-        message = "Are you sure you want to delete this project?"
+        message = _("Are you sure you want to delete this project?")
         return f"'{url}'" + "," + f"'{message}'"
 
     def actions(self):
@@ -238,22 +239,31 @@ class Project(models.Model):
     def status_column(self):
         return dict(self.PROJECT_STATUS).get(self.status)
 
+    class Meta:
+        """
+        Meta class to add the additional info
+        """
 
-class ProjectStage(models.Model):
+        verbose_name = _("Project")
+        verbose_name_plural = _("Projects")
+
+
+class ProjectStage(HorillaModel):
     """
     ProjectStage model
     """
 
-    title = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, verbose_name=_("Title"))
     project = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
         null=True,
         blank=True,
         related_name="project_stages",
+        verbose_name=_("Project"),
     )
     sequence = models.IntegerField(null=True, blank=True, editable=False)
-    is_end_stage = models.BooleanField(default=False)
+    is_end_stage = models.BooleanField(default=False, verbose_name=_("Is end stage"))
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -300,46 +310,50 @@ class ProjectStage(models.Model):
         """
 
         unique_together = ["project", "title"]
+        verbose_name = _("Project Stage")
+        verbose_name_plural = _("Project Stages")
 
 
-class Task(models.Model):
+class Task(HorillaModel):
     """
     Task model
     """
 
     TASK_STATUS = [
-        ("to_do", "To Do"),
-        ("in_progress", "In Progress"),
-        ("completed", "Completed"),
-        ("expired", "Expired"),
+        ("to_do", _("To Do")),
+        ("in_progress", _("In Progress")),
+        ("completed", _("Completed")),
+        ("expired", _("Expired")),
     ]
-    title = models.CharField(max_length=200)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=200, verbose_name=_("Title"))
+    project = models.ForeignKey(
+        Project, on_delete=models.CASCADE, null=True, verbose_name=_("Project")
+    )
     stage = models.ForeignKey(
         ProjectStage,
         on_delete=models.CASCADE,
         null=True,
         related_name="tasks",
-        verbose_name="Project Stage",
+        verbose_name=_("Project Stage"),
     )
     task_managers = models.ManyToManyField(
         Employee,
         blank=True,
-        verbose_name="Task Managers",
+        verbose_name=_("Task Managers"),
     )
     task_members = models.ManyToManyField(
-        Employee, blank=True, related_name="tasks", verbose_name="Task Members"
+        Employee, blank=True, related_name="tasks", verbose_name=_("Task Members")
     )
-    status = models.CharField(choices=TASK_STATUS, max_length=250, default="to_do")
-    start_date = models.DateField(null=True, blank=True)
-    end_date = models.DateField(null=True, blank=True)
+    status = models.CharField(
+        choices=TASK_STATUS, max_length=250, default="to_do", verbose_name=_("Status")
+    )
+    start_date = models.DateField(null=True, blank=True, verbose_name=_("Start Date"))
+    end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     document = models.FileField(
-        upload_to="task/files", blank=True, null=True, verbose_name="Task File"
+        upload_to="task/files", blank=True, null=True, verbose_name=_("Task File")
     )
-    is_active = models.BooleanField(default=True)
-    description = models.TextField()
+    description = models.TextField(verbose_name=_("Description"))
     sequence = models.IntegerField(default=0)
-    objects = models.Manager()
 
     def clean(self) -> None:
         if self.end_date is not None and self.project.end_date is not None:
@@ -363,6 +377,8 @@ class Task(models.Model):
         """
 
         unique_together = ["project", "title"]
+        verbose_name = _("Task")
+        verbose_name_plural = _("Tasks")
 
     def __str__(self):
         return f"{self.title}"
@@ -492,37 +508,37 @@ class Task(models.Model):
 
         url = reverse("delete-task", kwargs={"task_id": self.pk})
         url_with_params = f"{url}?task_all=true"
-        message = "Are you sure you want to delete this task?"
+        message = _("Are you sure you want to delete this task?")
         return f"'{url_with_params}'" + "," + f"'{message}'"
 
 
-class TimeSheet(models.Model):
+class TimeSheet(HorillaModel):
     """
     TimeSheet model
     """
 
     TIME_SHEET_STATUS = [
-        ("in_Progress", "In Progress"),
-        ("completed", "Completed"),
+        ("in_Progress", _("In Progress")),
+        ("completed", _("Completed")),
     ]
     project_id = models.ForeignKey(
         Project,
         on_delete=models.CASCADE,
         null=True,
         related_name="project_timesheet",
-        verbose_name="Project",
+        verbose_name=_("Project"),
     )
     task_id = models.ForeignKey(
         Task,
         on_delete=models.CASCADE,
         null=True,
         related_name="task_timesheet",
-        verbose_name="Task",
+        verbose_name=_("Task"),
     )
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
-        verbose_name="Employee",
+        verbose_name=_("Employee"),
     )
     date = models.DateField(default=timezone.now)
     time_spent = models.CharField(
@@ -530,13 +546,15 @@ class TimeSheet(models.Model):
         default="00:00",
         max_length=10,
         validators=[validate_time_format],
-        verbose_name="Hours Spent",
+        verbose_name=_("Hours Spent"),
     )
     status = models.CharField(
-        choices=TIME_SHEET_STATUS, max_length=250, default="in_Progress"
+        choices=TIME_SHEET_STATUS,
+        max_length=250,
+        default="in_Progress",
+        verbose_name=_("Status"),
     )
-    description = models.TextField(blank=True, null=True)
-    objects = models.Manager()
+    description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
 
     class Meta:
         ordering = ("-id",)
@@ -606,7 +624,7 @@ class TimeSheet(models.Model):
         This method to get delete url
         """
         url = reverse_lazy("delete-time-sheet", kwargs={"time_sheet_id": self.pk})
-        message = "Are you sure you want to delete this time sheet?"
+        message = _("Are you sure you want to delete this time sheet?")
         return f"'{url}'" + "," + f"'{message}'"
 
     def detail_view(self):
@@ -615,3 +633,7 @@ class TimeSheet(models.Model):
         """
         url = reverse("time-sheet-detail-view", kwargs={"pk": self.pk})
         return url
+
+    class Meta:
+        verbose_name = _("TimeSheet")
+        verbose_name_plural = _("TimeSheets")
