@@ -10,6 +10,7 @@ from recruitment.models import (
     Candidate,
     CandidateRating,
     InterviewSchedule,
+    LinkedInAccount,
     Recruitment,
     RecruitmentSurvey,
     RecruitmentSurveyAnswer,
@@ -28,3 +29,4 @@ admin.site.register(RecruitmentSurvey)
 admin.site.register(CandidateRating)
 admin.site.register(SkillZone)
 admin.site.register(InterviewSchedule)
+admin.site.register(LinkedInAccount)

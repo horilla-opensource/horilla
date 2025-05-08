@@ -1,0 +1,35 @@
+{% load i18n %}
+<div onclick="event.stopPropagation();" class="oh-btn-group">
+    <button
+      class="oh-btn oh-btn--light-bkg w-100"
+      title="{% trans 'Check Connection' %}"
+      hx-get="{% url 'val-linkedin' instance.id %}?{{pd}}"
+      hx-target="#genericModalBody"
+    >
+    <ion-icon name="repeat-outline"></ion-icon>
+    </button>
+    {% if perms.recruitment.change_linkedinaccount %}
+    <button
+      class="oh-btn oh-btn--light-bkg w-100"
+      title="{% trans 'Edit' %}"
+      data-toggle="oh-modal-toggle"
+      data-target="#genericModal"
+      hx-get="{% url 'update-linkedin-account' instance.id %}?{{pd}}"
+      hx-target="#genericModalBody"
+    >
+      <ion-icon name="create-outline"></ion-icon>
+    </button>
+    {% endif %}
+    {% if perms.recruitment.delete_linkedinaccount %}
+    <a
+      class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+      id="delete-link"
+      hx-confirm="{% trans 'Do you want to delete the linkedin account?' %}"
+      hx-post="{% url 'delete-linkedin-account' instance.id %}"
+      hx-target="#listContainer"
+      title="{% trans 'Delete' %}"
+    >
+      <ion-icon name="trash-outline"></ion-icon>
+    </a>
+    {% endif %}
+</div>

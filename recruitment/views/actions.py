@@ -29,6 +29,7 @@ from recruitment.decorators import (
 from recruitment.filters import StageFilter
 from recruitment.forms import StageCreationForm
 from recruitment.models import Candidate, Recruitment, Stage, StageNote
+from recruitment.views.linkedin import delete_post
 from recruitment.views.paginator_qry import paginator_qry
 
 
@@ -66,8 +67,14 @@ def recruitment_delete(request, rec_id):
                         candidate_permission.id
                     )
         try:
+            if delete_post(recruitment_obj):
+                messages.success(request, _("Recruitment deleted successfully."))
+            else:
+                messages.info(
+                    request, _("Couldn’t delete the recruitment post from LinkedIn.")
+                )
             recruitment_obj.delete()
-            messages.success(request, _("Recruitment deleted successfully."))
+
         except ProtectedError as e:
             model_verbose_name_sets = set()
             for obj in e.protected_objects:

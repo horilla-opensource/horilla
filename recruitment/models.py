@@ -12,6 +12,7 @@ from datetime import date
 from uuid import uuid4
 
 import django
+import requests
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -20,6 +21,8 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
+from django.http import JsonResponse
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -28,6 +31,7 @@ from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_views.cbv_methods import render_template
 
 # Create your models here.
 
@@ -161,6 +165,21 @@ class Recruitment(HorillaModel):
     start_date = models.DateField(default=django.utils.timezone.now)
     end_date = models.DateField(blank=True, null=True)
     skills = models.ManyToManyField(Skill, blank=True)
+    linkedin_account_id = models.ForeignKey(
+        "recruitment.LinkedInAccount",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        verbose_name=_("LinkedIn Account"),
+    )
+    linkedin_post_id = models.CharField(max_length=150, null=True, blank=True)
+    publish_in_linkedin = models.BooleanField(
+        default=True,
+        help_text=_(
+            "To publish a recruitment in Linkedin, if active is false then it \
+            will not post on LinkedIn."
+        ),
+    )
     objects = HorillaCompanyManager()
     default = models.manager.Manager()
     optional_profile_image = models.BooleanField(
@@ -223,6 +242,9 @@ class Recruitment(HorillaModel):
         return super().clean()
 
     def save(self, *args, **kwargs):
+        if not self.publish_in_linkedin:
+            self.linkedin_account_id = None
+            self.linkedin_post_id = None
         super().save(*args, **kwargs)  # Save the Recruitment instance first
         if self.is_event_based and self.open_positions is None:
             raise ValidationError({"open_positions": _("This field is required")})
@@ -1020,3 +1042,48 @@ class CandidateDocument(HorillaModel):
                 raise ValidationError(
                     {"document": _("Please upload {} file only.").format(format)}
                 )
+
+
+class LinkedInAccount(HorillaModel):
+    username = models.CharField(max_length=250, verbose_name="Username")
+    email = models.EmailField(max_length=254, verbose_name=_("Email"))
+    api_token = models.CharField(max_length=500, verbose_name="API Token")
+    sub_id = models.CharField(max_length=250, unique=True)
+    company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return str(self.username)
+
+    def clean(self, *args, **kwargs):
+        super().clean(*args, **kwargs)
+        url = "https://api.linkedin.com/v2/userinfo"
+        headers = {"Authorization": f"Bearer {self.api_token}"}
+
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            data = response.json()
+            if not data["email"] == self.email:
+                raise ValidationError({"email": _("Email mismatched.")})
+            self.sub_id = response.json()["sub"]
+        else:
+            raise ValidationError(_("Check the credentials"))
+
+    def action_template(self):
+        """
+        This method for get custom column for managers.
+        """
+        return render_template(
+            path="linkedin/linkedin_action.html",
+            context={"instance": self},
+        )
+
+    def is_active_toggle(self):
+        """
+        For toggle is_active field
+        """
+        url = f"update-isactive-linkedin-account/{self.id}"
+        return render_template(
+            path="is_active_toggle.html",
+            context={"instance": self, "url": url},
+        )

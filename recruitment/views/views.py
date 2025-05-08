@@ -104,6 +104,7 @@ from recruitment.models import (
     CandidateDocument,
     CandidateRating,
     InterviewSchedule,
+    LinkedInAccount,
     Recruitment,
     RecruitmentGeneralSetting,
     RecruitmentSurvey,
@@ -116,6 +117,7 @@ from recruitment.models import (
     StageFiles,
     StageNote,
 )
+from recruitment.views.linkedin import delete_post, post_recruitment_in_linkedin
 from recruitment.views.paginator_qry import paginator_qry
 
 
@@ -248,6 +250,13 @@ def recruitment(request):
             recruitment_obj.open_positions.set(
                 JobPosition.objects.filter(id__in=form.data.getlist("open_positions"))
             )
+            if (
+                recruitment_obj.publish_in_linkedin
+                and recruitment_obj.linkedin_account_id
+            ):
+                post_recruitment_in_linkedin(
+                    request, recruitment_obj, recruitment_obj.linkedin_account_id
+                )
             for survey in form.cleaned_data["survey_templates"]:
                 for sur in survey.recruitmentsurvey_set.all():
                     sur.recruitment_ids.add(recruitment_obj)
@@ -348,6 +357,15 @@ def recruitment_update(request, rec_id):
                 for sur in survey.recruitmentsurvey_set.all():
                     sur.recruitment_ids.add(recruitment_obj)
             recruitment_obj.save()
+            if len(form.changed_data) > 0:
+                if (
+                    recruitment_obj.publish_in_linkedin
+                    and recruitment_obj.linkedin_account_id
+                ):
+                    delete_post(recruitment_obj)
+                    post_recruitment_in_linkedin(
+                        request, recruitment_obj, recruitment_obj.linkedin_account_id
+                    )
             messages.success(request, _("Recruitment Updated."))
             response = render(
                 request, "recruitment/recruitment_form.html", {"form": form}
