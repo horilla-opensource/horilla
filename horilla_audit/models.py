@@ -3,6 +3,7 @@ models.py
 """
 
 from collections.abc import Iterable
+
 from django.db import models
 from django.dispatch import receiver
 from django.urls import reverse_lazy
@@ -12,17 +13,14 @@ from simple_history.models import (
     _history_user_getter,
     _history_user_setter,
 )
-from simple_history.signals import (
+from simple_history.signals import (  # pre_create_historical_m2m_records,; post_create_historical_m2m_records,
     post_create_historical_record,
     pre_create_historical_record,
-    # pre_create_historical_m2m_records,
-    # post_create_historical_m2m_records,
 )
 
 # from employee.models import Employee
 from horilla.models import HorillaModel
 from horilla_audit.methods import remove_duplicate_history
-
 
 # Create your models here.
 
@@ -50,7 +48,6 @@ class AuditTag(models.Model):
         return yes or no based on highlight true or false
         """
         return "Yes" if self.highlight else "No"
-    
 
     def get_update_url(self):
         """
@@ -58,20 +55,21 @@ class AuditTag(models.Model):
         """
         url = reverse_lazy("settings-audit-tag-update", kwargs={"pk": self.pk})
         return url
-    
+
     def get_delete_url(self):
         """
         This method to get delete url
         """
         url = reverse_lazy("audit-tag-delete", kwargs={"obj_id": self.pk})
         return url
-    
+
     def get_delete_instance(self):
         """
         to get instance for delete
         """
 
         return self.pk
+
 
 class HorillaAuditInfo(models.Model):
     """

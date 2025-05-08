@@ -10,7 +10,7 @@
   display: none;
   transition: all 0.4 ease-in-out;
   @include fade-in(0.2s, 0s);
-  
+
   @media (max-width: 575.98px) {
     padding-left: 0.7rem;
     padding-right: 0.7rem;

@@ -8,16 +8,18 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import filter_own_and_subordinate_recordes, is_reportingmanager
-from employee.forms import EmployeeForm
+from employee.models import Employee
 from horilla import horilla_middlewares
-from horilla.decorators import login_required, permission_required
+from horilla.decorators import login_required, owner_can_enter, permission_required
 from horilla_views.generic.cbv import views
 from pms import models
 from pms.filters import BonusPointSettingFilter, EmployeeBonusPointFilter
 from pms.forms import (
     BonusPointSettingForm,
+    BulkFeedbackForm,
     EmployeeBonusPointForm,
     EmployeeFeedbackForm,
+    FeedbackForm,
 )
 from pms.methods import check_duplication
 
@@ -275,10 +277,7 @@ class EmployeeBonusPointListView(views.HorillaListView):
 ####################### Feedback ########################################
 
 
-# @method_decorator(login_required, name="dispatch")
-# @method_decorator(
-#     permission_required("pms.change_feedback"), name="dispatch"
-# )
+@method_decorator(login_required, name="dispatch")
 class FeedbackEmployeeFormView(views.HorillaFormView):
     """
     Feedback other employee form View
@@ -301,7 +300,7 @@ class FeedbackEmployeeFormView(views.HorillaFormView):
             )
         return super().form_invalid(form)
 
-    def form_valid(self, form: EmployeeForm) -> views.HttpResponse:
+    def form_valid(self, form: EmployeeFeedbackForm) -> views.HttpResponse:
         if form.is_valid():
             message = "Feedback request sent."
             other_employees = check_duplication(
@@ -309,6 +308,90 @@ class FeedbackEmployeeFormView(views.HorillaFormView):
             )
             form.cleaned_data["others_id"] = other_employees
             form.save()
+            messages.success(self.request, _(message))
+            return self.HttpResponse("<script>window.location.reload()</script>")
+        return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("pms.add_feedback"), name="dispatch")
+class BulkFeedbackFormView(views.HorillaFormView):
+    """
+    Feedback other employee form View
+    """
+
+    form_class = BulkFeedbackForm
+    model = models.Feedback
+    view_id = "BulkFeedbackForm"
+    new_display_title = _("Bulk Feedback request ")
+    template_name = "feedback/bulk_feedback_form.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def form_invalid(self, form: Any) -> HttpResponse:
+        if not form.is_valid():
+            errors = form.errors.as_data()
+            return render(
+                self.request, self.template_name, {"form": form, "errors": errors}
+            )
+        return super().form_invalid(form)
+
+    def form_valid(self, form: BulkFeedbackForm) -> views.HttpResponse:
+        if form.is_valid():
+            message = "Bulk Feedback request sent."
+            cleaned_data = form.cleaned_data
+            employees = cleaned_data["employee_ids"]
+            for employee in employees:
+                reporting_manager = employee.get_reporting_manager()
+                manager_id = (
+                    reporting_manager if cleaned_data["include_manager"] else None
+                )
+                data = {
+                    "review_cycle": f"{cleaned_data['title']}-{employee} feedback",
+                    "employee_id": employee,
+                    "manager_id": manager_id,
+                    "question_template_id": cleaned_data["question_template_id"],
+                    "start_date": cleaned_data["start_date"],
+                    "end_date": cleaned_data["end_date"],
+                    "cyclic_feedback": cleaned_data["cyclic_feedback"],
+                    "cyclic_feedback_days_count": cleaned_data[
+                        "cyclic_feedback_days_count"
+                    ],
+                    "cyclic_feedback_period": cleaned_data["cyclic_feedback_period"],
+                    "status": cleaned_data["status"],
+                }
+                feedback_form = FeedbackForm(data)
+                if feedback_form.is_valid():
+                    feedback = feedback_form.save()
+                    if cleaned_data["include_keyresult"]:
+                        keyresults = models.EmployeeKeyResult.objects.filter(
+                            employee_objective_id__employee_id=employee.id
+                        )
+                        feedback.employee_key_results_id.add(*keyresults)
+                    if cleaned_data["include_colleagues"]:
+                        department = employee.get_department()
+                        # employee ids to exclude from collegue list
+                        exclude_ids = [employee.id]
+                        if reporting_manager:
+                            exclude_ids.append(reporting_manager.id)
+                        # Get employees in the same department as the employee
+                        colleagues = Employee.objects.filter(
+                            is_active=True, employee_work_info__department_id=department
+                        ).exclude(id__in=exclude_ids)
+                        feedback.colleague_id.add(*colleagues)
+
+                    if cleaned_data["include_subordinates"]:
+                        subordinates = Employee.objects.filter(
+                            is_active=True,
+                            employee_work_info__reporting_manager_id=employee,
+                        )
+                        feedback.subordinate_id.add(*subordinates)
+                    other_employees = check_duplication(
+                        feedback, cleaned_data["other_employees"]
+                    )
+                    feedback.others_id.add(*other_employees)
             messages.success(self.request, _(message))
             return self.HttpResponse("<script>window.location.reload()</script>")
         return super().form_valid(form)

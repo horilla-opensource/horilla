@@ -108,8 +108,6 @@ def question_order_update(request):
     return JsonResponse({"error": "Invalid request method"}, status=405)
 
 
-@login_required
-@is_recruitment_manager(perm="recruitment.view_recruitmentsurvey")
 def candidate_survey(request):
     """
     Used to render survey form to the candidate

@@ -23,7 +23,7 @@
 			{% endif %}
         </div> {% endcomment %}
 		{% comment %} ------------------------------------------------------ {% endcomment %}
-		
+
 		<div
     class="oh-checkpoint-badge mb-2"
     id="selectedInstances"
@@ -32,14 +32,14 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
 </div>
-		
+
 		{% comment %} ---------------------------------------------------- {% endcomment %}
 		{% comment %} {% if department_managers %}
 			{% include 'department_managers/department_managers_view.html' %}
@@ -49,9 +49,9 @@
                 <h5 class="oh-404__subtitle">{% trans "There is no department managers at this moment." %}</h5>
             </div>
         {% endif %} {% endcomment %}
-    {% endif %} 
+    {% endif %}
 
- </div> 
+ </div>
 
 <button id="getDepartmentEmployeesButton" hx-get="{% url "get-department-employee" %}" hx-target="#id_manager" hidden></button>
 <script>

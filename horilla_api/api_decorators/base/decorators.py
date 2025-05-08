@@ -1,12 +1,14 @@
+from functools import wraps
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.permissions import BasePermission
+from rest_framework.response import Response
+
 from base.models import MultipleApprovalManagers
 from employee.models import EmployeeWorkInformation
-from functools import wraps
-from rest_framework.response import Response
-from rest_framework import status
-from django.contrib import messages
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import decorator_with_arguments
 
@@ -41,6 +43,7 @@ def manager_permission_required(perm):
     """
     Decorator for views that checks whether the user has appropriate manager permissions.
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(self, request, *args, **kwargs):
@@ -52,7 +55,9 @@ def manager_permission_required(perm):
                     {"error": "You do not have permission to perform this action."},
                     status=status.HTTP_403_FORBIDDEN,
                 )
+
         return wrapper
+
     return decorator
 
 
@@ -60,6 +65,7 @@ def manager_or_owner_permission_required(model_class, perm):
     """
     Decorator for views that checks whether the user has either manager or owner permissions and a specific permission for a specific object for a given model class.
     """
+
     def decorator(func):
         @wraps(func)
         def wrapper(self, request, pk=None, *args, **kwargs):
@@ -70,14 +76,20 @@ def manager_or_owner_permission_required(model_class, perm):
                     if obj.employee_id == request.user.employee_get:
                         return func(self, request, pk, *args, **kwargs)
                 except model_class.DoesNotExist:
-                    return Response({"error": f"{model_class.__name__} does not exist"}, status=status.HTTP_404_NOT_FOUND)
+                    return Response(
+                        {"error": f"{model_class.__name__} does not exist"},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
             else:
-                if request.data.get('employee_id', None) == request.user.employee_get.id:
+                if (
+                    request.data.get("employee_id", None)
+                    == request.user.employee_get.id
+                ):
                     return func(self, request, *args, **kwargs)
             # If not the owner, check for manager permission
             permission = ManagerPermission()
             if permission.has_permission(request, perm) and pk:
-                return func(self, request,pk, *args, **kwargs)
+                return func(self, request, pk, *args, **kwargs)
             elif permission.has_permission(request, perm) and pk == None:
                 return func(self, request, *args, **kwargs)
             else:
@@ -92,17 +104,26 @@ def manager_or_owner_permission_required(model_class, perm):
 
 
 def check_approval_status(model, perm):
-    """ checking the object approval status """
+    """checking the object approval status"""
+
     def decorator(func):
         @wraps(func)
         def wrapper(self, request, pk, *args, **kwargs):
-            object = model.objects.filter(id = pk).first()
+            object = model.objects.filter(id=pk).first()
             if object.approved:
-                return Response({"error":f"Approved {model.__name__} can't preform this action "},status=400)
+                return Response(
+                    {"error": f"Approved {model.__name__} can't preform this action "},
+                    status=400,
+                )
             if object.canceled:
-                return Response({"error":f"Canceled {model.__name__} can't preform this action "},status=400)
-            return func(self, request, pk ,*args, **kwargs)
+                return Response(
+                    {"error": f"Canceled {model.__name__} can't preform this action "},
+                    status=400,
+                )
+            return func(self, request, pk, *args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
@@ -111,6 +132,7 @@ def permission_required(function, perm):
     """
     Decorator to validate user permissions
     """
+
     def _function(self, *args, **kwargs):
         request = getattr(_thread_locals, "request")
         if not getattr(self, "request", None):
@@ -118,5 +140,6 @@ def permission_required(function, perm):
         if request.user.has_perm(perm):
             return function(self, *args, **kwargs)
         else:
-            return Response({"message":"No permission"},status=401)
+            return Response({"message": "No permission"}, status=401)
+
     return _function

@@ -21,7 +21,37 @@
     <div class="oh-main__titlebar oh-main__titlebar--right">
 
       <div class="oh-main__titlebar-button-container">
-
+        {% if perms.pms.add_feedback %}
+          <div class="oh-btn-group ml-2">
+            <div class="oh-dropdown" x-data="{open: false}">
+              <button
+                onclick="event.preventDefault()"
+                class="oh-btn oh-btn--dropdown oh-btn oh-btn--shadow"
+                @click="open = !open"
+                @click.outside="open = false"
+              >
+                {% trans "Actions" %}
+              </button>
+              <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open"
+              style="display: none;"
+            >
+                <ul class="oh-dropdown__items">
+                  <li class="oh-dropdown__item">
+                    <a
+                      data-toggle="oh-modal-toggle"
+                      data-target="#objectCreateModal"
+                      hx-get="{% url "bulk-feedback-create" %}"
+                      hx-target="#objectCreateModalTarget"
+                      class="oh-dropdown__link"
+                      id="bulkfeedback"
+                      >{% trans "Bulk Feedback" %}</a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        {% endif %}
         <!-- checking  user permission for objective creation -->
         {% if perms.pms.add_feedback or request.user|filtersubordinates %}
         <div class="oh-btn-group ml-2">

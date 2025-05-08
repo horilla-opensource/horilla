@@ -317,4 +317,3 @@ class FAQ(HorillaModel):
     class Meta:
         verbose_name = _("FAQ")
         verbose_name_plural = _("FAQs")
-

@@ -5,7 +5,9 @@ This module is used to write horilla form select widgets
 """
 
 import uuid
+
 from django import forms
+
 from horilla import horilla_middlewares
 
 ALL_INSTANCES = {}
@@ -33,8 +35,8 @@ class HorillaMultiSelectWidget(forms.Widget):
         filter_template_path=None,
         instance=None,
         required=False,
-        form = None,
-        help_text = None,
+        form=None,
+        help_text=None,
         **kwargs
     ) -> None:
         self.filter_route_name = filter_route_name

@@ -1,64 +1,258 @@
-from django.urls import re_path,path
+from django.urls import path, re_path
+
 from ...api_views.base import views
 
 urlpatterns = [
-    path('job-positions/', views.JobPositionView.as_view(), name="api-job_position_detail"),
-    path('job-positions/<int:pk>/', views.JobPositionView.as_view(), name="api-job_position_detail_with_pk"),
-    path('job-roles/', views.JobRoleView.as_view(), name="api-job_roles_details"),
-    path('job-roles/<int:pk>/', views.JobRoleView.as_view(), name="api-job_roles_details_with_pk"),
-    path('companies/', views.CompanyView.as_view(), name="api-companies_detail"),
-    path('companies/<int:pk>/', views.CompanyView.as_view(), name="api-companies_detail_with_pk"),
-    path('departments/', views.DepartmentView.as_view(), name="api-department_detail"),
-    path('departments/<int:pk>/', views.DepartmentView.as_view(), name="api-department_detail_with_pk"),
-    path('worktypes/', views.WorkTypeView.as_view(), name="api-worktype_detail"),
-    path('worktypes/<int:pk>/', views.WorkTypeView.as_view(), name="api-worktype_detail_with_pk"),
-    path('rotating-worktypes/', views.RotatingWorkTypeView.as_view(), name="api-rotating_worktypes_detail"),
-    path('rotating-worktypes/<int:pk>/', views.RotatingWorkTypeView.as_view(), name="api-rotating_worktypes_detail_with_pk"),
-    
-    path('rotating-worktype-assigns/', views.RotatingWorkTypeAssignView.as_view(), name='api-rotating_worktype_assign_detail'),
-    path('individual-rotating-worktypes/', views.IndividualRotatingWorktypesView.as_view(), name='api-individual-worktype'),
-    path('individual-rotating-worktypes/<int:pk>', views.IndividualRotatingWorktypesView.as_view(), name='api-individual-worktype'),
-
-    path('individual-worktype-request/', views.IndividualWorkTypeRequestView.as_view(), name='api-individual-worktype-request'),
-    path('individual-worktype-request/<int:pk>', views.IndividualWorkTypeRequestView.as_view(), name='api-individual-worktype-request'),
-    path('rotating-worktype-assigns/<int:pk>/', views.RotatingWorkTypeAssignView.as_view(), name='api-rotating_worktype_assign_detail_with_pk'),
-    path('employee-shift/', views.EmployeeShiftView.as_view(), name='api-employee_shift_detail'),
-    path('employee-shift/<int:pk>/', views.EmployeeShiftView.as_view(), name='api-employee_shift_detail_with_pk'),
-    path('employee-shift-schedules/', views.EmployeeShiftScheduleView.as_view(), name='api-employee_shift_schedule_detail'),
-    path('employee-shift-schedules/<int:pk>/', views.EmployeeShiftScheduleView.as_view(), name='api-employee_shift_schedule_detail_with_pk'),
-    path('rotating-shifts/', views.RotatingShiftView.as_view(), name='api-rotating_shifts_detail'),
-    path('rotating-shifts/<int:pk>/', views.RotatingShiftView.as_view(), name='api-rotating_shifts_detail_with_pk'),
-    path('rotating-shift-assigns/', views.RotatingShiftAssignView.as_view(), name='api-rotating_shift_assigns_detail'),
-    path('rotating-shift-assigns/<int:pk>/', views.RotatingShiftAssignView.as_view(), name='api-rotating_shift_assigns_detail_with_pk'),
-    path('individual-rotating-shifts/', views.IndividualRotatingShiftView.as_view(), name='api-individual-worktype-request'),
-    path('individual-rotating-shifts/<int:pk>', views.IndividualRotatingShiftView.as_view(), name='api-individual-worktype-request'),
-   
-    path('worktype-requests/', views.WorkTypeRequestView.as_view(), name='api-worktype_requests_detail'),
-    path('worktype-requests/<int:pk>/', views.WorkTypeRequestView.as_view(), name='api-worktype_requests_detail_with_pk'),
-    path('worktype-requests-cancel/<int:pk>/', views.WorkTypeRequestCancelView.as_view(), name='api-worktype_requests_detail_with_pk'),
-    path('worktype-requests-approve/<int:pk>/', views.WorkRequestApproveView.as_view(), name='api-worktype_requests_detail_with_pk'),
-    path('shift-requests/', views.ShiftRequestView.as_view(), name='api-shift_requests_detail'),
-    path('shift-requests/<int:pk>/', views.ShiftRequestView.as_view(), name='api-shift_requests_detail_with_pk'),
-    path('individual-shift-request/', views.IndividualShiftRequestView.as_view(), name='api-individual-worktype-request'),
-    path('individual-shift-request/<int:pk>', views.IndividualShiftRequestView.as_view(), name='api-individual-worktype-request'),
-   
-    path('shift-request-approve/<int:pk>', views.ShiftRequestApproveView.as_view(), name='api-shift-requests-approve'),
-    path('shift-request-bulk-approve', views.ShiftRequestBulkApproveView.as_view(), name='api-shift-request-bulk-approve'),
-    path('shift-request-cancel/<int:pk>', views.ShiftRequestCancelView.as_view(), name='api-shift-request-cancel'),
-    path('shift-request-bulk-cancel', views.ShiftRequestBulkCancelView.as_view(), name='api-shift-request-bulk-cancel'),
-    path('shift-request-delete/<int:pk>', views.ShiftRequestDeleteView.as_view(), name='api-shift-request-delete'),
-    path('shift-request-bulk-delete', views.ShiftRequestDeleteView.as_view(), name='api-shift-request-bulk-delete'),
-    path('shift-request-export', views.ShiftRequestExportView.as_view(), name='api-shift-request-export'),
-    path('shift-request-allocation/<int:id>', views.ShiftRequestAllocationView.as_view(), name='api-shift-request-allocation'),
-    path('work-type-request-export', views.WorkTypeRequestExport.as_view(), name='api-work-type-request-export'),
-    path('rotating-shift-assign-export', views.RotatingShiftAssignExport.as_view(), name='api-rotating-shift-assigns-export'),
-    path('rotating-shift-assign-bulk-archive/<str:status>', views.RotatingShiftAssignBulkArchive.as_view(), name='api-rotating-shift-assigns-archive'),
-    path('rotating-shift-assign-bulk-delete', views.RotatingShiftAssignBulkDelete.as_view(), name='api-rotating-shift-assigns-bulk-delete'),
-    path('rotating-worktype-create-permission-check/<int:id>', views.RotatingWorKTypePermissionCheck.as_view(), name='api-rotating-worktype-create-permission-check'),
-    path('rotating-shift-create-permission-check/<int:id>', views.RotatingShiftPermissionCheck.as_view(), name='api-rotating-shift-create-permission-check'),
-    path('shift-request-approve-permission-check', views.ShiftRequestApprovePermissionCheck.as_view(), name='api-rotating-worktype-create-permission-check'),
-    path('worktype-request-approve-permission-check', views.WorktypeRequestApprovePermissionCheck.as_view(), name='api-rotating-shift-create-permission-check'),
-    path('employee-tab-permission-check', views.EmployeeTabPermissionCheck.as_view(), name='api-rotating-shift-create-permission-check'),
-    path('check-user-level', views.CheckUserLevel.as_view(), name='api-check-user-level'),
-
+    path(
+        "job-positions/",
+        views.JobPositionView.as_view(),
+        name="api-job_position_detail",
+    ),
+    path(
+        "job-positions/<int:pk>/",
+        views.JobPositionView.as_view(),
+        name="api-job_position_detail_with_pk",
+    ),
+    path("job-roles/", views.JobRoleView.as_view(), name="api-job_roles_details"),
+    path(
+        "job-roles/<int:pk>/",
+        views.JobRoleView.as_view(),
+        name="api-job_roles_details_with_pk",
+    ),
+    path("companies/", views.CompanyView.as_view(), name="api-companies_detail"),
+    path(
+        "companies/<int:pk>/",
+        views.CompanyView.as_view(),
+        name="api-companies_detail_with_pk",
+    ),
+    path("departments/", views.DepartmentView.as_view(), name="api-department_detail"),
+    path(
+        "departments/<int:pk>/",
+        views.DepartmentView.as_view(),
+        name="api-department_detail_with_pk",
+    ),
+    path("worktypes/", views.WorkTypeView.as_view(), name="api-worktype_detail"),
+    path(
+        "worktypes/<int:pk>/",
+        views.WorkTypeView.as_view(),
+        name="api-worktype_detail_with_pk",
+    ),
+    path(
+        "rotating-worktypes/",
+        views.RotatingWorkTypeView.as_view(),
+        name="api-rotating_worktypes_detail",
+    ),
+    path(
+        "rotating-worktypes/<int:pk>/",
+        views.RotatingWorkTypeView.as_view(),
+        name="api-rotating_worktypes_detail_with_pk",
+    ),
+    path(
+        "rotating-worktype-assigns/",
+        views.RotatingWorkTypeAssignView.as_view(),
+        name="api-rotating_worktype_assign_detail",
+    ),
+    path(
+        "individual-rotating-worktypes/",
+        views.IndividualRotatingWorktypesView.as_view(),
+        name="api-individual-worktype",
+    ),
+    path(
+        "individual-rotating-worktypes/<int:pk>",
+        views.IndividualRotatingWorktypesView.as_view(),
+        name="api-individual-worktype",
+    ),
+    path(
+        "individual-worktype-request/",
+        views.IndividualWorkTypeRequestView.as_view(),
+        name="api-individual-worktype-request",
+    ),
+    path(
+        "individual-worktype-request/<int:pk>",
+        views.IndividualWorkTypeRequestView.as_view(),
+        name="api-individual-worktype-request",
+    ),
+    path(
+        "rotating-worktype-assigns/<int:pk>/",
+        views.RotatingWorkTypeAssignView.as_view(),
+        name="api-rotating_worktype_assign_detail_with_pk",
+    ),
+    path(
+        "employee-shift/",
+        views.EmployeeShiftView.as_view(),
+        name="api-employee_shift_detail",
+    ),
+    path(
+        "employee-shift/<int:pk>/",
+        views.EmployeeShiftView.as_view(),
+        name="api-employee_shift_detail_with_pk",
+    ),
+    path(
+        "employee-shift-schedules/",
+        views.EmployeeShiftScheduleView.as_view(),
+        name="api-employee_shift_schedule_detail",
+    ),
+    path(
+        "employee-shift-schedules/<int:pk>/",
+        views.EmployeeShiftScheduleView.as_view(),
+        name="api-employee_shift_schedule_detail_with_pk",
+    ),
+    path(
+        "rotating-shifts/",
+        views.RotatingShiftView.as_view(),
+        name="api-rotating_shifts_detail",
+    ),
+    path(
+        "rotating-shifts/<int:pk>/",
+        views.RotatingShiftView.as_view(),
+        name="api-rotating_shifts_detail_with_pk",
+    ),
+    path(
+        "rotating-shift-assigns/",
+        views.RotatingShiftAssignView.as_view(),
+        name="api-rotating_shift_assigns_detail",
+    ),
+    path(
+        "rotating-shift-assigns/<int:pk>/",
+        views.RotatingShiftAssignView.as_view(),
+        name="api-rotating_shift_assigns_detail_with_pk",
+    ),
+    path(
+        "individual-rotating-shifts/",
+        views.IndividualRotatingShiftView.as_view(),
+        name="api-individual-worktype-request",
+    ),
+    path(
+        "individual-rotating-shifts/<int:pk>",
+        views.IndividualRotatingShiftView.as_view(),
+        name="api-individual-worktype-request",
+    ),
+    path(
+        "worktype-requests/",
+        views.WorkTypeRequestView.as_view(),
+        name="api-worktype_requests_detail",
+    ),
+    path(
+        "worktype-requests/<int:pk>/",
+        views.WorkTypeRequestView.as_view(),
+        name="api-worktype_requests_detail_with_pk",
+    ),
+    path(
+        "worktype-requests-cancel/<int:pk>/",
+        views.WorkTypeRequestCancelView.as_view(),
+        name="api-worktype_requests_detail_with_pk",
+    ),
+    path(
+        "worktype-requests-approve/<int:pk>/",
+        views.WorkRequestApproveView.as_view(),
+        name="api-worktype_requests_detail_with_pk",
+    ),
+    path(
+        "shift-requests/",
+        views.ShiftRequestView.as_view(),
+        name="api-shift_requests_detail",
+    ),
+    path(
+        "shift-requests/<int:pk>/",
+        views.ShiftRequestView.as_view(),
+        name="api-shift_requests_detail_with_pk",
+    ),
+    path(
+        "individual-shift-request/",
+        views.IndividualShiftRequestView.as_view(),
+        name="api-individual-worktype-request",
+    ),
+    path(
+        "individual-shift-request/<int:pk>",
+        views.IndividualShiftRequestView.as_view(),
+        name="api-individual-worktype-request",
+    ),
+    path(
+        "shift-request-approve/<int:pk>",
+        views.ShiftRequestApproveView.as_view(),
+        name="api-shift-requests-approve",
+    ),
+    path(
+        "shift-request-bulk-approve",
+        views.ShiftRequestBulkApproveView.as_view(),
+        name="api-shift-request-bulk-approve",
+    ),
+    path(
+        "shift-request-cancel/<int:pk>",
+        views.ShiftRequestCancelView.as_view(),
+        name="api-shift-request-cancel",
+    ),
+    path(
+        "shift-request-bulk-cancel",
+        views.ShiftRequestBulkCancelView.as_view(),
+        name="api-shift-request-bulk-cancel",
+    ),
+    path(
+        "shift-request-delete/<int:pk>",
+        views.ShiftRequestDeleteView.as_view(),
+        name="api-shift-request-delete",
+    ),
+    path(
+        "shift-request-bulk-delete",
+        views.ShiftRequestDeleteView.as_view(),
+        name="api-shift-request-bulk-delete",
+    ),
+    path(
+        "shift-request-export",
+        views.ShiftRequestExportView.as_view(),
+        name="api-shift-request-export",
+    ),
+    path(
+        "shift-request-allocation/<int:id>",
+        views.ShiftRequestAllocationView.as_view(),
+        name="api-shift-request-allocation",
+    ),
+    path(
+        "work-type-request-export",
+        views.WorkTypeRequestExport.as_view(),
+        name="api-work-type-request-export",
+    ),
+    path(
+        "rotating-shift-assign-export",
+        views.RotatingShiftAssignExport.as_view(),
+        name="api-rotating-shift-assigns-export",
+    ),
+    path(
+        "rotating-shift-assign-bulk-archive/<str:status>",
+        views.RotatingShiftAssignBulkArchive.as_view(),
+        name="api-rotating-shift-assigns-archive",
+    ),
+    path(
+        "rotating-shift-assign-bulk-delete",
+        views.RotatingShiftAssignBulkDelete.as_view(),
+        name="api-rotating-shift-assigns-bulk-delete",
+    ),
+    path(
+        "rotating-worktype-create-permission-check/<int:id>",
+        views.RotatingWorKTypePermissionCheck.as_view(),
+        name="api-rotating-worktype-create-permission-check",
+    ),
+    path(
+        "rotating-shift-create-permission-check/<int:id>",
+        views.RotatingShiftPermissionCheck.as_view(),
+        name="api-rotating-shift-create-permission-check",
+    ),
+    path(
+        "shift-request-approve-permission-check",
+        views.ShiftRequestApprovePermissionCheck.as_view(),
+        name="api-rotating-worktype-create-permission-check",
+    ),
+    path(
+        "worktype-request-approve-permission-check",
+        views.WorktypeRequestApprovePermissionCheck.as_view(),
+        name="api-rotating-shift-create-permission-check",
+    ),
+    path(
+        "employee-tab-permission-check",
+        views.EmployeeTabPermissionCheck.as_view(),
+        name="api-rotating-shift-create-permission-check",
+    ),
+    path(
+        "check-user-level", views.CheckUserLevel.as_view(), name="api-check-user-level"
+    ),
 ]

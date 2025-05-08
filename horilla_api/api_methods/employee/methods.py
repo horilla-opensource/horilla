@@ -1,7 +1,8 @@
 import re
+
+from base.methods import eval_validate
 from base.models import *
 from employee.models import *
-from base.methods import eval_validate
 
 
 def get_next_badge_id():

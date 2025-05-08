@@ -3,12 +3,12 @@ from django.contrib import admin
 from helpdesk.models import (
     FAQ,
     Attachment,
+    ClaimRequest,
     Comment,
     DepartmentManager,
     FAQCategory,
     Ticket,
     TicketType,
-    ClaimRequest,
 )
 
 # Register your models here.

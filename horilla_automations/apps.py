@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+
 from horilla_automations.signals import start_automation
 
 
@@ -9,11 +10,11 @@ class HorillaAutomationConfig(AppConfig):
     def ready(self) -> None:
         ready = super().ready()
         try:
-            
+
             from base.templatetags.horillafilters import app_installed
-            from horilla_automations.models import MODEL_CHOICES
             from employee.models import Employee
             from horilla_automations.methods.methods import get_related_models
+            from horilla_automations.models import MODEL_CHOICES
 
             recruitment_installed = False
             if app_installed("recruitment"):

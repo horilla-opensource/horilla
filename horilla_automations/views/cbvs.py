@@ -3,17 +3,19 @@ horilla_automations/views/cbvs.py
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+
+from horilla.decorators import login_required, permission_required
+from horilla_automations import models
 from horilla_automations.filters import AutomationFilter
 from horilla_automations.forms import AutomationForm
-from horilla_automations import models
 from horilla_views.generic.cbv import views
-from horilla.decorators import login_required, permission_required
 
 
 @method_decorator(login_required, name="dispatch")
@@ -82,7 +84,7 @@ class AutomationFormView(views.HorillaFormView):
         instance = models.MailAutomation.objects.filter(pk=self.kwargs["pk"]).first()
         kwargs["instance"] = instance
         return kwargs
-    
+
     def form_valid(self, form: AutomationForm) -> views.HttpResponse:
         if form.is_valid():
             message = "New automation added"

@@ -1,8 +1,24 @@
 import datetime
+
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import serializers
-from base.models import Company, Department, EmployeeShift, EmployeeShiftDay, EmployeeShiftSchedule, JobPosition, JobRole, RotatingShift, RotatingShiftAssign, RotatingWorkType, RotatingWorkTypeAssign, ShiftRequest, WorkType, WorkTypeRequest
 
+from base.models import (
+    Company,
+    Department,
+    EmployeeShift,
+    EmployeeShiftDay,
+    EmployeeShiftSchedule,
+    JobPosition,
+    JobRole,
+    RotatingShift,
+    RotatingShiftAssign,
+    RotatingWorkType,
+    RotatingWorkTypeAssign,
+    ShiftRequest,
+    WorkType,
+    WorkTypeRequest,
+)
 from horilla import horilla_middlewares
 
 
@@ -30,7 +46,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        comapny_id = validated_data.pop('company_id', [])
+        comapny_id = validated_data.pop("company_id", [])
         obj = Department(**validated_data)
         obj.save()
         obj.company_id.set(comapny_id)
@@ -41,7 +57,7 @@ class WorkTypeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkType
-        fields = '__all__'
+        fields = "__all__"
 
     def validate(self, attrs):
         # Create an instance of the model with the provided data
@@ -70,7 +86,7 @@ class WorkTypeSerializer(serializers.ModelSerializer):
 class RotatingWorkTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = RotatingWorkType
-        fields = '__all__'
+        fields = "__all__"
 
     def validate(self, attrs):
         # Create an instance of the model with the provided data
@@ -103,7 +119,7 @@ class RotatingWorkTypeAssignSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RotatingWorkTypeAssign
-        fields = '__all__'
+        fields = "__all__"
 
     def get_current_work_type_name(self, instance):
         current_work_type = instance.current_work_type
@@ -152,13 +168,13 @@ class RotatingWorkTypeAssignSerializer(serializers.ModelSerializer):
 class EmployeeShiftDaySerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeShiftDay
-        fields = '__all__'
+        fields = "__all__"
 
 
 class EmployeeShiftSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeShift
-        fields = '__all__'
+        fields = "__all__"
 
     def validate(self, attrs):
         # Create an instance of the model with the provided data
@@ -187,13 +203,13 @@ class EmployeeShiftSerializer(serializers.ModelSerializer):
 class EmployeeShiftScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeShiftSchedule
-        fields = '__all__'
+        fields = "__all__"
 
 
 class RotatingShiftSerializer(serializers.ModelSerializer):
     class Meta:
         model = RotatingShift
-        fields = '__all__'
+        fields = "__all__"
 
     def validate(self, attrs):
         # Create an instance of the model with the provided data
@@ -227,7 +243,7 @@ class RotatingShiftAssignSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RotatingShiftAssign
-        fields = '__all__'
+        fields = "__all__"
 
     def validate(self, attrs):
         # Create an instance of the model with the provided data
@@ -248,21 +264,29 @@ class RotatingShiftAssignSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
 
-        if instance.based_on == 'after':
-            representation['rotate'] = f"Rotate after {instance.rotate_after_day} days"
-        elif instance.based_on == 'weekly':
-            representation['rotate'] = f"Weekly every {instance.rotate_every_weekend}"
-        elif instance.based_on == 'monthly':
-            if instance.rotate_every == '1':
-                representation['rotate'] = f"Rotate every {instance.rotate_every}st day of month"
-            elif instance.rotate_every == '2':
-                representation['rotate'] = f"Rotate every {instance.rotate_every}nd day of month"
-            elif instance.rotate_every == '3':
-                representation['rotate'] = f"Rotate every {instance.rotate_every}rd day of month"
-            elif instance.rotate_every == 'last':
-                representation['rotate'] = "Rotate every last day of month"
+        if instance.based_on == "after":
+            representation["rotate"] = f"Rotate after {instance.rotate_after_day} days"
+        elif instance.based_on == "weekly":
+            representation["rotate"] = f"Weekly every {instance.rotate_every_weekend}"
+        elif instance.based_on == "monthly":
+            if instance.rotate_every == "1":
+                representation["rotate"] = (
+                    f"Rotate every {instance.rotate_every}st day of month"
+                )
+            elif instance.rotate_every == "2":
+                representation["rotate"] = (
+                    f"Rotate every {instance.rotate_every}nd day of month"
+                )
+            elif instance.rotate_every == "3":
+                representation["rotate"] = (
+                    f"Rotate every {instance.rotate_every}rd day of month"
+                )
+            elif instance.rotate_every == "last":
+                representation["rotate"] = "Rotate every last day of month"
             else:
-                representation['rotate'] = f"Rotate every {instance.rotate_every}th day of month"
+                representation["rotate"] = (
+                    f"Rotate every {instance.rotate_every}th day of month"
+                )
 
         return representation
 
@@ -297,49 +321,56 @@ class RotatingShiftAssignSerializer(serializers.ModelSerializer):
 
 class WorkTypeRequestSerializer(serializers.ModelSerializer):
     employee_first_name = serializers.CharField(
-        source='employee_id.employee_first_name', read_only=True)
+        source="employee_id.employee_first_name", read_only=True
+    )
     employee_last_name = serializers.CharField(
-        source='employee_id.employee_last_name', read_only=True)
+        source="employee_id.employee_last_name", read_only=True
+    )
     work_type_name = serializers.CharField(
-        source='work_type_id.work_type', read_only=True)
+        source="work_type_id.work_type", read_only=True
+    )
     previous_work_type_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = WorkTypeRequest
-        fields = '__all__'
-        
+        fields = "__all__"
+
     def validate(self, attrs):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         # Check if the user is not a superuser
-        requested_date = attrs.get('requested_date',None)
-        
+        requested_date = attrs.get("requested_date", None)
+
         if request and not request.user.is_superuser:
-            
+
             if requested_date and requested_date < datetime.datetime.today().date():
                 raise serializers.ValidationError(
                     {"requested_date": "Date must be greater than or equal to today."}
                 )
-        
+
         # Validate requested_till is not earlier than requested_date
-        requested_till = attrs.get('requested_till', None)
+        requested_till = attrs.get("requested_till", None)
         if requested_till and requested_till < requested_date:
             raise serializers.ValidationError(
-                {"requested_till": ("End date must be greater than or equal to start date.")}
+                {
+                    "requested_till": (
+                        "End date must be greater than or equal to start date."
+                    )
+                }
             )
-        
+
         # Check if any work type request already exists
         if self.instance and self.instance.is_any_work_type_request_exists():
             raise serializers.ValidationError(
-                {"error":"A work type request already exists during this time period."}
+                {"error": "A work type request already exists during this time period."}
             )
 
         # Validate if `is_permanent_work_type` is False, `requested_till` must be provided
-        if not attrs.get('is_permanent_work_type', False):
+        if not attrs.get("is_permanent_work_type", False):
             if not requested_till:
                 raise serializers.ValidationError(
                     {"requested_till": ("Requested till field is required.")}
                 )
-                        
+
         return attrs
 
     def create(self, validated_data):
@@ -362,9 +393,11 @@ class WorkTypeRequestSerializer(serializers.ModelSerializer):
 
 class ShiftRequestSerializer(serializers.ModelSerializer):
     employee_first_name = serializers.CharField(
-        source='employee_id.employee_first_name', read_only=True)
+        source="employee_id.employee_first_name", read_only=True
+    )
     employee_last_name = serializers.CharField(
-        source='employee_id.employee_last_name', read_only=True)
+        source="employee_id.employee_last_name", read_only=True
+    )
     shift_name = serializers.SerializerMethodField(read_only=True)
     previous_shift_name = serializers.SerializerMethodField(read_only=True)
 
@@ -407,5 +440,4 @@ class ShiftRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShiftRequest
-        fields = '__all__'
-
+        fields = "__all__"

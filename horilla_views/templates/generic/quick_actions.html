@@ -24,16 +24,16 @@
         reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
         "
         style="cursor: pointer;">
-        <span class="label" 
+        <span class="label"
         {% comment %} style="display:none;" {% endcomment %}
         >
-        {% trans "Select" %} 
+        {% trans "Select" %}
         </span>
         {% comment %} <ion-icon style="font;font-size: 1rem;" name="checkmark-done-circle" style="font"></ion-icon> {% endcomment %}
         ({{queryset.paginator.count}})
       </div>
-      <div 
-      id="unselect_{{view_id}}" 
+      <div
+      id="unselect_{{view_id}}"
       class="oh-checkpoint-badge text-secondary d-none quick-bulk-action"
       style="cursor: pointer;"
       onclick="
@@ -46,7 +46,7 @@
         $('#{{view_id}} .bulk-list-table-row').prop('checked',false);
       "
       >
-        <span class="label" 
+        <span class="label"
         {% comment %} style="display:none;" {% endcomment %}
         >
           {% trans "Unselect" %}
@@ -57,15 +57,15 @@
         </span>)
       </div>
       {% if quick_export %}
-      <div 
-        id="export_{{view_id}}" 
+      <div
+        id="export_{{view_id}}"
         class="oh-checkpoint-badge text-info d-none quick-bulk-action"
         style="cursor: pointer;"
         data-toggle="oh-modal-toggle"
         data-target="#exportFields{{view_id|safe}}"
       >
       {% comment %} <ion-icon style="font;font-size: 1rem; margin-right:0;" name="download"></ion-icon> {% endcomment %}
-      <span class="label" 
+      <span class="label"
       {% comment %} style="display: none;" {% endcomment %}
       >
         {% trans "Export" %}
@@ -76,8 +76,8 @@
       </div>
       {% endif %}
       {% if bulk_path and bulk_update %}
-      <div 
-        id="bulk_udate_{{view_id}}" 
+      <div
+        id="bulk_udate_{{view_id}}"
         class="oh-checkpoint-badge text-warning d-none quick-bulk-action"
         style="cursor: pointer;"
         data-toggle="oh-modal-toggle"
@@ -88,7 +88,7 @@
         $('#bulk_update_get_form{{view_id}}').click()
         "
         >
-        <span class="label" 
+        <span class="label"
         {% comment %} style="display: none;" {% endcomment %}
         >
           {% trans "Update" %}
@@ -97,7 +97,7 @@
           0
         </span>)
       </div>
-      <form 
+      <form
       hx-post="/{{bulk_path}}"
       hx-target="#bulkUpdateModalBody{{view_id|safe}}">
       <input type="hidden" name="instance_ids">
@@ -106,12 +106,12 @@
     </form>
     {% endif %}
     {% if filter_selected %}
-    <div 
-      id="filter_selected_{{view_id}}" 
+    <div
+      id="filter_selected_{{view_id}}"
       class="oh-checkpoint-badge text-warning d-none quick-bulk-action"
       style="cursor: pointer;
       color:hsl(7.8deg 91% 60%) !important;"
-      
+
       onclick="
       ids = $('#{{selected_instances_key_id}}').attr('data-ids');
       $('#bulk_update_get_form{{view_id}}').closest('form').find('[name=instance_ids]').val(ids);
@@ -121,11 +121,11 @@
       "
       >
       <form style="display: inline;"
-       hx-post="{{request.path}}?show_all=false" hx-target="#{{view_id|safe}}"  hx-swap="outerHTML" 
+       hx-post="{{request.path}}?show_all=false" hx-target="#{{view_id|safe}}"  hx-swap="outerHTML"
       onsubmit="event.preventDefault()"
       hx-on:submit="htmxLoadIndicator(this);">
       <input type="hidden" name="selected_ids" value="{{request.sesssion.hlv_selected_ids}}">
-          <span class="label" 
+          <span class="label"
           {% comment %} style="display: none;" {% endcomment %}
           >
           {% trans "Filter" %}
@@ -137,15 +137,15 @@
       </span>)
     </div>
     {% if request.session.hlv_selected_ids %}
-    <div 
-      hx-get="{{request.path}}?show_all=true" hx-target="#{{view_id|safe}}"  hx-swap="outerHTML" 
-      id="show_selected{{view_id}}" 
+    <div
+      hx-get="{{request.path}}?show_all=true" hx-target="#{{view_id|safe}}"  hx-swap="outerHTML"
+      id="show_selected{{view_id}}"
       class="oh-checkpoint-badge text-warning quick-bulk-action"
       style="cursor: pointer;
       color: hsl(203.16deg 91% 60%) !important;
       "
       >
-      <span class="label" 
+      <span class="label"
       {% comment %} style="display: none;" {% endcomment %}
       >
         {% trans "Show All" %}
@@ -161,7 +161,7 @@
         hx-get="{{request.path}}?{{filter.urlencode}}"
         hx-target="#{{view_id|safe}}" hx-swap="outerHTML"
         >
-        <button 
+        <button
         hx-get="{% url "last-applied-filter" %}?{{filter.urlencode}}"
         hx-swap="none"
         class="oh-hover-btn" style="
@@ -179,7 +179,7 @@
         </div>
       </div>
       {% endfor %}
-      
+
     </div>
     {% if row_status_indications %}
     <div class="d-flex flex-row-reverse">
@@ -192,5 +192,3 @@
     </div>
     {% endif %}
   </div>
-
-  

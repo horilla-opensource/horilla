@@ -10,7 +10,6 @@ from django import forms
 
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 
-
 default_select_option_template = forms.Select.option_template_name
 forms.Select.option_template_name = "horilla_widgets/horilla_select_option.html"
 

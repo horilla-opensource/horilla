@@ -20,3 +20,11 @@
         {{form.as_p}}
     </form>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $("select").on("select2:select", function (e) {
+            $(this).closest("select")[0].dispatchEvent(new Event("change"));
+        });
+    });
+</script>

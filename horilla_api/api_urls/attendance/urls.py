@@ -3,8 +3,9 @@ horilla_api/urls/attendance/urls.py
 """
 
 from django.urls import path
-from horilla_api.api_views.attendance.views import *
+
 from horilla_api.api_views.attendance.permission_views import AttendancePermissionCheck
+from horilla_api.api_views.attendance.views import *
 
 urlpatterns = [
     path("clock-in/", ClockInAPIView.as_view(), name="api-check-in"),
@@ -12,7 +13,9 @@ urlpatterns = [
     path("attendance/", AttendanceView.as_view(), name="api-attendance-list"),
     path("attendance/<int:pk>", AttendanceView.as_view(), name="api-attendance-detail"),
     path(
-        "attendance/list/<str:type>", AttendanceView.as_view(), name="api-attendance-list"
+        "attendance/list/<str:type>",
+        AttendanceView.as_view(),
+        name="api-attendance-list",
     ),
     path("attendance-validate/<int:pk>", ValidateAttendanceView.as_view()),
     path(
@@ -37,7 +40,9 @@ urlpatterns = [
     ),
     path("overtime-approve/<int:pk>", OvertimeApproveView.as_view(), name="api-"),
     path(
-        "attendance-hour-account/<int:pk>/", AttendanceOverTimeView.as_view(), name="api-"
+        "attendance-hour-account/<int:pk>/",
+        AttendanceOverTimeView.as_view(),
+        name="api-",
     ),
     path("attendance-hour-account/", AttendanceOverTimeView.as_view(), name="api-"),
     path("late-come-early-out-view/", LateComeEarlyOutView.as_view(), name="api-"),

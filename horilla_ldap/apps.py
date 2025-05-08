@@ -1,16 +1,18 @@
 from django.apps import AppConfig
 from django.conf import settings
+
 import horilla.horilla_settings
 
 
 class HorillaLdapConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'horilla_ldap'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "horilla_ldap"
 
     def ready(self):
         from django.urls import include, path
-        from horilla.urls import urlpatterns
+
         from horilla.horilla_settings import APPS
+        from horilla.urls import urlpatterns
 
         APPS.append("horilla_ldap")
         urlpatterns.append(

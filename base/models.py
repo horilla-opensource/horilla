@@ -2265,7 +2265,15 @@ class Announcement(HorillaModel):
     company_id = models.ManyToManyField(
         Company, blank=True, related_name="announcement", verbose_name=_("Company")
     )
-    disable_comments = models.BooleanField(default=False)
+    disable_comments = models.BooleanField(
+        default=False, verbose_name=_("Disable Comments")
+    )
+    public_comments = models.BooleanField(
+        default=True,
+        verbose_name=_("Show Comments to All"),
+        help_text=_("If enabled, all employees can view each other's comments."),
+    )
+
     filtered_employees = models.ManyToManyField(
         Employee, related_name="announcement_filtered_employees", editable=False
     )
@@ -2293,6 +2301,14 @@ class Announcement(HorillaModel):
         for i in viewed_by:
             viewed_emp.append(i.user)
         return viewed_emp
+
+    def save(self, *args, **kwargs):
+        """
+        if comments are disabled, force public comments to be false
+        """
+        if self.disable_comments:
+            self.public_comments = False
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title

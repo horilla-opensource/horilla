@@ -4,44 +4,40 @@ horilla/cbv_methods.py
 
 import json
 import types
-from urllib.parse import urlencode
-from typing import Any
-from io import BytesIO
 import uuid
+from io import BytesIO
+from typing import Any
+from urllib.parse import urlencode
 from venv import logger
-from django import template
-from django import forms
-from django.db import models
-from django.shortcuts import redirect, render
-from django.template import loader
-from django.template.loader import render_to_string
-from django.template.defaultfilters import register
-from django.urls import reverse
+
+from django import forms, template
 from django.contrib import messages
-from django.http import HttpResponse
+from django.core.cache import cache as CACHE
 from django.core.paginator import Paginator
-from django.middleware.csrf import get_token
-from django.utils.translation import gettext_lazy as _
-from django.utils.html import format_html
-from django.utils.functional import lazy
-from django.utils.safestring import SafeString
+from django.db import models
+from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.related_descriptors import (
     ForwardManyToOneDescriptor,
     ReverseOneToOneDescriptor,
 )
-from django.db.models.fields.related import ForeignKey
-from django.core.cache import cache as CACHE
+from django.http import HttpResponse
+from django.middleware.csrf import get_token
+from django.shortcuts import redirect, render
+from django.template import loader
+from django.template.defaultfilters import register
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.functional import lazy
+from django.utils.html import format_html
+from django.utils.safestring import SafeString
+from django.utils.translation import gettext_lazy as _
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.utils import get_column_letter
 
 from horilla import settings
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.templatetags.generic_template_filters import getattribute
-
-
-from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Border, Side, Alignment
-from openpyxl.utils import get_column_letter
-from django.http import HttpResponse
-
 
 FIELD_WIDGET_MAP = {
     models.CharField: forms.TextInput(attrs={"class": "oh-input w-100"}),
@@ -520,6 +516,7 @@ def merge_dicts(dict1, dict2):
 
     return merged_dict
 
+
 def flatten_dict(d, parent_key=""):
     """Recursively flattens a nested dictionary"""
     items = []
@@ -530,6 +527,7 @@ def flatten_dict(d, parent_key=""):
         else:
             items.append((new_key, v))
     return dict(items)
+
 
 def export_xlsx(json_data, columns):
     """

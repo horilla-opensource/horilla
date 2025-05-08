@@ -793,7 +793,7 @@
                 node.style.offsetWidth = node.offsetWidth;
             }
         },
-        // determines how to show arrow buttons 
+        // determines how to show arrow buttons
         nodeEnterLeaveHandler: function (event) {
             var $node = $(event.delegateTarget);
             var flag = false;
@@ -946,7 +946,7 @@
             $(event.delegateTarget).children('.backToCompactSymbol').addClass('hidden').end()
                 .children('.backToLooseSymbol').removeClass('hidden');
         },
-        // show the compact node's children in the loose mode 
+        // show the compact node's children in the loose mode
         backToLooseHandler: function (event) {
             $(event.delegateTarget)
                 .addClass('looseMode')

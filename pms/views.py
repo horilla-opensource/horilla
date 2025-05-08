@@ -28,8 +28,10 @@ from django.utils.translation import gettext_lazy as _
 from base.methods import (
     closest_numbers,
     eval_validate,
+    filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
+    is_reportingmanager,
     paginator_qry,
     sortby,
 )
@@ -162,7 +164,7 @@ def obj_form_save(request, objective_form):
 
 
 @login_required
-@manager_can_enter(perm="pms.add_employeeobjective")
+@permission_required(perm="pms.add_employeeobjective")
 def objective_creation(request):
     """
     This view is for objective creation , and returns a objective form.
@@ -602,13 +604,25 @@ def objective_filter_pagination(request, objective_own):
     employee = request.user.employee_get
     manager = False
 
-    objectives = (
-        Objective.objects.filter(Q(managers=employee) | Q(assignees=employee))
+    sub_employees = filtersubordinatesemployeemodel(
+        request,
+        queryset=Employee.objects.filter(is_active=True),
+    )
+    sub_obj_ids = (
+        EmployeeObjective.objects.filter(employee_id__in=sub_employees)
+        .values_list("objective_id", flat=True)
+        .distinct()
+    )
+
+    objectives = Objective.objects.filter(
+        Q(managers=employee) | Q(assignees=employee) | Q(id__in=sub_obj_ids)
     ).distinct()
     if request.user.has_perm("pms.view_objective"):
         objectives = Objective.objects.all()
         manager = True
-    elif Objective.objects.filter(managers=employee).exists():
+    elif Objective.objects.filter(managers=employee).exists() or is_reportingmanager(
+        request
+    ):
         manager = True
     objectives = ActualObjectiveFilter(
         request.GET or initial_data, queryset=objectives
@@ -1068,7 +1082,7 @@ def create_employee_objective(request):
             obj = emp_obj.objective_id
             # Add this employee as assignee
             obj.assignees.add(emp_obj.employee_id)
-            krs.extend([key_result for key_result in obj.key_result_id.all()])
+            # krs.extend([key_result for key_result in obj.key_result_id.all()])
             set_krs = set(krs)
             emp_obj.save()
             # Add all key results
@@ -1086,6 +1100,18 @@ def create_employee_objective(request):
                     )
             messages.success(request, _("Employee objective created successfully"))
             return HttpResponse("<script>window.location.reload()</script>")
+    context = {"form": form, "k_form": KRForm(), "emp_obj": True}
+    return render(
+        request, "okr/emp_objective/emp_objective_create_form.html", context=context
+    )
+
+
+@login_required
+def get_objective_keyresults(request):
+    obj_id = request.GET.get("objective_id")
+    objective = Objective.objects.filter(id=obj_id).first()
+    keyresults = objective.key_result_id.all()
+    form = EmployeeObjectiveCreateForm(initial={"key_result_id": keyresults})
     context = {"form": form, "k_form": KRForm(), "emp_obj": True}
     return render(
         request, "okr/emp_objective/emp_objective_create_form.html", context=context

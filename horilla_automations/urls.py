@@ -3,9 +3,8 @@ horilla_automations/urls.py
 """
 
 from django.urls import path
-from horilla_automations.views import views
-from horilla_automations.views import cbvs
 
+from horilla_automations.views import cbvs, views
 
 urlpatterns = [
     path(

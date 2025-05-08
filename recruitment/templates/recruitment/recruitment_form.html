@@ -146,6 +146,22 @@
                     >
                     {{form.skills}}
                 </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label" for="{{form.publish_in_linkedin.id_for_lable}}"
+                        title="{{form.publish_in_linkedin.help_text|safe}}"
+                            >{% trans "Post on LinkedIn" %}</label
+                        >
+                        <div class="w-100 d-flex" style="align-items: center">
+                            <div class="oh-switch">{{form.publish_in_linkedin}}</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label" for="{{form.linkedin_account_id.id_for_label}}"
+                            >{{form.linkedin_account_id.label}}</label
+                        >
+                        {{form.linkedin_account_id}} {{form.linkedin_account_id.errors}}
+                    </div>
+
                 <div class="col-12 col-sm-12 col-md-12 col-lg-4">
                     <label
                         class="oh-label"
@@ -196,4 +212,10 @@
 
 <script>
     $(".oh-general__tab-target.oh-profile-section [name=description]").hide();
+    $(document).ready(function () {
+        if (!$("#id_publish_in_linkedin").is(":checked")) {
+            const linkedInInput = $("[name='linkedin_account_id']");
+            linkedInInput.closest('div').toggleClass('d-none');
+            }
+    });
 </script>

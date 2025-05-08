@@ -1,35 +1,40 @@
 import json
-from datetime import datetime
 import logging
-from operator import itemgetter
 import os
-from urllib.parse import parse_qs
+from datetime import datetime
 from distutils.util import strtobool
+from operator import itemgetter
+from urllib.parse import parse_qs
 
-from django.urls import reverse
 from django.contrib import messages
 from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
 
-from employee.views import get_content_type
-from helpdesk.decorators import ticket_owner_can_enter
-from helpdesk.methods import is_department_manager
-from horilla.group_by import group_by_queryset
 from base.forms import TagsForm
 from base.methods import (
     filtersubordinates,
     get_key_instances,
     get_pagination,
     is_reportingmanager,
-    sortby,
     paginator_qry,
+    sortby,
 )
 from base.models import Department, JobPosition, Tags
 from employee.models import Employee
-from helpdesk.filter import FAQCategoryFilter, FAQFilter, FaqSearch, TicketFilter, TicketReGroup
+from employee.views import get_content_type
+from helpdesk.decorators import ticket_owner_can_enter
+from helpdesk.filter import (
+    FAQCategoryFilter,
+    FAQFilter,
+    FaqSearch,
+    TicketFilter,
+    TicketReGroup,
+)
 from helpdesk.forms import (
     AttachmentForm,
     CommentForm,
@@ -42,6 +47,7 @@ from helpdesk.forms import (
     TicketTagForm,
     TicketTypeForm,
 )
+from helpdesk.methods import is_department_manager
 from helpdesk.models import (
     FAQ,
     TICKET_STATUS,
@@ -60,8 +66,8 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
+from horilla.group_by import group_by_queryset
 from notifications.signals import notify
-from django.template.loader import render_to_string
 
 logger = logging.getLogger(__name__)
 
@@ -1654,13 +1660,15 @@ def ticket_type_delete(request, t_type_id):
             if count == 0:
                 return HttpResponse("<script>$('.reload-record').click()</script>")
             else:
-                return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
+                return HttpResponse(
+                    "<script>$('#reloadMessagesButton').click()</script>"
+                )
         except:
             messages.error(request, _("Ticket type can not delete"))
             return HttpResponse("<script>$('.reload-record').click()</script>")
     # return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
- 
+
 
 @login_required
 @permission_required("helpdesk.view_departmentmanager")

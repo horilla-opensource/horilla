@@ -1,9 +1,7 @@
-
-
 from helpdesk.models import DepartmentManager
 
 
-def is_department_manager(request,ticket):
+def is_department_manager(request, ticket):
     """
     Method used to find the user is a department manger of given ticket
     """
@@ -16,6 +14,5 @@ def is_department_manager(request,ticket):
     else:
         return False
     return DepartmentManager.objects.filter(
-        manager = user_emp,
-        department = department
+        manager=user_emp, department=department
     ).exists()

@@ -47,7 +47,3 @@ const faq = new Faq();
 const orgChart = new OrgChart();
 const accordion = new Accordion();
 // const workEntry = new WorkEntry();
-
-
-
-  

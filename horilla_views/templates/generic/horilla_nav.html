@@ -15,11 +15,11 @@
     </a>
   </div>
   {% if search_url %}
-  <form autocomplete="off" 
-    id="filterForm" 
-    onsubmit="event.preventDefault()" 
-    hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}" 
-    hx-replace-url="false" 
+  <form autocomplete="off"
+    id="filterForm"
+    onsubmit="event.preventDefault()"
+    hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}"
+    hx-replace-url="false"
     hx-target="{{search_swap_target}}"
     hx-on:submit="htmxLoadIndicator(this);"
     class="oh-main__titlebar oh-main__titlebar--right"
@@ -114,7 +114,7 @@
           {% include filter_body_template %}
           <input type="radio" name="filter_applied" checked hidden>
           <div class="oh-dropdown__filter-footer">
-            <button 
+            <button
              type="submit"
              id="applyFilter"
              onclick="
@@ -135,7 +135,7 @@
                   data: filterData,
                   traditional:true,
                   success: function (response) {
-                    
+
                   }
                 });
 
@@ -148,7 +148,7 @@
         </div>
       </div>
       {% else %}
-      <button 
+      <button
         hidden
         type="submit"
         id="applyFilter"
@@ -204,7 +204,7 @@
               <li class="oh-dropdown__item">
                 <a class="oh-dropdown__link" {{action.attrs|safe}}>{{action.action}}</a>
               </li>
-              {% endfor %}              
+              {% endfor %}
             </ul>
           </div>
         </div>
@@ -216,7 +216,7 @@
     {% endif %}
 
     {% if create_attrs %}
-    <a 
+    <a
       class="oh-btn oh-btn--secondary ml-2"
       {{create_attrs|safe}}
       >
@@ -262,15 +262,15 @@
       }
       {% endif %}
     }, 100);
-    $(".oh-btn--view").click(function (e) { 
+    $(".oh-btn--view").click(function (e) {
       e.preventDefault();
-      $(".oh-btn--view-active").removeClass("oh-btn--view-active");      
+      $(".oh-btn--view-active").removeClass("oh-btn--view-active");
       $(this).addClass("oh-btn--view-active");
     });
     if (!$(".oh-btn--view-active").length) {
       // $("a.oh-btn--view:first").trigger("click")
     }
-    $(".oh-accordion-header").click(function (e) { 
+    $(".oh-accordion-header").click(function (e) {
       e.preventDefault();
       $(this).parent().toggleClass("oh-accordion--show");
     });

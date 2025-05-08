@@ -1,26 +1,36 @@
-from django.db.models import Case, Value, When, F, CharField
-from django.http import QueryDict
-from attendance.models import AttendanceActivity
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from datetime import date, datetime, timedelta, timezone
-from attendance.models import EmployeeShiftDay
+
+from django import template
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.db.models import Case, CharField, F, Value, When
+from django.http import QueryDict
+from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from attendance.models import Attendance, AttendanceActivity, EmployeeShiftDay
+from attendance.views.clock_in_out import *
+from attendance.views.clock_in_out import clock_out
 from attendance.views.dashboard import (
     find_expected_attendances,
     find_late_come,
     find_on_time,
 )
 from attendance.views.views import *
-from attendance.views.clock_in_out import *
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from attendance.models import Attendance
-from base.methods import is_reportingmanager
+from base.backends import ConfiguredEmailBackend
+from base.methods import generate_pdf, is_reportingmanager
 from base.models import HorillaMailTemplate
-from ...api_decorators.base.decorators import manager_permission_required,permission_required
-from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 from employee.filters import EmployeeFilter
+
+from ...api_decorators.base.decorators import (
+    manager_permission_required,
+    permission_required,
+)
+from ...api_methods.base.methods import groupby_queryset, permission_based_queryset
 from ...api_serializers.attendance.serializers import (
     AttendanceActivitySerializer,
     AttendanceLateComeEarlyOutSerializer,
@@ -29,14 +39,6 @@ from ...api_serializers.attendance.serializers import (
     AttendanceSerializer,
     MailTemplateSerializer,
 )
-from rest_framework.pagination import PageNumberPagination
-from django.utils.decorators import method_decorator
-from django.conf import settings
-from django.core.mail import EmailMessage
-from base.backends import ConfiguredEmailBackend
-from django import template
-from base.methods import generate_pdf
-from attendance.views.clock_in_out  import clock_out
 
 # Create your views here.
 
@@ -63,61 +65,73 @@ class ClockInAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        employee, work_info = employee_exists(request)
-        datetime_now = datetime.now()
-        if request.__dict__.get("datetime"):
-            datetime_now = request.datetime
-        if employee and work_info is not None:
-            shift = work_info.shift_id
-            date_today = date.today()
-            if request.__dict__.get("date"):
-                date_today = request.date
-            attendance_date = date_today
-            day = date_today.strftime("%A").lower()
-            day = EmployeeShiftDay.objects.get(day=day)
-            now = datetime.now().strftime("%H:%M")
-            if request.__dict__.get("time"):
-                now = request.time.strftime("%H:%M")
-            now_sec = strtime_seconds(now)
-            mid_day_sec = strtime_seconds("12:00")
-            minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
-                day=day, shift=shift
-            )
-            if start_time_sec > end_time_sec:
-                # night shift
-                # ------------------
-                # Night shift in Horilla consider a 24 hours from noon to next day noon,
-                # the shift day taken today if the attendance clocked in after 12 O clock.
+        if not request.user.employee_get.check_online():
+            try:
+                if request.user.employee_get.get_company().geo_fencing.start:
+                    from geofencing.views import GeoFencingEmployeeLocationCheckAPIView
 
-                if mid_day_sec > now_sec:
-                    # Here you need to create attendance for yesterday
+                    location_api_view = GeoFencingEmployeeLocationCheckAPIView()
+                    response = location_api_view.post(request)
+                    if response.status_code != 200:
+                        return response
+            except:
+                pass
+            employee, work_info = employee_exists(request)
+            datetime_now = datetime.now()
+            if request.__dict__.get("datetime"):
+                datetime_now = request.datetime
+            if employee and work_info is not None:
+                shift = work_info.shift_id
+                date_today = date.today()
+                if request.__dict__.get("date"):
+                    date_today = request.date
+                attendance_date = date_today
+                day = date_today.strftime("%A").lower()
+                day = EmployeeShiftDay.objects.get(day=day)
+                now = datetime.now().strftime("%H:%M")
+                if request.__dict__.get("time"):
+                    now = request.time.strftime("%H:%M")
+                now_sec = strtime_seconds(now)
+                mid_day_sec = strtime_seconds("12:00")
+                minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
+                    day=day, shift=shift
+                )
+                if start_time_sec > end_time_sec:
+                    # night shift
+                    # ------------------
+                    # Night shift in Horilla consider a 24 hours from noon to next day noon,
+                    # the shift day taken today if the attendance clocked in after 12 O clock.
 
-                    date_yesterday = date_today - timedelta(days=1)
-                    day_yesterday = date_yesterday.strftime("%A").lower()
-                    day_yesterday = EmployeeShiftDay.objects.get(day=day_yesterday)
-                    minimum_hour, start_time_sec, end_time_sec = shift_schedule_today(
-                        day=day_yesterday, shift=shift
-                    )
-                    attendance_date = date_yesterday
-                    day = day_yesterday
-            clock_in_attendance_and_activity(
-                employee=employee,
-                date_today=date_today,
-                attendance_date=attendance_date,
-                day=day,
-                now=now,
-                shift=shift,
-                minimum_hour=minimum_hour,
-                start_time=start_time_sec,
-                end_time=end_time_sec,
-                in_datetime=datetime_now,
+                    if mid_day_sec > now_sec:
+                        # Here you need to create attendance for yesterday
+
+                        date_yesterday = date_today - timedelta(days=1)
+                        day_yesterday = date_yesterday.strftime("%A").lower()
+                        day_yesterday = EmployeeShiftDay.objects.get(day=day_yesterday)
+                        minimum_hour, start_time_sec, end_time_sec = (
+                            shift_schedule_today(day=day_yesterday, shift=shift)
+                        )
+                        attendance_date = date_yesterday
+                        day = day_yesterday
+                clock_in_attendance_and_activity(
+                    employee=employee,
+                    date_today=date_today,
+                    attendance_date=attendance_date,
+                    day=day,
+                    now=now,
+                    shift=shift,
+                    minimum_hour=minimum_hour,
+                    start_time=start_time_sec,
+                    end_time=end_time_sec,
+                    in_datetime=datetime_now,
+                )
+                return Response({"message": "Clocked-In"}, status=200)
+            return Response(
+                {
+                    "error": "You Don't have work information filled or your employee detail neither entered "
+                }
             )
-            return Response({"message": "Clocked-In"}, status=200)
-        return Response(
-            {
-                "error": "You Don't have work information filled or your employee detail neither entered "
-            }
-        )
+        return Response({"message": "Already clocked-in"}, status=400)
 
 
 class ClockOutAPIView(APIView):
@@ -131,27 +145,37 @@ class ClockOutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        
-        current_date = date.today()
-        current_time = datetime.now().time()
-        current_datetime = datetime.now()
-        
-        try:
-            clock_out(
-                Request(
-                    user=request.user,
-                    date=current_date,
-                    time=current_time,
-                    datetime=current_datetime,
-                )
-            )        
-            return Response({"message": "Clocked-Out"}, status=200)
 
-        except Exception as error:
-            logger.error(
-                "Got an error in clock_out", error
-            )
-        return Response({"message": "Clocked-Out"}, status=200)
+        try:
+            if request.user.employee_get.get_company().geo_fencing.start:
+                from geofencing.views import GeoFencingEmployeeLocationCheckAPIView
+
+                location_api_view = GeoFencingEmployeeLocationCheckAPIView()
+                response = location_api_view.post(request)
+                if response.status_code != 200:
+                    return response
+        except:
+            pass
+        if request.user.employee_get.check_online():
+            current_date = date.today()
+            current_time = datetime.now().time()
+            current_datetime = datetime.now()
+
+            try:
+                clock_out(
+                    Request(
+                        user=request.user,
+                        date=current_date,
+                        time=current_time,
+                        datetime=current_datetime,
+                    )
+                )
+                return Response({"message": "Clocked-Out"}, status=200)
+
+            except Exception as error:
+                logger.error("Got an error in clock_out", error)
+            return Response({"message": "Clocked-Out"}, status=200)
+        return Response({"message": "Already clocked-out"}, status=400)
 
 
 class AttendanceView(APIView):
@@ -223,15 +247,22 @@ class AttendanceView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
-        employee_id = request.data.get('employee_id')
-        attendance_date = request.data.get('attendance_date', date.today())
-        if Attendance.objects.filter(employee_id=employee_id, attendance_date=attendance_date).exists():
-            return Response({"error":["Attendance for this employee on the current date already exists."]},status=400)
+        employee_id = request.data.get("employee_id")
+        attendance_date = request.data.get("attendance_date", date.today())
+        if Attendance.objects.filter(
+            employee_id=employee_id, attendance_date=attendance_date
+        ).exists():
+            return Response(
+                {
+                    "error": [
+                        "Attendance for this employee on the current date already exists."
+                    ]
+                },
+                status=400,
+            )
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required("attendance.change_attendance")
-    )
+    @method_decorator(permission_required("attendance.change_attendance"))
     def put(self, request, pk):
         try:
             attendance = Attendance.objects.get(id=pk)
@@ -258,9 +289,7 @@ class AttendanceView(APIView):
                 }
         return Response(serializer_errors, status=400)
 
-    @method_decorator(
-        permission_required("attendance.delete_attendance")
-    )
+    @method_decorator(permission_required("attendance.delete_attendance"))
     def delete(self, request, pk):
         attendance = Attendance.objects.get(id=pk)
         month = attendance.attendance_date
@@ -300,6 +329,8 @@ class ValidateAttendanceView(APIView):
         put(request, pk): Marks the attendance as validated and notifies the employee.
     """
 
+    permission_classes = [IsAuthenticated]
+
     def put(self, request, pk):
         attendance = Attendance.objects.filter(id=pk).update(attendance_validated=True)
         attendance = Attendance.objects.filter(id=pk).first()
@@ -328,6 +359,8 @@ class OvertimeApproveView(APIView):
     Method:
         put(request, pk): Marks the overtime as approved and notifies the employee.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
         try:
@@ -404,10 +437,19 @@ class AttendanceRequestView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=200)
-        employee_id = request.data.get('employee_id')
-        attendance_date = request.data.get('attendance_date', date.today())
-        if Attendance.objects.filter(employee_id=employee_id, attendance_date=attendance_date).exists():
-            return Response({"error":["Attendance for this employee on the current date already exists."]},status=400)
+        employee_id = request.data.get("employee_id")
+        attendance_date = request.data.get("attendance_date", date.today())
+        if Attendance.objects.filter(
+            employee_id=employee_id, attendance_date=attendance_date
+        ).exists():
+            return Response(
+                {
+                    "error": [
+                        "Attendance for this employee on the current date already exists."
+                    ]
+                },
+                status=400,
+            )
         return Response(serializer.errors, status=404)
 
     @manager_permission_required("attendance.update_attendance")
@@ -439,6 +481,8 @@ class AttendanceRequestApproveView(APIView):
     Method:
         put(request, pk): Approves the attendance request, updates attendance records, and handles related activities.
     """
+
+    permission_classes = [IsAuthenticated]
 
     @manager_permission_required("attendance.change_attendance")
     def put(self, request, pk):
@@ -506,6 +550,8 @@ class AttendanceRequestCancelView(APIView):
     Method:
         put(request, pk): Cancels the attendance request, resetting its status and data, and deletes the request if it was a create request.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
         try:
@@ -585,10 +631,7 @@ class AttendanceOverTimeView(APIView):
             return Response(serializer.data, status=200)
         return Response(serializer.errors, status=400)
 
-    @method_decorator(
-        permission_required(
-            "attendance.delete_attendanceovertime")
-    )
+    @method_decorator(permission_required("attendance.delete_attendanceovertime"))
     def delete(self, request, pk):
         attendance = get_object_or_404(AttendanceOverTime, pk=pk)
         attendance.delete()
@@ -626,6 +669,8 @@ class AttendanceActivityView(APIView):
         get(request, pk=None): Retrieves a list of all attendance activity records.
     """
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk=None):
         data = AttendanceActivity.objects.all()
         serializer = AttendanceActivitySerializer(data, many=True)
@@ -639,6 +684,8 @@ class TodayAttendance(APIView):
     Method:
         get(request): Calculates and returns the attendance ratio for today.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
 
@@ -671,6 +718,8 @@ class OfflineEmployeesCountView(APIView):
         get(request): Returns the number of active employees who are not yet clocked in.
     """
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         count = (
             EmployeeFilter({"not_in_yet": date.today()})
@@ -688,6 +737,8 @@ class OfflineEmployeesListView(APIView):
     Method:
         get(request): Retrieves and paginates a list of employees not clocked in today with their leave status.
     """
+
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         queryset = (

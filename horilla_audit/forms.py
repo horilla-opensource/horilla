@@ -4,11 +4,13 @@ forms.py
 
 from collections.abc import Mapping
 from typing import Any
+
 from django import forms
 from django.forms.utils import ErrorList
-from django.utils.translation import gettext_lazy as _
 from django.template.loader import render_to_string
-from horilla_audit.models import HorillaAuditInfo, AuditTag
+from django.utils.translation import gettext_lazy as _
+
+from horilla_audit.models import AuditTag, HorillaAuditInfo
 
 
 class HistoryForm(forms.Form):

@@ -1,11 +1,13 @@
-from rest_framework import serializers
-from .models import GeoFencing
 from geopy.geocoders import Nominatim
+from rest_framework import serializers
+
+from .models import GeoFencing
+
 
 class GeoFencingSetupSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoFencing
-        fields = '__all__'
+        fields = "__all__"
 
     def validate(self, data):
         geolocator = Nominatim(user_agent="geo_checker")  # Use a unique user-agent
@@ -23,5 +25,4 @@ class GeoFencingSetupSerializer(serializers.ModelSerializer):
 class EmployeeLocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeoFencing
-        fields = ['latitude', 'longitude']
-
+        fields = ["latitude", "longitude"]

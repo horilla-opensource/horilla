@@ -8,10 +8,8 @@ from django.urls import path
 
 from base.views import object_delete
 from helpdesk import views
+from helpdesk.cbv import department_managers, faq, tags, ticket_type
 from helpdesk.models import FAQ, FAQCategory, Ticket
-from helpdesk.cbv import ticket_type, tags, faq
-from helpdesk.cbv import department_managers
-
 
 urlpatterns = [
     path("ticket-list/", ticket_type.TicketsListView.as_view(), name="ticket-list"),
@@ -28,7 +26,11 @@ urlpatterns = [
     ),
     path("faq-category-view/", views.faq_category_view, name="faq-category-view"),
     # path("faq-category-create/", views.faq_category_create, name="faq-category-create"),
-    path("faq-category-create/", faq.FaqCategoryCreateFormView.as_view(), name="faq-category-create"),
+    path(
+        "faq-category-create/",
+        faq.FaqCategoryCreateFormView.as_view(),
+        name="faq-category-create",
+    ),
     path(
         "faq-category-update/<int:pk>/",
         faq.FaqCategoryCreateFormView.as_view(),
@@ -51,9 +53,11 @@ urlpatterns = [
         name="faq-view",
         kwargs={"model": FAQCategory},
     ),
-    path("faq-create/<int:cat_id>/", faq.FaqCreateFormView.as_view(), name="faq-create"),
+    path(
+        "faq-create/<int:cat_id>/", faq.FaqCreateFormView.as_view(), name="faq-create"
+    ),
     # path("faq-create/<int:cat_id>/", views.create_faq, name="faq-create"),
-    path("faq-update/<int:pk>/",faq.FaqCreateFormView.as_view(), name="faq-update"),
+    path("faq-update/<int:pk>/", faq.FaqCreateFormView.as_view(), name="faq-update"),
     # path("faq-update/<int:id>", views.faq_update, name="faq-update"),
     path("faq-search/", views.faq_search, name="faq-search"),
     path("faq-filter/<int:id>/", views.faq_filter, name="faq-filter"),
@@ -64,9 +68,17 @@ urlpatterns = [
         name="faq-delete",
     ),
     path("ticket-view/", views.ticket_view, name="ticket-view"),
-    path("ticket-create", ticket_type.TicketsCreateFormView.as_view(), name="ticket-create"),
+    path(
+        "ticket-create",
+        ticket_type.TicketsCreateFormView.as_view(),
+        name="ticket-create",
+    ),
     # path("ticket-create", views.ticket_create, name="ticket-create"),
-    path("ticket-update/<int:pk>/",ticket_type.TicketsCreateFormView.as_view(), name="ticket-update"),
+    path(
+        "ticket-update/<int:pk>/",
+        ticket_type.TicketsCreateFormView.as_view(),
+        name="ticket-update",
+    ),
     # path("ticket-update/<int:ticket_id>", views.ticket_update, name="ticket-update"),
     path("ticket-archive/<int:ticket_id>", views.ticket_archive, name="ticket-archive"),
     path(
@@ -85,12 +97,12 @@ urlpatterns = [
     path(
         "ticket-individual-view/<int:ticket_id>",
         views.ticket_individual_view,
-        name = "ticket-individual-view"
+        name="ticket-individual-view",
     ),
     path(
         "view-ticket-claim-request/<int:ticket_id>",
         views.view_ticket_claim_request,
-        name = "view-ticket-claim-request"
+        name="view-ticket-claim-request",
     ),
     path("ticket-change-tag", views.ticket_update_tag, name="ticket-change-tag"),
     path(
@@ -105,7 +117,11 @@ urlpatterns = [
     ),
     path("ticket-create-tag", views.create_tag, name="ticket-create-tag"),
     path("remove-tag", views.remove_tag, name="remove-tag"),
-    path("view-ticket-document/<int:doc_id>", views.view_ticket_document, name="view-ticket-document"),
+    path(
+        "view-ticket-document/<int:doc_id>",
+        views.view_ticket_document,
+        name="view-ticket-document",
+    ),
     path("comment-create/<int:ticket_id>", views.comment_create, name="comment-create"),
     path("comment-edit/", views.comment_edit, name="comment-edit"),
     path(
@@ -113,7 +129,11 @@ urlpatterns = [
     ),
     path("get-raised-on", views.get_raised_on, name="get-raised-on"),
     path("claim-ticket/<int:id>", views.claim_ticket, name="claim-ticket"),
-    path("approve-claim-request/<int:req_id>", views.approve_claim_request, name="approve-claim-request"),
+    path(
+        "approve-claim-request/<int:req_id>",
+        views.approve_claim_request,
+        name="approve-claim-request",
+    ),
     path(
         "tickets-select-filter",
         views.tickets_select_filter,
@@ -143,7 +163,7 @@ urlpatterns = [
         tags.TagsFormView.as_view(),
         name="create-helpdesk-tag",
     ),
-     path(
+    path(
         "settings/update-helpdesk-tag/<int:pk>/",
         tags.TagsFormView.as_view(),
         name="update-helpdesk-tag",
@@ -201,13 +221,13 @@ urlpatterns = [
         name="department-manager-view",
     ),
     path(
-        'get-department-employee',
+        "get-department-employee",
         views.get_department_employees,
-        name="get-department-employee"
+        name="get-department-employee",
     ),
     path(
-        'delete-ticket-document/<int:doc_id>',
+        "delete-ticket-document/<int:doc_id>",
         views.delete_ticket_document,
-        name="delete-ticket-document"
-    )
+        name="delete-ticket-document",
+    ),
 ]

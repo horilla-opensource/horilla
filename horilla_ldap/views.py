@@ -1,13 +1,14 @@
+from django.contrib import messages
 from django.shortcuts import render
-
-# Create your views here.
-
-from horilla.decorators import login_required
-from .models import LDAPSettings
-from .forms import LDAPSettingsForm
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
+
+from horilla.decorators import login_required
+
+from .forms import LDAPSettingsForm
+from .models import LDAPSettings
+
+# Create your views here.
 
 
 @login_required

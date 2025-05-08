@@ -1,22 +1,16 @@
-from collections import defaultdict
 import gettext
+from collections import defaultdict
+
+from django.contrib.auth.decorators import permission_required
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from base.backends import ConfiguredEmailBackend
-from payroll.models.tax_models import TaxBracket
-from payroll.threadings.mail import MailSendThread
-from payroll.views.views import payslip_pdf
-from ...api_serializers.payroll.serializers import (
-    AllowanceSerializer,
-    ContractSerializer,
-    DeductionSerializer,
-    LoanAccountSerializer,
-    PayslipSerializer,
-    ReimbursementSerializer,
-    TaxBracketSerializer,
-)
-from ...api_methods.base.methods import groupby_queryset
+from base.methods import eval_validate
 from payroll.filters import (
     AllowanceFilter,
     ContractFilter,
@@ -31,12 +25,20 @@ from payroll.models.models import (
     Payslip,
     Reimbursement,
 )
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.decorators import permission_required
-from django.utils.decorators import method_decorator
-from base.methods import eval_validate
+from payroll.models.tax_models import TaxBracket
+from payroll.threadings.mail import MailSendThread
+from payroll.views.views import payslip_pdf
+
+from ...api_methods.base.methods import groupby_queryset
+from ...api_serializers.payroll.serializers import (
+    AllowanceSerializer,
+    ContractSerializer,
+    DeductionSerializer,
+    LoanAccountSerializer,
+    PayslipSerializer,
+    ReimbursementSerializer,
+    TaxBracketSerializer,
+)
 
 
 class PayslipView(APIView):

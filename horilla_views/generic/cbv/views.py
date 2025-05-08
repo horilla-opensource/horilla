@@ -6,37 +6,34 @@ import json
 import logging
 from typing import Any
 from urllib.parse import parse_qs
+
 from bs4 import BeautifulSoup
 from django import forms
-from django.http import HttpRequest, HttpResponse, QueryDict
 from django.contrib import messages
+from django.core.cache import cache as CACHE
+from django.core.paginator import Page
+from django.http import HttpRequest, HttpResponse, QueryDict
 from django.shortcuts import render
 from django.urls import resolve, reverse
-from django.core.paginator import Page
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, DetailView, TemplateView, FormView
-from django.core.cache import cache as CACHE
-from base.methods import (
-    closest_numbers,
-    get_key_instances,
-    eval_validate,
-)
-from horilla.group_by import group_by_queryset
+from django.views.generic import DetailView, FormView, ListView, TemplateView
+
+from base.methods import closest_numbers, eval_validate, get_key_instances
 from horilla.filters import FilterSet
+from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views import models
-from horilla_views.cbv_methods import (
+from horilla_views.cbv_methods import (  # update_initial_cache,
     export_xlsx,
     get_short_uuid,
-    paginator_qry,
-    # update_initial_cache,
-    sortby,
-    update_saved_filter_cache,
     hx_request_required,
+    paginator_qry,
+    sortby,
     structured,
+    update_saved_filter_cache,
 )
-from horilla_views.forms import ToggleColumnForm, DynamicBulkUpdateForm
+from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 logger = logging.getLogger(__name__)
@@ -75,7 +72,7 @@ class HorillaListView(ListView):
     )->bool:
         # True if accessible to the action else False
         return True
-        
+
     actions = [
         {
             "action": "Edit",
@@ -419,7 +416,7 @@ class HorillaListView(ListView):
             #         ordered_ids.append(instance.pk)
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
-        from horilla.urls import urlpatterns, path
+        from horilla.urls import path, urlpatterns
 
         self.export_path = f"export-list-view-{get_short_uuid(4)}/"
 
@@ -770,7 +767,7 @@ class HorillaCardView(ListView):
     )->bool:
         # True if accessible to the action else False
         return True
-        
+
     actions = [
         {
             "action": "Edit",
@@ -1115,8 +1112,9 @@ class HorillaFormView(FormView):
                         },
                     )
 
-                    from horilla.urls import urlpatterns
                     from django.urls import path
+
+                    from horilla.urls import urlpatterns
 
                     urlpatterns.append(
                         path(
@@ -1278,7 +1276,7 @@ class HorillaProfileView(DetailView):
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         # update_initial_cache(request, CACHE, HorillaProfileView)
 
-        from horilla.urls import urlpatterns, path
+        from horilla.urls import path, urlpatterns
 
         for tab in self.tabs:
             if not tab.get("url"):

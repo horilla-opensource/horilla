@@ -410,7 +410,8 @@ def asset_category_creation(request):
             messages.success(request, _("Asset category created successfully"))
             form = AssetCategoryForm()
             if AssetCategory.objects.filter().count() == 1:
-                return HttpResponse("<script>window.location.reload();</script>")
+                if AssetCategory.objects.count() == 1:
+                    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     context = {"form": form}
     return render(request, "category/asset_category_form.html", context)
 
@@ -456,7 +457,7 @@ def delete_asset_category(request, cat_id):
     except:
         messages.error(request, _("Assets are located within this category."))
     if not AssetCategory.objects.filter():
-        return HttpResponse("<script>window.location.reload();</script>")
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     return redirect(f"/asset/asset-category-view-search-filter?{previous_data}")
 
 
@@ -1397,6 +1398,7 @@ def asset_export_excel(request):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="asset.add_assetlot")
 def asset_batch_number_creation(request):
     """asset batch number creation view"""
@@ -1417,7 +1419,7 @@ def asset_batch_number_creation(request):
             asset_batch_form = AssetBatchForm()
             messages.success(request, _("Batch number created successfully."))
             if AssetLot.objects.filter().count() == 1 and not hx_vals:
-                return HttpResponse("<script>location.reload();</script>")
+                return HttpResponse(status=204, headers={"HX-Refresh": "true"})
             if hx_vals:
                 category_id = request.GET.get("asset_category_id")
                 url = reverse("asset-creation", args=[category_id])
@@ -1496,6 +1498,7 @@ def asset_batch_update(request, batch_id):
 
 
 @login_required
+@hx_request_required
 @permission_required(perm="asset.delete_assetlot")
 def asset_batch_number_delete(request, batch_id):
     """
@@ -1524,10 +1527,8 @@ def asset_batch_number_delete(request, batch_id):
     except ProtectedError:
         messages.error(request, _("You cannot delete this Batch number."))
     if not AssetLot.objects.filter():
-        return HttpResponse("<script>location.reload();</script>")
-    if request.GET.get("instance_ids"):
-        return HttpResponse("<script>location.reload();</script>")
-    return redirect(f"/asset/asset-batch-list?{previous_data}")
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+    return redirect(f"/asset/asset-batch-number-search?{previous_data}")
 
 
 @login_required

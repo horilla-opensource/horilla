@@ -196,7 +196,7 @@
         <option value="employeeobjective">Employee Objective</option>
         <option value="feedback">Feedback</option>
     </select>
-    
+
 
     <!-- Pivot Container -->
     <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto;">
@@ -242,11 +242,11 @@
         function loadPivotData(model) {
             // Hide all containers first
             $(".pivot-wrapper").hide();
-        
+
             // Determine current container and row config
             let containerId = "";
             let rowsConfig = [];
-        
+
             if (model === "feedback") {
                 containerId = "pivot-feedback";
                 rowsConfig = ["Title","Employee","Manager","Answerable Employees","Answered Employees","Questions","Answer"];
@@ -257,14 +257,14 @@
                 containerId = "pivot-employeeobjective";
                 rowsConfig = ["Employee", "Objective","Employee Keyresult","Keyresult Target Value","Keyresult Current Value"];
             }
-        
+
             // Show relevant container
             $("#" + containerId).show();
-        
+
             // Fetch and render data in its own container
             $.getJSON(`pms-pivot?model=${model}`, function (data) {
                 let plotlyRenderers = $.pivotUtilities.plotly_renderers;
-        
+
                 $("#" + containerId).pivotUI(data, {
                     rows: rowsConfig,
                     cols: [],
@@ -278,9 +278,9 @@
                         } else {
                             $("#export-btn").hide();
                         }
-        
+
                         $(".pvtTotal, .pvtTotalLabel, .pvtGrandTotal, .pvtAggregator").hide();
-        
+
                         setTimeout(() => {
                             $(".pvtAttrDropdown option").each(function () {
                                 if (hiddenFields.includes($(this).text())) {
@@ -297,12 +297,12 @@
         window.loadFilteredPivotData =function loadFilteredPivotData() {
             const selectedModel = $("#model-select").val();
             const formData = $("#filterForm").serialize();
-        
+
             $(".pivot-wrapper").hide();
-        
+
             let containerId = "";
             let rowsConfig = [];
-        
+
             if (selectedModel === "feedback") {
                 containerId = "pivot-feedback";
                 rowsConfig = ["Title","Employee", "Manager", "Answerable Employees", "Answered Employees", "Questions", "Answer"];
@@ -313,15 +313,15 @@
                 containerId = "pivot-employeeobjective";
                 rowsConfig = ["Employee", "Objective", "Employee Keyresult", "Keyresult Target Value", "Keyresult Current Value"];
             }
-        
+
             $("#" + containerId).show();
-        
+
             $.getJSON(`pms-pivot?model=${selectedModel}&${formData}`, function (data) {
 
                 console.log("Filtered data:", data);
 
                 const plotlyRenderers = $.pivotUtilities.plotly_renderers;
-        
+
                 $("#" + containerId).pivotUI(data, {
                     rows: rowsConfig,
                     cols: [],
@@ -335,24 +335,24 @@
                         } else {
                             $("#export-btn").hide();
                         }
-        
+
                         $(".pvtTotal, .pvtTotalLabel, .pvtGrandTotal, .pvtAggregator").hide();
                     }
                 });
             });
         }
-        
-        
+
+
         // Listen to dropdown
         $("#model-select").on("change", function () {
             let selectedModel = $(this).val();
             loadPivotData(selectedModel);
         });
-        
+
         // Initial load
         loadPivotData("objective");
-        
-        
+
+
         // Export to Excel on button click
         $("#export-btn").on("click", function () {
             let visiblePivot = $(".pivot-wrapper:visible .pvtTable").closest(".pivot-wrapper");
@@ -369,14 +369,14 @@
                 alert("No table found to export.");
                 return;
             }
-        
+
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet("Pivot Data");
             const baseRow = 5;
             const baseCol = 5;
-        
+
             let currentRow = baseRow;
-        
+
             // Add company details first (if not 'all')
             if ('{{company}}' !== 'all') {
                 const companyDetails = {
@@ -387,7 +387,7 @@
                     city: "{{ company.city|escapejs }}",
                     zip: "{{ company.zip|escapejs }}"
                 };
-        
+
                 function getBase64FromUrl(url) {
                     return fetch(url)
                         .then(response => response.blob())
@@ -398,7 +398,7 @@
                             reader.readAsDataURL(blob);
                         }));
                 }
-        
+
                 const logoUrl = "{{ protocol }}://{{ host }}{{ company.icon.url }}";
                 await getBase64FromUrl(logoUrl).then((base64) => {
                     const base64Data = base64.split(',')[1];
@@ -406,13 +406,13 @@
                         base64: base64Data,
                         extension: 'png'
                     });
-        
+
                     worksheet.addImage(imageId, {
                         tl: { col: baseCol - 1, row: currentRow - 1 },
                         ext: { width: 80, height: 80 }
                     });
                 });
-        
+
                 // Merge cells for company details text
                 const companyTextCell = worksheet.getCell(currentRow, baseCol + 1);
                 worksheet.mergeCells(currentRow, baseCol + 1, currentRow, baseCol + 2);
@@ -430,24 +430,24 @@
                     wrapText: true
                 };
                 worksheet.getRow(currentRow).height = 80;
-        
+
                 currentRow += 2; // Leave a blank row
             }
-        
+
             // Add timestamp
             const timestamp = new Date().toLocaleDateString('en-GB') + ' ' +
                 new Date().toLocaleTimeString('en-US', {
                     hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
                 });
-        
+
             const downloadCell = worksheet.getCell(currentRow, baseCol);
             worksheet.mergeCells(currentRow, baseCol, currentRow, baseCol + 3);
             downloadCell.value = `Generated on: ${timestamp}`;
             downloadCell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
             downloadCell.font = { size: 10, italic: true, color: { argb: 'FF666666' }, bold: true };
-        
+
             currentRow += 3; // Leave some rows before the table
-        
+
             // ------------------------
             // Render pivot table
             // ------------------------
@@ -457,9 +457,9 @@
                     row.classList.contains("pvtTotal") ||
                     row.classList.contains("pvtGrandTotal")
                 ) return;
-        
+
                 let colIndex = baseCol;
-        
+
                 Array.from(row.cells).forEach((cell) => {
                     if (
                         cell.classList.contains("pvtTotal") ||
@@ -467,18 +467,18 @@
                         cell.classList.contains("pvtAggregator") ||
                         cell.classList.contains("pvtGrandTotal")
                     ) return;
-        
+
                     while (cellMap[`${currentRow + rowIndex}-${colIndex}`]) {
                         colIndex++;
                     }
-        
+
                     const rowspan = parseInt(cell.getAttribute("rowspan")) || 1;
                     const colspan = parseInt(cell.getAttribute("colspan")) || 1;
                     const cellValue = cell.textContent.trim();
-        
+
                     const excelCell = worksheet.getCell(currentRow + rowIndex, colIndex);
                     excelCell.value = cellValue;
-        
+
                     excelCell.font = {
                         bold: rowIndex === 0,
                         size: rowIndex === 0 ? 12 : 11,
@@ -496,7 +496,7 @@
                         right: { style: 'thin' }
                     };
                     excelCell.alignment = { horizontal: "center", vertical: "middle" };
-        
+
                     // Merge
                     if (rowspan > 1 || colspan > 1) {
                         worksheet.mergeCells(
@@ -505,7 +505,7 @@
                             currentRow + rowIndex + rowspan - 1,
                             colIndex + colspan - 1
                         );
-        
+
                         for (let r = 0; r < rowspan; r++) {
                             for (let c = 0; c < colspan; c++) {
                                 cellMap[`${currentRow + rowIndex + r}-${colIndex + c}`] = true;
@@ -514,14 +514,14 @@
                     } else {
                         cellMap[`${currentRow + rowIndex}-${colIndex}`] = true;
                     }
-        
+
                     colIndex++;
                 });
             });
-        
+
             // Header row height
             worksheet.getRow(currentRow).height = 30;
-        
+
             // Auto-adjust column widths
             worksheet.columns.forEach(column => {
                 let maxLength = 5;
@@ -531,21 +531,21 @@
                 });
                 column.width = maxLength + 0;
             });
-        
+
             // Save
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             });
-        
+
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = filename;
             link.click();
         }
-                
+
 });
-    
+
 </script>
 
 

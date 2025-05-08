@@ -2892,6 +2892,9 @@ class AnnouncementForm(ModelForm):
         self.fields["attachments"] = MultipleFileField(label=_("Attachments"))
         self.fields["attachments"].required = False
         self.fields["description"].required = False
+        self.fields["disable_comments"].widget.attrs.update(
+            {"hx-on:click": "togglePublicComments()"}
+        )
 
     def save(self, commit: bool = ...) -> Any:
         attachement = []

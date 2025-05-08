@@ -1,0 +1,50 @@
+{% load static %}
+{% include "generic/horilla_form.html" %}
+
+<script>
+    $(document).ready(function(){
+        $('#id_cyclic_feedback_period_parent_div').addClass('d-none')
+        $('#id_cyclic_feedback_days_count_parent_div').addClass('d-none')
+    })
+   // this function is used to generate csrf token
+   function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function periodChange(element){
+        period_id = element.val()
+        $.ajax({
+            url: '/pms/period-change',
+            type: "POST",
+            dataType: "json",
+            data: JSON.stringify(period_id),
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            success: (data) => {
+                // Adding data to start and end date
+                $('#BulkFeedbackForm #id_start_date').val(data.start_date)
+                $('#BulkFeedbackForm #id_end_date').val(data.end_date);
+            },
+            error: (error) => {
+                console.log('Error', error);
+            }
+        });
+    }
+    function cyclicFeedback(){
+        $('#id_cyclic_feedback_period_parent_div').toggleClass('d-none')
+        $('#id_cyclic_feedback_days_count_parent_div').toggleClass('d-none')
+    }
+</script>

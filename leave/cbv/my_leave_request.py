@@ -27,9 +27,15 @@ from leave.methods import (
     calculate_requested_days,
     company_leave_dates_list,
     holiday_dates_list,
+)
+from leave.models import (
+    AvailableLeave,
+    CompanyLeave,
+    Holiday,
+    LeaveRequest,
+    LeaveType,
     leave_requested_dates,
 )
-from leave.models import AvailableLeave, CompanyLeave, Holiday, LeaveRequest, LeaveType
 from leave.threading import LeaveMailSendThread
 from notifications.signals import notify
 

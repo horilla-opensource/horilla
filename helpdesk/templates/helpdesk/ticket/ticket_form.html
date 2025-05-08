@@ -103,7 +103,7 @@
         <div class="oh-modal__dialog-body" id="editTarget">
             <form onsubmit="saveTicketType();event.preventDefault();" class="oh-profile-section">
                 {% csrf_token %}
-                
+
                 <div class="oh-input-group">
                     <label class="oh-label" for="{{t_type_form.title.id_for_label}}">{{t_type_form.title.label}}</label>
                     <input type="text" name="title" maxlength="30" class="oh-input w-100" placeholder="Title"

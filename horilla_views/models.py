@@ -1,8 +1,10 @@
 import json
-from django.db import models
+
 from django.contrib.auth.models import User
-from horilla.models import HorillaModel
+from django.db import models
+
 from horilla.horilla_middlewares import _thread_locals
+from horilla.models import HorillaModel
 
 # Create your models here.
 

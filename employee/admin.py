@@ -24,12 +24,25 @@ from employee.models import (
 
 # admin.site.register(Employee)
 admin.site.register(EmployeeBankDetails)
-admin.site.register(EmployeeWorkInformation, SimpleHistoryAdmin)
 admin.site.register([EmployeeNote, EmployeeTag, PolicyMultipleFile, Policy, BonusPoint])
 admin.site.register([DisciplinaryAction, Actiontype])
 
 
-from django.contrib import admin
+class EmployeeWorkInformationAdmin(SimpleHistoryAdmin):
+    list_display = (
+        "employee_id",
+        "department_id",
+        "job_position_id",
+        "job_role_id",
+        "reporting_manager_id",
+        "shift_id",
+        "work_type_id",
+        "company_id",
+    )
+    search_fields = (
+        "employee_id__employee_first_name",
+        "employee_id__employee_last_name",
+    )
 
 
 class EmployeeAdmin(admin.ModelAdmin):
@@ -61,3 +74,4 @@ class EmployeeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Employee, EmployeeAdmin)
+admin.site.register(EmployeeWorkInformation, EmployeeWorkInformationAdmin)

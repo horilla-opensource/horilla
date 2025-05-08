@@ -1,5 +1,5 @@
-from urllib.parse import urlparse
 import uuid
+from urllib.parse import urlparse
 
 from django.apps import apps
 from django.shortcuts import redirect

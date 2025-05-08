@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
@@ -137,7 +138,7 @@ class ProjectsNavView(HorillaNavView):
         ("status", _("Status")),
         ("is_active", _("Is active")),
     ]
-    nav_title = _("Projects")
+    nav_title = Project._meta.verbose_name_plural
     filter_instance = ProjectFilter()
     filter_form_context_name = "form"
     filter_body_template = "cbv/projects/filter.html"
@@ -170,19 +171,22 @@ class ProjectsList(HorillaListView):
         if self.request.user.is_superuser:
             self.action_method = "actions"
 
+    @cached_property
+    def columns(self):
+        instance = self.model()
+        return [
+            (instance._meta.get_field("title").verbose_name, "title"),
+            (instance._meta.get_field("managers").verbose_name, "get_managers"),
+            (instance._meta.get_field("members").verbose_name, "get_members"),
+            (instance._meta.get_field("status").verbose_name, "status_column"),
+            (instance._meta.get_field("start_date").verbose_name, "start_date"),
+            (instance._meta.get_field("end_date").verbose_name, "end_date"),
+            (instance._meta.get_field("document").verbose_name, "get_document_html"),
+            (instance._meta.get_field("description").verbose_name, "get_description"),
+        ]
+
     model = Project
     filter_class = ProjectFilter
-
-    columns = [
-        (_("Project"), "title"),
-        (_("Project Managers"), "get_managers"),
-        (_("Project Members"), "get_members"),
-        (_("Status"), "status_column"),
-        (_("Start Date"), "start_date"),
-        (_("End Date"), "end_date"),
-        (_("File"), "get_document_html"),
-        (_("Description"), "get_description"),
-    ]
 
     sortby_mapping = [
         ("Project", "title"),
@@ -274,7 +278,7 @@ class ProjectFormView(HorillaFormView):
 
     form_class = ProjectForm
     model = Project
-    new_display_title = _("Create Project")
+    new_display_title = _("Create") + " " + model._meta.verbose_name
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -286,7 +290,9 @@ class ProjectFormView(HorillaFormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.form.instance.pk:
-            self.form_class.verbose_name = _("Update project")
+            self.form_class.verbose_name = (
+                _("Update") + " " + self.model._meta.verbose_name
+            )
         return context
 
     def form_valid(self, form: ProjectForm) -> HttpResponse:

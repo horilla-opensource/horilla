@@ -56,7 +56,9 @@ def serialize_form(form, prefix=""):
             field_structure["max_length"] = field.max_length
 
         # If the field is a Select field, include the options
-        if isinstance(field.widget, forms.Select):
+        if isinstance(field.widget, forms.Select) and not isinstance(
+            field, forms.NullBooleanField
+        ):
             field_structure["options"] = [
                 {"value": str(key), "label": str(value)} for key, value in field.choices
             ]
@@ -70,9 +72,7 @@ def serialize_form(form, prefix=""):
                 related_field_structure = {
                     "name": prefix + field_name + "__" + related_field["name"],
                     "type": related_field["type"],
-                    "label": related_field["label"].capitalize()
-                    + " | "
-                    + field.label,
+                    "label": related_field["label"].capitalize() + " | " + field.label,
                     "required": related_field["required"],
                 }
                 if related_field.get("options"):

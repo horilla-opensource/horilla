@@ -11,6 +11,7 @@ import recruitment.views.dashboard
 import recruitment.views.search
 import recruitment.views.surveys
 from base.views import add_remove_dynamic_fields, object_duplicate
+from recruitment import cbvs
 from recruitment.cbv import (
     candidate_mail_log,
     candidate_profile,
@@ -27,7 +28,7 @@ from recruitment.cbv import (
 )
 from recruitment.forms import QuestionForm, RecruitmentCreationForm, StageCreationForm
 from recruitment.models import Candidate, Recruitment, RecruitmentSurvey, Stage
-from recruitment.views import views
+from recruitment.views import linkedin, views
 from recruitment.views.actions import get_mail_preview, get_template, get_template_hint
 
 urlpatterns = [
@@ -963,5 +964,45 @@ urlpatterns = [
         "cbv-change-stage/<int:pk>/",
         pipeline.ChangeStage.as_view(),
         name="cbv-change-stage",
+    ),
+    # Linkedin Integration urls
+    path(
+        "linkedin-integration-setting",
+        cbvs.LinkedinSettingSectionView.as_view(),
+        name="linkedin-integration-setting",
+    ),
+    path(
+        "linkedin-setting-nav",
+        cbvs.LinkedInSettingNavView.as_view(),
+        name="linkedin-setting-nav",
+    ),
+    path(
+        "linkedin-setting-list",
+        cbvs.LinkedInSettingListView.as_view(),
+        name="linkedin-setting-list",
+    ),
+    path(
+        "create-linkedin-account",
+        cbvs.LinkedInAccountFormView.as_view(),
+        name="create-linkedin-account",
+    ),
+    path(
+        "update-linkedin-account/<int:pk>/",
+        cbvs.LinkedInAccountFormView.as_view(),
+        name="update-linkedin-account",
+    ),
+    path(
+        "delete-linkedin-account/<int:pk>/",
+        linkedin.delete_linkedin_account,
+        name="delete-linkedin-account",
+    ),
+    path(
+        "update-isactive-linkedin-account/<int:obj_id>",
+        linkedin.update_isactive_linkedin,
+        name="update-isactive-linkedin-account",
+    ),
+    path("check-linkedin", linkedin.check_linkedin, name="check-linkedin"),
+    path(
+        "val-linkedin/<int:pk>/", linkedin.validate_linkedin_token, name="val-linkedin"
     ),
 ]

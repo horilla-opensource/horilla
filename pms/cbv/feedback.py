@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
@@ -359,6 +359,21 @@ class FeedbacknavView(HorillaNavView):
                 """,
             },
         ]
+        if self.request.user.has_perm("pms.add_feedback"):
+            self.actions.append(
+                {
+                    "action": _("Bulk feedback"),
+                    "attrs": f"""
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                        hx-get ="{reverse_lazy('bulk-feedback-create')}"
+                        hx-target="#objectCreateModalTarget"
+                        class="oh-dropdown__link"
+                        id="bulkfeedback"
+                        style="cursor: pointer;"
+                    """,
+                }
+            )
         if self.request.user.has_perm("pms.view_feedback") or is_reportingmanager(
             self.request
         ):

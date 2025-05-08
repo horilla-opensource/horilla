@@ -254,6 +254,12 @@ urlpatterns = [
         name="feedback-update",
     ),
     # path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
+    path(
+        "bulk-feedback-create",
+        cbvs.BulkFeedbackFormView.as_view(),
+        name="bulk-feedback-create",
+    ),
+    path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
     path("feedback-delete/<int:id>", views.feedback_delete, name="feedback-delete"),
     path("feedback-archive/<int:id>", views.feedback_archive, name="feedback-archive"),
     path("get-collegues", views.get_collegues, name="get-collegues"),
@@ -477,6 +483,11 @@ urlpatterns = [
         "update-employee-objective/<int:pk>/",
         objectives.CreateEmployeeObjectiveForm.as_view(),
         name="update-employee-objective",
+    ),
+    path(
+        "get-objective-keyresult/",
+        views.get_objective_keyresults,
+        name="get-objective-keyresult",
     ),
     # path(
     #     "update-employee-objective/<int:emp_obj_id>/",

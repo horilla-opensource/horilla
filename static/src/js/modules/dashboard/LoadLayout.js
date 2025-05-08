@@ -2,15 +2,15 @@ import $ from 'jquery'
 
 class LoadLayout {
 
-  constructor() { 
+  constructor() {
     this.events();
   }
 
   // Events
-  events() { 
+  events() {
     $(window).on('load', this.loadHeader.bind(this));
   }
- 
+
   // Methods
 
   /**

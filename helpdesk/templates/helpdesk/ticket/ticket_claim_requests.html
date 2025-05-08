@@ -33,7 +33,7 @@
                             >
                                 {% trans "Action" %}
                             </div>
-                        
+
                         </div>
                     </div>
                     <div class="oh-sticky-table__tbody">
@@ -81,26 +81,26 @@
                                         </button>
                                     {% endif %}
                                     {% if not req.is_rejected %}
-                                        <button 
-                                            class="oh-btn oh-btn--danger w-100" 
+                                        <button
+                                            class="oh-btn oh-btn--danger w-100"
                                             titile = "{% trans 'Reject' %}"
                                             data-toggle="oh-modal-toggle"
                                             data-target="#objectDetailsModal"
                                             hx-get="{% url 'approve-claim-request' req.id %}?approve=False"
                                             hx-target="#objectDetailsModalTarget"
                                         >
-                                            <ion-icon name="close-outline"></ion-icon> 
+                                            <ion-icon name="close-outline"></ion-icon>
                                         </button>
                                     {% else %}
-                                        <button 
-                                            class="oh-btn oh-btn--danger w-100" 
+                                        <button
+                                            class="oh-btn oh-btn--danger w-100"
                                             titile = "{% trans 'Reject' %}"
                                             disabled
                                             >
-                                            <ion-icon name="close-outline"></ion-icon> 
+                                            <ion-icon name="close-outline"></ion-icon>
                                         </button>
                                     {% endif %}
-                                    
+
                                 </div>
                             </div>
                         </div>

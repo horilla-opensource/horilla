@@ -103,7 +103,7 @@ class EmployeeBiometricAddForm(Form):
     """
     Form for adding employees to a biometric device.
 
-    This form allows administrators to add multiple employees to a biometric device
+    This form allows administrators to add employees to a biometric device
     for biometric authentication. It includes a field for selecting employees from
     a queryset and ensures that only active employees not already associated with
     a 'zk' type biometric device are available for selection.
@@ -117,8 +117,15 @@ class EmployeeBiometricAddForm(Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.request = getattr(_thread_locals, "request")
+        self.device_id = (
+            self.request.resolver_match.kwargs.get("device_id", None)
+            if self.request.resolver_match
+            else None
+        )
+        self.device = BiometricDevices.find(self.device_id)
         zk_employee_ids = BiometricEmployees.objects.filter(
-            device_id__machine_type="zk"
+            device_id=self.device
         ).values_list("employee_id", flat=True)
         self.fields["employee_ids"].queryset = Employee.objects.filter(
             is_active=True

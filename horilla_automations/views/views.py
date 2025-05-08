@@ -3,16 +3,15 @@ horilla_automation/views/views.py
 """
 
 from django import forms
+from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.contrib import messages
-from horilla.decorators import login_required
-from horilla.decorators import permission_required
-from horilla_automations.methods.methods import generate_choices
-from horilla_automations.models import MailAutomation
 
+from horilla.decorators import login_required, permission_required
+from horilla_automations.methods.methods import generate_choices
 from horilla_automations.methods.serialize import serialize_form
+from horilla_automations.models import MailAutomation
 
 
 @login_required

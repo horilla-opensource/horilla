@@ -1,6 +1,6 @@
 {% load static %} {% load i18n %} {% load mathfilters %} {% load helpdeskfilters %}
 {% include 'filter_tags.html' %}
-{% if my_tickets or allocated_tickets or all_tickets %} 
+{% if my_tickets or allocated_tickets or all_tickets %}
     <div class="oh-kanban" style="overflow: hidden">
         <div class="oh-tabs__content" id="tab_1">
             {% if my_tickets %}
@@ -358,7 +358,7 @@
                                     data-candidate="{{ticket.name}}"
                                     data-job-position="{{ticket.job_position_id}}"
                                     {% if request.user.employee_get in ticket.assigned_to.all or perms.helpdesk.view_ticket or request.user.employee_get|is_department_manager:ticket %}
-                                        onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"	
+                                        onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`"
                                     {% else %}
                                         hx-get = "{% url 'ticket-individual-view' ticket.id %}"
                                         data-toggle="oh-modal-toggle"
@@ -381,7 +381,7 @@
                                             >{{ticket.created_date}}</span
                                         >
                                         </div>
-                                        
+
                                             <div
                                                 class="oh-kanban__card-actions oh-kanban__dropdown"
                                             >
@@ -421,9 +421,9 @@
                                                                     >{% trans "Claim Requests" %}
                                                                     </a>
                                                                 </li>
-                                                                
+
                                                             {% else %}
-                                                                
+
                                                                 {% if not ticket|calim_request_exists:request.user.employee_get and request.user.employee_get not in ticket.assigned_to.all %}
                                                                     <li
                                                                         class="oh-dropdown__item"

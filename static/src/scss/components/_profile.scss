@@ -35,9 +35,9 @@
     }
     .oh-profile__name {
       font-size: 0.8rem;
-    }                                                      
+    }
   }
-  
+
   // Size: Large
   .oh-profile--base {
     .oh-profile__avatar {
@@ -61,8 +61,8 @@
   }
 
 
-  
-  
+
+
   // Misc. Profile Components
   .oh-profile-list{
     list-style-type: none;
@@ -72,7 +72,7 @@
   .oh-profile-list__item{
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-  
+
     &:last-child{
       padding-bottom: 0;
     }
