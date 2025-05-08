@@ -10,7 +10,8 @@ from django.contrib.auth.signals import user_login_failed
 from django.db.models import Max, Q
 from django.db.models.signals import m2m_changed, post_migrate, post_save
 from django.dispatch import receiver
-from django.shortcuts import redirect
+from django.http import Http404
+from django.shortcuts import redirect, render
 
 from base.models import Announcement, PenaltyAccounts
 from horilla.methods import get_horilla_model_class
@@ -150,65 +151,92 @@ def log_login_failed(sender, credentials, request, **kwargs):
         },
     }
 
+    # This section is for giving the maxtry and bantime
+
+    FAIL2BAN_MAX_RETRY = 3        # Same as maxretry in jail.local
+    FAIL2BAN_BAN_TIME = 300       # Same as bantime in jail.local (in seconds)
+
     """
 
     # Checking that the file is created or not to initiate the ban functions.
     if not FAIL2BAN_LOG_ENABLED:
         return
 
+    max_attempts = getattr(settings, "FAIL2BAN_MAX_RETRY", 3)
+    ban_duration = getattr(settings, "FAIL2BAN_BAN_TIME", 300)
+
     username = credentials.get("username", "unknown")
     ip = request.META.get("REMOTE_ADDR", "unknown")
+    session_key = (
+        request.session.session_key or request.session._get_or_create_session_key()
+    )
 
-    # Track the number of failed attempts for the user in the current session
-    session_key = request.session.session_key
-    if not session_key:
-        request.session.create()
-
-    # Initialize failed attempts for this session if not already
-    if session_key not in failed_attempts:
-        failed_attempts[session_key] = 0
-
-    # Initialize ban time if not already set
-    if session_key not in ban_time:
-        ban_time[session_key] = 0
-
-    failed_attempts[session_key] += 1
-
-    # Log the failed attempt
-    logger.warning(f"Invalid login attempt for user '{username}' from {ip}")
-
-    # Set maximum allowed attempts
-    max_attempts = 3
-    attempts_left = max_attempts - failed_attempts[session_key]
-
-    # If the user is banned, show banned message and GIF
-    if ban_time.get(session_key, 0) > time.time():
+    # Check if currently banned
+    if session_key in ban_time and ban_time[session_key] > time.time():
         banned_until = time.strftime("%H:%M", time.localtime(ban_time[session_key]))
         messages.info(
             request, f"You are banned until {banned_until}. Please try again later."
         )
         return redirect("/")
 
-    # If failed attempts are above the limit, ban the user for 5 minutes
+    # If ban expired, reset counters
+    if session_key in ban_time and ban_time[session_key] <= time.time():
+        del ban_time[session_key]
+        if session_key in failed_attempts:
+            del failed_attempts[session_key]
+
+    # Initialize tracking if needed
+    if session_key not in failed_attempts:
+        failed_attempts[session_key] = 0
+
+    failed_attempts[session_key] += 1
+    attempts_left = max_attempts - failed_attempts[session_key]
+
+    logger.warning(f"Invalid login attempt for user '{username}' from {ip}")
+
     if failed_attempts[session_key] >= max_attempts:
-        # Ban user for 5 minutes (300 seconds)
-        ban_time[session_key] = time.time() + 300
+        ban_time[session_key] = time.time() + ban_duration
         messages.info(
             request,
-            "You have exceeded the maximum attempts. You are banned for 5 minutes.",
+            f"You have been banned for {ban_duration // 60} minutes due to multiple failed login attempts.",
         )
-        return redirect("/")  # Redirect or show a banned page
+        return redirect("/")
 
-    # Display message showing remaining attempts
-    if attempts_left > 0:
-        message = (
-            f"You have {attempts_left} attempts left before being temporarily banned."
-        )
-    else:
-        message = (
-            "You have exceeded the maximum attempts. You will be banned for 5 minutes."
-        )
-
-    # Add a message to the session to show to the user
-    messages.info(request, message)
+    messages.info(
+        request,
+        f"You have {attempts_left} login attempt(s) left before a temporary ban.",
+    )
     return redirect("login")
+
+
+class Fail2BanMiddleware:
+    """
+    Middleware to force password change for new employees.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        session_key = request.session.session_key
+        if not session_key:
+            request.session.create()
+
+        # Check ban and enforce it
+        if session_key in ban_time and ban_time[session_key] > time.time():
+            banned_until = time.strftime("%H:%M", time.localtime(ban_time[session_key]))
+            messages.info(
+                request, f"You are banned until {banned_until}. Please try again later."
+            )
+            return render(request, "403.html")
+
+        # If ban expired, clear counters
+        if session_key in ban_time and ban_time[session_key] <= time.time():
+            del ban_time[session_key]
+            if session_key in failed_attempts:
+                del failed_attempts[session_key]
+
+        return self.get_response(request)
+
+
+settings.MIDDLEWARE.append("base.signals.Fail2BanMiddleware")
