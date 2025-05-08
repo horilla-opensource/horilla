@@ -1201,3 +1201,103 @@ class EmployeeFeedbackForm(HorillaModelForm):
             cleaned_data["others_id"] = employee_data
 
         return cleaned_data
+
+
+class BulkFeedbackForm(HorillaModelForm):
+    """Form for creating feedback in bulk"""
+
+    title = forms.CharField(required=True, label=_("Title"))
+    employee_ids = forms.ModelMultipleChoiceField(
+        queryset=Employee.objects.filter(is_active=True), required=True
+    )
+    other_employees = forms.ModelMultipleChoiceField(
+        queryset=Employee.objects.filter(is_active=True),
+        required=False,
+        label=_("Other employees"),
+        help_text=_("Employees need to sent feedback request."),
+    )
+    include_manager = forms.BooleanField(
+        initial=True,
+        required=False,
+    )
+    include_subordinates = forms.BooleanField(
+        initial=True, required=False, label=_("Include all subordinates")
+    )
+    include_colleagues = forms.BooleanField(
+        initial=True, required=False, label=_("Include all colleagues")
+    )
+    include_keyresult = forms.BooleanField(
+        initial=True,
+        required=False,
+        label=_("Include all keyresults"),
+        help_text=_("Include all keyresults assigned to the employee."),
+    )
+    period = forms.ModelChoiceField(
+        queryset=Period.objects.all(),
+        label=_("Period"),
+        required=False,
+        widget=forms.Select(
+            attrs={
+                "onchange": "periodChange($(this))",
+            }
+        ),
+    )
+
+    class Meta:
+        model = Feedback
+        fields = [
+            "title",
+            "employee_ids",
+            "status",
+            "other_employees",
+            "include_manager",
+            "include_subordinates",
+            "include_colleagues",
+            "include_keyresult",
+            "question_template_id",
+            "cyclic_feedback",
+            "cyclic_feedback_period",
+            "cyclic_feedback_days_count",
+            "period",
+            "start_date",
+            "end_date",
+        ]
+        widgets = {
+            "start_date": forms.DateInput(
+                attrs={"type": "date", "class": "oh-input w-100"}
+            ),
+            "end_date": forms.DateInput(
+                attrs={"type": "date", "class": "oh-input w-100"}
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["employee_ids"] = HorillaMultiSelectField(
+            queryset=Employee.objects.filter(employee_work_info__isnull=False),
+            widget=HorillaMultiSelectWidget(
+                filter_route_name="employee-widget-filter",
+                filter_class=EmployeeFilter,
+                filter_instance_contex_name="f",
+                filter_template_path="employee_filters.html",
+                form=self,
+                instance=self.instance,
+                required=True,
+            ),
+            label=_("Employees"),
+        )
+        self.fields["status"].initial = "Not Started"
+        self.fields["cyclic_feedback"].widget.attrs["onchange"] = "cyclicFeedback()"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if isinstance(self.fields["employee_ids"], HorillaMultiSelectField):
+            self.errors.pop("employee_ids", None)
+
+            employee_data = self.fields["employee_ids"].queryset.filter(
+                id__in=self.data.getlist("employee_ids")
+            )
+
+            cleaned_data["employee_ids"] = employee_data
+
+        return cleaned_data

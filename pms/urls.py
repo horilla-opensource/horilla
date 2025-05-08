@@ -125,11 +125,11 @@ urlpatterns = [
         "feedback-list-search", views.feedback_list_search, name="feedback-list-search"
     ),
     path("feedback-creation", views.feedback_creation, name="feedback-creation"),
-    # path(
-    #     "feedback-creation-ajax",
-    #     views.feedback_creation_ajax,
-    #     name="feedback-creation-ajax",
-    # ),
+    path(
+        "bulk-feedback-create",
+        cbvs.BulkFeedbackFormView.as_view(),
+        name="bulk-feedback-create",
+    ),
     path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
     path("feedback-delete/<int:id>", views.feedback_delete, name="feedback-delete"),
     path("feedback-archive/<int:id>", views.feedback_archive, name="feedback-archive"),
