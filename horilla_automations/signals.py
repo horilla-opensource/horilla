@@ -449,10 +449,8 @@ def send_mail(request, automation, instance):
         title_template = template.Template(automation.title)
         title_context = template.Context({"instance": instance, "self": sender})
         render_title = title_template.render(title_context)
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         soup = BeautifulSoup(render_bdy, "html.parser")
         plain_text = soup.get_text(separator="\n")
-        print(render_title)
 
         email = EmailMessage(
             subject=render_title,
@@ -468,8 +466,10 @@ def send_mail(request, automation, instance):
 
         def _send_mail(email):
             try:
-                print("MAIL SENTTTTTTTTTTTTT")
                 email.send()
+                logger.info(
+                    f"Automation <Mail> {automation.title} is triggered by {request.user.employee_get}"
+                )
             except Exception as e:
                 print("ERRRRRR")
                 logger.error(e)
@@ -483,7 +483,9 @@ def send_mail(request, automation, instance):
                 icon="person-remove",
                 redirect="",
             )
-            print("NOTIFICATION SENTTTTTTTTTTTTTT")
+            logger.info(
+                f"Automation <Notification> {automation.title} is triggered by {request.user.employee_get}"
+            )
 
         if automation.delivary_channel != "notification":
             thread = threading.Thread(
