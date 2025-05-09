@@ -1596,12 +1596,15 @@ def view_mail_template(request, obj_id):
 
 
 @login_required
-@require_http_methods(["POST"])
+@hx_request_required
 @permission_required("base.add_horillamailtemplate")
 def create_mail_templates(request):
     """
     This method is used to create offerletter template
     """
+    form = MailTemplateForm()
+    searchWords = form.get_template_language()
+
     if request.method == "POST":
         form = MailTemplateForm(request.POST)
         if form.is_valid():
@@ -1609,7 +1612,12 @@ def create_mail_templates(request):
             instance.save()
             messages.success(request, "Template created")
             return HttpResponse("<script>window.location.reload()</script>")
-    return redirect(view_mail_templates)
+
+    return render(
+        request,
+        "mail/htmx/form.html",
+        {"form": form, "duplicate": False, "searchWords": searchWords},
+    )
 
 
 @login_required
