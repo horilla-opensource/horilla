@@ -1,574 +1,299 @@
-{% extends 'index.html' %}  {% load static %} {% load i18n %}
+{% extends 'index.html' %} {% load static %} {% load i18n %}
 {% load audit_filters %}
 {% load basefilters %} {% load helpdeskfilters %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Helpdesk</title>
-    <link rel="stylesheet" href="./build/css/style.min.css" />
-  </head>
 
-  <body>
-
-    <div class="oh-wrapper-main">
-      {% comment %} <div id="sidebar"></div> {% endcomment %}
-      {% block content %}
-
+{% block content %}
 <style>
-  .oh-profile__avatar-limit-height {
-    height: 30px !important;
-  }
-  .oh-profile_name_custom {
-    font-size: 13px;
-    padding-left: 4px;
-  }
-  .oh-profile__image_custm {
-    width: 26px;
-    height: 26px;
-  }
-  .avatars {
-    display: flex;
-    padding: 8px 10px 8px 10px;
-  }
+    .oh-profile__avatar-limit-height {
+        height: 30px !important;
+    }
 
-  .avatars__item {
-    background-color: #596376;
-    border: 2px solid white;
-    border-radius: 100%;
-    color: #ffffff;
-    display: block;
-    font-family: sans-serif;
-    font-size: 12px;
-    font-weight: 100;
-    height: 26px;
-    width: 26px;
-    line-height: 17px;
-    text-align: center;
-    transition: margin 0.1s ease-in-out;
-    overflow: hidden;
-    margin-left: -10px;
-  }
+    .oh-profile_name_custom {
+        font-size: 13px;
+        padding-left: 4px;
+    }
 
-  .avatars__item:first-child {
-    z-index: 5;
-  }
+    .oh-profile__image_custm {
+        width: 26px;
+        height: 26px;
+    }
 
-  .avatars__item:nth-child(2) {
-    z-index: 4;
-  }
+    .avatars {
+        display: flex;
+        padding: 8px 10px 8px 10px;
+    }
 
-  .avatars__item:nth-child(3) {
-    z-index: 3;
-  }
+    .avatars__item {
+        background-color: #596376;
+        border: 2px solid white;
+        border-radius: 100%;
+        color: #ffffff;
+        display: block;
+        font-family: sans-serif;
+        font-size: 12px;
+        font-weight: 100;
+        height: 26px;
+        width: 26px;
+        line-height: 17px;
+        text-align: center;
+        transition: margin 0.1s ease-in-out;
+        overflow: hidden;
+        margin-left: -10px;
+    }
 
-  .avatars__item:nth-child(4) {
-    z-index: 2;
-  }
+    .avatars__item:first-child {
+        z-index: 5;
+    }
 
-  .avatars__item:nth-child(5) {
-    z-index: 1;
-  }
+    .avatars__item:nth-child(2) {
+        z-index: 4;
+    }
 
-  .avatars__item:last-child {
-    z-index: 0;
-  }
+    .avatars__item:nth-child(3) {
+        z-index: 3;
+    }
 
-  .avatars__item img {
-    width: 100%;
-  }
+    .avatars__item:nth-child(4) {
+        z-index: 2;
+    }
 
-  .avatars:hover .avatars__item {
-    margin-right: 10px;
-  }
-  .horizontal-scroll{
-    display: flex;
-    justify-content: flex-start;
-    overflow-x: auto;
-    width: 100%;
-  }
+    .avatars__item:nth-child(5) {
+        z-index: 1;
+    }
+
+    .avatars__item:last-child {
+        z-index: 0;
+    }
+
+    .avatars__item img {
+        width: 100%;
+    }
+
+    .avatars:hover .avatars__item {
+        margin-right: 10px;
+    }
+
+    .horizontal-scroll {
+        display: flex;
+        justify-content: flex-start;
+        overflow-x: auto;
+        width: 100%;
+    }
 </style>
 
-      <div id="main">
-        <!-- Navigation -->
-        <div id="mainNav"></div>
-        <div id="ohMessages"></div>
-        <!-- End of Navigation -->
-        <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-          <div class="oh-helpdesk">
-            <div class="oh-helpdesk__left">
-              <div class="oh-helpdesk__header">
-                <div class = "d-flex justify-content-between align-items-center">
-                  <p class="oh-helpdesk__header-title">{{ticket.title}}</p>
+<div id="main">
 
-                  <span class="helpdesk__card-value me-3">
-                    {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or request.user.employee_get in ticket.assigned_to.all or request.user.employee_get == ticket.employee_id %}
+    <div id="ohMessages"></div>
 
-                        <select name="status_update" title='{% trans "Status" %}' class="oh-select" onchange="updateStatus()"
-                          style="
-                          width:190px;
-                          align-items: center;
-                          border: 1px solid #aaa;
-                          border-radius: 2px;
-                          background-color: #fff;
-                      ">
-                          {% for status in ticket_status %}
-                          <option value="{{status.0}}"  {% if status.0 == ticket.status %} selected {% endif %}>
-                            <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
-                          {% endfor %}
-                        </select>
-                    {% else %}
-                    <select name="status_update" title='{% trans "Status" %}' class="oh-select"
-                          style="
-                          width:190px;
-                          align-items: center;
-                          border: 1px solid #aaa;
-                          border-radius: 2px;
-                          background-color: #fff;
-                      ">
-                        {% for status in ticket_status %}
-                            {% if status.0 == ticket.status %}
-                              <option value="{{status.0}}" selected >
-                              <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span></option>
-                            {% endif %}
-                        {% endfor %}
-                      </select>
-                    {% endif %}
-                  </span>
-                </div>
-              <!-- Description Goes Here -->
-              </div>
-              <div class="oh-helpdesk__body">
-                <div class="oh-helpdesk__chat-container">
-                  <div class="oh-helpdesk__bubble oh-helpdesk__bubble--sender">
-                    <div class="oh-helpdesk__bubble-header">
-                      <div class="oh-helpdesk__bubble-user">
-                        <div class="oh-profile oh-profile--md">
-                          <div class="oh-profile__avatar mr-1">
-                            <img
-                              src="{{ticket.employee_id.get_avatar}}"
-                              class="oh-profile__image"
-                              alt="oh-link--secondary" />
-                          </div>
-                        </div>
-                        <span class="oh-helpdesk__bubble-username">{{ticket.employee_id}}</span>
-                      </div>
-                      <span class="oh-helpdesk__bubble-timestamp"
-                        >{{ticket.created_date}}</span
-                      >
-                    </div>
-                    <div class="oh-helpdesk__bubble-body">
-                      <p>{{ticket.description|safe}}</p>
+    <div class="oh-helpdesk">
+        <div class="oh-helpdesk__left">
+            <div class="oh-helpdesk__header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class="oh-helpdesk__header-title">{{ticket.title}}</p>
 
-                    </div>
-                  </div>
-
-                  {% for item in sorted_activity_list %}
-                    {% if item.type == 'comment' %}
-                      {% if item.comment.employee_id == ticket.employee_id %}
-                        <div class="oh-helpdesk__comment--container d-flex justify-content-end" >
-                          <div class="oh-helpdesk__bubble oh-helpdesk__bubble--comment" style="width:90%">
-                            <div class="oh-helpdesk__bubble-header">
-                              <div class="oh-helpdesk__bubble-user">
-                                <div class="oh-profile oh-profile--md">
-                                  <div class="oh-profile__avatar mr-1">
-                                    <img
-                                      src="{{item.comment.employee_id.get_avatar}}"
-                                      class="oh-profile__image"
-                                      alt="{{item.comment.employee_id}}" />
-                                  </div>
-                                </div>
-                                <span class="oh-helpdesk__bubble-username">{{item.comment.employee_id}}</span>
-
-                              </div>
-                              <span class="oh-helpdesk__bubble-timestamp"
-                                >{{item.comment.date}}
-                              </span>
-                            </div>
-                            <div class="oh-helpdesk__bubble-body">
-                              <span class="oh-helpdesk__comment">
-                                {{item.comment.comment|safe}}
-                              </span>
-                              <div class="oh-scrollable-container">
-                                <div class="oh-layout--grid-3 mt-2 mb-2 horizontal-scroll"
-                                  >
-                                    {% if item.comment.comment_attachment.all %}
-                                      {% for attachment in item.comment.comment_attachment.all %}
-                                          {% with extension=attachment.file.name|lower|slice:"-4:" %}
-                                          <a
-                                            class ="me-2"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target ="#viewFileModal"
-                                            hx-target="#viewFile"
-                                            hx-get="{% url 'view-ticket-document' attachment.id %}?ticket_id={{ticket.id}}"
-                                          >
-                                                <div class="oh-helpdesk__icon">
-                                                  <span class="oh-file-icon
-                                                    {% if extension == '.pdf' %} oh-file-icon--pdf
-                                                    {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
-                                                    {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
-                                                    {% elif extension in '.doc .docx' %} oh-file-icon--word
-                                                    {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
-                                                    {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
-                                                    {% elif extension in '.html' %} oh-file-icon--html
-                                                    {% else %} oh-file-icon--default
-                                                    {% endif %}"
-                                                    title = "{{attachment}}"
-                                                    >
-                                                  </span>
-                                                </div>
-                                              </a>
-                                          {% endwith %}
-                                      {% endfor %}
-                                    {% endif %}
-                                  </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      {% else %}
-                        <div class="oh-helpdesk__bubble oh-helpdesk__bubble--reply" style="width:90%">
-                          <div class="oh-helpdesk__bubble-header">
-                            <div class="oh-helpdesk__bubble-user">
-                              <div class="oh-profile oh-profile--md">
-                                <div class="oh-profile__avatar mr-1">
-                                  <img
-                                    src="{{item.comment.employee_id.get_avatar}}"
-                                    class="oh-profile__image"
-                                    alt="{{item.comment.employee_id}}" />
-                                </div>
-                              </div>
-                              <span class="oh-helpdesk__bubble-username"
-                                >{{item.comment.employee_id}}</span
-                              >
-                            </div>
-                            <span class="oh-helpdesk__bubble-timestamp"
-                              >{{item.comment.date}}</span
-                            >
-                          </div>
-                          <div class="oh-helpdesk__bubble-body">
-                            <div class="d-flex justify-content-between align-items-center comment_container">
-                              <div>
-                                <textarea class="bg-transparent border-0 w-100 comment_input" data-comment-id = "{{item.comment.id}}" >{{item.comment.comment}}</textarea>
-                                {{item.comment.comment|safe}}
-                              </div>
-                                <div class="oh-btn-group" style="border:none">
-                              {% if request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_comment or request.user.employee_get == item.comment.employee_id %}
-                                <a
-                                  class="oh-btn p-3 edit_comment"
-                                  title="{% trans 'Edit' %}"
-
-                                >
-                                    <ion-icon name="pencil-outline"></ion-icon>
-                                </a>
-                              {% endif %}
-                              {% if perms.helpdesk.delete_comment %}
-                                <a
-                                  href="{% url "comment-delete" item.comment.id %}"
-                                  type="button" title="{% trans 'Delete' %}"
-                                  class="oh-btn p-3"
-                                >
-                                  <ion-icon name="trash-outline"></ion-icon>
-                                </a>
-                              {% endif %}
-                              </div>
-                            </div>
-                            <div class="oh-scrollable-container">
-                              <div class="oh-layout--grid-3 mt-2 mb-2 horizontal-scroll"
-                                >
-                                  {% if item.comment.comment_attachment.all %}
-                                    {% for attachment in item.comment.comment_attachment.all %}
-                                        {% with extension=attachment.file.name|lower|slice:"-4:" %}
-                                              <a
-                                                class ="me-2"
-                                                data-toggle="oh-modal-toggle"
-                                                data-target ="#viewFileModal"
-                                                hx-target="#viewFile"
-                                                hx-get="{% url 'view-ticket-document' attachment.id %}"
-                                              >
-                                                <div class="oh-helpdesk__icon">
-                                                  <span class="oh-file-icon
-                                                    {% if extension == '.pdf' %} oh-file-icon--pdf
-                                                    {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
-                                                    {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
-                                                    {% elif extension in '.doc .docx' %} oh-file-icon--word
-                                                    {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
-                                                    {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
-                                                    {% elif extension in '.html' %} oh-file-icon--html
-                                                    {% else %} oh-file-icon--default
-                                                    {% endif %}"
-                                                    title = "{{ attachment }}"
-                                                    >
-                                                  </span>
-                                                </div>
-                                              </a>
-                                          {% endwith %}
-                                    {% endfor %}
-                                  {% endif %}
-                                </div>
-                              </div>
-                          </div>
-                        </div>
-                      {% endif %}
-                      {% elif item.type == 'history' %}
-                      {% if item.history.type == 'Ticket created' %}
-                      <div class="oh-helpdesk__chat-update">
-                        <span><strong>
-                          {{item.history.updated_by}}</strong> {% trans "Created the ticket " %}
-                        </span>
-                      </div>
-                      {% elif item.history.changes.0.is_fk == True %}
-                      <div class="oh-helpdesk__chat-update">
-                        <span
-                          >{{item.history.updated_by}} {% trans "changed the ticket " %}{{item.history.changes.0.field|safe}} {% trans " from" %}
-                          <strong>{{item.history.pair.0|fk_history:item.history.changes.0|safe}}</strong> {% trans "to" %} <strong>{{item.history.pair.1|fk_history:item.history.changes.0|safe}}</strong></span
-                        >
-                        <span>{{ item.history.pair.0.history_date}}</span>
-                      </div>
-                      {% else %}
-                      <div class="oh-helpdesk__chat-update">
-                        <span
-                          >{{item.history.updated_by}} {% trans "changed the ticket " %}{{item.history.changes.0.field|safe}} {% trans " from" %}
-                          <strong>{{item.history.changes.0.old|safe}}</strong> {% trans "to" %} <strong>{{item.history.changes.0.new|safe}}</strong></span
-                        >
-                        <span>{{ item.history.pair.0.history_date}}</span>
-                      </div>
-                      {% endif %}
-                    {% endif %}
-                  {% endfor %}
-
-                </div>
-              </div>
-              <!-- start of comment box. -->
-              {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
-                <div class="oh-helpdesk__chatbox">
-                  <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST" enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper">
-                    {% csrf_token %}
-                    <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
-                    <label
-                      aria-role="button"
-                      for="fileUpload"
-                      aria-label="Attach Files"
-                      class="oh-btn oh-btn--chat oh-btn--chat-attachments"
-                    >
-                      <!-- The file count badge -->
-                      <span id="fileCount" style="
-                        position: absolute;
-                        top: -6px;   /* Adjust the top position */
-                        right: -6px; /* Adjust the right position */
-                        background-color: red;
-                        color: white;
-                        font-size: 12px;
-                        border-radius: 50%;
-                        padding: 2px 6px;
-                        min-width: 16px;
-                        text-align: center;
-                        display: none; /* Initially hidden */
-                      ">
-                      </span>
-                    </label>
-
-                    <textarea
-                      name="comment"
-                      class="oh-helpdesk__chat-input oh-chat__main-input ps-5"
-                      placeholder="Type something..."
-                    ></textarea>
-                    <button
-                      class="oh-btn oh-btn--chat oh-btn--chat-send"
-                      type="submit"
-                      onclick="validateComment(event)"
-                      aria-label="Send Message"></button>
-                  </form>
-                  <script>
-                    $(document).ready(function () {
-                      $(`[name=comment]`).summernote(noteProperties());
-                    });
-                  </script>
-                </div>
-              {% endif %}
-              <!-- end of comment box. -->
-            </div>
-            <!-- start of right side contents. -->
-            <div class="oh-helpdesk__right">
-              <div class="oh-helpdesk__right-header">{% trans "Ticket Details" %}</div>
-              <div class="oh-helpdesk__right-body">
-                <!-- Ticket Info. -->
-                <div class="oh-helpdesk__card">
-                  <div class="oh-helpdesk__card-header d-flex justify-content-between align-items-center">
-                    <span class="oh-helpdesk__card-title">{% trans "Ticket Info" %}</span>
-                  </div>
-                  <div class="oh-helpdesk__card-body">
-                    <ul class="helpdesk__card-items">
-                      <li class="helpdesk__card-item">
-                        <span class="helpdesk__card-label">{% trans "Ticket ID:" %}</span>
-                        <span class="helpdesk__card-value" name="ticketId" id="{{ticket.id}}">{{ticket.ticket_type.prefix}}{{ ticket.id|stringformat:"03d" }}</span>
-                      </li>
-                      <li class="helpdesk__card-item">
-                        <span class="helpdesk__card-label">{% trans "Owner" %}</span>
-                        <span class="helpdesk__card-value" name="owner">{{ticket.employee_id}}</span>
-                      </li>
-                      <li class="helpdesk__card-item">
-                        <span class="helpdesk__card-label">{% trans "Created:" %}</span>
-                        <span class="helpdesk__card-value">{{ticket.created_date}}</span>
-                      </li>
-                      <li class="helpdesk__card-item">
+                    <span class="helpdesk__card-value me-3">
                         {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or request.user.employee_get in ticket.assigned_to.all or request.user.employee_get == ticket.employee_id %}
-                          <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
-                            {% csrf_token %}
-                            <div class="d-flex">
-                              <span class="helpdesk__card-label">{% trans "Priority" %} :</span>
-                              <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
-                                {% for i in "321" %}
-                                <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if rating == i %} checked {% endif %}/>
-                                <label for="star{{i}}{{ticket.id}}"
-                                {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
+                            <select name="status_update" title='{% trans "Status" %}' class="oh-select"
+                                onchange="updateStatus()" style=" width:190px; align-items: center; border: 1px solid #aaa; border-radius: 2px; background-color: #fff; ">
+                                {% for status in ticket_status %}
+                                    <option value="{{status.0}}" {% if status.0 == ticket.status %} selected {% endif %}>
+                                        <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span>
+                                    </option>
                                 {% endfor %}
-                              </div>
-                              <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
-                              <span id="rating-radio-error"></span>
-                            </div>
-                          </form>
+                            </select>
                         {% else %}
-                          <div class="d-flex">
-                            <span class="helpdesk__card-label">{% trans "Priority" %} :</span>
-                            <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
-                              {% for i in "321" %}
-                              <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if rating == i %} checked {% endif %}/>
-                              <label for="star{{i}}{{ticket.id}}"
-                              {% if i == '1' %}title="{% trans 'Low' %}"{% elif i == '2' %}title="{% trans 'Medium' %}"{% else %}title="{% trans 'High' %}"{% endif %}></label>
-                              {% endfor %}
-                            </div>
+                            <select name="status_update" title='{% trans "Status" %}' class="oh-select" style="width:190px; align-items: center; border: 1px solid #aaa; border-radius: 2px; background-color: #fff;">
+                                {% for status in ticket_status %}
+                                    {% if status.0 == ticket.status %}
+                                        <option value="{{status.0}}" selected>
+                                            <span class="oh-dot oh-dot--small oh-dot--warning">{{status.1}}</span>
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
                         {% endif %}
-                      </li>
-                      <li class="helpdesk__card-item">
-                        <span class="helpdesk__card-label">{% trans "Last activity:" %}</span>
-                        <span class="helpdesk__card-value">
-                          {% with sorted_activity_list|last as last %}
-                            {{ last.date }}
-                          {% endwith %}
-                        </span>
-                      </li>
-                    </ul>
-                    <div class="helpdesk__card-footer">
-                      <span class="helpdesk__card-label">{% trans "Tags:" %}</span>
-                        {% if perms.helpdesk.change_ticket or request.user.employee_get == ticket.employee_id or request.user.employee_get|is_department_manager:ticket %}
-                          <div class="oh-helpdesk-selectbox">
-                            {{tag_form.tags}}
-                          </div>
-                        {% else %}
-                          <span class="helpdesk__card-value">
-                              {% for tag in ticket.tags.all  %}
-                                {{tag}},
-                              {% endfor %}
-                          </span>
-                        {% endif %}
-                    </div>
-                  </div>
+                    </span>
                 </div>
-                <!-- End of Ticket Info. -->
-                <!-- Responsibility Card -->
-                <div class="oh-helpdesk__card">
-                  <div class="oh-helpdesk__card-header d-flex justify-content-between">
-                    <span class="oh-helpdesk__card-title">{% trans "Responsibility" %}</span>
-                    <span class="oh-helpdesk__card-title text-{{color}}">{{remaining}} </span>
-                  </div>
-                  <div class="oh-helpdesk__card-body">
-                    <div class="oh-helpdesk__subcard">
-                      <div class="oh-helpdesk__subcard-header">
-                        <span class="oh-helpdesk__subcard-title">{% trans "Forward to" %}</span>
-                        {% if perms.helpdesk.change_ticket or request.user.employee_get == ticket.employee_id %}
-                          <div class="oh-btn-group">
-                            <button
-                              class="oh-btn oh-btn--light-bkg p-3 w-100"
-                              hx-get="{% url 'ticket-change-raised-on' ticket.id %}"
-                              data-target ="#addTagModal"
-                              hx-target="#addTagTarget"
-                              role="button"
-                              title = "{% trans "Edit" %}"
-                              >
-                              <ion-icon name="create-outline"></ion-icon>
-                            </button>
-                          </div>
-                        {% endif %}
-                      </div>
-                      <div class="oh-helpdesk__subcard-body">
-                        <ul class="oh-helpdesk__subcard-items">
-                          <li class="oh-helpdesk__subcard-item">{{ticket.get_raised_on_object}}</li>
-                        </ul>
-                      </div>
-                    </div>
-
-                    <div class="oh-helpdesk__subcard">
-                      {% if perms.helpdesk.view_claimrequest or perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
-                        <div class="oh-helpdesk__subcard-header">
-                          <span class="oh-helpdesk__subcard-title">{% trans "Assigned to" %}</span>
-                          {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
-                          <div class="oh-btn-group">
-
-                            <button
-                                hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
-                                hx-target="#objectDetailsModalTarget"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#objectDetailsModal"
-                                class="oh-btn oh-btn--info p-3 w-100"
-                                title = "{% trans "Claim Requests" %}"
-                              >
-                              <ion-icon name="eye-outline"></ion-icon>
-
-                            </button>
-                            <button
-                              class="oh-btn oh-btn--light-bkg p-3 w-100"
-                              hx-get="{% url 'ticket-change-assignees' ticket.id %}"
-                              data-target ="#addTagModal"
-                              hx-target="#addTagTarget"
-                              title="{% trans 'Edit' %}"
-
-                            ><ion-icon name="create-outline"></ion-icon>
-                          </button>
-                          </div>
-                          {% endif %}
+                <!-- Description Goes Here -->
+            </div>
+            <div class="oh-helpdesk__body">
+                <div class="oh-helpdesk__chat-container">
+                    <div class="oh-helpdesk__bubble oh-helpdesk__bubble--sender">
+                        <div class="oh-helpdesk__bubble-header">
+                            <div class="oh-helpdesk__bubble-user">
+                                <div class="oh-profile oh-profile--md">
+                                    <div class="oh-profile__avatar mr-1">
+                                        <img src="{{ticket.employee_id.get_avatar}}" class="oh-profile__image"
+                                            alt="oh-link--secondary" />
+                                    </div>
+                                </div>
+                                <span class="oh-helpdesk__bubble-username">{{ticket.employee_id}}</span>
+                            </div>
+                            <span class="oh-helpdesk__bubble-timestamp">{{ticket.created_date}}</span>
+                        </div>
+                        <div class="oh-helpdesk__bubble-body">
+                            <p>{{ticket.description|safe}}</p>
 
                         </div>
-                          <div class="align-items-center d-flex" style="min-height: 40px;">
-                          <div class="d-flex justify-content-between custom-scroll">
-                            <div class="avatars" id="avatarsContainer">
-                              {% for employee in ticket.assigned_to.all %}
-                              <a
-                                href="{% url 'employee-view-individual' employee.id %}"
-                                class="avatars__item"
-                                title="{{employee}}"
-                                ><img class="avatar" src="{{employee.get_avatar}}" alt=""
-                              /></a>
-                              {% endfor %}
-                            </div>
-                          </div>
-                        </div>
-                      {% endif %}
-
                     </div>
-                  </div>
-                </div>
-                <!-- End of Responsibility Card -->
-                <!-- Document Card -->
-                <div class="oh-helpdesk__card">
-                  <div class="oh-helpdesk__card-header" style="display: flex; align-items: center; justify-content: space-between;">
-                    <span class="oh-helpdesk__card-title">{% trans "Documents" %}</span>
 
-                    {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
-                      <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST" enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper" style="display: flex; align-items: center; gap: 10px;">
+                    {% for item in sorted_activity_list %}
+                        {% if item.type == 'comment' %}
+                            {% if item.comment.employee_id == ticket.employee_id %}
+                                <div class="oh-helpdesk__comment--container d-flex justify-content-end">
+                                    <div class="oh-helpdesk__bubble oh-helpdesk__bubble--comment" style="width:90%">
+                                        <div class="oh-helpdesk__bubble-header">
+                                            <div class="oh-helpdesk__bubble-user">
+                                                <div class="oh-profile oh-profile--md">
+                                                    <div class="oh-profile__avatar mr-1">
+                                                        <img src="{{item.comment.employee_id.get_avatar}}" class="oh-profile__image"
+                                                            alt="{{item.comment.employee_id}}" />
+                                                    </div>
+                                                </div>
+                                                <span class="oh-helpdesk__bubble-username">{{item.comment.employee_id}}</span>
+
+                                            </div>
+                                            <span class="oh-helpdesk__bubble-timestamp">{{item.comment.date}}
+                                            </span>
+                                        </div>
+                                        <div class="oh-helpdesk__bubble-body">
+                                            <span class="oh-helpdesk__comment">
+                                                {{item.comment.comment|safe}}
+                                            </span>
+                                            <div class="oh-scrollable-container">
+                                                <div class="oh-layout--grid-3 mt-2 mb-2 horizontal-scroll">
+                                                    {% if item.comment.comment_attachment.all %}
+                                                        {% for attachment in item.comment.comment_attachment.all %}
+                                                            {% with extension=attachment.file.name|lower|slice:"-4:" %}
+                                                                <a class="me-2" data-toggle="oh-modal-toggle" data-target="#viewFileModal"
+                                                                    hx-target="#viewFile"
+                                                                    hx-get="{% url 'view-ticket-document' attachment.id %}?ticket_id={{ticket.id}}">
+                                                                    <div class="oh-helpdesk__icon">
+                                                                        <span class="oh-file-icon
+                                                                            {% if extension == '.pdf' %} oh-file-icon--pdf
+                                                                            {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
+                                                                            {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
+                                                                            {% elif extension in '.doc .docx' %} oh-file-icon--word
+                                                                            {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
+                                                                            {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
+                                                                            {% elif extension in '.html' %} oh-file-icon--html
+                                                                            {% else %} oh-file-icon--default
+                                                                            {% endif %}" title="{{attachment}}">
+                                                                        </span>
+                                                                    </div>
+                                                                </a>
+                                                            {% endwith %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="oh-helpdesk__bubble oh-helpdesk__bubble--reply" style="width:90%">
+                                    <div class="oh-helpdesk__bubble-header">
+                                        <div class="oh-helpdesk__bubble-user">
+                                            <div class="oh-profile oh-profile--md">
+                                                <div class="oh-profile__avatar mr-1">
+                                                    <img src="{{item.comment.employee_id.get_avatar}}" class="oh-profile__image"
+                                                        alt="{{item.comment.employee_id}}" />
+                                                </div>
+                                            </div>
+                                            <span class="oh-helpdesk__bubble-username">{{item.comment.employee_id}}</span>
+                                        </div>
+                                        <span class="oh-helpdesk__bubble-timestamp">{{item.comment.date}}</span>
+                                    </div>
+                                    <div class="oh-helpdesk__bubble-body">
+                                        <div class="d-flex justify-content-between align-items-center comment_container">
+                                            <div>
+                                                <textarea class="bg-transparent border-0 w-100 comment_input"
+                                                    data-comment-id="{{item.comment.id}}">{{item.comment.comment}}</textarea>
+                                                {{item.comment.comment|safe}}
+                                            </div>
+                                            <div class="oh-btn-group" style="border:none">
+                                                {% if request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_comment or request.user.employee_get == item.comment.employee_id %}
+                                                    <a class="oh-btn p-3 edit_comment" title="{% trans 'Edit' %}">
+                                                        <ion-icon name="pencil-outline"></ion-icon>
+                                                    </a>
+                                                {% endif %}
+                                                {% if perms.helpdesk.delete_comment %}
+                                                    <a href="{% url " comment-delete" item.comment.id %}" type="button"
+                                                        title="{% trans 'Delete' %}" class="oh-btn p-3">
+                                                        <ion-icon name="trash-outline"></ion-icon>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="oh-scrollable-container">
+                                            <div class="oh-layout--grid-3 mt-2 mb-2 horizontal-scroll">
+                                                {% if item.comment.comment_attachment.all %}
+                                                    {% for attachment in item.comment.comment_attachment.all %}
+                                                        {% with extension=attachment.file.name|lower|slice:"-4:" %}
+                                                            <a class="me-2" data-toggle="oh-modal-toggle" data-target="#viewFileModal"
+                                                                hx-target="#viewFile" hx-get="{% url 'view-ticket-document' attachment.id %}">
+                                                                <div class="oh-helpdesk__icon">
+                                                                    <span class="oh-file-icon
+                                                                            {% if extension == '.pdf' %} oh-file-icon--pdf
+                                                                            {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
+                                                                            {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
+                                                                            {% elif extension in '.doc .docx' %} oh-file-icon--word
+                                                                            {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
+                                                                            {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
+                                                                            {% elif extension in '.html' %} oh-file-icon--html
+                                                                            {% else %} oh-file-icon--default
+                                                                            {% endif %}" title="{{ attachment }}">
+                                                                    </span>
+                                                                </div>
+                                                            </a>
+                                                        {% endwith %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% elif item.type == 'history' %}
+                            {% if item.history.type == 'Ticket created' %}
+                                <div class="oh-helpdesk__chat-update">
+                                    <span><strong>
+                                        {{item.history.updated_by}}</strong> {% trans "Created the ticket " %}
+                                    </span>
+                                </div>
+                            {% elif item.history.changes.0.is_fk == True %}
+                                <div class="oh-helpdesk__chat-update">
+                                    <span>{{item.history.updated_by}} {% trans "changed the ticket " %}{{item.history.changes.0.field|safe}} {% trans " from" %}
+                                        <strong>{{item.history.pair.0|fk_history:item.history.changes.0|safe}}</strong> {% trans "to" %}
+                                        <strong>{{item.history.pair.1|fk_history:item.history.changes.0|safe}}</strong></span>
+                                    <span>{{ item.history.pair.0.history_date}}</span>
+                                </div>
+                            {% else %}
+                                <div class="oh-helpdesk__chat-update">
+                                    <span>{{item.history.updated_by}} {% trans "changed the ticket " %}{{item.history.changes.0.field|safe}} {% trans " from" %}
+                                        <strong>{{item.history.changes.0.old|safe}}</strong> {% trans "to" %}
+                                        <strong>{{item.history.changes.0.new|safe}}</strong></span>
+                                    <span>{{ item.history.pair.0.history_date}}</span>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- start of comment box. -->
+            {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
+                <div class="oh-helpdesk__chatbox">
+                    <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST"
+                        enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper">
                         {% csrf_token %}
-
                         <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
-
-                        <!-- Attachment Button -->
-                        <label for="fileUpload" aria-label="Attach Files" class="oh-btn oh-btn--chat oh-btn--chat-attachments" style="position: relative; cursor: pointer;">
-                          <!-- File count badge -->
-                          <span id="fileCount1" style="
+                        <label aria-role="button" for="fileUpload" aria-label="Attach Files"
+                            class="oh-btn oh-btn--chat oh-btn--chat-attachments">
+                            <!-- The file count badge -->
+                            <span id="fileCount" style="
                             position: absolute;
-                            top: -6px;
-                            right: -6px;
+                            top: -6px;   /* Adjust the top position */
+                            right: -6px; /* Adjust the right position */
                             background-color: red;
                             color: white;
                             font-size: 12px;
@@ -576,330 +301,476 @@
                             padding: 2px 6px;
                             min-width: 16px;
                             text-align: center;
-                            display: none;
-                          "></span>
+                            display: none; /* Initially hidden */
+                        ">
+                            </span>
                         </label>
 
-                      </form>
-                    {% endif %}
-                  </div>
-                  <div class="oh-helpdesk__card-body oh-scrollable-container">
-                    <div class="oh-layout--grid-3 mt-2 mb-2 horizontal-scroll"
-                      >
-                      {% if attachments %}
-                        {% for attachment in attachments %}
-                          {% with extension=attachment.file.name|lower|slice:"-4:" %}
-                            <a
-                                class="me-2 position-relative d-inline-block"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#viewFileModal"
-                                hx-target="#viewFile"
-                                hx-get="{% url 'view-ticket-document' attachment.id %}"
-                            >
-                                <!-- File icon -->
-                                <div class="oh-helpdesk__icon">
-                                    <span class="oh-file-icon
-                                        {% if extension == '.pdf' %} oh-file-icon--pdf
-                                        {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
-                                        {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
-                                        {% elif extension in '.doc .docx' %} oh-file-icon--word
-                                        {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
-                                        {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
-                                        {% elif extension in '.html' %} oh-file-icon--html
-                                        {% else %} oh-file-icon--default
-                                        {% endif %}"
-                                        title="{{ attachment }}"
-                                    >
-                                    </span>
-                                </div>
-
-                                <!-- Cross mark for delete action (absolute positioned) -->
-                                <span
-                                    class="position-absolute"
-                                    style="top: -6px; right: 0px; color: red; font-size: 16px; cursor: pointer;"
-                                    title="Delete attachment"
-                                    hx-delete="{% url 'delete-ticket-document' attachment.id %}"
-                                    hx-confirm="Are you sure you want to delete this file?"
-                                    hx-swap="none"
-                                    hx-trigger="click"
-                                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-                                    onclick="deleteFile(event);"
-                                >
-                                    &times;
-                                </span>
-                            </a>
-
-                          {% endwith %}
-                        {% endfor %}
-
-                      {% endif %}
+                        <textarea name="comment" class="oh-helpdesk__chat-input oh-chat__main-input ps-5"
+                            placeholder="Type something..."></textarea>
+                        <button class="oh-btn oh-btn--chat oh-btn--chat-send" type="submit" onclick="validateComment(event)"
+                            aria-label="Send Message"></button>
+                    </form>
+                    <script>
+                        $(document).ready(function () {
+                            $(`[name=comment]`).summernote(noteProperties());
+                        });
+                    </script>
+                </div>
+            {% endif %}
+            <!-- end of comment box. -->
+        </div>
+        <!-- start of right side contents. -->
+        <div class="oh-helpdesk__right">
+            <div class="oh-helpdesk__right-header">{% trans "Ticket Details" %}</div>
+            <div class="oh-helpdesk__right-body">
+                <!-- Ticket Info. -->
+                <div class="oh-helpdesk__card">
+                    <div class="oh-helpdesk__card-header d-flex justify-content-between align-items-center">
+                        <span class="oh-helpdesk__card-title">{% trans "Ticket Info 123" %}</span>
                     </div>
-                  </div>
+                    <div class="oh-helpdesk__card-body">
+                        <ul class="helpdesk__card-items">
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Ticket ID:" %}</span>
+                                <span class="helpdesk__card-value" name="ticketId" id="{{ticket.id}}">{{ticket.ticket_type.prefix}}{{ ticket.id|stringformat:"03d" }}</span>
+                            </li>
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Owner" %}</span>
+                                <span class="helpdesk__card-value" name="owner">{{ticket.employee_id}}</span>
+                            </li>
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Created:" %}</span>
+                                <span class="helpdesk__card-value">{{ticket.created_date}}</span>
+                            </li>
+                            <li class="helpdesk__card-item">
+                                {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or request.user.employee_get in ticket.assigned_to.all or request.user.employee_get == ticket.employee_id %}
+                                    <form hx-swap="none" hx-post='{% url "update-priority" ticket.id %}' method="post">
+                                        {% csrf_token %}
+                                        <div class="d-flex">
+                                            <span class="helpdesk__card-label">{% trans "Priority" %} :</span>
+                                            <div class="oh-rate"
+                                                onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                                {% for i in "321" %}
+                                                    <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if rating == i %}checked{% endif %} />
+                                                    <label for="star{{i}}{{ticket.id}}" title="{% if i == '1' %}{% trans 'Low' %}
+                                                            {% elif i == '2' %}{% trans 'Medium' %}
+                                                            {% else %}{% trans 'High' %}{% endif %}">
+                                                    </label>
+                                                {% endfor %}
+                                            </div>
+                                            <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                                            <span id="rating-radio-error"></span>
+                                        </div>
+                                    </form>
+                                {% else %}
+                                    <div class="d-flex">
+                                        <span class="helpdesk__card-label">{% trans "Priority" %} :</span>
+                                        <div class="oh-rate"
+                                            onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                                            {% for i in "321" %}
+                                                    <input type="radio" id="star{{i}}{{ticket.id}}" name="rating" class="rating-radio" value="{{i}}" {% if rating == i %}checked{% endif %} />
+                                                    <label for="star{{i}}{{ticket.id}}" title="{% if i == '1' %}{% trans 'Low' %}
+                                                            {% elif i == '2' %}{% trans 'Medium' %}
+                                                            {% else %}{% trans 'High' %}{% endif %}">
+                                                    </label>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </li>
+                            <li class="helpdesk__card-item">
+                                <span class="helpdesk__card-label">{% trans "Last activity:" %}</span>
+                                <span class="helpdesk__card-value">
+                                    {% with sorted_activity_list|last as last %}
+                                    {{ last.date }}
+                                    {% endwith %}
+                                </span>
+                            </li>
+                        </ul>
+                        <div class="helpdesk__card-footer">
+                            <span class="helpdesk__card-label">{% trans "Tags:" %}</span>
+                            {% if perms.helpdesk.change_ticket or request.user.employee_get == ticket.employee_id or request.user.employee_get|is_department_manager:ticket %}
+                                <div class="oh-helpdesk-selectbox">
+                                    {{tag_form.tags}}
+                                </div>
+                            {% else %}
+                                <span class="helpdesk__card-value">
+                                    {% for tag in ticket.tags.all %}
+                                        {{tag}},
+                                    {% endfor %}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- End of Ticket Info. -->
+                <!-- Responsibility Card -->
+                <div class="oh-helpdesk__card">
+                    <div class="oh-helpdesk__card-header d-flex justify-content-between">
+                        <span class="oh-helpdesk__card-title">{% trans "Responsibility" %}</span>
+                        <span class="oh-helpdesk__card-title text-{{color}}">{{remaining}} </span>
+                    </div>
+                    <div class="oh-helpdesk__card-body">
+                        <div class="oh-helpdesk__subcard">
+                            <div class="oh-helpdesk__subcard-header">
+                                <span class="oh-helpdesk__subcard-title">{% trans "Forward to" %}</span>
+                                {% if perms.helpdesk.change_ticket or request.user.employee_get == ticket.employee_id %}
+                                    <div class="oh-btn-group">
+                                        <button class="oh-btn oh-btn--light-bkg p-3 w-100"
+                                            hx-get="{% url 'ticket-change-raised-on' ticket.id %}"
+                                            data-target="#addTagModal" hx-target="#addTagTarget" role="button"
+                                            title="{% trans 'Edit' %}">
+                                            <ion-icon name="create-outline"></ion-icon>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="oh-helpdesk__subcard-body">
+                                <ul class="oh-helpdesk__subcard-items">
+                                    <li class="oh-helpdesk__subcard-item">{{ticket.get_raised_on_object}}</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="oh-helpdesk__subcard">
+                            {% if perms.helpdesk.view_claimrequest or perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
+                                <div class="oh-helpdesk__subcard-header">
+                                    <span class="oh-helpdesk__subcard-title">{% trans "Assigned to" %}</span>
+                                    {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_claimrequest %}
+                                        <div class="oh-btn-group">
+                                            <button hx-get="{% url 'view-ticket-claim-request' ticket.id %}"
+                                                hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle"
+                                                data-target="#objectDetailsModal" class="oh-btn oh-btn--info p-3 w-100"
+                                                title="{% trans " Claim Requests" %}">
+                                                <ion-icon name="eye-outline"></ion-icon>
+                                            </button>
+
+                                            <button class="oh-btn oh-btn--light-bkg p-3 w-100"
+                                                hx-get="{% url 'ticket-change-assignees' ticket.id %}"
+                                                data-target="#addTagModal" hx-target="#addTagTarget"
+                                                title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="align-items-center d-flex" style="min-height: 40px;">
+                                    <div class="d-flex justify-content-between custom-scroll">
+                                        <div class="avatars" id="avatarsContainer">
+                                            {% for employee in ticket.assigned_to.all %}
+                                                <a href="{% url 'employee-view-individual' employee.id %}" class="avatars__item"
+                                                    title="{{employee}}"><img class="avatar" src="{{employee.get_avatar}}"
+                                                        alt="" /></a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+                <!-- End of Responsibility Card -->
+                <!-- Document Card -->
+                <div class="oh-helpdesk__card">
+                    <div class="oh-helpdesk__card-header"
+                        style="display: flex; align-items: center; justify-content: space-between;">
+                        <span class="oh-helpdesk__card-title">{% trans "Documents" %}</span>
+
+                        {% if perms.helpdesk.add_comment or request.user.employee_get == ticket.employee_id or request.user.employee_get in ticket.assigned_to.all %}
+                            <form name="comment-form" action="{% url 'comment-create' ticket.id %}" method="POST"
+                                enctype="multipart/form-data" class="oh-chat oh-chat__input-wrapper"
+                                style="display: flex; align-items: center; gap: 10px;">
+                                {% csrf_token %}
+
+                                <input name="file" multiple="True" type="file" id="fileUpload" class="d-none" />
+
+                                <!-- Attachment Button -->
+                                <label for="fileUpload" aria-label="Attach Files"
+                                    class="oh-btn oh-btn--chat oh-btn--chat-attachments"
+                                    style="position: relative; cursor: pointer;">
+                                    <!-- File count badge -->
+                                    <span id="fileCount1" style="position: absolute; top: -6px; right: -6px; background-color: red; color: white; font-size: 12px; border-radius: 50%; padding: 2px 6px; min-width: 16px; text-align: center; display: none; "></span>
+                                </label>
+                            </form>
+                        {% endif %}
+                    </div>
+                    <div class="oh-helpdesk__card-body oh-scrollable-container">
+                        <div class="oh-layout--grid-3 mt-2 mb-2 horizontal-scroll">
+                            {% if attachments %}
+                                {% for attachment in attachments %}
+                                    {% with extension=attachment.file.name|lower|slice:"-4:" %}
+                                        <a class="me-2 position-relative d-inline-block" data-toggle="oh-modal-toggle"
+                                            data-target="#viewFileModal" hx-target="#viewFile"
+                                            hx-get="{% url 'view-ticket-document' attachment.id %}">
+                                            <!-- File icon -->
+                                            <div class="oh-helpdesk__icon">
+                                                <span class="oh-file-icon
+                                                    {% if extension == '.pdf' %} oh-file-icon--pdf
+                                                    {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
+                                                    {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
+                                                    {% elif extension in '.doc .docx' %} oh-file-icon--word
+                                                    {% elif extension in '.xls .xlsx' %} oh-file-icon--excel
+                                                    {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
+                                                    {% elif extension in '.html' %} oh-file-icon--html
+                                                    {% else %} oh-file-icon--default
+                                                    {% endif %}" title="{{ attachment }}">
+                                                </span>
+                                            </div>
+
+                                            <!-- Cross mark for delete action (absolute positioned) -->
+                                            <span class="position-absolute"
+                                                style="top: -6px; right: 0px; color: red; font-size: 16px; cursor: pointer;"
+                                                title="Delete attachment"
+                                                hx-delete="{% url 'delete-ticket-document' attachment.id %}"
+                                                hx-confirm="Are you sure you want to delete this file?" hx-swap="none"
+                                                hx-trigger="click" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                                onclick="deleteFile(event);">
+                                                &times;
+                                            </span>
+                                        </a>
+                                    {% endwith %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
                 <!-- End of Document Card -->
-              </div>
             </div>
-            <!-- end of right side contents. -->
+        </div>
+        <!-- end of right side contents. -->
 
-          </div>
-        </main>
-      </div>
     </div>
+</div>
+</div>
 
 <!-- start of create tag modal. -->
 
-    <div id="addTagModal">
-      <div id="addTagTarget">
-      </div>
+<div id="addTagModal">
+    <div id="addTagTarget">
     </div>
-    <div
-      class="oh-modal"
-      id="editModal"
-      role="dialog"
-      aria-labelledby="editDialogModal"
-      aria-hidden="true"
-    >
-      <div class="oh-modal__dialog">
+</div>
+<div class="oh-modal" id="editModal" role="dialog" aria-labelledby="editDialogModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
         <div class="oh-modal__dialog-header">
-          <h2 class="oh-modal__dialog-title" id="editTitle">
-            {% trans "Create Tag" %}
-          </h2>
-          <button class="oh-modal__close" aria-label="Close">
-            <ion-icon name="close-outline"></ion-icon>
-          </button>
+            <h2 class="oh-modal__dialog-title" id="editTitle">
+                {% trans "Create Tag" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
         </div>
         <div class="oh-modal__dialog-body" id="editTarget">
-          <form
-            onsubmit="showTag();event.preventDefault()"
-          >
-            {% csrf_token %}
-            {{create_tag_f.as_p}}
-          </form>
+            <form onsubmit="showTag();event.preventDefault()">
+                {% csrf_token %}
+                {{create_tag_f.as_p}}
+            </form>
         </div>
-      </div>
     </div>
+</div>
 <!-- end of create tag modal. -->
 
-<div
-	class="oh-modal"
-	id="viewFileModal"
-	role="dialog"
-	aria-labelledby="viewFileModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog custom-dialog">
-		<div class="oh-modal__dialog-header">
-			<span class="oh-modal__dialog-title" id="viewFileModalLabel"
-				>{% trans "View File" %}</span
-			>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon
-					name="close-outline"
-					role="img"
-					class="md hydrated"
-					aria-label="close outline"
-				></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="viewFile"></div>
-	</div>
+<div class="oh-modal" id="viewFileModal" role="dialog" aria-labelledby="viewFileModal" aria-hidden="true">
+    <div class="oh-modal__dialog custom-dialog">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="viewFile"></div>
+    </div>
 </div>
 
-    <script>
-      function deleteFile(event) {
-          event.stopPropagation(); // Prevent the event from bubbling up
-          // No additional code is needed here, HTMX will handle the request automatically
-      }
+<script>
+    function deleteFile(event) {
+        event.stopPropagation(); // Prevent the event from bubbling up
+        // No additional code is needed here, HTMX will handle the request automatically
+    }
 
-      document.getElementById('fileUpload').addEventListener('change', function() {
+    document.getElementById('fileUpload').addEventListener('change', function () {
         const fileCount = this.files.length;
         const countSpan = document.getElementById('fileCount');
 
         if (fileCount > 0) {
-          countSpan.textContent = fileCount;
-          countSpan.style.display = 'inline-block'; // Show the badge
+            countSpan.textContent = fileCount;
+            countSpan.style.display = 'inline-block'; // Show the badge
         } else {
-          countSpan.style.display = 'none'; // Hide if no files are selected
+            countSpan.style.display = 'none'; // Hide if no files are selected
         }
-      });
-      document.getElementById('fileUpload').addEventListener('change', function() {
+    });
+    document.getElementById('fileUpload').addEventListener('change', function () {
         const fileCount = this.files.length;
         const countSpandoc = document.getElementById('fileCount1');
 
         if (fileCount > 0) {
-          countSpandoc.textContent = fileCount;
-          countSpandoc.style.display = 'inline-block'; // Show the badge
+            countSpandoc.textContent = fileCount;
+            countSpandoc.style.display = 'inline-block'; // Show the badge
         } else {
-          countSpandoc.style.display = 'none'; // Hide if no files are selected
+            countSpandoc.style.display = 'none'; // Hide if no files are selected
         }
-      });
-    </script>
+    });
+</script>
 
-    <script>
-      // Function to send rating via AJAX
-      function sendRating(ratingValue) {
+<script>
+    // Function to send rating via AJAX
+    function sendRating(ratingValue) {
 
-          // Send AJAX request with the rating value
-          $.ajax({
-              url: '/your-ajax-endpoint',
-              type: 'POST',
-              contentType: 'application/json',
-              data: JSON.stringify({ rating: ratingValue }),
-              success: function(response) {
-                  // Handle success response
-                  console.log('Rating submitted successfully');
-              },
-              error: function(xhr, status, error) {
-                  // Handle error response
-                  console.error('Error:', xhr.status);
-              }
-          });
-      }
+        // Send AJAX request with the rating value
+        $.ajax({
+            url: '/your-ajax-endpoint',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ rating: ratingValue }),
+            success: function (response) {
+                // Handle success response
+                console.log('Rating submitted successfully');
+            },
+            error: function (xhr, status, error) {
+                // Handle error response
+                console.error('Error:', xhr.status);
+            }
+        });
+    }
 
-      function showTag(){
-        var title=$('#id_title').val()
+    function showTag() {
+        var title = $('#id_title').val()
         var color = $("#id_color").val()
         var is_active = $("#id_is_active").val()
         $.ajax({
-          type: "post",
-          url: `/helpdesk/ticket-create-tag`,
-          data: {
-            csrfmiddlewaretoken: getCookie("csrftoken"),
-            "title": title,
-            "color":color,
-            "is_active":is_active,
-          },
-          success: function (response) {
-            if (response.errors === "no_error") {
-              var newOption = $('<option selected></option>').val(response.tag_id).text(response.title)
-              $("#editModal").removeClass("oh-modal--show");
-              $("#id_tags option[value='create_new_tag']").before(newOption);
-              $("#id_tags option[value='create_new_tag']").prop('selected',false)
-                updateTag()
+            type: "post",
+            url: `/helpdesk/ticket-create-tag`,
+            data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                "title": title,
+                "color": color,
+                "is_active": is_active,
+            },
+            success: function (response) {
+                if (response.errors === "no_error") {
+                    var newOption = $('<option selected></option>').val(response.tag_id).text(response.title)
+                    $("#editModal").removeClass("oh-modal--show");
+                    $("#id_tags option[value='create_new_tag']").before(newOption);
+                    $("#id_tags option[value='create_new_tag']").prop('selected', false)
+                    updateTag()
+                }
             }
-          }
         });
-      }
+    }
 
-      function updateStatus(){
+    function updateStatus() {
         var status = $("[name='status_update']").val()
         var ticketID = $("[name='ticketId']").attr('id');
         $.ajax({
-          type: "post",
-          url: `/helpdesk/change-ticket-status/${ticketID}/`,
-          data: {
-            csrfmiddlewaretoken: getCookie("csrftoken"),
-            "status": status,
-          },
-          success: function (response) {
-            var duration = 0;
-            if (response.errors != "noChange") {
-                $("#ohMessages").append(`
+            type: "post",
+            url: `/helpdesk/change-ticket-status/${ticketID}/`,
+            data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                "status": status,
+            },
+            success: function (response) {
+                var duration = 0;
+                if (response.errors != "noChange") {
+                    $("#ohMessages").append(`
                 <div class="oh-alert-container">
                 <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
                 ${response.message}
                 </div>
                 </div>`);
-                duration = 1500;
-                $('.oh-helpdesk__chat-container').append(
-                    `<div class="oh-helpdesk__chat-update">
+                    duration = 1500;
+                    $('.oh-helpdesk__chat-container').append(
+                        `<div class="oh-helpdesk__chat-update">
                       <span>${response.user} changed the ticket Status from
                         <strong>${response.pre_status}</strong> to <strong>${response.cur_status}</strong></span>
                       <span>${response.time}</span>
                     </div>`
-                  )
-            }
-          },
+                    )
+                }
+            },
         });
-      }
+    }
 
-      function validateComment(event){
+    function validateComment(event) {
         var comment = $("[name='comment']").val()
         var file = $("[name='file']").val()
         if (comment === '' && file === '') {
-          event.preventDefault();
+            event.preventDefault();
         }
-      }
+    }
 
-      function updateTag(event) {
+    function updateTag(event) {
         var ticketId = $("[name='ticketId']").attr('id');
-        var selectedValues = $("#id_tags option:selected").map(function(){
-          return $(this).val();
+        var selectedValues = $("#id_tags option:selected").map(function () {
+            return $(this).val();
         }).get();
         // Check if 'create_new_tag' exists in the list
         if (selectedValues.includes('create_new_tag')) {
-          $("#editModal").addClass("oh-modal--show");
+            $("#editModal").addClass("oh-modal--show");
         } else {
-          // ajax function for save the tag to ticket
-          $.ajax({
-            type:'GET',
-            url:'/helpdesk/ticket-change-tag',
-            data:{"selectedValues":selectedValues,'ticketId':ticketId},
-            success: function (response) {
-              var duration = 0;
-              if (response.errors != "noChange") {
-                  $("#ohMessages").append(`
+            // ajax function for save the tag to ticket
+            $.ajax({
+                type: 'GET',
+                url: '/helpdesk/ticket-change-tag',
+                data: { "selectedValues": selectedValues, 'ticketId': ticketId },
+                success: function (response) {
+                    var duration = 0;
+                    if (response.errors != "noChange") {
+                        $("#ohMessages").append(`
                   <div class="oh-alert-container">
                     <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
                     ${response.message}
                     </div>
                   </div>`);
-                  duration = 1500;
-              }
-            },
-          })
+                        duration = 1500;
+                    }
+                },
+            })
         }
-      }
-      $(document).ready(function() {
+    }
+    $(document).ready(function () {
         $('.comment_container textarea').hide();
-        $(".edit_comment").on("click", function() {
-          let container = $(this).closest('.comment_container')
-          let text = $(container).find('p')
-          let input = $(container).find('textarea')
-          $(text).hide()
-          $(input).show()
-          $(input).focus()
-          var length = input.val().length;
-          input[0].setSelectionRange(length, length);
+        $(".edit_comment").on("click", function () {
+            let container = $(this).closest('.comment_container')
+            let text = $(container).find('p')
+            let input = $(container).find('textarea')
+            $(text).hide()
+            $(input).show()
+            $(input).focus()
+            var length = input.val().length;
+            input[0].setSelectionRange(length, length);
 
         })
-        $(".comment_input").on("keydown", function(event) {
-          if (event.keyCode === 13 && !event.shiftKey) {
-            event.preventDefault();
-            $(this).blur();
-          }
+        $(".comment_input").on("keydown", function (event) {
+            if (event.keyCode === 13 && !event.shiftKey) {
+                event.preventDefault();
+                $(this).blur();
+            }
         });
 
         $(".comment_input").on('focusout', function () {
-          let newComment = $(this).val()
-          let commentId = $(this).data("comment-id")
+            let newComment = $(this).val()
+            let commentId = $(this).data("comment-id")
 
-          $.ajax({
-            type: "post",
-            url: '{% url "comment-edit" %}',
-            data: {
-              csrfmiddlewaretoken: getCookie("csrftoken"),
-              "new_comment": newComment,
-              "comment_id": commentId,
-            },
-            success: function (response) {
-              window.location.reload()
-            },
-          })
+            $.ajax({
+                type: "post",
+                url: '{% url "comment-edit" %}',
+                data: {
+                    csrfmiddlewaretoken: getCookie("csrftoken"),
+                    "new_comment": newComment,
+                    "comment_id": commentId,
+                },
+                success: function (response) {
+                    window.location.reload()
+                },
+            })
         })
 
-      })
-    </script>
+    })
+</script>
 
-    <script src="./build/js/web.frontend.min.js"></script>
-    <script
-      type="module"
-      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
-    <script
-      nomodule
-      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-    <script></script>
-  </body>
-</html>
+<script src="./build/js/web.frontend.min.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<script></script>
 
-{% endblock content %}
+{% endblock %}
