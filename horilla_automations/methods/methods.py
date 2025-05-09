@@ -29,69 +29,128 @@ def get_related_models(model: HorillaModel) -> list:
     return related_models
 
 
+from horilla_automations.methods.recursive_relation import (
+    get_forward_relation_paths_separated,
+)
+
+
 def generate_choices(model_path):
+    """
+    Generate mail to choice
+    """
     module_name, class_name = model_path.rsplit(".", 1)
 
     module = __import__(module_name, fromlist=[class_name])
     model_class: Employee = getattr(module, class_name)
+    fk_relation, m2m_relation = get_forward_relation_paths_separated(
+        model_class, Employee
+    )
+    all_fields = fk_relation + m2m_relation
 
-    to_fields = []
+    all_mail_to_field = []
     mail_details_choice = []
-
-    for field in list(model_class._meta.fields) + list(model_class._meta.many_to_many):
-        if not getattr(field, "exclude_from_automation", False):
-            related_model = field.related_model
-            models = [Employee]
-            if recruitment_installed:
-                models.append(Candidate)
-            if related_model in models:
-                email_field = (
-                    f"{field.name}__get_email",
-                    f"{field.verbose_name.capitalize().replace(' id','')} mail field ",
+    for field_tuple in all_fields:
+        if not getattr(field_tuple[1], "exclude_from_automation", False):
+            all_mail_to_field.append(
+                (
+                    f"{field_tuple[0]}__get_email",
+                    f"({field_tuple[1].model.__name__}) {field_tuple[1].verbose_name.capitalize().replace(' id','')}'s mail ",
                 )
-                mail_detail = None
-                if not isinstance(field, django_models.ManyToManyField):
-                    mail_detail = (
-                        f"{field.name}__pk",
-                        field.verbose_name.capitalize().replace(" id", "")
-                        + "(Template context)",
-                    )
-                if field.related_model == Employee:
-                    to_fields.append(
+            )
+            if not field_tuple[1].many_to_many:
+                mail_details_choice += [
+                    (
+                        f"{field_tuple[0]}__pk",
+                        f"{field_tuple[1].verbose_name.capitalize().replace(' id','')} (Template context)",
+                    ),
+                ]
+                # Adding reporting manager if the related model is Employee
+                if field_tuple[1].related_model == Employee:
+                    # reporting manager mail to
+                    all_mail_to_field.append(
                         (
-                            f"{field.name}__employee_work_info__reporting_manager_id__get_email",
-                            f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager",
+                            f"{field_tuple[0]}__employee_work_info__reporting_manager_id__get_email",
+                            f"{field_tuple[1].verbose_name.capitalize().replace(' id','')} / Reporting Manager's mail ",
                         )
                     )
-                    if not isinstance(field, django_models.ManyToManyField):
-                        mail_details_choice.append(
-                            (
-                                f"{field.name}__employee_work_info__reporting_manager_id__pk",
-                                f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager (Template context)",
-                            )
+                    # reporting manager template context
+                    mail_details_choice.append(
+                        (
+                            f"{field_tuple[0]}__employee_work_info__reporting_manager_id__pk",
+                            f"{field_tuple[1].verbose_name.capitalize().replace(' id','')} / Reporting Manager (Template context) ",
                         )
-
-                to_fields.append(email_field)
-                if mail_detail:
-                    mail_details_choice.append(mail_detail)
-    text_area_fields = get_textfield_paths(model_class)
-    mail_details_choice = mail_details_choice + text_area_fields
-    models = [Employee]
-    if recruitment_installed:
-        models.append(Candidate)
-    if model_class in models:
-        to_fields.append(
+                    )
+    if model_class == Employee:
+        # reporting manager mail to
+        all_mail_to_field.append(
             (
-                "get_email",
-                f"{model_class.__name__}'s mail",
+                f"employee_work_info__reporting_manager_id__get_email",
+                f"Reporting Manager's mail ",
             )
         )
-        mail_to_related_fields = getattr(model_class, "mail_to_related_fields", [])
-        to_fields = to_fields + mail_to_related_fields
-        mail_details_choice.append(("pk", model_class.__name__))
+    if model_path == "employee.models.Employee":
+        all_mail_to_field.append(("get_email", "Employee's mail"))
+    elif model_path == "recruitment.models.Candidate":
+        all_mail_to_field.append(("get_email", "Candidate's mail"))
+
+    to_fields = []
+    # mail_details_choice = []
+
+    # for field in list(model_class._meta.fields) + list(model_class._meta.many_to_many):
+    #     if not getattr(field, "exclude_from_automation", False):
+    #         related_model = field.related_model
+    #         models = [Employee]
+    #         if recruitment_installed:
+    #             models.append(Candidate)
+    #         if related_model in models:
+    #             email_field = (
+    #                 f"{field.name}__get_email",
+    #                 f"{field.verbose_name.capitalize().replace(' id','')} mail field ",
+    #             )
+    #             mail_detail = None
+    #             if not isinstance(field, django_models.ManyToManyField):
+    #                 mail_detail = (
+    #                     f"{field.name}__pk",
+    #                     field.verbose_name.capitalize().replace(" id", "")
+    #                     + "(Template context)",
+    #                 )
+    #             if field.related_model == Employee:
+    #                 to_fields.append(
+    #                     (
+    #                         f"{field.name}__employee_work_info__reporting_manager_id__get_email",
+    #                         f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager",
+    #                     )
+    #                 )
+    #                 if not isinstance(field, django_models.ManyToManyField):
+    #                     mail_details_choice.append(
+    #                         (
+    #                             f"{field.name}__employee_work_info__reporting_manager_id__pk",
+    #                             f"{field.verbose_name.capitalize().replace(' id','')}'s reporting manager (Template context)",
+    #                         )
+    #                     )
+
+    # to_fields.append(email_field)
+    # if mail_detail:
+    #     mail_details_choice.append(mail_detail)
+    text_area_fields = get_textfield_paths(model_class)
+    mail_details_choice = mail_details_choice + text_area_fields
+    # models = [Employee]
+    # if recruitment_installed:
+    #     models.append(Candidate)
+    # if model_class in models:
+    #     to_fields.append(
+    #         (
+    #             "get_email",
+    #             f"{model_class.__name__}'s mail ({model_class.__name__})",
+    #         )
+    #     )
+    #     mail_to_related_fields = getattr(model_class, "mail_to_related_fields", [])
+    #     to_fields = to_fields + mail_to_related_fields
+    #     mail_details_choice.append(("pk", model_class.__name__))
 
     to_fields = list(set(to_fields))
-    return to_fields, mail_details_choice, model_class
+
+    return all_mail_to_field, mail_details_choice, model_class
 
 
 def get_model_class(model_path):

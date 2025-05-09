@@ -47,4 +47,9 @@ urlpatterns = [
         views.delete_automation,
         name="delete-automation",
     ),
+    path(
+        "load-automations",
+        cbvs.LoadAutomationsView.as_view(),
+        name="load-automations",
+    ),
 ]
