@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
-    command: ./entrypoint.sh
+    command: sh ./entrypoint.sh
     volumes:
       - ./horilla:/app/horilla
     depends_on:
