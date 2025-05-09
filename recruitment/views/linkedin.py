@@ -1,21 +1,25 @@
-
-from django.contrib import messages 
+import json
+import logging
+import os
 import re
+
+import requests
+from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
-import requests
-import json
-import os
-import logging
+
 logger = logging.getLogger(__name__)
-from django.utils.translation import gettext_lazy as _
+import json
+
+import requests
+from bs4 import BeautifulSoup
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
+from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required, permission_required
 from recruitment.models import LinkedInAccount, Recruitment
-import json
-import requests
-from django.conf import settings
-from bs4 import BeautifulSoup
+
 
 @login_required
 @permission_required("recruitment.update_linkedinaccount")
@@ -38,9 +42,10 @@ def update_isactive_linkedin(request, obj_id):
 
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
+
 @login_required
 @permission_required("recruitment.delete_linkedinaccount")
-def delete_linkedin_account(request, pk,return_redirect=True):
+def delete_linkedin_account(request, pk, return_redirect=True):
     """
     Delete Linkedin account
     """
@@ -53,29 +58,30 @@ def delete_linkedin_account(request, pk,return_redirect=True):
         logger(e)
         messages.error(request, "Something went wrong")
 
+
 @login_required
 def check_linkedin(request):
     import requests
-    url = 'https://www.linkedin.com/oauth/v2/userinfo'
+
+    url = "https://www.linkedin.com/oauth/v2/userinfo"
     data = {
-        'grant_type': 'authorization_code',
-        'code': 'AQXepuwNjedxqn6A7XE75IBHWGdCGeuWqB8ZmhlA9oFbKIHtSBzsKaPwJ5uw4opHURUAwNbi3asSUkJvjmR57BNqgK-Snw_2nUhuRp_S3cTRtFcCrE4JZKIZpy_aTWokL3tr1BFGu0zfgzK1uSU5zYClUeQ4j4bTNkCmvjVAQ8T_4T9JdJ8MZg8m84tMMsuvbniMXOGrdURJXJsmBHckyFnaFD0Mp9Fahl85BGYXqtm0czifPhOJH3TuP2GQQb8fQoNH9rDWcXoNW9D0Jchkv-gs_7_p3cz_U0Dqa_6g_Qdj-5uGdTjPiZlKZNCjPNOsK28lilGOtybHipJ8kVkhoW_tg774Zg',
-        'redirect_uri': 'https://www.linkedin.com/developers/tools/oauth/redirect',
-        'client_id': '86bnqwzxrmxdy6',
-        'client_secret': 'WPL_AP1.op0BkkK4xDn5ANwP.RuayNw=='
+        "grant_type": "authorization_code",
+        "code": "AQXepuwNjedxqn6A7XE75IBHWGdCGeuWqB8ZmhlA9oFbKIHtSBzsKaPwJ5uw4opHURUAwNbi3asSUkJvjmR57BNqgK-Snw_2nUhuRp_S3cTRtFcCrE4JZKIZpy_aTWokL3tr1BFGu0zfgzK1uSU5zYClUeQ4j4bTNkCmvjVAQ8T_4T9JdJ8MZg8m84tMMsuvbniMXOGrdURJXJsmBHckyFnaFD0Mp9Fahl85BGYXqtm0czifPhOJH3TuP2GQQb8fQoNH9rDWcXoNW9D0Jchkv-gs_7_p3cz_U0Dqa_6g_Qdj-5uGdTjPiZlKZNCjPNOsK28lilGOtybHipJ8kVkhoW_tg774Zg",
+        "redirect_uri": "https://www.linkedin.com/developers/tools/oauth/redirect",
+        "client_id": "86bnqwzxrmxdy6",
+        "client_secret": "WPL_AP1.op0BkkK4xDn5ANwP.RuayNw==",
     }
 
     response = requests.post(url, data=data)
-    return JsonResponse (response)
+    return JsonResponse(response)
+
 
 @login_required
-def validate_linkedin_token(request,pk):
+def validate_linkedin_token(request, pk):
     linkedin_account = LinkedInAccount.objects.filter(id=pk).first()
     access_token = linkedin_account.api_token
-    url = 'https://api.linkedin.com/v2/userinfo'
-    headers = {
-        'Authorization': f'Bearer {access_token}'
-    }
+    url = "https://api.linkedin.com/v2/userinfo"
+    headers = {"Authorization": f"Bearer {access_token}"}
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
         messages.success(request, _("LinkedIn connection success."))
@@ -85,45 +91,46 @@ def validate_linkedin_token(request,pk):
 
 
 def html_to_text(html):
-    soup = BeautifulSoup(html, 'html.parser')
-    return '\n'.join(p.get_text(strip=True) for p in soup.find_all(['p', 'br']) if p.get_text(strip=True))
+    soup = BeautifulSoup(html, "html.parser")
+    return "\n".join(
+        p.get_text(strip=True)
+        for p in soup.find_all(["p", "br"])
+        if p.get_text(strip=True)
+    )
+
 
 @login_required
-def post_recruitment_in_linkedin(request, recruitment, linkedin_acc, feed_type="feed", group_id=None):
-    site_url = request.build_absolute_uri('/')[:-1]  # Gets the base URL 
-    recruitment_url = f'{site_url}/recruitment/application-form?recruitmentId={recruitment.id}'
+def post_recruitment_in_linkedin(
+    request, recruitment, linkedin_acc, feed_type="feed", group_id=None
+):
+    site_url = request.build_absolute_uri("/")[:-1]  # Gets the base URL
+    recruitment_url = (
+        f"{site_url}/recruitment/application-form?recruitmentId={recruitment.id}"
+    )
 
     payload_dict = {
         "author": f"urn:li:person:{linkedin_acc.sub_id}",
         "lifecycleState": "PUBLISHED",
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {
-                "shareCommentary": {
-                    "text": html_to_text(recruitment.description)
-                },
+                "shareCommentary": {"text": html_to_text(recruitment.description)},
                 "shareMediaCategory": "ARTICLE",
                 "media": [
                     {
                         "status": "READY",
-                        "description": {
-                            "text": recruitment.description
-                        },
+                        "description": {"text": recruitment.description},
                         "originalUrl": recruitment_url,
-                        "title": {
-                            "text": recruitment.title
-                        },
-                        "thumbnails": [
-                            {
-                                "url": recruitment_url
-                            }
-                        ]
+                        "title": {"text": recruitment.title},
+                        "thumbnails": [{"url": recruitment_url}],
                     }
-                ]
+                ],
             }
         },
         "visibility": {
-            "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" if feed_type == "feed" else "CONTAINER"
-        }
+            "com.linkedin.ugc.MemberNetworkVisibility": (
+                "PUBLIC" if feed_type == "feed" else "CONTAINER"
+            )
+        },
     }
 
     if feed_type == "group" and group_id:
@@ -132,8 +139,8 @@ def post_recruitment_in_linkedin(request, recruitment, linkedin_acc, feed_type="
     url = "https://api.linkedin.com/v2/ugcPosts"
     payload = json.dumps(payload_dict)
     headers = {
-        'Authorization': f'Bearer {linkedin_acc.api_token}',
-        'Content-Type': 'application/json'
+        "Authorization": f"Bearer {linkedin_acc.api_token}",
+        "Content-Type": "application/json",
     }
     response = requests.post(url, headers=headers, data=payload)
     if response.status_code == 201:
@@ -147,14 +154,14 @@ def post_recruitment_in_linkedin(request, recruitment, linkedin_acc, feed_type="
 
 @login_required
 def delete_post(recruitment):
-    """ Delete recruitment post from linkedin """
+    """Delete recruitment post from linkedin"""
     # Ensure you are using the correct post ID from when you created the post
     linkedin_post_id = recruitment.linkedin_post_id  # e.g., "urn:li:ugcPost:123456789"
 
     url = f"https://api.linkedin.com/v2/ugcPosts/{linkedin_post_id}"
     headers = {
-        'Authorization': f'Bearer {recruitment.linkedin_account_id.api_token}',
-        'Content-Type': 'application/json'
+        "Authorization": f"Bearer {recruitment.linkedin_account_id.api_token}",
+        "Content-Type": "application/json",
     }
 
     response = requests.delete(url, headers=headers)
