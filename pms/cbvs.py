@@ -1,11 +1,12 @@
 from typing import Any
 
+from django import template
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
 
 from base.methods import filter_own_and_subordinate_recordes, is_reportingmanager
 from employee.models import Employee
@@ -59,7 +60,7 @@ class BonusPointSettingNavView(views.HorillaNavView):
             data-target="#genericModal"
         """
 
-    nav_title = _trans("Bonus Point Setting")
+    nav_title = _("Bonus Point Setting")
     search_url = reverse_lazy("bonus-point-setting-list-view")
     search_swap_target = "#listContainer"
 
@@ -73,7 +74,7 @@ class BonusPointSettingFormView(views.HorillaFormView):
 
     form_class = BonusPointSettingForm
     model = models.BonusPointSetting
-    new_display_title = _trans("Create Bonus Point Setting")
+    new_display_title = _("Create Bonus Point Setting")
     template_name = "bonus/bonus_form.html"
 
     def get_form_kwargs(self):
@@ -102,7 +103,7 @@ class BonusPointSettingFormView(views.HorillaFormView):
                 message = "Bonus Point Setting updated"
             form.save()
 
-            messages.success(self.request, _trans(message))
+            messages.success(self.request, _(message))
             return self.HttpResponse()
 
         return super().form_valid(form)
@@ -170,22 +171,22 @@ class EmployeeBonusPointNavView(views.HorillaNavView):
                     data-target="#genericModal"
                     """
 
-    nav_title = _trans("Employee Bonus Point ")
+    nav_title = _("Employee Bonus Point ")
     search_url = reverse_lazy("employee-bonus-point-list-view")
     search_swap_target = "#listContainer"
     group_by_fields = [
-        ("employee_id", _trans("Employee")),
+        ("employee_id", _("Employee")),
         (
             "employee_id__employee_work_info__reporting_manager_id",
-            _trans("Reporting Manager"),
+            _("Reporting Manager"),
         ),
-        ("employee_id__employee_work_info__department_id", _trans("Department")),
-        ("employee_id__employee_work_info__job_position_id", _trans("Job Position")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
         (
             "employee_id__employee_work_info__employee_type_id",
-            _trans("Employement Type"),
+            _("Employement Type"),
         ),
-        ("employee_id__employee_work_info__company_id", _trans("Company")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
     ]
 
 
@@ -198,7 +199,7 @@ class EmployeeBonusPointFormView(views.HorillaFormView):
 
     form_class = EmployeeBonusPointForm
     model = models.EmployeeBonusPoint
-    new_display_title = _trans("Create Employee Bonus Point ")
+    new_display_title = _("Create Employee Bonus Point ")
     # template_name = "bonus/bonus_form.html"
 
     def get_context_data(self, **kwargs):
@@ -220,7 +221,7 @@ class EmployeeBonusPointFormView(views.HorillaFormView):
             if form.instance.pk:
                 message = "Bonus Point updated"
             form.save()
-            messages.success(self.request, _trans(message))
+            messages.success(self.request, _(message))
             return self.HttpResponse(
                 """
                     <script>
@@ -285,7 +286,7 @@ class FeedbackEmployeeFormView(views.HorillaFormView):
 
     form_class = EmployeeFeedbackForm
     model = models.Feedback
-    new_display_title = _trans("Share Feedback request ")
+    new_display_title = _("Share Feedback request ")
     # template_name = "bonus/bonus_form.html"
 
     def get_context_data(self, **kwargs):
@@ -308,7 +309,7 @@ class FeedbackEmployeeFormView(views.HorillaFormView):
             )
             form.cleaned_data["others_id"] = other_employees
             form.save()
-            messages.success(self.request, _trans(message))
+            messages.success(self.request, _(message))
             return self.HttpResponse("<script>window.location.reload()</script>")
         return super().form_valid(form)
 
@@ -323,11 +324,20 @@ class BulkFeedbackFormView(views.HorillaFormView):
     form_class = BulkFeedbackForm
     model = models.Feedback
     view_id = "BulkFeedbackForm"
-    new_display_title = _trans("Bulk Feedback request ")
+    new_display_title = _("Bulk Feedback request ")
     template_name = "feedback/bulk_feedback_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        hints = {
+            "Employee|Full name": "employee.get_full_name",
+            "Employee|Email": "employee.get_mail",
+            "Employee|Employee Type": "employee.get_employee_type",
+            "Employee|Work Type": "employee.get_work_type",
+            "Employee|Company": "employee.get_company",
+            "Employee|Job position": "employee.get_job_position",
+        }
+        context["hints"] = hints
         return context
 
     def form_invalid(self, form: Any) -> HttpResponse:
@@ -348,8 +358,12 @@ class BulkFeedbackFormView(views.HorillaFormView):
                 manager_id = (
                     reporting_manager if cleaned_data["include_manager"] else None
                 )
+                title_template = cleaned_data["title"]
+                temp = template.Template(title_template)
+                title_context = template.Context({"employee": employee})
+                render_title = temp.render(title_context)
                 data = {
-                    "review_cycle": f"{cleaned_data['title']}-{employee} feedback",
+                    "review_cycle": render_title,
                     "employee_id": employee,
                     "manager_id": manager_id,
                     "question_template_id": cleaned_data["question_template_id"],
@@ -392,6 +406,6 @@ class BulkFeedbackFormView(views.HorillaFormView):
                         feedback, cleaned_data["other_employees"]
                     )
                     feedback.others_id.add(*other_employees)
-            messages.success(self.request, _trans(message))
+            messages.success(self.request, _(message))
             return self.HttpResponse("<script>window.location.reload()</script>")
         return super().form_valid(form)

@@ -1288,6 +1288,7 @@ class BulkFeedbackForm(HorillaModelForm):
         )
         self.fields["status"].initial = "Not Started"
         self.fields["cyclic_feedback"].widget.attrs["onchange"] = "cyclicFeedback()"
+        self.fields["title"].widget.attrs["autocomplete"] = "off"
 
     def clean(self):
         cleaned_data = super().clean()
