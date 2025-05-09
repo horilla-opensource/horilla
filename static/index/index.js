@@ -40,6 +40,15 @@ function addToSelectedId(newIds, storeKey) {
     $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
 }
 
+function togglePublicComments() {
+    if ($('#id_disable_comments').is(':checked')) {
+        $('#id_public_comments').prop('checked', false);
+        $('#id_public_comments_parent_div').hide();
+    } else {
+        $('#id_public_comments_parent_div').show();
+    }
+}
+
 function attendanceDateChange(selectElement) {
     var selectedDate = selectElement.val();
     let parentForm = selectElement.parents().closest("form");
@@ -324,7 +333,7 @@ function checkSequence(element) {
 
     if (
         stageOrder.indexOf(parseInt(stageId)) !=
-            stageOrder.indexOf(parseInt(preStageId)) + 1 &&
+        stageOrder.indexOf(parseInt(preStageId)) + 1 &&
         stage.type != "cancelled"
     ) {
         Swal.fire({
