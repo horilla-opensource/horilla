@@ -477,6 +477,18 @@
 													</a>
 												</div>
 											{% endif %}
+
+											{% if perms.geofencing.add_geofencing or perms.facedetection.add_facedetection %}
+											<div class="oh-input-group">
+												<a
+													id="geo_face_conf"
+													href="{% url "geo-face-config" %}"
+													class="oh-inner-sidebar__link oh-dropdown__link"
+													>{% trans "Geo & Face Config" %}
+												</a>
+											</div>
+											{% endif %}
+
 										</div>
 									</div>
 								</div>

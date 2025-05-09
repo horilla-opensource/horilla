@@ -9,6 +9,7 @@ from django.urls import path
 
 import attendance.views.clock_in_out
 import attendance.views.dashboard
+import attendance.views.geofaceconfig
 import attendance.views.penalty
 import attendance.views.requests
 import attendance.views.search
@@ -906,5 +907,10 @@ urlpatterns = [
         "check-in-check-out-nav",
         check_in_check_out.CheckInCheckOutNavBar.as_view(),
         name="check-in-check-out-nav",
+    ),
+    path(
+        "settings/geo-face-config/",
+        attendance.views.geofaceconfig.geofaceconfig,
+        name="geo-face-config",
     ),
 ]

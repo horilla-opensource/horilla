@@ -1,14 +1,15 @@
 from typing import Any
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _trans
+
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import render
-from horilla.decorators import login_required,permission_required
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _trans
+
+from horilla.decorators import login_required, permission_required
 from horilla_views.generic.cbv import views
 from recruitment import models
-from django.utils.decorators import method_decorator
-
 from recruitment.filters import LinkedInAccountFilter
 from recruitment.forms import LinkedInAccountForm
 
@@ -54,7 +55,6 @@ class LinkedInSettingNavView(views.HorillaNavView):
     nav_title = _trans("LinkedIn Accounts")
     search_url = reverse_lazy("linkedin-setting-list")
     search_swap_target = "#listContainer"
-
 
 
 @method_decorator(login_required, name="dispatch")

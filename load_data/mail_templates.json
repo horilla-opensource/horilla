@@ -1,0 +1,80 @@
+[
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 1,
+        "fields": {
+            "created_at": "2025-04-30T06:35:03.434Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Leave Request Template",
+            "body": "<p style=\"font-size: 12.8px;\">This is to inform you that {{ model_instance.employee_id }} has submitted a leave request for {{model_instance.requested_days}} days. Please take the necessary actions to review and process the request at your earliest convenience.</p><p style=\"font-size: 12.8px;\"><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance.employee_id }}.<br><br>Thank you for your prompt attention to this matter.</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 2,
+        "fields": {
+            "created_at": "2025-04-30T06:35:03.460Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Leave Allocation Request Template",
+            "body": "<p style=\"font-size: 12.8px;\">This is to inform you that {{ model_instance.employee_id }} has submitted a leave allocation request for {{model_instance.requested_days}} days. Please take the necessary actions to review and process the request at your earliest convenience.</p><p style=\"font-size: 12.8px;\"><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance.employee_id }}.<br><br>Thank you for your prompt attention to this matter.&nbsp;</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 3,
+        "fields": {
+            "created_at": "2025-04-30T06:35:03.478Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Candidate Added Template",
+            "body": "<p style=\"font-size: 12.8px;\">This is to inform you that {{ model_instance}} has been added to the recruitment {{model_instance.recruitment_id}}. Please take the necessary actions.</p><p style=\"font-size: 12.8px;\"><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance}}.<br><br>Thank you for your prompt attention to this matter.</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 4,
+        "fields": {
+            "created_at": "2025-04-30T06:35:03.497Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Interview Template",
+            "body": "<p data-start=\"234\" data-end=\"421\" class=\"\">This is to inform you that an interview has been scheduled for {{model_instance.candidate_id}} on {{model_instance.interview_date}} at {{model_instance.interview_time}}.</p><p data-start=\"234\" data-end=\"421\" class=\"\"><span style=\"font-size: 12.8px;\">Kindly take the necessary steps to prepare for or facilitate this interview as appropriate.</span></p><p data-start=\"234\" data-end=\"421\" class=\"\"><span style=\"font-size: 12.8px;\">Thank you for your prompt attention to this matter.</span></p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 5,
+        "fields": {
+            "created_at": "2025-04-30T06:35:03.515Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Add As Recruitment Manager Template",
+            "body": "<p data-pm-slice=\"1 1 []\">We are pleased to inform you that you have been assigned as the Recruitment Manager for {{ model_instance}}.</p><p></p><p>You may now proceed with the necessary steps to manage the recruitment process. Should you require any additional information or resources, please don't hesitate to reach out.</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 6,
+        "fields": {
+            "created_at": "2025-04-30T06:36:05.669Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Add As Stage Manager Template",
+            "body": "<p data-pm-slice=\"1 1 []\">We are pleased to inform you that you have been assigned as the Stage Manager for {{ model_instance}}.</p><p></p><p>You may now proceed with the necessary steps to manage the recruitment stage process. Should you require any additional information or resources, please don't hesitate to reach out.</p>",
+            "company_id": null
+        }
+    }
+]

@@ -40,7 +40,7 @@ class MailAutomation(HorillaModel):
     title = models.CharField(max_length=256, unique=True)
     method_title = models.CharField(max_length=50, editable=False)
     model = models.CharField(max_length=100, choices=MODEL_CHOICES, null=False)
-    mail_to = models.TextField(verbose_name="Mail to")
+    mail_to = models.TextField(verbose_name="Mail to/Notify to")
     mail_details = models.CharField(
         max_length=250,
         help_text=_(

@@ -76,7 +76,7 @@ function getAssetImportTemplate() {
 						const url = URL.createObjectURL(file);
 						const link = document.createElement("a");
 						link.href = url;
-						link.download = "my_excel_file.xlsx";
+						link.download = "asset_excel.xlsx";
 						document.body.appendChild(link);
 						link.click();
 					},

@@ -1,0 +1,14 @@
+
+{% extends "settings.html" %}
+{% block settings %}
+
+<div hx-get="{% url 'geo-config' %}" hx-trigger="load" hx-target="#geo"></div>
+<div id="geo"></div>
+
+<hr>
+
+<div hx-get="{% url 'face-config' %}" hx-trigger="load" hx-target="#face"></div>
+<div id="face"></div>
+
+
+{% endblock settings %}

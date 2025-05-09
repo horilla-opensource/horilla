@@ -45,7 +45,9 @@ function getToMail(element) {
       tr = `
       <tr class="dynamic-condition-row">
         <td class="sn">${totalRows}</td>
-        <td id="conditionalField"></td>
+        <td id="conditionalField">
+        <div hidden>${JSON.stringify(response.serialized_form)}</div>
+        </td>
         <td>
         <select name="condition" onchange="addSelectedAttr(event)" class="w-100">
           <option value="==">==</option>
@@ -127,9 +129,7 @@ function getHtml() {
 
 function populateSelect(data, response) {
   const selectElement = $(
-    `<select class="w-100" onchange="updateValue($(this));addSelectedAttr(event)" data-response='${JSON.stringify(
-      response.serialized_form
-    ).toString()}'></select>`
+    `<select class="w-100" onchange="updateValue($(this));addSelectedAttr(event)"></select>`
   );
 
   data.forEach((item) => {
@@ -139,17 +139,21 @@ function populateSelect(data, response) {
     selectElement.append($option);
   });
   return selectElement;
+
 }
 
 function updateValue(element) {
-  field = element.val();
-  attr = element.attr("data-response");
-  attr = attr
-    .replace(/[\u0000-\u001F\u007F-\u009F]/g, "")
-    .replace(/\\n/g, "\\\\n")
-    .replace(/\\t/g, "\\\\t");
+  console.log(">>>>>>>>>>>>>>>>>>>>>>")
+  json = element.closest('table').find('#conditionalField div[hidden]').text()
+  console.log(json)
 
-  response = JSON.parse(attr);
+  field = element.val();
+  // attr = json
+  //   .replace(/[\u0000-\u001F\u007F-\u009F]/g, "")
+  //   .replace(/\\n/g, "\\\\n")
+  //   .replace(/\\t/g, "\\\\t");
+
+  response = JSON.parse(json);
 
   valueElement = createElement(field, response);
   element.closest("tr").find(".condition-value-th").html("");
