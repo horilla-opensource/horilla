@@ -208,9 +208,11 @@ class ModelForm(forms.ModelForm):
                 label = ""
                 if field.label is not None:
                     label = _(field.label.title())
+                existing_class = field.widget.attrs.get("class", "oh-input w-100")
                 field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": label}
+                    {"class": f"{existing_class}", "placeholder": label}
                 )
+
             elif isinstance(widget, (forms.Select,)):
                 field.empty_label = None
                 if not isinstance(field, forms.ModelMultipleChoiceField):

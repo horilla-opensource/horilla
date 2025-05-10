@@ -70,7 +70,7 @@ class Company(HorillaModel):
     Company model
     """
 
-    company = models.CharField(max_length=50)
+    company = models.CharField(max_length=50, verbose_name=_("Name"))
     hq = models.BooleanField(default=False)
     address = models.TextField(max_length=255)
     country = models.CharField(max_length=50)
