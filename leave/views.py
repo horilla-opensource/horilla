@@ -2461,42 +2461,6 @@ def user_request_delete(request, id):
 
 
 @login_required
-def user_leave_view(request):
-    """
-    function used to view user assigned leave types.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
-    GET : return user assigned leave types view template
-    """
-    try:
-        employee = request.user.employee_get
-        queryset = employee.available_leave.all()
-        previous_data = request.GET.urlencode()
-        page_number = request.GET.get("page")
-        page_obj = paginator_qry(queryset, page_number)
-        assigned_leave_filter = AssignedLeaveFilter()
-        if not queryset.exists():
-            template_name = "leave/user_leave/user_leave_empty_view.html"
-        else:
-            template_name = "leave/user_leave/user_leave_view.html"
-        return render(
-            request,
-            template_name,
-            {
-                "user_leaves": page_obj,
-                "form": assigned_leave_filter.form,
-                "pd": previous_data,
-            },
-        )
-    except Exception:
-        messages.error(request, _("User is not an employee.."))
-        return redirect("/")
-
-
-@login_required
 @hx_request_required
 def user_leave_filter(request):
     """

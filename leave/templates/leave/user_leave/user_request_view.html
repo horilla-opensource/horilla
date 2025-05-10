@@ -281,29 +281,13 @@
 	{% if leave_requests %}
         {% include 'leave/user_leave/user_requests.html' %}
     {% else %}
-	<div>
-        <div
-            style="
-                height: 40vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            "
-            class=""
-        >
-            <div>
-                <img
-                    style="display: block; width: 150px; height: 150px; margin: 10px auto"
-                    src="{% static 'images/ui/attendance.png' %}"
-                    class="mb-4"
-                    alt=""
-                />
-                <h3 style="font-size: 20px" class="oh-404__subtitle">
-                    {% trans "There are no leave requests at the moment." %}
-                </h3>
-            </div>
-        </div>
-	</div>
+		<div class="oh-wrapper">
+			<div class="oh-empty">
+				<img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+				<h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+				<p class="oh-empty__subtitle">{% trans "There are no leave requests at the moment." %}</p>
+			</div>
+		</div>
 	{% endif %}
 </div>
 
