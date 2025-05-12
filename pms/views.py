@@ -1201,10 +1201,15 @@ def change_employee_objective_status(request):
     emp_obj = request.GET.get("empObjId")
     emp_objective = EmployeeObjective.objects.filter(id=emp_obj).first()
     status = request.GET.get("status")
-    if (
-        request.user.has_perm("pms.change_employeeobjective")
-        or emp_objective.employee_id == request.user.employee_get
+    if not (
+        request.user.has_perm("pms.change_objective")
+        or request.user.has_perm("pms.change_employeeobjective")
+        or request.user.has_perm("pms.change_employeekeyresult")
         or request.user.employee_get in emp_objective.objective_id.managers.all()
+        or (
+            emp_objective.objective_id.self_employee_progress_update
+            and (emp_objective.employee_id == request.user.employee_get)
+        )
     ):
         if emp_objective.status != status:
             emp_objective.status = status
@@ -3325,11 +3330,26 @@ def key_result_current_value_update(request):
         current_value = eval_validate(request.POST.get("current_value"))
         emp_kr_id = eval_validate(request.POST.get("emp_key_result_id"))
         emp_kr = EmployeeKeyResult.objects.get(id=emp_kr_id)
-        if current_value <= emp_kr.target_value:
+        if (
+            request.user.has_perm("pms.change_objective")
+            or request.user.has_perm("pms.change_employeeobjective")
+            or request.user.has_perm("pms.change_employeekeyresult")
+            or request.user.employee_get
+            in emp_kr.employee_objective_id.objective_id.managers.all()
+            or (
+                emp_kr.employee_objective_id.objective_id.self_employee_progress_update
+                and (
+                    emp_kr.employee_objective_id.employee_id
+                    == request.user.employee_get
+                )
+            )
+        ):
             emp_kr.current_value = current_value
             emp_kr.save()
             emp_kr.employee_objective_id.update_objective_progress()
             return JsonResponse({"type": "sucess"})
+        else:
+            messages.info(request, "You dont have permission")
     except:
         return JsonResponse({"type": "error"})
 

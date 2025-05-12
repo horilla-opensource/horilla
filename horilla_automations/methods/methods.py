@@ -89,6 +89,9 @@ def generate_choices(model_path):
             )
         )
         mail_details_choice.append(("pk", "Employee"))
+    if model_class == Candidate:
+        mail_details_choice.append(("pk", "Candidate"))
+
     if model_path == "employee.models.Employee":
         all_mail_to_field.append(("get_email", "Employee's mail"))
     elif model_path == "recruitment.models.Candidate":

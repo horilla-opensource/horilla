@@ -425,6 +425,7 @@ def send_mail(request, automation, instance):
                             "instance": context_instance,
                             "self": sender,
                             "model_instance": instance,
+                            "request": request,
                         }
                     )
                     render_bdy = template_bdy.render(context)
@@ -442,12 +443,19 @@ def send_mail(request, automation, instance):
         else:
             template_bdy = template.Template(pk_or_text)
         context = template.Context(
-            {"instance": context_instance, "self": sender, "model_instance": instance}
+            {
+                "instance": context_instance,
+                "self": sender,
+                "model_instance": instance,
+                "request": request,
+            }
         )
         render_bdy = template_bdy.render(context)
 
         title_template = template.Template(automation.title)
-        title_context = template.Context({"instance": instance, "self": sender})
+        title_context = template.Context(
+            {"instance": instance, "self": sender, "request": request}
+        )
         render_title = title_template.render(title_context)
         soup = BeautifulSoup(render_bdy, "html.parser")
         plain_text = soup.get_text(separator="\n")

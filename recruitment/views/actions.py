@@ -466,7 +466,11 @@ def get_mail_preview(request):
     if candidate_id:
         try:
             candidate_obj = Candidate.objects.get(id=candidate_id)
-            context = {"instance": candidate_obj, "self": request.user.employee_get}
+            context = {
+                "instance": candidate_obj,
+                "self": request.user.employee_get,
+                "request": request,
+            }
         except Candidate.DoesNotExist:
             return HttpResponse("Candidate not found", status=404)
 

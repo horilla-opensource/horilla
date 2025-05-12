@@ -104,6 +104,7 @@ class ObjectiveForm(BaseForm):
             "assignees",
             "start_date",
             "archive",
+            "self_employee_progress_update",
         ]
         exclude = ["is_active"]
 
