@@ -48,7 +48,7 @@ class BiometricDevices(HorillaModel):
     """
 
     BIO_DEVICE_TYPE = [
-        ("zk", _("ZKTeco Biometric")),
+        ("zk", _("ZKTeco / eSSL Biometric")),
         ("anviz", _("Anviz Biometric")),
         ("cosec", _("Matrix COSEC Biometric")),
         ("dahua", _("Dahua Biometric")),
