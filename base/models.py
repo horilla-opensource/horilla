@@ -1703,6 +1703,13 @@ class TrackLateComeEarlyOut(HorillaModel):
         tracking = _("enabled") if self.is_enable else _("disabled")
         return f"Tracking late come early out {tracking}"
 
+    def save(self, *args, **kwargs):
+        if not self.pk and TrackLateComeEarlyOut.objects.exists():
+            raise ValidationError(
+                _("Only one TrackLateComeEarlyOut instance is allowed.")
+            )
+        return super().save(*args, **kwargs)
+
 
 class Holidays(HorillaModel):
     name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
