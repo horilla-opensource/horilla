@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+{% load horillafilters %}
+<html>
+  <head>
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: sans-serif;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 2px;
+        text-align: left;
+      }
+      th {
+        background: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Exported Data</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="width: 30px;text-align: center;">SN</th>
+          {% for header in headers %}
+            {% if forloop.counter != 1 %}
+              <!-- Excluding the ID column -->
+              <th style="word-wrap: break-word; white-space: normal; padding: 2px;">{{ header }}</th>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          <tr>
+            <td style="width: 30px;text-align: center;">{{ forloop.counter }}</td>
+            {% for header in headers %}
+              {% if forloop.counter != 1 %}
+                <!-- Excluding the ID column -->
+                <td style="word-wrap: break-word; white-space: normal; border: 1px solid #666; padding: 2px; max-width: 200px; overflow-wrap: break-word;">
+                  {% with cell=row|get_item:header %}
+                    {% if cell|length > 0 and not cell|stringformat:"s" == cell %}
+                        <!-- cell is likely a list -->
+                        <ul>
+                            {% for item in cell %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <!-- cell is not a list -->
+                        {{ cell }}
+                    {% endif %}
+                {% endwith %}
+                </td>
+              {% endif %}
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </body>
+</html>

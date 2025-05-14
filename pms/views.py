@@ -1231,10 +1231,15 @@ def change_employee_objective_status(request):
         return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
     status = request.GET.get("status")
-    if (
-        request.user.has_perm("pms.change_employeeobjective")
-        or emp_objective.employee_id == request.user.employee_get
+    if not (
+        request.user.has_perm("pms.change_objective")
+        or request.user.has_perm("pms.change_employeeobjective")
+        or request.user.has_perm("pms.change_employeekeyresult")
         or request.user.employee_get in emp_objective.objective_id.managers.all()
+        or (
+            emp_objective.objective_id.self_employee_progress_update
+            and (emp_objective.employee_id == request.user.employee_get)
+        )
     ):
         if emp_objective.status != status:
             emp_objective.status = status

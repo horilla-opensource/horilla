@@ -2,6 +2,7 @@
 horilla/generic/views.py
 """
 
+import io
 import json
 import logging
 from typing import Any
@@ -14,10 +15,12 @@ from django.core.cache import cache as CACHE
 from django.core.paginator import Page
 from django.http import HttpRequest, HttpResponse, QueryDict
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, FormView, ListView, TemplateView
+from xhtml2pdf import pisa
 
 from base.methods import closest_numbers, eval_validate, get_key_instances
 from horilla.filters import FilterSet
@@ -49,7 +52,13 @@ class HorillaListView(ListView):
 
     view_id: str = """"""
 
-    export_file_name: str = None
+    export_file_name: str = "quick_export"
+    export_formats: list = [
+        ("xlsx", "Excel"),
+        ("json", "Json"),
+        ("csv", "CSV"),
+        ("pdf", "PDF"),
+    ]
 
     template_name: str = "generic/horilla_list_table.html"
     context_object_name = "queryset"
@@ -445,7 +454,7 @@ class HorillaListView(ListView):
             )
             context["bulk_update_fields"] = self.bulk_update_fields
             context["bulk_path"] = get_bulk_path
-
+        context["export_formats"] = self.export_formats
         return context
 
     def select_all(self, *args, **kwargs):
@@ -463,6 +472,7 @@ class HorillaListView(ListView):
         request = getattr(_thread_locals, "request", None)
         ids = eval_validate(request.POST["ids"])
         _columns = eval_validate(request.POST["columns"])
+        export_format = request.POST.get("format", "xlsx")
         queryset = self.model.objects.filter(id__in=ids)
 
         _model = self.model
@@ -589,6 +599,49 @@ class HorillaListView(ListView):
                 column = (column[0], column[1])
             columns.append(column)
 
+        if export_format == "json":
+            response = HttpResponse(
+                json.dumps(json_data, indent=4), content_type="application/json"
+            )
+            response["Content-Disposition"] = (
+                f'attachment; filename="{self.export_file_name}.json"'
+            )
+            return response
+        # CSV
+        elif export_format == "csv":
+            csv_data = dataset.export("csv")
+            response = HttpResponse(csv_data, content_type="text/csv")
+            response["Content-Disposition"] = (
+                f'attachment; filename="{self.export_file_name}.csv"'
+            )
+            return response
+        elif export_format == "pdf":
+
+            headers = dataset.headers
+            rows = dataset.dict
+
+            # Render to HTML using a template
+            html_string = render_to_string(
+                "generic/export_pdf.html",
+                {
+                    "headers": headers,
+                    "rows": rows,
+                },
+            )
+
+            # Convert HTML to PDF using xhtml2pdf
+            result = io.BytesIO()
+            pisa_status = pisa.CreatePDF(html_string, dest=result)
+
+            if pisa_status.err:
+                return HttpResponse("PDF generation failed", status=500)
+
+            # Return response
+            response = HttpResponse(result.getvalue(), content_type="application/pdf")
+            response["Content-Disposition"] = (
+                f'attachment; filename="{self.export_file_name}.pdf"'
+            )
+            return response
         return export_xlsx(json_data, columns)
 
 

@@ -9,5 +9,10 @@
           <span  data-action="collapse" title="{% trans "Collapse" %}"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
         </button>
         <span class="oh-permission-table__user">{{instance}}</span>
+        {% if instance.linkedin_account_id %}
+          <div style="margin-left: 8px;" title="{{ instance }} posted on {{ instance.linkedin_account_id }} LinkedIn account.">
+            <ion-icon name="logo-linkedin"></ion-icon>
+          </div>
+        {% endif %}
       </div>
     </div>

@@ -51,6 +51,9 @@ class ObjectivesList(HorillaListView):
         self.search_url = reverse("tab-objectives-view")
 
     model = Objective
+    bulk_update_fields = [
+        "self_employee_progress_update",
+    ]
     filter_class = ActualObjectiveFilter
 
     columns = [

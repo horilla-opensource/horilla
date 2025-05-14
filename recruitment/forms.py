@@ -232,16 +232,12 @@ class RecruitmentCreationForm(ModelForm):
     Form for Recruitment model
     """
 
-    # survey_templates = forms.ModelMultipleChoiceField(
-    #     queryset=SurveyTemplate.objects.all(),
-    #     widget=forms.SelectMultiple(),
-    #     label=_("Survey Templates"),
-    #     required=False,
-    # )
-    # linkedin_account_id = forms.ModelChoiceField(
-    #     queryset=LinkedInAccount.objects.filter(is_active=True)
-    #     label=_('')
-    # )
+    cols = {
+        "is_published": 4,
+        "optional_profile_image": 4,
+        "optional_resume": 4,
+    }
+
     class Meta:
         """
         Meta class to add the additional info
@@ -292,14 +288,6 @@ class RecruitmentCreationForm(ModelForm):
         self.fields["publish_in_linkedin"].widget.attrs.update(
             {"onchange": "toggleLinkedIn()"}
         )
-
-    # def create_option(self, *args,**kwargs):
-    #     option = super().create_option(*args,**kwargs)
-
-    #     if option.get('value') == "create":
-    #         option['attrs']['class'] = 'text-danger'
-
-    #     return option
 
     def clean(self):
         if isinstance(self.fields["recruitment_managers"], HorillaMultiSelectField):

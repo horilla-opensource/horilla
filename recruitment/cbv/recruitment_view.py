@@ -22,6 +22,7 @@ from horilla_views.generic.cbv.views import (
 from recruitment.filters import RecruitmentFilter
 from recruitment.forms import AddCandidateForm, RecruitmentCreationForm, SkillsForm
 from recruitment.models import Candidate, Recruitment, Skill
+from recruitment.views.linkedin import delete_post, post_recruitment_in_linkedin
 
 
 @method_decorator(login_required, name="dispatch")
@@ -150,7 +151,13 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
     extended form view for create
     """
 
-    cols = {"title": 12, "description": 12}
+    cols = {
+        "title": 12,
+        "description": 12,
+        "is_published": 4,
+        "optional_profile_image": 4,
+        "optional_resume": 4,
+    }
 
     class Meta:
         """
@@ -172,6 +179,8 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             "is_published",
             "optional_profile_image",
             "optional_resume",
+            "publish_in_linkedin",
+            "linkedin_account_id",
         ]
         exclude = ["is_active"]
         widgets = {
@@ -225,6 +234,7 @@ class RecruitmentForm(HorillaFormView):
     form_class = RecruitmentCreationFormExtended
     new_display_title = _("Add Recruitment")
     dynamic_create_fields = [("skills", RecruitmentNewSkillForm)]
+    template_name = "cbv/recruitment/recruitment_form.html"
 
     def get_context_data(self, **kwargs):
         """
@@ -246,12 +256,21 @@ class RecruitmentForm(HorillaFormView):
                 recruitment_managers = self.request.POST.getlist("recruitment_managers")
                 if recruitment_managers:
                     recruitment.recruitment_managers.set(recruitment_managers)
+                if recruitment.publish_in_linkedin and recruitment.linkedin_account_id:
+                    delete_post(recruitment)
+                    post_recruitment_in_linkedin(
+                        self.request, recruitment, recruitment.linkedin_account_id
+                    )
                 message = _("Recruitment Updated Successfully")
             else:
                 recruitment = form.save()
                 recruitment_managers = self.request.POST.getlist("recruitment_managers")
                 if recruitment_managers:
                     recruitment.recruitment_managers.set(recruitment_managers)
+                if recruitment.publish_in_linkedin and recruitment.linkedin_account_id:
+                    post_recruitment_in_linkedin(
+                        self.request, recruitment, recruitment.linkedin_account_id
+                    )
                 message = _("Recruitment Created Successfully")
             messages.success(self.request, message)
             if self.request.GET.get("pipeline") == "true":
