@@ -529,7 +529,7 @@ def flatten_dict(d, parent_key=""):
     return dict(items)
 
 
-def export_xlsx(json_data, columns):
+def export_xlsx(json_data, columns, file_name="quick_export"):
     """
     Quick export method
     """
@@ -657,5 +657,5 @@ def export_xlsx(json_data, columns):
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    response["Content-Disposition"] = 'attachment; filename="quick_export.xlsx"'
+    response["Content-Disposition"] = f'attachment; filename="{file_name}.xlsx"'
     return response

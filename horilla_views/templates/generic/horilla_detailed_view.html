@@ -32,9 +32,11 @@
                     <a class="oh-timeoff-modal__profile-content" style="text-decoration: none"
                         {{header.attrs|format:object|safe}}>
                         <div class="oh-profile mb-3">
+                            {% if header.avatar %}
                             <div class="oh-profile__avatar">
                                 <img src="{{object|getattribute:header.avatar}}" class="oh-profile__image me-2" />
                             </div>
+                            {% endif %}
                             <div class="oh-timeoff-modal__profile-info">
                                 <span class="oh-timeoff-modal__user fw-bold">
                                     {{object|getattribute:header.title|selected_format:request.user.employee_get.employee_work_info.company_id}}
