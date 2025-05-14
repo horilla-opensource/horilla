@@ -601,7 +601,7 @@ def login_user(request):
         if not url_has_allowed_host_and_scheme(
             next_url, allowed_hosts={request.get_host()}
         ):
-            next_url = "/dashboard"
+            next_url = "/"
 
         if params:
             next_url += f"?{params}"
