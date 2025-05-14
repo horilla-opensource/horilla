@@ -37,6 +37,7 @@ setattr(QuerySet, "from_list", from_list)
 
 SIGNAL_HANDLERS = []
 INSTANCE_HANDLERS = []
+REFRESH_METHODS = {}
 
 
 def start_automation():
@@ -73,6 +74,8 @@ def start_automation():
             post_save.disconnect(handler, sender=handler.model_class)
             post_bulk_update.disconnect(handler, sender=handler.model_class)
         SIGNAL_HANDLERS.clear()
+
+    REFRESH_METHODS["clear_connection"] = clear_connection
 
     def create_post_bulk_update_handler(automation, model_class, query_strings):
         def post_bulk_update_handler(sender, queryset, *args, **kwargs):
@@ -184,6 +187,8 @@ def start_automation():
             post_save.connect(
                 dynamic_signal_handler, sender=dynamic_signal_handler.model_class
             )
+
+    REFRESH_METHODS["start_connection"] = start_connection
 
     def create_pre_bulk_update_handler(automation, model_class):
         def pre_bulk_update_handler(sender, queryset, *args, **kwargs):
@@ -479,11 +484,9 @@ def send_mail(request, automation, instance):
                     f"Automation <Mail> {automation.title} is triggered by {request.user.employee_get}"
                 )
             except Exception as e:
-                print("ERRRRRR")
                 logger.error(e)
 
         def _send_notification(text):
-            print(text)
             notify.send(
                 sender,
                 recipient=user_ids,
@@ -506,3 +509,6 @@ def send_mail(request, automation, instance):
                 target=lambda: _send_notification(plain_text),
             )
             thread.start()
+        logger.info(
+            f"Automation Triggered | {automation.get_delivary_channel_display()} | {automation}"
+        )

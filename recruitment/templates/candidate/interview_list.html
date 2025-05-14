@@ -207,11 +207,10 @@
         </nav>
     </div>
 {% else %}
-    <div class="oh-404">
-        <span class="material-symbols-outlined" style="font-size: 190px;">
-            groups
-        </span>
-        <h5 class="oh-404__subtitle">{% trans "No Interviews Found." %}</h5>
+    <div class="oh-empty">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "No Interviews Found." %} </p>
     </div>
 {% endif %}
 <script>

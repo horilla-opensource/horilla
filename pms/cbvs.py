@@ -1,5 +1,6 @@
 from typing import Any
 
+from django import template
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -328,6 +329,15 @@ class BulkFeedbackFormView(views.HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        hints = {
+            "Employee|Full name": "employee.get_full_name",
+            "Employee|Email": "employee.get_mail",
+            "Employee|Employee Type": "employee.get_employee_type",
+            "Employee|Work Type": "employee.get_work_type",
+            "Employee|Company": "employee.get_company",
+            "Employee|Job position": "employee.get_job_position",
+        }
+        context["hints"] = hints
         return context
 
     def form_invalid(self, form: Any) -> HttpResponse:
@@ -348,8 +358,12 @@ class BulkFeedbackFormView(views.HorillaFormView):
                 manager_id = (
                     reporting_manager if cleaned_data["include_manager"] else None
                 )
+                title_template = cleaned_data["title"]
+                temp = template.Template(title_template)
+                title_context = template.Context({"employee": employee})
+                render_title = temp.render(title_context)
                 data = {
-                    "review_cycle": f"{cleaned_data['title']}-{employee} feedback",
+                    "review_cycle": render_title,
                     "employee_id": employee,
                     "manager_id": manager_id,
                     "question_template_id": cleaned_data["question_template_id"],

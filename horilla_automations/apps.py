@@ -41,7 +41,8 @@ class HorillaAutomationConfig(AppConfig):
             MODEL_CHOICES = list(set(MODEL_CHOICES))
             try:
                 start_automation()
-            except:
+            except Exception as e:
+                print(e)
                 """
                 Migrations are not affected yet
                 """

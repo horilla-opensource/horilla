@@ -95,6 +95,28 @@ def import_valid_date(date_value, field_label, errors_dict, error_key):
     return None
 
 
+def clean_badge_id(value):
+    """
+    Cleans and converts a badge ID value from Excel import.
+
+    - If the value is a whole number (e.g., 5480.0), returns it as an integer string ("5480").
+    - If the value is a decimal (e.g., 567.67), returns it as a float string ("567.67").
+    - If the value is a non-numeric string (e.g., "A101"), returns the stripped string.
+    - If the value is NaN or None, returns an empty string.
+    """
+    if pd.isna(value):
+        return ""
+
+    try:
+        float_val = float(value)
+        if float_val.is_integer():
+            return str(int(float_val))
+        else:
+            return str(float_val)
+    except (ValueError, TypeError):
+        return str(value).strip()
+
+
 def convert_nan(field, dicts):
     """
     This method is returns None or field value
@@ -241,13 +263,13 @@ def process_employee_records(data_frame):
     for emp in employee_dicts:
         errors, save = {}, True
 
-        email = emp.get("Email", "").strip()
+        email = str(emp.get("Email", "")).strip()
         raw_phone = emp.get("Phone", "")
         phone = normalize_phone(raw_phone)
-        badge_id = str(emp.get("Badge ID", "") or "").strip()
+        badge_id = clean_badge_id(emp.get("Badge ID"))
         first_name = convert_nan("First Name", emp)
         last_name = convert_nan("Last Name", emp)
-        gender = emp.get("Gender", "").strip().lower()
+        gender = str(emp.get("Gender") or "").strip().lower()
         company = convert_nan("Company", emp)
         basic_salary = convert_nan("Basic Salary", emp)
         salary_hour = convert_nan("Salary Hour", emp)
@@ -291,6 +313,7 @@ def process_employee_records(data_frame):
             errors["Badge ID Error"] = "An employee with this badge ID already exists."
             save = False
         else:
+            emp["Badge ID"] = badge_id
             existing_badge_ids.add(badge_id)
 
         if email in existing_usernames:

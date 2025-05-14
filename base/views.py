@@ -34,6 +34,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import strip_tags
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -598,6 +599,12 @@ def login_user(request):
 
         login(request, user)
         messages.success(request, _("Login successful."))
+
+        # Ensure `next_url` is a safe local URL
+        if not url_has_allowed_host_and_scheme(
+            next_url, allowed_hosts={request.get_host()}
+        ):
+            next_url = "/dashboard"
 
         if params:
             next_url += f"?{params}"

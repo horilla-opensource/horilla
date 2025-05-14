@@ -12,6 +12,8 @@ from horilla.decorators import login_required, permission_required
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.methods.serialize import serialize_form
 from horilla_automations.models import MailAutomation
+from horilla_automations.signals import REFRESH_METHODS
+from horilla_views.generic.cbv.views import HorillaFormView
 
 
 @login_required
@@ -43,7 +45,7 @@ def get_to_field(request):
 
 
 @login_required
-@permission_required("horilla_automation")
+@permission_required("horilla_automation.delete_mailautomation")
 def delete_automation(request, pk):
     """
     Automation delete view
@@ -55,3 +57,15 @@ def delete_automation(request, pk):
         print(e)
         messages.error(request, "Something went wrong")
     return redirect(reverse("mail-automations"))
+
+
+@login_required
+@permission_required("horilla_automation.add_mailautomation")
+def refresh_automations(request):
+    """
+    Method to  refresh automation signals
+    """
+    REFRESH_METHODS["clear_connection"]()
+    REFRESH_METHODS["start_connection"]()
+    messages.success(request, "Automations refreshed")
+    return HorillaFormView.HttpResponse()

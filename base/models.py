@@ -79,7 +79,7 @@ class Company(HorillaModel):
     Company model
     """
 
-    company = models.CharField(max_length=50)
+    company = models.CharField(max_length=50, verbose_name=_("Name"))
     hq = models.BooleanField(default=False)
     address = models.TextField(max_length=255)
     country = models.CharField(max_length=50)
@@ -2512,6 +2512,13 @@ class TrackLateComeEarlyOut(HorillaModel):
     def __str__(self):
         tracking = _("enabled") if self.is_enable else _("disabled")
         return f"Tracking late come early out {tracking}"
+
+    def save(self, *args, **kwargs):
+        if not self.pk and TrackLateComeEarlyOut.objects.exists():
+            raise ValidationError(
+                _("Only one TrackLateComeEarlyOut instance is allowed.")
+            )
+        return super().save(*args, **kwargs)
 
 
 class Holidays(HorillaModel):

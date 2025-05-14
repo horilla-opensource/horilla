@@ -52,4 +52,9 @@ urlpatterns = [
         cbvs.LoadAutomationsView.as_view(),
         name="load-automations",
     ),
+    path(
+        "refresh-automations",
+        views.refresh_automations,
+        name="refresh-automations",
+    ),
 ]

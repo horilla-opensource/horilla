@@ -17,6 +17,7 @@
         {% csrf_token %}
 
         <div class="oh-inner-sidebar-content__body">
+            <div class="col-12">{{form.non_field_errors}}</div>
             <!-- Company Name -->
             <div class="oh-input-group mb-2">
                 <label for="{{ form.company.id_for_label }}" class="mb-1">{{ form.company.label }}</label>

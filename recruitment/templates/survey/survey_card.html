@@ -1,13 +1,13 @@
 {% load i18n %} {% load static %}
 <style>
-  .oh-kanban-card__title {
-    width: 280px;
-  }
+    .oh-kanban-card__title {
+        width: 280px;
+    }
 </style>
 
 {% include 'filter_tags.html' %}
 <div class="oh-tabs__content oh-tabs__content--active" id="templateTab">
-  {% include "survey/template_accordion.html" %}
+    {% include "survey/template_accordion.html" %}
 </div>
 <div class="oh-tabs__content" id="questionTab">
   {% if questions %}
@@ -72,84 +72,64 @@
                 {% endif %}
               </ul>
             </div>
-          </div>
         </div>
-        {% endif %}
-      </div>
-      {% endfor %}
     </div>
+    {% endif %}
+</div>
+{% endfor %}
 
-    <div class="oh-pagination">
-      <span class="oh-pagination__page">
-        {% trans "Page" %} {{ questions.number }} {% trans "of" %} {{ questions.paginator.num_pages }}.
-      </span>
-      <nav class="oh-pagination__nav">
-        <div class="oh-pagination__input-container me-3">
-          <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-          <input
-            type="number"
-            name="page"
-            class="oh-pagination__input"
-            value="{{questions.number}}"
-            hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
-            hx-target="#view-container"
-            min="1"
-          />
-          <span class="oh-pagination__label">
-            {% trans "of" %} {{questions.paginator.num_pages}}
-          </span>
+            </div>
+
+            <div class="oh-pagination">
+                <span class="oh-pagination__page">
+                    {% trans "Page" %} {{ questions.number }} {% trans "of" %} {{ questions.paginator.num_pages }}.
+                </span>
+                <nav class="oh-pagination__nav">
+                    <div class="oh-pagination__input-container me-3">
+                        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                        <input type="number" name="page" class="oh-pagination__input" value="{{questions.number}}"
+                            hx-get="{% url 'rec-filter-survey' %}?{{pd}}" hx-target="#view-container" min="1" />
+                        <span class="oh-pagination__label">
+                            {% trans "of" %} {{questions.paginator.num_pages}}
+                        </span>
+                    </div>
+                    <ul class="oh-pagination__items">
+                        {% if questions.has_previous %}
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                                <a hx-target="#view-container" hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page=1"
+                                    class="oh-pagination__link">{% trans "First" %}
+                                </a>
+                            </li>
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                                <a hx-target="#view-container"
+                                    hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.previous_page_number }}"
+                                    class="oh-pagination__link">{% trans "Previous" %}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if questions.has_next %}
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                                <a hx-target="#view-container"
+                                    hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.next_page_number }}"
+                                    class="oh-pagination__link">{% trans "Next" %}
+                                </a>
+                            </li>
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                                <a hx-target="#view-container"
+                                    hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.paginator.num_pages }}"
+                                    class="oh-pagination__link">{% trans "Last" %}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
         </div>
-        <ul class="oh-pagination__items">
-          {% if questions.has_previous %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a
-              hx-target="#view-container"
-              hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page=1"
-              class="oh-pagination__link"
-              >{% trans "First" %}
-            </a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a
-              hx-target="#view-container"
-              hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.previous_page_number }}"
-              class="oh-pagination__link"
-              >{% trans "Previous" %}
-            </a>
-          </li>
-          {% endif %} {% if questions.has_next %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a
-              hx-target="#view-container"
-              hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.next_page_number }}"
-              class="oh-pagination__link"
-              >{% trans "Next" %}
-            </a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a
-              hx-target="#view-container"
-              hx-get="{% url 'rec-filter-survey' %}?{{pd}}&page={{ questions.paginator.num_pages }}"
-              class="oh-pagination__link"
-              >{% trans "Last" %}
-            </a>
-          </li>
-          {% endif %}
-        </ul>
-      </nav>
-    </div>
-  </div>
-  {% else %}
-  <div class="oh-wrapper">
-    <img
-      style="width: 150px; height: 150px; display: block; margin: 0 auto"
-      src="{% static 'images/ui/editor.png' %}"
-      class="oh-404__image mb-4"
-      alt="Page not found. 404."
-    />
-    <h5 class="oh-404__subtitle">
-      {% trans "No questions have been established yet." %}
-    </h5>
-  </div>
-  {% endif %}
+    {% else %}
+        <div class="oh-empty">
+            <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+            <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+            <p class="oh-empty__subtitle">{% trans "No questions have been established yet." %} </p>
+        </div>
+    {% endif %}
 </div>

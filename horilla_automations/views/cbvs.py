@@ -77,16 +77,17 @@ class AutomationNavView(views.HorillaNavView):
                 }
             )
 
-        self.actions.append(
-            {
-                "action": "Refresh Automations",
-                "attrs": f"""
-                    hx-get="{reverse_lazy('mail-automations-list-view')}"
-                    hx-target="#listContainer"
-                    class="oh-btn oh-btn--light-bkg"
-                """,
-            }
-        )
+        if self.request.user.has_perm("horilla_automation.add_mailautomation"):
+            self.actions.append(
+                {
+                    "action": "Refresh Automations",
+                    "attrs": f"""
+                        hx-get="{reverse_lazy('refresh-automations')}"
+                        hx-target="#reloadMessages"
+                        class="oh-btn oh-btn--light-bkg"
+                    """,
+                }
+            )
 
     nav_title = _("Automations")
     search_url = reverse_lazy("mail-automations-list-view")
