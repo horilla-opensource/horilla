@@ -57,8 +57,8 @@
                                 {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
                                 <div class="d-flex mb-3" style="flex-direction: row-reverse;">
                                     <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
-                                        data-toggle="oh-modal-toggle" data-target="#editModal1"
-                                        hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#stageForm">
+                                        data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                        hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#objectCreateModalTarget">
                                         <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
                                             aria-label="add outline"></ion-icon>{% trans "Stage" %}
                                     </button>

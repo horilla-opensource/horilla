@@ -3,17 +3,22 @@
 <!-- form errors  -->
 <div class="oh-wrapper">
     <div class="oh-alert-container">
-
         {% for error in form.non_field_errors %}
-        <div class="oh-alert oh-alert--animated oh-alert--danger">
-            {{ error }}
-        </div>
+            <div class="oh-alert oh-alert--animated oh-alert--danger">
+                {{ error }}
+            </div>
         {% endfor %}
     </div>
 </div>
 {% endif %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="objectUpdateModalLabel">{% trans "Update" %} {{form.verbose_name}}</span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline" role="img" class="md hydrated"></ion-icon>
+    </button>
+</div>
 <div class="oh-modal__dialog-body">
-    <form hx-post="{% url 'stage-update' stage_id recruitment_id %}">
+    <form hx-post="{% url 'stage-update' stage_id recruitment_id %}" hx-target="#objectUpdateModalTarget">
         {{form.as_p}}
     </form>
 </div>

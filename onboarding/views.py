@@ -277,16 +277,8 @@ def task_creation(request):
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            response = render(
-                request,
-                "onboarding/task_form.html",
-                {"form": form, "stage_id": stage_id},
-            )
             messages.success(request, _("New task created successfully..."))
-
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     return render(
         request, "onboarding/task_form.html", {"form": form, "stage_id": stage_id}
     )
@@ -311,6 +303,7 @@ def task_update(
     POST : return onboarding view
     """
     onboarding_task = OnboardingTask.objects.get(id=task_id)
+    form = OnboardingTaskForm(instance=onboarding_task)
     if request.method == "POST":
         form = OnboardingTaskForm(request.POST, instance=onboarding_task)
         if form.is_valid():
@@ -336,18 +329,7 @@ def task_update(
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            response = render(
-                request,
-                "onboarding/task_update.html",
-                {
-                    "form": form,
-                    "task_id": task_id,
-                },
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
-    form = OnboardingTaskForm(instance=onboarding_task)
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     return render(
         request,
         "onboarding/task_update.html",
