@@ -561,11 +561,8 @@ class Candidate(HorillaModel):
             return ""
 
     def save(self, *args, **kwargs):
-        # Check if the 'stage_id' attribute is not None
         if self.stage_id is not None:
-            # Check if the stage type is 'hired'
-            if self.stage_id.stage_type == "hired":
-                self.hired = True
+            self.hired = self.stage_id.stage_type == "hired"
 
         if not self.recruitment_id.is_event_based and self.job_position_id is None:
             self.job_position_id = self.recruitment_id.job_position_id
