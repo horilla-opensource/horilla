@@ -33,9 +33,9 @@
         </div>
     </div>
 {% else %}
-    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-        <img style="display: block; width:10%; margin: 20px auto;" src="{% static 'images/ui/asset.png' %}" class=""
-            alt="Page not found. 404." />
-        <h5 class="oh-404__subtitle">{% trans "There is no asset allocation at this moment." %}</h5>
+    <div class="oh-empty h-100">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "There is no asset allocation at this moment." %}</p>
     </div>
 {% endif %}
