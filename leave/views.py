@@ -2707,7 +2707,7 @@ def employee_leave(request):
     today_holidays = Holidays.today_holidays()
     return render(
         request,
-        "leave/on_leave.html",
+        "leave/dashboard/on_leave.html",
         {
             "leaves": leaves,
             "requests_ids": requests_ids,
@@ -5287,7 +5287,7 @@ def leave_request_and_approve(request):
     leave_requests_ids = json.dumps([instance.id for instance in leave_requests])
     return render(
         request,
-        "request_and_approve/leave_request_approve.html",
+        "leave/dashboard/leave_request_approve.html",
         {
             "leave_requests": leave_requests,
             "requests_ids": leave_requests_ids,
@@ -5313,7 +5313,7 @@ def leave_allocation_approve(request):
     )
     return render(
         request,
-        "request_and_approve/leave_allocation_approve.html",
+        "leave/dashboard/leave_allocation_approve.html",
         {
             "allocation_reqests": allocation_reqests,
             "reqests_ids": allocation_reqests_ids,

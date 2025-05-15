@@ -3807,9 +3807,10 @@ def dashboard_feedback_answer(request):
     ).distinct()
     feedbacks = feedback_requested.exclude(feedback_answer__employee_id=employee)
     feedbacks = paginator_qry(feedbacks, page_number)
+
     return render(
         request,
-        "request_and_approve/feedback_answer.html",
+        "dashboard/feedback_answer.html",
         {
             "feedbacks": feedbacks,
             "pd": previous_data,
