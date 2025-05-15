@@ -93,10 +93,7 @@ def generate_choices(model_path):
                             f"{field_tuple[1].verbose_name.capitalize().replace(' id','')} / Reporting Manager (Template context) ",
                         )
                     )
-    print(model_path)
-    print(
-        "_______________________________________________________________________________________"
-    )
+
     if model_class == Employee:
         # reporting manager mail to
         all_mail_to_field.append(
