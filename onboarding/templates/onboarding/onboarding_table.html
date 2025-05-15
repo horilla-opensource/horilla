@@ -65,9 +65,9 @@
                      {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingstage %}
                      <li class="oh-dropdown__item">
                         <a hx-get="{% url 'stage-update' stage.grouper.id recruitment.id %}"
-                           hx-target="#updateStage"
+                           hx-target="#objectUpdateModalTarget"
                            data-toggle="oh-modal-toggle"
-                           data-target="#editModal3"
+                           data-target="#objectUpdateModal"
                            class="oh-dropdown__link"
                         >{% trans "Edit" %}</a
                         >
@@ -136,9 +136,9 @@
                                  {% if request.user|stage_manages:stage or perms.onboarding.change_onboardingtask %}
                                  <li class="oh-dropdown__item">
                                     <a class="oh-dropdown__link" data-toggle="oh-modal-toggle"
-                                       data-target="#editModal4"
+                                       data-target="#objectUpdateModal"
                                        hx-get="{% url 'task-update' task.id %}"
-                                       hx-target="#updateTask">{% trans "Edit" %}
+                                       hx-target="#objectUpdateModalTarget">{% trans "Edit" %}
                                     </a>
                                  </li>
                                  {% endif %}
@@ -173,8 +173,8 @@
                   {% if request.user|stage_manages:stage or perms.onboarding.add_onboardingtask %}
                   <div class="oh-sticky-table__th">
                      <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
-                        data-toggle="oh-modal-toggle" data-target="#editModal2"
-                        hx-get="{% url 'task-creation' %}?stage_id={{stage.grouper.id}}" hx-target="#taskForm">
+                        data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                        hx-get="{% url 'task-creation' %}?stage_id={{stage.grouper.id}}" hx-target="#objectCreateModalTarget">
                         <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
                            aria-label="add outline"></ion-icon>
                         {% trans "Task" %}
