@@ -1,6 +1,6 @@
 {% load i18n %}
 {% if birthdays %}
-<div class="oh-dashboard__events">
+<div class="oh-dashboard__events w-100">
     <div class="oh-dashbaord__events-reel w-100" id="birthdayContainer" style="transform: translateX(0%);">
         {% for birthday in birthdays %}
             <div class="oh-dashboard__event" style="background-color: rgb(231, 76, 60);">
@@ -20,8 +20,8 @@
     </div>
     <ul class="oh-dashboard__events-nav" id="birthdayDots">
         {% for birthday in birthdays %}
-            <li onclick="moveSlider(event)"
-                class="oh-dashboard__events-nav-item {% if forloop.first %}oh-dashboard__events-nav-item--active{% endif %}"
+            <li onclick="moveSlider(event)" 
+                class="oh-dashboard__events-nav-item {% if forloop.first %}oh-dashboard__events-nav-item--active{% endif %}" 
                 data-target="{{ forloop.counter0 }}">
             </li>
         {% endfor %}

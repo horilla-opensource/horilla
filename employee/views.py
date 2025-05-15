@@ -2731,7 +2731,9 @@ def get_employees_birthday(request):
         }
         for emp in employees
     ]
-    return render(request, "birthdays_container.html", {"birthdays": birthdays})
+    return render(
+        request, "dashboard/birthdays_container.html", {"birthdays": birthdays}
+    )
 
 
 @login_required
