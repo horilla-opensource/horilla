@@ -1,11 +1,12 @@
+from django.template.loader import render_to_string
 
 from base.forms import ModelForm
 from facedetection.models import FaceDetection
-from django.template.loader import render_to_string
+
 
 class FaceDetectionSetupForm(ModelForm):
     verbose_name = "Facedetection Configuration"
-   
+
     class Meta:
         model = FaceDetection
         exclude = ["company_id"]
@@ -17,4 +18,3 @@ class FaceDetectionSetupForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
-    

@@ -141,7 +141,6 @@ def get_facedetection(request):
 @permission_required("geofencing.add_localbackup")
 @hx_request_required
 def face_detection_config(request):
-    print(">>>>>>>>>>>>>>>>>>>>>")
     try:
         form = FaceDetectionSetupForm(instance=get_facedetection(request))
     except:
