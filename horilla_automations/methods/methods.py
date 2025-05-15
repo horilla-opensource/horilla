@@ -42,10 +42,23 @@ def generate_choices(model_path):
 
     module = __import__(module_name, fromlist=[class_name])
     model_class: Employee = getattr(module, class_name)
-    fk_relation, m2m_relation = get_forward_relation_paths_separated(
+
+    # Get relations to Employee
+    employee_fk_paths, employee_m2m_paths = get_forward_relation_paths_separated(
         model_class, Employee
     )
-    all_fields = fk_relation + m2m_relation
+
+    # Get relations to Candidate
+    candidate_fk_paths, candidate_m2m_paths = get_forward_relation_paths_separated(
+        model_class, Candidate
+    )
+
+    all_fields = (
+        employee_fk_paths
+        + employee_m2m_paths
+        + candidate_fk_paths
+        + candidate_m2m_paths
+    )
 
     all_mail_to_field = []
     mail_details_choice = []
@@ -80,6 +93,10 @@ def generate_choices(model_path):
                             f"{field_tuple[1].verbose_name.capitalize().replace(' id','')} / Reporting Manager (Template context) ",
                         )
                     )
+    print(model_path)
+    print(
+        "_______________________________________________________________________________________"
+    )
     if model_class == Employee:
         # reporting manager mail to
         all_mail_to_field.append(

@@ -361,7 +361,7 @@ def send_mail(request, automation, instance):
 
     mail_template = automation.mail_template
     employees = []
-    raw_emails = []
+    to_emails = []
 
     if instance.pk:
         # refreshing instance due to m2m fields are not loading here some times
@@ -378,15 +378,15 @@ def send_mail(request, automation, instance):
     for mapping in eval_validate(automation.mail_to):
         result = getattribute(instance, mapping)
         if isinstance(result, list):
-            raw_emails.extend(result)
+            to_emails.extend(result)
         else:
-            raw_emails.append(result)
+            to_emails.append(result)
 
-    raw_emails = list(filter(None, set(raw_emails)))
+    to_emails = list(filter(None, set(to_emails)))
 
     employees = Employee.objects.filter(
-        models.Q(email__in=raw_emails)
-        | models.Q(employee_work_info__email__in=raw_emails)
+        models.Q(email__in=to_emails)
+        | models.Q(employee_work_info__email__in=to_emails)
     ).select_related("employee_work_info")
 
     employees = list(employees)
@@ -399,11 +399,11 @@ def send_mail(request, automation, instance):
     except Exception as e:
         logger.error(e)
 
-    emails = [str(emp.get_mail()) for emp in employees if emp and emp.get_mail()]
+    cc_emails = [str(emp.get_mail()) for emp in also_sent_to if emp and emp.get_mail()]
     user_ids = [emp.employee_user_id for emp in employees]
 
-    to = emails[:1]
-    cc = emails[1:]
+    to = to_emails
+    cc = cc_emails
 
     email_backend = ConfiguredEmailBackend()
     display_email_name = email_backend.dynamic_from_email_with_display_name
@@ -415,7 +415,7 @@ def send_mail(request, automation, instance):
         except:
             logger.error(Exception)
 
-    if pk_or_text and request and raw_emails:
+    if pk_or_text and request and to_emails:
         attachments = []
         try:
             sender = request.user.employee_get
