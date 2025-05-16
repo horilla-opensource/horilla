@@ -692,12 +692,12 @@ def document_delete(request, id):
                             hx-target='#document_target' hx-trigger='load'></span>
                         """
                     )
-            return HttpResponse()
+            return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
         else:
             messages.error(request, _("Document not found"))
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
-    return HttpResponse("<script>window.location.reload();</script>")
+    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 
 @login_required
