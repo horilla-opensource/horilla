@@ -11,6 +11,7 @@ services:
     command: sh ./entrypoint.sh
     volumes:
       - ./horilla:/app/horilla
+      - ./media:/app/media
     depends_on:
       db:
         condition: service_healthy
