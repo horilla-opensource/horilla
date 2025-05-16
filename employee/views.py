@@ -868,40 +868,69 @@ def document_reject(request, id):
 @manager_can_enter("horilla_documents.add_document")
 def document_bulk_approve(request):
     """
-    This function used to view the approve uploaded document.
-    Parameters:
+    This function is used to bulk-approve uploaded documents.
 
-    request (HttpRequest): The HTTP request object.
+    Parameters:
+        request (HttpRequest): The HTTP request object.
 
     Returns:
+        HttpResponse: A 204 No Content response with HX-Refresh header.
     """
-    ids = request.GET.getlist("ids")
-    document_obj = Document.objects.filter(
-        id__in=ids,
-    ).exclude(document="")
-    document_obj.update(status="approved")
-    messages.success(request, _(f"{len(document_obj)} Document request approved"))
+    if request.method == "POST":
+        ids = request.POST.getlist("ids")
 
-    return HttpResponse("success")
+        # Documents with uploaded files
+        approved_docs = Document.objects.filter(id__in=ids).exclude(document="")
+        count_approved = approved_docs.update(status="approved")
+
+        # Documents without uploaded files
+        not_uploaded_count = len(ids) - approved_docs.count()
+
+        if count_approved:
+            messages.success(
+                request, _(f"{count_approved} document request(s) approved")
+            )
+
+        if not_uploaded_count:
+            messages.info(
+                request, _(f"{not_uploaded_count} document(s) skipped (not uploaded)")
+            )
+
+    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 
 @login_required
 @manager_can_enter("horilla_documents.add_document")
 def document_bulk_reject(request):
     """
-    This function used to view the reject uploaded document.
-    Parameters:
+    Handle bulk rejection of documents.
 
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
+    On GET request, display a form to enter the rejection reason for selected documents.
+    On POST request, validate the rejection reason and update the status of documents
+    (excluding those already rejected) to 'rejected' with the provided reason.
     """
-    ids = request.POST.getlist("ids")
-    reason = request.POST.get("reason")
-    document_obj = Document.objects.filter(id__in=ids)
-    document_obj.update(status="rejected", reject_reason=reason)
-    messages.success(request, _("Document request rejected"))
-    return HttpResponse("success")
+    ids = (
+        request.POST.getlist("ids")
+        if request.method == "POST"
+        else request.GET.getlist("ids")
+    )
+    form = DocumentRejectForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        reject_reason = form.cleaned_data["reject_reason"]
+        updated_count = (
+            Document.objects.filter(id__in=ids)
+            .exclude(status="rejected")
+            .update(status="rejected", reject_reason=reject_reason)
+        )
+        messages.success(
+            request, _("{} Document request rejected").format(updated_count)
+        )
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
+    return render(
+        request, "documents/document_reject_reason.html", {"ids": ids, "form": form}
+    )
 
 
 @login_required

@@ -61,7 +61,7 @@
 			 >
 				<span class="oh-accordion-meta__title pt-3 pb-3">
 					<div class="oh-tabs__input-badge-container">
-						<input type="checkbox" name="select_all" onclick="event.stopPropagation()" class="oh-input payslip-checkbox oh-input__checkbox select_all me-3">
+						<input type="checkbox" name="select_all" onclick="selectAllDocuments(event)" class="oh-input payslip-checkbox oh-input__checkbox select_all me-3">
 						{{document_list.grouper}}
 						<div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" style="margin-left: 20px;" title="{% trans 'Uploaded / Requested' %}">
 							{{document_list.list.0.upload_documents_count}} / {{document_list.list|length}}
@@ -118,7 +118,7 @@
 							<div class="oh-user_permission-list_profile ps-2 {% if document.status == "approved" %}row-status--yellow {% elif document.status == 'rejected' %}row-status--red {% elif document.status == 'requested' %}row-status--blue{% endif %}">
 								<input type="checkbox" id="{{ document.id }}" onchange="highlightRow($(this))"
 									class="oh-input payslip-checkbox oh-input__checkbox all-documents-row"
-									onclick="event.stopPropagation()"
+									onclick="event.stopPropagation()" data-status="{{document.status}}"
 								>
 								<div class="oh-navbar__user-photo oh-user_permission--profile">
 									{% if document.document %}
@@ -395,15 +395,7 @@
   <!-- end of empty page -->
 {% endif %}
 <script>
-	function highlightRow(checkbox) {
-		checkbox.closest(".oh-user_permission-list_item").removeClass("highlight-selected");
-		if (checkbox.is(":checked")) {
-		  checkbox.closest(".oh-user_permission-list_item").addClass("highlight-selected");
-		}
-	}
 	$(document).ready(function(){
-		$(".oh-accordion-meta__header").first().click()
-
+		$(".oh-accordion-meta__body").first().removeClass('d-none');
 	})
-
 </script>
