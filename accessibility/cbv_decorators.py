@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from accessibility.methods import check_is_accessible
 from base.decorators import decorator_with_arguments
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 
 
 @decorator_with_arguments

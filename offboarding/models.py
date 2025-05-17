@@ -8,14 +8,14 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.moared_company_manager import HorillaCompanyManager
 from base.models import Company
 from employee.models import Employee
-from moared import horilla_middlewares
-from moared.horilla_middlewares import _thread_locals
-from moared.methods import get_horilla_model_class
+from moared import moared_middlewares
+from moared.moared_middlewares import _thread_locals
+from moared.methods import get_moared_model_class
 from moared.models import HorillaModel
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from moared_audit.models import HorillaAuditInfo, HorillaAuditLog
 from notifications.signals import notify
 
 # Create your models here.
@@ -188,7 +188,7 @@ class ResignationLetter(HorillaModel):
             .first()
         )
         contract_notice_end_date = (
-            get_horilla_model_class(app_label="payroll", model="contract")
+            get_moared_model_class(app_label="payroll", model="contract")
             .objects.filter(employee_id=self.employee_id, contract_status="active")
             .first()
             if apps.is_installed("payroll")
@@ -332,7 +332,7 @@ class OffboardingNote(HorillaModel):
         ordering = ["-created_at"]
 
     def save(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if request:
             updated_by = request.user.employee_get
             self.note_by = updated_by

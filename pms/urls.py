@@ -1,7 +1,7 @@
 from django.urls import path
 
 from base.views import object_delete
-from horilla_audit.methods import history_tracking
+from moared_audit.methods import history_tracking
 from pms import cbvs
 
 from . import models, views

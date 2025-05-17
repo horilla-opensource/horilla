@@ -22,12 +22,12 @@ from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.moared_company_manager import HorillaCompanyManager
 from base.models import Company, JobPosition
 from employee.models import Employee
 from moared.models import HorillaModel
-from horilla_audit.methods import get_diff
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from moared_audit.methods import get_diff
+from moared_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # Create your models here.
 

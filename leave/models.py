@@ -18,7 +18,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.moared_company_manager import HorillaCompanyManager
 from base.methods import get_date_range
 from base.models import (
     Company,
@@ -30,11 +30,11 @@ from base.models import (
     clear_messages,
 )
 from employee.models import Employee, EmployeeWorkInformation
-from moared import horilla_middlewares
-from moared.methods import get_horilla_model_class
+from moared import moared_middlewares
+from moared.methods import get_moared_model_class
 from moared.models import HorillaModel
-from horilla_audit.methods import get_diff
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from moared_audit.methods import get_diff
+from moared_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.methods import calculate_requested_days
 from leave.threading import LeaveClashThread
 
@@ -760,7 +760,7 @@ class LeaveRequest(HorillaModel):
             emp_dep = self.employee_id.employee_work_info.department_id
             emp_job = self.employee_id.employee_work_info.job_position_id
 
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
             if EmployeePastLeaveRestrict.objects.first().enabled:
                 if self.start_date < date.today():
@@ -888,7 +888,7 @@ class LeaveRequest(HorillaModel):
         return result
 
     def is_approved(self):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if request:
             employee = Employee.objects.filter(employee_user_id=request.user).first()
             condition_approval = LeaveRequestConditionApproval.objects.filter(
@@ -906,7 +906,7 @@ class LeaveRequest(HorillaModel):
             # Update the leave clashes count for all relevant leave requests
             self.update_leave_clashes_count()
         else:
-            request = getattr(horilla_middlewares._thread_locals, "request", None)
+            request = getattr(moared_middlewares._thread_locals, "request", None)
             if request:
                 clear_messages(request)
                 messages.warning(
@@ -1225,7 +1225,7 @@ if apps.is_installed("attendance"):
             """
             Overriding LeaveRequest model save method
             """
-            WorkRecords = get_horilla_model_class(
+            WorkRecords = get_moared_model_class(
                 app_label="attendance", model="workrecords"
             )
             if (

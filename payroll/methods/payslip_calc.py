@@ -11,7 +11,7 @@ import operator
 from django.apps import apps
 
 # from attendance.models import Attendance
-from moared.methods import get_horilla_model_class
+from moared.methods import get_moared_model_class
 from payroll.methods.deductions import update_compensation_deduction
 from payroll.methods.limits import compute_limit
 from payroll.models import models
@@ -335,7 +335,7 @@ def calculate_allowance(**kwargs):
                     employee, allowance, start_date, end_date
                 )
                 if apps.is_installed("attendance"):
-                    Attendance = get_horilla_model_class(
+                    Attendance = get_moared_model_class(
                         app_label="attendance", model="attendance"
                     )
                     if Attendance.objects.filter(**filter_params):
@@ -881,7 +881,7 @@ def calculate_based_on_attendance(*_args, **kwargs):
     if not apps.is_installed("attendance"):
         return 0
 
-    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
+    Attendance = get_moared_model_class(app_label="attendance", model="attendance")
     employee = kwargs["employee"]
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]
@@ -917,7 +917,7 @@ def calculate_based_on_shift(*_args, **kwargs):
     if not apps.is_installed("attendance"):
         return 0
 
-    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
+    Attendance = get_moared_model_class(app_label="attendance", model="attendance")
     employee = kwargs["employee"]
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]
@@ -954,7 +954,7 @@ def calculate_based_on_overtime(*_args, **kwargs):
     if not apps.is_installed("attendance"):
         return 0
 
-    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
+    Attendance = get_moared_model_class(app_label="attendance", model="attendance")
     employee = kwargs["employee"]
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]
@@ -996,7 +996,7 @@ def calculate_based_on_work_type(*_args, **kwargs):
     if not apps.is_installed("attendance"):
         return 0
 
-    Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
+    Attendance = get_moared_model_class(app_label="attendance", model="attendance")
     employee = kwargs["employee"]
     start_date = kwargs["start_date"]
     end_date = kwargs["end_date"]

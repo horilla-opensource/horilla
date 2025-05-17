@@ -43,8 +43,8 @@ from moared.decorators import (
     permission_required,
 )
 from moared.group_by import group_by_queryset
-from horilla_automations.methods.methods import generate_choices
-from horilla_automations.methods.serialize import serialize_form
+from moared_automations.methods.methods import generate_choices
+from moared_automations.methods.serialize import serialize_form
 from notifications.signals import notify
 from pms.filters import (
     ActualKeyResultFilter,

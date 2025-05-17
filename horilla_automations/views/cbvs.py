@@ -1,5 +1,5 @@
 """
-horilla_automations/views/cbvs.py
+moared_automations/views/cbvs.py
 """
 
 from django.contrib import messages
@@ -8,15 +8,15 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _trans
 
 from moared.decorators import login_required, permission_required
-from horilla_automations import models
-from horilla_automations.filters import AutomationFilter
-from horilla_automations.forms import AutomationForm
-from horilla_views.generic.cbv import views
+from moared_automations import models
+from moared_automations.filters import AutomationFilter
+from moared_automations.forms import AutomationForm
+from moared_views.generic.cbv import views
 
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("moared_automation.view_mailautomation"), name="dispatch"
 )
 class AutomationSectionView(views.HorillaSectionView):
     """
@@ -31,12 +31,12 @@ class AutomationSectionView(views.HorillaSectionView):
         "/automation/automation.js",
     ]
 
-    template_name = "horilla_automations/section_view.html"
+    template_name = "moared_automations/section_view.html"
 
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("moared_automation.view_mailautomation"), name="dispatch"
 )
 class AutomationNavView(views.HorillaNavView):
     """
@@ -59,7 +59,7 @@ class AutomationNavView(views.HorillaNavView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.change_mailautomation"), name="dispatch"
+    permission_required("moared_automation.change_mailautomation"), name="dispatch"
 )
 class AutomationFormView(views.HorillaFormView):
     """
@@ -69,7 +69,7 @@ class AutomationFormView(views.HorillaFormView):
     form_class = AutomationForm
     model = models.MailAutomation
     new_display_title = _trans("New Automation")
-    template_name = "horilla_automations/automation_form.html"
+    template_name = "moared_automations/automation_form.html"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -92,7 +92,7 @@ class AutomationFormView(views.HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("moared_automation.view_mailautomation"), name="dispatch"
 )
 class AutomationListView(views.HorillaListView):
     """
@@ -144,7 +144,7 @@ class AutomationListView(views.HorillaListView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("moared_automation.view_mailautomation"), name="dispatch"
 )
 class AutomationDetailedView(views.HorillaDetailedView):
     """

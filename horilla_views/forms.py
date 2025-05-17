@@ -1,5 +1,5 @@
 """
-horilla_views/forms.py
+moared_views/forms.py
 """
 
 import os
@@ -12,16 +12,16 @@ from django.template.loader import render_to_string
 from django.utils.safestring import SafeText
 from django.utils.translation import gettext_lazy as _trans
 
-from moared.horilla_middlewares import _thread_locals
-from horilla_views import models
-from horilla_views.cbv_methods import (
+from moared.moared_middlewares import _thread_locals
+from moared_views import models
+from moared_views.cbv_methods import (
     BOOLEAN_CHOICES,
     FIELD_WIDGET_MAP,
     MODEL_FORM_FIELD_MAP,
     get_field_class_map,
     structured,
 )
-from horilla_views.templatetags.generic_template_filters import getattribute
+from moared_views.templatetags.generic_template_filters import getattribute
 
 
 class ToggleColumnForm(forms.Form):
@@ -128,7 +128,7 @@ class DynamicBulkUpdateForm(forms.Form):
                         required=False,
                     )
                     self.fields[key].widget.option_template_name = (
-                        "horilla_widgets/select_option.html",
+                        "moared_widgets/select_option.html",
                     )
                     continue
                 elif not getattribute(val, "related_model"):
@@ -143,7 +143,7 @@ class DynamicBulkUpdateForm(forms.Form):
                             required=False,
                         )
                         self.fields[key].widget.option_template_name = (
-                            "horilla_widgets/select_option.html",
+                            "moared_widgets/select_option.html",
                         )
                         continue
                     self.fields[key] = field(
@@ -152,7 +152,7 @@ class DynamicBulkUpdateForm(forms.Form):
                         required=False,
                     )
                     self.fields[key].widget.option_template_name = (
-                        "horilla_widgets/select_option.html",
+                        "moared_widgets/select_option.html",
                     )
                     continue
                 queryset = val.related_model.objects.all()
@@ -163,7 +163,7 @@ class DynamicBulkUpdateForm(forms.Form):
                     required=False,
                 )
                 self.fields[key].widget.option_template_name = (
-                    "horilla_widgets/select_option.html",
+                    "moared_widgets/select_option.html",
                 )
 
     def is_valid(self):

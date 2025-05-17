@@ -61,7 +61,7 @@ from moared.decorators import (
     permission_required,
 )
 from moared.group_by import group_by_queryset
-from horilla_documents.models import Document
+from moared_documents.models import Document
 from notifications.signals import notify
 from recruitment.auth import CandidateAuthenticationBackend
 from recruitment.decorators import (

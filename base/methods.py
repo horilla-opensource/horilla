@@ -22,8 +22,8 @@ from xhtml2pdf import pisa
 
 from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
 from employee.models import Employee, EmployeeWorkInformation
-from moared.horilla_middlewares import _thread_locals
-from moared.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
+from moared.moared_middlewares import _thread_locals
+from moared.moared_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 
 
 def filtersubordinates(request, queryset, perm=None, field=None):
@@ -649,7 +649,7 @@ def generate_pdf(template_path, context, path=True, title=None, html=True):
 
 
 def get_pagination():
-    from moared.horilla_middlewares import _thread_locals
+    from moared.moared_middlewares import _thread_locals
 
     request = getattr(_thread_locals, "request", None)
     user = request.user

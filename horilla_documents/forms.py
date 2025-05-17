@@ -5,9 +5,9 @@ from base.forms import ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee
-from horilla_documents.models import Document, DocumentRequest
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from moared_documents.models import Document, DocumentRequest
+from moared_widgets.widgets.moared_multi_select_field import HorillaMultiSelectField
+from moared_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
 
 class DocumentRequestForm(ModelForm):

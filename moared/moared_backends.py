@@ -1,5 +1,5 @@
 """
-moared/horilla_backends.py
+moared/moared_backends.py
 """
 
 from django.db import models

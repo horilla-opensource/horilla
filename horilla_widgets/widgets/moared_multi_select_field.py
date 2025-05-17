@@ -1,5 +1,5 @@
 """
-horilla_multi_select_field.py
+moared_multi_select_field.py
 This module is used to write cutom multiple select field
 """
 

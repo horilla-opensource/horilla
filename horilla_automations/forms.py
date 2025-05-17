@@ -1,5 +1,5 @@
 """
-horilla_automations/forms.py
+moared_automations/forms.py
 """
 
 from typing import Any
@@ -10,10 +10,10 @@ from django.utils.translation import gettext_lazy as _
 from base.forms import ModelForm
 from employee.filters import EmployeeFilter
 from employee.models import Employee
-from horilla_automations.methods.methods import generate_choices
-from horilla_automations.models import MODEL_CHOICES, MailAutomation
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from moared_automations.methods.methods import generate_choices
+from moared_automations.models import MODEL_CHOICES, MailAutomation
+from moared_widgets.widgets.moared_multi_select_field import HorillaMultiSelectField
+from moared_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
 
 class AutomationForm(ModelForm):

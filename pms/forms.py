@@ -25,9 +25,9 @@ from base.methods import (
     reload_queryset,
 )
 from employee.filters import EmployeeFilter
-from moared import horilla_middlewares
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from moared import moared_middlewares
+from moared_widgets.widgets.moared_multi_select_field import HorillaMultiSelectField
+from moared_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from pms.models import (
     AnonymousFeedback,
     BonusPointSetting,
@@ -339,7 +339,7 @@ class EmployeeObjectiveCreateForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
 
         if request.user.has_perm("pms.add_keyresult") or is_reportingmanager(request):
             self.fields["key_result_id"].choices = list(
@@ -425,7 +425,7 @@ class EmployeeKeyResultForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if self.initial.get("employee_objective_id"):
             if (
                 type(self.initial.get("employee_objective_id")) == int
@@ -757,7 +757,7 @@ class FeedbackForm(ModelForm):
         If an instance is provided, sets the initial value for the form's date fields.
         """
         # fetch request
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         # get instance
         instance = kwargs.get("instance")
         # set employee
@@ -1065,7 +1065,7 @@ class MeetingsForm(BaseForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("moared_form.html", context)
         return table_html
 
     def clean(self):
@@ -1176,7 +1176,7 @@ class EmployeeBonusPointForm(MF):
         exclude = ["bonus_point_id", "instance", "is_active"]
 
     def __init__(self, *args, **kwargs):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         super().__init__(*args, **kwargs)
         if request.GET.get("employee_id"):
             employee = Employee.objects.filter(id=request.GET["employee_id"])

@@ -518,7 +518,7 @@ msgstr "Benachrichtigen Sie im Voraus (Tage)"
 #: .\asset\templates\request_allocation\asset_request_creation.html:45
 #: .\attendance\templates\attendance\break_point\condition_form.html:28
 #: .\attendance\templates\attendance\penalty\form.html:116
-#: .\attendance\templates\horilla_form.html:52
+#: .\attendance\templates\moared_form.html:52
 #: .\attendance\templates\requests\attendance\attendance_request_comment_form.html:51
 #: .\base\templates\announcement\announcement_form.html:26
 #: .\base\templates\announcement\announcement_update_form.html:26
@@ -566,8 +566,8 @@ msgstr "Benachrichtigen Sie im Voraus (Tage)"
 #: .\helpdesk\templates\helpdesk\ticket\forms\add_tag.html:480
 #: .\helpdesk\templates\helpdesk\ticket\ticket_form.html:117
 #: .\helpdesk\templates\helpdesk\ticket\ticket_form.html:181
-#: .\horilla_audit\templates\horilla_audit\horilla_audit_log.html:45
-#: .\horilla_views\templates\generic\form.html:56
+#: .\moared_audit\templates\moared_audit\moared_audit_log.html:45
+#: .\moared_views\templates\generic\form.html:56
 #: .\leave\templates\leave\company_leave\company_leave_creation_form.html:52
 #: .\leave\templates\leave\company_leave\company_leave_update_form.html:54
 #: .\leave\templates\leave\holiday\holiday_form.html:66
@@ -1142,9 +1142,9 @@ msgstr "Vermögensgegenstand"
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:344
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:615
 #: .\helpdesk\templates\helpdesk\ticket\ticket_nav.html:30
-#: .\horilla_views\templates\generic\group_by.html:136
-#: .\horilla_views\templates\generic\horilla_list.html:154
-#: .\horilla_views\templates\generic\horilla_nav.html:159
+#: .\moared_views\templates\generic\group_by.html:136
+#: .\moared_views\templates\generic\moared_list.html:154
+#: .\moared_views\templates\generic\moared_nav.html:159
 #: .\leave\templates\leave\assign_view.html:168
 #: .\leave\templates\leave\company_leave\company_leave.html:22
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:44
@@ -1457,14 +1457,14 @@ msgstr "Möchten Sie dieses Asset löschen?"
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:503
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:789
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:793
-#: .\horilla_views\templates\generic\group_by.html:241
-#: .\horilla_views\templates\generic\group_by.html:247
-#: .\horilla_views\templates\generic\group_by.html:313
-#: .\horilla_views\templates\generic\group_by.html:318
-#: .\horilla_views\templates\generic\horilla_card.html:71
-#: .\horilla_views\templates\generic\horilla_card.html:77
-#: .\horilla_views\templates\generic\horilla_list.html:265
-#: .\horilla_views\templates\generic\horilla_list.html:271
+#: .\moared_views\templates\generic\group_by.html:241
+#: .\moared_views\templates\generic\group_by.html:247
+#: .\moared_views\templates\generic\group_by.html:313
+#: .\moared_views\templates\generic\group_by.html:318
+#: .\moared_views\templates\generic\moared_card.html:71
+#: .\moared_views\templates\generic\moared_card.html:77
+#: .\moared_views\templates\generic\moared_list.html:265
+#: .\moared_views\templates\generic\moared_list.html:271
 #: .\leave\templates\leave\company_leave\company_leave.html:76
 #: .\leave\templates\leave\company_leave\company_leave.html:80
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:132
@@ -1801,14 +1801,14 @@ msgstr "Seite"
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:514
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:789
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:804
-#: .\horilla_views\templates\generic\group_by.html:242
-#: .\horilla_views\templates\generic\group_by.html:259
-#: .\horilla_views\templates\generic\group_by.html:313
-#: .\horilla_views\templates\generic\group_by.html:330
-#: .\horilla_views\templates\generic\horilla_card.html:71
-#: .\horilla_views\templates\generic\horilla_card.html:90
-#: .\horilla_views\templates\generic\horilla_list.html:265
-#: .\horilla_views\templates\generic\horilla_list.html:284
+#: .\moared_views\templates\generic\group_by.html:242
+#: .\moared_views\templates\generic\group_by.html:259
+#: .\moared_views\templates\generic\group_by.html:313
+#: .\moared_views\templates\generic\group_by.html:330
+#: .\moared_views\templates\generic\moared_card.html:71
+#: .\moared_views\templates\generic\moared_card.html:90
+#: .\moared_views\templates\generic\moared_list.html:265
+#: .\moared_views\templates\generic\moared_list.html:284
 #: .\leave\templates\leave\company_leave\company_leave.html:76
 #: .\leave\templates\leave\company_leave\company_leave.html:83
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:132
@@ -2077,10 +2077,10 @@ msgstr "von"
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:252
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:524
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:814
-#: .\horilla_views\templates\generic\group_by.html:270
-#: .\horilla_views\templates\generic\group_by.html:336
-#: .\horilla_views\templates\generic\horilla_card.html:102
-#: .\horilla_views\templates\generic\horilla_list.html:296
+#: .\moared_views\templates\generic\group_by.html:270
+#: .\moared_views\templates\generic\group_by.html:336
+#: .\moared_views\templates\generic\moared_card.html:102
+#: .\moared_views\templates\generic\moared_list.html:296
 #: .\leave\templates\leave\company_leave\company_leave.html:89
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:145
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:334
@@ -2257,10 +2257,10 @@ msgstr "Erste"
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:260
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:532
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:822
-#: .\horilla_views\templates\generic\group_by.html:278
-#: .\horilla_views\templates\generic\group_by.html:339
-#: .\horilla_views\templates\generic\horilla_card.html:111
-#: .\horilla_views\templates\generic\horilla_list.html:305
+#: .\moared_views\templates\generic\group_by.html:278
+#: .\moared_views\templates\generic\group_by.html:339
+#: .\moared_views\templates\generic\moared_card.html:111
+#: .\moared_views\templates\generic\moared_list.html:305
 #: .\leave\templates\leave\company_leave\company_leave.html:94
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:150
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:339
@@ -2439,10 +2439,10 @@ msgstr "Vorherige"
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:269
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:541
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:831
-#: .\horilla_views\templates\generic\group_by.html:287
-#: .\horilla_views\templates\generic\group_by.html:344
-#: .\horilla_views\templates\generic\horilla_card.html:121
-#: .\horilla_views\templates\generic\horilla_list.html:315
+#: .\moared_views\templates\generic\group_by.html:287
+#: .\moared_views\templates\generic\group_by.html:344
+#: .\moared_views\templates\generic\moared_card.html:121
+#: .\moared_views\templates\generic\moared_list.html:315
 #: .\leave\templates\leave\company_leave\company_leave.html:101
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:157
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:346
@@ -2620,10 +2620,10 @@ msgstr "Nächste"
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:277
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:549
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:839
-#: .\horilla_views\templates\generic\group_by.html:295
-#: .\horilla_views\templates\generic\group_by.html:347
-#: .\horilla_views\templates\generic\horilla_card.html:130
-#: .\horilla_views\templates\generic\horilla_list.html:324
+#: .\moared_views\templates\generic\group_by.html:295
+#: .\moared_views\templates\generic\group_by.html:347
+#: .\moared_views\templates\generic\moared_card.html:130
+#: .\moared_views\templates\generic\moared_list.html:324
 #: .\leave\templates\leave\company_leave\company_leave.html:106
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:162
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:351
@@ -3109,12 +3109,12 @@ msgstr "Bruttolohn kleiner oder gleich"
 #: .\helpdesk\templates\helpdesk\faq\faq_nav.html:79
 #: .\helpdesk\templates\helpdesk\ticket\ticket_filter.html:52
 #: .\helpdesk\templates\helpdesk\ticket\ticket_filter.html:137
-#: .\horilla_views\templates\generic\horilla_nav.html:89
-#: .\horilla_views\templates\generic\horilla_nav.html:105
-#: .\horilla_views\templates\generic\horilla_nav.html:116
-#: .\horilla_widgets\templates\horilla_widgets\horilla_multiselect_widget.html:171
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\nav.html:38
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\nav.html:57
+#: .\moared_views\templates\generic\moared_nav.html:89
+#: .\moared_views\templates\generic\moared_nav.html:105
+#: .\moared_views\templates\generic\moared_nav.html:116
+#: .\moared_widgets\templates\moared_widgets\moared_multiselect_widget.html:171
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\nav.html:38
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\nav.html:57
 #: .\leave\templates\leave\assign_view.html:156
 #: .\leave\templates\leave\company_leave\company_leave_view.html:25
 #: .\leave\templates\leave\company_leave\company_leave_view.html:53
@@ -3284,7 +3284,7 @@ msgstr "Filter"
 #: .\employee\templates\tabs\shift-tab.html:310
 #: .\employee\templates\tabs\shift-tab.html:451
 #: .\employee\templates\tabs\shift-tab.html:595
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\table.html:19
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\table.html:19
 #: .\leave\filters.py:475 .\leave\filters.py:511 .\leave\filters.py:535
 #: .\leave\models.py:279 .\leave\models.py:459
 #: .\leave\templates\leave\accrual_plan_assign_view.html:9
@@ -3400,7 +3400,7 @@ msgstr "Keine Ergebnis gefunden!"
 #: .\employee\templates\employee_nav.html:278
 #: .\helpdesk\templates\helpdesk\faq\faq_nav.html:28
 #: .\helpdesk\templates\helpdesk\ticket\ticket_filter.html:29
-#: .\horilla_views\templates\generic\horilla_nav.html:62
+#: .\moared_views\templates\generic\moared_nav.html:62
 #: .\leave\templates\leave\assign_view.html:146
 #: .\leave\templates\leave\company_leave\company_leave_view.html:20
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_view.html:59
@@ -3465,8 +3465,8 @@ msgstr "Suchen"
 #: .\employee\templates\employee_nav.html:365
 #: .\helpdesk\templates\helpdesk\ticket\ticket_filter.html:150
 #: .\helpdesk\templates\helpdesk\ticket\ticket_filter.html:159
-#: .\horilla_views\templates\generic\horilla_nav.html:123
-#: .\horilla_views\templates\generic\horilla_nav.html:128
+#: .\moared_views\templates\generic\moared_nav.html:123
+#: .\moared_views\templates\generic\moared_nav.html:128
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:166
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:175
 #: .\leave\templates\leave\leave_assign\assign_view.html:146
@@ -3505,7 +3505,7 @@ msgstr "Gruppiere nach"
 #: .\base\templates\work_type_request\work_type_request_nav.html:183
 #: .\employee\templates\employee_nav.html:370
 #: .\helpdesk\templates\helpdesk\ticket\ticket_filter.html:163
-#: .\horilla_views\templates\generic\horilla_nav.html:132
+#: .\moared_views\templates\generic\moared_nav.html:132
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:179
 #: .\leave\templates\leave\leave_assign\assign_view.html:160
 #: .\leave\templates\leave\leave_request\request_view.html:146
@@ -3606,7 +3606,7 @@ msgstr "Vermögensgegenstand Chargen Nummer"
 #: .\helpdesk\templates\helpdesk\faq\faq_category_nav.html:83
 #: .\helpdesk\templates\helpdesk\faq\faq_nav.html:97
 #: .\helpdesk\templates\helpdesk\ticket\ticket_nav.html:99
-#: .\horilla_views\templates\generic\horilla_nav.html:187
+#: .\moared_views\templates\generic\moared_nav.html:187
 #: .\leave\templates\leave\accrual_plan_view.html:3
 #: .\leave\templates\leave\company_leave\company_leave_view.html:65
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_view.html:207
@@ -3780,8 +3780,8 @@ msgstr "Importieren"
 #: .\base\templates\work_type_request\work_type_request_nav.html:304
 #: .\employee\templates\employee_nav.html:128
 #: .\employee\templates\employee_nav.html:432
-#: .\horilla_views\templates\generic\group_by.html:46
-#: .\horilla_views\templates\generic\horilla_list.html:50
+#: .\moared_views\templates\generic\group_by.html:46
+#: .\moared_views\templates\generic\moared_list.html:50
 #: .\leave\templates\leave\assign_view.html:106
 #: .\leave\templates\leave\assign_view.html:194
 #: .\leave\templates\leave\holiday\holiday_export_filter_form.html:74
@@ -5675,11 +5675,11 @@ msgstr "Suchen in: Firma"
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:26
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:324
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:595
-#: .\horilla_views\templates\generic\group_by.html:13
-#: .\horilla_views\templates\generic\horilla_list.html:17
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\filter_tags.html:26
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\filter_tags.html:34
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\search.html:28
+#: .\moared_views\templates\generic\group_by.html:13
+#: .\moared_views\templates\generic\moared_list.html:17
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\filter_tags.html:26
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\filter_tags.html:34
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\search.html:28
 #: .\leave\templates\leave\holiday\holiday.html:38
 #: .\leave\templates\leave\leave_assign\assigned_leave.html:33
 #: .\leave\templates\leave\leave_assign\assigned_leaves_export_form.html:28
@@ -6129,13 +6129,13 @@ msgstr "Angeforderte Anwesenheiten"
 
 #: .\attendance\templates\attendance\attendance_account\attendance_overtime_view.html:11
 #: .\attendance\templates\requests\attendance\view-requests.html:35
-#: .\horilla_views\templates\generic\as_list.html:7
+#: .\moared_views\templates\generic\as_list.html:7
 msgid "Select All Records"
 msgstr "Wählen Sie alle Datensätze aus"
 
 #: .\attendance\templates\attendance\attendance_account\attendance_overtime_view.html:14
 #: .\attendance\templates\requests\attendance\view-requests.html:38
-#: .\horilla_views\templates\generic\as_list.html:10
+#: .\moared_views\templates\generic\as_list.html:10
 msgid "Unselect All Records"
 msgstr "Alle Datensätze abwählen"
 
@@ -10408,7 +10408,7 @@ msgid " is validated"
 msgstr "is bestätigt"
 
 #: .\base\translator.py:49
-#: .\horilla_views\templates\generic\horilla_nav.html:138
+#: .\moared_views\templates\generic\moared_nav.html:138
 #: .\leave\filters.py:474 .\leave\filters.py:497 .\leave\filters.py:510
 #: .\leave\filters.py:534 .\payroll\filters.py:363 .\payroll\filters.py:385
 msgid "Select"
@@ -12539,7 +12539,7 @@ msgstr "Mitarbeiter"
 #: .\employee\templates\tabs\note_tab.html:96
 #: .\employee\templates\tabs\note_tab.html:219
 #: .\employee\templates\tabs\shift-tab.html:69
-#: .\horilla_widgets\templates\horilla_widgets\horilla_multiselect_widget.html:209
+#: .\moared_widgets\templates\moared_widgets\moared_multiselect_widget.html:209
 #: .\offboarding\templates\offboarding\note\view_notes.html:46
 #: .\payroll\templates\payroll\bonus\form.html:23
 #: .\pms\templates\feedback\feedback_list.html:72
@@ -12679,8 +12679,8 @@ msgid "Port No."
 msgstr ""
 
 #: .\biometric\templates\biometric\list_biometric_devices.html:46
-#: .\horilla_views\templates\generic\group_by.html:130
-#: .\horilla_views\templates\generic\horilla_list.html:148
+#: .\moared_views\templates\generic\group_by.html:130
+#: .\moared_views\templates\generic\moared_list.html:148
 #: .\leave\templates\leave\leave_request\leave-requests.html:43
 #: .\onboarding\templates\onboarding\onboarding_table.html:124
 #: .\pms\templates\okr\emp_objective\emp_objective_dashboard_view.html:96
@@ -13828,7 +13828,7 @@ msgstr "Mitarbeiter ausschließen"
 #: .\employee\templates\employee_nav.html:266
 #: .\employee\templates\employee_nav.html:272
 #: .\employee\templates\employee_nav.html:278
-#: .\horilla_views\templates\generic\horilla_nav.html:62
+#: .\moared_views\templates\generic\moared_nav.html:62
 msgid "for:"
 msgstr ""
 
@@ -15884,63 +15884,63 @@ msgstr "Erstellt von"
 msgid "Modified By"
 msgstr ""
 
-#: .\horilla_audit\forms.py:19
+#: .\moared_audit\forms.py:19
 #, fuzzy
 #| msgid "Update Note"
 msgid "Updation title"
 msgstr "Hinweis Aktualisieren"
 
-#: .\horilla_audit\forms.py:25
+#: .\moared_audit\forms.py:25
 #, fuzzy
 #| msgid "Request description"
 msgid "Updation description"
 msgstr "Beschreibung anfordern"
 
-#: .\horilla_audit\forms.py:28
+#: .\moared_audit\forms.py:28
 msgid "Updation highlight"
 msgstr ""
 
-#: .\horilla_audit\forms.py:31
+#: .\moared_audit\forms.py:31
 #, fuzzy
 #| msgid "Update Stage"
 msgid "Updation tag"
 msgstr "Abschnitt aktualisieren"
 
-#: .\horilla_audit\templates\horilla_audit\horilla_audit_log.html:28
+#: .\moared_audit\templates\moared_audit\moared_audit_log.html:28
 msgid "Why this change?"
 msgstr ""
 
-#: .\horilla_documents\models.py:110
+#: .\moared_documents\models.py:110
 #, fuzzy
 #| msgid "Password must contain at least 8 characters."
 msgid "Title must be at least 3 characters"
 msgstr "Passwort muss mindestens 8 Zeichen enthalten."
 
-#: .\horilla_views\templates\generic\filter_tags.html:45
+#: .\moared_views\templates\generic\filter_tags.html:45
 #: .\templates\filter_tags.html:55
 #, fuzzy
 #| msgid "Filter"
 msgid "Filters"
 msgstr "Filter"
 
-#: .\horilla_views\templates\generic\filter_tags.html:67
+#: .\moared_views\templates\generic\filter_tags.html:67
 #: .\templates\filter_tags.html:77
 #, fuzzy
 #| msgid "Clear"
 msgid "Clear All"
 msgstr "Klar"
 
-#: .\horilla_views\templates\generic\group_by.html:28
-#: .\horilla_views\templates\generic\horilla_list.html:32
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\filter_tags.html:29
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\search.html:30
+#: .\moared_views\templates\generic\group_by.html:28
+#: .\moared_views\templates\generic\moared_list.html:32
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\filter_tags.html:29
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\search.html:30
 msgid "Unselect All"
 msgstr ""
 
-#: .\horilla_views\templates\generic\group_by.html:35
-#: .\horilla_views\templates\generic\horilla_list.html:39
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\filter_tags.html:23
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\search.html:25
+#: .\moared_views\templates\generic\group_by.html:35
+#: .\moared_views\templates\generic\moared_list.html:39
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\filter_tags.html:23
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\search.html:25
 #: .\onboarding\templates\onboarding\candidates.html:367
 #: .\onboarding\templates\onboarding\group_by.html:347
 #: .\recruitment\templates\candidate\candidate_list.html:412
@@ -15950,31 +15950,31 @@ msgstr ""
 msgid "Selected"
 msgstr "Wählen"
 
-#: .\horilla_views\templates\generic\horilla_card.html:151
-#: .\horilla_views\templates\generic\horilla_list.html:376
+#: .\moared_views\templates\generic\moared_card.html:151
+#: .\moared_views\templates\generic\moared_list.html:376
 #, fuzzy
 #| msgid "No email found."
 msgid "No Records found"
 msgstr "Keine Email gefunden."
 
-#: .\horilla_views\templates\generic\horilla_card.html:153
-#: .\horilla_views\templates\generic\horilla_list.html:378
+#: .\moared_views\templates\generic\moared_card.html:153
+#: .\moared_views\templates\generic\moared_list.html:378
 #, fuzzy
 #| msgid "No email found."
 msgid "No records found."
 msgstr "Keine Email gefunden."
 
-#: .\horilla_views\templates\generic\horilla_tabs.html:30
+#: .\moared_views\templates\generic\moared_tabs.html:30
 #, fuzzy
 #| msgid "Work Records"
 msgid "Records"
 msgstr "Arbeitsaufzeichnungen"
 
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\filter_tags.html:26
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\filter_tags.html:26
 msgid "user"
 msgstr ""
 
-#: .\horilla_widgets\templates\horilla_widgets\multiselect_components\filter_tags.html:34
+#: .\moared_widgets\templates\moared_widgets\multiselect_components\filter_tags.html:34
 msgid "Item"
 msgstr ""
 

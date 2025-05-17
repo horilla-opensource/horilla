@@ -1,5 +1,5 @@
 """
-horilla_middlewares.py
+moared_middlewares.py
 
 This module is used to register moared's middlewares without affecting the moared/settings.py
 """
@@ -12,8 +12,8 @@ from django.shortcuts import render
 from moared.settings import MIDDLEWARE
 
 MIDDLEWARE.append("base.middleware.CompanyMiddleware")
-MIDDLEWARE.append("moared.horilla_middlewares.MethodNotAllowedMiddleware")
-MIDDLEWARE.append("moared.horilla_middlewares.ThreadLocalMiddleware")
+MIDDLEWARE.append("moared.moared_middlewares.MethodNotAllowedMiddleware")
+MIDDLEWARE.append("moared.moared_middlewares.ThreadLocalMiddleware")
 MIDDLEWARE.append("accessibility.middlewares.AccessibilityMiddleware")
 MIDDLEWARE.append("accessibility.middlewares.AccessibilityMiddleware")
 MIDDLEWARE.append("base.middleware.ForcePasswordChangeMiddleware")

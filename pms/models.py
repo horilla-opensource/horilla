@@ -12,14 +12,14 @@ from django.db.models.signals import post_delete, post_save, pre_save
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.moared_company_manager import HorillaCompanyManager
 from base.models import Company, Department, JobPosition
 from employee.models import BonusPoint, Employee
 from moared.models import HorillaModel
-from horilla_audit.methods import get_diff
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
-from horilla_automations.methods.methods import get_model_class
-from horilla_views.cbv_methods import render_template
+from moared_audit.methods import get_diff
+from moared_audit.models import HorillaAuditInfo, HorillaAuditLog
+from moared_automations.methods.methods import get_model_class
+from moared_views.cbv_methods import render_template
 
 """Objectives and key result section"""
 

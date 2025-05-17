@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 
 from base.forms import ModelForm
 from employee.forms import MultipleFileField
-from moared import horilla_middlewares
+from moared import moared_middlewares
 from notifications.signals import notify
 from offboarding.models import (
     EmployeeTask,
@@ -264,7 +264,7 @@ class ResignationLetterForm(ModelForm):
                 self.instance.employee_id.get_full_name() + " Resignation Letter"
             )
 
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
 
         if request and not request.user.has_perm("offboarding.add_offboardingemployee"):
             exclude = exclude + [
@@ -277,7 +277,7 @@ class ResignationLetterForm(ModelForm):
             del self.fields[field]
 
     def save(self, commit: bool = ...) -> Any:
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         instance = self.instance
         if (
             not request.user.has_perm("offboarding.add_offboardingemployee")

@@ -8,8 +8,8 @@ from django.http import JsonResponse
 from django.urls import include, path
 
 from moared.urls import urlpatterns
-from horilla_audit.forms import HistoryForm
-from horilla_audit.models import AuditTag
+from moared_audit.forms import HistoryForm
+from moared_audit.models import AuditTag
 
 
 def history_form(request):

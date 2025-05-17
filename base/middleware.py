@@ -15,7 +15,7 @@ from attendance.models import (
     WorkRecords,
 )
 from base.context_processors import AllCompany
-from base.horilla_company_manager import HorillaCompanyManager
+from base.moared_company_manager import HorillaCompanyManager
 from base.models import Company, ShiftRequest, WorkTypeRequest
 from employee.models import (
     DisciplinaryAction,
@@ -24,7 +24,7 @@ from employee.models import (
     EmployeeWorkInformation,
 )
 from helpdesk.models import Ticket
-from horilla_documents.models import DocumentRequest
+from moared_documents.models import DocumentRequest
 from leave.models import (
     AvailableLeave,
     CompensatoryLeaveRequest,
@@ -101,7 +101,7 @@ class CompanyMiddleware:
                 "base",
                 "helpdesk",
                 "offboarding",
-                "horilla_documents",
+                "moared_documents",
             ]
             app_models = [
                 model

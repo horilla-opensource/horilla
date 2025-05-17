@@ -34,7 +34,7 @@ from moared.decorators import (
     permission_required,
 )
 from moared.filters import HorillaPaginator
-from moared.horilla_settings import BIO_DEVICE_THREADS
+from moared.moared_settings import BIO_DEVICE_THREADS
 
 from .cosec import COSECBiometric
 from .filters import BiometricDeviceFilter
@@ -1436,7 +1436,7 @@ def edit_cosec_user(request, user_id, device_id):
 @login_required
 @install_required
 @permission_required("biometric.delete_biometricemployees")
-def delete_horilla_cosec_user(request, user_id, device_id):
+def delete_moared_cosec_user(request, user_id, device_id):
     """
     View function to delete a user from a COSEC biometric device and database.
 

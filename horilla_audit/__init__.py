@@ -1,1 +1,1 @@
-from horilla_audit import settings
+from moared_audit import settings

@@ -100,7 +100,7 @@ urlpatterns = [
     ),
     path(
         "delete-cosec-user/<str:user_id>/<uuid:device_id>/",
-        views.delete_horilla_cosec_user,
+        views.delete_moared_cosec_user,
         name="delete-cosec-user",
     ),
     path(

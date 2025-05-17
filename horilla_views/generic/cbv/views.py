@@ -21,9 +21,9 @@ from django.views.generic import DetailView, FormView, ListView, TemplateView
 from base.methods import closest_numbers, eval_validate, get_key_instances
 from moared.filters import FilterSet
 from moared.group_by import group_by_queryset
-from moared.horilla_middlewares import _thread_locals
-from horilla_views import models
-from horilla_views.cbv_methods import (
+from moared.moared_middlewares import _thread_locals
+from moared_views import models
+from moared_views.cbv_methods import (
     get_short_uuid,
     hx_request_required,
     paginator_qry,
@@ -32,8 +32,8 @@ from horilla_views.cbv_methods import (
     update_initial_cache,
     update_saved_filter_cache,
 )
-from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
-from horilla_views.templatetags.generic_template_filters import getattribute
+from moared_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
+from moared_views.templatetags.generic_template_filters import getattribute
 
 
 @method_decorator(hx_request_required, name="dispatch")
@@ -48,7 +48,7 @@ class HorillaListView(ListView):
 
     export_file_name: str = None
 
-    template_name: str = "generic/horilla_list_table.html"
+    template_name: str = "generic/moared_list_table.html"
     context_object_name = "queryset"
     # column = [("Verbose Name","field_name","avatar_mapping")], opt: avatar_mapping
     columns: list = []
@@ -480,7 +480,7 @@ class HorillaSectionView(TemplateView):
     script_static_paths: list = []
     style_static_paths: list = []
 
-    template_name = "generic/horilla_section.html"
+    template_name = "generic/moared_section.html"
 
     def get_context_data(self, **kwargs) -> dict:
         context = super().get_context_data(**kwargs)
@@ -499,7 +499,7 @@ class HorillaDetailedView(DetailView):
     """
 
     title = "Detailed View"
-    template_name = "generic/horilla_detailed_view.html"
+    template_name = "generic/moared_detailed_view.html"
     header: dict = {"title": "Moared", "subtitle": "Moared Detailed View"}
     body: list = []
 
@@ -561,7 +561,7 @@ class HorillaTabView(TemplateView):
     """
 
     view_id: str = get_short_uuid(3, "htv")
-    template_name = "generic/horilla_tabs.html"
+    template_name = "generic/moared_tabs.html"
 
     tabs: list = []
 
@@ -597,7 +597,7 @@ class HorillaCardView(ListView):
 
     view_id: str = get_short_uuid(4, prefix="hcv")
 
-    template_name = "generic/horilla_card.html"
+    template_name = "generic/moared_card.html"
     context_object_name = "queryset"
 
     search_url: str = ""
@@ -805,7 +805,7 @@ class HorillaFormView(FormView):
     view_id: str = get_short_uuid(4)
     hx_confirm: str = ""
     form_class: forms.ModelForm = None
-    template_name = "generic/horilla_form.html"
+    template_name = "generic/moared_form.html"
     ids_key: str = "instance_ids"
     form_disaply_attr: str = ""
     new_display_title: str = "Add New"
@@ -987,7 +987,7 @@ class HorillaFormView(FormView):
                         required=form.fields[field].required,
                     )
                     form.fields[field].widget.option_template_name = (
-                        "horilla_widgets/select_option.html",
+                        "moared_widgets/select_option.html",
                     )
                     form.fields[field].widget.attrs = attrs
                     form.initial[field] = value
@@ -1027,7 +1027,7 @@ class HorillaNavView(TemplateView):
     filter form submit button id: applyFilter
     """
 
-    template_name = "generic/horilla_nav.html"
+    template_name = "generic/moared_nav.html"
 
     nav_title: str = ""
     search_url: str = ""
@@ -1086,7 +1086,7 @@ class HorillaProfileView(DetailView):
     GenericHorillaProfileView
     """
 
-    template_name = "generic/horilla_profile_view.html"
+    template_name = "generic/moared_profile_view.html"
     view_id: str = None
     filter_class: FilterSet = None
 

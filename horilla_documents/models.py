@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from django.forms import ValidationError
 from django.utils.translation import gettext as _
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.moared_company_manager import HorillaCompanyManager
 from employee.models import Employee
 from moared.models import HorillaModel
 

@@ -1,5 +1,5 @@
 <div id="formContainer">
-    {% include "generic/horilla_form.html" %}
+    {% include "generic/moared_form.html" %}
 
 </div>
 <script>
@@ -29,11 +29,11 @@
         })
         .summernote("code", getHtml());
     {% if form.instance.pk %}
-        $("#id_mail_to").val({{ form.instance.mail_to | safe }}).change()
-        $("#dynamic_field_condition .note-editable").html($("<form id='multipleConditionForm'></form>"));
-        $("#dynamic_field_condition .note-editable #multipleConditionForm").html($(`{{form.instance.condition_html|safe}}`))
-        $(".note-editable select").parent().find("span.select2").remove()
-        $(".note-editable select").parent().find(".select2-hidden-accessible").removeClass("select2-hidden-accessible")
-        $(".note-editable select").parent().find("select").select2();
+    $("#id_mail_to").val({{ form.instance.mail_to | safe }}).change()
+    $("#dynamic_field_condition .note-editable").html($("<form id='multipleConditionForm'></form>"));
+    $("#dynamic_field_condition .note-editable #multipleConditionForm").html($(`{{form.instance.condition_html|safe}}`))
+    $(".note-editable select").parent().find("span.select2").remove()
+    $(".note-editable select").parent().find(".select2-hidden-accessible").removeClass("select2-hidden-accessible")
+    $(".note-editable select").parent().find("select").select2();
     {% endif %}
 </script>

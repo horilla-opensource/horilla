@@ -11,7 +11,7 @@ from django.utils.translation import gettext as _
 
 from employee.models import Employee
 from moared.filters import HorillaFilterSet
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 
 
 def _filter_form_structured(self):

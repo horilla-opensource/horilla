@@ -19,6 +19,7 @@
 		height: 34px !important;
 		font-size: 1.75rem !important;
 	}
+
 	.enlarge-image-container {
 		display: none;
 		position: fixed;
@@ -131,84 +132,86 @@
 				</button>
 				<div class="oh-dropdown__menu oh-dropdown__menu--right" style="min-width:250px" x-show="open">
 					<ul class="oh-dropdown__items">
-						{% if perms.employee.change_employee or employee.employee_work_info.reporting_manager_id == request.user.employee_get %}
-							<li class="oh-dropdown__item">
-								<a href="{% url 'employee-view-update' employee.id %}" class="">
-									<img src="{% static 'images/ui/edit_btn.png' %}" style="width: 20px; height: auto"
-										title="{% trans 'Edit' %}" />
-									<button style="border: none; background: transparent;">{% trans "Edit" %}</button>
-								</a>
-							</li>
+						{% if perms.employee.change_employee or employee.employee_work_info.reporting_manager_id ==
+						request.user.employee_get %}
+						<li class="oh-dropdown__item">
+							<a href="{% url 'employee-view-update' employee.id %}" class="">
+								<img src="{% static 'images/ui/edit_btn.png' %}" style="width: 20px; height: auto"
+									title="{% trans 'Edit' %}" />
+								<button style="border: none; background: transparent;">{% trans "Edit" %}</button>
+							</a>
+						</li>
 						{% endif %}
 
 						{% if enabled_block_unblock and perms.employee.change_employee %}
-							{% if employee.employee_user_id.is_active %}
-								{% if not employee.employee_user_id.is_superuser %}
-									<li class="oh-dropdown__item">
-										<form action="{% url 'employee-account-block-unblock' employee.id %}"
-											onsubmit="return confirm('{% trans "Do you really want to prevent this employee from
-											accessing and logging into this webpage?" %}');">
-											{% csrf_token %}
-											<img src="{% static 'images/ui/block-user.png' %}" style="width: 20px; height: 20px; ">
-											<button type="submit" style=" border: none; background: transparent;">
-												{% trans "Block Account" %}
-											</button>
-										</form>
-									</li>
-								{% endif %}
-							{% else %}
-								{% if not employee.employee_user_id.is_superuser %}
-									<li class="oh-dropdown__item">
-										<form action="{% url 'employee-account-block-unblock' employee.id %}"
-											onsubmit="return confirm('{% trans " Do you really want to allow this employee to access
-											and log into this webpage?" %}');">
-											{% csrf_token %}
-											<img src="{% static 'images/ui/unlock.png' %}" style="width: 30px; height: 27px;">
-											<button type="submit" style="  border: none; background: transparent;">
-												{% trans "Un-Block Account" %}
-											</button>
-										</form>
-									</li>
-								{% endif %}
-							{% endif %}
+						{% if employee.employee_user_id.is_active %}
+						{% if not employee.employee_user_id.is_superuser %}
+						<li class="oh-dropdown__item">
+							<form action="{% url 'employee-account-block-unblock' employee.id %}"
+								onsubmit="return confirm('{% trans " Do you really want to prevent this employee from
+								accessing and logging into this webpage?" %}');">
+								{% csrf_token %}
+								<img src="{% static 'images/ui/block-user.png' %}" style="width: 20px; height: 20px; ">
+								<button type="submit" style=" border: none; background: transparent;">
+									{% trans "Block Account" %}
+								</button>
+							</form>
+						</li>
+						{% endif %}
+						{% else %}
+						{% if not employee.employee_user_id.is_superuser %}
+						<li class="oh-dropdown__item">
+							<form action="{% url 'employee-account-block-unblock' employee.id %}"
+								onsubmit="return confirm('{% trans " Do you really want to allow this employee to access
+								and log into this webpage?" %}');">
+								{% csrf_token %}
+								<img src="{% static 'images/ui/unlock.png' %}" style="width: 30px; height: 27px;">
+								<button type="submit" style="  border: none; background: transparent;">
+									{% trans "Un-Block Account" %}
+								</button>
+							</form>
+						</li>
+						{% endif %}
+						{% endif %}
 						{% endif %}
 
-						{% if perms.employee.add_employee or employee.employee_work_info.reporting_manager_id == request.user.employee_get %}
-							<li class="oh-dropdown__item">
-								<form action="{% url 'employee-reset-password' %}" method="post" role="button"
-									style="display: flex;">
-									<ion-icon name="key-outline" style="width: 20px; height: 20px; "></ion-icon>
-									{% csrf_token %}
-									<input name="email" hidden value="{{employee.employee_user_id.username}}" />
-									<button type="submit" style="border: none; background: transparent;">{% trans "Send password reset link" %} </button>
-								</form>
-							</li>
+						{% if perms.employee.add_employee or employee.employee_work_info.reporting_manager_id ==
+						request.user.employee_get %}
+						<li class="oh-dropdown__item">
+							<form action="{% url 'employee-reset-password' %}" method="post" role="button"
+								style="display: flex;">
+								<ion-icon name="key-outline" style="width: 20px; height: 20px; "></ion-icon>
+								{% csrf_token %}
+								<input name="email" hidden value="{{employee.employee_user_id.username}}" />
+								<button type="submit" style="border: none; background: transparent;">{% trans "Send
+									password reset link" %} </button>
+							</form>
+						</li>
 						{% endif %}
 					</ul>
 				</div>
 			</div>
 
 			{% if next != None %}
-				<a href="{% url 'employee-view-individual' next %}" title="{% trans "Next Employee" %}"
-					data-action="next"
-					style="color:hsl(8, 77%, 56%);" class="ms-1 fw-bold">
-					<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
+			<a href="{% url 'employee-view-individual' next %}" title="{% trans " Next Employee" %}" data-action="next"
+				style="color:hsl(8, 77%, 56%);" class="ms-1 fw-bold">
+				<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
+			</a>
 			{% else %}
-				<a href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 fw-bold oh-btn--disabled">
-					<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
+			<a href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 fw-bold oh-btn--disabled">
+				<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
+			</a>
 			{% endif %}
 
 			{% if previous != None %}
-				<a href="{% url 'employee-view-individual' previous %}" title="{% trans "Previous Employee" %}"
-					data-action="previous" style="color:hsl(8, 77%, 56%);" class="ms-1 me-2 fw-bold">
-					<ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
+			<a href="{% url 'employee-view-individual' previous %}" title="{% trans " Previous Employee" %}"
+				data-action="previous" style="color:hsl(8, 77%, 56%);" class="ms-1 me-2 fw-bold">
+				<ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
+			</a>
 			{% else %}
-				<a href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 me-2 fw-bold oh-btn--disabled">
-					<ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
+			<a href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 me-2 fw-bold oh-btn--disabled">
+				<ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
+			</a>
 			{% endif %}
 		</div>
 
@@ -224,15 +227,15 @@
 								$('#enlargeImageContainer').removeClass('enlarge-image-container');" {% endif %} />
 						</div>
 						{% if "attendance"|app_installed %}
-							{% if employee.check_online %}
-								<span class="oh-profile__active-badge oh-profile__active-badge--secondary"
-									style="background-color: yellowgreen;" title="{% trans 'Online' %}">
-								</span>
-							{% else %}
-								<span class="oh-profile__active-badge oh-profile__active-badge--secondary"
-									style="background-color: rgba(128, 128, 128, 0.482);" title="{% trans 'Offline' %}">
-								</span>
-							{% endif %}
+						{% if employee.check_online %}
+						<span class="oh-profile__active-badge oh-profile__active-badge--secondary"
+							style="background-color: yellowgreen;" title="{% trans 'Online' %}">
+						</span>
+						{% else %}
+						<span class="oh-profile__active-badge oh-profile__active-badge--secondary"
+							style="background-color: rgba(128, 128, 128, 0.482);" title="{% trans 'Offline' %}">
+						</span>
+						{% endif %}
 						{% endif %}
 					</div>
 
@@ -282,7 +285,8 @@
 							<ion-icon name="call-outline"></ion-icon>
 							<span>{% trans "Phone" %}:</span>
 						</span>
-						<span class="oh-profile__info-value">{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
+						<span class="oh-profile__info-value">{% if perms.employee.view_employee or request.user ==
+							employee.employee_user_id %}
 							{{employee.phone}}
 							{% else %}
 							**********
@@ -294,23 +298,25 @@
 		</div>
 
 		<div class="oh-table_sticky--wrapper">
-			{% if request.user.is_superuser or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-				<div class="oh-sticky-dropdown--header" style="border:none;">
-					<div class="oh-dropdown" x-data="{open: false}">
-						<button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon
-								name="ellipsis-vertical-sharp" role="img" class="md hydrated"
-								aria-label="ellipsis vertical sharp"></ion-icon></button>
-						<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-							<ul class="oh-dropdown__items" id="fieldContainerTable">
-							</ul>
-						</div>
+			{% if request.user.is_superuser or request.user|check_manager:employee or request.user ==
+			employee.employee_user_id %}
+			<div class="oh-sticky-dropdown--header" style="border:none;">
+				<div class="oh-dropdown" x-data="{open: false}">
+					<button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon
+							name="ellipsis-vertical-sharp" role="img" class="md hydrated"
+							aria-label="ellipsis vertical sharp"></ion-icon></button>
+					<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+						<ul class="oh-dropdown__items" id="fieldContainerTable">
+						</ul>
 					</div>
 				</div>
+			</div>
 			{% endif %}
 			<div id="employee-tab" data-table-name="employee_tab">
 				<div class="row">
 					<div class="col-sm-12 col-md-12 col lg-12">
-						<ul class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5">
+						<ul
+							class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5">
 
 							<li class="oh-general__tab">
 								<a hx-get={% url 'about-tab' employee.id %} hx-target="#personal_target"
@@ -318,92 +324,100 @@
 									data-target="#personal_target">{% trans "About" %}</a>
 							</li>
 
-							{% if request.user == employee.employee_user_id or request.user|check_manager:employee or perms.attendance.view_worktyperequest or perms.attendance.view_shiftrequest %}
-								<li data-cell-index="10" data-cell-title="{% trans 'Work Type & Shift' %}"
-									class="oh-general__tab">
-									<a hx-get={% url 'shift-tab' employee.id %} hx-target="#shift_target"
-										data-action="general-tab" data-target="#shift_target"
-										class="oh-general__tab-link pointer" role="button">
-										{% trans "Work Type & Shift"%}
-									</a>
-								</li>
+							{% if request.user == employee.employee_user_id or request.user|check_manager:employee or
+							perms.attendance.view_worktyperequest or perms.attendance.view_shiftrequest %}
+							<li data-cell-index="10" data-cell-title="{% trans 'Work Type & Shift' %}"
+								class="oh-general__tab">
+								<a hx-get={% url 'shift-tab' employee.id %} hx-target="#shift_target"
+									data-action="general-tab" data-target="#shift_target"
+									class="oh-general__tab-link pointer" role="button">
+									{% trans "Work Type & Shift"%}
+								</a>
+							</li>
 							{% endif %}
 
 							{% if "attendance"|app_installed %}
-								{% if perms.attendance.view_attendance or request.user|check_manager:employee %}
-								<li data-cell-index="11" data-cell-title="{% trans 'Attendance' %}" class="oh-general__tab">
-									<a hx-get="{% url 'attendance-tab' employee.id %}" hx-target="#attendance_target"
-										data-action="general-tab" data-target="#attendance_target"
-										class="oh-general__tab-link" role="button">{% trans "Attendance" %}</a>
-								</li>
-								{% endif %}
+							{% if perms.attendance.view_attendance or request.user|check_manager:employee %}
+							<li data-cell-index="11" data-cell-title="{% trans 'Attendance' %}" class="oh-general__tab">
+								<a hx-get="{% url 'attendance-tab' employee.id %}" hx-target="#attendance_target"
+									data-action="general-tab" data-target="#attendance_target"
+									class="oh-general__tab-link" role="button">{% trans "Attendance" %}</a>
+							</li>
+							{% endif %}
 							{% endif %}
 
 							{% if "leave"|app_installed %}
-								{% if perms.leave.view_leaverequest or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-									<li data-cell-index="12" data-cell-title="{% trans 'Leave' %}" class="oh-general__tab">
-										<a hx-get="{% url 'leave-tab' employee.id %}" hx-target="#leave"
-											class="oh-general__tab-link" data-action="general-tab" data-target="#leave"
-											role="button">{% trans "Leave" %}</a>
-									</li>
-								{% endif %}
+							{% if perms.leave.view_leaverequest or request.user|check_manager:employee or request.user
+							== employee.employee_user_id %}
+							<li data-cell-index="12" data-cell-title="{% trans 'Leave' %}" class="oh-general__tab">
+								<a hx-get="{% url 'leave-tab' employee.id %}" hx-target="#leave"
+									class="oh-general__tab-link" data-action="general-tab" data-target="#leave"
+									role="button">{% trans "Leave" %}</a>
+							</li>
+							{% endif %}
 							{% endif %}
 
 							{% if "payroll"|app_installed %}
-								{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
-									<li data-cell-index="13" data-cell-title="{% trans 'Payroll' %}" class="oh-general__tab">
-										<a href="#" class="oh-general__tab-link" data-action="general-tab"
-											data-target="#payroll">{% trans "Payroll" %}</a>
-									</li>
-								{% endif %}
+							{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
+							<li data-cell-index="13" data-cell-title="{% trans 'Payroll' %}" class="oh-general__tab">
+								<a href="#" class="oh-general__tab-link" data-action="general-tab"
+									data-target="#payroll">{% trans "Payroll" %}</a>
+							</li>
+							{% endif %}
 
-								{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
-									<li data-cell-index="14" data-cell-title="{% trans 'Allowance & Deduction' %}"
-										class="oh-general__tab">
-										<a hx-get="{% url 'allowances-deductions-tab' employee.id %}"
-											hx-target="#allowance_deduction" data-action="general-tab"
-											data-target="#allowance_deduction" class="oh-general__tab-link" role="button">
-											{% trans "Allowance & Deduction" %}
-										</a>
-									</li>
-								{% endif %}
+							{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
+							<li data-cell-index="14" data-cell-title="{% trans 'Allowance & Deduction' %}"
+								class="oh-general__tab">
+								<a hx-get="{% url 'allowances-deductions-tab' employee.id %}"
+									hx-target="#allowance_deduction" data-action="general-tab"
+									data-target="#allowance_deduction" class="oh-general__tab-link" role="button">
+									{% trans "Allowance & Deduction" %}
+								</a>
+							</li>
+							{% endif %}
 							{% endif %}
 
 							{% if "attendance"|app_installed or "leave"|app_installed %}
-								{% if perms.attendance.view_penaltyaccount or request.user == employee.employee_user_id %}
-									<li data-cell-index="23" data-cell-title="{% trans " Penalty Account" %}" class="oh-general__tab">
-										<a data-action="general-tab" data-target="#penaltyTarget" id="penalty" class="oh-general__tab-link" role="button">{% trans "Penalty Account" %}</a>
-									</li>
-								{% endif %}
+							{% if perms.attendance.view_penaltyaccount or request.user == employee.employee_user_id %}
+							<li data-cell-index="23" data-cell-title="{% trans " Penalty Account" %}"
+								class="oh-general__tab">
+								<a data-action="general-tab" data-target="#penaltyTarget" id="penalty"
+									class="oh-general__tab-link" role="button">{% trans "Penalty Account" %}</a>
+							</li>
+							{% endif %}
 							{% endif %}
 
-							{% if perms.employee.view_historicalemployeeworkinformation or request.user|check_manager:employee %}
-								<li data-cell-index="15" data-cell-title="{% trans 'History' %}" class="oh-general__tab">
-									<a href="#" class="oh-general__tab-link" data-action="general-tab"
-										data-target="#history">{% trans "History" %}</a>
-								</li>
+							{% if perms.employee.view_historicalemployeeworkinformation or
+							request.user|check_manager:employee %}
+							<li data-cell-index="15" data-cell-title="{% trans 'History' %}" class="oh-general__tab">
+								<a href="#" class="oh-general__tab-link" data-action="general-tab"
+									data-target="#history">{% trans "History" %}</a>
+							</li>
 							{% endif %}
 
 							{% if "asset"|app_installed %}
-								{% if perms.asset.view_asset or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-									<li data-cell-index="16" data-cell-title="{% trans 'Assets' %}" class="oh-general__tab">
-										<a hx-get={% url 'asset-tab' employee.id %} hx-target="#asset_target"
-											data-action="general-tab" data-target="#asset_target"
-											class="oh-general__tab-link pointer" role="button">{% trans "Assets" %}
-										</a>
-									</li>
-								{% endif %}
+							{% if perms.asset.view_asset or request.user|check_manager:employee or request.user ==
+							employee.employee_user_id %}
+							<li data-cell-index="16" data-cell-title="{% trans 'Assets' %}" class="oh-general__tab">
+								<a hx-get={% url 'asset-tab' employee.id %} hx-target="#asset_target"
+									data-action="general-tab" data-target="#asset_target"
+									class="oh-general__tab-link pointer" role="button">{% trans "Assets" %}
+								</a>
+							</li>
+							{% endif %}
 							{% endif %}
 
 							{% if "pms"|app_installed %}
-								{% if perms.pms.view_feedback or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-									<li data-cell-index="17" data-cell-title="{% trans 'Performance' %}" class="oh-general__tab">
-										<a hx-get={% url 'performance-tab' employee.id %} hx-target="#performance_target"
-											data-action="general-tab" data-target="#performance_target"
-											class="oh-general__tab-link" role="button">{% trans "Performance" %}
-										</a>
-									</li>
-								{% endif %}
+							{% if perms.pms.view_feedback or request.user|check_manager:employee or request.user ==
+							employee.employee_user_id %}
+							<li data-cell-index="17" data-cell-title="{% trans 'Performance' %}"
+								class="oh-general__tab">
+								<a hx-get={% url 'performance-tab' employee.id %} hx-target="#performance_target"
+									data-action="general-tab" data-target="#performance_target"
+									class="oh-general__tab-link" role="button">{% trans "Performance" %}
+								</a>
+							</li>
+							{% endif %}
 							{% endif %}
 
 							{% if perms.auth.view_permission or perms.auth.view_group %}
@@ -418,22 +432,22 @@
 							{% endif %}
 
 							{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
-								<li data-cell-index="19" data-cell-title="{% trans 'Note' %}" class="oh-general__tab">
-									<a hx-get={% url 'note-tab' employee.id %} hx-target="#note_target"
-										data-action="general-tab" data-target="#note_target" class="oh-general__tab-link"
-										role="button">{% trans "Note" %}
-									</a>
-								</li>
+							<li data-cell-index="19" data-cell-title="{% trans 'Note' %}" class="oh-general__tab">
+								<a hx-get={% url 'note-tab' employee.id %} hx-target="#note_target"
+									data-action="general-tab" data-target="#note_target" class="oh-general__tab-link"
+									role="button">{% trans "Note" %}
+								</a>
+							</li>
 							{% endif %}
 
-							{% if perms.horilla_documents.view_document or request.user == employee.employee_user_id %}
-								<li data-cell-index="20" data-cell-title="{% trans 'Documents' %}" class="oh-general__tab">
-									<a hx-get="{% url 'document-tab' employee.id %}?employee_view=true"
-										hx-target="#document_target" data-action="general-tab"
-										data-target="#document_target" class="oh-general__tab-link" role="button">
-										{% trans "Documents" %}
-									</a>
-								</li>
+							{% if perms.moared_documents.view_document or request.user == employee.employee_user_id %}
+							<li data-cell-index="20" data-cell-title="{% trans 'Documents' %}" class="oh-general__tab">
+								<a hx-get="{% url 'document-tab' employee.id %}?employee_view=true"
+									hx-target="#document_target" data-action="general-tab"
+									data-target="#document_target" class="oh-general__tab-link" role="button">
+									{% trans "Documents" %}
+								</a>
+							</li>
 							{% endif %}
 
 							{% if perms.employee.view_employee %}
@@ -445,17 +459,18 @@
 							{% endif %}
 
 							{% if "payroll"|app_installed %}
-								{% if perms.employee.view_bonuspoint or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-									<li data-cell-index="21" data-cell-title="{% trans 'Bonus' %}" class="oh-general__tab">
-										<a hx-get={% url 'bonus-points-tab' employee.id %} hx-target="#bonus_points_target"
-											data-action="general-tab" data-target="#bonus_points_target"
-											class="oh-general__tab-link" role="button">{% trans "Bonus Points" %}</a>
-									</li>
-								{% endif %}
+							{% if perms.employee.view_bonuspoint or request.user|check_manager:employee or request.user
+							== employee.employee_user_id %}
+							<li data-cell-index="21" data-cell-title="{% trans 'Bonus' %}" class="oh-general__tab">
+								<a hx-get={% url 'bonus-points-tab' employee.id %} hx-target="#bonus_points_target"
+									data-action="general-tab" data-target="#bonus_points_target"
+									class="oh-general__tab-link" role="button">{% trans "Bonus Points" %}</a>
+							</li>
+							{% endif %}
 							{% endif %}
 						</ul>
-						<button
-							hx-get={% url 'bonus-points-tab' employee.id %} hx-target="#bonus_points_target" id="bonus-tab-button" hidden>
+						<button hx-get={% url 'bonus-points-tab' employee.id %} hx-target="#bonus_points_target"
+							id="bonus-tab-button" hidden>
 						</button>
 
 						<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="personal_target"> </div>
@@ -473,45 +488,51 @@
 						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="maillog"></div>
 
 						{% if "payroll"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="allowance_deduction"> </div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="allowance_deduction">
+						</div>
 						{% endif %}
 
 						{% if "attendance"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="attendance_target"> </div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="attendance_target">
+						</div>
 						{% endif %}
 
 						{% if "attendance"|app_installed or "leave"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="penaltyTarget">
-								{% include 'tabs/penalty_account.html' %}
-							</div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="penaltyTarget">
+							{% include 'tabs/penalty_account.html' %}
+						</div>
 						{% endif %}
 
 						{% if "pms"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="performance_target"> </div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="performance_target">
+						</div>
 						{% endif %}
 
 						{% if "asset"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="asset_target"> </div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="asset_target"> </div>
 						{% endif %}
 
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="document_target"> </div>
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="document_target">
+						</div>
 
-						{% if perms.auth.view_permission or perms.auth.view_group or request.user|is_reportingmanager or request.user == employee.employee_user_id %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="permission_tab_content"></div>
+						{% if perms.auth.view_permission or perms.auth.view_group or request.user|is_reportingmanager or
+						request.user == employee.employee_user_id %}
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="permission_tab_content"></div>
 						{% endif %}
 
-						{% if request.user|check_manager:employee or request.user == employee.employee_user_id or perms.employee.view_historicalemployeeworkinformation %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="history">
-								{% include "tabs/history.html" %}
-							</div>
+						{% if request.user|check_manager:employee or request.user == employee.employee_user_id or
+						perms.employee.view_historicalemployeeworkinformation %}
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="history">
+							{% include "tabs/history.html" %}
+						</div>
 						{% endif %}
 
 						{% if "payroll"|app_installed %}
-							{% if perms.view_payslip or request.user == employee.employee_user_id %}
-								<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="payroll">
-									{% include "tabs/payroll-tab.html" %}
-								</div>
-							{% endif %}
+						{% if perms.view_payslip or request.user == employee.employee_user_id %}
+						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="payroll">
+							{% include "tabs/payroll-tab.html" %}
+						</div>
+						{% endif %}
 						{% endif %}
 
 						{% if "leave"|app_installed %}
@@ -573,45 +594,45 @@
 		}, 100)
 	}
 	function checkSelected(names, target, initial = false) {
-        names = JSON.parse(`${names}`);
-        $.each(names, function (indexInArray, valueOfElement) {
-            if (!initial) {
-                $(target)
-                    .find(`[value=${valueOfElement}]`)
-                    .prop("checked", true)
-                    .change();
-            } else {
-                $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
-            }
-        });
-    }
+		names = JSON.parse(`${names}`);
+		$.each(names, function (indexInArray, valueOfElement) {
+			if (!initial) {
+				$(target)
+					.find(`[value=${valueOfElement}]`)
+					.prop("checked", true)
+					.change();
+			} else {
+				$(target).find(`[value=${valueOfElement}]`).prop("checked", true);
+			}
+		});
+	}
 	function updateBadge(element = false) {
-        var panels = $(".panel");
-        $.each(panels, function (indexInArray, valueOfElement) {
-            var check = $(valueOfElement).find("[name=permissions]:checked").length;
-            $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
-            $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title", check + " Permissions");
-        });
+		var panels = $(".panel");
+		$.each(panels, function (indexInArray, valueOfElement) {
+			var check = $(valueOfElement).find("[name=permissions]:checked").length;
+			$(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+			$(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title", check + " Permissions");
+		});
 
-        var permissionLine = $(".oh-sticky-table__tr");
-        $.each(permissionLine, function (index, value) {
-            var check = $(value).find("[name=permissions]:checked").length;
-            if (check === 4) {
-                $(value).find(".row-permission").prop("checked", true);
-            }
-        })
+		var permissionLine = $(".oh-sticky-table__tr");
+		$.each(permissionLine, function (index, value) {
+			var check = $(value).find("[name=permissions]:checked").length;
+			if (check === 4) {
+				$(value).find(".row-permission").prop("checked", true);
+			}
+		})
 
-        var permissionApps = $(".oh-sticky-table__tbody")
-        $.each(permissionApps, function (index, value) {
-            var total_permission_count = $(value).find("[name=permissions]").length;
-            var checked_permission_count = $(value).find("[name=permissions]:checked").length
-            if (checked_permission_count === total_permission_count) {
-                $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", true);
-            } else {
-                $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", false)
-            }
-        })
-    }
+		var permissionApps = $(".oh-sticky-table__tbody")
+		$.each(permissionApps, function (index, value) {
+			var total_permission_count = $(value).find("[name=permissions]").length;
+			var checked_permission_count = $(value).find("[name=permissions]:checked").length
+			if (checked_permission_count === total_permission_count) {
+				$(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", true);
+			} else {
+				$(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", false)
+			}
+		})
+	}
 	function hideEnlargeDoc() {
 		var enlargeDocContainer = $('.enlargeDocContainer')
 		enlargeDocContainer.empty()

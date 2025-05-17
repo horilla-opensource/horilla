@@ -1,7 +1,7 @@
 from django.core.files.storage import FileSystemStorage
 
 from moared import settings
-from moared.horilla_apps import INSTALLED_APPS
+from moared.moared_apps import INSTALLED_APPS
 
 """
 DB_INIT_PASSWORD: str
@@ -57,7 +57,7 @@ APPS = [
     "payroll",
     "auth",
     "offboarding",
-    "horilla_documents",
+    "moared_documents",
     "helpdesk",
 ]
 if settings.env("AWS_ACCESS_KEY_ID", default=None):

@@ -9,7 +9,7 @@ from employee.models import (
     EmployeeWorkInformation,
     Policy,
 )
-from horilla_documents.models import Document, DocumentRequest
+from moared_documents.models import Document, DocumentRequest
 
 from ...api_methods.employee.methods import get_next_badge_id
 

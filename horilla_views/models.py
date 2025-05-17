@@ -3,7 +3,7 @@ import json
 from django.contrib.auth.models import User
 from django.db import models
 
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 from moared.models import HorillaModel
 
 # Create your models here.

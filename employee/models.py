@@ -19,7 +19,7 @@ from django.dispatch import receiver
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 
-from base.horilla_company_manager import HorillaCompanyManager
+from base.moared_company_manager import HorillaCompanyManager
 from base.models import (
     Company,
     Department,
@@ -31,11 +31,11 @@ from base.models import (
     validate_time_format,
 )
 from employee.methods.duration_methods import format_time, strtime_seconds
-from moared import horilla_middlewares
-from moared.methods import get_horilla_model_class
+from moared import moared_middlewares
+from moared.methods import get_moared_model_class
 from moared.models import HorillaModel
-from horilla_audit.methods import get_diff
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from moared_audit.methods import get_diff
+from moared_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # create your model
 
@@ -309,16 +309,16 @@ class Employee(models.Model):
         a dictionary is returned with a list of related models of that employee.
         """
         if apps.is_installed("onboarding"):
-            OnboardingStage = get_horilla_model_class("onboarding", "onboardingstage")
-            OnboardingTask = get_horilla_model_class("onboarding", "onboardingtask")
+            OnboardingStage = get_moared_model_class("onboarding", "onboardingstage")
+            OnboardingTask = get_moared_model_class("onboarding", "onboardingtask")
             onboarding_stage_query = OnboardingStage.objects.filter(employee_id=self.pk)
             onboarding_task_query = OnboardingTask.objects.filter(employee_id=self.pk)
         else:
             onboarding_stage_query = None
             onboarding_task_query = None
         if apps.is_installed("recruitment"):
-            Recruitment = get_horilla_model_class("recruitment", "recruitment")
-            Stage = get_horilla_model_class("recruitment", "stage")
+            Recruitment = get_moared_model_class("recruitment", "recruitment")
+            Stage = get_moared_model_class("recruitment", "stage")
             recruitment_stage_query = Stage.objects.filter(stage_managers=self.pk)
             recruitment_manager_query = Recruitment.objects.filter(
                 recruitment_managers=self.pk
@@ -405,8 +405,8 @@ class Employee(models.Model):
         This method is used to check if the user is in the list of online users.
         """
         if apps.is_installed("attendance"):
-            Attendance = get_horilla_model_class("attendance", "attendance")
-            request = getattr(horilla_middlewares._thread_locals, "request", None)
+            Attendance = get_moared_model_class("attendance", "attendance")
+            request = getattr(moared_middlewares._thread_locals, "request", None)
 
             if request is not None:
                 if (
@@ -486,7 +486,7 @@ class Employee(models.Model):
         # call the parent class's save method to save the object
         prev_employee = Employee.objects.filter(id=self.id).first()
         super().save(*args, **kwargs)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if request and not self.is_active and self.get_archive_condition() is not False:
             self.is_active = True
             super().save(*args, **kwargs)

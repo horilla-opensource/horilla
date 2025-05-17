@@ -70,12 +70,12 @@ from base.models import (
 from employee.filters import EmployeeFilter
 from employee.forms import MultipleFileField
 from employee.models import Employee
-from moared import horilla_middlewares
-from moared.horilla_middlewares import _thread_locals
-from moared.methods import get_horilla_model_class
-from horilla_audit.models import AuditTag
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from moared import moared_middlewares
+from moared.moared_middlewares import _thread_locals
+from moared.methods import get_moared_model_class
+from moared_audit.models import AuditTag
+from moared_widgets.widgets.moared_multi_select_field import HorillaMultiSelectField
+from moared_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
 # your form here
 
@@ -188,7 +188,7 @@ class ModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.DateInput)):
@@ -1105,7 +1105,7 @@ class EmployeeShiftScheduleUpdateForm(ModelForm):
         """
 
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("moared_form.html", context)
         return table_html
 
     def clean(self):
@@ -1195,7 +1195,7 @@ class EmployeeShiftScheduleForm(ModelForm):
         """
 
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("moared_form.html", context)
         return table_html
 
     def clean(self):
@@ -1692,7 +1692,7 @@ class ShiftRequestForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("moared_form.html", context)
         return table_html
 
     def save(self, commit: bool = ...):
@@ -1755,7 +1755,7 @@ class ShiftAllocationForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("moared_form.html", context)
         return table_html
 
     def save(self, commit: bool = ...):
@@ -1804,7 +1804,7 @@ class WorkTypeRequestForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("moared_form.html", context)
         return table_html
 
     def save(self, commit: bool = ...):
@@ -1945,7 +1945,7 @@ excluded_fields = [
     "created_by",
     "modified_by",
     "additional_data",
-    "horilla_history",
+    "moared_history",
     "additional_data",
 ]
 
@@ -2056,7 +2056,7 @@ class TagsForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("moared_form.html", context)
         return table_html
 
 
@@ -2120,7 +2120,7 @@ class DynamicMailConfForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("horilla_form.html", context)
+        table_html = render_to_string("moared_form.html", context)
         return table_html
 
 
@@ -2630,7 +2630,7 @@ class CompanyLeaveForm(ModelForm):
         """
         super().__init__(*args, **kwargs)
         self.fields["based_on_week"].widget.option_template_name = (
-            "horilla_widgets/select_option.html"
+            "moared_widgets/select_option.html"
         )
 
 
@@ -2648,7 +2648,7 @@ class PenaltyAccountForm(ModelForm):
         employee = kwargs.pop("employee", None)
         super().__init__(*args, **kwargs)
         if apps.is_installed("leave") and employee:
-            LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
+            LeaveType = get_moared_model_class(app_label="leave", model="leavetype")
             available_leaves = employee.available_leave.all()
             assigned_leave_types = LeaveType.objects.filter(
                 id__in=available_leaves.values_list("leave_type_id", flat=True)

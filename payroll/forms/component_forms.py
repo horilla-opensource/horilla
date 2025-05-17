@@ -19,11 +19,11 @@ from base.forms import Form, ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
-from moared import horilla_middlewares
-from moared.methods import get_horilla_model_class
-from horilla_widgets.forms import HorillaForm, orginal_template_name
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
-from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
+from moared import moared_middlewares
+from moared.methods import get_moared_model_class
+from moared_widgets.forms import HorillaForm, orginal_template_name
+from moared_widgets.widgets.moared_multi_select_field import HorillaMultiSelectField
+from moared_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from notifications.signals import notify
 from payroll.models import tax_models as models
 from payroll.models.models import (
@@ -755,7 +755,7 @@ class ReimbursementForm(ModelForm):
     if apps.is_installed("leave"):
 
         def get_encashable_leaves(self, employee):
-            LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
+            LeaveType = get_moared_model_class(app_label="leave", model="leavetype")
             leaves = LeaveType.objects.filter(
                 employee_available_leave__employee_id=employee,
                 employee_available_leave__total_leave_days__gte=1,
@@ -770,7 +770,7 @@ class ReimbursementForm(ModelForm):
         if not self.instance.pk:
             self.initial["allowance_on"] = str(datetime.date.today())
 
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if request:
             employee = (
                 request.user.employee_get
@@ -779,7 +779,7 @@ class ReimbursementForm(ModelForm):
             )
         self.initial["employee_id"] = employee.id
         if apps.is_installed("leave"):
-            AvailableLeave = get_horilla_model_class(
+            AvailableLeave = get_moared_model_class(
                 app_label="leave", model="availableleave"
             )
 
@@ -860,7 +860,7 @@ class ReimbursementForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if self.instance.pk:
             employee_id = self.instance.employee_id
             type = self.instance.type
@@ -901,7 +901,7 @@ class ReimbursementForm(ModelForm):
                     {"leave_type_id": "This leave type is not encashable"}
                 )
             else:
-                AvailableLeave = get_horilla_model_class(
+                AvailableLeave = get_moared_model_class(
                     app_label="leave", model="availableleave"
                 )
                 available_leave = AvailableLeave.objects.filter(

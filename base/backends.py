@@ -12,7 +12,7 @@ from django.core.mail.backends.smtp import EmailBackend
 
 from base.models import DynamicEmailConfiguration, EmailLog
 from moared import settings
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 
 logger = logging.getLogger(__name__)
 

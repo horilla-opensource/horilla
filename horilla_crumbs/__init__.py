@@ -1,1 +1,1 @@
-from horilla_crumbs import settings
+from moared_crumbs import settings

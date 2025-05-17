@@ -6,7 +6,7 @@ from django.core.cache import cache
 
 from accessibility.filters import AccessibilityFilter
 from accessibility.models import DefaultAccessibility
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 
 
 def check_is_accessible(feature, cache_key, employee):

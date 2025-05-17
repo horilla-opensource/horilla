@@ -26,7 +26,7 @@ from base.forms import ModelForm
 from base.methods import reload_queryset
 from employee.forms import MultipleFileField
 from employee.models import Employee
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 
 
 def set_date_field_initial(instance):

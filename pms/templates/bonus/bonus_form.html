@@ -1,26 +1,19 @@
 <div id="formContainer">
-    {% include "generic/horilla_form.html" %}
+    {% include "generic/moared_form.html" %}
 </div>
 
 {% comment %} {% load i18n %}
 <div class="oh-modal__dialog-header">
-    <span class="oh-modal__dialog-title" id="objectCreateModalLabel"
-        >{% trans "Bonus Point Settings" %}</span
-    >
-    <button
-        class="oh-modal__close--custom"
-        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
-        aria-label="Close"
-        {% if close_hx_url and messages %}
-			hx-get="{{close_hx_url}}"
-			hx-target="{{close_hx_target}}"
-        {% endif %}
-    >
+    <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{% trans "Bonus Point Settings" %}</span>
+    <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+        aria-label="Close" {% if close_hx_url and messages %} hx-get="{{close_hx_url}}" hx-target="{{close_hx_target}}"
+        {% endif %}>
         <ion-icon name="close-outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body" id="formBody">
-    <form hx-post="{% url 'create-bonus-setting' %}?instance_id={{form.instance.id}}" hx-target="#objectCreateModalTarget">
+    <form hx-post="{% url 'create-bonus-setting' %}?instance_id={{form.instance.id}}"
+        hx-target="#objectCreateModalTarget">
         {{form.as_p}}
     </form>
 </div>

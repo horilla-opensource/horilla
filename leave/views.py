@@ -47,8 +47,8 @@ from moared.decorators import (
     permission_required,
 )
 from moared.group_by import group_by_queryset
-from moared.horilla_settings import DYNAMIC_URL_PATTERNS
-from moared.methods import get_horilla_model_class, remove_dynamic_url
+from moared.moared_settings import DYNAMIC_URL_PATTERNS
+from moared.methods import get_moared_model_class, remove_dynamic_url
 from leave.decorators import *
 from leave.filters import *
 from leave.forms import *
@@ -556,7 +556,7 @@ def leave_request_view(request):
         for leave_request in leave_requests:
 
             # Fetch interviews for the employee within the requested leave period
-            InterviewSchedule = get_horilla_model_class(
+            InterviewSchedule = get_moared_model_class(
                 app_label="recruitment", model="interviewschedule"
             )
 
@@ -646,7 +646,7 @@ def leave_request_filter(request):
         for leave_request in leave_requests:
 
             # Fetch interviews for the employee within the requested leave period
-            InterviewSchedule = get_horilla_model_class(
+            InterviewSchedule = get_moared_model_class(
                 app_label="recruitment", model="interviewschedule"
             )
 
@@ -2380,7 +2380,7 @@ def user_request_view(request):
             for leave_request in leave_requests:
 
                 # Fetch interviews for the employee within the requested leave period
-                InterviewSchedule = get_horilla_model_class(
+                InterviewSchedule = get_moared_model_class(
                     app_label="recruitment", model="interviewschedule"
                 )
 
@@ -2456,7 +2456,7 @@ def user_request_filter(request):
             for leave_request in leave_requests:
 
                 # Fetch interviews for the employee within the requested leave period
-                InterviewSchedule = get_horilla_model_class(
+                InterviewSchedule = get_moared_model_class(
                     app_label="recruitment", model="interviewschedule"
                 )
 
@@ -4971,7 +4971,7 @@ if apps.is_installed("recruitment"):
             date_list = [
                 start_date_obj + timedelta(days=i) for i in range(delta.days + 1)
             ]
-            InterviewSchedule = get_horilla_model_class(
+            InterviewSchedule = get_moared_model_class(
                 app_label="recruitment", model="interviewschedule"
             )
 

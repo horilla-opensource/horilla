@@ -5,7 +5,7 @@ import uuid
 import pandas as pd
 from django.http import HttpResponse
 
-from moared.horilla_settings import DYNAMIC_URL_PATTERNS
+from moared.moared_settings import DYNAMIC_URL_PATTERNS
 from moared.methods import remove_dynamic_url
 
 

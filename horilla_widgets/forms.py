@@ -8,10 +8,10 @@ from typing import Any, Dict
 
 from django import forms
 
-from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
+from moared_widgets.widgets.moared_multi_select_field import HorillaMultiSelectField
 
 orginal_template_name = forms.Select.option_template_name
-forms.Select.option_template_name = "horilla_widgets/horilla_select_option.html"
+forms.Select.option_template_name = "moared_widgets/moared_select_option.html"
 
 
 class HorillaForm(forms.Form):

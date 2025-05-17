@@ -14,10 +14,10 @@ from django.views import View
 from django.views.decorators.csrf import csrf_protect
 
 from base.methods import eval_validate
-from horilla_views import models
-from horilla_views.cbv_methods import get_short_uuid, login_required, merge_dicts
-from horilla_views.forms import SavedFilterForm
-from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
+from moared_views import models
+from moared_views.cbv_methods import get_short_uuid, login_required, merge_dicts
+from moared_views.forms import SavedFilterForm
+from moared_views.generic.cbv.views import HorillaFormView, HorillaListView
 
 # Create your views here.
 
@@ -106,7 +106,7 @@ class ReloadField(View):
             required=field.required,
         )
         parent_form.fields[cache_field].widget.option_template_name = (
-            "horilla_widgets/select_option.html",
+            "moared_widgets/select_option.html",
         )
         parent_form.fields[cache_field].widget.attrs = field.widget.attrs
         parent_form.fields[cache_field].initial = value

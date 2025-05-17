@@ -15,7 +15,7 @@ from attendance.models import AttendanceLateComeEarlyOut
 from base.forms import PenaltyAccountForm
 from base.models import PenaltyAccounts
 from moared.decorators import hx_request_required, login_required, manager_can_enter
-from moared.methods import get_horilla_model_class
+from moared.methods import get_moared_model_class
 
 
 @login_required
@@ -36,7 +36,7 @@ def cut_available_leave(request, instance_id):
     instance = AttendanceLateComeEarlyOut.objects.get(id=instance_id)
     form = PenaltyAccountForm(employee=instance.employee_id)
     if apps.is_installed("leave"):
-        AvailableLeave = get_horilla_model_class(
+        AvailableLeave = get_moared_model_class(
             app_label="leave", model="availableleave"
         )
         available = AvailableLeave.objects.filter(employee_id=instance.employee_id)

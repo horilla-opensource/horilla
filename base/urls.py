@@ -32,7 +32,7 @@ from base.models import (
     WorkType,
     WorkTypeRequest,
 )
-from horilla_audit.models import AuditTag
+from moared_audit.models import AuditTag
 
 urlpatterns = [
     path("", views.home, name="home-page"),
@@ -984,7 +984,7 @@ urlpatterns = [
     ),
     path(
         "get-moared-installed-apps/",
-        views.get_horilla_installed_apps,
+        views.get_moared_installed_apps,
         name="get-moared-installed-apps",
     ),
     path("configuration/holiday-view", views.holiday_view, name="holiday-view"),

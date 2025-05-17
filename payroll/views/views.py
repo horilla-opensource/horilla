@@ -37,7 +37,7 @@ from moared.decorators import (
     permission_required,
 )
 from moared.group_by import group_by_queryset
-from moared.horilla_settings import HORILLA_DATE_FORMATS
+from moared.moared_settings import HORILLA_DATE_FORMATS
 from notifications.signals import notify
 from payroll.context_processors import get_active_employees
 from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter

@@ -31,8 +31,8 @@ from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _trans
 
 from moared import settings
-from moared.horilla_middlewares import _thread_locals
-from horilla_views.templatetags.generic_template_filters import getattribute
+from moared.moared_middlewares import _thread_locals
+from moared_views.templatetags.generic_template_filters import getattribute
 
 FIELD_WIDGET_MAP = {
     models.CharField: forms.TextInput(attrs={"class": "oh-input w-100"}),

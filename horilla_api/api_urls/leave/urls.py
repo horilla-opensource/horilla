@@ -1,10 +1,10 @@
 """
-horilla_api/urls/leave/urls.py
+moared_api/urls/leave/urls.py
 """
 
 from django.urls import path
 
-from horilla_api.api_views.leave.views import *
+from moared_api.api_views.leave.views import *
 
 urlpatterns = [
     path("available-leave/", EmployeeAvailableLeaveGetAPIView.as_view()),

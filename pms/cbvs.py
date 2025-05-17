@@ -8,9 +8,9 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _trans
 
 from base.methods import filter_own_and_subordinate_recordes, is_reportingmanager
-from moared import horilla_middlewares
+from moared import moared_middlewares
 from moared.decorators import login_required, permission_required
-from horilla_views.generic.cbv import views
+from moared_views.generic.cbv import views
 from pms import models
 from pms.filters import BonusPointSettingFilter, EmployeeBonusPointFilter
 from pms.forms import BonusPointSettingForm, EmployeeBonusPointForm
@@ -255,7 +255,7 @@ class EmployeeBonusPointListView(views.HorillaListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if is_reportingmanager(request) or request.user.has_perm(
             "pms.view_employeebonuspoint"
         ):

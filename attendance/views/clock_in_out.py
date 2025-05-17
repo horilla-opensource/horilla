@@ -35,7 +35,7 @@ from base.context_processors import (
 )
 from base.models import AttendanceAllowedIP, EmployeeShiftDay
 from moared.decorators import hx_request_required, login_required
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 
 
 def late_come_create(attendance):

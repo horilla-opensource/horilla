@@ -128,7 +128,7 @@ else:
                 "DB_NAME",
                 default=os.path.join(
                     BASE_DIR,
-                    "TestDB_Horilla.sqlite3",
+                    "moared.sqlite3",
                 ),
             ),
             "USER": env("DB_USER", default=""),

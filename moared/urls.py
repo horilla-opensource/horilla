@@ -33,15 +33,15 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path("accounts/", include("django.contrib.auth.urls")),
     path("", include("base.urls")),
-    path("", include("horilla_automations.urls")),
-    path("", include("horilla_views.urls")),
+    path("", include("moared_automations.urls")),
+    path("", include("moared_views.urls")),
     path("employee/", include("employee.urls")),
-    path("moared-widget/", include("horilla_widgets.urls")),
+    path("moared-widget/", include("moared_widgets.urls")),
     re_path(
         "^inbox/notifications/", include(notifications.urls, namespace="notifications")
     ),
     path("i18n/", include("django.conf.urls.i18n")),
-    path("api/", include("horilla_api.urls")),
+    path("api/", include("moared_api.urls")),
     path("health/", health_check),
 ]
 

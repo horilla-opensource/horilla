@@ -8,7 +8,7 @@ import uuid
 
 from django import forms
 
-from moared import horilla_middlewares
+from moared import moared_middlewares
 
 ALL_INSTANCES = {}
 
@@ -49,7 +49,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         self.help_text = help_text
         super().__init__()
 
-    template_name = "horilla_widgets/horilla_multiselect_widget.html"
+    template_name = "moared_widgets/moared_multiselect_widget.html"
 
     def get_context(self, name, value, attrs):
         # Get the default context from the parent class
@@ -82,7 +82,7 @@ class HorillaMultiSelectWidget(forms.Widget):
         uid = get_short_uuid(5)
         context["section_id"] = uid
         context[self.filter_instance_contex_name] = self.filter_class
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         ALL_INSTANCES[str(request.user.id)] = self
 
         return context

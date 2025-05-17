@@ -1,5 +1,5 @@
 """
-horilla_automation/views/views.py
+moared_automation/views/views.py
 """
 
 from django import forms
@@ -9,9 +9,9 @@ from django.shortcuts import redirect
 from django.urls import reverse
 
 from moared.decorators import login_required, permission_required
-from horilla_automations.methods.methods import generate_choices
-from horilla_automations.methods.serialize import serialize_form
-from horilla_automations.models import MailAutomation
+from moared_automations.methods.methods import generate_choices
+from moared_automations.methods.serialize import serialize_form
+from moared_automations.models import MailAutomation
 
 
 @login_required
@@ -43,7 +43,7 @@ def get_to_field(request):
 
 
 @login_required
-@permission_required("horilla_automation")
+@permission_required("moared_automation")
 def delete_automation(request, pk):
     """
     Automation delete view

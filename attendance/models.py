@@ -29,13 +29,13 @@ from attendance.methods.utils import (
     validate_time_format,
     validate_time_in_minutes,
 )
-from base.horilla_company_manager import HorillaCompanyManager
+from base.moared_company_manager import HorillaCompanyManager
 from base.methods import is_company_leave, is_holiday
 from base.models import Company, EmployeeShift, EmployeeShiftDay, Holidays, WorkType
 from employee.models import Employee
-from moared.methods import get_horilla_model_class
+from moared.methods import get_moared_model_class
 from moared.models import HorillaModel
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from moared_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # to skip the migration issue with the old migrations
 _validate_time_in_minutes = validate_time_in_minutes
@@ -980,7 +980,7 @@ if apps.is_installed("leave") and apps.is_installed("payroll"):
         if created:
             penalty_amount = instance.penalty_amount
             if penalty_amount:
-                Deduction = get_horilla_model_class(
+                Deduction = get_moared_model_class(
                     app_label="payroll", model="deduction"
                 )
                 penalty = Deduction()
@@ -1075,7 +1075,7 @@ class WorkRecords(models.Model):
         title_message = self.message
         if title_message == "Absent":
             if apps.is_installed("leave"):
-                LeaveRequest = get_horilla_model_class(
+                LeaveRequest = get_moared_model_class(
                     app_label="leave", model="leaverequest"
                 )
                 leave_type = (

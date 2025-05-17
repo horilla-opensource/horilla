@@ -11,6 +11,7 @@
       right: 15px;
       cursor: pointer;
     }
+
     .tag-badge {
       box-sizing: border-box;
       display: inline-block;
@@ -30,33 +31,41 @@
       border: solid orangered 2px;
       cursor: pointer;
     }
+
     .tag-badge--primary {
       background-color: orangered;
       color: white;
     }
+
     .oh-profile__avatar-limit-height {
       height: 30px !important;
     }
+
     .oh-profile_name_custom {
       font-size: 13px;
       padding-left: 4px;
     }
+
     .oh-profile__image_custm {
       width: 26px;
       height: 26px;
     }
+
     .badge-container {
       height: 30vh;
       overflow: auto;
     }
+
     .tag-badge--outline {
       background: white;
       border: solid orangered 2px;
       color: black;
     }
+
     .oh-sticky-table__th--custom {
       padding-left: 10px !important;
     }
+
     .oh-sticky-table__tr--selected {
       background: #ff450017 !important;
     }
@@ -115,31 +124,43 @@
     .avatars:hover .avatars__item {
       margin-right: 10px;
     }
-    .select2{
+
+    .select2 {
       width: 100% !important;
     }
-    #selectContainer{{self.attrs.id}} .select2-container .select2-selection{
+
+    #selectContainer {
+        {
+        self.attrs.id
+      }
+    }
+
+    .select2-container .select2-selection {
       padding: 5px !important;
       max-height: 70px !important;
       overflow: hidden;
       overflow-y: scroll;
     }
-    .custom-scroll{
+
+    .custom-scroll {
       overflow-x: scroll
     }
-    .custom-scroll::-webkit-scrollbar{
+
+    .custom-scroll::-webkit-scrollbar {
       background-color: #cacaca;
       height: 4px;
       border-radius: 6px;
 
     }
-    .custom-scroll::-webkit-scrollbar-thumb{
+
+    .custom-scroll::-webkit-scrollbar-thumb {
       background-color: #888;
       border-radius: 6px;
     }
   </style>
   <div id="selectContainer{{self.attrs.id}}">
-    <select name="{{field_name}}" id="{{self.attrs.id}}" {% if required  %}required{% endif %} class="w-100 oh-select oh-select2" multiple>
+    <select name="{{field_name}}" id="{{self.attrs.id}}" {% if required %}required{% endif %}
+      class="w-100 oh-select oh-select2" multiple>
       {% for instance in queryset %}
       <option value="{{instance.id}}">{{instance}}</option>
       {% endfor %}
@@ -149,66 +170,47 @@
   <div class="d-flex justify-content-between custom-scroll">
     <div class="avatars" id="avatarsContainer"></div>
   </div>
-  <span
-    style="
+  <span style="
       cursor: pointer;
       padding: 10px;
       display: flex;
       justify-content: right;
       color: orangered;
-    "
-  >
-    <span
-      data-toggle="oh-modal-toggle"
-      data-target="#filterChoose{{section_id}}"
-      title="Filter and Choose {{field.label}}"
-      style="
+    ">
+    <span data-toggle="oh-modal-toggle" data-target="#filterChoose{{section_id}}"
+      title="Filter and Choose {{field.label}}" style="
         justify-content: right;
         align-items: center;
         display: flex;
         width: 50px;
-      "
-    >
+      ">
       <ion-icon name="filter-circle"></ion-icon> {% trans "Filter" %}
     </span>
   </span>
-  <div
-    class="oh-modal"
-    id="filterChoose{{section_id}}"
-    role="dialog"
-    aria-labelledby="filterChoose{{section_id}}"
-    aria-hidden="true"
-  >
+  <div class="oh-modal" id="filterChoose{{section_id}}" role="dialog" aria-labelledby="filterChoose{{section_id}}"
+    aria-hidden="true">
     <div class="oh-modal__dialog">
       <div class="oh-modal__dialog-header">
-        <button
-          type="button"
-          class="oh-modal__close-custom"
-          onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').toggleClass('oh-modal--show');"
-        >
+        <button type="button" class="oh-modal__close-custom"
+          onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').toggleClass('oh-modal--show');">
           <ion-icon name="close-outline"></ion-icon>
         </button>
       </div>
-      <div
-        class="oh-modal__dialog-body"
-        id="filterChooseModalBody{{self.attrs.id}}"
-      >
+      <div class="oh-modal__dialog-body" id="filterChooseModalBody{{self.attrs.id}}">
         <div class="oh-wrapper">
           <!-- Nav -->
-          {% include "horilla_widgets/multiselect_components/nav.html" %}
+          {% include "moared_widgets/multiselect_components/nav.html" %}
           <!-- Filter Tags -->
-          {% include "horilla_widgets/multiselect_components/filter_tags.html" %}
+          {% include "moared_widgets/multiselect_components/filter_tags.html" %}
           <!-- Sticky Table -->
-          {% include "horilla_widgets/multiselect_components/table.html" %}
+          {% include "moared_widgets/multiselect_components/table.html" %}
           <!-- Pagination -->
-          {% include "horilla_widgets/multiselect_components/pagination.html" %}
+          {% include "moared_widgets/multiselect_components/pagination.html" %}
           <div class="d-flex flex-row-reverse">
-            <a
-              class="oh-btn oh-btn--secondary oh-btn--shadow pr-3 pl-3"
-              onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').removeClass('oh-modal--show');"
-            >
+            <a class="oh-btn oh-btn--secondary oh-btn--shadow pr-3 pl-3"
+              onclick="event.stopPropagation();event.preventDefault;$('#filterChoose{{section_id}}').removeClass('oh-modal--show');">
               {% trans "Add" %}
-          </a>
+            </a>
           </div>
         </div>
       </div>

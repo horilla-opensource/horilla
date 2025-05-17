@@ -16,7 +16,7 @@ from django.db.models.utils import AltersData
 from django.template.defaultfilters import register
 
 from moared.config import import_method
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 
 register = template.Library()
 

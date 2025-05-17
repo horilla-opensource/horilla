@@ -6,7 +6,7 @@ from base.methods import eval_validate
 from base.models import HorillaMailTemplate
 from employee.models import Employee
 from moared.models import HorillaModel
-from horilla_views.cbv_methods import render_template
+from moared_views.cbv_methods import render_template
 
 MODEL_CHOICES = []
 
@@ -94,13 +94,13 @@ class MailAutomation(HorillaModel):
             display = display[:-1]
             mappings.append(display)
         return render_template(
-            "horilla_automations/mail_to.html", {"instance": self, "mappings": mappings}
+            "moared_automations/mail_to.html", {"instance": self, "mappings": mappings}
         )
 
     def get_mail_cc_display(self):
         employees = self.also_sent_to.all()
         return render_template(
-            "horilla_automations/mail_cc.html", {"employees": employees}
+            "moared_automations/mail_cc.html", {"employees": employees}
         )
 
     def detailed_url(self):
@@ -108,7 +108,7 @@ class MailAutomation(HorillaModel):
 
     def conditions(self):
         return render_template(
-            "horilla_automations/conditions.html", {"instance": self}
+            "moared_automations/conditions.html", {"instance": self}
         )
 
     def delete_url(self):

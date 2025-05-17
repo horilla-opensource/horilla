@@ -276,8 +276,8 @@ msgstr "Groupe Numéro"
 #: asset/templates/request_allocation/asset_request_creation.html:35
 #: attendance/templates/attendance/attendance_account/form.html:7
 #: attendance/templates/attendance/attendance_account/update_form.html:11
-#: attendance/templates/horilla_form.html:52
-#: horilla_audit/templates/horilla_audit/horilla_audit_log.html:45
+#: attendance/templates/moared_form.html:52
+#: moared_audit/templates/moared_audit/moared_audit_log.html:45
 #: payroll/templates/common_form.html:43
 #: payroll/templates/contract_form.html:42
 #: payroll/templates/payroll/contribution/contribution_deduction_assign.html:28
@@ -7684,7 +7684,7 @@ msgstr "In-Active"
 msgid "No Data Found..."
 msgstr "Aucun e-mail trouvé."
 
-#: horilla_audit/templates/horilla_audit/horilla_audit_log.html:28
+#: moared_audit/templates/moared_audit/moared_audit_log.html:28
 msgid "Why this change?"
 msgstr "Pourquoi ce changement?"
 

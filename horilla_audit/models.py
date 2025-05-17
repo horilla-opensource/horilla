@@ -19,7 +19,7 @@ from simple_history.signals import (  # pre_create_historical_m2m_records,; post
 
 # from employee.models import Employee
 from moared.models import HorillaModel
-from horilla_audit.methods import remove_duplicate_history
+from moared_audit.methods import remove_duplicate_history
 
 # Create your models here.
 
@@ -40,7 +40,7 @@ class AuditTag(models.Model):
         Meta class for aditional info
         """
 
-        app_label = "horilla_audit"
+        app_label = "moared_audit"
 
 
 class HorillaAuditInfo(models.Model):
@@ -58,7 +58,7 @@ class HorillaAuditInfo(models.Model):
         Meta class for aditional info
         """
 
-        app_label = "horilla_audit"
+        app_label = "moared_audit"
         abstract = True
 
 
@@ -69,7 +69,7 @@ class HorillaAuditLog(HistoricalRecords):
 
     # def __init__(self, *args, bases=None, **kwargs):
     #     super(HorillaAuditLog, self).__init__(*args, **kwargs)
-    #     self.is_horilla_audit_log = True
+    #     self.is_moared_audit_log = True
 
     pass
 
@@ -77,7 +77,7 @@ class HorillaAuditLog(HistoricalRecords):
 
 
 @receiver(pre_create_historical_record)
-def pre_create_horilla_audit_log(sender, instance, *args, **kwargs):
+def pre_create_moared_audit_log(sender, instance, *args, **kwargs):
     """
     Pre create horill audit log method
     """
@@ -100,7 +100,7 @@ def pre_create_horilla_audit_log(sender, instance, *args, **kwargs):
 
 
 @receiver(post_create_historical_record)
-def post_create_horilla_audit_log(sender, instance, *_args, **kwargs):
+def post_create_moared_audit_log(sender, instance, *_args, **kwargs):
     """
     Post create horill audit log method
     """

@@ -1,5 +1,5 @@
 """
-horilla_apps
+moared_apps
 
 This module is used to register moared addons
 """
@@ -8,13 +8,13 @@ from moared import settings
 from moared.settings import INSTALLED_APPS
 
 INSTALLED_APPS.append("accessibility")
-INSTALLED_APPS.append("horilla_audit")
-INSTALLED_APPS.append("horilla_widgets")
-INSTALLED_APPS.append("horilla_crumbs")
-INSTALLED_APPS.append("horilla_documents")
+INSTALLED_APPS.append("moared_audit")
+INSTALLED_APPS.append("moared_widgets")
+INSTALLED_APPS.append("moared_crumbs")
+INSTALLED_APPS.append("moared_documents")
 INSTALLED_APPS.append("haystack")
-INSTALLED_APPS.append("horilla_views")
-INSTALLED_APPS.append("horilla_automations")
+INSTALLED_APPS.append("moared_views")
+INSTALLED_APPS.append("moared_automations")
 INSTALLED_APPS.append("auditlog")
 INSTALLED_APPS.append("biometric")
 INSTALLED_APPS.append("helpdesk")

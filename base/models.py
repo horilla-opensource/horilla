@@ -18,12 +18,12 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from base.horilla_company_manager import HorillaCompanyManager
-from moared import horilla_middlewares
-from moared.horilla_middlewares import _thread_locals
-from moared.methods import get_horilla_model_class
+from base.moared_company_manager import HorillaCompanyManager
+from moared import moared_middlewares
+from moared.moared_middlewares import _thread_locals
+from moared.methods import get_moared_model_class
 from moared.models import HorillaModel
-from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from moared_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # Create your models here.
 WEEKS = [
@@ -916,7 +916,7 @@ class WorkTypeRequest(HorillaModel):
         return False
 
     def clean(self):
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
             if self.requested_date < django.utils.timezone.now().date():
                 raise ValidationError(_("Date must be greater than or equal to today"))
@@ -1035,7 +1035,7 @@ class ShiftRequest(HorillaModel):
 
     def clean(self):
 
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        request = getattr(moared_middlewares._thread_locals, "request", None)
         if not request.user.is_superuser:
             if not self.pk and self.requested_date < django.utils.timezone.now().date():
                 raise ValidationError(_("Date must be greater than or equal to today"))
@@ -1755,7 +1755,7 @@ def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
     if created:
         penalty_amount = instance.penalty_amount
         if apps.is_installed("payroll") and penalty_amount:
-            Deduction = get_horilla_model_class(app_label="payroll", model="deduction")
+            Deduction = get_moared_model_class(app_label="payroll", model="deduction")
             penalty = Deduction()
             if instance.late_early_id:
                 penalty.title = f"{instance.late_early_id.get_type_display()} penalty"

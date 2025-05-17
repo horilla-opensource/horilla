@@ -15,9 +15,9 @@ from django_filters import CharFilter
 from accessibility.models import DefaultAccessibility
 from employee.models import DisciplinaryAction, Employee, Policy
 from moared.filters import FilterSet, HorillaFilterSet, filter_by_name
-from moared.horilla_middlewares import _thread_locals
-from horilla_documents.models import Document
-from horilla_views.templatetags.generic_template_filters import getattribute
+from moared.moared_middlewares import _thread_locals
+from moared_documents.models import Document
+from moared_views.templatetags.generic_template_filters import getattribute
 
 
 class EmployeeFilter(HorillaFilterSet):

@@ -1,5 +1,5 @@
 """
-horilla_audit/settings.py
+moared_audit/settings.py
 
 This module is used to write settings contents related to payroll app
 """
@@ -7,5 +7,5 @@ This module is used to write settings contents related to payroll app
 from moared.settings import TEMPLATES
 
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
-    "horilla_audit.context_processors.history_form",
+    "moared_audit.context_processors.history_form",
 )

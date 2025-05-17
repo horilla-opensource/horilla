@@ -1,5 +1,5 @@
 """
-horilla_company_manager.py
+moared_company_manager.py
 """
 
 import logging
@@ -8,7 +8,7 @@ from typing import Coroutine, Sequence
 from django.db import models
 from django.db.models.query import QuerySet
 
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 from moared.signals import post_bulk_update, pre_bulk_update
 
 logger = logging.getLogger(__name__)

@@ -1,11 +1,11 @@
 """
-horilla_api/urls/attendance/urls.py
+moared_api/urls/attendance/urls.py
 """
 
 from django.urls import path
 
-from horilla_api.api_views.attendance.permission_views import AttendancePermissionCheck
-from horilla_api.api_views.attendance.views import *
+from moared_api.api_views.attendance.permission_views import AttendancePermissionCheck
+from moared_api.api_views.attendance.views import *
 
 urlpatterns = [
     path("clock-in/", ClockInAPIView.as_view(), name="api-check-in"),

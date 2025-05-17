@@ -1,5 +1,5 @@
 """
-horilla_automation/signals.py
+moared_automation/signals.py
 
 """
 
@@ -15,7 +15,7 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 from moared.signals import post_bulk_update, pre_bulk_update
 
 logger = logging.getLogger(__name__)
@@ -41,8 +41,8 @@ def start_automation():
     Automation signals
     """
     from base.models import HorillaMailTemplate
-    from horilla_automations.methods.methods import get_model_class, split_query_string
-    from horilla_automations.models import MailAutomation
+    from moared_automations.methods.methods import get_model_class, split_query_string
+    from moared_automations.models import MailAutomation
 
     @receiver(post_delete, sender=MailAutomation)
     @receiver(post_save, sender=MailAutomation)
@@ -272,8 +272,8 @@ def send_automated_mail(
     instance,
     previous_instance,
 ):
-    from horilla_automations.methods.methods import evaluate_condition, operator_map
-    from horilla_views.templatetags.generic_template_filters import getattribute
+    from moared_automations.methods.methods import evaluate_condition, operator_map
+    from moared_views.templatetags.generic_template_filters import getattribute
 
     applicable = False
     and_exists = False
@@ -344,11 +344,11 @@ def send_mail(request, automation, instance):
     """
     from base.backends import ConfiguredEmailBackend
     from base.methods import eval_validate, generate_pdf
-    from horilla_automations.methods.methods import (
+    from moared_automations.methods.methods import (
         get_model_class,
         get_related_field_model,
     )
-    from horilla_views.templatetags.generic_template_filters import getattribute
+    from moared_views.templatetags.generic_template_filters import getattribute
 
     mail_template = automation.mail_template
     pk = getattribute(instance, automation.mail_details)

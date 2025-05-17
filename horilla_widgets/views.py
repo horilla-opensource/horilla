@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from moared.decorators import login_required
-from horilla_widgets.widgets.select_widgets import (
+from moared_widgets.widgets.select_widgets import (
     ALL_INSTANCES,
     HorillaMultiSelectWidget,
 )

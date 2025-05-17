@@ -12,7 +12,7 @@ from django.db.models.signals import m2m_changed, post_delete, post_save, pre_sa
 from django.dispatch import receiver
 
 from employee.methods.methods import check_relationship_with_employee_model
-from moared.horilla_middlewares import _thread_locals
+from moared.moared_middlewares import _thread_locals
 from moared.signals import pre_bulk_update
 from pms.models import BonusPointSetting
 
@@ -27,7 +27,7 @@ def start_automation():
     """
     Automation signals
     """
-    from horilla_automations.methods.methods import get_model_class, split_query_string
+    from moared_automations.methods.methods import get_model_class, split_query_string
 
     @receiver(post_delete, sender=BonusPointSetting)
     @receiver(post_save, sender=BonusPointSetting)

@@ -159,7 +159,7 @@ def history_tracking(request, obj_id, **kwargs):
     @apply_decorators(decorator_strings)
     def _history_tracking(request, obj_id, model):
         instance = model.objects.get(pk=obj_id)
-        histories = instance.horilla_history.all()
+        histories = instance.moared_history.all()
         page_number = request.GET.get("page", 1)
         paginator = Paginator(histories, 4)
         page_obj = paginator.get_page(page_number)
@@ -169,7 +169,7 @@ def history_tracking(request, obj_id, **kwargs):
         }
         return render(
             request,
-            "horilla_audit/history_tracking.html",
+            "moared_audit/history_tracking.html",
             context,
         )
 

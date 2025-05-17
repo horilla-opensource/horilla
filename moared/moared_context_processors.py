@@ -1,5 +1,5 @@
 """
-horilla_context_process.py
+moared_context_process.py
 
 This module is used to register context processors without effecting the moared/settings.py module
 """

@@ -11,7 +11,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
 
-from moared.horilla_apps import SIDEBARS
+from moared.moared_apps import SIDEBARS
 
 logger = logging.getLogger(__name__)
 

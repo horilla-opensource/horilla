@@ -9,15 +9,15 @@ try:
         if not HorillaMailTemplate.objects.filter(
             title=recruitment_mail.title
         ).exists():
-            horilla_mail = HorillaMailTemplate(
+            moared_mail = HorillaMailTemplate(
                 id=recruitment_mail.id,
                 title=recruitment_mail.title,
                 body=recruitment_mail.body,
                 company_id=recruitment_mail.company_id,
             )
-            horilla_mail.save()
+            moared_mail.save()
 
-    horilla_mail_templates = HorillaMailTemplate.objects.all()
+    moared_mail_templates = HorillaMailTemplate.objects.all()
     RecruitmentMailTemplate.objects.all().delete()
 except Exception as e:
     pass

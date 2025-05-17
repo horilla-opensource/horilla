@@ -4,7 +4,7 @@ This module defines the configuration for the 'attendance' app within the Moared
 
 from django.apps import AppConfig
 
-from moared.horilla_settings import APP_URLS
+from moared.moared_settings import APP_URLS
 
 
 class AttendanceConfig(AppConfig):

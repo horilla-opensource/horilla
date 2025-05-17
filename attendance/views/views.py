@@ -14,7 +14,7 @@ provide the main entry points for interacting with the application's functionali
 import logging
 import uuid
 
-from moared.horilla_settings import DYNAMIC_URL_PATTERNS, HORILLA_DATE_FORMATS
+from moared.moared_settings import DYNAMIC_URL_PATTERNS, HORILLA_DATE_FORMATS
 from moared.methods import remove_dynamic_url
 
 logger = logging.getLogger(__name__)
