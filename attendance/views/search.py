@@ -28,8 +28,8 @@ from attendance.models import (
 )
 from attendance.views.views import paginator_qry, strtime_seconds
 from base.methods import filtersubordinates, get_key_instances, sortby
-from horilla.decorators import hx_request_required, login_required, manager_can_enter
-from horilla.group_by import group_by_queryset
+from moared.decorators import hx_request_required, login_required, manager_can_enter
+from moared.group_by import group_by_queryset
 
 
 @login_required

@@ -11,8 +11,8 @@ from django.core.mail import EmailMessage
 from django.core.mail.backends.smtp import EmailBackend
 
 from base.models import DynamicEmailConfiguration, EmailLog
-from horilla import settings
-from horilla.horilla_middlewares import _thread_locals
+from moared import settings
+from moared.horilla_middlewares import _thread_locals
 
 logger = logging.getLogger(__name__)
 

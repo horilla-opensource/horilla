@@ -19,7 +19,7 @@ from base.models import (
     ShiftRequest,
     WorkTypeRequest,
 )
-from horilla.filters import FilterSet, filter_by_name
+from moared.filters import FilterSet, filter_by_name
 
 
 class ShiftRequestFilter(FilterSet):

@@ -8235,7 +8235,7 @@ msgstr ""
 
 #: base/models.py:600
 msgid ""
-"Time at which the horilla will automatically check out the employee "
+"Time at which the moared will automatically check out the employee "
 "attendance if they forget."
 msgstr ""
 
@@ -9481,7 +9481,7 @@ msgstr ""
 #: employee/templates/tabs/shift-tab.html:385
 #: employee/templates/tabs/shift-tab.html:562
 #: helpdesk/templates/helpdesk/ticket/ticket_filter.html:117
-#: horilla/models.py:70 recruitment/templates/candidate/export_filter.html:175
+#: moared/models.py:70 recruitment/templates/candidate/export_filter.html:175
 #: recruitment/templates/candidate/filters.html:146
 #: recruitment/templates/recruitment/filters.html:56
 #: recruitment/templates/skill_zone/skill_zone_nav.html:116
@@ -12076,7 +12076,7 @@ msgid "This {} is already in use for {}."
 msgstr ""
 
 #: base/views.py:1342
-msgid "Test mail from Horilla"
+msgid "Test mail from Moared"
 msgstr ""
 
 #: base/views.py:1403
@@ -15812,19 +15812,19 @@ msgstr ""
 msgid "Ticket type not found"
 msgstr "Employee"
 
-#: horilla/decorators.py:312
+#: moared/decorators.py:312
 msgid "Please enable the Track Late Come & Early Out from settings"
 msgstr ""
 
-#: horilla/decorators.py:322
+#: moared/decorators.py:322
 msgid "Please activate the biometric attendance feature in the settings menu."
 msgstr ""
 
-#: horilla/models.py:48 payroll/models/models.py:1899
+#: moared/models.py:48 payroll/models/models.py:1899
 msgid "Created At"
 msgstr ""
 
-#: horilla/models.py:56 leave/models.py:568
+#: moared/models.py:56 leave/models.py:568
 #: leave/templates/leave/compensatory_leave/compensatory_leave_req_list.html:40
 #: leave/templates/leave/compensatory_leave/compensatory_leave_req_list.html:194
 #: leave/templates/leave/compensatory_leave/compensatory_leave_view.html:103
@@ -15840,7 +15840,7 @@ msgstr ""
 msgid "Created By"
 msgstr ""
 
-#: horilla/models.py:65
+#: moared/models.py:65
 msgid "Modified By"
 msgstr ""
 
@@ -23173,7 +23173,7 @@ msgstr ""
 
 #: templates/initialize_database/horilla_user.html:99
 msgid ""
-"Authenticate with your password to initialize the Horilla HRMS database."
+"Authenticate with your password to initialize the Moared HRMS database."
 msgstr ""
 
 #: templates/initialize_database/horilla_user.html:147
@@ -23185,7 +23185,7 @@ msgid "Sign Up"
 msgstr ""
 
 #: templates/initialize_database/horilla_user_signup.html:33
-msgid "Please sign up to access the Horilla HRMS."
+msgid "Please sign up to access the Moared HRMS."
 msgstr ""
 
 #: templates/initialize_database/horilla_user_signup.html:148
@@ -23373,7 +23373,7 @@ msgstr ""
 
 #, fuzzy
 #~| msgid "recruitment"
-#~ msgid "Horilla - Open Recruitments"
+#~ msgid "Moared - Open Recruitments"
 #~ msgstr "Recruitment"
 
 #, fuzzy

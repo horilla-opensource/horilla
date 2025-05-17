@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.filters import FilterSet
 from employee.models import Employee
-from horilla.filters import filter_by_name
+from moared.filters import filter_by_name
 from payroll.models.models import (
     Allowance,
     Contract,

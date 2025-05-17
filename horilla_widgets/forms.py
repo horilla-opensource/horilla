@@ -1,7 +1,7 @@
 """
 forms.py
 
-Horilla forms
+Moared forms
 """
 
 from typing import Any, Dict

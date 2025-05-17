@@ -5,7 +5,7 @@ from django.apps import apps
 from django.db.models import Q
 
 from employee.models import Employee
-from horilla.methods import get_horilla_model_class
+from moared.methods import get_horilla_model_class
 
 
 def calculate_requested_days(

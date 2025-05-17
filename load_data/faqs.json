@@ -483,7 +483,7 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "What is the Recruitment module in Horilla HRMS?",
+      "question": "What is the Recruitment module in Moared HRMS?",
       "answer": "The Recruitment module allows HR professionals to create and manage job postings, receive and review resumes, manage interviews, and track candidate progress throughout the hiring process.",
       "category": 5,
       "company_id": null
@@ -511,7 +511,7 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How can I create a new recruitment in Horilla?",
+      "question": "How can I create a new recruitment in Moared?",
       "answer": "To create a new recruitment, click on the '+ Create' button from Recruitment > Recruitments , specify the job position, description, vacancies, managers, start and end dates, and select a recruitment survey.",
       "category": 5,
       "company_id": null
@@ -595,7 +595,7 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "Can I customize application forms in Horilla HRMS?",
+      "question": "Can I customize application forms in Moared HRMS?",
       "answer": "Yes, the Recruitment Survey feature allows HR managers to create custom questionnaires for candidates, which are integrated into the application forms.",
       "category": 5,
       "company_id": null
@@ -623,8 +623,8 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "What is the Payroll module in Horilla HRMS?",
-      "answer": "The Payroll module in Horilla HRMS enables businesses to manage employee allowances, deductions, taxes, and generate accurate payslips, ensuring streamlined and efficient payroll processes.",
+      "question": "What is the Payroll module in Moared HRMS?",
+      "answer": "The Payroll module in Moared HRMS enables businesses to manage employee allowances, deductions, taxes, and generate accurate payslips, ensuring streamlined and efficient payroll processes.",
       "category": 6,
       "company_id": null
     }
@@ -651,7 +651,7 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How does Contract Management work in Horilla?",
+      "question": "How does Contract Management work in Moared?",
       "answer": "Contract Management allows users to create contracts, define compensation, set contract duration, and manage leave settings. It supports various wage types for customized work arrangements.",
       "category": 6,
       "company_id": null
@@ -679,7 +679,7 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How are deductions managed in Horilla?",
+      "question": "How are deductions managed in Moared?",
       "answer": "The Deduction Management feature allows users to create and personalize deductions, set eligibility conditions, and choose fixed or variable amounts. It ensures streamlined deductions and fair practices.",
       "category": 6,
       "company_id": null
@@ -735,7 +735,7 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How are payslips generated in Horilla?",
+      "question": "How are payslips generated in Moared?",
       "answer": "The Payslip Generation feature calculates salaries, including allowances, deductions, and taxes, and creates accurate and detailed payslips for each pay period.",
       "category": 6,
       "company_id": null
@@ -749,7 +749,7 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "What is the Asset Management System in Horilla HRMS?",
+      "question": "What is the Asset Management System in Moared HRMS?",
       "answer": "The Asset Management System enables employees to request and manage work-related assets like computers and equipment. It categorizes assets, tracks requests, and ensures efficient allocation.",
       "category": 7,
       "company_id": null
@@ -777,7 +777,7 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How can admin search for assets in Horilla HRMS?",
+      "question": "How can admin search for assets in Moared HRMS?",
       "answer": "Admin can search for specific asset categories or individual assets using the search bar. The system dynamically filters results based on the search term.",
       "category": 7,
       "company_id": null
@@ -819,7 +819,7 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How can asset categories be managed in Horilla HRMS?",
+      "question": "How can asset categories be managed in Moared HRMS?",
       "answer": "Admin can create, update, and delete asset categories. Categories can only be deleted if they are empty, ensuring no associated assets remain in use.",
       "category": 7,
       "company_id": null

@@ -20,8 +20,8 @@ from base.methods import export_data, generate_pdf
 from base.models import HorillaMailTemplate
 from employee.filters import EmployeeFilter
 from employee.models import Employee
-from horilla import settings
-from horilla.decorators import login_required, manager_can_enter
+from moared import settings
+from moared.decorators import login_required, manager_can_enter
 
 
 def paginator_qry(qryset, page_number):

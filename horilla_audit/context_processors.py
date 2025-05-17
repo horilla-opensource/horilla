@@ -7,7 +7,7 @@ This module is used to register context processor`
 from django.http import JsonResponse
 from django.urls import include, path
 
-from horilla.urls import urlpatterns
+from moared.urls import urlpatterns
 from horilla_audit.forms import HistoryForm
 from horilla_audit.models import AuditTag
 
@@ -30,4 +30,4 @@ def dynamic_tag(request):
     return JsonResponse({"id": title[0].id})
 
 
-urlpatterns.append(path("horilla-audit-log", dynamic_tag, name="horilla-audit-log"))
+urlpatterns.append(path("moared-audit-log", dynamic_tag, name="moared-audit-log"))

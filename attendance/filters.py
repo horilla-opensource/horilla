@@ -23,7 +23,7 @@ from attendance.models import (
 from base.filters import FilterSet
 from employee.filters import EmployeeFilter
 from employee.models import Employee
-from horilla.filters import filter_by_name
+from moared.filters import filter_by_name
 
 
 class DurationInSecondsFilter(django_filters.CharFilter):

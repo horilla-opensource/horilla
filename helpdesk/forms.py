@@ -40,7 +40,7 @@ from helpdesk.models import (
     Ticket,
     TicketType,
 )
-from horilla import horilla_middlewares
+from moared import horilla_middlewares
 
 
 class TicketTypeForm(ModelForm):

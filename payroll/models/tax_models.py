@@ -12,7 +12,7 @@ from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
-from horilla.models import HorillaModel
+from moared.models import HorillaModel
 from payroll.models.models import FilingStatus
 
 

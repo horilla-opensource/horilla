@@ -7,7 +7,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "company": "Horilla",
+      "company": "Moared",
       "hq": true,
       "address": "ABCD street",
       "country": "USA",
@@ -27,7 +27,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "company": "Horilla Inc.",
+      "company": "Moared Inc.",
       "hq": false,
       "address": "The Estate , 8th Floor",
       "country": "India",
@@ -47,7 +47,7 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "company": "Horilla Next Inc.",
+      "company": "Moared Next Inc.",
       "hq": false,
       "address": "Alpha House",
       "country": "United Kingdom",
@@ -128,7 +128,9 @@
       "modified_by": 1,
       "is_active": true,
       "department": "Managers",
-      "company_id": [1]
+      "company_id": [
+        1
+      ]
     }
   },
   {
@@ -1135,7 +1137,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1156,7 +1161,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1177,7 +1185,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1198,7 +1209,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1219,7 +1233,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1240,7 +1257,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1261,7 +1281,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1282,7 +1305,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1303,7 +1329,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1324,7 +1353,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1345,7 +1377,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1366,7 +1401,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1387,7 +1425,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1408,7 +1449,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1429,7 +1473,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1450,7 +1497,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1471,7 +1521,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1492,7 +1545,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1513,7 +1569,10 @@
       "rotate_after_day": 3,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1, "next_work_type_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1,
+        "next_work_type_index": 1
+      }
     }
   },
   {
@@ -1555,37 +1614,58 @@
   {
     "model": "base.employeeshiftday",
     "pk": 1,
-    "fields": { "day": "monday", "company_id": [] }
+    "fields": {
+      "day": "monday",
+      "company_id": []
+    }
   },
   {
     "model": "base.employeeshiftday",
     "pk": 2,
-    "fields": { "day": "tuesday", "company_id": [] }
+    "fields": {
+      "day": "tuesday",
+      "company_id": []
+    }
   },
   {
     "model": "base.employeeshiftday",
     "pk": 3,
-    "fields": { "day": "wednesday", "company_id": [] }
+    "fields": {
+      "day": "wednesday",
+      "company_id": []
+    }
   },
   {
     "model": "base.employeeshiftday",
     "pk": 4,
-    "fields": { "day": "thursday", "company_id": [] }
+    "fields": {
+      "day": "thursday",
+      "company_id": []
+    }
   },
   {
     "model": "base.employeeshiftday",
     "pk": 5,
-    "fields": { "day": "friday", "company_id": [] }
+    "fields": {
+      "day": "friday",
+      "company_id": []
+    }
   },
   {
     "model": "base.employeeshiftday",
     "pk": 6,
-    "fields": { "day": "saturday", "company_id": [] }
+    "fields": {
+      "day": "saturday",
+      "company_id": []
+    }
   },
   {
     "model": "base.employeeshiftday",
     "pk": 7,
-    "fields": { "day": "sunday", "company_id": [] }
+    "fields": {
+      "day": "sunday",
+      "company_id": []
+    }
   },
   {
     "model": "base.employeeshift",
@@ -1979,7 +2059,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1
+      }
     }
   },
   {
@@ -2000,7 +2082,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1
+      }
     }
   },
   {
@@ -2021,7 +2105,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1
+      }
     }
   },
   {
@@ -2042,7 +2128,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1
+      }
     }
   },
   {
@@ -2063,7 +2151,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 0 }
+      "additional_data": {
+        "next_shift_index": 0
+      }
     }
   },
   {
@@ -2084,7 +2174,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1
+      }
     }
   },
   {
@@ -2105,7 +2197,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 0 }
+      "additional_data": {
+        "next_shift_index": 0
+      }
     }
   },
   {
@@ -2126,7 +2220,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1
+      }
     }
   },
   {
@@ -2147,7 +2243,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 0 }
+      "additional_data": {
+        "next_shift_index": 0
+      }
     }
   },
   {
@@ -2168,7 +2266,9 @@
       "rotate_after_day": 1,
       "rotate_every_weekend": "monday",
       "rotate_every": "1",
-      "additional_data": { "next_shift_index": 1 }
+      "additional_data": {
+        "next_shift_index": 1
+      }
     }
   },
   {
@@ -2896,32 +2996,50 @@
   {
     "model": "base.dynamicpagination",
     "pk": 1,
-    "fields": { "user_id": 1, "pagination": 25 }
+    "fields": {
+      "user_id": 1,
+      "pagination": 25
+    }
   },
   {
     "model": "base.driverviewed",
     "pk": 1,
-    "fields": { "user": 1, "viewed": "dashboard" }
+    "fields": {
+      "user": 1,
+      "viewed": "dashboard"
+    }
   },
   {
     "model": "base.driverviewed",
     "pk": 2,
-    "fields": { "user": 1, "viewed": "settings" }
+    "fields": {
+      "user": 1,
+      "viewed": "settings"
+    }
   },
   {
     "model": "base.driverviewed",
     "pk": 3,
-    "fields": { "user": 1, "viewed": "pipeline" }
+    "fields": {
+      "user": 1,
+      "viewed": "pipeline"
+    }
   },
   {
     "model": "base.driverviewed",
     "pk": 4,
-    "fields": { "user": 13, "viewed": "dashboard" }
+    "fields": {
+      "user": 13,
+      "viewed": "dashboard"
+    }
   },
   {
     "model": "base.driverviewed",
     "pk": 5,
-    "fields": { "user": 13, "viewed": "pipeline" }
+    "fields": {
+      "user": 13,
+      "viewed": "pipeline"
+    }
   },
   {
     "model": "base.dashboardemployeecharts",
@@ -2953,8 +3071,8 @@
       "created_by": 1,
       "modified_by": 1,
       "is_active": true,
-      "title": "Horilla Tour",
-      "description": "<h1 class=\"hr-heading hr-heading--h1 hr-hero__title\" style=\"-webkit-font-smoothing: auto; font-size: 5rem; margin-right: auto; margin-bottom: 0px; margin-left: auto; font-family: Poppins, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-weight: bold; text-align: center; max-width: 855px; line-height: 96px; color: rgb(28, 28, 28);\">The&nbsp;<span class=\"hr-hero__highlight\" style=\"-webkit-font-smoothing: auto; position: relative;\">only</span>&nbsp;HR Software You'll ever need.</h1><p class=\"hr-hero__lead\" style=\"-webkit-font-smoothing: auto; font-size: 1.25rem; color: rgb(28, 28, 28); max-width: 650px; text-align: center; margin: 1rem auto 1.5rem; font-family: &quot;Open Sans&quot;, Inter, &quot;Helvetica Neue Light&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">Horilla HRMS offers all the features you would expect from your favorite Open Source HR Software and much more.<span style=\"-webkit-font-smoothing: auto; font-weight: bolder;\"><br style=\"-webkit-font-smoothing: auto;\">It's free &amp; open-source!</span></p>",
+      "title": "Moared Tour",
+      "description": "<h1 class=\"hr-heading hr-heading--h1 hr-hero__title\" style=\"-webkit-font-smoothing: auto; font-size: 5rem; margin-right: auto; margin-bottom: 0px; margin-left: auto; font-family: Poppins, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-weight: bold; text-align: center; max-width: 855px; line-height: 96px; color: rgb(28, 28, 28);\">The&nbsp;<span class=\"hr-hero__highlight\" style=\"-webkit-font-smoothing: auto; position: relative;\">only</span>&nbsp;HR Software You'll ever need.</h1><p class=\"hr-hero__lead\" style=\"-webkit-font-smoothing: auto; font-size: 1.25rem; color: rgb(28, 28, 28); max-width: 650px; text-align: center; margin: 1rem auto 1.5rem; font-family: &quot;Open Sans&quot;, Inter, &quot;Helvetica Neue Light&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;\">Moared HRMS offers all the features you would expect from your favorite Open Source HR Software and much more.<span style=\"-webkit-font-smoothing: auto; font-weight: bolder;\"><br style=\"-webkit-font-smoothing: auto;\">It's free &amp; open-source!</span></p>",
       "expire_date": "2100-11-17",
       "disable_comments": false,
       "attachments": [],
@@ -2966,7 +3084,10 @@
   {
     "model": "base.biometricattendance",
     "pk": 1,
-    "fields": { "is_installed": false, "company_id": null }
+    "fields": {
+      "is_installed": false,
+      "company_id": null
+    }
   },
   {
     "model": "base.holidays",

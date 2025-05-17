@@ -19,8 +19,8 @@ from base.forms import Form, ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
-from horilla import horilla_middlewares
-from horilla.methods import get_horilla_model_class
+from moared import horilla_middlewares
+from moared.methods import get_horilla_model_class
 from horilla_widgets.forms import HorillaForm, orginal_template_name
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget

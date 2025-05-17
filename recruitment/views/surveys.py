@@ -18,7 +18,7 @@ from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import closest_numbers, get_pagination
-from horilla.decorators import (
+from moared.decorators import (
     hx_request_required,
     is_recruitment_manager,
     login_required,

@@ -19,8 +19,14 @@
       "end_date": "2024-11-30",
       "optional_profile_image": false,
       "optional_resume": false,
-      "open_positions": [1, 2],
-      "recruitment_managers": [12, 1],
+      "open_positions": [
+        1,
+        2
+      ],
+      "recruitment_managers": [
+        12,
+        1
+      ],
       "survey_templates": [],
       "skills": []
     }
@@ -45,8 +51,12 @@
       "end_date": "2024-11-30",
       "optional_profile_image": false,
       "optional_resume": false,
-      "open_positions": [3],
-      "recruitment_managers": [68],
+      "open_positions": [
+        3
+      ],
+      "recruitment_managers": [
+        68
+      ],
       "survey_templates": [],
       "skills": []
     }
@@ -71,8 +81,14 @@
       "end_date": "2024-11-30",
       "optional_profile_image": false,
       "optional_resume": false,
-      "open_positions": [1, 2, 4],
-      "recruitment_managers": [1],
+      "open_positions": [
+        1,
+        2,
+        4
+      ],
+      "recruitment_managers": [
+        1
+      ],
       "survey_templates": [],
       "skills": []
     }
@@ -89,7 +105,9 @@
       "stage": "Interview",
       "stage_type": "interview",
       "sequence": 1,
-      "stage_managers": [1]
+      "stage_managers": [
+        1
+      ]
     }
   },
   {
@@ -104,7 +122,9 @@
       "stage": "Hired",
       "stage_type": "hired",
       "sequence": 2,
-      "stage_managers": [12]
+      "stage_managers": [
+        12
+      ]
     }
   },
   {
@@ -119,7 +139,9 @@
       "stage": "Cancelled",
       "stage_type": "cancelled",
       "sequence": 3,
-      "stage_managers": [12]
+      "stage_managers": [
+        12
+      ]
     }
   },
   {
@@ -134,7 +156,9 @@
       "stage": "Hired",
       "stage_type": "hired",
       "sequence": 1,
-      "stage_managers": [37]
+      "stage_managers": [
+        37
+      ]
     }
   },
   {
@@ -153,7 +177,7 @@
       "stage_id": 5,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "liam.bennett@horilla.com",
+      "email": "liam.bennett@moared.com",
       "mobile": "9876540101",
       "resume": "recruitment/resume/resume.pdf",
       "referral": null,
@@ -191,7 +215,7 @@
       "stage_id": 1,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "ava.mitchell@horilla.com",
+      "email": "ava.mitchell@moared.com",
       "mobile": "9876540102",
       "resume": "recruitment/resume/resume_HjTNWZS.pdf",
       "referral": null,
@@ -229,7 +253,7 @@
       "stage_id": 6,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "noah.anderson@horilla.com",
+      "email": "noah.anderson@moared.com",
       "mobile": "9876540103",
       "resume": "recruitment/resume/resume_CJGP0i7.pdf",
       "referral": null,
@@ -267,7 +291,7 @@
       "stage_id": 2,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "sophia.carter@horilla.com",
+      "email": "sophia.carter@moared.com",
       "mobile": "9876540104",
       "resume": "recruitment/resume/resume_isLsD8M.pdf",
       "referral": null,
@@ -305,7 +329,7 @@
       "stage_id": 1,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "isabella.morris@horilla.com",
+      "email": "isabella.morris@moared.com",
       "mobile": "9876540106",
       "resume": "recruitment/resume/resume_Mr8M3VL.pdf",
       "referral": null,
@@ -343,7 +367,7 @@
       "stage_id": 7,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "lucas.rogers@horilla.com",
+      "email": "lucas.rogers@moared.com",
       "mobile": "9876540107",
       "resume": "recruitment/resume/resume_SjCrKeM.pdf",
       "referral": null,
@@ -381,7 +405,7 @@
       "stage_id": 4,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "mia.reed@horilla.com",
+      "email": "mia.reed@moared.com",
       "mobile": "9876540108",
       "resume": "recruitment/resume/resume_ZGFTZr3.pdf",
       "referral": null,
@@ -419,7 +443,7 @@
       "stage_id": 5,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "william.peterson@horilla.com",
+      "email": "william.peterson@moared.com",
       "mobile": "9876540109",
       "resume": "recruitment/resume/resume_W98xQYe.pdf",
       "referral": null,
@@ -457,7 +481,7 @@
       "stage_id": 5,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "emily.turner@horilla.com",
+      "email": "emily.turner@moared.com",
       "mobile": "9876540110",
       "resume": "recruitment/resume/resume_6x1QM7Z.pdf",
       "referral": null,
@@ -495,7 +519,7 @@
       "stage_id": 6,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "james.perry@horilla.com",
+      "email": "james.perry@moared.com",
       "mobile": "9876540111",
       "resume": "recruitment/resume/resume_k4pB5mo.pdf",
       "referral": null,
@@ -533,7 +557,7 @@
       "stage_id": 5,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "olivia.coleman@horilla.com",
+      "email": "olivia.coleman@moared.com",
       "mobile": "9876540112",
       "resume": "recruitment/resume/resume_Toa3pyH.pdf",
       "referral": null,
@@ -571,7 +595,7 @@
       "stage_id": 1,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "benjamin.foster@horilla.com",
+      "email": "benjamin.foster@moared.com",
       "mobile": "9876540113",
       "resume": "recruitment/resume/resume_uIv7EBy.pdf",
       "referral": null,
@@ -609,7 +633,7 @@
       "stage_id": 2,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "charlotte.brooks@horilla.com",
+      "email": "charlotte.brooks@moared.com",
       "mobile": "9876540114",
       "resume": "recruitment/resume/resume_8LRlV56.pdf",
       "referral": null,
@@ -647,7 +671,7 @@
       "stage_id": 1,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "henry.jenkins@horilla.com",
+      "email": "henry.jenkins@moared.com",
       "mobile": "9876540115",
       "resume": "recruitment/resume/resume_0Nvfipm.pdf",
       "referral": null,
@@ -685,7 +709,7 @@
       "stage_id": 1,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "amelia.hayes@horilla.com",
+      "email": "amelia.hayes@moared.com",
       "mobile": "9876540116",
       "resume": "recruitment/resume/resume_gPOC7cN.pdf",
       "referral": null,
@@ -723,7 +747,7 @@
       "stage_id": 1,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "grace.price@horilla.com",
+      "email": "grace.price@moared.com",
       "mobile": "9876540118",
       "resume": "recruitment/resume/resume_ru3PeM7.pdf",
       "referral": null,
@@ -761,7 +785,7 @@
       "stage_id": 1,
       "converted_employee_id": null,
       "schedule_date": null,
-      "email": "sebastian.howard@horilla.com",
+      "email": "sebastian.howard@moared.com",
       "mobile": "9876540117",
       "resume": "recruitment/resume/resume_AQzECPu.pdf",
       "referral": null,
@@ -875,7 +899,9 @@
       "interview_time": "10:30:00",
       "description": "",
       "completed": false,
-      "employee_id": [1]
+      "employee_id": [
+        1
+      ]
     }
   },
   {
@@ -933,8 +959,12 @@
       "sequence": 0,
       "type": "text",
       "options": "",
-      "template_id": [1],
-      "recruitment_ids": [1],
+      "template_id": [
+        1
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -951,8 +981,12 @@
       "sequence": 0,
       "type": "text",
       "options": "",
-      "template_id": [1],
-      "recruitment_ids": [1],
+      "template_id": [
+        1
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -969,8 +1003,12 @@
       "sequence": 0,
       "type": "checkbox",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -987,8 +1025,12 @@
       "sequence": 0,
       "type": "options",
       "options": "Sales, Inventory, Accounting, Human Resources",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1005,8 +1047,12 @@
       "sequence": 0,
       "type": "multiple",
       "options": "Data modeling, SQL query generation, Form building, Workflow automation",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1023,8 +1069,12 @@
       "sequence": 0,
       "type": "text",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1041,8 +1091,12 @@
       "sequence": 0,
       "type": "number",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1059,8 +1113,12 @@
       "sequence": 0,
       "type": "percentage",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1077,8 +1135,12 @@
       "sequence": 0,
       "type": "rating",
       "options": "",
-      "template_id": [2],
-      "recruitment_ids": [1],
+      "template_id": [
+        2
+      ],
+      "recruitment_ids": [
+        1
+      ],
       "job_position_ids": []
     }
   },
@@ -1095,8 +1157,12 @@
       "sequence": 0,
       "type": "checkbox",
       "options": "",
-      "template_id": [3],
-      "recruitment_ids": [2],
+      "template_id": [
+        3
+      ],
+      "recruitment_ids": [
+        2
+      ],
       "job_position_ids": []
     }
   },
@@ -1113,8 +1179,12 @@
       "sequence": 0,
       "type": "options",
       "options": "Writing custom queries, Query optimization, Database migrations, Managing relations between models",
-      "template_id": [3],
-      "recruitment_ids": [2],
+      "template_id": [
+        3
+      ],
+      "recruitment_ids": [
+        2
+      ],
       "job_position_ids": []
     }
   },
@@ -1131,8 +1201,12 @@
       "sequence": 0,
       "type": "options",
       "options": "Views, Models, Controllers, Templates",
-      "template_id": [3],
-      "recruitment_ids": [2],
+      "template_id": [
+        3
+      ],
+      "recruitment_ids": [
+        2
+      ],
       "job_position_ids": []
     }
   },
@@ -1149,8 +1223,12 @@
       "sequence": 0,
       "type": "text",
       "options": "",
-      "template_id": [3],
-      "recruitment_ids": [2],
+      "template_id": [
+        3
+      ],
+      "recruitment_ids": [
+        2
+      ],
       "job_position_ids": []
     }
   }

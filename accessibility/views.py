@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from accessibility.accessibility import ACCESSBILITY_FEATURE
 from accessibility.filters import AccessibilityFilter
 from accessibility.models import DefaultAccessibility
-from horilla.decorators import login_required, permission_required
+from moared.decorators import login_required, permission_required
 
 
 @login_required

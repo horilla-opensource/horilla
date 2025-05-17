@@ -18,7 +18,7 @@ class PayrollConfig(AppConfig):
         ready = super().ready()
         from django.urls import include, path
 
-        from horilla.urls import urlpatterns
+        from moared.urls import urlpatterns
 
         urlpatterns.append(
             path("payroll/", include("payroll.urls.urls")),

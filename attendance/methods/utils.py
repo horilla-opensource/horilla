@@ -18,7 +18,7 @@ from django.utils.translation import gettext_lazy as _
 from base.methods import get_pagination
 from base.models import WEEK_DAYS, CompanyLeaves, Holidays
 from employee.models import Employee
-from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
+from moared.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 
 MONTH_MAPPING = {
     "january": 1,

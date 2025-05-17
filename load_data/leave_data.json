@@ -3263,7 +3263,7 @@
       "end_date": "2024-11-16",
       "department": 1,
       "include_all": true,
-      "description": "Horilla Project Installation",
+      "description": "Moared Project Installation",
       "company_id": 1,
       "job_position": [],
       "spesific_leave_types": [],
@@ -3283,7 +3283,7 @@
       "end_date": "2024-11-27",
       "department": 2,
       "include_all": true,
-      "description": "Luanch Horilla",
+      "description": "Luanch Moared",
       "company_id": 1,
       "job_position": [],
       "spesific_leave_types": [],
@@ -3307,7 +3307,9 @@
       "company_id": 1,
       "job_position": [],
       "spesific_leave_types": [],
-      "exclued_leave_types": [3]
+      "exclued_leave_types": [
+        3
+      ]
     }
   },
   {
@@ -3327,7 +3329,9 @@
       "company_id": 1,
       "job_position": [],
       "spesific_leave_types": [],
-      "exclued_leave_types": [3]
+      "exclued_leave_types": [
+        3
+      ]
     }
   },
   {

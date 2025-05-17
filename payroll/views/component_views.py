@@ -37,15 +37,15 @@ from base.methods import (
 )
 from base.models import Company
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import (
+from moared.decorators import (
     hx_request_required,
     login_required,
     owner_can_enter,
     permission_required,
 )
-from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import HORILLA_DATE_FORMATS
-from horilla.methods import dynamic_attr, get_horilla_model_class, get_urlencode
+from moared.group_by import group_by_queryset
+from moared.horilla_settings import HORILLA_DATE_FORMATS
+from moared.methods import dynamic_attr, get_horilla_model_class, get_urlencode
 
 # from leave.models import AvailableLeave
 from notifications.signals import notify

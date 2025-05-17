@@ -11,7 +11,7 @@ import operator
 from django.apps import apps
 
 # from attendance.models import Attendance
-from horilla.methods import get_horilla_model_class
+from moared.methods import get_horilla_model_class
 from payroll.methods.deductions import update_compensation_deduction
 from payroll.methods.limits import compute_limit
 from payroll.models import models

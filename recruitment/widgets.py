@@ -8,7 +8,7 @@ This page is used to write custom form widget or override some functionalities.
 from django import forms
 from django.utils.safestring import mark_safe
 
-from horilla import settings
+from moared import settings
 
 # your your widgets
 

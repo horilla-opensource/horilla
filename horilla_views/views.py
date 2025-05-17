@@ -307,7 +307,7 @@ class HorillaDeleteConfirmationView(View):
         """
         GET method
         """
-        from horilla.urls import path, urlpatterns
+        from moared.urls import path, urlpatterns
 
         pk = self.request.GET["pk"]
 

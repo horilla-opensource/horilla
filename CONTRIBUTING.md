@@ -1,17 +1,17 @@
-# Contributing Guidelines for Horilla
+# Contributing Guidelines for Moared
 
-Thank you for considering contributing to Horilla! We welcome your input and appreciate the community effort to make this project even better.
+Thank you for considering contributing to Moared! We welcome your input and appreciate the community effort to make this project even better.
 
 ## How to Contribute
 
 1. **Fork the Repository:**
-   - Fork the Horilla repository on GitHub to your own space.
+   - Fork the Moared repository on GitHub to your own space.
 
 2. **Clone the Repository:**
    - Clone the forked repository to your local machine.
 
      ```bash
-     git clone https://github.com/your-username/Horilla.git
+     git clone https://github.com/your-username/Moared.git
      ```
 
 3. **Create a Branch:**
@@ -39,7 +39,7 @@ Thank you for considering contributing to Horilla! We welcome your input and app
      ```
 
 7. **Create a Pull Request:**
-   - Open a pull request on the official Horilla repository.
+   - Open a pull request on the official Moared repository.
    - Provide a clear title and description for your pull request.
    - Reference any relevant issues in your pull request description.
 
@@ -61,4 +61,4 @@ Thank you for considering contributing to Horilla! We welcome your input and app
 - Provide constructive feedback.
 - Encourage a positive and inclusive community.
 
-Thank you for your contributions to Horilla! Together, we can build a better and more efficient HR management solution using Django.
+Thank you for your contributions to Moared! Together, we can build a better and more efficient HR management solution using Django.

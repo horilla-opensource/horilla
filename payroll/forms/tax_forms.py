@@ -16,7 +16,7 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import reload_queryset
-from horilla import horilla_middlewares
+from moared import horilla_middlewares
 from payroll.methods import federal_tax
 from payroll.models.models import FilingStatus
 from payroll.models.tax_models import TaxBracket

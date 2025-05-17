@@ -1,7 +1,7 @@
 """
 horilla_middlewares.py
 
-This module is used to register horilla's middlewares without affecting the horilla/settings.py
+This module is used to register moared's middlewares without affecting the moared/settings.py
 """
 
 import threading
@@ -9,11 +9,11 @@ import threading
 from django.http import HttpResponseNotAllowed
 from django.shortcuts import render
 
-from horilla.settings import MIDDLEWARE
+from moared.settings import MIDDLEWARE
 
 MIDDLEWARE.append("base.middleware.CompanyMiddleware")
-MIDDLEWARE.append("horilla.horilla_middlewares.MethodNotAllowedMiddleware")
-MIDDLEWARE.append("horilla.horilla_middlewares.ThreadLocalMiddleware")
+MIDDLEWARE.append("moared.horilla_middlewares.MethodNotAllowedMiddleware")
+MIDDLEWARE.append("moared.horilla_middlewares.ThreadLocalMiddleware")
 MIDDLEWARE.append("accessibility.middlewares.AccessibilityMiddleware")
 MIDDLEWARE.append("accessibility.middlewares.AccessibilityMiddleware")
 MIDDLEWARE.append("base.middleware.ForcePasswordChangeMiddleware")

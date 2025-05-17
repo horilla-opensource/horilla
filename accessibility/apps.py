@@ -7,7 +7,7 @@ class AccessibilityConfig(AppConfig):
 
     def ready(self) -> None:
         from accessibility import signals
-        from horilla.urls import include, path, urlpatterns
+        from moared.urls import include, path, urlpatterns
 
         urlpatterns.append(
             path("", include("accessibility.urls")),

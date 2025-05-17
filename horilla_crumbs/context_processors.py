@@ -7,7 +7,7 @@ from django.urls import Resolver404, path, resolve, reverse
 
 from base.context_processors import white_labelling_company
 from employee.models import Employee
-from horilla.urls import urlpatterns
+from moared.urls import urlpatterns
 
 
 def is_valid_uuid(uuid_string):

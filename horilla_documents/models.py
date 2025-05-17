@@ -10,7 +10,7 @@ from django.utils.translation import gettext as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
-from horilla.models import HorillaModel
+from moared.models import HorillaModel
 
 STATUS = [
     ("requested", "Requested"),

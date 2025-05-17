@@ -8,8 +8,8 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _trans
 
 from base.methods import filter_own_and_subordinate_recordes, is_reportingmanager
-from horilla import horilla_middlewares
-from horilla.decorators import login_required, permission_required
+from moared import horilla_middlewares
+from moared.decorators import login_required, permission_required
 from horilla_views.generic.cbv import views
 from pms import models
 from pms.filters import BonusPointSettingFilter, EmployeeBonusPointFilter

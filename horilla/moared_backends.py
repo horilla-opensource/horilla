@@ -1,11 +1,11 @@
 """
-horilla/horilla_backends.py
+moared/horilla_backends.py
 """
 
 from django.db import models
 from storages.backends.s3boto3 import S3Boto3Storage
 
-from horilla import settings
+from moared import settings
 
 
 class PrivateMediaStorage(S3Boto3Storage):

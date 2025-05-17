@@ -9052,7 +9052,7 @@ msgstr "Stornieren"
 #: .\employee\templates\tabs\shift-tab.html:385
 #: .\employee\templates\tabs\shift-tab.html:536
 #: .\helpdesk\templates\helpdesk\ticket\ticket_filter.html:117
-#: .\horilla\models.py:35
+#: .\moared\models.py:35
 #: .\recruitment\templates\candidate\candidate_create_form.html:189
 #: .\recruitment\templates\candidate\export_filter.html:156
 #: .\recruitment\templates\candidate\filters.html:146
@@ -15854,17 +15854,17 @@ msgstr "Abteilung wurde erfolgreich erstellt!"
 msgid "Priority updated successfully."
 msgstr "Urlaub erfolgreich aktualisiert.."
 
-#: .\horilla\decorators.py:270
+#: .\moared\decorators.py:270
 msgid "Please activate the biometric attendance feature in the settings menu."
 msgstr ""
 
-#: .\horilla\models.py:14 .\payroll\models\models.py:1780
+#: .\moared\models.py:14 .\payroll\models\models.py:1780
 #, fuzzy
 #| msgid "Created Date"
 msgid "Created At"
 msgstr "Erstellungsdatum"
 
-#: .\horilla\models.py:22 .\leave\models.py:517
+#: .\moared\models.py:22 .\leave\models.py:517
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:40
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_req_list.html:194
 #: .\leave\templates\leave\compensatory_leave\compensatory_leave_view.html:103
@@ -15880,7 +15880,7 @@ msgstr "Erstellungsdatum"
 msgid "Created By"
 msgstr "Erstellt von"
 
-#: .\horilla\models.py:31
+#: .\moared\models.py:31
 msgid "Modified By"
 msgstr ""
 

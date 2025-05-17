@@ -14,8 +14,8 @@ from django.utils.translation import gettext_lazy as _
 from attendance.models import AttendanceLateComeEarlyOut
 from base.forms import PenaltyAccountForm
 from base.models import PenaltyAccounts
-from horilla.decorators import hx_request_required, login_required, manager_can_enter
-from horilla.methods import get_horilla_model_class
+from moared.decorators import hx_request_required, login_required, manager_can_enter
+from moared.methods import get_horilla_model_class
 
 
 @login_required

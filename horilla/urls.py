@@ -1,4 +1,4 @@
-"""horilla URL Configuration
+"""moared URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -36,7 +36,7 @@ urlpatterns = [
     path("", include("horilla_automations.urls")),
     path("", include("horilla_views.urls")),
     path("employee/", include("employee.urls")),
-    path("horilla-widget/", include("horilla_widgets.urls")),
+    path("moared-widget/", include("horilla_widgets.urls")),
     re_path(
         "^inbox/notifications/", include(notifications.urls, namespace="notifications")
     ),

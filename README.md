@@ -1,13 +1,13 @@
 
-# **Horilla 🦍** 
-Horilla is a Free and Open Source HRMS Software.
+# **Moared 🦍** 
+Moared is a Free and Open Source HRMS Software.
 
-<img width="1470" alt="Screenshot 2024-03-15 at 3 05 20 PM" src="https://github.com/horilla-opensource/horilla/assets/131998600/1317bd0a-03a8-40be-8fb2-ecb655bb5c13">
+<img width="1470" alt="Screenshot 2024-03-15 at 3 05 20 PM" src="https://github.com/moared-opensource/moared/assets/131998600/1317bd0a-03a8-40be-8fb2-ecb655bb5c13">
 
 
 ## **Installation**
 ____
-Horilla can be installed on your system by following the below commands.
+Moared can be installed on your system by following the below commands.
 
 You'll have to install python, django and the database you wish to use for the project as a prerequisites.
 
@@ -112,13 +112,13 @@ This should output the version number of Django that you just installed.
 Congratulations, you have successfully installed Django on your machine!
 You can now start building web applications using Django.
 
-### **Installing Horilla**
+### **Installing Moared**
 ___
 
-For installing the Horilla, follow the following steps:
+For installing the Moared, follow the following steps:
 1. Clone the project repository from GitHub:
 ```bash
-git clone https://github.com/horilla-opensource/horilla.git
+git clone https://github.com/moared-opensource/moared.git
 ```
 2. Install the required dependencies using pip:
 
@@ -136,12 +136,12 @@ For installing the python dependencies required for the project, run the followi
 >Run the requirement installation command again
 
 3. Set up the database by running the following commands:
-   _By default the test database will be loaded which will have demo data inside it. If you wish to start with a fresh database, you can either remove the TestDB_Horilla.sqlite3 from the project directory or change the name of the database inside the horilla/settings.py file. (You can configure different database based on your choice, of which configurations settings is given below in the documentation._
+   _By default the test database will be loaded which will have demo data inside it. If you wish to start with a fresh database, you can either remove the TestDB_Horilla.sqlite3 from the project directory or change the name of the database inside the moared/settings.py file. (You can configure different database based on your choice, of which configurations settings is given below in the documentation._
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
-4. Create an admin employee account (use this command if you are starting with a fresh database, for the demo database there is already a Horilla admin user created with credentials _admin_ and _admin_ as username and password respectively).
+4. Create an admin employee account (use this command if you are starting with a fresh database, for the demo database there is already a Moared admin user created with credentials _admin_ and _admin_ as username and password respectively).
 ```bash
 python manage.py createhorillauser
 ```
@@ -165,10 +165,10 @@ To run the project locally, execute the following command:
 ```bash
 python manage.py runserver
 ```
-If everything is configured correctly, you should be able to access your Horilla app at http://localhost:8000.
+If everything is configured correctly, you should be able to access your Moared app at http://localhost:8000.
 
 >Note:
->>If you wish to run the Horilla application to any other port, you can specify the port number after the runserver command.
+>>If you wish to run the Moared application to any other port, you can specify the port number after the runserver command.
 
 >>eg: *python  manage.py runserver <port_number>*
 
@@ -348,4 +348,4 @@ ___
 [Cybrosys Technologies](https://www.cybrosys.com/)
 
 ### **ABOUT**
-[Horilla](https://www.horilla.com/)
+[Moared](https://www.moared.com/)

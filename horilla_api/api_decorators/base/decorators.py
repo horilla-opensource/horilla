@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from base.models import MultipleApprovalManagers
 from employee.models import EmployeeWorkInformation
-from horilla.horilla_middlewares import _thread_locals
+from moared.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import decorator_with_arguments
 
 

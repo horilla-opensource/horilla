@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
-from horilla.decorators import decorator_with_arguments
+from moared.decorators import decorator_with_arguments
 from offboarding.models import (
     Offboarding,
     OffboardingGeneralSetting,

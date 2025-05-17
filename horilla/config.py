@@ -1,7 +1,7 @@
 """
-horilla/config.py
+moared/config.py
 
-Horilla app configurations
+Moared app configurations
 """
 
 import importlib
@@ -11,7 +11,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
 
-from horilla.horilla_apps import SIDEBARS
+from moared.horilla_apps import SIDEBARS
 
 logger = logging.getLogger(__name__)
 

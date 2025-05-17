@@ -55,13 +55,13 @@ from helpdesk.models import (
     TicketType,
 )
 from helpdesk.threading import AddAssigneeThread, RemoveAssigneeThread, TicketSendThread
-from horilla.decorators import (
+from moared.decorators import (
     hx_request_required,
     login_required,
     manager_can_enter,
     permission_required,
 )
-from horilla.group_by import group_by_queryset
+from moared.group_by import group_by_queryset
 from notifications.signals import notify
 
 logger = logging.getLogger(__name__)

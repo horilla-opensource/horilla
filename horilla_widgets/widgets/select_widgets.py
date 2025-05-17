@@ -1,14 +1,14 @@
 """
 select_widgets.py
 
-This module is used to write horilla form select widgets
+This module is used to write moared form select widgets
 """
 
 import uuid
 
 from django import forms
 
-from horilla import horilla_middlewares
+from moared import horilla_middlewares
 
 ALL_INSTANCES = {}
 

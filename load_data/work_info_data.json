@@ -12,7 +12,7 @@
       "reporting_manager_id": 9,
       "company_id": 1,
       "location": "Canada",
-      "email": "michael.brown@horilla.com",
+      "email": "michael.brown@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -37,7 +37,7 @@
       "reporting_manager_id": 9,
       "company_id": 1,
       "location": "india",
-      "email": "sarah.anderson@horilla.com",
+      "email": "sarah.anderson@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -62,7 +62,7 @@
       "reporting_manager_id": 9,
       "company_id": 1,
       "location": "london",
-      "email": "emily.clark@horilla.com",
+      "email": "emily.clark@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -87,7 +87,7 @@
       "reporting_manager_id": 9,
       "company_id": 1,
       "location": "Bengaluru",
-      "email": "jessica.evans@horilla.com",
+      "email": "jessica.evans@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -112,7 +112,7 @@
       "reporting_manager_id": 9,
       "company_id": 1,
       "location": "london",
-      "email": "matthew.harris@horilla.com",
+      "email": "matthew.harris@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -137,7 +137,7 @@
       "reporting_manager_id": 9,
       "company_id": 1,
       "location": "Bengaluru",
-      "email": "david.king@horilla.com",
+      "email": "david.king@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -162,7 +162,7 @@
       "reporting_manager_id": 9,
       "company_id": 1,
       "location": "Canada",
-      "email": "emma.lee@horilla.com",
+      "email": "emma.lee@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -187,7 +187,7 @@
       "reporting_manager_id": 12,
       "company_id": 1,
       "location": "india",
-      "email": "christopher.miller@horilla.com",
+      "email": "christopher.miller@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -212,7 +212,7 @@
       "reporting_manager_id": 13,
       "company_id": 1,
       "location": "london",
-      "email": "mia.nelson@horilla.com",
+      "email": "mia.nelson@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -237,7 +237,7 @@
       "reporting_manager_id": 70,
       "company_id": 3,
       "location": "kochi",
-      "email": "benjamin.parker@horilla.com",
+      "email": "benjamin.parker@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -262,7 +262,7 @@
       "reporting_manager_id": 1,
       "company_id": 1,
       "location": "Bengaluru",
-      "email": "abigail.roberts@horilla.com",
+      "email": "abigail.roberts@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -287,7 +287,7 @@
       "reporting_manager_id": 12,
       "company_id": 1,
       "location": "Canada",
-      "email": "alexander.smith@horilla.com",
+      "email": "alexander.smith@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -312,7 +312,7 @@
       "reporting_manager_id": 13,
       "company_id": 1,
       "location": "india",
-      "email": "isabella.thompson@horilla.com",
+      "email": "isabella.thompson@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -337,7 +337,7 @@
       "reporting_manager_id": 13,
       "company_id": 1,
       "location": "london",
-      "email": "jacob.walker@horilla.com",
+      "email": "jacob.walker@moared.com",
       "mobile": null,
       "shift_id": 3,
       "date_joining": "2024-02-01",
@@ -362,7 +362,7 @@
       "reporting_manager_id": 13,
       "company_id": 1,
       "location": "kochi",
-      "email": "charlotte.white@horilla.com",
+      "email": "charlotte.white@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -387,7 +387,7 @@
       "reporting_manager_id": 13,
       "company_id": 1,
       "location": "Bengaluru",
-      "email": "noah.young@horilla.com",
+      "email": "noah.young@moared.com",
       "mobile": null,
       "shift_id": 3,
       "date_joining": "2024-02-01",
@@ -412,7 +412,7 @@
       "reporting_manager_id": 13,
       "company_id": 1,
       "location": "Canada",
-      "email": "grace.allen@horilla.com",
+      "email": "grace.allen@moared.com",
       "mobile": null,
       "shift_id": 3,
       "date_joining": "2024-02-01",
@@ -437,7 +437,7 @@
       "reporting_manager_id": 13,
       "company_id": 1,
       "location": "india",
-      "email": "samuel.baker@horilla.com",
+      "email": "samuel.baker@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -462,7 +462,7 @@
       "reporting_manager_id": 26,
       "company_id": 2,
       "location": "london",
-      "email": "lily.campbell@horilla.com",
+      "email": "lily.campbell@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -487,7 +487,7 @@
       "reporting_manager_id": 21,
       "company_id": 3,
       "location": "kochi",
-      "email": "lucas.carter@horilla.com",
+      "email": "lucas.carter@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -512,7 +512,7 @@
       "reporting_manager_id": 12,
       "company_id": 1,
       "location": "Bengaluru",
-      "email": "amelia.cooper@horilla.com",
+      "email": "amelia.cooper@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -537,7 +537,7 @@
       "reporting_manager_id": 21,
       "company_id": 3,
       "location": "Canada",
-      "email": "mason.diaz@horilla.com",
+      "email": "mason.diaz@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -562,7 +562,7 @@
       "reporting_manager_id": 26,
       "company_id": 2,
       "location": "india",
-      "email": "harper.edwards@horilla.com",
+      "email": "harper.edwards@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -587,7 +587,7 @@
       "reporting_manager_id": 26,
       "company_id": 2,
       "location": "london",
-      "email": "logan.flores@horilla.com",
+      "email": "logan.flores@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-02-01",
@@ -612,7 +612,7 @@
       "reporting_manager_id": 119,
       "company_id": 2,
       "location": "kochi",
-      "email": "evelyn.garcia@horilla.com",
+      "email": "evelyn.garcia@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -637,7 +637,7 @@
       "reporting_manager_id": 22,
       "company_id": 1,
       "location": "Bengaluru",
-      "email": "ethan.gonzalez@horilla.com",
+      "email": "ethan.gonzalez@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -662,7 +662,7 @@
       "reporting_manager_id": 22,
       "company_id": 1,
       "location": "Canada",
-      "email": "avery.hill@horilla.com",
+      "email": "avery.hill@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -687,7 +687,7 @@
       "reporting_manager_id": 21,
       "company_id": 3,
       "location": "india",
-      "email": "william.hughes@horilla.com",
+      "email": "william.hughes@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -712,7 +712,7 @@
       "reporting_manager_id": 22,
       "company_id": 1,
       "location": "london",
-      "email": "ella.jackson@horilla.com",
+      "email": "ella.jackson@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -737,7 +737,7 @@
       "reporting_manager_id": 33,
       "company_id": 1,
       "location": "kochi",
-      "email": "owen.jenkins@horilla.com",
+      "email": "owen.jenkins@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -762,7 +762,7 @@
       "reporting_manager_id": 33,
       "company_id": 1,
       "location": "Bengaluru",
-      "email": "madison.kelly@horilla.com",
+      "email": "madison.kelly@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -787,7 +787,7 @@
       "reporting_manager_id": 12,
       "company_id": 1,
       "location": "Canada",
-      "email": "henry.lewis@horilla.com",
+      "email": "henry.lewis@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -812,7 +812,7 @@
       "reporting_manager_id": 33,
       "company_id": 1,
       "location": "india",
-      "email": "scarlett.martinez@horilla.com",
+      "email": "scarlett.martinez@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -837,7 +837,7 @@
       "reporting_manager_id": 37,
       "company_id": 1,
       "location": "london",
-      "email": "sebastian.mitchell@horilla.com",
+      "email": "sebastian.mitchell@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -862,7 +862,7 @@
       "reporting_manager_id": 37,
       "company_id": 1,
       "location": "kochi",
-      "email": "chloe.morgan@horilla.com",
+      "email": "chloe.morgan@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -887,7 +887,7 @@
       "reporting_manager_id": 12,
       "company_id": 1,
       "location": "Bengaluru",
-      "email": "aiden.murphy@horilla.com",
+      "email": "aiden.murphy@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -912,7 +912,7 @@
       "reporting_manager_id": 40,
       "company_id": 2,
       "location": "Canada",
-      "email": "mila.perez@horilla.com",
+      "email": "mila.perez@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -937,7 +937,7 @@
       "reporting_manager_id": 40,
       "company_id": 2,
       "location": "india",
-      "email": "gabriel.phillips@horilla.com",
+      "email": "gabriel.phillips@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -962,7 +962,7 @@
       "reporting_manager_id": 119,
       "company_id": 2,
       "location": "london",
-      "email": "aria.powell@horilla.com",
+      "email": "aria.powell@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -987,7 +987,7 @@
       "reporting_manager_id": 40,
       "company_id": 2,
       "location": "kochi",
-      "email": "wyatt.ramirez@horilla.com",
+      "email": "wyatt.ramirez@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1012,7 +1012,7 @@
       "reporting_manager_id": 40,
       "company_id": 2,
       "location": "Bengaluru",
-      "email": "nora.reed@horilla.com",
+      "email": "nora.reed@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1037,7 +1037,7 @@
       "reporting_manager_id": 40,
       "company_id": 2,
       "location": "Canada",
-      "email": "jack.rivera@horilla.com",
+      "email": "jack.rivera@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1062,7 +1062,7 @@
       "reporting_manager_id": 40,
       "company_id": 2,
       "location": "india",
-      "email": "ellie.rogers@horilla.com",
+      "email": "ellie.rogers@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1087,7 +1087,7 @@
       "reporting_manager_id": 40,
       "company_id": 2,
       "location": "london",
-      "email": "levi.sanders@horilla.com",
+      "email": "levi.sanders@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1112,7 +1112,7 @@
       "reporting_manager_id": 40,
       "company_id": 2,
       "location": "kochi",
-      "email": "penelope.scott@horilla.com",
+      "email": "penelope.scott@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1137,7 +1137,7 @@
       "reporting_manager_id": 119,
       "company_id": 2,
       "location": "Bengaluru",
-      "email": "carter.stewart@horilla.com",
+      "email": "carter.stewart@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1162,7 +1162,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "london",
-      "email": "victoria.turner@horilla.com",
+      "email": "victoria.turner@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1187,7 +1187,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "Bengaluru",
-      "email": "zoey.watson@horilla.com",
+      "email": "zoey.watson@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1212,7 +1212,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "Canada",
-      "email": "nathaniel.wright@horilla.com",
+      "email": "nathaniel.wright@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1237,7 +1237,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "india",
-      "email": "hazel.adams@horilla.com",
+      "email": "hazel.adams@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1262,7 +1262,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "london",
-      "email": "julian.barnes@horilla.com",
+      "email": "julian.barnes@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1287,7 +1287,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "kochi",
-      "email": "stella.bell@horilla.com",
+      "email": "stella.bell@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1312,7 +1312,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "Bengaluru",
-      "email": "ryan.bennett@horilla.com",
+      "email": "ryan.bennett@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1337,7 +1337,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "Canada",
-      "email": "hannah.brooks@horilla.com",
+      "email": "hannah.brooks@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1362,7 +1362,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "india",
-      "email": "hunter.butler@horilla.com",
+      "email": "hunter.butler@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1387,7 +1387,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "london",
-      "email": "ruby.cook@horilla.com",
+      "email": "ruby.cook@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1412,7 +1412,7 @@
       "reporting_manager_id": 47,
       "company_id": 2,
       "location": "kochi",
-      "email": "elijah.cox@horilla.com",
+      "email": "elijah.cox@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1437,7 +1437,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "Bengaluru",
-      "email": "lucy.cruz@horilla.com",
+      "email": "lucy.cruz@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1462,7 +1462,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "Canada",
-      "email": "joseph.diaz@horilla.com",
+      "email": "joseph.diaz@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1487,7 +1487,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "india",
-      "email": "sadie.ellis@horilla.com",
+      "email": "sadie.ellis@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1512,7 +1512,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "london",
-      "email": "caleb.fisher@horilla.com",
+      "email": "caleb.fisher@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1537,7 +1537,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "kochi",
-      "email": "alice.foster@horilla.com",
+      "email": "alice.foster@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1562,7 +1562,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "Bengaluru",
-      "email": "nicholas.george@horilla.com",
+      "email": "nicholas.george@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1587,7 +1587,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "Canada",
-      "email": "layla.gonzales@horilla.com",
+      "email": "layla.gonzales@moared.com",
       "mobile": null,
       "shift_id": 2,
       "date_joining": "2024-05-22",
@@ -1612,7 +1612,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "india",
-      "email": "jonathan.gray@horilla.com",
+      "email": "jonathan.gray@moared.com",
       "mobile": null,
       "shift_id": 2,
       "date_joining": "2024-05-22",
@@ -1637,7 +1637,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "london",
-      "email": "violet.griffin@horilla.com",
+      "email": "violet.griffin@moared.com",
       "mobile": null,
       "shift_id": 2,
       "date_joining": "2024-05-22",
@@ -1662,7 +1662,7 @@
       "reporting_manager_id": 70,
       "company_id": 3,
       "location": "kochi",
-      "email": "andrew.hayes@horilla.com",
+      "email": "andrew.hayes@moared.com",
       "mobile": null,
       "shift_id": 2,
       "date_joining": "2024-05-22",
@@ -1687,7 +1687,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "Bengaluru",
-      "email": "sofia.howard@horilla.com",
+      "email": "sofia.howard@moared.com",
       "mobile": null,
       "shift_id": 2,
       "date_joining": "2024-05-22",
@@ -1712,7 +1712,7 @@
       "reporting_manager_id": 1,
       "company_id": 3,
       "location": "kochi",
-      "email": "james.davis@horilla.com",
+      "email": "james.davis@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -1737,7 +1737,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "Canada",
-      "email": "daniel.foster@horilla.com",
+      "email": "daniel.foster@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -1762,7 +1762,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "india",
-      "email": "olivia.green@horilla.com",
+      "email": "olivia.green@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -1787,7 +1787,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "kochi",
-      "email": "sophia.johnson@horilla.com",
+      "email": "sophia.johnson@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-01-01",
@@ -1812,7 +1812,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "Canada",
-      "email": "riley.taylor@horilla.com",
+      "email": "riley.taylor@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1837,7 +1837,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "india",
-      "email": "isaac.torres@horilla.com",
+      "email": "isaac.torres@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -1862,7 +1862,7 @@
       "reporting_manager_id": 68,
       "company_id": 3,
       "location": "kochi",
-      "email": "dylan.ward@horilla.com",
+      "email": "dylan.ward@moared.com",
       "mobile": null,
       "shift_id": 1,
       "date_joining": "2024-05-22",
@@ -3162,7 +3162,11 @@
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -3178,7 +3182,11 @@
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -3194,7 +3202,11 @@
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -3210,7 +3222,11 @@
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -3226,7 +3242,11 @@
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -3242,7 +3262,11 @@
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -3258,7 +3282,11 @@
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -3274,7 +3302,11 @@
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -3290,7 +3322,11 @@
       "is_visible_to_all": true,
       "specific_employees": [],
       "attachments": [],
-      "company_id": [1, 2, 3]
+      "company_id": [
+        1,
+        2,
+        3
+      ]
     }
   },
   {
@@ -3308,7 +3344,10 @@
       "hours": "00:00",
       "start_date": "2024-09-21",
       "attachment": "",
-      "employee_id": [7, 4]
+      "employee_id": [
+        7,
+        4
+      ]
     }
   },
   {
@@ -3326,7 +3365,10 @@
       "hours": "00:00",
       "start_date": "2024-09-21",
       "attachment": "",
-      "employee_id": [23, 29]
+      "employee_id": [
+        23,
+        29
+      ]
     }
   },
   {
@@ -3440,7 +3482,10 @@
       "answer": "Click on Work Records inside Attendance, filter the data and click on Export button",
       "category": 2,
       "company_id": null,
-      "tags": [4, 20]
+      "tags": [
+        4,
+        20
+      ]
     }
   },
   {
@@ -3470,7 +3515,11 @@
       "answer": "Recruitment --> Stage 3 dot --> Edit --> Managers",
       "category": 5,
       "company_id": null,
-      "tags": [2, 23, 24]
+      "tags": [
+        2,
+        23,
+        24
+      ]
     }
   },
   {
@@ -3485,7 +3534,9 @@
       "answer": "All the details about the recruitment, stage, and candidate can be controlled from here.",
       "category": 5,
       "company_id": null,
-      "tags": [2]
+      "tags": [
+        2
+      ]
     }
   },
   {
@@ -3500,7 +3551,9 @@
       "answer": "Employee > Employees > Create > Fill out the form",
       "category": 3,
       "company_id": null,
-      "tags": [5]
+      "tags": [
+        5
+      ]
     }
   },
   {
@@ -3515,7 +3568,9 @@
       "answer": "Leave > Assigned Leave > Assign",
       "category": 1,
       "company_id": null,
-      "tags": [6]
+      "tags": [
+        6
+      ]
     }
   },
   {
@@ -3530,7 +3585,9 @@
       "answer": "Leave > Leave Types > Create > Fill Out Form",
       "category": 1,
       "company_id": null,
-      "tags": [6]
+      "tags": [
+        6
+      ]
     }
   },
   {
@@ -3545,7 +3602,9 @@
       "answer": "The Attendance Module tracks and manages employee attendance, including check-ins, check-outs, and biometric integration.",
       "category": 2,
       "company_id": null,
-      "tags": [4]
+      "tags": [
+        4
+      ]
     }
   },
   {
@@ -3560,7 +3619,9 @@
       "answer": "It records employee working hours by tracking their check-in and check-out times.",
       "category": 2,
       "company_id": null,
-      "tags": [4]
+      "tags": [
+        4
+      ]
     }
   },
   {
@@ -3575,7 +3636,10 @@
       "answer": "Biometric devices, such as ZKTeco,Matrix COSEC & Anviz synchronize attendance data automatically for accurate tracking.",
       "category": 2,
       "company_id": null,
-      "tags": [4, 7]
+      "tags": [
+        4,
+        7
+      ]
     }
   },
   {
@@ -3590,7 +3654,9 @@
       "answer": "Employees can submit an Attendance Request to edit or add missing attendance records.",
       "category": 2,
       "company_id": null,
-      "tags": [4]
+      "tags": [
+        4
+      ]
     }
   },
   {
@@ -3605,7 +3671,9 @@
       "answer": "It tracks total worked hours for employees by month and year.",
       "category": 2,
       "company_id": null,
-      "tags": [4]
+      "tags": [
+        4
+      ]
     }
   },
   {
@@ -3620,7 +3688,9 @@
       "answer": "It compiles daily attendance statuses (e.g., present, absent) into monthly records.",
       "category": 2,
       "company_id": null,
-      "tags": [4]
+      "tags": [
+        4
+      ]
     }
   },
   {
@@ -3635,7 +3705,9 @@
       "answer": "It shows attendance records generated from check-ins, check-outs, or biometric devices.",
       "category": 2,
       "company_id": null,
-      "tags": [4]
+      "tags": [
+        4
+      ]
     }
   },
   {
@@ -3650,7 +3722,9 @@
       "answer": "It flags employees who check in late or leave early based on their shift schedule.",
       "category": 2,
       "company_id": null,
-      "tags": [4]
+      "tags": [
+        4
+      ]
     }
   },
   {
@@ -3665,7 +3739,9 @@
       "answer": "Employees can view their previous attendance records and statuses.",
       "category": 2,
       "company_id": null,
-      "tags": [4]
+      "tags": [
+        4
+      ]
     }
   },
   {
@@ -3680,7 +3756,10 @@
       "answer": "They allow employees to request modifications to attendance records if errors occur.",
       "category": 2,
       "company_id": null,
-      "tags": [4, 21]
+      "tags": [
+        4,
+        21
+      ]
     }
   },
   {
@@ -3695,7 +3774,9 @@
       "answer": "The Employee Profile view displays all details about an employee, including personal, work, bank information, and more. It also allows employees to customize visible tabs.",
       "category": 3,
       "company_id": null,
-      "tags": [5]
+      "tags": [
+        5
+      ]
     }
   },
   {
@@ -3710,7 +3791,10 @@
       "answer": "Employees can request a shift change through the 'Reallocate Shift' option in the Work Type & Shift tab. Admin approval is required for changes.",
       "category": 3,
       "company_id": null,
-      "tags": [5, 21]
+      "tags": [
+        5,
+        21
+      ]
     }
   },
   {
@@ -3725,7 +3809,10 @@
       "answer": "The Attendance tab shows all attendance records for the employee in a detailed tabular view.",
       "category": 3,
       "company_id": null,
-      "tags": [4, 5]
+      "tags": [
+        4,
+        5
+      ]
     }
   },
   {
@@ -3740,7 +3827,9 @@
       "answer": "The Employee Directory allows actions like importing, exporting, bulk archiving, unarchiving, updating, and deleting employee data.",
       "category": 3,
       "company_id": null,
-      "tags": [5]
+      "tags": [
+        5
+      ]
     }
   },
   {
@@ -3755,7 +3844,10 @@
       "answer": "Admins or managers create document requests specifying details like title, format, and size. Employees upload documents directly from their profile.",
       "category": 3,
       "company_id": null,
-      "tags": [5, 21]
+      "tags": [
+        5,
+        21
+      ]
     }
   },
   {
@@ -3770,7 +3862,10 @@
       "answer": "The Shift Request feature allows employees to request temporary or permanent shift changes. Approval by a manager or admin is required.",
       "category": 3,
       "company_id": null,
-      "tags": [5, 21]
+      "tags": [
+        5,
+        21
+      ]
     }
   },
   {
@@ -3785,7 +3880,9 @@
       "answer": "A Rotating Work Type Assign automates frequent changes in work types based on conditions like intervals, weekends, or specific dates.",
       "category": 3,
       "company_id": null,
-      "tags": [5]
+      "tags": [
+        5
+      ]
     }
   },
   {
@@ -3800,7 +3897,9 @@
       "answer": "Admins can create disciplinary actions like warnings or suspensions, and these may block employee logins for the specified period.",
       "category": 3,
       "company_id": null,
-      "tags": [5]
+      "tags": [
+        5
+      ]
     }
   },
   {
@@ -3815,7 +3914,9 @@
       "answer": "Employees can access company policies and guidelines in the Policies section for reference.",
       "category": 3,
       "company_id": null,
-      "tags": [5]
+      "tags": [
+        5
+      ]
     }
   },
   {
@@ -3830,7 +3931,9 @@
       "answer": "The Organization Chart provides a visual representation of reporting structures, helping to identify team members and managers.",
       "category": 3,
       "company_id": null,
-      "tags": [5]
+      "tags": [
+        5
+      ]
     }
   },
   {
@@ -3841,11 +3944,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "What is the Recruitment module in Horilla HRMS?",
+      "question": "What is the Recruitment module in Moared HRMS?",
       "answer": "The Recruitment module allows HR professionals to create and manage job postings, receive and review resumes, manage interviews, and track candidate progress throughout the hiring process.",
       "category": 5,
       "company_id": null,
-      "tags": [2]
+      "tags": [
+        2
+      ]
     }
   },
   {
@@ -3860,7 +3965,10 @@
       "answer": "The Recruitment Pipeline is a comprehensive feature that organizes candidates through various stages using tabular and Kanban views. It supports multiple recruitment drives, each represented as a tab for easy management.",
       "category": 5,
       "company_id": null,
-      "tags": [2, 25]
+      "tags": [
+        2,
+        25
+      ]
     }
   },
   {
@@ -3871,11 +3979,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How can I create a new recruitment in Horilla?",
+      "question": "How can I create a new recruitment in Moared?",
       "answer": "To create a new recruitment, click on the '+ Create' button from Recruitment > Recruitments , specify the job position, description, vacancies, managers, start and end dates, and select a recruitment survey.",
       "category": 5,
       "company_id": null,
-      "tags": [2]
+      "tags": [
+        2
+      ]
     }
   },
   {
@@ -3890,7 +4000,10 @@
       "answer": "The main stage types are Initial, Interview, Hired, and Cancelled. Each type serves a specific purpose, such as automatically registering candidates or marking them as hired.",
       "category": 5,
       "company_id": null,
-      "tags": [2, 23]
+      "tags": [
+        2,
+        23
+      ]
     }
   },
   {
@@ -3905,7 +4018,10 @@
       "answer": "To add a new stage, click on the '+ Stage' button from Recruitment Pipeline, provide the stage title, assign stage managers, and specify the stage type (e.g., Initial, Interview, Hired).",
       "category": 5,
       "company_id": null,
-      "tags": [2, 23]
+      "tags": [
+        2,
+        23
+      ]
     }
   },
   {
@@ -3920,7 +4036,10 @@
       "answer": "Resume Shortlisting is a feature that uses skill-based keyword optimization to rank resumes. The system calculates scores for each resume based on matching skills and displays them in descending order.",
       "category": 5,
       "company_id": null,
-      "tags": [2, 26]
+      "tags": [
+        2,
+        26
+      ]
     }
   },
   {
@@ -3935,7 +4054,10 @@
       "answer": "The Skill Zone categorizes candidates based on their skills, helping recruiters match them to relevant job positions more efficiently.",
       "category": 5,
       "company_id": null,
-      "tags": [2, 27]
+      "tags": [
+        2,
+        27
+      ]
     }
   },
   {
@@ -3950,7 +4072,10 @@
       "answer": "You can manage interviews through the 'Scheduled Interviews' page, where you can add, edit, or delete interviews, assign interviewers, and track the status of interviews.",
       "category": 5,
       "company_id": null,
-      "tags": [2, 28]
+      "tags": [
+        2,
+        28
+      ]
     }
   },
   {
@@ -3961,11 +4086,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "Can I customize application forms in Horilla HRMS?",
+      "question": "Can I customize application forms in Moared HRMS?",
       "answer": "Yes, the Recruitment Survey feature allows HR managers to create custom questionnaires for candidates, which are integrated into the application forms.",
       "category": 5,
       "company_id": null,
-      "tags": [2]
+      "tags": [
+        2
+      ]
     }
   },
   {
@@ -3980,7 +4107,10 @@
       "answer": "Candidates can be managed using the Kanban view, list view, and detailed view. These views allow for filtering, grouping, and performing actions like editing, exporting, or converting candidates to employees.",
       "category": 5,
       "company_id": null,
-      "tags": [2, 29]
+      "tags": [
+        2,
+        29
+      ]
     }
   },
   {
@@ -3991,11 +4121,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "What is the Payroll module in Horilla HRMS?",
-      "answer": "The Payroll module in Horilla HRMS enables businesses to manage employee allowances, deductions, taxes, and generate accurate payslips, ensuring streamlined and efficient payroll processes.",
+      "question": "What is the Payroll module in Moared HRMS?",
+      "answer": "The Payroll module in Moared HRMS enables businesses to manage employee allowances, deductions, taxes, and generate accurate payslips, ensuring streamlined and efficient payroll processes.",
       "category": 6,
       "company_id": null,
-      "tags": [3]
+      "tags": [
+        3
+      ]
     }
   },
   {
@@ -4010,7 +4142,10 @@
       "answer": "The Payroll Dashboard provides visual insights into payroll processes, including charts for payslips, contract details, and department-wise payslips. Managers can also download data as Excel files.",
       "category": 6,
       "company_id": null,
-      "tags": [3, 18]
+      "tags": [
+        3,
+        18
+      ]
     }
   },
   {
@@ -4021,11 +4156,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How does Contract Management work in Horilla?",
+      "question": "How does Contract Management work in Moared?",
       "answer": "Contract Management allows users to create contracts, define compensation, set contract duration, and manage leave settings. It supports various wage types for customized work arrangements.",
       "category": 6,
       "company_id": null,
-      "tags": [3]
+      "tags": [
+        3
+      ]
     }
   },
   {
@@ -4040,7 +4177,9 @@
       "answer": "Allowance Management enables users to create and customize allowances, set eligibility conditions, and specify fixed or variable allowances. It simplifies targeting allowances to employee groups and ensures fairness.",
       "category": 6,
       "company_id": null,
-      "tags": [3]
+      "tags": [
+        3
+      ]
     }
   },
   {
@@ -4051,11 +4190,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How are deductions managed in Horilla?",
+      "question": "How are deductions managed in Moared?",
       "answer": "The Deduction Management feature allows users to create and personalize deductions, set eligibility conditions, and choose fixed or variable amounts. It ensures streamlined deductions and fair practices.",
       "category": 6,
       "company_id": null,
-      "tags": [3]
+      "tags": [
+        3
+      ]
     }
   },
   {
@@ -4070,7 +4211,9 @@
       "answer": "This module helps manage employee loans, installments, and advance salary transactions, ensuring accurate and transparent financial dealings.",
       "category": 6,
       "company_id": null,
-      "tags": [3]
+      "tags": [
+        3
+      ]
     }
   },
   {
@@ -4085,7 +4228,9 @@
       "answer": "This feature supports reimbursements for company-related expenses, leave encashments, and bonus point encashments, simplifying the process for diverse employee needs.",
       "category": 6,
       "company_id": null,
-      "tags": [3]
+      "tags": [
+        3
+      ]
     }
   },
   {
@@ -4100,7 +4245,9 @@
       "answer": "The Federal Tax feature automates tax calculations, defines tax brackets, and sets rates based on income. It ensures compliance and smooth payroll processing.",
       "category": 6,
       "company_id": null,
-      "tags": [3]
+      "tags": [
+        3
+      ]
     }
   },
   {
@@ -4111,11 +4258,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How are payslips generated in Horilla?",
+      "question": "How are payslips generated in Moared?",
       "answer": "The Payslip Generation feature calculates salaries, including allowances, deductions, and taxes, and creates accurate and detailed payslips for each pay period.",
       "category": 6,
       "company_id": null,
-      "tags": [3]
+      "tags": [
+        3
+      ]
     }
   },
   {
@@ -4126,11 +4275,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "What is the Asset Management System in Horilla HRMS?",
+      "question": "What is the Asset Management System in Moared HRMS?",
       "answer": "The Asset Management System enables employees to request and manage work-related assets like computers and equipment. It categorizes assets, tracks requests, and ensures efficient allocation.",
       "category": 7,
       "company_id": null,
-      "tags": [17]
+      "tags": [
+        17
+      ]
     }
   },
   {
@@ -4145,7 +4296,10 @@
       "answer": "The Asset Dashboard displays the total number of assets, asset requests, and assets in use. It includes pie charts and tables for asset allocation and provides tools for admins to approve requests and allocate assets directly.",
       "category": 7,
       "company_id": null,
-      "tags": [17, 18]
+      "tags": [
+        17,
+        18
+      ]
     }
   },
   {
@@ -4156,11 +4310,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How can admin search for assets in Horilla HRMS?",
+      "question": "How can admin search for assets in Moared HRMS?",
       "answer": "Admin can search for specific asset categories or individual assets using the search bar. The system dynamically filters results based on the search term.",
       "category": 7,
       "company_id": null,
-      "tags": [17]
+      "tags": [
+        17
+      ]
     }
   },
   {
@@ -4175,7 +4331,10 @@
       "answer": "The Asset Import feature allows admin to upload large amounts of asset data, such as names, purchase dates, and categories, from an external file like Excel, improving efficiency in asset management.",
       "category": 7,
       "company_id": null,
-      "tags": [17, 19]
+      "tags": [
+        17,
+        19
+      ]
     }
   },
   {
@@ -4190,7 +4349,10 @@
       "answer": "The Asset Export feature enables admin to download asset data, either filtered or in full, for reporting or further processing.",
       "category": 7,
       "company_id": null,
-      "tags": [17, 20]
+      "tags": [
+        17,
+        20
+      ]
     }
   },
   {
@@ -4201,11 +4363,13 @@
       "created_by": null,
       "modified_by": 1,
       "is_active": true,
-      "question": "How can asset categories be managed in Horilla HRMS?",
+      "question": "How can asset categories be managed in Moared HRMS?",
       "answer": "Admin can create, update, and delete asset categories. Categories can only be deleted if they are empty, ensuring no associated assets remain in use.",
       "category": 7,
       "company_id": null,
-      "tags": [17]
+      "tags": [
+        17
+      ]
     }
   },
   {
@@ -4220,7 +4384,11 @@
       "answer": "This feature allows employees to request new assets or return allocated ones, while admins can allocate or reallocate assets based on requests and availability.",
       "category": 7,
       "company_id": null,
-      "tags": [17, 21, 22]
+      "tags": [
+        17,
+        21,
+        22
+      ]
     }
   },
   {
@@ -4235,7 +4403,9 @@
       "answer": "Admin can update details like asset name, description, tracking ID, purchase date, cost, status, and expiry date. Notifications can also be set for upcoming expiry dates.",
       "category": 7,
       "company_id": null,
-      "tags": [17]
+      "tags": [
+        17
+      ]
     }
   },
   {
@@ -4250,7 +4420,9 @@
       "answer": "The Asset History feature tracks details of returned assets, allowing admin to filter, group, and sort asset usage data as needed.",
       "category": 7,
       "company_id": null,
-      "tags": [17]
+      "tags": [
+        17
+      ]
     }
   }
 ]

@@ -18,7 +18,7 @@ from simple_history.signals import (  # pre_create_historical_m2m_records,; post
 )
 
 # from employee.models import Employee
-from horilla.models import HorillaModel
+from moared.models import HorillaModel
 from horilla_audit.methods import remove_duplicate_history
 
 # Create your models here.

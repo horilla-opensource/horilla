@@ -14,8 +14,8 @@ provide the main entry points for interacting with the application's functionali
 import logging
 import uuid
 
-from horilla.horilla_settings import DYNAMIC_URL_PATTERNS, HORILLA_DATE_FORMATS
-from horilla.methods import remove_dynamic_url
+from moared.horilla_settings import DYNAMIC_URL_PATTERNS, HORILLA_DATE_FORMATS
+from moared.methods import remove_dynamic_url
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +118,7 @@ from base.models import (
 )
 from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import (
+from moared.decorators import (
     hx_request_required,
     install_required,
     login_required,

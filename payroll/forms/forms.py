@@ -14,7 +14,7 @@ from base.forms import Form
 from base.methods import reload_queryset
 from employee.forms import MultipleFileField
 from employee.models import Employee
-from horilla import horilla_middlewares
+from moared import horilla_middlewares
 from payroll.context_processors import get_active_employees
 from payroll.models.models import (
     Contract,

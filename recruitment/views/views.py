@@ -53,14 +53,14 @@ from base.methods import (
 from base.models import EmailLog, HorillaMailTemplate, JobPosition, clear_messages
 from employee.models import Employee, EmployeeWorkInformation
 from employee.views import get_content_type
-from horilla import settings
-from horilla.decorators import (
+from moared import settings
+from moared.decorators import (
     hx_request_required,
     logger,
     login_required,
     permission_required,
 )
-from horilla.group_by import group_by_queryset
+from moared.group_by import group_by_queryset
 from horilla_documents.models import Document
 from notifications.signals import notify
 from recruitment.auth import CandidateAuthenticationBackend

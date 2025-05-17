@@ -27,14 +27,14 @@ from attendance.methods.utils import Request
 from attendance.views.clock_in_out import clock_in, clock_out
 from base.methods import get_key_instances, get_pagination
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.decorators import (
+from moared.decorators import (
     hx_request_required,
     install_required,
     login_required,
     permission_required,
 )
-from horilla.filters import HorillaPaginator
-from horilla.horilla_settings import BIO_DEVICE_THREADS
+from moared.filters import HorillaPaginator
+from moared.horilla_settings import BIO_DEVICE_THREADS
 
 from .cosec import COSECBiometric
 from .filters import BiometricDeviceFilter

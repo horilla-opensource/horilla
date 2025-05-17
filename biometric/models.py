@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.models import Company
 from employee.models import Employee
-from horilla.models import HorillaModel
+from moared.models import HorillaModel
 
 
 def validate_schedule_time_format(value):

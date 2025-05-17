@@ -18,8 +18,8 @@ from django.utils.translation import gettext as _
 
 from base.models import EmployeeShiftSchedule
 from employee.methods.duration_methods import strtime_seconds
-from horilla.horilla_middlewares import _thread_locals
-from horilla.methods import get_horilla_model_class
+from moared.horilla_middlewares import _thread_locals
+from moared.methods import get_horilla_model_class
 
 register = template.Library()
 

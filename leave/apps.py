@@ -8,7 +8,7 @@ class LeaveConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
-        from horilla.urls import urlpatterns
+        from moared.urls import urlpatterns
 
         urlpatterns.append(
             path("leave/", include("leave.urls")),

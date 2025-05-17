@@ -33,13 +33,13 @@ try:
             start_date=holiday.start_date,
             end_date=holiday.end_date,
         ).exists():
-            horilla = BaseHoliday(
+            moared = BaseHoliday(
                 id=holiday.id,
                 name=holiday.name,
                 start_date=holiday.start_date,
                 end_date=holiday.end_date,
             )
-            horilla.save()
+            moared.save()
 
     base_leaves = BaseHoliday.objects.all()
     LeaveHoliday.objects.all().delete()
@@ -73,19 +73,19 @@ try:
             )
 
         if not PenaltyAccounts.objects.filter(**filter_conditions).exists():
-            horilla = PenaltyAccounts(
+            moared = PenaltyAccounts(
                 id=penalty.id,
                 employee_id=penalty.employee_id,
                 penalty_amount=penalty.penalty_amount,
             )
             if apps.is_installed("attendance"):
-                horilla.late_early_id = penalty.late_early_id
+                moared.late_early_id = penalty.late_early_id
             if apps.is_installed("leave"):
-                horilla.leave_request_id = penalty.leave_request_id
-                horilla.leave_type_id = penalty.leave_type_id
-                horilla.minus_leaves = penalty.minus_leaves
-                horilla.deduct_from_carry_forward = penalty.deduct_from_carry_forward
-            horilla.save()
+                moared.leave_request_id = penalty.leave_request_id
+                moared.leave_type_id = penalty.leave_type_id
+                moared.minus_leaves = penalty.minus_leaves
+                moared.deduct_from_carry_forward = penalty.deduct_from_carry_forward
+            moared.save()
     penalty_accounts = PenaltyAccounts.objects.all()
     PenaltyAccount.objects.all().delete()
 except Exception as e:
@@ -101,12 +101,12 @@ try:
             based_on_week=leave.based_on_week,
             based_on_week_day=leave.based_on_week_day,
         ).exists():
-            horilla = BaseCompanyLeave(
+            moared = BaseCompanyLeave(
                 id=leave.id,
                 based_on_week=leave.based_on_week,
                 based_on_week_day=leave.based_on_week_day,
             )
-            horilla.save()
+            moared.save()
 
     base_leaves = BaseCompanyLeave.objects.all()
     CompanyLeave.objects.all().delete()

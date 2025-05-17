@@ -2,7 +2,7 @@
 init.py
 """
 
-from horilla import (
+from moared import (
     haystack_configuration,
     horilla_apps,
     horilla_context_processors,

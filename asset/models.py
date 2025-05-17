@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
 from employee.models import Employee
-from horilla.models import HorillaModel
+from moared.models import HorillaModel
 
 
 class AssetCategory(HorillaModel):

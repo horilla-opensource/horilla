@@ -35,7 +35,7 @@ from django.utils.translation import gettext_lazy as _
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeBankDetails
-from horilla import horilla_middlewares
+from moared import horilla_middlewares
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from onboarding.models import CandidateTask, OnboardingStage, OnboardingTask

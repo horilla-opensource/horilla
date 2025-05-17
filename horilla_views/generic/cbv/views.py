@@ -1,5 +1,5 @@
 """
-horilla/generic/views.py
+moared/generic/views.py
 """
 
 import json
@@ -19,9 +19,9 @@ from django.utils.translation import gettext_lazy as _trans
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 
 from base.methods import closest_numbers, eval_validate, get_key_instances
-from horilla.filters import FilterSet
-from horilla.group_by import group_by_queryset
-from horilla.horilla_middlewares import _thread_locals
+from moared.filters import FilterSet
+from moared.group_by import group_by_queryset
+from moared.horilla_middlewares import _thread_locals
 from horilla_views import models
 from horilla_views.cbv_methods import (
     get_short_uuid,
@@ -352,7 +352,7 @@ class HorillaListView(ListView):
                     instance.ordered_ids = ordered_ids
                     ordered_ids.append(instance.pk)
         CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
-        from horilla.urls import path, urlpatterns
+        from moared.urls import path, urlpatterns
 
         self.export_path = f"export-list-view-{get_short_uuid(4)}/"
 
@@ -462,7 +462,7 @@ class HorillaListView(ListView):
 
 class HorillaSectionView(TemplateView):
     """
-    Horilla Template View
+    Moared Template View
     """
 
     def __init__(self, **kwargs: Any) -> None:
@@ -500,7 +500,7 @@ class HorillaDetailedView(DetailView):
 
     title = "Detailed View"
     template_name = "generic/horilla_detailed_view.html"
-    header: dict = {"title": "Horilla", "subtitle": "Horilla Detailed View"}
+    header: dict = {"title": "Moared", "subtitle": "Moared Detailed View"}
     body: list = []
 
     action_method: list = []
@@ -951,7 +951,7 @@ class HorillaFormView(FormView):
 
                     from django.urls import path
 
-                    from horilla.urls import urlpatterns
+                    from moared.urls import urlpatterns
 
                     urlpatterns.append(
                         path(
@@ -1108,7 +1108,7 @@ class HorillaProfileView(DetailView):
         self.request = request
         update_initial_cache(request, CACHE, HorillaProfileView)
 
-        from horilla.urls import path, urlpatterns
+        from moared.urls import path, urlpatterns
 
         for tab in self.tabs:
             if not tab.get("url"):

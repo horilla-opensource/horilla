@@ -2,7 +2,7 @@
 models.py
 =========
 
-This module defines the abstract base model `HorillaModel` for the Horilla HRMS project.
+This module defines the abstract base model `HorillaModel` for the Moared HRMS project.
 The `HorillaModel` provides common fields and functionalities for other models within
 the application, such as tracking creation and modification timestamps and user
 information, audit logging, and active/inactive status management.
@@ -16,7 +16,7 @@ from django.db.models.fields.files import FieldFile
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from horilla.horilla_middlewares import _thread_locals
+from moared.horilla_middlewares import _thread_locals
 
 
 @property
@@ -37,7 +37,7 @@ setattr(FieldFile, "url", url)
 class HorillaModel(models.Model):
     """
     An abstract base model that includes common fields and functionalities
-    for models within the Horilla application.
+    for models within the Moared application.
     """
 
     created_at = models.DateTimeField(

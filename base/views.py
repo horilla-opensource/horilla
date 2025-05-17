@@ -159,7 +159,7 @@ from employee.models import (
     EmployeeGeneralSetting,
     EmployeeWorkInformation,
 )
-from horilla.decorators import (
+from moared.decorators import (
     delete_permission,
     duplicate_permission,
     hx_request_required,
@@ -167,14 +167,14 @@ from horilla.decorators import (
     manager_can_enter,
     permission_required,
 )
-from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import (
+from moared.group_by import group_by_queryset
+from moared.horilla_settings import (
     APPS,
     DB_INIT_PASSWORD,
     DYNAMIC_URL_PATTERNS,
     FILE_STORAGE,
 )
-from horilla.methods import get_horilla_model_class, remove_dynamic_url
+from moared.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
 from notifications.models import Notification
@@ -279,7 +279,7 @@ def initialize_database(request):
     if initialize_database_condition():
         if request.method == "POST":
             password = request._post.get("password")
-            from horilla.horilla_settings import DB_INIT_PASSWORD as db_password
+            from moared.horilla_settings import DB_INIT_PASSWORD as db_password
 
             if db_password == password:
                 return redirect(initialize_database_user)
@@ -621,7 +621,7 @@ def reset_send_success(request):
 
 class HorillaPasswordResetView(PasswordResetView):
     """
-    Horilla View for Reset Password
+    Moared View for Reset Password
     """
 
     template_name = "forgot_password.html"
@@ -667,7 +667,7 @@ class HorillaPasswordResetView(PasswordResetView):
 
 class EmployeePasswordResetView(PasswordResetView):
     """
-    Horilla View for Employee Reset Password
+    Moared View for Employee Reset Password
     """
 
     template_name = "forgot_password.html"
@@ -1384,7 +1384,7 @@ def mail_server_test_email(request):
         form = DynamicMailTestForm(request.POST)
         if form.is_valid():
             email_to = form.cleaned_data["to_email"]
-            subject = _("Test mail from Horilla")
+            subject = _("Test mail from Moared")
 
             # HTML content
             html_content = """
@@ -1393,20 +1393,20 @@ def mail_server_test_email(request):
                     <table align="center" width="600" cellpadding="0" cellspacing="0" border="0" style="border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
                         <tr>
                             <td align="center" bgcolor="#4CAF50" style="padding: 20px 0;">
-                                <h1 style="color: #ffffff; margin: 0;">Horilla</h1>
+                                <h1 style="color: #ffffff; margin: 0;">Moared</h1>
                             </td>
                         </tr>
                         <tr>
                             <td style="padding: 20px;">
                                 <h3 style="color: #4CAF50;">Email tested successfully</h3>
                                 <b><p style="font-size: 14px;">Hi,<br>
-                                    This email is being sent as part of mail sever testing from Horilla.</p></b>
+                                    This email is being sent as part of mail sever testing from Moared.</p></b>
                                 <img src="cid:unique_image_id" alt="Test Image" style="width: 200px; height: auto; margin: 20px 0;">
                             </td>
                         </tr>
                         <tr>
                             <td bgcolor="#f0f0f0" style="padding: 10px; text-align: center;">
-                                <p style="font-size: 12px; color: black;">&copy; 2024 Horilla, Inc.</p>
+                                <p style="font-size: 12px; color: black;">&copy; 2024 Moared, Inc.</p>
                             </td>
                         </tr>
                     </table>
@@ -1435,7 +1435,7 @@ def mail_server_test_email(request):
 
                 # Attach the image
                 image_path = path.join(
-                    settings.STATIC_ROOT, "images/ui/horilla-logo.png"
+                    settings.STATIC_ROOT, "images/ui/moared-logo.png"
                 )
                 with open(image_path, "rb") as img:
                     msg_img = MIMEImage(img.read())

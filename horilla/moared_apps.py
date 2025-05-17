@@ -1,11 +1,11 @@
 """
 horilla_apps
 
-This module is used to register horilla addons
+This module is used to register moared addons
 """
 
-from horilla import settings
-from horilla.settings import INSTALLED_APPS
+from moared import settings
+from moared.settings import INSTALLED_APPS
 
 INSTALLED_APPS.append("accessibility")
 INSTALLED_APPS.append("horilla_audit")

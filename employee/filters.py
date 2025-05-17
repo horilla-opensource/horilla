@@ -14,8 +14,8 @@ from django_filters import CharFilter
 # from attendance.models import Attendance
 from accessibility.models import DefaultAccessibility
 from employee.models import DisciplinaryAction, Employee, Policy
-from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
-from horilla.horilla_middlewares import _thread_locals
+from moared.filters import FilterSet, HorillaFilterSet, filter_by_name
+from moared.horilla_middlewares import _thread_locals
 from horilla_documents.models import Document
 from horilla_views.templatetags.generic_template_filters import getattribute
 

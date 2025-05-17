@@ -9,8 +9,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from horilla import settings
-from horilla.settings import BASE_DIR, TEMPLATES
+from moared import settings
+from moared.settings import BASE_DIR, TEMPLATES
 
 logger = logging.getLogger(__name__)
 

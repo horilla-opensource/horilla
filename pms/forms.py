@@ -25,7 +25,7 @@ from base.methods import (
     reload_queryset,
 )
 from employee.filters import EmployeeFilter
-from horilla import horilla_middlewares
+from moared import horilla_middlewares
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from pms.models import (
@@ -772,7 +772,7 @@ class FeedbackForm(ModelForm):
 
         super().__init__(*args, **kwargs)
 
-        # Horilla multi select filter for employee
+        # Moared multi select filter for employee
         self.fields["subordinate_id"] = HorillaMultiSelectField(
             queryset=Employee.objects.all(),
             widget=HorillaMultiSelectWidget(

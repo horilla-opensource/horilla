@@ -8,10 +8,10 @@ services:
       - 8000:8000
     restart: unless-stopped
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/moared"
     command: ./entrypoint.sh
     volumes:
-      - ./horilla:/app/horilla
+      - ./moared:/app/moared
     depends_on:
       db:
         condition: service_healthy
@@ -19,14 +19,14 @@ services:
   db:
     image: postgres:16-bullseye
     environment:
-      POSTGRES_DB: horilla
+      POSTGRES_DB: moared
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - 5432:5432
     restart: unless-stopped
     volumes:
-      - horilla-data:/var/lib/postgresql/data
+      - moared-data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
@@ -34,4 +34,4 @@ services:
       retries: 5
 
 volumes:
-  horilla-data:
+  moared-data:

@@ -1,7 +1,7 @@
 from django.core.files.storage import FileSystemStorage
 
-from horilla import settings
-from horilla.horilla_apps import INSTALLED_APPS
+from moared import settings
+from moared.horilla_apps import INSTALLED_APPS
 
 """
 DB_INIT_PASSWORD: str

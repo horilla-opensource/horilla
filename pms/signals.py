@@ -12,8 +12,8 @@ from django.db.models.signals import m2m_changed, post_delete, post_save, pre_sa
 from django.dispatch import receiver
 
 from employee.methods.methods import check_relationship_with_employee_model
-from horilla.horilla_middlewares import _thread_locals
-from horilla.signals import pre_bulk_update
+from moared.horilla_middlewares import _thread_locals
+from moared.signals import pre_bulk_update
 from pms.models import BonusPointSetting
 
 logger = logging.getLogger(__name__)

@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 
 from base.forms import ModelForm
 from employee.forms import MultipleFileField
-from horilla import horilla_middlewares
+from moared import horilla_middlewares
 from notifications.signals import notify
 from offboarding.models import (
     EmployeeTask,

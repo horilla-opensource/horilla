@@ -11,7 +11,7 @@ from django.dispatch import receiver
 from accessibility.middlewares import ACCESSIBILITY_CACHE_USER_KEYS
 from accessibility.models import DefaultAccessibility
 from employee.models import EmployeeWorkInformation
-from horilla.signals import post_bulk_update
+from moared.signals import post_bulk_update
 
 
 def _clear_accessibility_cache():

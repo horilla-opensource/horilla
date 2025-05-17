@@ -4,7 +4,7 @@ import importlib
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
-from horilla.horilla_settings import APP_URLS, DYNAMIC_URL_PATTERNS
+from moared.horilla_settings import APP_URLS, DYNAMIC_URL_PATTERNS
 
 
 def get_horilla_model_class(app_label, model):

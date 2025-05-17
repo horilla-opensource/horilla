@@ -15,9 +15,9 @@ from django.utils.translation import gettext_lazy as _
 from base.models import Company, TrackLateComeEarlyOut
 from base.urls import urlpatterns
 from employee.models import Employee, EmployeeGeneralSetting, EmployeeWorkInformation
-from horilla import horilla_apps
-from horilla.decorators import hx_request_required, login_required, permission_required
-from horilla.methods import get_horilla_model_class
+from moared import horilla_apps
+from moared.decorators import hx_request_required, login_required, permission_required
+from moared.methods import get_horilla_model_class
 
 
 class AllCompany:
@@ -167,12 +167,12 @@ def white_labelling_company(request):
             company = hq
 
         return {
-            "white_label_company_name": company.company if company else "Horilla",
+            "white_label_company_name": company.company if company else "Moared",
             "white_label_company": company,
         }
     else:
         return {
-            "white_label_company_name": "Horilla",
+            "white_label_company_name": "Moared",
             "white_label_company": None,
         }
 

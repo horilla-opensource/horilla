@@ -1,6 +1,6 @@
 import os
 
-from horilla import settings
+from moared import settings
 
 setattr(
     settings,

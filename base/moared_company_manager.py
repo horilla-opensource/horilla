@@ -8,8 +8,8 @@ from typing import Coroutine, Sequence
 from django.db import models
 from django.db.models.query import QuerySet
 
-from horilla.horilla_middlewares import _thread_locals
-from horilla.signals import post_bulk_update, pre_bulk_update
+from moared.horilla_middlewares import _thread_locals
+from moared.signals import post_bulk_update, pre_bulk_update
 
 logger = logging.getLogger(__name__)
 django_filter_update = QuerySet.update

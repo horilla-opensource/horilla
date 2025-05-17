@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.models import Department, JobPosition
 from employee.models import EmployeeWorkInformation
-from horilla.decorators import login_required
+from moared.decorators import login_required
 from recruitment.decorators import manager_can_enter
 from recruitment.models import Candidate, Recruitment, SkillZone, Stage
 

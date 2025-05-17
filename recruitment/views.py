@@ -29,8 +29,8 @@ from django.views.decorators.http import require_http_methods
 from base.backends import ConfiguredEmailBackend
 from base.methods import sortby
 from employee.models import Employee
-from horilla import settings
-from horilla.decorators import hx_request_required, login_required, permission_required
+from moared import settings
+from moared.decorators import hx_request_required, login_required, permission_required
 from notifications.signals import notify
 from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.filters import CandidateFilter, RecruitmentFilter, StageFilter

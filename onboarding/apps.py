@@ -8,7 +8,7 @@ class OnboardingConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
-        from horilla.urls import urlpatterns
+        from moared.urls import urlpatterns
 
         urlpatterns.append(
             path("onboarding/", include("onboarding.urls")),
