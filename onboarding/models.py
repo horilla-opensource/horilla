@@ -47,8 +47,8 @@ class OnboardingStage(HorillaModel):
         Meta class for additional options
         """
 
-        verbose_name = _("Stage")
-        verbose_name_plural = _("Stages")
+        verbose_name = _("Onboarding Stage")
+        verbose_name_plural = _("Onboarding Stages")
         ordering = ["sequence"]
 
 
