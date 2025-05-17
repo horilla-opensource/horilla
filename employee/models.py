@@ -16,6 +16,7 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.templatetags.static import static
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 
@@ -223,17 +224,9 @@ class Employee(models.Model):
         )
 
     def get_avatar(self):
-        """
-        Method will retun the api to the avatar or path to the profile image
-        """
-        url = (
-            f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
-        )
-        if self.employee_profile:
-            full_filename = self.employee_profile.name
-            if default_storage.exists(full_filename):
-                url = self.employee_profile.url
-        return url
+        if self.employee_profile and default_storage.exists(self.employee_profile.name):
+            return self.employee_profile.url
+        return static("images/ui/default_avatar.jpg")
 
     def get_leave_status(self):
         """
