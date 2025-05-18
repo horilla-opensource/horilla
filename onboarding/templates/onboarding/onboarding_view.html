@@ -5,17 +5,20 @@
 {% load recruitmentfilters %}
 {% load onboardingfilters %}
 <style>
-    .select2-container{
+    .select2-container {
         width: 100% !important;
     }
+
     .select2-container .select2-selection {
         padding: 10px;
-        height: 50px !important; /* Adjust the height value as needed */
+        height: 50px !important;
+        /* Adjust the height value as needed */
     }
 
     .oh-dot--color-done {
         background-color: hsl(148deg, 71%, 44%)
     }
+
     .oh-dot--color-scheduled {
         background-color: hsl(40deg, 100%, 60%)
     }
@@ -23,6 +26,7 @@
     .oh-dot--color-stuck {
         background-color: #ff0400
     }
+
     .oh-dot--color-ongoing {
         background-color: hsl(204deg, 70%, 53%)
     }
@@ -30,6 +34,7 @@
     .oh-dot--color-todo {
         background-color: #e3b75f80
     }
+
     .oh-dot--color-None {
         background-color: hsla(270, 5%, 48%, 0.709)
     }
@@ -37,116 +42,106 @@
     .oh-dot--color- {
         background-color: hsla(270, 5%, 48%, 0.709)
     }
-
 </style>
-<div class="oh-alert-container messages" >
+<div class="oh-alert-container messages">
 
 </div>
 {% include "onboarding/onboarding_view_nav.html" %}
 <div class="oh-wrapper oh-filter-tag-container filter-value"></div>
 <div class="oh-wrapper">
     {% if recruitments %}
-    <div class="oh-tabs">
-        {% include "onboarding/tabs.html" %}
-        <div class="oh-tabs__contents">
-            {% for recruitment in recruitments %}
-                {% for stage in recruitment.stages %}
-                    {% if request.user|task_manages:recruitment or request.user|stage_manages:stage or perms.onboarding.view_candidatestage %}
-                        <div class="oh-tabs__content" id="tab_{{recruitment.id}}">
-                            <div class="oh-card">
-                                {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
-                                <div class="d-flex mb-3" style="flex-direction: row-reverse;">
-                                    <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
-                                        data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
-                                        hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#objectCreateModalTarget">
-                                        <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
-                                            aria-label="add outline"></ion-icon>{% trans "Stage" %}
-                                    </button>
-                                </div>
-                                {% endif %}
-                                <div id="onboardingTable{{recruitment.id}}" class="demo dd">
-                                    {% include 'onboarding/onboarding_table.html' %}
+        <div class="oh-tabs">
+            {% include "onboarding/tabs.html" %}
+            <div class="oh-tabs__contents">
+                {% for recruitment in recruitments %}
+                    {% for stage in recruitment.stages %}
+                        {% if request.user|task_manages:recruitment or request.user|stage_manages:stage or perms.onboarding.view_candidatestage %}
+                            <div class="oh-tabs__content" id="tab_{{recruitment.id}}">
+                                <div class="oh-card">
+                                    {% if request.user|task_manages:recruitment or perms.onboarding.add_onboardingstage %}
+                                    <div class="d-flex mb-3" style="flex-direction: row-reverse;">
+                                        <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
+                                            data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                            hx-get="{% url 'stage-creation' recruitment.id %}" hx-target="#objectCreateModalTarget">
+                                            <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
+                                                aria-label="add outline"></ion-icon>{% trans "Stage" %}
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                    <div id="onboardingTable{{recruitment.id}}" class="demo dd">
+                                        {% include 'onboarding/onboarding_table.html' %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endif %}
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-        </div>
-    </div>
-     <!-- Paginator Section -->
-     <div class="oh-pagination">
-        <span
-          class="oh-pagination__page"
-          data-toggle="modal"
-          data-target="#addEmployeeModal"
-          >
-          {% trans "Page" %} {{ recruitments.number }} {% trans "of" %} {{ recruitments.paginator.num_pages }}.
-          </span
-          >
-
-        <nav class="oh-pagination__nav">
-          <div class="oh-pagination__input-container me-3">
-              <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-
-              <input
-              type="number"
-              name="page"
-              class="oh-pagination__input"
-              value="{{recruitments.number}}"
-              {% comment %} hx-get="{% url 'recruitment-search' %}?{{pd}}" hx-target="#tab_rec_{{rec.id}}" {% endcomment %}
-              min="1"
-              />
-              <span class="oh-pagination__label">{% trans "of" %} {{recruitments.paginator.num_pages}}</span>
             </div>
+        </div>
+        <!-- Paginator Section -->
+        <div class="oh-pagination">
+            <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">
+                {% trans "Page" %} {{ recruitments.number }} {% trans "of" %} {{ recruitments.paginator.num_pages }}.
+            </span>
 
-            <ul class="oh-pagination__items">
-              {% if recruitments.has_previous %}
-              <li class="oh-pagination__item oh-pagination__item--wide">
-                <a href="{% url 'onboarding-view' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
-              </li>
-              <li class="oh-pagination__item oh-pagination__item--wide">
-                  <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.previous_page_number }}" class="oh-pagination__link">{% trans "Previous" %}</a>
-                </li>
-              {% endif %}
-              {% if recruitments.has_next %}
-              <li class="oh-pagination__item oh-pagination__item--wide">
-                  <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.next_page_number }}" class="oh-pagination__link">{% trans "Next" %}</a>
-              </li>
-              <li class="oh-pagination__item oh-pagination__item--wide">
-                  <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.paginator.num_pages }}" class="oh-pagination__link">{% trans "Last" %}</a>
-                </li>
-              {% endif %}
+            <nav class="oh-pagination__nav">
+                <div class="oh-pagination__input-container me-3">
+                    <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
 
-            </ul>
-          </nav>
+                    <input type="number" name="page" class="oh-pagination__input" value="{{recruitments.number}}"
+                        {% comment %} hx-get="{% url 'recruitment-search' %}?{{pd}}" hx-target="#tab_rec_{{rec.id}}" {% endcomment %}
+                        min="1" />
+                    <span class="oh-pagination__label">{% trans "of" %} {{recruitments.paginator.num_pages}}</span>
+                </div>
+
+                <ul class="oh-pagination__items">
+                    {% if recruitments.has_previous %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a href="{% url 'onboarding-view' %}?{{pd}}&page=1" class="oh-pagination__link">{% trans "First" %}</a>
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.previous_page_number }}"
+                                class="oh-pagination__link">{% trans "Previous" %}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if recruitments.has_next %}
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.next_page_number }}"
+                                class="oh-pagination__link">{% trans "Next" %}
+                            </a>
+                        </li>
+                        <li class="oh-pagination__item oh-pagination__item--wide">
+                            <a href="{% url 'onboarding-view' %}?{{pd}}&page={{ recruitments.paginator.num_pages }}"
+                                class="oh-pagination__link">{% trans "Last" %}
+                            </a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </nav>
         </div>
     {% else %}
-    {% if request.GET.closed == 'true' %}
-        <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
-            <div style="" class="">
-                <img style="width: 190px;height: 190px; margin:0 auto;" src="{% static 'images/ui/recruitment.png' %}" class="oh-404__image d-block mb-4" alt="Page not found. 404."/>
-                <h5 class="oh-404__subtitle">{% trans "At present, There are no closed recruitments." %}</h5>
+        {% if request.GET.closed == 'true' %}
+            <div class="oh-empty">
+                <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+                <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+                <p class="oh-empty__subtitle">{% trans "At present, There are no closed recruitments." %}</p>
             </div>
-        </div>
         {% else %}
-        <div style="height: 70vh; display:flex;align-items: center;justify-content: center;" class="">
-            <div style="" class="">
-                <img style="width: 190px;height: 190px; margin:0 auto;" src="{% static 'images/ui/recruitment.png' %}" class="oh-404__image d-block mb-4" alt="Page not found. 404."/>
-                <h5 class="oh-404__subtitle">{% trans "At present, There is no ongoing recruitment." %}</h5>
+            <div class="oh-empty">
+                <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+                <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+                <p class="oh-empty__subtitle">{% trans "At present, There is no ongoing recruitment." %}</p>
             </div>
-        </div>
         {% endif %}
-        {% endif %}
-
-
-
+    {% endif %}
 </div>
 <!-- stage-form -->
 <div class="oh-modal" id="editModal1" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
-            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -159,7 +154,7 @@
 <div class="oh-modal" id="editModal3" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
-            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -173,7 +168,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create Task" %}</span>
-            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -188,7 +183,7 @@
     <div class="oh-modal__dialog oh-modal__dialog--timeoff">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Update Task" %}</span>
-            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans 'Close' %}">
                 <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
@@ -203,7 +198,7 @@
     <div class="oh-modal__dialog">
         <div class="oh-modal__dialog-header">
             <span class="oh-modal__dialog-title" id="modalTask">Send Mail</span>
-            <button class="oh-modal__close" aria-label="Close" title="{% trans "Close" %}">
+            <button class="oh-modal__close" aria-label="Close" title="{% trans " Close" %}">
                 <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
             </button>
         </div>
@@ -232,15 +227,15 @@
 
 
 <script>
-    function bulkStageChange(element){
+    function bulkStageChange(element) {
         let NewStage = $(element).val();
-        let currentStage =$(element).data("stage")
+        let currentStage = $(element).data("stage")
         let checkbox = $(currentStage).find("input[type='checkbox']:checked");
 
-        let ids =[]
+        let ids = []
         let recruitment = $(element).data("recruitment")
-        let target = "#onboardingTable"+recruitment
-        checkbox.each(function(index){
+        let target = "#onboardingTable" + recruitment
+        checkbox.each(function (index) {
             ids.push(parseInt($(this).val()))
         })
         $.ajax({
@@ -253,9 +248,9 @@
 
                 csrfmiddlewaretoken: getCookie("csrftoken"),
 
-             },
+            },
             success: function (response) {
-              $(target).html($(response))
+                $(target).html($(response))
             },
             error: () => {
                 console.log("error")
@@ -272,28 +267,28 @@
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== "") {
-          const cookies = document.cookie.split(";");
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === name + "=") {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
-          }
         }
         return cookieValue;
-      }
+    }
 
 
 
-    $(document).ready(function() {
-        $("#search").on("htmx:afterRequest", function(event, xhr, data) {
+    $(document).ready(function () {
+        $("#search").on("htmx:afterRequest", function (event, xhr, data) {
 
             alertContainer.append(alertDiv);
             $("#messages").html(alertContainer);
         });
-        $("#is_closed").on("change", function() {
+        $("#is_closed").on("change", function () {
             if ($(this).is(":checked")) {
                 window.location.href = "{% url 'onboarding-view' %}?closed=closed";
             } else {
