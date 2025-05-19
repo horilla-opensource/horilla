@@ -88,6 +88,8 @@ class ProjectsNavView(HorillaNavView):
                     "attrs": """
                         id="archiveProject"
                         style="cursor: pointer;"
+                        onclick="validateProjectIds(event);"
+                        data-action="archive"
                         """,
                 },
                 {
@@ -95,6 +97,8 @@ class ProjectsNavView(HorillaNavView):
                     "attrs": """
                         id="unArchiveProject"
                         style="cursor: pointer;"
+                        onclick="validateProjectIds(event);"
+                        data-action="unarchive"
                         """,
                 },
                 {
@@ -103,6 +107,7 @@ class ProjectsNavView(HorillaNavView):
                         class="oh-dropdown__link--danger"
                         data-action ="delete"
                         id="deleteProject"
+                        onclick="validateProjectIds(event);"
                         style="cursor: pointer; color:red !important"
                         """,
                 },
