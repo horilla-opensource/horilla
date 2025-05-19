@@ -157,6 +157,7 @@ class ClockOutAPIView(APIView):
         except:
             pass
         if request.user.employee_get.check_online():
+            print("----------------")
             current_date = date.today()
             current_time = datetime.now().time()
             current_datetime = datetime.now()
@@ -174,7 +175,7 @@ class ClockOutAPIView(APIView):
 
             except Exception as error:
                 logger.error("Got an error in clock_out", error)
-            return Response({"message": "Clocked-Out"}, status=200)
+            # return Response({"message": "Clocked-Out"}, status=200)
         return Response({"message": "Already clocked-out"}, status=400)
 
 

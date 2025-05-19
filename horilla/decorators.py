@@ -243,7 +243,10 @@ def login_required(view_func):
             request.session["title"] = "Dashboard".upper()
 
         login_url = reverse("login")
-        query_string = urlencode(request.GET)
+        try:
+            query_string = urlencode(request.GET)
+        except:
+            query_string = None
         redirect_url = f"{login_url}?next={request.path}"
         if query_string:
             redirect_url += f"&{query_string}"
