@@ -11,7 +11,7 @@
         <h1 class="oh-main__titlebar-title fw-bold">
           {% trans "Attendance Reports" %}
         </h1>
-        
+
 
         <div style="display:inline-flex;">
             <!-- Filter section -->
@@ -213,7 +213,7 @@
                         $.pivotUtilities.renderers,
                         plotlyRenderers // Adding Plotly renderers
                     ),
-                    
+
                     // Hide specific fields from selection dropdown
                     onRefresh: function (config) {
                         let currentRenderer = config.rendererName;
@@ -284,7 +284,7 @@
                     $.pivotUtilities.renderers,
                     plotlyRenderers // Adding Plotly renderers
                 ),
-                
+
                 // Hide specific fields from selection dropdown
                 onRefresh: function (config) {
                     let currentRenderer = config.rendererName;
@@ -319,7 +319,7 @@
                     }, 10);
                 }
             });
-            
+
         });
 
         // When the filter form is submitted, prevent default action and load filtered data
@@ -341,7 +341,7 @@
             alert("No table found to export.");
             return;
         }
-    
+
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet("Pivot Data");
         const baseRow = 5;
@@ -358,7 +358,7 @@
                 city: "{{ company.city|escapejs }}",
                 zip: "{{ company.zip|escapejs }}"
             };
-    
+
             function getBase64FromUrl(url) {
                 return fetch(url)
                     .then(response => response.blob())
@@ -369,7 +369,7 @@
                         reader.readAsDataURL(blob);
                     }));
             }
-    
+
             const logoUrl = "{{ protocol }}://{{ host }}{{ company.icon.url }}";
             await getBase64FromUrl(logoUrl).then((base64) => {
                 const base64Data = base64.split(',')[1];
@@ -377,13 +377,13 @@
                     base64: base64Data,
                     extension: 'png'
                 });
-    
+
                 worksheet.addImage(imageId, {
                     tl: { col: baseCol - 1, row: currentRow - 1 },
                     ext: { width: 80, height: 80 }
                 });
             });
-    
+
             // Merge cells for company details text
             const companyTextCell = worksheet.getCell(currentRow, baseCol + 1);
             worksheet.mergeCells(currentRow, baseCol + 1, currentRow, baseCol + 2);
@@ -401,46 +401,46 @@
                 wrapText: true
             };
             worksheet.getRow(currentRow).height = 80;
-    
+
             currentRow += 2; // Leave a blank row
         }
-    
+
         // Add timestamp
         const timestamp = new Date().toLocaleDateString('en-GB') + ' ' +
             new Date().toLocaleTimeString('en-US', {
                 hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
             });
-    
+
         const downloadCell = worksheet.getCell(currentRow, baseCol);
         worksheet.mergeCells(currentRow, baseCol, currentRow, baseCol + 3);
         downloadCell.value = `Generated on: ${timestamp}`;
         downloadCell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
         downloadCell.font = { size: 10, italic: true, color: { argb: 'FF666666' }, bold: true };
-    
+
         currentRow += 3;
-    
+
         // Table rendering
         const cellMap = {};
         const allRows = Array.from(table.rows);
         const lastRowIndex = allRows.length - 1;
 
         allRows.forEach((row, rowIndex) => {
-    
+
             let colIndex = baseCol;
-    
+
             Array.from(row.cells).forEach((cell) => {
-    
+
                 while (cellMap[`${currentRow + rowIndex}-${colIndex}`]) {
                     colIndex++;
                 }
-    
+
                 const rowspan = parseInt(cell.getAttribute("rowspan")) || 1;
                 const colspan = parseInt(cell.getAttribute("colspan")) || 1;
                 const cellValue = cell.textContent.trim();
-    
+
                 const excelCell = worksheet.getCell(currentRow + rowIndex, colIndex);
                 excelCell.value = cellValue;
-    
+
                 const isHeader = rowIndex === 0;
                 const isLastRow = rowIndex === lastRowIndex;
 
@@ -471,7 +471,7 @@
                     right: { style: 'thin' }
                 };
                 excelCell.alignment = { horizontal: "center", vertical: "middle" };
-    
+
                 if (rowspan > 1 || colspan > 1) {
                     worksheet.mergeCells(
                         currentRow + rowIndex,
@@ -479,7 +479,7 @@
                         currentRow + rowIndex + rowspan - 1,
                         colIndex + colspan - 1
                     );
-    
+
                     for (let r = 0; r < rowspan; r++) {
                         for (let c = 0; c < colspan; c++) {
                             cellMap[`${currentRow + rowIndex + r}-${colIndex + c}`] = true;
@@ -488,15 +488,15 @@
                 } else {
                     cellMap[`${currentRow + rowIndex}-${colIndex}`] = true;
                 }
-    
+
                 colIndex++;
             });
         });
 
         worksheet.getRow(currentRow + lastRowIndex).height = 25; // adjust height for Total
-    
+
         worksheet.getRow(currentRow).height = 30; // adjust height for Heading
-    
+
         worksheet.columns.forEach(column => {
             let maxLength = 2;
             column.eachCell({ includeEmpty: true }, cell => {
@@ -505,13 +505,13 @@
             });
             column.width = maxLength + 3;
         });
-        
-    
+
+
         const buffer = await workbook.xlsx.writeBuffer();
         const blob = new Blob([buffer], {
             type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         });
-    
+
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = filename;
