@@ -1211,6 +1211,8 @@ def change_employee_objective_status(request):
             and (emp_objective.employee_id == request.user.employee_get)
         )
     ):
+        messages.info(request, _("You dont have permission."))
+    else:
         if emp_objective.status != status:
             emp_objective.status = status
             emp_objective.save()
@@ -1243,9 +1245,6 @@ def change_employee_objective_status(request):
             messages.info(
                 request, _("The status of the objective is the same as selected.")
             )
-
-    else:
-        messages.info(request, _("You dont have permission."))
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
