@@ -1007,3 +1007,12 @@ def template_pdf(template, context={}, html=False, filename="payslip.pdf"):
         return response
     except Exception as e:
         return HttpResponse(f"Error generating PDF: {str(e)}", status=500)
+
+
+def generate_otp():
+    """
+    Function to generate a random 6-digit OTP (One-Time Password).
+    Returns:
+        str: A 6-digit random OTP as a string.
+    """
+    return str(random.randint(100000, 999999))
