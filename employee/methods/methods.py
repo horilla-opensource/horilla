@@ -401,7 +401,7 @@ def bulk_create_user_import(success_lists):
         user_obj_list.append(user_obj)
     result = []
     if user_obj_list:
-        result = User.objects.bulk_create(user_obj_list)
+        result = User.objects.bulk_create(user_obj_list, batch_size=1000)
     return result
 
 
@@ -440,7 +440,7 @@ def bulk_create_employee_import(success_lists):
         employee_obj_list.append(employee_obj)
     result = []
     if employee_obj_list:
-        result = Employee.objects.bulk_create(employee_obj_list)
+        result = Employee.objects.bulk_create(employee_obj_list, batch_size=1000)
 
     return result
 
@@ -740,8 +740,13 @@ def bulk_create_work_info_import(success_lists):
     reporting_manager_dict = optimize_reporting_manager_lookup()
 
     for work_info in success_lists:
-        email = work_info["Email"]
         badge_id = work_info["Badge ID"]
+        employee_obj = existing_employees.get(badge_id)
+        if not employee_obj:
+            continue
+
+        email = work_info["Email"]
+        employee_work_info = existing_employee_work_infos.get(employee_obj)
         department_obj = existing_departments.get(work_info.get("Department"))
 
         job_position_key = (
@@ -791,9 +796,6 @@ def bulk_create_work_info_import(success_lists):
             else 0
         )
 
-        employee_obj = existing_employees.get(badge_id)
-        employee_work_info = existing_employee_work_infos.get(employee_obj)
-
         if employee_work_info is None:
             # Create a new instance
             employee_work_info = EmployeeWorkInformation(
@@ -841,7 +843,7 @@ def bulk_create_work_info_import(success_lists):
             update_work_info_list.append(employee_work_info)
 
     if new_work_info_list:
-        EmployeeWorkInformation.objects.bulk_create(new_work_info_list)
+        EmployeeWorkInformation.objects.bulk_create(new_work_info_list, batch_size=1000)
     if update_work_info_list:
         EmployeeWorkInformation.objects.bulk_update(
             update_work_info_list,
@@ -861,6 +863,7 @@ def bulk_create_work_info_import(success_lists):
                 "basic_salary",
                 "salary_hour",
             ],
+            batch_size=1000,
         )
     if apps.is_installed("payroll"):
 

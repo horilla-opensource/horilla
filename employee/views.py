@@ -298,7 +298,23 @@ def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
-    employee = Employee.objects.get(id=obj_id)
+    try:
+        employee = Employee.objects.get(id=obj_id)
+    except ObjectDoesNotExist:
+        try:
+            employee = Employee.objects.entire().get(id=obj_id)
+            company = getattr(
+                getattr(employee, "employee_work_info", None), "company_id", None
+            )
+            company_id = getattr(company, "pk", None)
+            if company_id != request.session["selected_company"]:
+                messages.error(
+                    request, "Employee is not working in the selected company."
+                )
+                return redirect("employee-view")
+        except Exception as e:
+            return render(request, "404.html", status=404)
+
     employee_leaves = (
         employee.available_leave.all() if apps.is_installed("leave") else None
     )
