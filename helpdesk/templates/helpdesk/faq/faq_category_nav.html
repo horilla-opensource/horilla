@@ -47,6 +47,39 @@
         </select>
         {% endcomment %}
     </div>
+    <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
+        <div class="oh-dropdown" x-data="{open: false}">
+            <button
+                class="oh-btn oh-stop-prop oh-accordion-meta__btn"
+                @click="open = !open"
+                @click.outside="open = false"
+            >
+                {% trans "Actions" %}
+                <ion-icon
+                    class="ms-2 oh-accordion-meta__btn-icon"
+                    name="caret-down-outline"
+                ></ion-icon>
+            </button>
+            <div
+                class="oh-dropdown__menu oh-dropdown__menu--right"
+                x-show="open"
+            >
+                <ul class="oh-dropdown__items">
+                    <li class="oh-dropdown__item" role="button">
+                        <a
+                            class="oh-dropdown__link"
+                            hx-get="{% url 'load-faqs' %}"
+                            hx-target="#objectCreateModalTarget"
+                            data-target="#objectCreateModal"
+                            data-toggle="oh-modal-toggle"
+                        >
+                            {% trans "Load Faqs" %}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <div class="oh-main__titlebar oh-main__titlebar--right">
         <form
             method="post"
@@ -66,7 +99,7 @@
         </form>
         {% if perms.helpdesk.add_faqcategory %}
         <div class="oh-main__titlebar-button-container">
-            <div class="oh-btn-group ml-2">
+            <div class="oh-btn-group m-0">
                 <div class="oh-dropdown" x-data="{open: false}">
                     <button
                         class="oh-btn oh-btn--secondary oh-btn--shadow"

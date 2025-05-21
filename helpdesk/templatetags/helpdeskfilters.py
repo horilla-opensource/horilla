@@ -6,8 +6,8 @@ from helpdesk.models import ClaimRequest, DepartmentManager
 register = template.Library()
 
 
-@register.filter(name="calim_request_exists")
-def calim_request_exists(ticket, employee):
+@register.filter(name="claim_request_exists")
+def claim_request_exists(ticket, employee):
     return ClaimRequest.objects.filter(ticket_id=ticket, employee_id=employee).exists()
 
 
