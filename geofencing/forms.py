@@ -1,11 +1,13 @@
+from django.template.loader import render_to_string
 
 from base.forms import ModelForm
+
 from .models import GeoFencing
-from django.template.loader import render_to_string
+
 
 class GeoFencingSetupForm(ModelForm):
     verbose_name = "Geofence Configuration"
-   
+
     class Meta:
         model = GeoFencing
         exclude = ["company_id"]
@@ -17,4 +19,3 @@ class GeoFencingSetupForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
-    

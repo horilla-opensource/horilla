@@ -65,6 +65,7 @@ class ClockInAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        print("========", request.user.employee_get.check_online())
         if not request.user.employee_get.check_online():
             try:
                 if request.user.employee_get.get_company().geo_fencing.start:
