@@ -522,18 +522,22 @@ class Feedback(HorillaModel):
         related_name="feedback_colleague",
         blank=True,
         verbose_name=_("Colleague"),
+        help_text=_("Employees working on the same department."),
     )
     subordinate_id = models.ManyToManyField(
         Employee,
         related_name="feedback_subordinate",
         blank=True,
         verbose_name=_("Subordinates"),
+        help_text=_(
+            "Employees for whom the feedback requester is the reporting manager"
+        ),
     )
     others_id = models.ManyToManyField(
         Employee,
         related_name="feedback_others",
         blank=True,
-        verbose_name=_("Employees"),
+        verbose_name=_("Other Employees"),
     )
     question_template_id = models.ForeignKey(
         QuestionTemplate,

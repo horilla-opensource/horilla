@@ -66,9 +66,12 @@
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="oh-input__group">
-                            <div class="oh-input__group">
+                            <div style="display: flex;">
                                 <label class="oh-input__label"
                                     for="{{feedback_form.subordinate_id.id_for_label}}">{{feedback_form.subordinate_id.label}}</label>
+                                    <span class="oh-info mt-2" title="{{feedback_form.subordinate_id.help_text|safe }}"></span>
+                            </div>
+                            <div class="oh-input__group">
                                 {{feedback_form.subordinate_id}}
                                 {{feedback_form.subordinate_id.errors}}
                             </div>
@@ -76,11 +79,24 @@
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                         <div class="oh-input__group">
-                            <div class="oh-input__group">
+                            <div style="display: flex;">
                                 <label class="oh-input__label"
                                     for="{{feedback_form.colleague_id.id_for_label}}">{{feedback_form.colleague_id.label}}</label>
+                                <span class="oh-info mt-2" title="{{feedback_form.colleague_id.help_text|safe }}"></span>
+                            </div>
+                            <div class="oh-input__group">
                                 {{feedback_form.colleague_id}}
                                 {{feedback_form.colleague_id.errors}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+                        <div class="oh-input__group">
+                            <div class="oh-input__group">
+                                <label class="oh-input__label"
+                                    for="{{feedback_form.others_id.id_for_label}}">{{feedback_form.others_id.label}}</label>
+                                {{feedback_form.others_id}}
+                                {{feedback_form.others_id.errors}}
                             </div>
                         </div>
                     </div>
