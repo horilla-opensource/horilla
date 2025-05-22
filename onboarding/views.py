@@ -520,7 +520,7 @@ def paginator_qry(qryset, page_number):
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def candidates_view(request):
     """
     function used to view hired candidates .
@@ -581,7 +581,7 @@ def hired_candidate_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def candidate_filter(request):
     """
     function used to filter hired candidates .
@@ -1472,7 +1472,7 @@ def update_joining(request):
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def view_dashboard(request):
     recruitment = Recruitment.objects.all().values_list("title", flat=True)
     candidates = Candidate.objects.all()
@@ -1493,7 +1493,7 @@ def view_dashboard(request):
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def dashboard_stage_chart(request):
     recruitment = request.GET.get("recruitment")
     labels = OnboardingStage.objects.filter(
