@@ -3312,12 +3312,14 @@ def organisation_chart(request):
         and selected_company != "all"
     ):
         reporting_managers = Employee.objects.filter(
+            is_active=True,
             reporting_manager__isnull=False,
             employee_work_info__company_id=selected_company,
         ).distinct()
     else:
         reporting_managers = Employee.objects.filter(
-            reporting_manager__isnull=False
+            is_active=True,
+            reporting_manager__isnull=False,
         ).distinct()
 
     # Iterate through the queryset and add reporting manager id and name to the dictionary
@@ -3336,7 +3338,7 @@ def organisation_chart(request):
             entered_req_managers.append(manager)
         # filter the subordinates
         subordinates = Employee.objects.filter(
-            employee_work_info__reporting_manager_id=manager
+            is_active=True, employee_work_info__reporting_manager_id=manager
         ).exclude(id=manager.id)
 
         # itrating through subordinates
@@ -3376,12 +3378,13 @@ def organisation_chart(request):
         and selected_company != "all"
     ):
         reporting_managers = Employee.objects.filter(
+            is_active=True,
             reporting_manager__isnull=False,
             employee_work_info__company_id=selected_company,
         ).distinct()
     else:
         reporting_managers = Employee.objects.filter(
-            reporting_manager__isnull=False
+            is_active=True, reporting_manager__isnull=False
         ).distinct()
 
     manager = request.user.employee_get
