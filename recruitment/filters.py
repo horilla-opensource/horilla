@@ -252,6 +252,7 @@ class RecruitmentFilter(HorillaFilterSet):
             "is_active",
             "is_published",
             "job_position_id",
+            "open_positions",
         ]
 
     def filter_by_name(self, queryset, _, value):

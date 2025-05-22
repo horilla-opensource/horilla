@@ -8,6 +8,8 @@ from django import forms
 from django_filters import filters
 
 from base.filters import FilterSet
+from base.models import Company
+from employee.models import Employee
 from horilla.filters import HorillaFilterSet
 from onboarding.models import (
     CandidateStage,
@@ -193,7 +195,7 @@ class CandidateFilter(FilterSet):
         fields = {}
 
 
-class OnboardingStageFilter(FilterSet):
+class OnboardingStageFilter(HorillaFilterSet):
     """
     OnboardingStageFilter
     """
@@ -203,6 +205,32 @@ class OnboardingStageFilter(FilterSet):
     )
     search = filters.CharFilter(
         method="search_method",
+    )
+
+    employee_id = filters.ModelChoiceFilter(
+        queryset=Employee.objects.all(), label="Stage Manager"
+    )
+
+    onboarding_task__task_title = filters.CharFilter(
+        field_name="onboarding_task__task_title", lookup_expr="icontains", label="Task"
+    )
+
+    onboarding_task__employee_id = filters.ModelChoiceFilter(
+        field_name="onboarding_task__employee_id",
+        queryset=Employee.objects.all(),
+        label="Task Manager",
+    )
+
+    recruitment_id__company_id = filters.ModelChoiceFilter(
+        field_name="recruitment_id__company_id",
+        queryset=Company.objects.all(),
+        label="Company",
+    )
+
+    onboarding_task__candidates = filters.ModelChoiceFilter(
+        field_name="onboarding_task__candidates",
+        queryset=Candidate.objects.all(),
+        label="Candidates",
     )
 
     class Meta:

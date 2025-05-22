@@ -76,6 +76,9 @@ class TicketFilter(FilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    pipeline_status = django_filters.CharFilter(
+        field_name="status",
+    )
 
     class Meta:
         """

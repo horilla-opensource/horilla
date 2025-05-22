@@ -274,7 +274,7 @@ class OffboardingPipelineNav(HorillaNavView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        if self.request.user.has_perm("offboarding.create-offboarding"):
+        if self.request.user.has_perm("offboarding.create_offboarding"):
             self.create_attrs = f"""
                 class="oh-btn oh-btn--secondary"
                 hx-get="{reverse_lazy("create-offboarding")}"

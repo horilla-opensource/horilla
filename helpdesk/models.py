@@ -1,16 +1,16 @@
 import os
-from datetime import datetime
+from datetime import date, datetime
 
-from django import apps
 from django.db import models
-from django.db.models.signals import post_delete, post_save
 from django.forms import ValidationError
+from django.middleware.csrf import get_token
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, Department, JobPosition, Tags
 from employee.models import Employee
+from horilla.horilla_middlewares import _thread_locals
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -197,6 +197,182 @@ class Ticket(HorillaModel):
         elif self.assigning_type == "individual":
             raised_on = Employee.objects.get(id=obj_id)
         return raised_on
+
+    def get_ticket_id_col(self):
+        """
+        This method is used to get the ticket id
+        """
+        today = date.today()
+        ticket_id = f"{self.ticket_type.prefix}-{self.pk:03d}"
+
+        if self.deadline == today:
+            due_text = "Due today"
+        else:
+            days_diff = (self.deadline - today).days
+            if days_diff < 0:
+                days_diff = abs(days_diff)
+                due_text = f"Overdue by {days_diff} days"
+            else:
+                due_text = f"Due in {days_diff} days"
+
+        if self.deadline < today:
+            icon_class = "danger"
+        elif self.deadline == today:
+            icon_class = "warning"
+        else:
+            icon_class = "success"
+
+        col = f"""
+            <span
+                class='
+                    d-flex
+                    justify-content-between
+                    align-items-center
+                '
+            >
+                {ticket_id}
+                <span title='{due_text}'>
+                    <ion-icon
+                        class="text-{icon_class}"
+                        name="time-sharp"
+                    >
+                    </ion-icon>
+                </span>
+            </span>
+        """
+        return col
+
+    def get_ticket_detail_url(self):
+        """
+        This method is used to get the ticket detail url
+        """
+        return reverse_lazy("ticket-detail", kwargs={"ticket_id": self.pk})
+
+    def get_assigned_to(self):
+        """
+        This method is used to get the assigned to
+        """
+        assigned_to = self.assigned_to.all()
+        if assigned_to:
+            assigned_to = ", ".join([emp.get_full_name() for emp in assigned_to])
+
+        return assigned_to
+
+    def get_tags_col(self):
+        """
+        This method is used to get the tags column
+        """
+        tags = self.tags.all()
+        if tags:
+            tags = ", ".join([tag.title for tag in tags])
+
+        return tags
+
+    def get_priority_stars(self):
+        """
+        This method is used to get the priority stars
+        """
+        request = getattr(_thread_locals, "request", None)
+        csrf_token = get_token(request)
+        rating_inputs = ""
+        checked_value = {"low": "1", "medium": "2", "high": "3"}.get(self.priority, "1")
+
+        for i in "321":
+            checked = "checked" if i == checked_value else ""
+            title = {"1": _("Low"), "2": _("Medium"), "3": _("High")}[i]
+
+            rating_inputs += f"""
+                <input type="radio" id="star{i}{self.id}" name="rating" class="rating-radio" value="{i}" {checked} />
+                <label for="star{i}{self.id}" title="{title}"></label>
+            """
+
+        html = f"""
+            <form hx-swap="none" hx-post="{reverse_lazy('update-priority', kwargs = {'ticket_id' : self.id})}" method="post">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{csrf_token}">
+                <div class="d-flex">
+                    <div class="oh-rate" onclick="event.stopPropagation();$(this).parents().closest('form').find('button').click()">
+                        {rating_inputs}
+                    </div>
+                    <button type="submit" hidden="true" onclick="event.stopPropagation()"></button>
+                </div>
+            </form>
+        """
+        return html
+
+    def row_colors(self):
+        """
+        This method is used to get the row colors
+        """
+        if self.status == "new":
+            return "row-status--blue"
+        elif self.status == "in_progress":
+            return "row-status--orange"
+        elif self.status == "on_hold":
+            return "row-status--red"
+        elif self.status == "resolved":
+            return "row-status--yellowgreen"
+        elif self.status == "canceled":
+            return "row-status--gray"
+
+    def ticket_action_col(self):
+        """
+        This method is used to get the ticket actions
+        """
+        request = getattr(_thread_locals, "request", None)
+        tab_name = request.GET.get("ticket_tab", "my_tickets")
+        claim_request = self.claimrequest_set.filter(
+            employee_id=request.user.employee_get
+        ).first()
+        return render_template(
+            "cbv/pipeline/pipeline_action_col.html",
+            {"ticket": self, "tab": tab_name, "claim_request": claim_request},
+        )
+
+    def get_status_col(self):
+        """
+        This method is used to get the status column
+        """
+
+        from helpdesk.methods import is_department_manager
+
+        request = getattr(_thread_locals, "request", None)
+        options = ""
+        for status, name in TICKET_STATUS:
+            selected = "selected" if status == self.status else ""
+            options += f"""
+                <option value="{status}" {selected}>
+                    {name}
+                </option>
+            """
+
+        col = self.get_status_display()
+        if (
+            request.user.employee_get == self.employee_id
+            or request.user.has_perm("helpdesk.change_ticket")
+            or request.user.employee_get in self.assigned_to.all()
+            or is_department_manager(request, self)
+        ):
+            col = f"""
+                <div onclick="event.stopPropagation()" >
+                    <select
+                        hx-post="{reverse_lazy('ticket-status-change', kwargs={'ticket_id': self.id})}"
+                        name="status"
+                        id="status"
+                        hx-swap="none"
+                        hx-on-htmx-after-request="$('#reloadMessagesButton').click();$(`#offboardingStageContainer{{instance.stage_id.pk}}`).find('.reload-record').click()"
+                        name="status"
+                        class="w-100"
+                        style="
+                            border: 1px solid hsl(213deg, 22%, 84%);
+                            padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+                            border-radius: 0rem;
+                        "
+                    >
+                        {options}
+                    </select>
+                </div>
+            """
+        return col
 
     def __str__(self):
         return self.title

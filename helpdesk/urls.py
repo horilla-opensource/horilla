@@ -8,7 +8,7 @@ from django.urls import path
 
 from base.views import object_delete
 from helpdesk import views
-from helpdesk.cbv import department_managers, faq, tags, ticket_type
+from helpdesk.cbv import department_managers, faq, pipeline, tags, ticket_type
 from helpdesk.models import FAQ, FAQCategory, Ticket
 
 urlpatterns = [
@@ -67,7 +67,17 @@ urlpatterns = [
         views.faq_delete,
         name="faq-delete",
     ),
-    path("ticket-view/", views.ticket_view, name="ticket-view"),
+    # path("ticket-view/", views.ticket_view, name="ticket-view"),
+    path("ticket-view/", pipeline.TicketPipelineView.as_view(), name="ticket-view"),
+    path(
+        "ticket-pipeline-nav/",
+        pipeline.TicketPipelineNav.as_view(),
+        name="ticket-pipeline-nav",
+    ),
+    path("get-ticket-tabs", pipeline.TicketTabView.as_view(), name="get-ticket-tabs"),
+    path("ticket-tab/", pipeline.TicketTabView.as_view(), name="ticket-tab"),
+    path("ticket-tab-list/", pipeline.TicketListView.as_view(), name="ticket-tab-list"),
+    # path("ticket-pipeline-view/", pipeline.TicketPipelineTabView.as_view(), name="ticket-pipeline-view"),
     path(
         "ticket-create",
         ticket_type.TicketsCreateFormView.as_view(),
@@ -85,6 +95,11 @@ urlpatterns = [
         "change-ticket-status/<int:ticket_id>/",
         views.change_ticket_status,
         name="change-ticket-status",
+    ),
+    path(
+        "ticket-status-change/<int:ticket_id>/",
+        views.ticket_status_change,
+        name="ticket-status-change",
     ),
     path("ticket-delete/<int:ticket_id>", views.ticket_delete, name="ticket-delete"),
     path("ticket-filter", views.ticket_filter, name="ticket-filter"),

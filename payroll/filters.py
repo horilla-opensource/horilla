@@ -285,6 +285,22 @@ class PayslipFilter(HorillaFilterSet):
     month = django_filters.CharFilter(field_name="start_date", lookup_expr="month")
     year = django_filters.CharFilter(field_name="start_date", lookup_expr="year")
 
+    allowance_title = django_filters.CharFilter(
+        method="filter_by_allowance_title", label="Allowance Title"
+    )
+    allowance_amount_gte = django_filters.NumberFilter(
+        method="filter_by_allowance_amount_gte"
+    )
+    allowance_amount_lte = django_filters.NumberFilter(
+        method="filter_by_allowance_amount_lte"
+    )
+    deduction_amount_gte = django_filters.NumberFilter(
+        method="filter_by_deduction_amount_gte"
+    )
+    deduction_amount_lte = django_filters.NumberFilter(
+        method="filter_by_deduction_amount_lte"
+    )
+
     class Meta:
         """
         Meta class to add additional options
@@ -304,7 +320,81 @@ class PayslipFilter(HorillaFilterSet):
             "net_pay__lte",
             "net_pay__gte",
             "sent_to_employee",
+            "allowance_amount_gte",
+            "allowance_amount_lte",
+            "deduction_amount_gte",
+            "deduction_amount_lte",
         ]
+
+    def filter_by_allowance_amount_gte(self, queryset, name, value):
+        return queryset.filter(
+            id__in=[
+                p.id
+                for p in queryset
+                if any(
+                    float(allowance.get("amount", 0)) >= float(value)
+                    for allowance in (p.pay_head_data or {}).get("allowances", [])
+                )
+            ]
+        )
+
+    def filter_by_allowance_amount_lte(self, queryset, name, value):
+        return queryset.filter(
+            id__in=[
+                p.id
+                for p in queryset
+                if all(
+                    float(allowance.get("amount", 0)) <= float(value)
+                    for allowance in (p.pay_head_data or {}).get("allowances", [])
+                )
+            ]
+        )
+
+    def filter_by_deduction_amount_lte(self, queryset, name, value):
+        value = float(value)
+        deduction_keys = [
+            "pretax_deductions",
+            "gross_pay_deductions",
+            "basic_pay_deductions",
+            "post_tax_deductions",
+            "tax_deductions",
+            "net_deductions",
+        ]
+
+        return queryset.filter(
+            id__in=[
+                p.id
+                for p in queryset
+                if all(
+                    float(d.get("amount", 0)) <= value
+                    for key in deduction_keys
+                    for d in (p.pay_head_data or {}).get(key, [])
+                )
+            ]
+        )
+
+    def filter_by_deduction_amount_gte(self, queryset, name, value):
+        value = float(value)
+        deduction_keys = [
+            "pretax_deductions",
+            "gross_pay_deductions",
+            "basic_pay_deductions",
+            "post_tax_deductions",
+            "tax_deductions",
+            "net_deductions",
+        ]
+
+        return queryset.filter(
+            id__in=[
+                p.id
+                for p in queryset
+                if any(
+                    float(d.get("amount", 0)) >= value
+                    for key in deduction_keys
+                    for d in (p.pay_head_data or {}).get(key, [])
+                )
+            ]
+        )
 
     def __init__(self, data=None, queryset=None, *, request=None, prefix=None):
         super().__init__(data=data, queryset=queryset, request=request, prefix=prefix)

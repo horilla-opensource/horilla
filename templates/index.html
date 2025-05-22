@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="{% static 'build/css/summernote-lite.min.css' %}" />
     <link rel="stylesheet" href="{% static 'build/css/orgChart.css' %}" />
     <link rel="stylesheet" href="{% static '/jquery/jqueryui.css' %}">
+    <link rel="stylesheet" href="{% static 'build/css/pivottable.min.css' %}" />
     <script src="{% static '/jquery/ajax.js' %}"></script>
     <script src="{% static '/jquery/jquery.min.js' %}"></script>
     <script src="{% static '/jquery/jqueryui.js' %}"></script>
@@ -250,6 +251,12 @@
     <script src="{% static '/base/time_formatting.js' %}"></script>
     <script src="{% static '/base/time_settings.js' %}"></script>
     <script src="{% static '/base/date_formatting.js' %}"></script>
+
+    <script src="{% static 'build/js/pivottable.min.js' %}"></script>
+    <script src="{% static 'build/js/pivottable_plot.min.js' %}"></script>
+    <script src="{% static 'build/js/pivottable_ploty.min.js' %}"></script>
+    <script src="{% static 'build/js/pivottable_excel.min.js' %}"></script>
+
     {% if "attendance"|app_installed %}
         <script src="{% static 'attendance/actions.js' %}"></script>
     {% endif %}

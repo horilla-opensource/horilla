@@ -4,14 +4,12 @@ from django.shortcuts import render
 from base.models import Company
 from employee.filters import EmployeeFilter
 from employee.models import Employee
-from horilla_views.cbv_methods import login_required
+from horilla_views.cbv_methods import login_required, permission_required
 
 
 @login_required
+@permission_required(perm="employee.view_employee")
 def employee_report(request):
-
-    if not request.user.is_superuser:
-        return render(request, "404.html")
     company = "all"
     selected_company = request.session.get("selected_company")
     if selected_company != "all":
@@ -25,11 +23,8 @@ def employee_report(request):
 
 
 @login_required
+@permission_required(perm="employee.view_employee")
 def employee_pivot(request):
-
-    if not request.user.is_superuser:
-        return render(request, "404.html")
-
     qs = Employee.objects.all()
     filtered_qs = EmployeeFilter(request.GET, queryset=qs)
     qs = filtered_qs.qs

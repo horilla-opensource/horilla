@@ -594,6 +594,46 @@ def ticket_archive(request, ticket_id):
 
 
 @login_required
+def ticket_status_change(request, ticket_id):
+    if request.method != "POST":
+        messages.error(request, _("Invalid request method."))
+        return HttpResponse("error")
+    ticket = Ticket.objects.get(id=ticket_id)
+    status = request.POST.get("status")
+    ticket.status = status
+    if ticket.status == "resolved":
+        ticket.resolved_date = datetime.today()
+    ticket.save()
+
+    employees = ticket.assigned_to.all()
+    assignees = [employee.employee_user_id for employee in employees]
+    assignees.append(ticket.employee_id.employee_user_id)
+    if hasattr(ticket.get_raised_on_object(), "dept_manager"):
+        if ticket.get_raised_on_object().dept_manager.all():
+            manager = ticket.get_raised_on_object().dept_manager.all().first().manager
+            assignees.append(manager.employee_user_id)
+    notify.send(
+        request.user.employee_get,
+        recipient=assignees,
+        verb=f"The status of the ticket has been changed to {ticket.status}.",
+        verb_ar="تم تغيير حالة التذكرة.",
+        verb_de="Der Status des Tickets wurde geändert.",
+        verb_es="El estado del ticket ha sido cambiado.",
+        verb_fr="Le statut du ticket a été modifié.",
+        icon="infinite",
+        redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
+    )
+    mail_thread = TicketSendThread(
+        request,
+        ticket,
+        type="status_change",
+    )
+    mail_thread.start()
+    messages.success(request, _("The Ticket status updated successfully."))
+    return HttpResponse("success")
+
+
+@login_required
 # @ticket_owner_can_enter(perm="helpdesk.change_ticket", model=Ticket)
 def change_ticket_status(request, ticket_id):
     """
