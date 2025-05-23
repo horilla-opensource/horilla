@@ -1030,7 +1030,7 @@ def leave_request_approve(request, id, emp_id=None):
             leave_request.status = "approved"
             if not leave_request.multiple_approvals():
                 leave_request.save()
-                super(AvailableLeave, available_leave).save()
+                available_leave.save()
                 send_notification = True
             else:
                 if request.user.is_superuser:
@@ -1038,7 +1038,7 @@ def leave_request_approve(request, id, emp_id=None):
                         leave_request_id=leave_request
                     ).update(is_approved=True)
                     leave_request.save()
-                    super(AvailableLeave, available_leave).save()
+                    available_leave.save()
                     send_notification = True
                 else:
                     conditional_requests = leave_request.multiple_approvals()
@@ -1074,7 +1074,7 @@ def leave_request_approve(request, id, emp_id=None):
                     condition_approval.save()
                     if approver == conditional_requests["managers"][-1]:
                         leave_request.save()
-                        super(AvailableLeave, available_leave).save()
+                        available_leave.save()
                         send_notification = True
             messages.success(request, _("Leave request approved successfully.."))
             if send_notification:
@@ -3932,14 +3932,14 @@ def employee_available_leave_count(request):
         else None
     )
     total_leave_days = available_leave.total_leave_days if available_leave else 0
-    forcated_days = 0
+    forcasted_days = 0
 
     if (
         available_leave
         and available_leave.leave_type_id.leave_type_next_reset_date()
         and start_date >= available_leave.leave_type_id.leave_type_next_reset_date()
     ):
-        forcated_days = available_leave.forcasted_leaves(start_date)
+        forcasted_days = available_leave.forcasted_leaves(start_date)
         total_leave_days = (
             available_leave.leave_type_id.carryforward_max
             if available_leave.leave_type_id.carryforward_type
@@ -3949,14 +3949,21 @@ def employee_available_leave_count(request):
         )
         if available_leave.leave_type_id.carryforward_type == "no carryforward":
             total_leave_days = 0
-        total_leave_days += forcated_days
+        total_leave_days += forcasted_days
+
+    print(datetime.today().date())
+    pending_requests = available_leave.employee_id.leaverequest_set.filter(
+        status="requested", leave_type_id=leave_type_id
+    ).exclude(start_date__lt=datetime.today().date())
+    pending_requests_days = pending_requests.count()
 
     context = {
         "hx_target": hx_target,
         "leave_type_id": leave_type_id,
         "available_leave": available_leave,
         "total_leave_days": total_leave_days,
-        "forcated_days": forcated_days,
+        "forcasted_days": forcasted_days,
+        "pending_requests": pending_requests_days,
     }
     return render(
         request, "leave/leave_request/employee_available_leave_count.html", context
