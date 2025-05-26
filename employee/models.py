@@ -713,16 +713,18 @@ class EmployeeBankDetails(HorillaModel):
     bank_name = models.CharField(max_length=50)
     account_number = models.CharField(
         max_length=50,
-        null=False,
+        null=True,
         blank=False,
         default="",
     )
-    branch = models.CharField(max_length=50)
-    address = models.TextField(max_length=255)
+    branch = models.CharField(max_length=50, null=True)
+    address = models.TextField(max_length=255, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
     state = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=50, blank=True)
-    any_other_code1 = models.CharField(max_length=50, verbose_name="Bank Code #1")
+    any_other_code1 = models.CharField(
+        max_length=50, verbose_name="Bank Code #1", null=True
+    )
     any_other_code2 = models.CharField(
         max_length=50, null=True, blank=True, verbose_name="Bank Code #2"
     )
