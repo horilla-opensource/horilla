@@ -878,12 +878,13 @@ def update_status(request):
     This method is used to update the status of resignation letter
     """
     ids = request.GET.getlist("letter_ids")
-    status = request.GET["status"]
+    status = request.GET.get("status")
+    employee_id = request.GET.get("employee_id")
     offboarding_id = request.GET.get("offboarding_id")
-    default_notice_end = (
-        get_horilla_model_class(
-            app_label="payroll", model="payrollgeneralsetting"
-        ).objects.first()
+    contract_notice_end_date = (
+        get_horilla_model_class(app_label="payroll", model="contract")
+        .objects.filter(employee_id=employee_id, contract_status="active")
+        .first()
         if apps.is_installed("payroll")
         else None
     )
@@ -891,7 +892,7 @@ def update_status(request):
     if offboarding_id:
         offboarding = Offboarding.objects.get(id=offboarding_id)
         notice_period_starts = request.GET.get("notice_period_starts")
-        notice_period_ends = request.GET.get("notice_period_ends")
+        notice_period_ends = request.GET.get("notice_period_ends", None)
         if notice_period_starts:
             notice_period_starts = datetime.strptime(
                 notice_period_starts, "%Y-%m-%d"
@@ -902,10 +903,9 @@ def update_status(request):
                 notice_period_ends, "%Y-%m-%d"
             ).date()
         else:
-            notice_period_ends = None
-            if default_notice_end:
+            if contract_notice_end_date:
                 notice_period_ends = notice_period_starts + timedelta(
-                    days=default_notice_end.notice_period
+                    days=contract_notice_end_date.notice_period_in_days
                 )
         if not notice_period_starts:
             notice_period_starts = today

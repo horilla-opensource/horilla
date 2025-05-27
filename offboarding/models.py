@@ -119,7 +119,7 @@ class OffboardingEmployee(HorillaModel):
     OffboardingEmployee model / Employee on stage
     """
 
-    units = [("day", "days"), ("month", "Month")]
+    UNIT = [("day", "days"), ("month", "Month")]
     employee_id = models.OneToOneField(
         Employee, on_delete=models.CASCADE, verbose_name="Employee"
     )
@@ -127,7 +127,7 @@ class OffboardingEmployee(HorillaModel):
         OffboardingStage, on_delete=models.CASCADE, verbose_name="Stage", null=True
     )
     notice_period = models.IntegerField(null=True)
-    unit = models.CharField(max_length=10, choices=units, default="month", null=True)
+    unit = models.CharField(max_length=10, choices=UNIT, default="month", null=True)
     notice_period_starts = models.DateField(null=True)
     notice_period_ends = models.DateField(null=True, blank=True)
     objects = HorillaCompanyManager(
@@ -187,21 +187,21 @@ class ResignationLetter(HorillaModel):
             .filter(offboarding_id=offboarding)
             .first()
         )
-        contract_notice_end_date = (
-            get_horilla_model_class(app_label="payroll", model="contract")
-            .objects.filter(employee_id=self.employee_id, contract_status="active")
-            .first()
+        default_notice_end = (
+            get_horilla_model_class(
+                app_label="payroll", model="payrollgeneralsetting"
+            ).objects.first()
             if apps.is_installed("payroll")
             else None
         )
 
         try:
-            notice_period_ends = (
-                notice_period_starts
-                + timedelta(contract_notice_end_date.notice_period_in_days)
-                if contract_notice_end_date
-                else notice_period_ends
-            )
+            if not notice_period_ends:
+                notice_period_ends = (
+                    notice_period_starts + timedelta(default_notice_end.notice_period)
+                    if default_notice_end
+                    else notice_period_ends
+                )
         except:
             notice_period_ends = notice_period_ends
 

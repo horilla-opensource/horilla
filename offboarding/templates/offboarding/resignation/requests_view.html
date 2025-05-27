@@ -14,13 +14,23 @@
 {% include "offboarding/resignation/nav.html" %}
 {% if letters %}
     {% include "filter_tags.html" %}
-    <div id="resignationLetterContianer" hx-get="{% url 'search-resignation-request' %}?status=requested" hx-target="#resignationLetterContianer" hx-trigger="load">
+    <div
+        id="resignationLetterContianer"
+        hx-get="{% url 'search-resignation-request' %}?status=requested"
+        hx-target="#resignationLetterContianer"
+        hx-trigger="load"
+    >
 
     </div>
     {% else %}
     <div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
         <div class="text-center">
-            <img class="oh-404__image mb-3" style="width: 150px; height: 150px;" src="{% static 'images/ui/no_resignation.png' %}" alt="No documents">
+            <img
+                class="oh-404__image mb-3"
+                style="width: 150px; height: 150px;"
+                src="{% static 'images/ui/no_resignation.png' %}"
+                alt="No documents"
+            />
             <h5 class="oh-404__subtitle">{% trans "No resignation has been created yet." %}</h5>
         </div>
     </div>
@@ -38,67 +48,104 @@
     $("[type=checkbox]").change();
 
     function resignLetterConfirmation(params, target, approve = false) {
-      // Define the select box options
-      var selectOptions = ``;
-    var dateFields = '<label style="display:block;" for="notice_period_starts">Start Date:</label>' +
-      `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_starts" name="notice_period_starts">` +
-      '<label style="display:block;" for="notice_period_ends">End Date:</label>' +
-      `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_ends" name="notice_period_ends">`;
+        let html = '<p>' + params + '</p>'
+        let notice_starts = $(`#${target
+            .siblings("input[name=notice_period_starts]")
+            .first()
+            .attr("id")}`);
 
-    html = '<p>' + params + '</p>'
-    if (approve) { html = html + "<div >" + selectOptions + `
-      <div class='row' style='overflow-x:hidden;'>
-        <div class="col-12">
-          <div class="oh-label__info" for="offboardingSelect">
-            <label class="oh-label" for="offboardingSelect">Add to</label>
-          </div>
-            <select id="offboardingSelect" class="oh-select oh-select2 w-100" name="reason" title="{% trans "Add to offboarding" %}">
-              // {% for offboarding in offboardings %}
-                <option value="{{offboarding.id}}">{{offboarding.title}}</option>
-              // {% endfor %}
-          </select>
-        </div>
-        <div class="col-6 col-md-6">
-          <div class="oh-label__info" for="notice_period_starts">
-            <label class="oh-label" for="notice_period_starts">Planned to leave on</label>
-          </div>
-            <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">
-        </div>
-        <div class="col-6 col-md-6">
-          <div class="oh-label__info" for="notice_period_ends">
-            <label class="oh-label" for="notice_period_ends">Notice period end</label>
-          </div>
-            <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">
-        </div>
-      </div>
-      ` + "</div>" }
-    Swal.fire({
-      html: html,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#008000',
-      cancelButtonColor: '#d33',
-      confirmButtonText: "Confirm",
-      cancelButtonText: "Close"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Access the selected value from the select box
+        let notice_ends = $(`#${target
+            .siblings("input[name=notice_period_ends]")
+            .first()
+            .attr("id")}`);
+
         if (approve) {
-          var selectedOffboarding = document.getElementById('offboardingSelect').value;
-          target.siblings("input[name=offboarding_id]").val(selectedOffboarding)
-        }
-        target.click();
+            let noticeStartsId = notice_starts.attr("id");
+            let noticeEndsId = notice_ends.attr("id");
 
-        if (event.target.tagName.toLowerCase() === 'form') {
-          event.target.submit();
-        } else if (event.target.tagName.toLowerCase() === 'a') {
-          window.location.href = event.target.href;
+            html += `
+                <div>
+                    <div class='row' style='overflow-x:hidden;'>
+                        <div class="col-12">
+                            <div class="oh-label__info">
+                                <label class="oh-label" for="offboardingSelect">Add to</label>
+                            </div>
+                            <select id="offboardingSelect" class="oh-select oh-select2 w-100" name="reason" title="Add to offboarding">
+                                {% for offboarding in offboardings %}
+                                    <option value="{{offboarding.id}}">{{offboarding.title}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-6 col-md-6">
+                            <div class="oh-label__info">
+                                <label class="oh-label" for="notice_period_starts">Planned to leave on</label>
+                            </div>
+                            <input type="date" name="notice_period_starts"
+                                class="oh-input w-100 form-control"
+                                value="${notice_starts.val()}"
+                                onchange="
+                                    noticePeriodUpdate(this, $('#noticeEndDate'));
+                                    $('#${noticeStartsId}').val(this.value);
+                                "
+                                required
+                            />
+                        </div>
+                        <div class="col-6 col-md-6">
+                            <div class="oh-label__info">
+                                <label class="oh-label" for="notice_period_ends">Notice period end</label>
+                            </div>
+                            <input type="date"
+                                name="notice_period_ends"
+                                id="noticeEndDate"
+                                class="oh-input w-100 form-control"
+                                value="${notice_ends.val()}"
+                                onchange="$('#${noticeEndsId}').val(this.value)"
+                                required
+                            />
+                        </div>
+                    </div>
+                </div>
+            `;
         }
-      } else {
-        // Handle cancel
-      }
-    });
-  }
+        Swal.fire({
+        html: html,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#008000',
+        cancelButtonColor: '#d33',
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Close"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Access the selected value from the select box
+                if (approve) {
+                    var selectedOffboarding = document.getElementById('offboardingSelect').value;
+                    target.siblings("input[name=offboarding_id]").val(selectedOffboarding)
+                }
+                target.click();
 
+                if (event.target.tagName.toLowerCase() === 'form') {
+                    event.target.submit();
+                } else if (event.target.tagName.toLowerCase() === 'a') {
+                    window.location.href = event.target.href;
+                }
+            } else {
+                // Handle cancel
+            }
+        });
+    }
+
+    function noticePeriodUpdate($this, elem) {
+        start_date = $($this).val();
+        $.ajax({
+            type: 'get',
+            url: "{% url 'get-notice-period-end-date' %}",
+            data: { "start_date": start_date },
+            success: function (response) {
+                end_date = response.end_date;
+                $(elem).val(end_date);
+            }
+        })
+    }
   </script>
 {% endblock content %}
