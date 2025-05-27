@@ -1282,21 +1282,17 @@ def save_employee_bulk_update(request):
         for id in employee_list:
             try:
                 employee_instance = Employee.objects.get(id=int(id))
-                (
-                    employee_work_info,
-                    created,
-                ) = EmployeeWorkInformation.objects.get_or_create(
-                    employee_id=employee_instance
+                employee_work_info, created = (
+                    EmployeeWorkInformation.objects.get_or_create(
+                        employee_id=employee_instance
+                    )
                 )
-                (
-                    employee_bank,
-                    created,
-                ) = EmployeeBankDetails.objects.get_or_create(
+                employee_bank, created = EmployeeBankDetails.objects.get_or_create(
                     employee_id=employee_instance
                 )
             except (ValueError, OverflowError):
                 employee_list.remove(id)
-                pass
+
         for field in update_fields:
             parts = str(field).split("__")
             if parts[-1]:

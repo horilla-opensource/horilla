@@ -715,7 +715,6 @@ class EmployeeBankDetails(HorillaModel):
         max_length=50,
         null=True,
         blank=False,
-        default="",
     )
     branch = models.CharField(max_length=50, null=True)
     address = models.TextField(max_length=255, null=True)
