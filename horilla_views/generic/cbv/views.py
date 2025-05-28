@@ -367,15 +367,11 @@ class HorillaListView(ListView):
                 ).only("pk", field)
 
                 existing_values = existing_objects.values_list(field, flat=True)
-                print(">>>>>>>>>>>>>>>>>>>")
-                print(existing_values)
                 to_create = [
                     related_model(**{field: value})
                     for value in values
                     if value not in existing_values
                 ]
-                print(to_create)
-                print(">>>>>>>>>>>>>>>>>>>")
 
                 if to_create:
                     related_model.objects.bulk_create(to_create)
@@ -557,6 +553,7 @@ class HorillaListView(ListView):
                         )
                 bulk_base_fk_grouping = {}
                 bulk_update_reverse_related_grouping = {}
+                bulk_create_from_update_reverse_related_grouping = {}
                 bulk_update_base_grouping = []
 
                 related_fields = list(self.reverse_model_relation_to_base_model.keys())
@@ -600,6 +597,14 @@ class HorillaListView(ListView):
                                 bulk_update_reverse_related_grouping.get(relation, [])
                                 + [related_instance]
                             )
+                        else:
+                            bulk_create_from_update_reverse_related_grouping[
+                                relation
+                            ] = bulk_update_reverse_related_grouping.get(
+                                relation, []
+                            ) + [
+                                related_instance
+                            ]
 
                     for fk_field in fk_fields:
                         if fk_field not in self.fk_mapping:
@@ -630,6 +635,10 @@ class HorillaListView(ListView):
                     ]
                     related_model.objects.bulk_update(
                         bulk_update_reverse_related_grouping[field], update_fields
+                    )
+                elif field in bulk_create_from_update_reverse_related_grouping:
+                    related_model.objects.bulk_create(
+                        bulk_create_from_update_reverse_related_grouping[field]
                     )
 
         status = "Success"
