@@ -245,4 +245,5 @@ urlpatterns = [
         views.delete_ticket_document,
         name="delete-ticket-document",
     ),
+    path("load-faqs/", views.load_faqs, name="load-faqs"),
 ]

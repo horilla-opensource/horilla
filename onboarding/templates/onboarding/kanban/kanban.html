@@ -77,9 +77,9 @@
                                         <button
                                             class="oh-btn oh-btn--small oh-btn--transparent p-0"
                                             data-toggle="oh-modal-toggle"
-                                            data-target="#taskModal"
-                                            hx-get="{% url 'task-creation' stage.grouper.id %}"
-                                            hx-target = "#taskModalBody"
+                                            data-target="#objectCreateModal"
+                                            hx-get="{% url 'task-creation' %}?stage_id={{stage.grouper.id}}"
+                                            hx-target = "#objectCreateModalTarget"
 
                                             title="{% trans 'Add task' %}">
                                             <ion-icon name="add-sharp" role="img" class="md hydrated"
@@ -143,7 +143,7 @@
                     {% if request.user|task_manages:rec or perms.onboarding.add_candidatestage %}
                     <div class="oh-kanban__add-container">
                         <button class="oh-btn oh-btn--x-small oh-kanban__add-section" onclick="event.stopPropagation()"  data-action="toggle"
-                            data-target="#addStageModal" hx-get="{% url 'stage-creation' rec.id %}" hx-target="#stageForm" data-toggle="oh-modal-toggle">
+                            data-target="#objectCreateModal" hx-get="{% url 'stage-creation' rec.id %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle">
                             <ion-icon class="me-1" name="add-outline"></ion-icon>
                             {% trans "Stage" %}
                         </button>

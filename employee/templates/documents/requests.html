@@ -1,70 +1,79 @@
 {% load i18n %} {% load horillafilters %} {% load basefilters %} {% load static %}
 {% include 'generic/components.html'%}
 {% include 'filter_tags.html' %}
-<div
-	class="oh-modal"
-	id="viewFileModal"
-	role="dialog"
-	aria-labelledby="viewFileModal"
-	aria-hidden="true"
->
+<div class="oh-modal" id="viewFileModal" role="dialog" aria-labelledby="viewFileModal" aria-hidden="true">
 	<div class="oh-modal__dialog custom-dialog">
 		<div class="oh-modal__dialog-header">
-			<span class="oh-modal__dialog-title" id="viewFileModalLabel"
-				>{% trans "View File" %}</span
-			>
+			<span class="oh-modal__dialog-title" id="viewFileModalLabel">{% trans "View File" %}</span>
 			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon
-					name="close-outline"
-					role="img"
-					class="md hydrated"
-					aria-label="close outline"
-				></ion-icon>
+				<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
 			</button>
 		</div>
 		<div class="oh-modal__dialog-body" id="viewFile"></div>
 	</div>
 </div>
 
-<div
-	class="oh-modal"
-	id="rejectFileModal"
-	role="dialog"
-	aria-labelledby="rejectFileModal"
-	aria-hidden="true"
->
+<div class="oh-modal" id="rejectFileModal" role="dialog" aria-labelledby="rejectFileModal" aria-hidden="true">
 	<div class="oh-modal__dialog">
 		<div class="oh-modal__dialog-header">
-			<span class="oh-modal__dialog-title" id="rejectFileModalLabel"
-				>{% trans "Reject" %}</span
-			>
+			<span class="oh-modal__dialog-title" id="rejectFileModalLabel">{% trans "Reject" %}</span>
 			<button class="oh-modal__close--custom" aria-label="Close"
-			onclick="event.stopPropagation();event.preventDefault();$('#rejectFileModal').toggleClass('oh-modal--show');">
-				<ion-icon
-					name="close-outline"
-					role="img"
-					class="md hydrated"
-					aria-label="close outline"
-				></ion-icon>
+				onclick="event.stopPropagation();event.preventDefault();$('#rejectFileModal').toggleClass('oh-modal--show');">
+				<ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
 			</button>
 		</div>
 		<div class="oh-modal__dialog-body" id="rejectFileForm"></div>
 	</div>
 </div>
+
 {% if documents %}
-<div class="oh-card">
-    {% for document_list in documents reversed %}
-	<div class="oh-accordion-meta">
-		<div class="oh-accordion-meta__item">
-			<div
-				class="oh-accordion-meta__header"
-			 >
-				<span class="oh-accordion-meta__title pt-3 pb-3">
-					<div class="oh-tabs__input-badge-container">
-						<input type="checkbox" name="select_all" onclick="event.stopPropagation()" class="oh-input payslip-checkbox oh-input__checkbox select_all me-3">
-						{{document_list.grouper}}
-						<div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" style="margin-left: 20px;" title="{% trans 'Uploaded / Requested' %}">
-							{{document_list.list.0.upload_documents_count}} / {{document_list.list|length}}
+	<div class="oh-card">
+		{% for document_list in documents reversed %}
+			<div class="oh-accordion-meta">
+				<div class="oh-accordion-meta__item">
+					<div class="oh-accordion-meta__header">
+						<span class="oh-accordion-meta__title pt-3 pb-3">
+							<div class="oh-tabs__input-badge-container">
+								<input type="checkbox" name="select_all" onclick="selectAllDocuments(event)"
+									class="oh-input payslip-checkbox oh-input__checkbox select_all me-3">
+									{{document_list.grouper}}
+								<div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" style="margin-left: 20px;"
+									title="{% trans 'Uploaded / Requested' %}">
+									{{document_list.list.0.upload_documents_count}} / {{document_list.list|length}}
+								</div>
+							</div>
+						</span>
+
+						<div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
+							<div class="oh-dropdown" x-data="{open: false}">
+								<button class="oh-btn oh-stop-prop oh-accordion-meta__btn" @click="open = !open"
+									@click.outside="open = false" title="Action">
+									{% trans "Actions" %}
+									<ion-icon class="ms-2 oh-accordion-meta__btn-icon md hydrated" name="caret-down-outline"
+										role="img" aria-label="caret down outline"></ion-icon>
+								</button>
+								<div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none;">
+									<ul class="oh-dropdown__items">
+										<li class="oh-dropdown__item">
+											<a class="oh-dropdown__link" data-toggle="oh-modal-toggle"
+												data-target="#objectCreateModal"
+												hx-get="{% url 'document-request-update' document_list.list.0.document_request_id.id %}"
+												hx-target="#objectCreateModalTarget">{% trans "Edit" %}</a>
+										</li>
+										<li class="oh-dropdown__item">
+											<form action="{% url 'document-request-delete' document_list.list.0.document_request_id.id %}"
+												onsubmit="return confirm('{% trans " Are you sure you want to delete this Document Request?" %}');"
+												class="w-50" method='post'>
+												{% csrf_token %}
+												<button type="submit" class="oh-dropdown__link oh-dropdown__link--danger"
+													title="{% trans 'Delete' %}">
+													{% trans "Delete" %}
+												</button>
+											</form>
+										</li>
+									</ul>
+								</div>
+							</div>
 						</div>
 					</div>
 				</span>
@@ -236,173 +245,105 @@
 								</form>
 							</div>
 						</div>
-						{% endfor %}
+						<div class="oh-pagination">
+							<span class="oh-pagination__page">
+								{% trans "Page" %} {{ document_list.list.number }}
+								{%trans "of" %} {{document_list.list.paginator.num_pages }}.
+							</span>
+							<nav class="oh-pagination__nav">
+								<div class="oh-pagination__input-container me-3">
+									<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+									<input type="number" name="{{document_list.dynamic_name}}" class="oh-pagination__input"
+										value="{{document_list.list.number}}"
+										hx-get="{% url 'document-request-filter-view' %}?{{pd}}" hx-target="#view-container"
+										min="1" />
+									<span class="oh-pagination__label">{% trans "of" %}
+										{{document_list.list.paginator.num_pages}}</span>
+								</div>
+								<ul class="oh-pagination__items">
+									{% if document_list.list.has_previous %}
+									<li class="oh-pagination__item oh-pagination__item--wide">
+										<a hx-target="#view-container"
+											hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}=1"
+											class="oh-pagination__link">{% trans "First" %}</a>
+									</li>
+									<li class="oh-pagination__item oh-pagination__item--wide">
+										<a hx-target="#view-container"
+											hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.previous_page_number }}"
+											class="oh-pagination__link">{% trans "Previous" %}</a>
+									</li>
+									{% endif %} {% if document_list.list.has_next %}
+									<li class="oh-pagination__item oh-pagination__item--wide">
+										<a hx-target="#view-container"
+											hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.next_page_number }}"
+											class="oh-pagination__link">{% trans "Next" %}</a>
+									</li>
+									<li class="oh-pagination__item oh-pagination__item--wide">
+										<a hx-target="#view-container"
+											hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.paginator.num_pages }}"
+											class="oh-pagination__link">{% trans "Last" %}</a>
+									</li>
+									{% endif %}
+								</ul>
+							</nav>
+						</div>
 					</div>
 				</div>
-				<div class="oh-pagination">
-                    <span class="oh-pagination__page">
-                        {% trans "Page" %} {{ document_list.list.number }}
-                        {%trans "of" %} {{document_list.list.paginator.num_pages }}.
-                    </span>
-                    <nav class="oh-pagination__nav">
-                        <div class="oh-pagination__input-container me-3">
-                            <span class="oh-pagination__label me-1"
-                                >{% trans "Page" %}</span
-                            >
-                            <input
-                                type="number"
-                                name="{{document_list.dynamic_name}}"
-                                class="oh-pagination__input"
-                                value="{{document_list.list.number}}"
-                                hx-get="{% url 'document-request-filter-view' %}?{{pd}}"
-                                hx-target="#view-container"
-                                min="1"
-                            />
-                            <span class="oh-pagination__label"
-                                >{% trans "of" %}
-                                {{document_list.list.paginator.num_pages}}</span
-                            >
-                        </div>
-                        <ul class="oh-pagination__items">
-                            {% if document_list.list.has_previous %}
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#view-container"
-                                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}=1"
-                                    class="oh-pagination__link"
-                                    >{% trans "First" %}</a
-                                >
-                            </li>
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#view-container"
-                                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.previous_page_number }}"
-                                    class="oh-pagination__link"
-                                    >{% trans "Previous" %}</a
-                                >
-                            </li>
-                            {% endif %} {% if document_list.list.has_next %}
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#view-container"
-                                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.next_page_number }}"
-                                    class="oh-pagination__link"
-                                    >{% trans "Next" %}</a
-                                >
-                            </li>
-                            <li
-                                class="oh-pagination__item oh-pagination__item--wide"
-                            >
-                                <a
-                                    hx-target="#view-container"
-                                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.paginator.num_pages }}"
-                                    class="oh-pagination__link"
-                                    >{% trans "Last" %}</a
-                                >
-                            </li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-                </div>
 			</div>
+		{% endfor %}
+
+		<div class="oh-pagination">
+			<span class="oh-pagination__page">
+				{% trans "Page" %} {{ documents.number }} {% trans "of" %}
+				{{ documents.paginator.num_pages }}.
+			</span>
+			<nav class="oh-pagination__nav">
+				<div class="oh-pagination__input-container me-3">
+					<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+					<input type="number" name="page" class="oh-pagination__input" value="{{documents.number}}"
+						hx-get="{% url 'document-request-filter-view' %}?{{pd}}" hx-target="#view-container" min="1" />
+					<span class="oh-pagination__label">{% trans "of" %}
+						{{documents.paginator.num_pages}}</span>
+				</div>
+				<ul class="oh-pagination__items">
+					{% if documents.has_previous %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target="#view-container" hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page=1"
+							class="oh-pagination__link">{% trans "First" %}</a>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target="#view-container"
+							hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page={{ documents.previous_page_number }}"
+							class="oh-pagination__link">{% trans "Previous" %}</a>
+					</li>
+					{% endif %} {% if documents.has_next %}
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target="#view-container"
+							hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page={{ documents.next_page_number }}"
+							class="oh-pagination__link">{% trans "Next" %}</a>
+					</li>
+					<li class="oh-pagination__item oh-pagination__item--wide">
+						<a hx-target="#view-container"
+							hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page={{ documents.paginator.num_pages }}"
+							class="oh-pagination__link">{% trans "Last" %}</a>
+					</li>
+					{% endif %}
+				</ul>
+			</nav>
 		</div>
 	</div>
-	{% endfor %}
-
-	<div class="oh-pagination">
-        <span class="oh-pagination__page">
-            {% trans "Page" %} {{ documents.number }} {% trans "of" %}
-            {{ documents.paginator.num_pages }}.
-        </span>
-        <nav class="oh-pagination__nav">
-            <div class="oh-pagination__input-container me-3">
-                <span class="oh-pagination__label me-1"
-                    >{% trans "Page" %}</span
-                >
-                <input
-                    type="number"
-                    name="page"
-                    class="oh-pagination__input"
-                    value="{{documents.number}}"
-                    hx-get="{% url 'document-request-filter-view' %}?{{pd}}"
-                    hx-target="#view-container"
-                    min="1"
-                />
-                <span class="oh-pagination__label"
-                    >{% trans "of" %}
-                    {{documents.paginator.num_pages}}</span
-                >
-            </div>
-            <ul class="oh-pagination__items">
-                {% if documents.has_previous %}
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a
-                        hx-target="#view-container"
-                        hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page=1"
-                        class="oh-pagination__link"
-                        >{% trans "First" %}</a
-                    >
-                </li>
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a
-                        hx-target="#view-container"
-                        hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page={{ documents.previous_page_number }}"
-                        class="oh-pagination__link"
-                        >{% trans "Previous" %}</a
-                    >
-                </li>
-                {% endif %} {% if documents.has_next %}
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a
-                        hx-target="#view-container"
-                        hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page={{ documents.next_page_number }}"
-                        class="oh-pagination__link"
-                        >{% trans "Next" %}</a
-                    >
-                </li>
-                <li class="oh-pagination__item oh-pagination__item--wide">
-                    <a
-                        hx-target="#view-container"
-                        hx-get="{% url 'document-request-filter-view' %}?{{pd}}&page={{ documents.paginator.num_pages }}"
-                        class="oh-pagination__link"
-                        >{% trans "Last" %}</a
-                    >
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-    </div>
-</div>
 {% else %}
-  <!-- start of empty page -->
-  <div class="oh-404">
-    <img
-      style="width: 150px; height: 150px"
-      src="{% static 'images/ui/no-results.png' %}"
-      class="oh-404__image mb-4"
-    />
-    <h5 class="oh-404__subtitle">
-      {% trans "No search result found!" %}
-    </h5>
-  </div>
-  <!-- end of empty page -->
+	<!-- start of empty page -->
+	<div class="oh-empty">
+		<img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+		<h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+		<p class="oh-empty__subtitle">{% trans "No documents found." %}</p>
+	</div>
+	<!-- end of empty page -->
 {% endif %}
 <script>
-	function highlightRow(checkbox) {
-		checkbox.closest(".oh-user_permission-list_item").removeClass("highlight-selected");
-		if (checkbox.is(":checked")) {
-		  checkbox.closest(".oh-user_permission-list_item").addClass("highlight-selected");
-		}
-	}
-	$(document).ready(function(){
-		$(".oh-accordion-meta__header").first().click()
-
+	$(document).ready(function () {
+		$(".oh-accordion-meta__body").first().removeClass('d-none');
+		$(".oh-accordion-meta__header").first().addClass('oh-accordion-meta__header--show');
 	})
-
 </script>

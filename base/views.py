@@ -7,6 +7,8 @@ This module is used to map url pattens with django views or methods
 import csv
 import json
 import os
+import random
+import threading
 import uuid
 from datetime import datetime, timedelta
 from email.mime.image import MIMEImage
@@ -24,11 +26,17 @@ from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMessage, EmailMultiAlternatives, send_mail
 from django.core.management import call_command
 from django.core.validators import validate_ipv46_address
 from django.db.models import ProtectedError, Q
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import (
+    FileResponse,
+    Http404,
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
@@ -114,6 +122,7 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     format_date,
     generate_colors,
+    generate_otp,
     get_key_instances,
     is_reportingmanager,
     paginator_qry,
@@ -598,13 +607,14 @@ def login_user(request):
             return redirect("login")
 
         login(request, user)
+
         messages.success(request, _("Login successful."))
 
         # Ensure `next_url` is a safe local URL
         if not url_has_allowed_host_and_scheme(
             next_url, allowed_hosts={request.get_host()}
         ):
-            next_url = "/dashboard"
+            next_url = "/"
 
         if params:
             next_url += f"?{params}"
@@ -795,6 +805,95 @@ def change_username(request):
         return render(request, "base/auth/username_change_form.html", {"form": form})
 
     return render(request, "base/auth/username_change.html", {"form": form})
+
+
+def two_factor_auth(request):
+    """
+    function to handle two-factor authentication for users.
+    """
+    # request.session["otp_code"] = None
+    try:
+        otp = get_otp(request)
+    except:
+        otp = None
+
+    if request.method == "POST":
+        user_otp = request.POST.get("otp")
+        if user_otp == otp:
+            request.session["otp_code"] = None
+            request.session["otp_code_timestamp"] = None
+            request.session["otp_code_verified"] = True
+            request.session.save()
+            messages.success(request, "OTP verified successfully.")
+            return redirect("/")
+        elif otp is None:
+            messages.error(request, "OTP expired. Please request a new one.")
+            return render(request, "base/auth/two_factor_auth.html")
+        else:
+            messages.error(request, "Invalid OTP.")
+            return render(request, "base/auth/two_factor_auth.html")
+
+    if not horilla_apps.TWO_FACTORS_AUTHENTICATION:
+        return redirect("/")
+
+    if otp is None:
+        send_otp(request)
+    return render(request, "base/auth/two_factor_auth.html")
+
+
+def send_otp(request):
+    """
+    Function to send OTP to the user's email address.
+    It generates a new OTP code, stores it in the session, and sends it via email.
+    """
+    employee = request.user.employee_get
+    email = employee.get_mail()
+
+    email_backend = ConfiguredEmailBackend()
+    display_email_name = email_backend.dynamic_from_email_with_display_name
+
+    otp_code = set_otp(request)
+    email = EmailMessage(
+        subject="Your OTP Code",
+        body=f"Your OTP code is {otp_code}",
+        from_email=display_email_name,
+        to=[email],
+    )
+    thread = threading.Thread(target=email.send)
+    thread.start()
+
+    return redirect("two-factor")
+
+
+def set_otp(request):
+    """
+    Function to set the OTP code in the session.
+    Generates a new OTP code, stores it in the session, and sets a timestamp for expiration.
+    """
+
+    otp_code = generate_otp()
+    request.session["otp_code"] = otp_code
+    request.session["otp_code_timestamp"] = timezone.now().timestamp()
+    request.session["otp_code_verified"] = False
+    request.session.save()
+    return otp_code
+
+
+def get_otp(request):
+    """
+    Function to retrieve the OTP code from the session.
+    Checks if the OTP code has expired (10 minutes) and clears it if so.
+    """
+    created_at = request.session.get("otp_code_timestamp", 0)
+    current_time = timezone.now().timestamp()
+
+    if current_time - created_at > 600:
+        request.session["otp_code"] = None
+        request.session["otp_code_timestamp"] = None
+        request.session.save()
+        return None
+    else:
+        return request.session.get("otp_code")
 
 
 def logout_user(request):
@@ -7531,6 +7630,8 @@ def view_penalties(request):
     return render(request, "penalty/penalty_view.html", {"records": records})
 
 
+@login_required
+@permission_required("base.delete_penaltyaccounts")
 def delete_penalities(request, penalty_id):
     penalty = PenaltyAccounts.objects.get(id=penalty_id)
     penalty.delete()
@@ -7538,3 +7639,34 @@ def delete_penalities(request, penalty_id):
     return HttpResponse(
         "<script>$('.reload-record').click();$('#reloadMessagesButton').click();</script>"
     )
+
+
+def protected_media(request, path):
+    page_urls = [
+        "/login",
+        "/forgot-password",
+        "/change-username",
+        "/change-password",
+        "/employee-reset-password",
+        "/recruitment/candidate-survey",
+        "/recruitment/open-recruitments",
+        "/recruitment/candidate-self-status-tracking",
+    ]
+
+    exempted_folders = ["base/icon/"]
+
+    media_path = os.path.join(settings.MEDIA_ROOT, path)
+    if not os.path.exists(media_path):
+        raise Http404("File not found")
+
+    referer = urlparse(request.META.get("HTTP_REFERER", ""))
+    referer_path = referer.path
+
+    if referer_path not in page_urls and not any(
+        path.startswith(folder) for folder in exempted_folders
+    ):
+        if not request.user.is_authenticated:
+            messages.error(request, "You must be logged in to access this file.")
+            return redirect("login")
+
+    return FileResponse(open(media_path, "rb"))

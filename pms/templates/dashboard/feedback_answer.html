@@ -48,10 +48,9 @@
 </div>
 {% else %}
     <div class="oh-empty h-100">
-        <p class="oh-empty__message">
-            <img style="display: block;width: 70px;margin: 20px auto ;" src="{% static "/images/ui/no_records.svg" %}" class="" alt=""/>
-            {% trans "No records available at the moment." %}
-        </p>
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "No records available at the moment." %}</p>
     </div>
 {% endif %}
 {% if feedbacks.has_next or feedbacks.has_previous %}

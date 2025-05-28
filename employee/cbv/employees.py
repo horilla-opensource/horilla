@@ -14,7 +14,7 @@ from accessibility.cbv_decorators import enter_if_accessible
 from base.methods import is_reportingmanager
 from employee.filters import EmployeeFilter
 from employee.forms import BulkUpdateFieldForm, EmployeeExportExcelForm
-from employee.models import Employee
+from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
 from employee.views import _check_reporting_manager
 from horilla.signals import post_generic_delete
 from horilla_views.cbv_methods import login_required
@@ -49,6 +49,9 @@ class EmployeesView(TemplateView):
         update_fields = BulkUpdateFieldForm()
         context["update_fields_form"] = update_fields
         return context
+
+
+from base import models as base_models
 
 
 @method_decorator(login_required, name="dispatch")
@@ -89,6 +92,112 @@ class EmployeesList(HorillaListView):
         "employee_work_info__date_joining",
         "employee_work_info__company_id",
     ]
+
+    import_fields = [
+        "badge_id",
+        "employee_first_name",
+        "employee_last_name",
+        "employee_user_id__username",
+        "employee_user_id__password",
+        "email",
+        "phone",
+        "address",
+        "country",
+        "state",
+        "city",
+        "zip",
+        "dob",
+        "gender",
+        "qualification",
+        "experience",
+        "marital_status",
+        "children",
+        "emergency_contact",
+        "emergency_contact_name",
+        "emergency_contact_relation",
+        "is_active",
+        "employee_work_info__department_id",
+        "employee_work_info__job_position_id",
+        "employee_work_info__job_role_id",
+        "employee_work_info__reporting_manager_id",
+        "employee_work_info__shift_id",
+        "employee_work_info__work_type_id",
+        "employee_work_info__employee_type_id",
+        "employee_work_info__location",
+        "employee_work_info__company_id",
+        "employee_work_info__email",
+        "employee_work_info__mobile",
+        "employee_work_info__date_joining",
+        "employee_work_info__contract_end_date",
+        "employee_work_info__basic_salary",
+        "employee_work_info__salary_hour",
+        "employee_bank_details__bank_name",
+        "employee_bank_details__account_number",
+        "employee_bank_details__branch",
+        "employee_bank_details__address",
+        "employee_bank_details__country",
+        "employee_bank_details__state",
+        "employee_bank_details__city",
+        "employee_bank_details__any_other_code1",
+        "employee_bank_details__any_other_code2",
+    ]
+    import_file_name = "Employee Import"
+    update_reference = "id"
+
+    import_help = {
+        "Id | Reference": ["Dont Alter this column"],
+        "Gender": ["male", "female", "other"],
+        "Marital Status": ["single", "married", "divorced"],
+        "Date Formats": ["yyyy-mm-dd"],
+    }
+
+    import_related_model_column_mapping = {
+        "employee_user_id": base_models.User,
+        "employee_work_info": EmployeeWorkInformation,
+        "employee_bank_details": EmployeeBankDetails,
+        "employee_work_info__reporting_manager_id": Employee,
+        "employee_work_info__department_id": base_models.Department,
+        "employee_work_info__job_position_id": base_models.JobPosition,
+        "employee_work_info__job_role_id": base_models.JobRole,
+        "employee_work_info__shift_id": base_models.EmployeeShift,
+        "employee_work_info__work_type_id": base_models.WorkType,
+        "employee_work_info__employee_type_id": base_models.EmployeeType,
+        "employee_work_info__company_id": base_models.Company,
+    }
+    import_related_column_export_mapping = {
+        "employee_work_info__reporting_manager_id": "employee_work_info__reporting_manager_id__badge_id",
+        "employee_work_info__department_id": "employee_work_info__department_id__department",
+        "employee_work_info__job_position_id": "employee_work_info__job_position_id__job_position",
+        "employee_work_info__job_role_id": "employee_work_info__job_role_id__job_role",
+        "employee_work_info__shift_id": "employee_work_info__shift_id__employee_shift",
+        "employee_work_info__work_type_id": "employee_work_info__work_type_id__work_type",
+        "employee_work_info__employee_type_id": "employee_work_info__employee_type_id__employee_type",
+        "employee_work_info__company_id": "employee_work_info__company_id__company",
+    }
+
+    primary_key_mapping = {
+        "employee_user_id": "username",
+        "employee_work_info__reporting_manager_id": "badge_id",
+        "employee_work_info__department_id": "department",
+        "employee_work_info__job_position_id": "job_position",
+        "employee_work_info__job_role_id": "job_role",
+        "employee_work_info__shift_id": "employee_shift",
+        "employee_work_info__work_type_id": "work_type",
+        "employee_work_info__employee_type_id": "employee_type",
+        "employee_work_info__company_id": "company",
+    }
+
+    reverse_model_relation_to_base_model = {
+        "employee_work_info": "employee_id",
+        "employee_bank_details": "employee_id",
+    }
+
+    # fk_o2o_field_in_base_model = ["employee_user_id", "test"]
+    fk_o2o_field_in_base_model = ["employee_user_id"]
+    # Excel column value mapping to the table, one to one relation
+    fk_mapping = {
+        # "test": "department",
+    }
 
     def get_bulk_form(self):
         """

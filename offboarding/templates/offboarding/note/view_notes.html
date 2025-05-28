@@ -88,13 +88,10 @@
 			</li>
 		{% endfor %}
 	{% else %}
-		<div class="oh-timeoff-modal__profile-content">
-			<div class="oh-404">
-				<div class="">
-					<span class="oh-timeoff-title fw-bold" style="display: block">{% trans "No notes have been added for this employee" %}</span>
-					<img style="display: block; width: 100px; margin: 20px auto" src="{% static '/images/ui/no_notes.png'%}" class="" />
-				</div>
-			</div>
-		</div>
+		<div class="oh-empty">
+			<img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+			<h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+			<p class="oh-empty__subtitle">{% trans "No notes have been added for this employee" %}</p>
+    	</div>
 	{% endif %}
 </ol>

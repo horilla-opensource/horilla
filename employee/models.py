@@ -17,6 +17,7 @@ from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import JsonResponse
+from django.templatetags.static import static
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
@@ -252,17 +253,9 @@ class Employee(models.Model):
         )
 
     def get_avatar(self):
-        """
-        Method will retun the api to the avatar or path to the profile image
-        """
-        url = (
-            f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
-        )
-        if self.employee_profile:
-            full_filename = self.employee_profile.name
-            if default_storage.exists(full_filename):
-                url = self.employee_profile.url
-        return url
+        if self.employee_profile and default_storage.exists(self.employee_profile.name):
+            return self.employee_profile.url
+        return static("images/ui/default_avatar.jpg")
 
     def get_leave_status(self):
         """
@@ -620,7 +613,7 @@ class Employee(models.Model):
         # your custom code here
         # ...
         # call the parent class's save method to save the object
-        prev_employee = Employee.objects.filter(id=self.id).first()
+        # prev_employee = Employee.objects.filter(id=self.id).first()
         super().save(*args, **kwargs)
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         if request and not self.is_active and self.get_archive_condition() is not False:
@@ -631,7 +624,7 @@ class Employee(models.Model):
         if employee.employee_user_id is None:
             # Create user if no corresponding user exists
             username = self.email
-            password = self.phone
+            password = str(self.phone)
 
             is_new_employee_flag = (
                 not employee.employee_user_id.is_new_employee
@@ -903,19 +896,21 @@ class EmployeeBankDetails(HorillaModel):
         related_name="employee_bank_details",
         verbose_name=_("Employee"),
     )
-    bank_name = models.CharField(max_length=50)
+    bank_name = models.CharField(max_length=50, null=True)
     account_number = models.CharField(
         max_length=50,
-        null=False,
+        null=True,
         blank=False,
         default="",
     )
-    branch = models.CharField(max_length=50)
-    address = models.TextField(max_length=255)
+    branch = models.CharField(max_length=50, null=True)
+    address = models.TextField(max_length=255, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
-    state = models.CharField(max_length=50, blank=True)
-    city = models.CharField(max_length=50, blank=True)
-    any_other_code1 = models.CharField(max_length=50, verbose_name="Bank Code #1")
+    state = models.CharField(max_length=50, blank=True, null=True)
+    city = models.CharField(max_length=50, blank=True, null=True)
+    any_other_code1 = models.CharField(
+        max_length=50, verbose_name="Bank Code #1", null=True
+    )
     any_other_code2 = models.CharField(
         max_length=50, null=True, blank=True, verbose_name="Bank Code #2"
     )

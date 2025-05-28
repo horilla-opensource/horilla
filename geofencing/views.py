@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from base.models import Company
 from geofencing.forms import GeoFencingSetupForm
 
 from .models import GeoFencing
@@ -152,7 +153,10 @@ class GeoFencingSetUpPermissionCheck(APIView):
 
 def get_company(request):
     try:
-        company = request.user.employee_get.get_company()
+        selected_company = request.session.get("selected_company")
+        if selected_company == "all":
+            return None
+        company = Company.objects.get(id=selected_company)
         return company
     except Exception as e:
         raise serializers.ValidationError(e)

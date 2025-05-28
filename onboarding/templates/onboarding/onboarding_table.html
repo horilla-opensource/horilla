@@ -173,8 +173,8 @@
                   {% if request.user|stage_manages:stage or perms.onboarding.add_onboardingtask %}
                   <div class="oh-sticky-table__th">
                      <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table"
-                        data-toggle="oh-modal-toggle" data-target="#genericModal"
-                        hx-get="{% url 'task-creation' stage.grouper.id %}" hx-target="#genericModalBody">
+                        data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                        hx-get="{% url 'task-creation' %}?stage_id={{stage.grouper.id}}" hx-target="#objectCreateModalTarget">
                         <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
                            aria-label="add outline"></ion-icon>
                         {% trans "Task" %}

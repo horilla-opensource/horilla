@@ -32,10 +32,10 @@ from django.forms import DateInput, ValidationError
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
+from base.forms import ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeBankDetails
-from horilla import horilla_middlewares
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from onboarding.models import (
@@ -45,63 +45,6 @@ from onboarding.models import (
     OnboardingTask,
 )
 from recruitment.models import Candidate
-
-
-class ModelForm(forms.ModelForm):
-    """
-    Overriding django default model form to apply some styles
-    """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        reload_queryset(self.fields)
-        for _, field in self.fields.items():
-            widget = field.widget
-
-            if isinstance(widget, (forms.DateInput)):
-                field.initial = date.today()
-
-            if isinstance(widget, (forms.DateInput)):
-                field.widget.attrs.update({"class": "oh-input  w-100"})
-            elif isinstance(
-                widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-            ):
-                field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": field.label}
-                )
-            elif isinstance(widget, (forms.Select,)):
-                field.widget.attrs.update(
-                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
-                )
-            elif isinstance(widget, (forms.Textarea)):
-                field.widget.attrs.update(
-                    {
-                        "class": "oh-input w-100",
-                        "placeholder": field.label,
-                        "rows": 2,
-                        "cols": 40,
-                    }
-                )
-            elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
-            ):
-                field.widget.attrs.update({"class": "oh-switch__checkbox"})
-            try:
-                self.fields["employee_id"].initial = request.user.employee_get
-            except:
-                pass
-
-            try:
-                self.fields["company_id"].initial = (
-                    request.user.employee_get.get_company
-                )
-            except:
-                pass
 
 
 class UserCreationFormCustom(UserForm):
@@ -159,21 +102,6 @@ class UserCreationFormCustom(UserForm):
                 ),
             ):
                 field.widget.attrs.update({"class": "oh-switch__checkbox"})
-
-
-class OnboardingStageForm(ModelForm):
-    """
-    Form for OnboardingStage model
-    """
-
-    class Meta:
-        """
-        Meta class to add additional info
-        """
-
-        model = OnboardingStage
-        fields = "__all__"
-        exclude = ["sequence", "is_active"]
 
 
 class OnboardingCandidateForm(ModelForm):
@@ -277,7 +205,7 @@ class OnboardingViewTaskForm(ModelForm):
                 required=True,
                 instance=self.instance,
             ),
-            label="Task Managers",
+            label=_("Task Managers"),
         )
         reload_queryset(self.fields)
 
@@ -313,7 +241,7 @@ class OnboardingTaskForm(ModelForm):
                 required=True,
                 instance=self.instance,
             ),
-            label="Task Managers",
+            label=self.fields["employee_id"].label,
         )
         stage_id = self.initial.get("stage_id")
         if stage_id:
@@ -339,8 +267,6 @@ class OnboardingViewStageForm(ModelForm):
     """
     Form for OnboardingStageModel
     """
-
-    verbose_name = "Stage"
 
     class Meta:
         """
@@ -370,7 +296,7 @@ class OnboardingViewStageForm(ModelForm):
                 required=True,
                 instance=self.instance,
             ),
-            label="Stage Managers",
+            label=self.fields["employee_id"].label,
         )
 
         # Loop through form fields and generate unique IDs for their attributes
@@ -385,7 +311,7 @@ class OnboardingViewStageForm(ModelForm):
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("common_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
         return table_html
 
     def clean(self):

@@ -479,8 +479,8 @@ class FAQCategory(HorillaModel):
 
 class FAQ(HorillaModel):
     question = models.CharField(max_length=255)
-    answer = models.TextField(max_length=255)
-    tags = models.ManyToManyField(Tags)
+    answer = models.TextField()
+    tags = models.ManyToManyField(Tags, blank=True)
     category = models.ForeignKey(FAQCategory, on_delete=models.PROTECT)
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT

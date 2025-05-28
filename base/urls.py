@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-from django.urls import path
+from django.urls import path, re_path
 from django.utils.translation import gettext_lazy as _
 
 from base import announcement, request_and_approve, views
@@ -210,6 +210,8 @@ urlpatterns = [
     path("reset-send-success", views.reset_send_success, name="reset-send-success"),
     path("change-password", views.change_password, name="change-password"),
     path("change-username", views.change_username, name="change-username"),
+    path("two-factor", views.two_factor_auth, name="two-factor"),
+    path("send-otp", views.send_otp, name="send-otp"),
     path("logout", views.logout_user, name="logout"),
     path("settings", views.common_settings, name="settings"),
     path(
@@ -1682,3 +1684,7 @@ urlpatterns = [
         name="delete-penalties",
     ),
 ]
+
+urlpatterns.append(
+    re_path(r"^media/(?P<path>.*)$", views.protected_media, name="protected_media"),
+)

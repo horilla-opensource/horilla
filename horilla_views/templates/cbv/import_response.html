@@ -1,0 +1,45 @@
+<style>
+  table.import {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  table.import th,
+  table.import td {
+    border: 1px solid #cdd5df;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  table.import th {
+    background-color: #f2f2f2;
+  }
+</style>
+<table class="table import">
+  <tr>
+    <th>Status</th>
+    <th>Imported</th>
+    <th>Updated</th>
+  </tr>
+  <tr>
+    <td>{{ status }}</td>
+    <td>{{ imported }}</td>
+    <td>{{ updated }}</td>
+  </tr>
+</table>
+{% if errors %}
+  <h6 class="mt-1">Errors</h6>
+  <ol>
+    {% for error in errors %}
+      <li>
+        <b>{{ error.record }} :</b> {{ error.error }}
+      </li>
+    {% endfor %}
+    {% if more_error %}
+    <li>And more errors...</li>
+    {% endif %}
+  </ol>
+{% endif %}
+<div class="modal-footer d-flex flex-row-reverse">
+  <input type="button" onclick="$('#{{ view_id }} .reload-record').click()" class="oh-btn oh-btn--small oh-btn--success w-100 mr-1 mt-2" value="Refresh" />
+</div>

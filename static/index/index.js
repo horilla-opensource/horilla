@@ -32,6 +32,14 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function handleSidebarToggle() {
+    // Delay the execution slightly to allow existing toggle logic to finish
+    setTimeout(() => {
+        const isOpen = !$('.oh-wrapper-main').hasClass('oh-wrapper-main--closed');
+        localStorage.setItem('sidebarOpen', isOpen);
+    }, 50);
+}
+
 function addToSelectedId(newIds, storeKey) {
     ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
 
@@ -636,6 +644,34 @@ nav.after(
     )
 );
 
+$(function () {
+    const $wrapper = $('.oh-wrapper-main');
+    const sidebarOpen = localStorage.getItem('sidebarOpen');
+
+    if (sidebarOpen === 'false') {
+        $wrapper.addClass('oh-wrapper-main--closed');
+    } else {
+        $wrapper.removeClass('oh-wrapper-main--closed');
+    }
+
+    $('#sidebar').on('mouseleave', () => {
+        if (localStorage.getItem('sidebarOpen') === 'false') {
+            $wrapper.addClass('oh-wrapper-main--closed');
+        }
+    });
+});
+
+$(document).on('click', '.oh-kanban__card-body-collapse', function (e) {
+    e.preventDefault();
+
+    var $cardBody = $(this).closest('.oh-kanban__card-body');
+
+    $cardBody.find('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide');
+
+    $(this).toggleClass('oh-kanban__card-collapse--down');
+});
+
+
 $(document).on("htmx:beforeRequest", function (event, data) {
     if (
         !Array.from(event.target.getAttributeNames()).some((attr) =>
@@ -648,6 +684,7 @@ $(document).on("htmx:beforeRequest", function (event, data) {
             "BiometricDeviceTestFormTarget",
             "reloadMessages",
             "infinite",
+            "OtpContainer"
         ];
         var avoid_target_class = ["oh-badge--small"];
         if (

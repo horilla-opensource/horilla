@@ -410,7 +410,7 @@ urlpatterns = [
     ),
     path(
         "document-reject/<int:pk>/",
-        document_request.DocumentRejectform.as_view(),
+        document_request.DocumentRejectCbvForm.as_view(),
         name="document-reject",
     ),
     # path("document-reject/<int:id>", views.document_reject, name="document-reject"),

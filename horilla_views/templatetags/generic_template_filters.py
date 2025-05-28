@@ -22,7 +22,7 @@ from horilla.horilla_middlewares import _thread_locals
 register = template.Library()
 
 
-numeric_test = re.compile("^\d+$")
+numeric_test = re.compile(r"^\d+$")
 
 date_format_mapping = {
     "DD-MM-YYYY": "%d-%m-%Y",

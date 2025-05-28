@@ -45,7 +45,7 @@ def get_to_field(request):
 
 
 @login_required
-@permission_required("horilla_automation.delete_mailautomation")
+@permission_required("horilla_automations.delete_mailautomation")
 def delete_automation(request, pk):
     """
     Automation delete view
@@ -60,7 +60,7 @@ def delete_automation(request, pk):
 
 
 @login_required
-@permission_required("horilla_automation.add_mailautomation")
+@permission_required("horilla_automations.add_mailautomation")
 def refresh_automations(request):
     """
     Method to  refresh automation signals

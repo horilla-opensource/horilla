@@ -28,7 +28,7 @@ class OnboardingStage(HorillaModel):
     OnboardingStage models
     """
 
-    stage_title = models.CharField(max_length=200)
+    stage_title = models.CharField(max_length=200, verbose_name=_("Stage Title"))
     recruitment_id = models.ForeignKey(
         Recruitment,
         verbose_name=_("Recruitment"),
@@ -36,9 +36,11 @@ class OnboardingStage(HorillaModel):
         related_name="onboarding_stage",
         on_delete=models.CASCADE,
     )
-    employee_id = models.ManyToManyField(Employee, verbose_name="Stage managers")
+    employee_id = models.ManyToManyField(Employee, verbose_name=_("Stage Managers"))
     sequence = models.IntegerField(null=True)
-    is_final_stage = models.BooleanField(default=False)
+    is_final_stage = models.BooleanField(
+        default=False, verbose_name=_("Is Final Stage")
+    )
     objects = HorillaCompanyManager("recruitment_id__company_id")
 
     def __str__(self):
@@ -49,6 +51,8 @@ class OnboardingStage(HorillaModel):
         Meta class for additional options
         """
 
+        verbose_name = _("Onboarding Stage")
+        verbose_name_plural = _("Onboarding Stages")
         ordering = ["sequence"]
 
 
@@ -70,7 +74,7 @@ class OnboardingTask(HorillaModel):
     OnboardingTask models
     """
 
-    task_title = models.CharField(max_length=200)
+    task_title = models.CharField(max_length=200, verbose_name=_("Task Title"))
     # recruitment_id = models.ManyToManyField(Recruitment, related_name="onboarding_task")
     stage_id = models.ForeignKey(
         OnboardingStage,
@@ -83,6 +87,7 @@ class OnboardingTask(HorillaModel):
         Candidate,
         blank=True,
         related_name="cand_onboarding_task",
+        verbose_name=_("Candidates"),
     )
     employee_id = models.ManyToManyField(
         Employee, related_name="onboarding_task", verbose_name=_("Task Managers")
@@ -102,6 +107,14 @@ class OnboardingTask(HorillaModel):
 
     def __str__(self):
         return f"{self.task_title}"
+
+    class Meta:
+        """
+        Meta class to add some additional options
+        """
+
+        verbose_name = _("Onboarding Task")
+        verbose_name_plural = _("Onboarding Tasks")
 
 
 class CandidateStage(HorillaModel):
@@ -160,7 +173,7 @@ class CandidateStage(HorillaModel):
         Meta class for additional options
         """
 
-        verbose_name = _("Candidate Onboarding stage")
+        verbose_name = _("Candidate Onboarding Stage")
         ordering = ["sequence"]
 
 
@@ -216,8 +229,8 @@ class CandidateTask(HorillaModel):
         Meta class to add some additional options
         """
 
-        verbose_name = _("Candidate onboarding task")
-        # unique_together = ("candidate_id", "onboarding_task_id")
+        verbose_name = _("Onboarding Task")
+        verbose_name_plural = _("Onboarding Tasks")
 
 
 class OnboardingPortal(HorillaModel):

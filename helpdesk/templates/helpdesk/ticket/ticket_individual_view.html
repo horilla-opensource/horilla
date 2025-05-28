@@ -115,7 +115,7 @@
 		</div>
         <div class = "oh-modal__button-container text-center mt-3" onclick="event.stopPropagation()">
             <div class="oh-btn-group" style="border:none">
-                {% if ticket|calim_request_exists:request.user.employee_get or request.user.employee_get in ticket.assigned_to.all %}
+                {% if ticket|claim_request_exists:request.user.employee_get or request.user.employee_get in ticket.assigned_to.all %}
                     <a
                         href="#"
                         class="oh-btn oh-btn--info w-100 oh-btn--disabled"

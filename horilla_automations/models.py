@@ -75,6 +75,12 @@ class MailAutomation(HorillaModel):
 
     condition = models.TextField()
 
+    xss_exempt_fields = [
+        "condition_html",
+        "condition",
+        "condition_querystring",
+    ]
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.method_title = self.title.replace(" ", "_").lower()

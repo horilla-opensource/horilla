@@ -305,7 +305,9 @@
                                         hx-target='#view-container'
                                         hx-get="{% url 'search-attendance-requests' %}?{{pd}}&sortby=attendance_overtime">
                                         {% trans "Overtime" %}</div>
-                                    <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
+                                    {% if perms.attendance.change_attendance %}
+                                        <div class="oh-sticky-table__th oh-sticky-table__right">{% trans "Actions" %}</div>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% for attendance in attendances %}
@@ -357,6 +359,7 @@
                                         <div data-cell-index="32" class="oh-sticky-table__td">
                                             {{attendance.attendance_overtime}}
                                         </div>
+                                        {% if perms.attendance.change_attendance %}
                                         <div class="oh-sticky-table__td oh-sticky-table__right">
                                             <div class="oh-btn-group">
                                                 <a data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
@@ -367,6 +370,7 @@
                                                 </a>
                                             </div>
                                         </div>
+                                        {% endif %}
                                     </div>
                                 </div>
                             {% endfor %}

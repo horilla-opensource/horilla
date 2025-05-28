@@ -4,7 +4,20 @@
     {% include 'helpdesk/faq/faq_category_nav.html'%}
     <div class="oh-wrapper">
         <div id="faqCategoryList">
-            {% include "helpdesk/faq/faq_category_list.html" %}
+            {% if faq_categories %}
+                {% include "helpdesk/faq/faq_category_list.html" %}
+            {% else %}
+                <div class="oh-404">
+                    <img
+                        src="{% static 'images/ui/faq.png' %}"
+                        class="mb-4 oh-404__image"
+                        alt=""
+                    />
+                    <h3 style="font-size: 20px" class="oh-404__subtitle">
+                        {% trans "There are no FAQs at the moment." %}
+                    </h3>
+                </div>
+            {% endif %}
         </div>
     </div>
 

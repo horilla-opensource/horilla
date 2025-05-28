@@ -513,7 +513,7 @@
 
 															</button>
 														{% else %}
-															{% if ticket|calim_request_exists:request.user.employee_get or request.user.employee_get in ticket.assigned_to.all %}
+															{% if ticket|claim_request_exists:request.user.employee_get or request.user.employee_get in ticket.assigned_to.all %}
 																<a
 																{% if request.user.employee_get in ticket.assigned_to.all %}
 																	style="background-color:rgb(74, 238, 60);"
@@ -1082,8 +1082,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         "
-        class=""
     >
         <div style="" class="oh-404">
             <img

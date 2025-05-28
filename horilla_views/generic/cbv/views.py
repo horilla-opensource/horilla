@@ -8,12 +8,14 @@ import logging
 from typing import Any
 from urllib.parse import parse_qs
 
+import pandas as pd
 from bs4 import BeautifulSoup
 from django import forms
 from django.contrib import messages
 from django.core.cache import cache as CACHE
 from django.core.paginator import Page
-from django.http import HttpRequest, HttpResponse, QueryDict
+from django.db import transaction
+from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.urls import resolve, reverse
@@ -28,12 +30,18 @@ from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views import models
 from horilla_views.cbv_methods import (  # update_initial_cache,
+    assign_related,
     export_xlsx,
+    generate_import_excel,
     get_short_uuid,
+    get_verbose_name_from_field_path,
     hx_request_required,
     paginator_qry,
+    resolve_foreign_keys,
     sortby,
+    split_by_import_reference,
     structured,
+    update_related,
     update_saved_filter_cache,
 )
 from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
@@ -70,6 +78,17 @@ class HorillaListView(ListView):
     filter_selected: bool = True
     quick_export: bool = True
     bulk_update: bool = True
+    import_fields: list = []
+    import_file_name: str = "Quick Import"
+    update_reference: str = "pk"
+    import_related_model_column_mapping: dict = {}
+    primary_key_mapping: dict = {}
+    import_related_column_export_mapping: dict = {}
+    reverse_model_relation_to_base_model: dict = {}
+    fk_mapping: dict = {}
+    import_help: dict = {}
+    fk_o2o_field_in_base_model: list = []
+    chunk_size: int = 200
 
     custom_empty_template: str = ""
 
@@ -116,6 +135,19 @@ class HorillaListView(ListView):
     records_count_in_tab: bool = True
 
     header_attrs: dict = {}
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            # Inject URL params into initkwargs
+            initkwargs_with_url = {**initkwargs, **kwargs}
+            self = cls(**initkwargs_with_url)
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            return self.dispatch(request, *args, **kwargs)
+
+        return view
 
     def post(self, *args, **kwargs):
         """
@@ -167,6 +199,14 @@ class HorillaListView(ListView):
         """
         return self.request.user.has_perm(
             f"{self.model._meta.app_label}.change_{self.model.__name__.lower()}"
+        )
+
+    def import_accessibility(self) -> bool:
+        """
+        Accessibility method for bulk importz
+        """
+        return self.request.user.has_perm(
+            f"{self.model._meta.app_label}.add_{self.model.__name__.lower()}"
         )
 
     def serve_bulk_form(self, request: HttpRequest) -> HttpResponse:
@@ -231,6 +271,383 @@ class HorillaListView(ListView):
         # Bulk update feature
         return DynamicBulkUpdateForm(
             root_model=self.model, bulk_update_fields=self.bulk_update_fields
+        )
+
+    def serve_import_sheet(self, request, *args, **kwargs):
+        """
+        Method to serve bulk import sheet
+        """
+        if not self.import_accessibility():
+            messages.info(request, "You dont have permission")
+            return HorillaFormView.HttpResponse()
+        ids = eval_validate(request.POST["selected_ids"])
+
+        wb = generate_import_excel(
+            self.model,
+            self.import_fields,
+            reference_field=self.update_reference,
+            import_mapping=self.import_related_column_export_mapping,
+            queryset=self.model.objects.filter(id__in=ids),
+        )
+
+        # Create response
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        filename = f"{self.import_file_name}.xlsx"
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        wb.save(response)
+        return response
+
+    def import_records(self, request, *args, **kwargs):
+        """
+        Method to import records
+        """
+        if not self.import_accessibility():
+            messages.info(request, "You dont have permission")
+        field_column_mapping = {
+            field: get_verbose_name_from_field_path(
+                self.model, field, self.import_related_model_column_mapping
+            )
+            for field in self.import_fields
+        }
+        update_reference = f"{get_verbose_name_from_field_path(self.model, self.update_reference, self.import_related_model_column_mapping)} | Reference"
+        update_reference_key = f"{self.update_reference}_import_reference"
+        field_column_mapping[f"{self.update_reference}_import_reference"] = (
+            update_reference
+        )
+
+        excel_file = request.FILES.get("file")
+        if not excel_file:
+            return JsonResponse({"error": "No file uploaded"}, status=400)
+
+        df = pd.read_excel(excel_file)
+
+        serialized = []
+        field_column_mapping_values = {}
+        for _, row in df.iterrows():
+            record = {}
+            for model_field, excel_col in field_column_mapping.items():
+                if excel_col in row:
+                    value = row[excel_col]
+                    if model_field in (
+                        list(self.primary_key_mapping.keys())
+                        + list(self.import_related_model_column_mapping.keys())
+                    ) and not pd.isna(value):
+                        field_column_mapping_values[model_field] = (
+                            field_column_mapping_values.get(model_field, set({})).union(
+                                {value}
+                            )
+                        )
+                    if pd.isna(value):
+                        value = None
+                    if isinstance(value, str):
+                        value = value.strip()
+                    parts = model_field.split("__")
+                    current = record
+                    for part in parts[:-1]:
+                        current = current.setdefault(part, {})
+                    current[parts[-1]] = value
+            serialized.append(record)
+
+        with_ref, without_ref = split_by_import_reference(serialized)
+
+        error_records = []
+
+        error_records = []
+        pk_values_mapping = {}
+        fk_values_mapping = {}
+
+        for mapping, values in field_column_mapping_values.items():
+            related_model = self.import_related_model_column_mapping[mapping]
+            if mapping in self.primary_key_mapping:
+                field = self.primary_key_mapping[mapping]
+                existing_objects = related_model.objects.filter(
+                    **{f"{field}__in": list(values)}
+                ).only("pk", field)
+
+                existing_values = existing_objects.values_list(field, flat=True)
+                print(">>>>>>>>>>>>>>>>>>>")
+                print(existing_values)
+                to_create = [
+                    related_model(**{field: value})
+                    for value in values
+                    if value not in existing_values
+                ]
+                print(to_create)
+                print(">>>>>>>>>>>>>>>>>>>")
+
+                if to_create:
+                    related_model.objects.bulk_create(to_create)
+                pk_values_mapping[mapping] = pk_values_mapping.get(mapping, []) + list(
+                    existing_objects
+                )
+            elif mapping in self.fk_mapping:
+                field = self.fk_mapping[mapping]
+                related_model = self.import_related_model_column_mapping[mapping]
+                existing_objects = related_model.objects.filter(
+                    **{f"{field}__in": list(values)}
+                ).only("pk", field)
+                existing_values = existing_objects.values_list(field, flat=True)
+                to_create = [
+                    related_model(**{field: value})
+                    for value in values
+                    if value not in existing_values
+                ]
+                if to_create:
+                    related_model.objects.bulk_create(to_create)
+                fk_values_mapping[mapping] = fk_values_mapping.get(mapping, []) + list(
+                    existing_objects
+                )
+        if without_ref:
+            with transaction.atomic():
+                records_to_import = []
+                for record in without_ref:
+                    try:
+                        for reverse_field in (
+                            list(self.reverse_model_relation_to_base_model.keys())
+                            + self.fk_o2o_field_in_base_model
+                        ):
+                            if reverse_field in list(
+                                self.primary_key_mapping.keys()
+                            ) + list(self.reverse_model_relation_to_base_model.keys()):
+                                result = assign_related(
+                                    record,
+                                    reverse_field,
+                                    pk_values_mapping,
+                                    self.primary_key_mapping,
+                                )
+                                record[reverse_field] = result
+                            elif reverse_field in self.fk_mapping:
+                                record.update(
+                                    {
+                                        reverse_field: data
+                                        for data in fk_values_mapping[reverse_field]
+                                        if getattr(
+                                            data, self.fk_mapping[reverse_field], None
+                                        )
+                                        == record[reverse_field]
+                                    }
+                                )
+                        records_to_import.append(record)
+
+                    except Exception as e:
+                        error_records.append(
+                            {
+                                "record": record.get(next(iter(record)), "Unknown"),
+                                "error": str(e),
+                            }
+                        )
+                bulk_base_fk_grouping = {}
+                bulk_create_reverse_related_grouping = {}
+                bulk_create_base_grouping = []
+
+                related_fields = list(self.reverse_model_relation_to_base_model.keys())
+                fk_fields = self.fk_o2o_field_in_base_model
+                for record in records_to_import:
+                    if record.get(update_reference_key):
+                        del record[update_reference_key]
+                    instance_record = record.copy()
+                    if update_reference_key in instance_record:
+                        del instance_record[update_reference_key]
+                    for relation in related_fields:
+                        if relation in instance_record:
+                            del instance_record[relation]
+                    for fk_field in self.fk_o2o_field_in_base_model:
+                        if (
+                            fk_field in instance_record
+                            and fk_field not in self.fk_mapping
+                        ):
+                            del instance_record[fk_field]
+
+                    instance = self.model(**instance_record)
+                    for relation in related_fields:
+                        related_record = record[relation]
+                        related_record[
+                            self.reverse_model_relation_to_base_model[relation]
+                        ] = instance
+                        related_instance = self.import_related_model_column_mapping[
+                            relation
+                        ](**related_record)
+                        bulk_create_reverse_related_grouping[relation] = (
+                            bulk_create_reverse_related_grouping.get(relation, [])
+                            + [related_instance]
+                        )
+
+                    for fk_field in fk_fields:
+                        fk_record = record[fk_field]
+                        if isinstance(fk_record, dict):
+                            fk_instance = self.import_related_model_column_mapping[
+                                fk_field
+                            ](**fk_record)
+                        else:
+                            fk_instance = fk_record
+                        bulk_base_fk_grouping[fk_field] = bulk_base_fk_grouping.get(
+                            fk_field, []
+                        ) + [fk_instance]
+                        setattr(instance, fk_field, fk_instance)
+                    bulk_create_base_grouping.append(instance)
+
+                for fk_field in self.fk_o2o_field_in_base_model:
+                    if fk_field not in self.fk_mapping:
+                        for relation, items in bulk_base_fk_grouping.items():
+                            if relation not in self.fk_mapping:
+                                self.import_related_model_column_mapping[
+                                    fk_field
+                                ].objects.bulk_create(items)
+
+                self.model.objects.bulk_create(bulk_create_base_grouping)
+
+                for related, items in bulk_create_reverse_related_grouping.items():
+                    self.import_related_model_column_mapping[
+                        related
+                    ].objects.bulk_create(items)
+        if with_ref:
+            base_instance_ids = [item["id_import_reference"] for item in with_ref]
+            fields = (
+                list(self.reverse_model_relation_to_base_model)
+                + ["pk"]
+                + self.fk_o2o_field_in_base_model
+            )
+            mapped_ids_queryset = (
+                self.model.objects.filter(pk__in=base_instance_ids)
+                .only(*fields)
+                .values(*fields)
+            )
+            mapped_ids_with_reverse = {
+                item["pk"]: {
+                    key: item[key] for key in self.reverse_model_relation_to_base_model
+                }
+                for item in mapped_ids_queryset
+            }
+            with transaction.atomic():
+                records_to_update = []
+                for record in with_ref:
+                    try:
+                        for reverse_field in (
+                            list(self.reverse_model_relation_to_base_model.keys())
+                            + self.fk_o2o_field_in_base_model
+                        ):
+                            if reverse_field in list(
+                                self.primary_key_mapping.keys()
+                            ) + list(self.reverse_model_relation_to_base_model.keys()):
+                                result = assign_related(
+                                    record,
+                                    reverse_field,
+                                    pk_values_mapping,
+                                    self.primary_key_mapping,
+                                )
+                                record[reverse_field] = result
+                            elif reverse_field in self.fk_mapping:
+                                record.update(
+                                    {
+                                        reverse_field: data
+                                        for data in fk_values_mapping[reverse_field]
+                                        if getattr(
+                                            data, self.fk_mapping[reverse_field], None
+                                        )
+                                        == record[reverse_field]
+                                    }
+                                )
+                        records_to_update.append(record)
+
+                    except Exception as e:
+                        error_records.append(
+                            {"record": record[list(record.keys())[0]], "error": str(e)}
+                        )
+                bulk_base_fk_grouping = {}
+                bulk_update_reverse_related_grouping = {}
+                bulk_update_base_grouping = []
+
+                related_fields = list(self.reverse_model_relation_to_base_model.keys())
+                fk_fields = self.fk_o2o_field_in_base_model
+                related_update_fields = {}
+                for record in records_to_update:
+                    instance_record = record.copy()
+                    for relation in related_fields:
+                        if relation in instance_record:
+                            del instance_record[relation]
+                    for fk_field in self.fk_o2o_field_in_base_model:
+                        if (
+                            fk_field in instance_record
+                            and fk_field not in self.fk_mapping
+                        ):
+                            del instance_record[fk_field]
+
+                    instance_record["id"] = instance_record["id_import_reference"]
+                    instance_record["pk"] = instance_record["id_import_reference"]
+                    del instance_record["id_import_reference"]
+
+                    instance = self.model(**instance_record)
+                    for relation in related_fields:
+                        related_update_fields[relation] = record[relation].keys()
+                    for relation in related_fields:
+                        related_record = record[relation]
+                        related_record[
+                            self.reverse_model_relation_to_base_model[relation]
+                        ] = instance
+                        related_record["id"] = mapped_ids_with_reverse[instance.id][
+                            relation
+                        ]
+                        related_record["pk"] = mapped_ids_with_reverse[instance.id][
+                            relation
+                        ]
+                        related_instance = self.import_related_model_column_mapping[
+                            relation
+                        ](**related_record)
+                        if related_instance.pk is not None:
+                            bulk_update_reverse_related_grouping[relation] = (
+                                bulk_update_reverse_related_grouping.get(relation, [])
+                                + [related_instance]
+                            )
+
+                    for fk_field in fk_fields:
+                        if fk_field not in self.fk_mapping:
+                            fk_record = record[fk_field]
+                            fk_instance = self.import_related_model_column_mapping[
+                                fk_field
+                            ](**fk_record)
+                            bulk_base_fk_grouping[fk_field] = bulk_base_fk_grouping.get(
+                                fk_field, []
+                            ) + [fk_instance]
+                            setattr(instance, fk_field, fk_instance)
+                    bulk_update_base_grouping.append(instance)
+
+        if with_ref and bulk_update_base_grouping:
+            field_to_update = [
+                key for key in instance_record.keys() if key not in ["id", "pk"]
+            ]
+            self.model.objects.bulk_update(bulk_update_base_grouping, field_to_update)
+
+        if with_ref and related_update_fields:
+            for field in related_fields:
+                related_model = self.import_related_model_column_mapping[field]
+                if field in bulk_update_reverse_related_grouping:
+                    update_fields = [
+                        key
+                        for key in related_update_fields[field]
+                        if key not in ["id", "pk"]
+                    ]
+                    related_model.objects.bulk_update(
+                        bulk_update_reverse_related_grouping[field], update_fields
+                    )
+
+        status = "Success"
+        if error_records:
+            status = "Error Found"
+
+        return render(
+            request,
+            "cbv/import_response.html",
+            context={
+                "view_id": self.view_id,
+                "status": status,
+                "imported": len(without_ref),
+                "updated": len(with_ref),
+                "errors": error_records[:10],  # Optional: truncate if too large
+                "total_errors": error_records,  # Optional: truncate if too large
+                "more_error": len(error_records) > 10,
+            },
         )
 
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
@@ -432,6 +849,28 @@ class HorillaListView(ListView):
         urlpatterns.append(path(self.export_path, self.export_data))
         context["export_path"] = self.export_path
 
+        if self.import_fields:
+            get_import_sheet_path = (
+                f"get-import-sheet-{self.view_id}-{self.request.session.session_key}/"
+            )
+            post_import_sheet_path = (
+                f"post-import-sheet-{self.view_id}-{self.request.session.session_key}/"
+            )
+            urlpatterns.append(
+                path(
+                    get_import_sheet_path,
+                    self.serve_import_sheet,
+                )
+            )
+            urlpatterns.append(
+                path(
+                    post_import_sheet_path,
+                    self.import_records,
+                )
+            )
+            context["get_import_sheet_path"] = get_import_sheet_path
+            context["post_import_sheet_path"] = post_import_sheet_path
+        context["import_fields"] = self.import_fields
         if self.bulk_update_fields and self.bulk_update_accessibility():
             get_bulk_path = (
                 f"get-bulk-update-{self.view_id}-{self.request.session.session_key}/"
@@ -455,6 +894,8 @@ class HorillaListView(ListView):
             context["bulk_update_fields"] = self.bulk_update_fields
             context["bulk_path"] = get_bulk_path
         context["export_formats"] = self.export_formats
+        context["import_help"] = self.import_help
+        context["import_accessibility"] = self.import_accessibility()
         return context
 
     def select_all(self, *args, **kwargs):
@@ -676,6 +1117,19 @@ class HorillaSectionView(TemplateView):
         context["style_static_paths"] = self.style_static_paths
         return context
 
+    @classmethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            # Inject URL params into initkwargs
+            initkwargs_with_url = {**initkwargs, **kwargs}
+            self = cls(**initkwargs_with_url)
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            return self.dispatch(request, *args, **kwargs)
+
+        return view
+
 
 @method_decorator(hx_request_required, name="dispatch")
 class HorillaDetailedView(DetailView):
@@ -774,6 +1228,19 @@ class HorillaTabView(TemplateView):
     template_name = "generic/horilla_tabs.html"
 
     tabs: list = []
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            # Inject URL params into initkwargs
+            initkwargs_with_url = {**initkwargs, **kwargs}
+            self = cls(**initkwargs_with_url)
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            return self.dispatch(request, *args, **kwargs)
+
+        return view
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -940,6 +1407,19 @@ class HorillaCardView(ListView):
             queryset, self.request.GET.get("page"), self.records_per_page
         )
         return context
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            # Inject URL params into initkwargs
+            initkwargs_with_url = {**initkwargs, **kwargs}
+            self = cls(**initkwargs_with_url)
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            return self.dispatch(request, *args, **kwargs)
+
+        return view
 
 
 @method_decorator(hx_request_required, name="dispatch")
@@ -1234,6 +1714,19 @@ class HorillaFormView(FormView):
             self.form = form
         return self.form
 
+    @classmethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            # Inject URL params into initkwargs
+            initkwargs_with_url = {**initkwargs, **kwargs}
+            self = cls(**initkwargs_with_url)
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            return self.dispatch(request, *args, **kwargs)
+
+        return view
+
 
 @method_decorator(hx_request_required, name="dispatch")
 class HorillaNavView(TemplateView):
@@ -1296,6 +1789,19 @@ class HorillaNavView(TemplateView):
         ).first()
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaNavView] = context
         return context
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            # Inject URL params into initkwargs
+            initkwargs_with_url = {**initkwargs, **kwargs}
+            self = cls(**initkwargs_with_url)
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            return self.dispatch(request, *args, **kwargs)
+
+        return view
 
 
 @method_decorator(hx_request_required, name="dispatch")
@@ -1388,6 +1894,19 @@ class HorillaProfileView(DetailView):
                 cls.tabs.append(tab)
                 return
             cls.tabs.index(index, tab)
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            # Inject URL params into initkwargs
+            initkwargs_with_url = {**initkwargs, **kwargs}
+            self = cls(**initkwargs_with_url)
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            return self.dispatch(request, *args, **kwargs)
+
+        return view
 
     def get_context_data(self, **kwargs: Any) -> dict:
         context = super().get_context_data(**kwargs)

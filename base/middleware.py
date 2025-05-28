@@ -3,10 +3,12 @@ middleware.py
 """
 
 from django.apps import apps
+from django.contrib import messages
 from django.core.cache import cache
 from django.db.models import Q
 from django.shortcuts import redirect
 
+from base.backends import ConfiguredEmailBackend
 from base.context_processors import AllCompany
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, ShiftRequest, WorkTypeRequest
@@ -16,6 +18,7 @@ from employee.models import (
     EmployeeBankDetails,
     EmployeeWorkInformation,
 )
+from horilla.horilla_apps import TWO_FACTORS_AUTHENTICATION
 from horilla.horilla_settings import APPS
 from horilla.methods import get_horilla_model_class
 from horilla_documents.models import DocumentRequest
@@ -55,12 +58,23 @@ class CompanyMiddleware:
         """
         Set the company session data based on the company ID.
         """
+        user = request.user.employee_get
+        user_company_id = getattr(
+            getattr(user, "employee_work_info", None), "company_id", None
+        )
         if company_id and request.session.get("selected_company") != "all":
+            if company_id == "all":
+                text = "All companies"
+            elif company_id == user_company_id:
+                text = "My Company"
+            else:
+                text = "Other Company"
+
             request.session["selected_company"] = str(company_id.id)
             request.session["selected_company_instance"] = {
                 "company": company_id.company,
                 "icon": company_id.icon.url,
-                "text": "My company",
+                "text": text,
                 "id": company_id.id,
             }
         else:
@@ -187,5 +201,39 @@ class ForcePasswordChangeMiddleware:
         if hasattr(request, "user") and request.user.is_authenticated:
             if getattr(request.user, "is_new_employee", True):
                 return redirect("change-password")
+
+        return self.get_response(request)
+
+
+class TwoFactorAuthMiddleware:
+    """
+    Middleware to enforce two-factor authentication for specific users.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        excluded_paths = [
+            "/change-password",
+            "/login",
+            "/logout",
+            "/two-factor",
+            "/send-otp",
+        ]
+
+        if request.path.rstrip("/") in excluded_paths:
+            return self.get_response(request)
+
+        if TWO_FACTORS_AUTHENTICATION:
+            try:
+                if ConfiguredEmailBackend().configuration is not None:
+                    if hasattr(request, "user") and request.user.is_authenticated:
+                        if not request.session.get("otp_code_verified", False):
+                            return redirect("/two-factor")
+                else:
+                    return self.get_response(request)
+            except Exception as e:
+                return self.get_response(request)
 
         return self.get_response(request)

@@ -11,9 +11,10 @@ from django.contrib import messages
 from django.core import serializers
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _trans
 from django.views import View
 
 from base.models import HorillaMailTemplate
@@ -26,7 +27,7 @@ from horilla_views.generic.cbv import views
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("horilla_automations.view_mailautomation"), name="dispatch"
 )
 class AutomationSectionView(views.HorillaSectionView):
     """
@@ -46,7 +47,7 @@ class AutomationSectionView(views.HorillaSectionView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("horilla_automations.view_mailautomation"), name="dispatch"
 )
 class AutomationNavView(views.HorillaNavView):
     """
@@ -56,7 +57,7 @@ class AutomationNavView(views.HorillaNavView):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.actions = []
-        if self.request.user.has_perm("horilla_automation.add_mailautomation"):
+        if self.request.user.has_perm("horilla_automations.add_mailautomation"):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy("create-automation")}"
                 hx-target="#genericModalBody"
@@ -77,7 +78,7 @@ class AutomationNavView(views.HorillaNavView):
                 }
             )
 
-        if self.request.user.has_perm("horilla_automation.add_mailautomation"):
+        if self.request.user.has_perm("horilla_automations.add_mailautomation"):
             self.actions.append(
                 {
                     "action": "Refresh Automations",
@@ -96,7 +97,7 @@ class AutomationNavView(views.HorillaNavView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.change_mailautomation"), name="dispatch"
+    permission_required("horilla_automations.change_mailautomation"), name="dispatch"
 )
 class AutomationFormView(views.HorillaFormView):
     """
@@ -131,7 +132,7 @@ class AutomationFormView(views.HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("horilla_automations.view_mailautomation"), name="dispatch"
 )
 class AutomationListView(views.HorillaListView):
     """
@@ -185,7 +186,7 @@ class AutomationListView(views.HorillaListView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.view_mailautomation"), name="dispatch"
+    permission_required("horilla_automations.view_mailautomation"), name="dispatch"
 )
 class AutomationDetailedView(views.HorillaDetailedView):
     """
@@ -233,7 +234,7 @@ class AutomationDetailedView(views.HorillaDetailedView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("horilla_automation.add_mailautomation"), name="dispatch"
+    permission_required("horilla_automations.add_mailautomation"), name="dispatch"
 )
 class LoadAutomationsView(View):
     template_name = "horilla_automations/load_automation.html"

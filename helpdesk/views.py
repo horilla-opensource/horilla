@@ -6,7 +6,9 @@ from distutils.util import strtobool
 from operator import itemgetter
 from urllib.parse import parse_qs
 
+from django.conf import settings
 from django.contrib import messages
+from django.core import serializers
 from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
@@ -204,6 +206,10 @@ def faq_view(request, obj_id, **kwargs):
     """
 
     faqs = FAQ.objects.filter(category=obj_id)
+    faq_category = FAQCategory.objects.filter(id=obj_id)
+    if not faq_category:
+        messages.info(request, _("No FAQ found for the given category."))
+        return redirect(faq_category_view)
     context = {
         "faqs": faqs,
         "f": FAQFilter(request.GET),
@@ -1744,3 +1750,116 @@ def get_department_employees(request):
     context = {"employees": employees}
     employee_html = render_to_string("employee/employees_select.html", context)
     return HttpResponse(employee_html)
+
+
+@login_required
+def load_faqs(request):
+    base_dir = settings.BASE_DIR
+    faq_file = os.path.join(base_dir, "load_data", "faq.json")
+    faq_category_file = os.path.join(base_dir, "load_data", "faq_category.json")
+    tags_file = os.path.join(base_dir, "load_data", "tags.json")
+
+    with open(faq_category_file, "r") as cats:
+        faq_category_raw = json.load(cats)
+
+    with open(tags_file, "r") as t:
+        tags_raw = json.load(t)
+
+    with open(faq_file, "r") as faqs:
+        faq_raw = json.load(faqs)
+
+    category_lookup = {item["pk"]: item["fields"]["title"] for item in faq_category_raw}
+
+    tag_lookup = {item["pk"]: item["fields"]["title"] for item in tags_raw}
+
+    if request.method == "POST":
+        selected_ids = [int(k) for k in request.POST.keys() if k.isdigit()]
+        selected_faqs = [a for a in faq_raw if a["pk"] in selected_ids]
+
+        category_needed = [
+            faq["fields"].get("category")
+            for faq in selected_faqs
+            if faq["fields"].get("category")
+        ]
+
+        tags_needed_list = [
+            faq["fields"].get("tags")
+            for faq in selected_faqs
+            if faq["fields"].get("tags")
+        ]
+        tags_needed = [item for item_list in tags_needed_list for item in item_list]
+
+        for category_json in faq_category_raw:
+            if category_json["pk"] in category_needed:
+                category_data = list(
+                    serializers.deserialize("json", json.dumps([category_json]))
+                )[0].object
+                existing = FAQCategory.objects.filter(title=category_data.title).first()
+                if not existing:
+                    category_data.pk = None
+                    category_data.save()
+
+        for tag_json in tags_raw:
+            if tag_json["pk"] in tags_needed:
+                tag_data = list(
+                    serializers.deserialize("json", json.dumps([tag_json]))
+                )[0].object
+                existing = Tags.objects.filter(title=tag_data.title).first()
+                if not existing:
+                    tag_data.pk = None
+                    tag_data.save()
+
+        for faq_json in selected_faqs:
+            deserialized = list(
+                serializers.deserialize("json", json.dumps([faq_json]))
+            )[0]
+            faq_obj = deserialized.object
+
+            category_pk = faq_json["fields"].get("category")
+            tag_pk = faq_json["fields"].get("tags")
+            category_title = category_lookup.get(category_pk)
+            tags_title = [tag_lookup.get(pk, "") for pk in tag_pk]
+            category = FAQCategory.objects.filter(title=category_title).first()
+            tags = Tags.objects.filter(title__in=tags_title)
+            faq_obj.category = category
+
+            if not FAQ.objects.filter(question=faq_obj.question).exists():
+                faq_obj.pk = None
+                faq_obj.save()
+                faq_obj.tags.set(tags)
+
+                messages.success(
+                    request, f"Automation '{faq_obj.question}' created successfully."
+                )
+            else:
+                messages.warning(
+                    request, f"Automation '{faq_obj.question}' already exists."
+                )
+
+        script = """
+            <script>
+                $('.oh-modal--show').removeClass('oh-modal--show');
+                $('#reloadMessagesButton').click();
+                $('.filterButton').click();
+            </script>
+        """
+        return HttpResponse(script)
+
+    processed_faqs = []
+    for faq in faq_raw:
+        processed = faq.copy()
+
+        category_pk = faq["fields"].get("category")
+        tag_pk = faq["fields"].get("tags")
+        processed["tags"] = [tag_lookup.get(pk, "") for pk in tag_pk]
+        processed["category"] = category_lookup.get(category_pk, "")
+        processed_faqs.append(processed)
+
+    return render(
+        request,
+        "helpdesk/faq/load_faq.html",
+        {
+            "faqs": processed_faqs,
+            "catagories": category_lookup,
+        },
+    )

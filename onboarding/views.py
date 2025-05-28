@@ -310,16 +310,8 @@ def task_creation(request):
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            response = render(
-                request,
-                "onboarding/task_form.html",
-                {"form": form, "stage_id": stage_id},
-            )
             messages.success(request, _("New task created successfully..."))
-
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     return render(
         request, "onboarding/task_form.html", {"form": form, "stage_id": stage_id}
     )
@@ -344,6 +336,7 @@ def task_update(
     POST : return onboarding view
     """
     onboarding_task = OnboardingTask.objects.get(id=task_id)
+    form = OnboardingTaskForm(instance=onboarding_task)
     if request.method == "POST":
         form = OnboardingTaskForm(request.POST, instance=onboarding_task)
         if form.is_valid():
@@ -369,18 +362,7 @@ def task_update(
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            response = render(
-                request,
-                "onboarding/task_update.html",
-                {
-                    "form": form,
-                    "task_id": task_id,
-                },
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
-    form = OnboardingTaskForm(instance=onboarding_task)
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     return render(
         request,
         "onboarding/task_update.html",
@@ -571,7 +553,7 @@ def paginator_qry(qryset, page_number):
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def candidates_view(request):
     """
     function used to view hired candidates .
@@ -632,7 +614,7 @@ def hired_candidate_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def candidate_filter(request):
     """
     function used to filter hired candidates .
@@ -1524,7 +1506,7 @@ def update_joining(request):
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def view_dashboard(request):
     recruitment = Recruitment.objects.all().values_list("title", flat=True)
     candidates = Candidate.objects.all()
@@ -1545,7 +1527,7 @@ def view_dashboard(request):
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def dashboard_stage_chart(request):
     recruitment = request.GET.get("recruitment")
     labels = OnboardingStage.objects.filter(

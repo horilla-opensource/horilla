@@ -590,11 +590,15 @@ def update_candidate_sequence(request):
         .first()
     )
     data = {}
+
     for index, cand_id in enumerate(order_list):
         candidate = CACHE.get(request.session.session_key + "pipeline")[
             "candidates"
         ].filter(id=cand_id)
-        candidate.update(sequence=index, stage_id=stage)
+        candidate.update(
+            sequence=index, stage_id=stage, hired=(stage.stage_type == "hired")
+        )
+
     return JsonResponse(data)
 
 
@@ -671,7 +675,7 @@ def change_candidate_stage(request):
                             if stage.recruitment_id.is_vacancy_filled():
                                 context["message"] = _("Vaccancy is filled")
                                 context["vacancy"] = stage.recruitment_id.vacancy
-                        messages.success(request, "Candidate stage updated")
+                        messages.success(request, _("Candidate stage updated"))
                 except Candidate.DoesNotExist:
                     messages.error(request, _("Candidate not found."))
         else:
@@ -689,7 +693,7 @@ def change_candidate_stage(request):
                             context["vacancy"] = stage.recruitment_id.vacancy
                     candidate.stage_id = stage
                     candidate.save()
-                    messages.success(request, "Candidate stage updated")
+                    messages.success(request, _("Candidate stage updated"))
             except Candidate.DoesNotExist:
                 messages.error(request, _("Candidate not found."))
         return JsonResponse(context)
@@ -702,7 +706,7 @@ def change_candidate_stage(request):
     if stage:
         candidate.stage_id = stage
         candidate.save()
-        messages.success(request, "Candidate stage updated")
+        messages.success(request, _("Candidate stage updated"))
     return stage_component(request)
 
 

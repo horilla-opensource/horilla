@@ -508,7 +508,7 @@ class ExitReason(HorillaModel):
     title = models.CharField(max_length=50)
     description = models.TextField(max_length=255)
     offboarding_employee_id = models.ForeignKey(
-        OffboardingEmployee, on_delete=models.PROTECT
+        OffboardingEmployee, on_delete=models.CASCADE
     )
     attachments = models.ManyToManyField(OffboardingStageMultipleFile)
 
@@ -526,7 +526,7 @@ class OffboardingNote(HorillaModel):
         Employee, on_delete=models.SET_NULL, null=True, editable=False
     )
     employee_id = models.ForeignKey(
-        OffboardingEmployee, on_delete=models.PROTECT, null=True, editable=False
+        OffboardingEmployee, on_delete=models.CASCADE, null=True, editable=False
     )
     stage_id = models.ForeignKey(
         OffboardingStage, on_delete=models.PROTECT, null=True, editable=False

@@ -17,7 +17,7 @@ from onboarding.models import (
     OnboardingStage,
     OnboardingTask,
 )
-from recruitment.filters import RecruitmentFilter
+from recruitment.filters import RecruitmentFilter as rec_filter
 from recruitment.models import Candidate, Recruitment
 
 
@@ -35,7 +35,7 @@ class CandidateTaskFilter(HorillaFilterSet):
         fields = "__all__"
 
 
-class RecruitmentFilter(RecruitmentFilter):
+class RecruitmentFilter(rec_filter):
     """
     RecruitmentFilter
     """

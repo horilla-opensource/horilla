@@ -17,7 +17,7 @@ from employee.models import Employee
 from horilla.decorators import manager_can_enter
 from horilla_documents.forms import (
     DocumentForm,
-    DocumentRejectForm,
+    DocumentRejectCbvForm,
     DocumentRequestForm,
     DocumentUpdateForm,
 )
@@ -111,13 +111,13 @@ class DocumentCreateForm(HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(manager_can_enter("horilla_documents.add_document"), name="dispatch")
-class DocumentRejectform(HorillaFormView):
+class DocumentRejectCbvForm(HorillaFormView):
     """
     form view for rejecting document on document request and employee individual view
     """
 
     model = Document
-    form_class = DocumentRejectForm
+    form_class = DocumentRejectCbvForm
     hx_confirm = _("Do you want to reject this request")
 
     def get_context_data(self, **kwargs):
@@ -126,7 +126,7 @@ class DocumentRejectform(HorillaFormView):
             self.form_class.verbose_name = _("Reject")
         return context
 
-    def form_valid(self, form: DocumentRejectForm) -> HttpResponse:
+    def form_valid(self, form: DocumentRejectCbvForm) -> HttpResponse:
         if form.is_valid():
             pk = self.form.instance.pk
             document_obj = get_object_or_404(Document, id=pk)

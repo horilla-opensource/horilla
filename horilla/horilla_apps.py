@@ -12,7 +12,6 @@ INSTALLED_APPS.append("horilla_audit")
 INSTALLED_APPS.append("horilla_widgets")
 INSTALLED_APPS.append("horilla_crumbs")
 INSTALLED_APPS.append("horilla_documents")
-INSTALLED_APPS.append("haystack")
 INSTALLED_APPS.append("horilla_views")
 INSTALLED_APPS.append("horilla_automations")
 INSTALLED_APPS.append("auditlog")
@@ -21,6 +20,7 @@ INSTALLED_APPS.append("helpdesk")
 INSTALLED_APPS.append("offboarding")
 INSTALLED_APPS.append("horilla_backup")
 INSTALLED_APPS.append("project")
+
 if settings.env("AWS_ACCESS_KEY_ID", default=None) and "storages" not in INSTALLED_APPS:
     INSTALLED_APPS.append("storages")
 
@@ -61,3 +61,4 @@ SIDEBARS = [
 
 WHITE_LABELLING = False
 NESTED_SUBORDINATE_VISIBILITY = False
+TWO_FACTORS_AUTHENTICATION = False
