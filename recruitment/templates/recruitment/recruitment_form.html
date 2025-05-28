@@ -52,7 +52,7 @@
 {% endif %}
 <div class="oh-modal__dialog-header">
     <h5 class="oh-modal__dialog-title" id="addRecruitmentModalLabel"
-      >{% if duplicate %}{% trans "Duplicate Recruitment" %}{% else %}{% trans "Add Recruitment" %}{% endif %}</span
+      >{% if duplicate %}{% trans "Duplicate" %}{% else %}{% trans "Create" %}{% endif %} {{form.verbose_name}}</span
     >
     <button class="oh-modal__close" aria-label="Close" >
       <ion-icon name="close-outline"></ion-icon>
@@ -76,7 +76,7 @@
                     <label
                         class="oh-label required-star"
                         for="{{form.title.id_for_label}}"
-                        >{% trans "Title" %}</label
+                        >{{form.title.label}}</label
                     >
                     {{form.title}} {{form.title.errors}}
                 </div>
@@ -84,7 +84,7 @@
                     <label
                         class="oh-label required-star"
                         for="{{form.description.id_for_label}}"
-                        >{% trans "Description" %}</label
+                        >{{form.description.label}}</label
                     >
                     {{form.description}} {{form.description.errors}}
                 </div>
@@ -95,7 +95,7 @@
                     <label
                         class="oh-label required-star"
                         for="{{form.open_positions.id_for_label}}"
-                        >{% trans "Job Position" %}</label
+                        >{{form.open_positions.label}}</label
                     >
                     {{form.open_positions}} {{form.open_positions.errors}}
                 </div>
@@ -103,53 +103,53 @@
                     <label
                         class="oh-label required-star"
                         for="{{form.recruitment_managers.id_for_label}}"
-                        >{% trans "Managers" %}</label
+                        >{{form.recruitment_managers.label}}</label
                     >
                     {{form.recruitment_managers}}
                     {{form.recruitment_managers.errors}}
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                     <label class="oh-label" for="{{form.start_date.id_for_label}}"
-                        >{% trans "Start Date" %}</label
+                        >{{form.start_date.label}}</label
                     >
                     {{form.start_date}} {{form.start_date.errors}}
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                     <label class="oh-label" for="{{form.end_date.id_for_label}}"
-                        >{% trans "End Date" %}</label
+                        >{{form.end_date.label}}</label
                     >
                     {{form.end_date}} {{form.end_date.errors}}
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                     <label class="oh-label" for="{{form.vacancy.id_for_label}}"
-                        >{% trans "Vacancy" %}</label
+                        >{{form.vacancy.label}}</label
                     >
                     {{form.vacancy}} {{form.vacancy.errors}}
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                     <label class="oh-label" for="{{form.company_id.id_for_label}}"
-                        >{% trans "Company" %}</label
+                        >{{form.company_id.label}}</label
                     >
                     {{form.company_id}} {{form.company_id.errors}}
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
                     <label
                         class="oh-label"
-                        for="{{form.survey_templates.id_for_lable}}"
-                        >{% trans "Survey Templates" %}</label
+                        for="{{form.survey_templates.id_for_label}}"
+                        >{{form.survey_templates.label}}</label
                     >
                     {{form.survey_templates}}
                 </div>
                 <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                    <label class="oh-label" for="{{form.skills.id_for_lable}}"
-                        >{% trans "Skills" %}</label
+                    <label class="oh-label" for="{{form.skills.id_for_label}}"
+                        >{{form.skills.label}}</label
                     >
                     {{form.skills}}
                 </div>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6">
-                        <label class="oh-label" for="{{form.publish_in_linkedin.id_for_lable}}"
+                        <label class="oh-label" for="{{form.publish_in_linkedin.id_for_label}}"
                         title="{{form.publish_in_linkedin.help_text|safe}}"
-                            >{% trans "Post on LinkedIn" %}</label
+                            >{{form.publish_in_linkedin.label}}</label
                         >
                         <div class="w-100 d-flex" style="align-items: center">
                             <div class="oh-switch">{{form.publish_in_linkedin}}</div>
@@ -165,9 +165,9 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-4">
                     <label
                         class="oh-label"
-                        for="id_is_published"
+                        for="{{form.is_published.id_for_label}}"
                         title="{{form.is_published.help_text|safe}}"
-                        >{% trans "Is Published?" %}</label
+                        >{{form.is_published.label}} ?</label
                     >
                     <div class="w-100 d-flex" style="align-items: center">
                         <div class="oh-switch">{{form.is_published}}</div>
@@ -176,9 +176,9 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-4">
                     <label
                         class="oh-label"
-                        for="id_optional_profile_image"
+                        for="{{form.optional_profile_image.id_for_label}}"
                         title="{{form.optional_profile_image.help_text|safe}}"
-                        >{% trans "Optional Profile Image?" %}</label
+                        >{{form.optional_profile_image.label}}</label
                     >
                     <div class="w-100 d-flex" style="align-items: center">
                         <div class="oh-switch">{{form.optional_profile_image}}</div>
@@ -187,9 +187,9 @@
                 <div class="col-12 col-sm-12 col-md-12 col-lg-4">
                     <label
                         class="oh-label"
-                        for="id_optional_optional_resume"
+                        for="{{form.optional_resume.id_for_label}}"
                         title="{{form.optional_resume.help_text|safe}}"
-                        >{% trans "Optional Resume?" %}</label
+                        >{{form.optional_resume.label}}</label
                     >
                     <div class="w-100 d-flex" style="align-items: center">
                         <div class="oh-switch">{{form.optional_resume}}</div>
@@ -204,7 +204,7 @@
                 hx-post="{% url 'recruitment-create' %}"
                 hx-target="#objectCreateModalTarget"
             >
-                {% trans "Add" %}
+                {% trans "Save" %}
             </button>
         </div>
     </form>
