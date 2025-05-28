@@ -27,10 +27,8 @@ class GeoFencingSetupGetPostAPIView(APIView):
     )
     def get(self, request):
         company = request.user.employee_get.get_company()
-        location = company.geo_fencing.all()
-        paginator = PageNumberPagination()
-        page = paginator.paginate_queryset(location, request)
-        serializer = GeoFencingSetupSerializer(page, many=True)
+        location = GeoFencing.objects.get(company_id=company)
+        serializer = GeoFencingSetupSerializer(location)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @method_decorator(
