@@ -26,11 +26,8 @@ class GeoFencingSetupGetPostAPIView(APIView):
         name="dispatch",
     )
     def get(self, request):
-        if request.user.is_superuser:
-            location = GeoFencing.objects.all()
-        else:
-            company = request.user.employee_get.get_company()
-            location = company.geo_fencing.all()
+        company = request.user.employee_get.get_company()
+        location = company.geo_fencing.all()
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(location, request)
         serializer = GeoFencingSetupSerializer(page, many=True)
