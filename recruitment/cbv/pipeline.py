@@ -188,10 +188,11 @@ class GetStages(TemplateView):
     template_name = "cbv/pipeline/stages.html"
     stages = None
 
-    def get(self, request, rec_id, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         """
         get method
         """
+        rec_id = kwargs["rec_id"]
         cache = CACHE.get(request.session.session_key + "pipeline")
         if not cache.get("candidates"):
             cache["candidates"] = CandidateList.filter_class(

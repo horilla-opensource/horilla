@@ -349,7 +349,6 @@ class HorillaListView(ListView):
                         current = current.setdefault(part, {})
                     current[parts[-1]] = value
             serialized.append(record)
-
         with_ref, without_ref = split_by_import_reference(serialized)
 
         error_records = []
@@ -362,11 +361,19 @@ class HorillaListView(ListView):
             related_model = self.import_related_model_column_mapping[mapping]
             if mapping in self.primary_key_mapping:
                 field = self.primary_key_mapping[mapping]
-                existing_objects = related_model.objects.filter(
-                    **{f"{field}__in": list(values)}
-                ).only("pk", field)
+                if hasattr(related_model.objects, "entire"):
+                    existing_objects = (
+                        related_model.objects.entire()
+                        .filter(**{f"{field}__in": list(values)})
+                        .only("pk", field)
+                    )
+                else:
+                    existing_objects = related_model.objects.filter(
+                        **{f"{field}__in": list(values)}
+                    ).only("pk", field)
 
                 existing_values = existing_objects.values_list(field, flat=True)
+
                 to_create = [
                     related_model(**{field: value})
                     for value in values
