@@ -134,6 +134,7 @@ class Recruitment(HorillaModel):
         help_text=_(
             "To close the recruitment, If closed then not visible on pipeline view."
         ),
+        verbose_name=_("Closed"),
     )
     is_published = models.BooleanField(
         default=True,
@@ -142,13 +143,6 @@ class Recruitment(HorillaModel):
             will not appear on open recruitment page."
         ),
         verbose_name=_("Is Published"),
-    )
-    is_active = models.BooleanField(
-        default=True,
-        help_text=_(
-            "To archive and un-archive a recruitment, if active is false then it \
-            will not appear on recruitment list view."
-        ),
     )
     open_positions = models.ManyToManyField(
         JobPosition,
@@ -178,8 +172,10 @@ class Recruitment(HorillaModel):
         blank=True,
         verbose_name=_("Company"),
     )
-    start_date = models.DateField(default=django.utils.timezone.now)
-    end_date = models.DateField(blank=True, null=True)
+    start_date = models.DateField(
+        default=django.utils.timezone.now, verbose_name=_("Start Date")
+    )
+    end_date = models.DateField(blank=True, null=True, verbose_name=_("End Date"))
     skills = models.ManyToManyField(Skill, blank=True, verbose_name=_("Skills"))
     linkedin_account_id = models.ForeignKey(
         "recruitment.LinkedInAccount",
@@ -335,6 +331,9 @@ class Stage(HorillaModel):
         verbose_name = _("Stage")
         verbose_name_plural = _("Stages")
 
+    def __str__(self):
+        return f"{self.stage} - ({self.recruitment_id.title})"
+
     def active_candidates(self):
         """
         This method is used to get all the active candidate like related objects
@@ -472,6 +471,7 @@ class Candidate(HorillaModel):
         choices=offer_letter_statuses,
         default="not_sent",
         editable=False,
+        verbose_name=_("Offer Letter Status"),
     )
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
     last_updated = models.DateField(null=True, auto_now=True)

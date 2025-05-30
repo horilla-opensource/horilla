@@ -2,169 +2,200 @@
 {% load static %}
 <input type="hidden" name="search" id="filterSearch" />
 <div class="oh-dropdown__filter-body">
-  <div class="oh-accordion">
-    <div class="oh-accordion-header">
-      {% trans 'Candidates' %}
-    </div>
-    <div class="oh-accordion-body">
-      <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Phone' %}</label>
-            {{ f.form.mobile }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Interview Date' %}</label>
-            {{ f.form.interview_date }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Country' %}</label>
-            <select name="country" class="oh-select-2 w-100 country" id="country">
-            </select>
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Is Hired' %}?</label>
-            {{ f.form.hired }}
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Reject Reason" %}</label>
-              {{f.form.rejected_candidate__reject_reason_id}}
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">
+            {% trans 'Candidates' %}
+        </div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.mobile.id_for_label}}">{{f.form.mobile.label}}</label>
+                        {{ f.form.mobile }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.interview_date.id_for_label}}">{{f.form.interview_date.label}}</label>
+                        {{ f.form.interview_date }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="country">{{f.form.country.label}}</label>
+                        <select name="country" class="oh-select-2 w-100 country" id="country">
+                        </select>
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.hired.id_for_label}}">{{f.form.hired.label}} ?</label>
+                        {{ f.form.hired }}
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
+                        <div class="oh-input-group">
+                            <label class="oh-label"
+                                for="{{f.form.rejected_candidate__reject_reason_id.id_for_label}}">{{f.form.rejected_candidate__reject_reason_id.label}}
+                            </label>
+                            {{f.form.rejected_candidate__reject_reason_id}}
+                        </div>
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{f.form.converted.id_for_label}}">{{f.form.converted.label}}
+                                ?</label>
+                            {{ f.form.converted }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.email.id_for_label}}">{{f.form.email.label}}</label>
+                        {{ f.form.email }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.gender.id_for_label}}">{{f.form.gender.label}}</label>
+                        {{ f.form.gender }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="state">{{f.form.state.label}}</label>
+                        <select name="state" class="oh-select-2 w-100 country" id="state">
+                        </select>
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.canceled.id_for_label}}">{{f.form.canceled.label}}
+                            ?</label>
+                        {{ f.form.canceled }}
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
+                        <div class="oh-input-group">
+                            <label class="oh-label"
+                                for="{{f.form.offer_letter_status.id_for_label}}">{{f.form.offer_letter_status.label}}
+                            </label>
+                            {{f.form.offer_letter_status}}
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans 'Is Converted' %}?</label>
-              {{ f.form.converted }}
+        </div>
+    </div>
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">
+            {% trans 'Recruitment' %}
+        </div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.recruitment_id.id_for_label}}">{{f.form.recruitment_id.label}}</label>
+                        {{ f.form.recruitment_id }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.job_position_id__department_id.id_for_label}}">{{f.form.job_position_id__department_id.label}}</label>
+                        {{ f.form.job_position_id__department_id }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.recruitment_id__recruitment_managers.id_for_label}}">{{f.form.recruitment_id__recruitment_managers.label}}</label>
+                        {{ f.form.recruitment_id__recruitment_managers }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.stage_id.id_for_label}}">{{f.form.stage_id.label}}
+                        </label>
+                        {{ f.form.stage_id }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.stage_id__stage_type.id_for_label}}">{{f.form.stage_id__stage_type.label}}</label>
+                        {{ f.form.stage_id__stage_type }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.start_date.id_for_label}}">{{f.form.start_date.label}}</label>
+                        {{ f.form.start_date }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.recruitment_id__company_id.id_for_label}}">{{f.form.recruitment_id__company_id.label}}</label>
+                        {{ f.form.recruitment_id__company_id }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.job_position_id.id_for_label}}">{{f.form.job_position_id.label}}</label>
+                        {{ f.form.job_position_id }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.skillzonecandidate_set__skill_zone_id.id_for_label}}">{{f.form.skillzonecandidate_set__skill_zone_id.label}}
+                        </label>
+                        {{ f.form.skillzonecandidate_set__skill_zone_id }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.stage_id__stage_managers.id_for_label}}">{{f.form.stage_id__stage_managers.label}}
+                        </label>
+                        {{ f.form.stage_id__stage_managers }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.recruitment_id__closed.id_for_label}}">{{f.form.recruitment_id__closed.label}}
+                            ?</label>
+                        {{ f.form.recruitment_id__closed }}
+                    </div>
+
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.end_date.id_for_label}}">{{f.form.end_date.label}}</label>
+                        {{ f.form.end_date }}
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Email' %}</label>
-            {{ f.form.email }}
-          </div>
+    </div>
 
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Gender' %}</label>
-            {{ f.form.gender }}
-          </div>
-
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'State' %}</label>
-            <select name="state" class="oh-select-2 w-100 country" id="state">
-            </select>
-          </div>
-
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Is Canceled' %}?</label>
-            {{ f.form.canceled }}
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
-            <div class="oh-input-group">
-              <label class="oh-label">{% trans "Offer Status" %}</label>
-              {{f.form.offer_letter_status}}
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">
+            {% trans 'Advanced' %}
+        </div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.scheduled_from.id_for_label}}">{{f.form.scheduled_from.label}} </label>
+                        {{ f.form.scheduled_from }}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{f.form.is_active.id_for_label}}">{{f.form.is_active.label}}
+                            ?</label>
+                        {{ f.form.is_active }}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.scheduled_till.id_for_label}}">{{f.form.scheduled_till.label}} </label>
+                        {{ f.form.scheduled_till }}
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
-  <div class="oh-accordion">
-    <div class="oh-accordion-header">
-      {% trans 'Recruitment' %}
-    </div>
-    <div class="oh-accordion-body">
-      <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Recruitment' %}</label>
-            {{ f.form.recruitment_id }}
-          </div>
-
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Job Position' %}</label>
-            {{ f.form.job_position_id }}
-          </div>
-
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Start Date' %}</label>
-            {{ f.form.start_date }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Is Closed' %}?</label>
-            {{ f.form.recruitment_id__closed }}
-          </div>
-
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Stage Type' %}</label>
-            {{ f.form.stage_id__stage_type }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Stage Managers' %}</label>
-            {{ f.form.stage_id__stage_managers }}
-          </div>
-        </div>
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Stage' %}</label>
-            {{ f.form.stage_id }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Department' %}</label>
-            {{ f.form.job_position_id__department_id }}
-          </div>
-
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Company' %}</label>
-            {{ f.form.recruitment_id__company_id }}
-          </div>
-
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Recruitment Managers' %}</label>
-            {{ f.form.recruitment_id__recruitment_managers }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'End Date' %}</label>
-            {{ f.form.end_date }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Skill Zone' %}</label>
-            {{ f.form.skillzonecandidate_set__skill_zone_id }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="oh-accordion">
-    <div class="oh-accordion-header">
-      {% trans 'Advanced' %}
-    </div>
-    <div class="oh-accordion-body">
-      <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Interview From' %}</label>
-            {{ f.form.scheduled_from }}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Is Active' %}?</label>
-            {{ f.form.is_active }}
-          </div>
-        </div>
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans 'Interview Till' %}</label>
-            {{ f.form.scheduled_till }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 </div>
 <div class="oh-dropdown__filter-footer">
-  <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="#candidateFilter" onclick="event.stopPropagation()" >{% trans 'Filter' %}</button>
+    <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="#candidateFilter"
+        onclick="event.stopPropagation()">{% trans 'Filter' %}
+    </button>
 </div>
+
 <script src="{% static '/base/filter.js' %}"></script>
 <script>
-{% include "country.js" %}
+    {% include "country.js" %}
 </script>
