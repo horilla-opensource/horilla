@@ -11,11 +11,15 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from accessibility.cbv_decorators import enter_if_accessible
+from accessibility.models import DefaultAccessibility
+from base.context_processors import enable_profile_edit
 from base.methods import is_reportingmanager
 from employee.filters import EmployeeFilter
 from employee.forms import BulkUpdateFieldForm, EmployeeExportExcelForm
 from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
+from employee.templatetags.employee_filter import edit_accessibility
 from employee.views import _check_reporting_manager
+from horilla.horilla_middlewares import _thread_locals
 from horilla.signals import post_generic_delete
 from horilla_views.cbv_methods import login_required
 from horilla_views.forms import DynamicBulkUpdateForm
@@ -25,6 +29,30 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
+
+
+def profile_edit_accessibility_display(self):
+    """
+    Profile edit accessible
+    """
+    request = _thread_locals.request
+    if self.pk in request.all_edit_accessible_employees:
+        return "Revoke Profile Edit Access"
+    return "Add Profile Edit Access"
+
+
+def toggle_profile_edit_access_url(self):
+    """
+    toggle profiel edit access url get method
+    """
+    return (
+        reverse("profile-edit-access", kwargs={"emp_id": self.pk})
+        + "?feature=profile_edit"
+    )
+
+
+Employee.profile_edit_accessibility_display = profile_edit_accessibility_display
+Employee.toggle_profile_edit_access_url = toggle_profile_edit_access_url
 
 
 @method_decorator(login_required, name="dispatch")
@@ -467,6 +495,11 @@ class EmployeeCard(HorillaCardView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("employees-card")
+        self.request.all_edit_accessible_employees = (
+            DefaultAccessibility.objects.filter(feature="profile_edit").values_list(
+                "employees__pk", flat=True
+            )
+        )
         if self.request.user.has_perm(
             "employee.change_employee"
         ) or is_reportingmanager(self.request):
@@ -505,6 +538,18 @@ class EmployeeCard(HorillaCardView):
                     """,
                 },
             ]
+            if enable_profile_edit(self.request).get("profile_edit_enabled"):
+                self.actions.append(
+                    {
+                        "action": "profile_edit_accessibility_display",
+                        "accessibility": "employee.cbv.accessibility.action_accessible",
+                        "attrs": """
+                        href="{toggle_profile_edit_access_url}"
+                        class="oh-dropdown__link"
+                        style="cursor: pointer;"
+                    """,
+                    }
+                )
         else:
             self.actions = None
 

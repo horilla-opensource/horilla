@@ -2,12 +2,11 @@
 This page handles the cbv methods of employee individual view
 """
 
-from audioop import reverse
-
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
@@ -15,6 +14,7 @@ from django.views import View
 from base import views as base_views
 from base.cbv.mail_log_tab import MailLogTabList
 from base.cbv.work_shift_tab import WorkAndShiftTabView
+from base.context_processors import enable_profile_edit
 from base.forms import AddToUserGroupForm
 from employee import views
 from employee.filters import EmployeeFilter
@@ -22,6 +22,8 @@ from employee.models import Employee
 from horilla import settings
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import HorillaProfileView
+
+Employee.cbv_employee_profile_edi_url = reverse_lazy("edit-profile")
 
 
 class EmployeeProfileView(HorillaProfileView):
@@ -36,40 +38,66 @@ class EmployeeProfileView(HorillaProfileView):
     push_url = "employee-view-individual"
     key_name = "obj_id"
 
-    actions = [
-        {
-            "title": "Edit",
-            "src": f"/{settings.STATIC_URL}images/ui/editing.png",
-            "accessibility": "employee.cbv.accessibility.edit_accessibility",
-            "attrs": """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        employee = self.request.user.employee_get
+        if self.request.user.has_perm("employee.change_employee"):
+
+            self.actions = [
+                {
+                    "title": "Edit",
+                    "src": f"/{settings.STATIC_URL}images/ui/editing.png",
+                    "accessibility": "employee.cbv.accessibility.edit_accessibility",
+                    "attrs": """
                     onclick="window.location.href='{get_update_url}'"
                     """,
-        },
-        {
-            "title": "Block Account",
-            "src": f"/{settings.STATIC_URL}images/ui/block-user.png",
-            "accessibility": "employee.cbv.accessibility.block_account_accessibility",
-            "attrs": """
+                },
+                {
+                    "title": "Block Account",
+                    "src": f"/{settings.STATIC_URL}images/ui/block-user.png",
+                    "accessibility": "employee.cbv.accessibility.block_account_accessibility",
+                    "attrs": """
                     id="block-account"
                     """,
-        },
-        {
-            "title": "Un-Block Account",
-            "src": f"/{settings.STATIC_URL}images/ui/unlock.png",
-            "accessibility": "employee.cbv.accessibility.un_block_account_accessibility",
-            "attrs": """
+                },
+                {
+                    "title": "Un-Block Account",
+                    "src": f"/{settings.STATIC_URL}images/ui/unlock.png",
+                    "accessibility": "employee.cbv.accessibility.un_block_account_accessibility",
+                    "attrs": """
                     id="block-account"
                     """,
-        },
-        {
-            "title": "Send password reset link",
-            "src": f"/{settings.STATIC_URL}images/ui/key.png",
-            "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
-            "attrs": """
+                },
+                {
+                    "title": "Send password reset link",
+                    "src": f"/{settings.STATIC_URL}images/ui/key.png",
+                    "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
+                    "attrs": """
                     onclick="$('#reset-button').click();"
                     """,
-        },
-    ]
+                },
+            ]
+        elif employee.pk == kwargs["pk"] and enable_profile_edit(self.request).get(
+            "profile_edit_enabled"
+        ):
+            self.actions = [
+                {
+                    "title": "Edit Profile",
+                    "src": f"/{settings.STATIC_URL}images/ui/editing.png",
+                    "accessibility": "employee.cbv.accessibility.edit_accessibility",
+                    "attrs": """
+                    onclick="window.location.href='{cbv_employee_profile_edi_url}'"
+                    """,
+                },
+                {
+                    "title": "Send password reset link",
+                    "src": f"/{settings.STATIC_URL}images/ui/key.png",
+                    "accessibility": "employee.cbv.accessibility.password_reset_accessibility",
+                    "attrs": """
+                    onclick="$('#reset-button').click();"
+                    """,
+                },
+            ]
 
 
 EmployeeProfileView.add_tab(

@@ -15,11 +15,11 @@ def edit_accessibility(
     """
     To access edit
     """
-    employee = Employee.objects.get(id=instance.pk)
+    # employee = Employee.objects.get(id=instance.pk)
     if (
         (request.user.has_perm("employee.change_employee"))
         or check_manager(request.user.employee_get, instance)
-        or request.user == employee.employee_user_id
+        or request.user == instance.employee_user_id
     ):
         return True
     return False
@@ -31,11 +31,11 @@ def password_reset_accessibility(
     """
     To password  reset
     """
-    employee = Employee.objects.get(id=instance.pk)
+    # employee = Employee.objects.get(id=instance.pk)
     if (
         (request.user.has_perm("employee.add_employee"))
         or check_manager(request.user.employee_get, instance)
-        or request.user == employee.employee_user_id
+        or request.user == instance.employee_user_id
     ):
         return True
     return False
