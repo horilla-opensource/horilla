@@ -113,6 +113,8 @@ class FilingStatus(HorillaModel):
 
     class Meta:
         ordering = ["-id"]
+        verbose_name = _("Filing Status")
+        verbose_name_plural = _("Filing Statuses")
 
 
 class Contract(HorillaModel):

@@ -282,5 +282,9 @@ class COSECAttendanceArguments(models.Model):
     )
     objects = models.Manager()
 
+    class Meta:
+        verbose_name = _("COSEC Attendance Arguments")
+        verbose_name_plural = _("COSEC Attendance Arguments")
+
     def __str__(self):
         return f"{self.device_id} - {self.last_fetch_roll_ovr_count} - {self.last_fetch_seq_number}"

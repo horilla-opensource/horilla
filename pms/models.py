@@ -776,6 +776,7 @@ class Meetings(HorillaModel):
 
     class Meta:
         verbose_name = _("Meetings")
+        verbose_name_plural = _("Meetings")
 
     def __str__(self):
         return self.title

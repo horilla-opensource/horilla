@@ -732,6 +732,10 @@ class EmployeeBankDetails(HorillaModel):
         related_company_field="employee_id__employee_work_info__company_id"
     )
 
+    class Meta:
+        verbose_name = _("Employee Bank Details")
+        verbose_name_plural = _("Employee Bank Details")
+
     def __str__(self) -> str:
         return f"{self.employee_id}-{self.bank_name}"
 
@@ -802,6 +806,10 @@ class Policy(HorillaModel):
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager("company_id")
+
+    class Meta:
+        verbose_name = _("Policy")
+        verbose_name_plural = _("Policies")
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)
