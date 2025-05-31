@@ -144,6 +144,7 @@
             success: function (response) {
                 end_date = response.end_date;
                 $(elem).val(end_date);
+                $(elem).change();
             }
         })
     }

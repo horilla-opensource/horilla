@@ -907,6 +907,9 @@ def update_status(request):
                 notice_period_ends = notice_period_starts + timedelta(
                     days=contract_notice_end_date.notice_period_in_days
                 )
+            else:
+                notice_period_ends = None
+
         if not notice_period_starts:
             notice_period_starts = today
 
