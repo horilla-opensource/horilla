@@ -86,8 +86,8 @@ class BiometricDevices(HorillaModel):
     )
     api_token = models.CharField(max_length=500, null=True, blank=True)
     api_expires = models.CharField(max_length=100, null=True, blank=True)
-    is_live = models.BooleanField(default=False)
-    is_scheduler = models.BooleanField(default=False)
+    is_live = models.BooleanField(default=False, verbose_name=_("Is Live"))
+    is_scheduler = models.BooleanField(default=False, verbose_name=_("Is Scheduled"))
     scheduler_duration = models.CharField(
         null=True,
         default="00:00",
