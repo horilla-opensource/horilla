@@ -2714,40 +2714,45 @@ class HolidayForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(HolidayForm, self).__init__(*args, **kwargs)
         self.fields["name"].widget.attrs["autocomplete"] = "name"
+        self.fields["start_date"].label = (
+            f"{self.Meta.model()._meta.get_field('start_date').verbose_name}"
+        )
+        self.fields["end_date"].label = (
+            f"{self.Meta.model()._meta.get_field('end_date').verbose_name}"
+        )
 
 
 class HolidaysColumnExportForm(forms.Form):
     """
     Form for selecting columns to export in holiday data.
-
-    This form allows users to select specific columns from the Holidays model
-    for export. The available columns are dynamically generated based on the
-    model's meta information, excluding specified excluded_fields.
-
-    Attributes:
-        - model_fields: A list of fields in the Holidays model.
-        - field_choices: A list of field choices for the form, consisting of field names
-          and their verbose names, excluding specified excluded_fields.
-        - selected_fields: A MultipleChoiceField representing the selected columns
-          to be exported.
     """
 
-    model_fields = Holidays._meta.get_fields()
-    field_choices = [
-        (field.name, field.verbose_name.capitalize())
-        for field in model_fields
-        if hasattr(field, "verbose_name") and field.name not in excluded_fields
-    ]
     selected_fields = forms.MultipleChoiceField(
-        choices=field_choices,
+        choices=[],
         widget=forms.CheckboxSelectMultiple,
-        initial=[
+        initial=[],
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Use a single model instance for dynamic verbose names
+        model_instance = Holidays()
+        meta = model_instance._meta
+
+        field_choices = [
+            (field.name, meta.get_field(field.name).verbose_name)
+            for field in meta.fields
+            if field.name not in excluded_fields
+        ]
+
+        self.fields["selected_fields"].choices = field_choices
+        self.fields["selected_fields"].initial = [
             "name",
             "start_date",
             "end_date",
             "recurring",
-        ],
-    )
+        ]
 
 
 class CompanyLeaveForm(ModelForm):

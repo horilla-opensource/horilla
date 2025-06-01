@@ -1760,15 +1760,23 @@ class Holidays(HorillaModel):
 
 class CompanyLeaves(HorillaModel):
     based_on_week = models.CharField(
-        max_length=100, choices=WEEKS, blank=True, null=True
+        max_length=100,
+        choices=WEEKS,
+        blank=True,
+        null=True,
+        verbose_name=_("Based On Week"),
     )
-    based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
-    company_id = models.ForeignKey(Company, null=True, on_delete=models.PROTECT)
+    based_on_week_day = models.CharField(
+        max_length=100, choices=WEEK_DAYS, verbose_name=_("Based On Week Day")
+    )
+    company_id = models.ForeignKey(
+        Company, null=True, on_delete=models.PROTECT, verbose_name=_("Company")
+    )
     objects = HorillaCompanyManager()
 
     class Meta:
         unique_together = ("based_on_week", "based_on_week_day")
-        verbose_name = _("Company Leaves")
+        verbose_name = _("Company Leave")
         verbose_name_plural = _("Company Leaves")
 
     def __str__(self):

@@ -167,11 +167,11 @@
             setTimeout(function () {
                 var timer = $("#otp-timer");
                 timer.removeClass("oh-opacity-0");
-        
+
                 let counter = 20;
                 let $timeSpan = timer.find(".time");
                 let resendUrl = "{% url 'send-otp' %}";
-        
+
                 let interval = setInterval(function () {
                     counter--;
                     if (counter <= 0) {
