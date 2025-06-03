@@ -288,7 +288,7 @@ msgstr "Excluir empleados"
 #: .\templates\initialize_database\horilla_job_position.html:26
 #: .\templates\initialize_database\horilla_job_position_form.html:48
 msgid "Job Position"
-msgstr "Puestos de trabajo"
+msgstr "Puesto de trabajo"
 
 #: .\accessibility\filters.py:50
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:13
@@ -898,10 +898,9 @@ msgid "Yes"
 msgstr "Sí"
 
 #: .\accessibility\templates\accessibility\accessibility.html:58
-#, fuzzy
 #| msgid "Clear"
 msgid "Clear it"
-msgstr "Claro"
+msgstr "Borrar"
 
 #: .\accessibility\templates\accessibility\accessibility.html:69
 #, fuzzy
@@ -6200,7 +6199,7 @@ msgstr "No hay registros de asistencia para mostrar."
 #: .\payroll\templates\payroll\contract\contract_export_filter.html:87
 #: .\payroll\templates\payroll\contract\filter_contract.html:53
 msgid "Work Info"
-msgstr "Trabajo Información"
+msgstr "Información de Trabajo"
 
 #: .\attendance\templates\attendance\attendance\attendance_filters.html:21
 #: .\attendance\templates\attendance\attendance\export_filter.html:61
@@ -7218,10 +7217,9 @@ msgstr "Rango de fechas"
 
 #: .\attendance\templates\attendance\dashboard\dashboard.html:106
 #: .\base\views.py:6637 .\templates\dashboard_tile_container.html:9
-#, fuzzy
 #| msgid "Exclude Employees"
 msgid "Offline Employees"
-msgstr "Excluir empleados"
+msgstr "Empleados Desconectados"
 
 #: .\attendance\templates\attendance\dashboard\dashboard.html:123
 #: .\base\views.py:6644 .\templates\dashboard_tile_container.html:165
@@ -7616,6 +7614,8 @@ msgid ""
 "By enabling this feature user's will be able to see their current day worked "
 "hours in live on the navbar (inside the check in button)."
 msgstr ""
+"Al habilitar esta función, los usuarios podrán ver sus horas trabajadas del día actual "
+"en vivo en la barra de navegación (dentro del botón de registro)."
 
 #: .\attendance\templates\attendance\work_record\work_record_create.html:9
 msgid "save"
@@ -7857,7 +7857,7 @@ msgstr "Rechazo masivo"
 #: .\recruitment\templates\skill_zone\skill_zone_list.html:141
 #: .\templates\dashboard_chart_form.html:30
 msgid "View"
-msgstr "Vista"
+msgstr "Ver"
 
 #: .\attendance\templates\requests\attendance\request_lines.html:174
 msgid "Cancel / Reject"
@@ -8327,7 +8327,7 @@ msgstr "---Elige turno---"
 
 #: .\base\forms.py:1406
 msgid "Start date"
-msgstr "Inicio de fecha"
+msgstr "Fecha de inicio"
 
 #: .\base\forms.py:1829
 msgid "Old password"
@@ -8537,7 +8537,7 @@ msgstr "A diario"
 
 #: .\base\methods.py:472 .\leave\models.py:58
 msgid "Full Day"
-msgstr "Lleno Día"
+msgstr "Día Completo"
 
 #: .\base\methods.py:473 .\leave\models.py:59
 msgid "First Half"
@@ -8657,6 +8657,11 @@ msgstr "Formato no válido, excepto HH:MM"
 #: .\base\templates\base\navbar_components\company_selection.html:3
 msgid "Companies"
 msgstr "Compañías"
+
+#: .\base\models.py:98
+#: .\base\templates\base\navbar_components\language_settings.html:5
+msgid "Languages"
+msgstr "Idiomas"
 
 #: .\base\models.py:118
 msgid "Departments"
@@ -8805,7 +8810,7 @@ msgstr "Fin de semana"
 #: .\recruitment\templates\recruitment\recruitment_form.html:114
 #: .\recruitment\templates\recruitment\recruitment_update_form.html:105
 msgid "Start Date"
-msgstr "Inicio de Fecha"
+msgstr "Fecha de Inicio"
 
 #: .\base\models.py:357 .\base\models.py:751
 #: .\base\templates\base\rotating_shift\filters.html:28
@@ -9264,7 +9269,7 @@ msgstr "Usuaria"
 #, fuzzy
 #| msgid "Exclude Holidays"
 msgid "Excluded Charts"
-msgstr "Excluir Fevstivos"
+msgstr "Excluir Festivos"
 
 #: .\base\models.py:1659
 #, fuzzy
@@ -9373,7 +9378,7 @@ msgstr "Exportar tarde y salir temprano"
 #: .\recruitment\templates\recruitment\recruitment_form.html:120
 #: .\recruitment\templates\recruitment\recruitment_update_form.html:111
 msgid "End Date"
-msgstr "Fecha final"
+msgstr "Fecha de finalización"
 
 #: .\base\models.py:1678 .\base\templates\holiday\holiday.html:47
 #: .\base\templates\holiday\holiday_export_filter_form.html:63
@@ -9440,11 +9445,9 @@ msgid "Default Expire Days"
 msgstr "Días de vencimiento predeterminados"
 
 #: .\base\templates\announcement\expiry_day.html:11
-#, fuzzy
-#| msgid "Set default notice period expire days"
 msgid "Set default announcement expire days"
 msgstr ""
-"Establecer días de vencimiento del período de notificación predeterminado"
+"Establecer días de vencimiento predeterminado para anuncios"
 
 #: .\base\templates\announcement\expiry_day.html:14
 #: .\base\templates\base\shift\schedule_view.html:11 .\employee\models.py:883
@@ -9528,17 +9531,14 @@ msgid "Are you sure you want to delete this history tag ?"
 msgstr "¿Está seguro de que desea eliminar esta etiqueta de auditoría?"
 
 #: .\base\templates\base\audit_tag\employee_account_block_unblock.html:4
-#, fuzzy
-#| msgid "Employee Contribution"
 msgid "Employee Account Restrictions"
-msgstr "Contribución del empleado"
+msgstr "Restricciones de la cuenta de empleado"
 
 #: .\base\templates\base\audit_tag\employee_account_block_unblock.html:18
 msgid "Restrict Login Account"
 msgstr "Restringir cuenta de inicio de sesión"
 
 #: .\base\templates\base\audit_tag\employee_account_block_unblock.html:22
-#, fuzzy
 #| msgid ""
 #| "By enabling this feature, you can block or unblock an employee's account."
 msgid "By enabling this feature, you can block or unblock an employee account."
@@ -9547,21 +9547,16 @@ msgstr ""
 "empleado."
 
 #: .\base\templates\base\audit_tag\employee_account_block_unblock.html:50
-#, fuzzy
-#| msgid "Edit Profile"
 msgid "Restrict Profile Edit"
-msgstr "Editar Perfil"
+msgstr "Restringir Editar Perfil"
 
 #: .\base\templates\base\audit_tag\employee_account_block_unblock.html:54
-#, fuzzy
-#| msgid ""
-#| "By enabling this feature, you can block or unblock an employee's account."
 msgid ""
 "By enabling this feature, you can restrict an employee from editing their "
 "profile."
 msgstr ""
-"Al habilitar esta función, puede bloquear o desbloquear la cuenta de un "
-"empleado."
+"Al habilitar esta función, puede restringir a un empleado de editar su "
+"perfil."
 
 #: .\base\templates\base\audit_tag\history_tracking_fields.html:35
 msgid "Employee History Tracking"
@@ -9581,7 +9576,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Work Information"
 msgid "Work Information Tracking"
-msgstr "Trabajar Información"
+msgstr "Información de trabajo"
 
 #: .\base\templates\base\audit_tag\history_tracking_fields.html:61
 #, fuzzy
@@ -9734,10 +9729,9 @@ msgstr "Puede eliminar"
 
 #: .\base\templates\base\auth\username_change_form.html:25
 #: .\employee\templates\navbar_component\profile_section.html:19
-#, fuzzy
 #| msgid "Username"
 msgid "Change Username"
-msgstr "Nombre de usuario"
+msgstr "Cambiar nombre de usuario"
 
 #: .\base\templates\base\auth\username_change_form.html:36
 #, fuzzy
@@ -9774,7 +9768,7 @@ msgstr "Hq"
 #: .\recruitment\templates\candidate\individual.html:328
 #: .\templates\initialize_database\horilla_company.html:44
 msgid "Address"
-msgstr "Direcction"
+msgstr "Dirección"
 
 #: .\base\templates\base\company\company_form.html:29
 #: .\base\templates\base\company\company_view.html:9
@@ -9818,7 +9812,7 @@ msgstr "País"
 #: .\recruitment\templates\pipeline\filters.html:142
 #: .\templates\initialize_database\horilla_company.html:62
 msgid "State"
-msgstr "Estado"
+msgstr "Provincia"
 
 #: .\base\templates\base\company\company_form.html:47
 #: .\base\templates\base\company\company_view.html:11
@@ -10196,7 +10190,7 @@ msgstr "Entregar"
 #: .\pms\templates\feedback\question\question_all.html:102
 #: .\templates\index.html:105
 msgid "Cancel"
-msgstr "Cancelad"
+msgstr "Cancelar"
 
 #: .\base\templates\base\rotating_shift\filters.html:81
 #: .\base\templates\base\rotating_shift\individual_view.html:121
@@ -10917,7 +10911,7 @@ msgstr "Vista todo Festivos"
 #, fuzzy
 #| msgid "Exclude Holidays"
 msgid "Export Holidays"
-msgstr "Excluir Fevstivos"
+msgstr "Excluir Festivos"
 
 #: .\base\templates\holiday\holiday.html:37
 #: .\base\templates\holiday\holiday_form.html:27
@@ -11188,7 +11182,7 @@ msgstr "Respuesta"
 #: .\leave\templates\leave\user_leave\group_by.html:75
 #: .\leave\templates\leave\user_leave\user_requests.html:69
 msgid "Requested Days"
-msgstr "Solicitada Días"
+msgstr "Días solicitados"
 
 #: .\base\templates\request_and_approve\leave_allocation_approve.html:37
 msgid "Do you want to Approve this leave allocation request?"
@@ -11550,7 +11544,7 @@ msgstr "mensual"
 
 #: .\base\translator.py:13
 msgid "Employee First Name"
-msgstr "Empleada Primero Nombre"
+msgstr "Nombre del Empleado"
 
 #: .\base\translator.py:14
 msgid "Employee Last Name"
@@ -11892,7 +11886,7 @@ msgstr "Fecha de programacion"
 #: .\project\templates\dashboard\project_details.html:42
 #: .\project\templates\project\new\project_kanban_view.html:91
 msgid "End date"
-msgstr "Fecha final"
+msgstr "Fecha de finalización"
 
 #: .\base\translator.py:121
 msgid "Recruitment managers"
@@ -11927,7 +11921,7 @@ msgstr "Fecha de finalización hasta"
 
 #: .\base\translator.py:128
 msgid "Employee first name"
-msgstr "Empleada Primero Nombre"
+msgstr "Nombre del Empleado"
 
 #: .\base\translator.py:129
 msgid "Employee last name"
@@ -13216,7 +13210,7 @@ msgstr "Notificaciones marcadas como leídas"
 
 #: .\base\views.py:5130 .\base\views.py:5362 .\employee\views.py:3472
 msgid "Settings updated."
-msgstr "Ajustes actualizan."
+msgstr "Ajustes actualizados."
 
 #: .\base\views.py:5168
 msgid "Please select a valid date format."
@@ -13311,23 +13305,21 @@ msgid "Action has been deleted successfully!"
 msgstr "¡El puesto de trabajo se ha creado correctamente!"
 
 #: .\base\views.py:6638 .\templates\dashboard_tile_container.html:30
-#, fuzzy
 #| msgid "Exclude Employees"
 msgid "Online Employees"
-msgstr "Empleado en línea"
+msgstr "Empleados desconectados"
 
 #: .\base\views.py:6639
-#, fuzzy
 #| msgid "Overall Leave"
 msgid "Overall Leave Chart"
-msgstr "ausencia total"
+msgstr "Gráfico general de licencias"
 
 #: .\base\views.py:6640
 #: .\onboarding\templates\onboarding\candidates_view.html:23
 #: .\recruitment\templates\dashboard\dashboard.html:74
 #: .\templates\dashboard_tile_container.html:75
 msgid "Hired Candidates"
-msgstr "Contratado Candidatos"
+msgstr "Candidatos Contratados"
 
 #: .\base\views.py:6641
 msgid "Onboarding Candidates"
@@ -13925,7 +13917,7 @@ msgstr "Opciones"
 #, fuzzy
 #| msgid "Badge Id"
 msgid "Badge ID"
-msgstr "Insignia Id"
+msgstr "Legajo"
 
 #: .\biometric\templates\biometric\list_employees_biometric.html:31
 msgid "Fingerprint"
@@ -14367,7 +14359,7 @@ msgstr "Crear Dejar Tipo"
 #: .\onboarding\templates\onboarding\employee_creation.html:61
 #: .\templates\initialize_database\horilla_user_signup.html:38
 msgid "First Name"
-msgstr "Primero Nombre"
+msgstr "Nombre"
 
 #: .\employee\models.py:78
 #: .\employee\templates\employee\profile\personal_info.html:42
@@ -14375,7 +14367,7 @@ msgstr "Primero Nombre"
 #: .\onboarding\templates\onboarding\employee_creation.html:68
 #: .\templates\initialize_database\horilla_user_signup.html:45
 msgid "Last Name"
-msgstr "Último Nombre"
+msgstr "Apellido"
 
 #: .\employee\models.py:230
 #, fuzzy
@@ -14478,7 +14470,7 @@ msgstr "Correo electrónico"
 #: .\onboarding\templates\onboarding\single_view.html:57
 #: .\onboarding\templates\onboarding\table.html:12 .\recruitment\models.py:431
 msgid "Joining Date"
-msgstr "Dia de ingreso"
+msgstr "Fecha de ingreso"
 
 #: .\employee\models.py:627
 #: .\employee\templates\employee\profile\work_info.html:91
@@ -14488,7 +14480,7 @@ msgstr "Dia de ingreso"
 #: .\payroll\templates\payroll\contract\contract_list.html:63
 #: .\payroll\templates\payroll\contract\group_by.html:53
 msgid "Basic Salary"
-msgstr "Base Salario"
+msgstr "Salario base"
 
 #: .\employee\models.py:630
 #: .\employee\templates\employee\profile\work_info.html:97
@@ -14600,7 +14592,7 @@ msgstr "Acciones"
 #: .\leave\templates\leave\restrict\restrict_filter.html:28
 #: .\pms\templates\meetings\meetings_filter.html:54
 msgid "Work Information"
-msgstr "Trabajar Información"
+msgstr "Información de trabajo"
 
 #: .\employee\templates\disciplinary_actions\disciplinary_nav.html:103
 msgid "Take An Action"
@@ -14626,10 +14618,8 @@ msgstr "Dia de unirse"
 #: .\onboarding\templates\onboarding\candidates_view.html:298
 #: .\payroll\templates\payroll\reimbursement\attachments.html:2
 #: .\payroll\templates\payroll\reimbursement\reimbursenent_individual.html:85
-#, fuzzy
-#| msgid "Attachment"
 msgid "Attachments"
-msgstr "Adjunto"
+msgstr "Archivos Adjuntos"
 
 #: .\employee\templates\disciplinary_actions\disciplinary_records.html:84
 #, fuzzy
@@ -14778,7 +14768,7 @@ msgstr "Subir Foto"
 #: .\employee\templates\employee_personal_info\employee_list.html:95
 #: .\employee\templates\employee_personal_info\group_by.html:77
 msgid "Badge Id"
-msgstr "Insignia Id"
+msgstr "Legajo"
 
 #: .\employee\templates\employee\create_form\personal_info.html:73
 msgid "Show"
@@ -14787,7 +14777,7 @@ msgstr "Mostrar"
 #: .\employee\templates\employee\dashboard\dashboard_employee.html:100
 #: .\templates\birthdays_container.html:12
 msgid "Birthday"
-msgstr "Cumpleaño"
+msgstr "Cumpleaños"
 
 #: .\employee\templates\employee\dashboard\dashboard_employee.html:104
 #: .\employee\views.py:2799
@@ -14840,10 +14830,8 @@ msgid "Export Data"
 msgstr "Fecha de caducidad"
 
 #: .\employee\templates\employee\export_data_employee.html:84
-#, fuzzy
-#| msgid "Leave Types"
 msgid "Leave Records"
-msgstr "Dejar Tipos"
+msgstr "Registros de Licencias"
 
 #: .\employee\templates\employee\export_data_employee.html:134
 #, fuzzy
@@ -14889,7 +14877,7 @@ msgstr "Bancario Codigo"
 #: .\employee\templates\personal-tab.html:289
 #: .\employee\templates\tabs\personal_tab.html:332
 msgid "Bank Address"
-msgstr "Banco Direcction"
+msgstr "Dirección del banco"
 
 #: .\employee\templates\employee\profile\personal_info.html:68
 #: .\employee\templates\personal-tab.html:16
@@ -14903,7 +14891,7 @@ msgstr "Fecha de nacimiento"
 #: .\employee\templates\tabs\personal_tab.html:64 .\onboarding\forms.py:412
 #: .\onboarding\templates\onboarding\employee_creation.html:128
 msgid "Qualification"
-msgstr "Calificación"
+msgstr "Título"
 
 #: .\employee\templates\employee\profile\personal_info.html:97
 #: .\employee\templates\personal-tab.html:79
@@ -14923,7 +14911,7 @@ msgstr "Código Postal"
 #: .\employee\templates\personal-tab.html:106
 #: .\employee\templates\tabs\personal_tab.html:96
 msgid "Emergency Contact"
-msgstr "Emergencia Contacto"
+msgstr "Contacto de Emergencia"
 
 #: .\employee\templates\employee\profile\personal_info.html:170
 msgid "Contact Name"
@@ -14934,7 +14922,7 @@ msgstr "Contacto Nombre"
 #: .\employee\templates\tabs\personal_tab.html:113 .\onboarding\forms.py:422
 #: .\onboarding\templates\onboarding\employee_creation.html:170
 msgid "Emergency Contact Relation"
-msgstr "Emergencia Contacto Relación"
+msgstr "Relación con el Contacto de Emergencia"
 
 #: .\employee\templates\employee\profile\personal_info.html:189
 #: .\employee\templates\personal-tab.html:88
@@ -14942,7 +14930,7 @@ msgstr "Emergencia Contacto Relación"
 #: .\onboarding\templates\onboarding\employee_creation.html:142
 #: .\payroll\models\models.py:677
 msgid "Marital Status"
-msgstr "Marital Estado"
+msgstr "Estado Civil"
 
 #: .\employee\templates\employee\profile\personal_info.html:197
 #: .\employee\templates\personal-tab.html:97
@@ -14950,7 +14938,7 @@ msgstr "Marital Estado"
 #: .\onboarding\templates\onboarding\employee_creation.html:149
 #: .\payroll\models\models.py:676 .\payroll\models\models.py:720
 msgid "Children"
-msgstr "Niños"
+msgstr "Hijos"
 
 #: .\employee\templates\employee\profile\personal_info.html:267
 #: .\employee\templates\employee\profile\profile_modal.html:31
@@ -14975,7 +14963,7 @@ msgstr "Editar Perfil"
 #: .\employee\templates\employee\update_form\form_view.html:18
 #: .\employee\templates\employee_personal_info\employee_work_info.html:109
 msgid "Bank Info"
-msgstr "Banco Infó"
+msgstr "Información bancaria"
 
 #: .\employee\templates\employee\profile\profile_view.html:131
 #: .\employee\templates\employee\view\individual.html:228
@@ -15152,10 +15140,8 @@ msgstr "Vista Archivo Adjunto"
 #: .\employee\templates\employee\send_mail.html:72
 #: .\onboarding\templates\onboarding\candidates_view.html:355
 #: .\recruitment\templates\pipeline\pipeline_components\send_mail.html:93
-#, fuzzy
-#| msgid "Attachment"
 msgid "Other Attachments"
-msgstr "Adjunto"
+msgstr "Otros Archivos Adjuntos"
 
 #: .\employee\templates\employee\view\individual.html:154
 #, fuzzy
@@ -15502,10 +15488,10 @@ msgid "Logout"
 msgstr "Cerrar sesión"
 
 #: .\employee\templates\organisation_chart\org_chart.html:9
-#, fuzzy
+#: .\employee\sidebar.py:59
 #| msgid "organisation-chart"
 msgid "Organization Chart"
-msgstr "organigrama"
+msgstr "Organigrama"
 
 #: .\employee\templates\organisation_chart\org_chart.html:14
 #, fuzzy
@@ -15620,7 +15606,7 @@ msgstr "Personal Infón"
 #: .\employee\templates\tabs\personal_tab.html:104 .\onboarding\forms.py:419
 #: .\onboarding\templates\onboarding\employee_creation.html:163
 msgid "Emergency Contact Name"
-msgstr "Emergencia Contacto Nombre"
+msgstr "Nombre del Contacto de Emergencia"
 
 #: .\employee\templates\personal-tab.html:228
 #: .\employee\templates\tabs\personal_tab.html:234
@@ -15631,7 +15617,7 @@ msgstr "Salario"
 #: .\employee\templates\personal-tab.html:261
 #: .\employee\templates\tabs\personal_tab.html:305
 msgid "Bank Information"
-msgstr "Banco Información"
+msgstr "Información Bancaria"
 
 #: .\employee\templates\policies\form.html:13
 #, fuzzy
@@ -15695,7 +15681,7 @@ msgstr "Establecer la cantidad para el cobro de una licencia"
 #, fuzzy
 #| msgid "Badge Id"
 msgid "Badge Prefix"
-msgstr "Insignia Id"
+msgstr "Legajo"
 
 #: .\employee\templates\settings\settings.html:16
 #, fuzzy
@@ -16238,7 +16224,7 @@ msgstr "Ninguno"
 #, fuzzy
 #| msgid "Contract status"
 msgid "Contract details"
-msgstr "estado del contrato"
+msgstr "Detalles de contrato"
 
 #: .\employee\templates\tabs\profile-asset-tab.html:4
 #, fuzzy
@@ -16625,7 +16611,7 @@ msgstr "Empleado actualizado."
 
 #: .\employee\views.py:1870
 msgid "Employee deleted"
-msgstr "Empleada eliminada"
+msgstr "Empleado eliminado"
 
 #: .\employee\views.py:1879
 msgid "- {}."
@@ -16634,7 +16620,7 @@ msgstr ""
 #: .\employee\views.py:1906
 #, python-format
 msgid "%(employee)s deleted."
-msgstr "%(employee)s eliminada."
+msgstr "%(employee)s eliminados."
 
 #: .\employee\views.py:1912
 #, python-format
@@ -17166,10 +17152,8 @@ msgid "Ticket Details"
 msgstr "Banco Detalles"
 
 #: .\helpdesk\templates\helpdesk\ticket\ticket_detail.html:394
-#, fuzzy
-#| msgid "Work Info"
 msgid "Ticket Info"
-msgstr "Trabajo Información"
+msgstr "Información del Ticket"
 
 #: .\helpdesk\templates\helpdesk\ticket\ticket_detail.html:399
 msgid "Ticket ID:"
@@ -17293,10 +17277,8 @@ msgstr ""
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:34
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:347
 #: .\helpdesk\templates\helpdesk\ticket\ticket_list.html:742
-#, fuzzy
-#| msgid "Work Info"
 msgid "Ticket ID"
-msgstr "Trabajo Información"
+msgstr "ID del Ticket"
 
 #: .\helpdesk\templates\helpdesk\ticket\ticket_nav.html:65
 #: .\offboarding\templates\offboarding\task\table_body.html:95
@@ -17792,10 +17774,9 @@ msgstr "Filtro de encuesta"
 
 #: .\horilla_views\templates\generic\filter_tags.html:83
 #: .\templates\filter_tags.html:77
-#, fuzzy
 #| msgid "Clear"
 msgid "Clear All"
-msgstr "Claro"
+msgstr "Borrar todo"
 
 #: .\horilla_views\templates\generic\group_by.html:29
 #: .\horilla_views\templates\generic\group_by_table.html:30
@@ -18662,13 +18643,13 @@ msgstr ""
 #, fuzzy
 #| msgid "Address"
 msgid "IPv4 address"
-msgstr "Direcction"
+msgstr "Dirección IPv4"
 
 #: .\horillavenv\Lib\site-packages\django\db\models\fields\__init__.py:2144
 #, fuzzy
 #| msgid "Address"
 msgid "IP address"
-msgstr "Direcction"
+msgstr "Dirección IP"
 
 #: .\horillavenv\Lib\site-packages\django\db\models\fields\__init__.py:2237
 #: .\horillavenv\Lib\site-packages\django\db\models\fields\__init__.py:2238
@@ -18960,7 +18941,7 @@ msgstr ""
 #: .\horillavenv\Lib\site-packages\django\forms\widgets.py:463
 #: .\templates\notification\notification_items.html:22
 msgid "Clear"
-msgstr "Claro"
+msgstr "Borrar"
 
 #: .\horillavenv\Lib\site-packages\django\forms\widgets.py:464
 #, fuzzy
@@ -19764,7 +19745,7 @@ msgstr "Rechazadas Solicitude"
 
 #: .\leave\models.py:65
 msgid "Yearly"
-msgstr "Añoly"
+msgstr "Anualmente"
 
 #: .\leave\models.py:122
 #: .\leave\templates\leave\leave_type\leave_type_view.html:73
@@ -19796,10 +19777,8 @@ msgstr "está sujeto a impuestos"
 #: .\leave\templates\leave\leave_type\leave_type_update.html:197
 #: .\leave\templates\leave\leave_type_creation.html:160
 #: .\leave\templates\leave\leave_type_update.html:162
-#, fuzzy
-#| msgid "View attachment"
 msgid "Require Attachment"
-msgstr "Vista Archivo Adjunto"
+msgstr "Requerir Archivo Adjunto"
 
 #: .\leave\models.py:292
 msgid "Compensatory Leave Request already exists."
@@ -19852,7 +19831,7 @@ msgstr "Dejar count"
 
 #: .\leave\models.py:564 .\leave\templates\leave\user_request_form.html:35
 msgid "Attachment"
-msgstr "Adjunto"
+msgstr "Archivo adjunto"
 
 #: .\leave\models.py:578
 #: .\onboarding\templates\onboarding\candidate_filter.html:63
@@ -19882,30 +19861,24 @@ msgid ""
 msgstr ""
 
 #: .\leave\models.py:1106
-#, fuzzy
-#| msgid "User Leave"
 msgid "Enable to select all Leave types."
-msgstr "Usuario Dejar"
+msgstr "Habilitar para seleccionar todos los tipos de licencia."
 
 #: .\leave\models.py:1110
-#, fuzzy
-#| msgid "Leave types"
 msgid "Spesific leave types"
-msgstr "Dejar tipos"
+msgstr "Tipos de Licencia específicos"
 
 #: .\leave\models.py:1113
 msgid "Choose specific leave types to restrict."
-msgstr ""
+msgstr "Elija tipos de licencia específicos para restringir"
 
 #: .\leave\models.py:1117
-#, fuzzy
-#| msgid "Exclude Holidays"
 msgid "Exclude leave types"
-msgstr "Excluir Fevstivos"
+msgstr "Excluir Tipos de Licencia"
 
 #: .\leave\models.py:1120
 msgid "Choose leave types to exclude from restriction."
-msgstr ""
+msgstr "Elija tipos de licencia para excluir de la restricción"
 
 #: .\leave\models.py:1303 .\payroll\models\models.py:603
 #, fuzzy
@@ -20073,52 +20046,42 @@ msgid "Reason for Rejection"
 msgstr "Personal Infón"
 
 #: .\leave\templates\leave\dashboard.html:41
-#, fuzzy
-#| msgid "Asset Approve"
 msgid "Requests to Approve"
-msgstr "Activos Aprobación"
+msgstr "Solicitudes para Aprobar"
 
 #: .\leave\templates\leave\dashboard.html:54
 msgid "Approved Leaves In This Month"
-msgstr ""
+msgstr "Licencias Aprobadas este mes"
 
 #: .\leave\templates\leave\dashboard.html:67
 msgid "Rejected Leaves In This Month"
-msgstr ""
+msgstr "Licencias Rechazadas este mes"
 
 #: .\leave\templates\leave\dashboard.html:85
-#, fuzzy
-#| msgid "Employee rate"
 msgid "Employee Leaves"
-msgstr "Empleada tasa :"
+msgstr "Licencias de los Empleados"
 
 #: .\leave\templates\leave\dashboard.html:86
 msgid "next"
-msgstr ""
+msgstr "Próximo"
 
 #: .\leave\templates\leave\dashboard.html:116
-#, fuzzy
-#| msgid "Personal Details"
 msgid "View Personal Dashboard"
-msgstr "Personales Detalles"
+msgstr "Ver Tablero Personal"
 
 #: .\leave\templates\leave\dashboard.html:126
 #: .\leave\templates\leave\employee_dashboard.html:115
-#, fuzzy
-#| msgid "New Holiday"
 msgid "Next Holiday"
-msgstr "Nueva Festivos"
+msgstr "Próximo feriado"
 
 #: .\leave\templates\leave\dashboard.html:136
 #: .\leave\templates\leave\employee_dashboard.html:125
 msgid "Upcoming holidays"
-msgstr ""
+msgstr "Próximos feriados"
 
 #: .\leave\templates\leave\dashboard.html:147
-#, fuzzy
-#| msgid "Department"
 msgid "Department Leaves"
-msgstr "Departamento"
+msgstr "Licencias por Departamento"
 
 #: .\leave\templates\leave\dashboard.html:155
 #: .\leave\templates\leave\on_leave.html:28
@@ -20127,13 +20090,11 @@ msgstr ""
 
 #: .\leave\templates\leave\dashboard.html:172
 msgid "Leave Type - Count of leaves"
-msgstr ""
+msgstr "Tipo de Licencia: Cantidad de licencias"
 
 #: .\leave\templates\leave\dashboard.html:187
-#, fuzzy
-#| msgid "Daily Attendance Analytic"
 msgid "Weekly Leave Analytics"
-msgstr "Analítica de Asistencia Diaria"
+msgstr "Análisis de Licencias semanales"
 
 #: .\leave\templates\leave\employee_dashboard.html:33
 msgid "New Requests"
@@ -20145,27 +20106,21 @@ msgstr "Solicitudes Aprobadas"
 
 #: .\leave\templates\leave\employee_dashboard.html:61
 msgid "Rejected Requests"
-msgstr "Rechazadas Solicitude"
+msgstr "Solicitudes Rechazadas"
 
 #: .\leave\templates\leave\employee_dashboard.html:76
 #: .\leave\templates\leave\leave_request\employee_available_leave_count.html:32
 #: .\leave\templates\leave\leave_request\employee_available_leave_count.html:44
-#, fuzzy
-#| msgid "Available Leave Days"
 msgid "Available Leaves"
-msgstr "Disponibles Dejar Días"
+msgstr "Licencias Disponibles"
 
 #: .\leave\templates\leave\employee_dashboard.html:86
-#, fuzzy
-#| msgid "All Leave Requests"
 msgid "Total Leave Requests"
-msgstr "Todas Dejar Solicitudes"
+msgstr "Total de solicitudes de licencia"
 
 #: .\leave\templates\leave\employee_dashboard.html:105
-#, fuzzy
-#| msgid "Dashboard"
 msgid "View Admin Dashboard"
-msgstr "Dashboard"
+msgstr "Ver Tablero de Administrador"
 
 #: .\leave\templates\leave\holiday\holiday.html:115
 #: .\leave\templates\leave\leave_assign\assign_view.html:237
@@ -20207,7 +20162,7 @@ msgstr "Asignado Por"
 #: .\leave\templates\leave\user_leave\user_request_one.html:120
 #: .\leave\templates\leave\user_request_one.html:49
 msgid "View attachment"
-msgstr "Vista Archivo Adjunto"
+msgstr "Ver Archivo Adjunto"
 
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_single_view.html:226
 #: .\leave\templates\leave\leave_allocation_request\leave_allocation_request_view.html:301
@@ -20246,11 +20201,11 @@ msgstr "Ver Licencia Disponible"
 #, fuzzy
 #| msgid "Assigned Leaves"
 msgid "Import Assigned Leaves"
-msgstr "Asignadas Dejar"
+msgstr "Licencias Asignadas"
 
 #: .\leave\templates\leave\leave_assign\assign_view.html:61
 msgid "All Assigned Leaves"
-msgstr "Todo Asignadas Dejar"
+msgstr "Todas las Licencias Asignadas"
 
 #: .\leave\templates\leave\leave_assign\assign_view.html:171
 #, fuzzy
@@ -20290,15 +20245,13 @@ msgid "Used Leave Days"
 msgstr "Dejar Dias"
 
 #: .\leave\templates\leave\leave_assign\assigned_leaves_export_form.html:4
-#, fuzzy
-#| msgid "Assigned Leaves"
 msgid "Export Assigned Leaves"
-msgstr "Asignadas Dejar"
+msgstr "Exportar Licencias Asignadas"
 
 #: .\leave\templates\leave\leave_assign\assigned_leaves_export_form.html:45
 #: .\leave\templates\leave\leave_assign\assigned_leaves_filter.html:10
 msgid "Assigned Leave"
-msgstr "Asignadas Dejar"
+msgstr "Licencias Asignadas"
 
 #: .\leave\templates\leave\leave_assign\assigned_leaves_export_form.html:98
 #: .\leave\templates\leave\leave_assign\assigned_leaves_filter.html:63
@@ -20347,15 +20300,13 @@ msgid "Update Available Leave"
 msgstr "Actualizar Dejar Disponible"
 
 #: .\leave\templates\leave\leave_assign\leave_assign_form.html:28
-#, fuzzy
-#| msgid "Assign Leave"
 msgid "Assign Leaves"
-msgstr "Asignar Dejar"
+msgstr "Asignar Licencias"
 
 #: .\leave\templates\leave\leave_assign\leave_assign_one_form.html:20
 #: .\leave\templates\leave\leave_type\leave_types.html:88
 msgid "Assign Leave"
-msgstr "Asignar Dejar"
+msgstr "Asignar Licencia"
 
 #: .\leave\templates\leave\leave_assign\single_assign_view.html:98
 #, fuzzy
@@ -20364,14 +20315,12 @@ msgid "Are you sure you want to delete this assigned leave?"
 msgstr "¿Está seguro de que desea eliminar este horario?"
 
 #: .\leave\templates\leave\leave_assign\single_assign_view.html:115
-#, fuzzy
-#| msgid "Assigned Leave"
 msgid "Assigned Leave type not found."
-msgstr "Asignadas Dejar"
+msgstr "Tipo de Licencia asignada no encontrada"
 
 #: .\leave\templates\leave\leave_assign_form.html:17
 msgid "Leave types"
-msgstr "Dejar tipos"
+msgstr "Tipos de Licencia"
 
 #: .\leave\templates\leave\leave_my_assign_view.html:8
 msgid "Leave days"
@@ -20394,7 +20343,7 @@ msgstr "Mi solicitud de licencia"
 #: .\leave\templates\leave\leave_my_requests_view.html:3
 #: .\leave\templates\leave\leave_request_view.html:3
 msgid "New Leave Request"
-msgstr "Nueva Dejar petición"
+msgstr "Nueva solicitud de Licencia"
 
 #: .\leave\templates\leave\leave_my_request_view.html:14
 #: .\leave\templates\leave\leave_my_requests_view.html:14
@@ -20456,10 +20405,8 @@ msgid "Clashed Due To"
 msgstr ""
 
 #: .\leave\templates\leave\leave_request\leave_clashes.html:33
-#, fuzzy
-#| msgid "Open Job Positions"
 msgid "Same Department & Job Position"
-msgstr "Puestos de trabajo abiertos"
+msgstr "Mismo Departamento y Puesto de trabajo"
 
 #: .\leave\templates\leave\leave_request\leave_clashes.html:35
 #, fuzzy
@@ -20468,10 +20415,8 @@ msgid "Same Department"
 msgstr "Departamento"
 
 #: .\leave\templates\leave\leave_request\leave_clashes.html:37
-#, fuzzy
-#| msgid "Job Position"
 msgid "Same Job Position"
-msgstr "Puestos de trabajo"
+msgstr "Mismo Puesto de trabajo"
 
 #: .\leave\templates\leave\leave_request\leave_clashes.html:110
 msgid "No clashed requestes available for cancelled or rejected leaves."
@@ -20497,7 +20442,7 @@ msgstr "¿Estás segura de que quieres eliminar?"
 #, fuzzy
 #| msgid "Leave Requests"
 msgid "Export Leave Requests"
-msgstr "Dejar petición"
+msgstr "Exportar Solicitud de Licencias"
 
 #: .\leave\templates\leave\leave_request\leave_requests_export_filter.html:138
 #, fuzzy
@@ -20536,7 +20481,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_request\request_view.html:61
 #: .\leave\templates\leave\request_view.html:19
 msgid "Leave Requests"
-msgstr "Dejar petición"
+msgstr "Solicitud de Licencias"
 
 #: .\leave\templates\leave\leave_request\request_view.html:182
 #: .\leave\templates\leave\user_leave\user_request_view.html:275
@@ -20750,7 +20695,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Exclude Holidays"
 msgid "Exclude Company Holidays"
-msgstr "Excluir Fevstivos"
+msgstr "Excluir Festivos"
 
 #: .\leave\templates\leave\leave_type\leave_type_creation.html:210
 #: .\leave\templates\leave\leave_type\leave_type_update.html:210
@@ -20763,7 +20708,7 @@ msgstr ""
 #: .\leave\templates\leave\leave_type_creation.html:174
 #: .\leave\templates\leave\leave_type_update.html:176
 msgid "Exclude Holidays"
-msgstr "Excluir Fevstivos"
+msgstr "Excluir Feriados"
 
 #: .\leave\templates\leave\leave_type\leave_type_creation.html:222
 #: .\leave\templates\leave\leave_type\leave_type_update.html:222
@@ -20802,7 +20747,7 @@ msgstr "El empleado no tiene tipo de licencia."
 #: .\leave\templates\leave\user_eave_type_empty_view.html:20
 #: .\leave\templates\leave\user_leave_type_empty_view.html:20
 msgid "Leave Types"
-msgstr "Dejar Tipos"
+msgstr "Tipos de Licencia"
 
 #: .\leave\templates\leave\leave_type\leave_type_empty_view.html:48
 #: .\leave\templates\leave\user_eave_type_empty_view.html:49
@@ -20907,10 +20852,8 @@ msgid "Do you really want to delete this leave type?"
 msgstr "¿Quieres eliminar este activo?"
 
 #: .\leave\templates\leave\leave_type\leave_type_individual_view.html:216
-#, fuzzy
-#| msgid "There are no assets to export."
 msgid "There are no leave types to view"
-msgstr "No hay activos para exportar."
+msgstr "No hay tipos de licencia para ver."
 
 #: .\leave\templates\leave\leave_type\leave_type_update.html:23
 #: .\leave\templates\leave\leave_type_update.html:36
@@ -20920,7 +20863,7 @@ msgstr "Actualizar Dejar Tipos"
 #: .\leave\templates\leave\leave_type_creation.html:22
 #: .\leave\templates\leave\leave_type_update.html:24
 msgid "View Leave Types"
-msgstr "Vista Dejar Tipos"
+msgstr "Ver tipos de Licencia"
 
 #: .\leave\templates\leave\leave_type_creation.html:145
 msgid "Carryforward Expire"
@@ -20932,17 +20875,14 @@ msgid "Exclude Company Leaves"
 msgstr "Excluir Empresa Dejar"
 
 #: .\leave\templates\leave\on_leave.html:36
-#, fuzzy
 #| msgid "Employee doesn't have enough leave days.."
 msgid "No employees have taken leave today."
-msgstr "El empleado no tiene suficientes días de licencia."
+msgstr "Ningún empleado ha tomado vacaciones hoy."
 
 #: .\leave\templates\leave\request_view.html:143
 #: .\leave\templates\leave\request_view.html:165
-#, fuzzy
-#| msgid "Leave Request"
 msgid "Leave Request Create"
-msgstr "Dejar petición"
+msgstr "Crear Solicitud de Licencia"
 
 #: .\leave\templates\leave\restrict\restrict.html:20
 msgid "Select All Days"
@@ -20953,22 +20893,16 @@ msgid "Unselect All Days"
 msgstr ""
 
 #: .\leave\templates\leave\restrict\restrict.html:104
-#, fuzzy
-#| msgid "Leave type is required"
 msgid "All Leave types are Restricted"
-msgstr "Se requiere tipo de licencia"
+msgstr "Todos los tipos de licencia están restringidos"
 
 #: .\leave\templates\leave\restrict\restrict.html:108
-#, fuzzy
-#| msgid "User Leave"
 msgid "Restricted for these Leave Types"
-msgstr "Usuario Dejar"
+msgstr "Restringido para estos tipos de licencia"
 
 #: .\leave\templates\leave\restrict\restrict.html:112
-#, fuzzy
-#| msgid "View Leave Types"
 msgid "Excluded Leave Types"
-msgstr "Vista Dejar Tipos"
+msgstr "Tipos de Licencia Excluidos"
 
 #: .\leave\templates\leave\restrict\restrict.html:217
 #: .\leave\templates\leave\restrict\view_restrict.html:97
@@ -20990,24 +20924,19 @@ msgstr "Crear Período"
 
 #: .\leave\templates\leave\restrict\restrict_form.html:59
 #: .\leave\templates\leave\restrict\restrict_update_form.html:59
-#, fuzzy
 #| msgid "Clear"
 msgid "Include all"
-msgstr "Claro"
+msgstr "Borrar"
 
 #: .\leave\templates\leave\restrict\restrict_form.html:72
 #: .\leave\templates\leave\restrict\restrict_update_form.html:70
-#, fuzzy
-#| msgid "View Leave Types"
 msgid "Specific Leave Types"
-msgstr "Vista Dejar Tipos"
+msgstr "Tipos de Licencia específicos"
 
 #: .\leave\templates\leave\restrict\restrict_form.html:81
 #: .\leave\templates\leave\restrict\restrict_update_form.html:79
-#, fuzzy
-#| msgid "View Leave Types"
 msgid "Exclude Leave Types"
-msgstr "Vista Dejar Tipos"
+msgstr "Excluir Tipos de Licencia"
 
 #: .\leave\templates\leave\restrict\restrict_update_form.html:20
 #, fuzzy
@@ -21016,10 +20945,8 @@ msgid "Update Restricted Day"
 msgstr "Actualización Período"
 
 #: .\leave\templates\leave\restrict\view_restrict.html:7
-#, fuzzy
-#| msgid "Requested Days"
 msgid "Restricted Days"
-msgstr "Solicitada Días"
+msgstr "Días Restringidos"
 
 #: .\leave\templates\leave\settings\past_leave_restrict_view.html:8
 #, fuzzy
@@ -21031,7 +20958,7 @@ msgstr "Usuario Dejar"
 #, fuzzy
 #| msgid "Leave Request"
 msgid "Restricts Past Date Leave Request Creation"
-msgstr "Dejar petición"
+msgstr "Restringir Creación de Solicitud de Licencias en fechas pasadas"
 
 #: .\leave\templates\leave\settings\past_leave_restrict_view.html:19
 msgid ""
@@ -21064,10 +20991,8 @@ msgstr "¿Quiere cancelar esta solicitud?"
 
 #: .\leave\templates\leave\user_leave\user_leave_empty_view.html:13
 #: .\leave\templates\leave\user_leave_empty_view.html:13
-#, fuzzy
-#| msgid "Leave types not assigned to you"
 msgid "Leave types not assigned to you."
-msgstr "Tipos de dejar no asignados a usted"
+msgstr "Tipos de Licencia no asignados a usted"
 
 #: .\leave\templates\leave\user_leave\user_leave_view.html:7
 #: .\leave\templates\leave\user_leave_view.html:7
@@ -21080,10 +21005,9 @@ msgid "User Leave"
 msgstr "Usuario Dejar"
 
 #: .\leave\templates\leave\user_leave\user_request_update.html:19
-#, fuzzy
 #| msgid "Leave Request"
 msgid "Leave Request Update"
-msgstr "Dejar petición"
+msgstr "Actualizar Solicitud de Licencia"
 
 #: .\leave\templates\leave\user_leave\user_request_view.html:42
 #: .\leave\templates\leave\user_request_view.html:19
@@ -21105,10 +21029,8 @@ msgid "New leave type Created.."
 msgstr "Nuevo tipo de ejar creado .."
 
 #: .\leave\views.py:259
-#, fuzzy
-#| msgid "Leave types not assigned to you"
 msgid "Leave type not found"
-msgstr "Tipos de dejar no asignados a usted"
+msgstr "Tipo de Licencia no encontrado"
 
 #: .\leave\views.py:272
 msgid "Leave type is updated successfully.."
@@ -21119,16 +21041,12 @@ msgid "Leave type deleted successfully.."
 msgstr "Deje el tipo eliminado con éxito..."
 
 #: .\leave\views.py:298 .\leave\views.py:1205
-#, fuzzy
-#| msgid "Leave types not assigned to you"
 msgid "Leave type not found."
-msgstr "Tipos de dejar no asignados a usted"
+msgstr "Tipo de Licencia no encontrado"
 
 #: .\leave\views.py:307
-#, fuzzy
-#| msgid "This Employee type already in use."
 msgid "This leave types are already in use for {}"
-msgstr "Este tipo de empleado ya está en uso."
+msgstr "Este tipo de Licencia ya está en uso para {}"
 
 #: .\leave\views.py:479 .\leave\views.py:2114 .\leave\views.py:3066
 msgid "Leave request created successfully.."
@@ -21146,7 +21064,7 @@ msgstr "Dejar solicitud eliminada con éxito.."
 #, fuzzy
 #| msgid "Leave Request"
 msgid "Leave request not found."
-msgstr "Dejar petición"
+msgstr "Solicitud de Licencia no encontrada"
 
 #: .\leave\views.py:931
 msgid "Leave request approved successfully.."
@@ -21176,13 +21094,13 @@ msgstr ""
 #, fuzzy
 #| msgid "Leave Request"
 msgid "Leave request not found"
-msgstr "Dejar petición"
+msgstr "Solicitud de Licencia no encontrada"
 
 #: .\leave\views.py:1076
 #, fuzzy
 #| msgid "Leave request created successfully.."
 msgid "Leave request rejected successfully.."
-msgstr "Dejar solicitud creada con éxito.."
+msgstr "Solicitud de Licencia creada con éxito.."
 
 #: .\leave\views.py:1094
 #, fuzzy
@@ -21214,7 +21132,7 @@ msgstr "Empleado actualizado."
 
 #: .\leave\views.py:1269
 msgid "Successfully assigned leave type to {} employees."
-msgstr ""
+msgstr "Se asignó correctamente el tipo de licencia a {} empleados"
 
 #: .\leave\views.py:1297
 #, fuzzy
@@ -21223,16 +21141,12 @@ msgid "Leave type is already assigned to some selected {} employees."
 msgstr "El tipo de licencia ya está asignado a la empleada."
 
 #: .\leave\views.py:1504
-#, fuzzy
-#| msgid "Leave type assign is successfull.."
 msgid "Leave types assigned successfully."
-msgstr "Asignar dejar tipo de es exitosa.."
+msgstr "Asignación de tipo de licencia exitosa."
 
 #: .\leave\views.py:1509
-#, fuzzy
-#| msgid "leave type is already assigned to the employee.."
 msgid "Some leave types were already assigned to {} employees."
-msgstr "el tipo de licencia ya está asignado al empleado."
+msgstr "Algunos tipos de licencia ya están asignados a los empleados {}."
 
 #: .\leave\views.py:1544
 msgid "Available leaves updated successfully..."
@@ -21245,10 +21159,8 @@ msgid "Assigned leave successfully deleted."
 msgstr "Dejar asignada eliminó con éxito."
 
 #: .\leave\views.py:1584 .\leave\views.py:1617
-#, fuzzy
-#| msgid "Assigned Leave"
 msgid "Assigned leave not found."
-msgstr "Asignadas Dejar"
+msgstr "Licencia Asignada no encontrada"
 
 #: .\leave\views.py:1586
 #, fuzzy
@@ -21279,10 +21191,8 @@ msgid "Leave type has already been assigned to the employee."
 msgstr "El tipo de licencia ya está asignado a la empleada."
 
 #: .\leave\views.py:1729
-#, fuzzy
-#| msgid "Assigned Leave"
 msgid "Assigned Leaves"
-msgstr "Asignadas Dejar"
+msgstr "Licencias Asignadas"
 
 #: .\leave\views.py:1799
 #, fuzzy
@@ -21370,10 +21280,8 @@ msgid "No leave requests for any leave type this month."
 msgstr ""
 
 #: .\leave\views.py:2974
-#, fuzzy
-#| msgid "Leave Types"
 msgid "Leave Trends"
-msgstr "Dejar Tipos"
+msgstr "Tendencias de licencia"
 
 #: .\leave\views.py:3233
 #, fuzzy
@@ -21534,10 +21442,8 @@ msgid "Completed"
 msgstr "Completo"
 
 #: .\offboarding\models.py:69
-#, fuzzy
-#| msgid "period"
 msgid "Notice period"
-msgstr "Período"
+msgstr "Plazo de aviso"
 
 #: .\offboarding\models.py:70
 msgid "FnF Settlement"
@@ -21704,7 +21610,7 @@ msgstr ""
 #: .\payroll\templates\payroll\reimbursement\filter.html:41
 #: .\recruitment\templates\pipeline\pipeline_empty.html:28
 msgid "Job position"
-msgstr "Puestos de trabajo"
+msgstr "Puesto de trabajo"
 
 #: .\offboarding\templates\offboarding\resignation\group_by.html:68
 #: .\offboarding\templates\offboarding\resignation\group_by.html:73
@@ -21781,18 +21687,14 @@ msgstr ""
 
 #: .\offboarding\templates\offboarding\settings\settings.html:4
 #: .\offboarding\templates\offboarding\settings\settings.html:9
-#, fuzzy
-#| msgid "Re-validate Request"
 msgid "Resignation Request"
-msgstr "Revalidar Solicitud"
+msgstr "Solicitud de Renuncia"
 
 #: .\offboarding\templates\offboarding\settings\settings.html:11
-#, fuzzy
-#| msgid "By enabling this users can access time-runner feature"
 msgid ""
 "By enabling this normal users can request for their resignation progress"
 msgstr ""
-"Al habilitar esto, los usuarios pueden acceder a la función Time-runner"
+"Al habilitar esto, los usuarios normales pueden solicitar el progreso de su renuncia."
 
 #: .\offboarding\templates\offboarding\stage\offboarding_body.html:49
 #, fuzzy
@@ -21803,10 +21705,8 @@ msgstr "¿Está seguro de que desea eliminar esta etapa"
 #: .\offboarding\templates\offboarding\stage\offboarding_body.html:66
 #: .\payroll\models\models.py:244
 #: .\payroll\templates\payroll\settings\settings.html:4
-#, fuzzy
-#| msgid "Create Period"
 msgid "Notice Period"
-msgstr "Crear Período"
+msgstr "Plazo de aviso"
 
 #: .\offboarding\templates\offboarding\stage\offboarding_body.html:72
 #: .\onboarding\templates\onboarding\onboarding_table.html:122
@@ -21915,7 +21815,7 @@ msgstr "beneficios no encontrada"
 #, fuzzy
 #| msgid "Bank Address"
 msgid "Task Added"
-msgstr "Banco Direcction"
+msgstr "Dirección del banco"
 
 #: .\offboarding\views.py:612
 #, fuzzy
@@ -21963,7 +21863,7 @@ msgstr ""
 #: .\onboarding\templates\onboarding\candidate_creation.html:31
 #: .\onboarding\templates\onboarding\candidate_update.html:38
 msgid "Full Name"
-msgstr "Lleno Nombre"
+msgstr "Nombre completo"
 
 #: .\onboarding\forms.py:205
 #: .\onboarding\templates\onboarding\candidate_creation.html:57
@@ -21972,7 +21872,7 @@ msgstr "Lleno Nombre"
 #: .\onboarding\templates\onboarding\onboardings.html:12
 #: .\recruitment\forms.py:404
 msgid "Mobile"
-msgstr "Móvil"
+msgstr "Celular"
 
 #: .\onboarding\forms.py:234
 #, fuzzy
@@ -21991,7 +21891,7 @@ msgstr "es la etapa final"
 #: .\onboarding\forms.py:416
 #: .\onboarding\templates\onboarding\employee_creation.html:156
 msgid "Emergency Contact Number"
-msgstr "Emergencia Contacto Número"
+msgstr "Número del Contacto de Emergencia"
 
 #: .\onboarding\forms.py:448
 msgid "Experience should be a postive integier"
@@ -22351,7 +22251,7 @@ msgstr "País"
 #, fuzzy
 #| msgid "State"
 msgid "State *"
-msgstr "Estado"
+msgstr "Provincia"
 
 #: .\onboarding\templates\onboarding\employee_bank_details.html:146
 msgid "Finish Onboarding"
@@ -22359,7 +22259,7 @@ msgstr "Finalizar Onboarding"
 
 #: .\onboarding\templates\onboarding\employee_creation.html:114
 msgid "DOB"
-msgstr "Nacimiento Fecha"
+msgstr "Fecha de Nacimiento"
 
 #: .\onboarding\templates\onboarding\employee_creation.html:179
 #: .\onboarding\templates\onboarding\user_creation.html:114
@@ -22467,7 +22367,7 @@ msgstr "Guardar Cambios"
 #, fuzzy
 #| msgid "Marital Status"
 msgid "Portal Status"
-msgstr "Marital Estado"
+msgstr "Estado Civil"
 
 #: .\onboarding\templates\onboarding\onboarding_table.html:149
 msgid "Bulk Change Task"
@@ -24208,10 +24108,8 @@ msgstr "beneficios"
 #: .\payroll\templates\payroll\reimbursement\request_cards.html:168
 #: .\payroll\templates\payroll\reimbursement\request_cards.html:457
 #: .\payroll\templates\payroll\reimbursement\request_cards.html:744
-#, fuzzy
-#| msgid "View attachment"
 msgid "View Attachments"
-msgstr "Vista Archivo Adjunto"
+msgstr "Ver Archivos Adjuntos"
 
 #: .\payroll\templates\payroll\reimbursement\request_cards.html:189
 #: .\payroll\templates\payroll\reimbursement\request_cards.html:478
@@ -24276,10 +24174,8 @@ msgid "Currency Symbol"
 msgstr "Moneda"
 
 #: .\payroll\templates\payroll\settings\payroll_settings.html:43
-#, fuzzy
-#| msgid "Job Position"
 msgid "Position"
-msgstr "Puestos de trabajo"
+msgstr "Posición"
 
 #: .\payroll\templates\payroll\settings\payslip_auto_generate_table.html:6
 #, fuzzy
@@ -24294,17 +24190,13 @@ msgid "Are you sure you want to delete this payslip auto generate?"
 msgstr "¿Estás segura de que quieres eliminar esto nómina de sueldos?"
 
 #: .\payroll\templates\payroll\settings\settings.html:9
-#, fuzzy
-#| msgid "Create Period"
 msgid "Default Notice Period"
-msgstr "Crear Período"
+msgstr "Plazo de aviso predeterminado"
 
 #: .\payroll\templates\payroll\settings\settings.html:10
-#, fuzzy
-#| msgid "Set default notice period expire days"
 msgid " Set initial notice period (in days)"
 msgstr ""
-"Establecer días de vencimiento del período de notificación predeterminado"
+"Establecer el plazo de aviso inicial (en días)"
 
 #: .\payroll\templates\payroll\tax\filing_status_empty.html:35
 #: .\payroll\templates\payroll\tax\filing_status_view.html:75
@@ -25115,10 +25007,8 @@ msgid "Do you want Delete this Feedback ?"
 msgstr "¿Quiere eliminar este comentario?"
 
 #: .\pms\templates\feedback\feedback_detailed_view.html:152
-#, fuzzy
-#| msgid "Start date"
 msgid "Start date: "
-msgstr "Inicio de fecha"
+msgstr "Fecha de Inicio: "
 
 #: .\pms\templates\feedback\feedback_detailed_view.html:156
 #, fuzzy
@@ -25471,10 +25361,8 @@ msgid "Response"
 msgstr ""
 
 #: .\pms\templates\okr\add_assignees.html:19
-#, fuzzy
-#| msgid "Assigned Leaves"
 msgid "Add assignees"
-msgstr "Asignadas Dejar"
+msgstr "Agregar asignados"
 
 #: .\pms\templates\okr\create_period.html:14
 #: .\pms\templates\okr\objective_creation.html:79
@@ -26271,7 +26159,7 @@ msgstr ""
 #, fuzzy
 #| msgid "Marital Status"
 msgid "Project Status"
-msgstr "Marital Estado"
+msgstr "Estado Civil"
 
 #: .\project\templates\dashboard\project_dashboard.html:95
 #, fuzzy
@@ -27628,8 +27516,6 @@ msgid "View Recruitments"
 msgstr "Ver Reclutamientos"
 
 #: .\recruitment\templates\recruitment\recruitment_details.html:4
-#, fuzzy
-#| msgid "Job position"
 msgid "Job positions :"
 msgstr "Puestos de trabajo"
 
@@ -28263,15 +28149,15 @@ msgstr ""
 
 #: .\templates\dashboard.html:146
 msgid "New Joining Today"
-msgstr "Nuevo ingreso hoy"
+msgstr "Nuevos ingresos hoy"
 
 #: .\templates\dashboard.html:163
 msgid "New Joining This Week"
-msgstr "Nuevo ingreso esta semana"
+msgstr "Nuevos ingresos esta semana"
 
 #: .\templates\dashboard.html:180
 msgid "Total Strength"
-msgstr "Miembros totales"
+msgstr "Cantidad de Miembros"
 
 #: .\templates\dashboard.html:204
 msgid "Announcements"
@@ -28288,22 +28174,21 @@ msgid "Employee Work Information"
 msgstr "Información del Trabajador"
 
 #: .\templates\dashboard_chart_form.html:4
-#, fuzzy
 #| msgid "Dashboard View"
 msgid "Dashboard Chart Select"
-msgstr "Vista Panel"
+msgstr "Seleccionar Gráficos del Tablero"
 
 #: .\templates\dashboard_chart_form.html:15
 msgid "Select All Rows"
-msgstr ""
+msgstr "Seleccionar todas las filas"
 
 #: .\templates\dashboard_chart_form.html:16
 msgid "Unselect All Rows"
-msgstr ""
+msgstr "Deseleccionar todas las filas"
 
 #: .\templates\dashboard_chart_form.html:27
 msgid "Charts"
-msgstr ""
+msgstr "Gráficos"
 
 #: .\templates\dashboard_tile_container.html:50
 msgid "Overall Leave"
@@ -28338,10 +28223,8 @@ msgid "Work Type Requests To Approve"
 msgstr "Trabajo Tipo Solicitudes"
 
 #: .\templates\dashboard_tile_container.html:393
-#, fuzzy
-#| msgid "Leave Requests"
 msgid "Leave Requests To Approve"
-msgstr "Dejar petición"
+msgstr "Solicitud de Licencias para Aprobar"
 
 #: .\templates\dashboard_tile_container.html:414
 msgid "Leave Allocation Request To Approve"
@@ -28411,13 +28294,12 @@ msgstr "Cargar un Archivo"
 
 #: .\templates\index.html:120
 msgid "All Notifications"
-msgstr "Toda Notificaciones"
+msgstr "Todas las Notificaciones"
 
 #: .\templates\index.html:122
-#, fuzzy
 #| msgid "Clear"
 msgid "Clear all"
-msgstr "Claro"
+msgstr "Borrar todo"
 
 #: .\templates\initialize_database\horilla_job_position_form.html:88
 msgid "Go To Home"
@@ -28496,10 +28378,9 @@ msgid "Anonymous"
 msgstr "Anónimo"
 
 #: .\templates\notification\notification_items.html:114
-#, fuzzy
 #| msgid "All Notifications"
 msgid "View all notifications"
-msgstr "Toda Notificaciones"
+msgstr "Ver todas las Notificaciones"
 
 #: .\templates\notification\notification_items.html:116
 #, fuzzy
@@ -28534,10 +28415,8 @@ msgid "All\tSettings"
 msgstr "Todos los ajustes"
 
 #: .\templates\settings.html:60
-#, fuzzy
-#| msgid "All Settings"
 msgid "General Settings"
-msgstr "Todos los ajustes"
+msgstr "Ajustes generales"
 
 #: .\templates\settings.html:69
 msgid "Employee Permission"
@@ -28615,7 +28494,7 @@ msgstr "Mesa de ayuda"
 msgid "Department Managers"
 msgstr "Gerentes de reclutamiento"
 
-#: .\templates\sidebar.html:96
+#: .\templates\sidebar.html:101
 msgid "My Company"
 msgstr "Mi empresa"
 
@@ -28783,7 +28662,7 @@ msgstr "Progreso"
 #~ msgstr "Solicitud de tipo de trabajo eliminada."
 
 #~ msgid "Childrens"
-#~ msgstr "Niños"
+#~ msgstr "Hijos"
 
 #, fuzzy, python-brace-format
 #~| msgid "leave type is already assigned to the employee.."
@@ -29092,7 +28971,7 @@ msgstr "Progreso"
 #~ msgstr "de Trabajo Infó"
 
 #~ msgid "s Bank Info"
-#~ msgstr "de Banco Infó"
+#~ msgstr "de Información bancaria"
 
 #~ msgid "View Candidates"
 #~ msgstr "Vista Candidatos"
