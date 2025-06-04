@@ -871,16 +871,31 @@ def assign_related(
     """
     reverse_obj_dict = {}
     if reverse_field in record:
-        for field, value in record[reverse_field].items():
-            full_field = reverse_field + "__" + field
-            if full_field in pk_values_mapping:
-                reverse_obj_dict.update(
-                    {
-                        field: data
-                        for data in pk_values_mapping[full_field]
-                        if getattr(data, pk_field_mapping[full_field], None) == value
-                    }
+        if isinstance(record[reverse_field], dict):
+            for field, value in record[reverse_field].items():
+                full_field = reverse_field + "__" + field
+                if full_field in pk_values_mapping:
+                    reverse_obj_dict.update(
+                        {
+                            field: data
+                            for data in pk_values_mapping[full_field]
+                            if getattr(data, pk_field_mapping[full_field], None)
+                            == value
+                        }
+                    )
+                else:
+                    reverse_obj_dict[field] = value
+        else:
+            instance = [
+                data
+                for data in pk_values_mapping[reverse_field]
+                if getattr(
+                    data,
+                    pk_field_mapping[reverse_field],
+                    record[reverse_field],
                 )
-            else:
-                reverse_obj_dict[field] = value
+                == record[reverse_field]
+            ][0]
+            reverse_obj_dict.update({reverse_field: instance})
+
     return reverse_obj_dict

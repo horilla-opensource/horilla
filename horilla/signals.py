@@ -9,3 +9,6 @@ post_bulk_update = Signal()
 
 pre_generic_delete = Signal()
 post_generic_delete = Signal()
+
+pre_generic_import = Signal()
+post_generic_import = Signal()

@@ -5,6 +5,7 @@ horilla/generic/views.py
 import io
 import json
 import logging
+import traceback
 from typing import Any
 from urllib.parse import parse_qs
 
@@ -28,6 +29,7 @@ from base.methods import closest_numbers, eval_validate, get_key_instances
 from horilla.filters import FilterSet
 from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
+from horilla.signals import post_generic_import, pre_generic_import
 from horilla_views import models
 from horilla_views.cbv_methods import (  # update_initial_cache,
     assign_related,
@@ -88,7 +90,8 @@ class HorillaListView(ListView):
     fk_mapping: dict = {}
     import_help: dict = {}
     fk_o2o_field_in_base_model: list = []
-    chunk_size: int = 200
+    individual_update: bool = False
+    o2o_related_name_mapping: dict = {}
 
     custom_empty_template: str = ""
 
@@ -303,366 +306,632 @@ class HorillaListView(ListView):
         """
         Method to import records
         """
-        if not self.import_accessibility():
-            messages.info(request, "You dont have permission")
-        field_column_mapping = {
-            field: get_verbose_name_from_field_path(
-                self.model, field, self.import_related_model_column_mapping
+        try:
+            if not self.import_accessibility():
+                messages.info(request, "You dont have permission")
+            field_column_mapping = {
+                field: get_verbose_name_from_field_path(
+                    self.model, field, self.import_related_model_column_mapping
+                )
+                for field in self.import_fields
+            }
+            update_reference = f"{get_verbose_name_from_field_path(self.model, self.update_reference, self.import_related_model_column_mapping)} | Reference"
+            update_reference_key = f"{self.update_reference}_import_reference"
+            field_column_mapping[f"{self.update_reference}_import_reference"] = (
+                update_reference
             )
-            for field in self.import_fields
-        }
-        update_reference = f"{get_verbose_name_from_field_path(self.model, self.update_reference, self.import_related_model_column_mapping)} | Reference"
-        update_reference_key = f"{self.update_reference}_import_reference"
-        field_column_mapping[f"{self.update_reference}_import_reference"] = (
-            update_reference
-        )
 
-        excel_file = request.FILES.get("file")
-        if not excel_file:
-            return JsonResponse({"error": "No file uploaded"}, status=400)
+            excel_file = request.FILES.get("file")
+            if not excel_file:
+                return JsonResponse({"error": "No file uploaded"}, status=400)
 
-        df = pd.read_excel(excel_file)
+            df = pd.read_excel(excel_file)
 
-        serialized = []
-        field_column_mapping_values = {}
-        for _, row in df.iterrows():
-            record = {}
-            for model_field, excel_col in field_column_mapping.items():
-                if excel_col in row:
-                    value = row[excel_col]
-                    if model_field in (
-                        list(self.primary_key_mapping.keys())
-                        + list(self.import_related_model_column_mapping.keys())
-                    ) and not pd.isna(value):
-                        field_column_mapping_values[model_field] = (
-                            field_column_mapping_values.get(model_field, set({})).union(
-                                {value}
+            serialized = []
+            field_column_mapping_values = {}
+            for _, row in df.iterrows():
+                record = {}
+                for model_field, excel_col in field_column_mapping.items():
+                    if excel_col in row:
+                        value = row[excel_col]
+                        if model_field in (
+                            list(self.primary_key_mapping.keys())
+                            + list(self.import_related_model_column_mapping.keys())
+                        ) and not pd.isna(value):
+                            field_column_mapping_values[model_field] = (
+                                field_column_mapping_values.get(
+                                    model_field, set({})
+                                ).union({value})
                             )
+                        if pd.isna(value):
+                            value = None
+                        if isinstance(value, str):
+                            value = value.strip()
+                        parts = model_field.split("__")
+                        current = record
+                        for part in parts[:-1]:
+                            current = current.setdefault(part, {})
+                        current[parts[-1]] = value
+                serialized.append(record)
+            with_ref, without_ref = split_by_import_reference(serialized)
+
+            error_records = []
+
+            error_records = []
+            pk_values_mapping = {}
+            fk_values_mapping = {}
+
+            for mapping, values in field_column_mapping_values.items():
+                related_model = self.import_related_model_column_mapping[mapping]
+                if mapping in self.primary_key_mapping:
+                    field = self.primary_key_mapping[mapping]
+                    if hasattr(related_model.objects, "entire"):
+                        existing_objects = (
+                            related_model.objects.entire()
+                            .filter(**{f"{field}__in": list(values)})
+                            .only("pk", field)
                         )
-                    if pd.isna(value):
-                        value = None
-                    if isinstance(value, str):
-                        value = value.strip()
-                    parts = model_field.split("__")
-                    current = record
-                    for part in parts[:-1]:
-                        current = current.setdefault(part, {})
-                    current[parts[-1]] = value
-            serialized.append(record)
-        with_ref, without_ref = split_by_import_reference(serialized)
+                    else:
+                        existing_objects = related_model.objects.filter(
+                            **{f"{field}__in": list(values)}
+                        ).only("pk", field)
 
-        error_records = []
+                    existing_values = existing_objects.values_list(field, flat=True)
 
-        error_records = []
-        pk_values_mapping = {}
-        fk_values_mapping = {}
+                    to_create = [
+                        related_model(**{field: value})
+                        for value in values
+                        if value not in existing_values
+                    ]
 
-        for mapping, values in field_column_mapping_values.items():
-            related_model = self.import_related_model_column_mapping[mapping]
-            if mapping in self.primary_key_mapping:
-                field = self.primary_key_mapping[mapping]
-                if hasattr(related_model.objects, "entire"):
-                    existing_objects = (
-                        related_model.objects.entire()
-                        .filter(**{f"{field}__in": list(values)})
-                        .only("pk", field)
-                    )
-                else:
+                    if to_create:
+                        pre_generic_import.send(
+                            sender=related_model,
+                            records=to_create,
+                            view=self,
+                        )
+                        related_model.objects.bulk_create(to_create)
+                        post_generic_import.send(
+                            sender=related_model,
+                            records=to_create,
+                            view=self,
+                        )
+                    pk_values_mapping[mapping] = pk_values_mapping.get(
+                        mapping, []
+                    ) + list(existing_objects)
+                elif mapping in self.fk_mapping:
+                    field = self.fk_mapping[mapping]
+                    related_model = self.import_related_model_column_mapping[mapping]
                     existing_objects = related_model.objects.filter(
                         **{f"{field}__in": list(values)}
                     ).only("pk", field)
-
-                existing_values = existing_objects.values_list(field, flat=True)
-
-                to_create = [
-                    related_model(**{field: value})
-                    for value in values
-                    if value not in existing_values
-                ]
-
-                if to_create:
-                    related_model.objects.bulk_create(to_create)
-                pk_values_mapping[mapping] = pk_values_mapping.get(mapping, []) + list(
-                    existing_objects
-                )
-            elif mapping in self.fk_mapping:
-                field = self.fk_mapping[mapping]
-                related_model = self.import_related_model_column_mapping[mapping]
-                existing_objects = related_model.objects.filter(
-                    **{f"{field}__in": list(values)}
-                ).only("pk", field)
-                existing_values = existing_objects.values_list(field, flat=True)
-                to_create = [
-                    related_model(**{field: value})
-                    for value in values
-                    if value not in existing_values
-                ]
-                if to_create:
-                    related_model.objects.bulk_create(to_create)
-                fk_values_mapping[mapping] = fk_values_mapping.get(mapping, []) + list(
-                    existing_objects
-                )
-        if without_ref:
-            with transaction.atomic():
-                records_to_import = []
-                for record in without_ref:
-                    try:
-                        for reverse_field in (
-                            list(self.reverse_model_relation_to_base_model.keys())
-                            + self.fk_o2o_field_in_base_model
-                        ):
-                            if reverse_field in list(
-                                self.primary_key_mapping.keys()
-                            ) + list(self.reverse_model_relation_to_base_model.keys()):
-                                result = assign_related(
-                                    record,
-                                    reverse_field,
-                                    pk_values_mapping,
-                                    self.primary_key_mapping,
-                                )
-                                record[reverse_field] = result
-                            elif reverse_field in self.fk_mapping:
-                                record.update(
-                                    {
-                                        reverse_field: data
-                                        for data in fk_values_mapping[reverse_field]
-                                        if getattr(
-                                            data, self.fk_mapping[reverse_field], None
-                                        )
-                                        == record[reverse_field]
-                                    }
-                                )
-                        records_to_import.append(record)
-
-                    except Exception as e:
-                        error_records.append(
-                            {
-                                "record": record.get(next(iter(record)), "Unknown"),
-                                "error": str(e),
-                            }
+                    existing_values = existing_objects.values_list(field, flat=True)
+                    to_create = [
+                        related_model(**{field: value})
+                        for value in values
+                        if value not in existing_values
+                    ]
+                    if to_create:
+                        pre_generic_import.send(
+                            sender=related_model,
+                            records=to_create,
+                            view=self,
                         )
-                bulk_base_fk_grouping = {}
-                bulk_create_reverse_related_grouping = {}
-                bulk_create_base_grouping = []
-
-                related_fields = list(self.reverse_model_relation_to_base_model.keys())
-                fk_fields = self.fk_o2o_field_in_base_model
-                for record in records_to_import:
-                    if record.get(update_reference_key):
-                        del record[update_reference_key]
-                    instance_record = record.copy()
-                    if update_reference_key in instance_record:
-                        del instance_record[update_reference_key]
-                    for relation in related_fields:
-                        if relation in instance_record:
-                            del instance_record[relation]
-                    for fk_field in self.fk_o2o_field_in_base_model:
-                        if (
-                            fk_field in instance_record
-                            and fk_field not in self.fk_mapping
-                        ):
-                            del instance_record[fk_field]
-
-                    instance = self.model(**instance_record)
-                    for relation in related_fields:
-                        related_record = record[relation]
-                        related_record[
-                            self.reverse_model_relation_to_base_model[relation]
-                        ] = instance
-                        related_instance = self.import_related_model_column_mapping[
-                            relation
-                        ](**related_record)
-                        bulk_create_reverse_related_grouping[relation] = (
-                            bulk_create_reverse_related_grouping.get(relation, [])
-                            + [related_instance]
+                        related_model.objects.bulk_create(to_create)
+                        post_generic_import.send(
+                            sender=related_model,
+                            records=to_create,
+                            view=self,
                         )
+                    fk_values_mapping[mapping] = fk_values_mapping.get(
+                        mapping, []
+                    ) + list(existing_objects)
+            if without_ref:
+                with transaction.atomic():
+                    records_to_import = []
+                    for record in without_ref:
+                        try:
+                            for reverse_field in (
+                                list(self.reverse_model_relation_to_base_model.keys())
+                                + self.fk_o2o_field_in_base_model
+                            ):
+                                if reverse_field in list(
+                                    self.primary_key_mapping.keys()
+                                ) + list(
+                                    self.reverse_model_relation_to_base_model.keys()
+                                ):
+                                    result = assign_related(
+                                        record,
+                                        reverse_field,
+                                        pk_values_mapping,
+                                        self.primary_key_mapping,
+                                    )
+                                    record[reverse_field] = result
+                                elif reverse_field in self.fk_mapping:
+                                    record.update(
+                                        {
+                                            reverse_field: data
+                                            for data in fk_values_mapping[reverse_field]
+                                            if getattr(
+                                                data,
+                                                self.fk_mapping[reverse_field],
+                                                None,
+                                            )
+                                            == record[reverse_field]
+                                        }
+                                    )
+                            records_to_import.append(record)
 
-                    for fk_field in fk_fields:
-                        fk_record = record[fk_field]
-                        if isinstance(fk_record, dict):
-                            fk_instance = self.import_related_model_column_mapping[
-                                fk_field
-                            ](**fk_record)
-                        else:
-                            fk_instance = fk_record
-                        bulk_base_fk_grouping[fk_field] = bulk_base_fk_grouping.get(
-                            fk_field, []
-                        ) + [fk_instance]
-                        setattr(instance, fk_field, fk_instance)
-                    bulk_create_base_grouping.append(instance)
+                        except Exception as e:
+                            error_records.append(
+                                {
+                                    "record": record.get(next(iter(record)), "Unknown"),
+                                    "error": str(e),
+                                }
+                            )
+                    bulk_base_fk_grouping = {}
+                    bulk_create_reverse_related_grouping = {}
+                    bulk_create_base_grouping = []
 
-                for fk_field in self.fk_o2o_field_in_base_model:
-                    if fk_field not in self.fk_mapping:
-                        for relation, items in bulk_base_fk_grouping.items():
-                            if relation not in self.fk_mapping:
-                                self.import_related_model_column_mapping[
-                                    fk_field
-                                ].objects.bulk_create(items)
+                    related_fields = list(
+                        self.reverse_model_relation_to_base_model.keys()
+                    )
+                    fk_fields = self.fk_o2o_field_in_base_model
+                    for record in records_to_import:
+                        if record.get(update_reference_key):
+                            del record[update_reference_key]
+                        instance_record = record.copy()
+                        if update_reference_key in instance_record:
+                            del instance_record[update_reference_key]
+                        for relation in related_fields:
+                            if relation in instance_record:
+                                del instance_record[relation]
+                        for fk_field in self.fk_o2o_field_in_base_model:
+                            if (
+                                fk_field in instance_record
+                                and fk_field not in self.fk_mapping
+                            ):
+                                del instance_record[fk_field]
 
-                self.model.objects.bulk_create(bulk_create_base_grouping)
-
-                for related, items in bulk_create_reverse_related_grouping.items():
-                    self.import_related_model_column_mapping[
-                        related
-                    ].objects.bulk_create(items)
-        if with_ref:
-            base_instance_ids = [item["id_import_reference"] for item in with_ref]
-            fields = (
-                list(self.reverse_model_relation_to_base_model)
-                + ["pk"]
-                + self.fk_o2o_field_in_base_model
-            )
-            mapped_ids_queryset = (
-                self.model.objects.filter(pk__in=base_instance_ids)
-                .only(*fields)
-                .values(*fields)
-            )
-            mapped_ids_with_reverse = {
-                item["pk"]: {
-                    key: item[key] for key in self.reverse_model_relation_to_base_model
-                }
-                for item in mapped_ids_queryset
-            }
-            with transaction.atomic():
-                records_to_update = []
-                for record in with_ref:
-                    try:
-                        for reverse_field in (
-                            list(self.reverse_model_relation_to_base_model.keys())
-                            + self.fk_o2o_field_in_base_model
-                        ):
-                            if reverse_field in list(
-                                self.primary_key_mapping.keys()
-                            ) + list(self.reverse_model_relation_to_base_model.keys()):
-                                result = assign_related(
-                                    record,
-                                    reverse_field,
-                                    pk_values_mapping,
-                                    self.primary_key_mapping,
-                                )
-                                record[reverse_field] = result
-                            elif reverse_field in self.fk_mapping:
-                                record.update(
-                                    {
-                                        reverse_field: data
-                                        for data in fk_values_mapping[reverse_field]
-                                        if getattr(
-                                            data, self.fk_mapping[reverse_field], None
-                                        )
-                                        == record[reverse_field]
-                                    }
-                                )
-                        records_to_update.append(record)
-
-                    except Exception as e:
-                        error_records.append(
-                            {"record": record[list(record.keys())[0]], "error": str(e)}
-                        )
-                bulk_base_fk_grouping = {}
-                bulk_update_reverse_related_grouping = {}
-                bulk_create_from_update_reverse_related_grouping = {}
-                bulk_update_base_grouping = []
-
-                related_fields = list(self.reverse_model_relation_to_base_model.keys())
-                fk_fields = self.fk_o2o_field_in_base_model
-                related_update_fields = {}
-                for record in records_to_update:
-                    instance_record = record.copy()
-                    for relation in related_fields:
-                        if relation in instance_record:
-                            del instance_record[relation]
-                    for fk_field in self.fk_o2o_field_in_base_model:
-                        if (
-                            fk_field in instance_record
-                            and fk_field not in self.fk_mapping
-                        ):
-                            del instance_record[fk_field]
-
-                    instance_record["id"] = instance_record["id_import_reference"]
-                    instance_record["pk"] = instance_record["id_import_reference"]
-                    del instance_record["id_import_reference"]
-
-                    instance = self.model(**instance_record)
-                    for relation in related_fields:
-                        related_update_fields[relation] = record[relation].keys()
-                    for relation in related_fields:
-                        related_record = record[relation]
-                        related_record[
-                            self.reverse_model_relation_to_base_model[relation]
-                        ] = instance
-                        related_record["id"] = mapped_ids_with_reverse[instance.id][
-                            relation
-                        ]
-                        related_record["pk"] = mapped_ids_with_reverse[instance.id][
-                            relation
-                        ]
-                        related_instance = self.import_related_model_column_mapping[
-                            relation
-                        ](**related_record)
-                        if related_instance.pk is not None:
-                            bulk_update_reverse_related_grouping[relation] = (
-                                bulk_update_reverse_related_grouping.get(relation, [])
+                        instance = self.model(**instance_record)
+                        for relation in related_fields:
+                            related_record = record[relation]
+                            related_record[
+                                self.reverse_model_relation_to_base_model[relation]
+                            ] = instance
+                            related_instance = self.import_related_model_column_mapping[
+                                relation
+                            ](**related_record)
+                            bulk_create_reverse_related_grouping[relation] = (
+                                bulk_create_reverse_related_grouping.get(relation, [])
                                 + [related_instance]
                             )
-                        else:
-                            bulk_create_from_update_reverse_related_grouping[
-                                relation
-                            ] = bulk_update_reverse_related_grouping.get(
-                                relation, []
-                            ) + [
-                                related_instance
-                            ]
 
-                    for fk_field in fk_fields:
-                        if fk_field not in self.fk_mapping:
+                        for fk_field in fk_fields:
                             fk_record = record[fk_field]
-                            fk_instance = self.import_related_model_column_mapping[
-                                fk_field
-                            ](**fk_record)
+                            if isinstance(fk_record, dict):
+                                fk_instance = self.import_related_model_column_mapping[
+                                    fk_field
+                                ](**fk_record)
+                            else:
+                                fk_instance = fk_record
                             bulk_base_fk_grouping[fk_field] = bulk_base_fk_grouping.get(
                                 fk_field, []
                             ) + [fk_instance]
                             setattr(instance, fk_field, fk_instance)
-                    bulk_update_base_grouping.append(instance)
 
-        if with_ref and bulk_update_base_grouping:
-            field_to_update = [
-                key for key in instance_record.keys() if key not in ["id", "pk"]
-            ]
-            self.model.objects.bulk_update(bulk_update_base_grouping, field_to_update)
+                        bulk_create_base_grouping.append(instance)
 
-        if with_ref and related_update_fields:
-            for field in related_fields:
-                related_model = self.import_related_model_column_mapping[field]
-                if field in bulk_update_reverse_related_grouping:
-                    update_fields = [
-                        key
-                        for key in related_update_fields[field]
-                        if key not in ["id", "pk"]
+                    for fk_field in self.fk_o2o_field_in_base_model:
+                        if fk_field not in self.fk_mapping:
+                            for relation, items in bulk_base_fk_grouping.items():
+                                pre_generic_import.send(
+                                    sender=self.import_related_model_column_mapping[
+                                        fk_field
+                                    ],
+                                    records=items,
+                                    view=self,
+                                )
+
+                                if relation not in self.fk_mapping:
+                                    pre_generic_import.send(
+                                        sender=self.import_related_model_column_mapping[
+                                            fk_field
+                                        ],
+                                        records=items,
+                                        view=self,
+                                    )
+                                    self.import_related_model_column_mapping[
+                                        fk_field
+                                    ].objects.bulk_create(items)
+                                    post_generic_import.send(
+                                        sender=self.import_related_model_column_mapping[
+                                            fk_field
+                                        ],
+                                        records=items,
+                                        view=self,
+                                    )
+                    pre_generic_import.send(
+                        sender=self.model,
+                        records=items,
+                        view=self,
+                    )
+                    self.model.objects.bulk_create(bulk_create_base_grouping)
+                    post_generic_import.send(
+                        sender=self.model,
+                        records=items,
+                        view=self,
+                    )
+                    for related, items in bulk_create_reverse_related_grouping.items():
+                        pre_generic_import.send(
+                            sender=self.import_related_model_column_mapping[related],
+                            records=items,
+                            view=self,
+                        )
+                        self.import_related_model_column_mapping[
+                            related
+                        ].objects.bulk_create(items)
+                        post_generic_import.send(
+                            sender=self.import_related_model_column_mapping[related],
+                            records=items,
+                            view=self,
+                        )
+            if with_ref:
+                base_instance_ids = [item["id_import_reference"] for item in with_ref]
+                fields = (
+                    list(self.reverse_model_relation_to_base_model)
+                    + ["pk"]
+                    + self.fk_o2o_field_in_base_model
+                )
+                mapped_ids_queryset = (
+                    self.model.objects.filter(pk__in=base_instance_ids)
+                    .only(*fields)
+                    .values(*fields)
+                )
+                mapped_ids_with_reverse = {
+                    item["pk"]: {
+                        key: item[key]
+                        for key in list(
+                            self.reverse_model_relation_to_base_model.keys()
+                        )
+                        + self.fk_o2o_field_in_base_model
+                        if key not in self.fk_mapping
+                    }
+                    for item in mapped_ids_queryset
+                }
+                field_to_update_o2o = {}
+                o2o_to_create = []
+                o2o_create_base_mapping = {}
+                with transaction.atomic():
+                    records_to_update = []
+                    for record in with_ref:
+                        try:
+                            for reverse_field in (
+                                list(self.reverse_model_relation_to_base_model.keys())
+                                + self.fk_o2o_field_in_base_model
+                            ):
+                                if reverse_field in list(
+                                    self.primary_key_mapping.keys()
+                                ) + list(
+                                    self.reverse_model_relation_to_base_model.keys()
+                                ):
+                                    result = assign_related(
+                                        record,
+                                        reverse_field,
+                                        pk_values_mapping,
+                                        self.primary_key_mapping,
+                                    )
+                                    if list(result.keys())[0] not in self.fk_mapping:
+                                        if (
+                                            reverse_field
+                                            in self.fk_o2o_field_in_base_model
+                                        ):
+                                            result["main_instance_id"] = record[
+                                                "id_import_reference"
+                                            ]
+                                        record[reverse_field] = result
+                                    else:
+                                        record[list(result.keys())[0]] = list(
+                                            result.values()
+                                        )[0]
+                                elif reverse_field in self.fk_mapping:
+                                    record.update(
+                                        {
+                                            reverse_field: data
+                                            for data in fk_values_mapping[reverse_field]
+                                            if getattr(
+                                                data,
+                                                self.fk_mapping[reverse_field],
+                                                None,
+                                            )
+                                            == record[reverse_field]
+                                        }
+                                    )
+                            records_to_update.append(record)
+
+                        except Exception as e:
+                            logger.error(traceback.format_exc())
+                            error_records.append(
+                                {
+                                    "record": record[list(record.keys())[0]],
+                                    "error": str(e),
+                                }
+                            )
+                    bulk_base_fk_grouping = {}
+                    bulk_update_reverse_related_grouping = {}
+                    bulk_create_from_update_reverse_related_grouping = {}
+                    bulk_update_base_grouping = []
+
+                    related_fields = list(
+                        self.reverse_model_relation_to_base_model.keys()
+                    )
+                    fk_fields = self.fk_o2o_field_in_base_model
+                    related_update_fields = {}
+                    for record in records_to_update:
+                        instance_record = record.copy()
+                        for relation in related_fields:
+                            if relation in instance_record:
+                                del instance_record[relation]
+                        for fk_field in self.fk_o2o_field_in_base_model:
+                            if (
+                                fk_field in instance_record
+                                and fk_field not in self.fk_mapping
+                            ):
+                                del instance_record[fk_field]
+
+                        instance_record["id"] = instance_record["id_import_reference"]
+                        instance_record["pk"] = instance_record["id_import_reference"]
+                        del instance_record["id_import_reference"]
+                        instance = self.model(**instance_record)
+                        for relation in related_fields:
+                            related_update_fields[relation] = record[relation].keys()
+
+                        for relation in related_fields:
+                            related_record = record[relation]
+                            related_record[
+                                self.reverse_model_relation_to_base_model[relation]
+                            ] = instance
+                            related_record["id"] = mapped_ids_with_reverse[instance.id][
+                                relation
+                            ]
+                            related_record["pk"] = mapped_ids_with_reverse[instance.id][
+                                relation
+                            ]
+                            related_instance = self.import_related_model_column_mapping[
+                                relation
+                            ](**related_record)
+                            if related_instance.pk is not None:
+                                bulk_update_reverse_related_grouping[relation] = (
+                                    bulk_update_reverse_related_grouping.get(
+                                        relation, []
+                                    )
+                                    + [related_instance]
+                                )
+                            else:
+                                bulk_create_from_update_reverse_related_grouping[
+                                    relation
+                                ] = bulk_update_reverse_related_grouping.get(
+                                    relation, []
+                                ) + [
+                                    related_instance
+                                ]
+
+                        for fk_field in fk_fields:
+                            if fk_field not in self.fk_mapping:
+                                fk_record = record[fk_field]
+                                pk = mapped_ids_with_reverse[
+                                    fk_record["main_instance_id"]
+                                ][fk_field]
+                                del fk_record["main_instance_id"]
+                                if pk is None:
+                                    fk_record[
+                                        self.o2o_related_name_mapping[fk_field]
+                                    ] = self.model(pk=pk, id=pk)
+                                    o2o_related_instance = (
+                                        self.import_related_model_column_mapping[
+                                            fk_field
+                                        ](**fk_record)
+                                    )
+                                    setattr(instance, fk_field, o2o_related_instance)
+                                    o2o_to_create.append(o2o_related_instance)
+                                    continue
+                                fk_record["pk"] = pk
+                                fk_record["id"] = pk
+                                if fk_field not in field_to_update_o2o:
+                                    field_to_update_o2o[fk_field] = list(
+                                        fk_record.keys()
+                                    )
+                                fk_instance = self.import_related_model_column_mapping[
+                                    fk_field
+                                ](**fk_record)
+                                bulk_base_fk_grouping[fk_field] = (
+                                    bulk_base_fk_grouping.get(fk_field, [])
+                                    + [fk_instance]
+                                )
+                                setattr(instance, fk_field, fk_instance)
+                        bulk_update_base_grouping.append(instance)
+            if with_ref and bulk_update_base_grouping:
+                for o2o_field, records in bulk_base_fk_grouping.items():
+                    field_to_update_o2o = [
+                        field
+                        for field in field_to_update_o2o[o2o_field]
+                        if field not in ["pk", "id"]
                     ]
-                    related_model.objects.bulk_update(
-                        bulk_update_reverse_related_grouping[field], update_fields
+                    related_model = self.import_related_model_column_mapping[o2o_field]
+                    pre_generic_import.send(
+                        sender=related_model,
+                        records=records,
+                        view=self,
                     )
-                elif field in bulk_create_from_update_reverse_related_grouping:
-                    related_model.objects.bulk_create(
-                        bulk_create_from_update_reverse_related_grouping[field]
+                    if not self.individual_update:
+                        related_model.objects.bulk_update(
+                            records,
+                            field_to_update_o2o,
+                        )
+                        if o2o_to_create:
+                            pre_generic_import.send(
+                                sender=related_model,
+                                records=o2o_to_create,
+                                view=self,
+                            )
+                            related_model.objects.bulk_create(o2o_to_create)
+                            post_generic_import.send(
+                                sender=related_model,
+                                records=o2o_to_create,
+                                view=self,
+                            )
+                    else:
+                        if o2o_to_create:
+                            pre_generic_import.send(
+                                sender=related_model,
+                                records=o2o_to_create,
+                                view=self,
+                            )
+                            related_model.objects.bulk_create(o2o_to_create)
+                            post_generic_import.send(
+                                sender=related_model,
+                                records=o2o_to_create,
+                                view=self,
+                            )
+                        for o2o_instance in records:
+                            related_model.objects.update_or_create(
+                                id=o2o_instance.id,
+                                defaults={
+                                    field: getattr(o2o_instance, field)
+                                    for field in field_to_update_o2o
+                                },
+                            )
+                    post_generic_import.send(
+                        sender=related_model,
+                        records=records,
+                        view=self,
                     )
+                field_to_update = [
+                    key for key in instance_record.keys() if key not in ["id", "pk"]
+                ] + [key for key in self.o2o_related_name_mapping]
+                pre_generic_import.send(
+                    sender=self.model,
+                    records=bulk_update_base_grouping,
+                    view=self,
+                )
+                if not self.individual_update:
+                    self.model.objects.bulk_update(
+                        bulk_update_base_grouping, field_to_update
+                    )
+                else:
+                    for model_obj in bulk_update_base_grouping:
+                        self.model.objects.update_or_create(
+                            id=model_obj.id,
+                            defaults={
+                                field: getattr(model_obj, field)
+                                for field in field_to_update
+                            },
+                        )
+                post_generic_import.send(
+                    sender=self.model,
+                    records=bulk_update_base_grouping,
+                    view=self,
+                )
 
-        status = "Success"
-        if error_records:
-            status = "Error Found"
+            if with_ref and related_update_fields:
+                for field in related_fields:
+                    related_model = self.import_related_model_column_mapping[field]
+                    if field in bulk_update_reverse_related_grouping:
+                        update_fields = [
+                            key
+                            for key in related_update_fields[field]
+                            if key not in ["id", "pk"]
+                        ]
+                        pre_generic_import.send(
+                            sender=related_model,
+                            records=bulk_update_reverse_related_grouping[field],
+                            view=self,
+                        )
+                        if not self.individual_update:
+                            related_model.objects.bulk_update(
+                                bulk_update_reverse_related_grouping[field],
+                                update_fields,
+                            )
+                        else:
+                            for (
+                                reverse_related_obj
+                            ) in bulk_update_reverse_related_grouping[field]:
+                                related_model.objects.update_or_create(
+                                    id=reverse_related_obj.id,
+                                    defaults={
+                                        field: getattr(reverse_related_obj, field)
+                                        for field in update_fields
+                                    },
+                                )
+                        post_generic_import.send(
+                            sender=related_model,
+                            records=bulk_update_reverse_related_grouping[field],
+                            view=self,
+                        )
+                    elif field in bulk_create_from_update_reverse_related_grouping:
+                        pre_generic_import.send(
+                            sender=related_model,
+                            records=bulk_create_from_update_reverse_related_grouping[
+                                field
+                            ],
+                            view=self,
+                        )
+                        if not self.individual_update:
+                            related_model.objects.bulk_create(
+                                bulk_create_from_update_reverse_related_grouping[field]
+                            )
+                        else:
+                            for (
+                                reverse_related_obj
+                            ) in bulk_create_from_update_reverse_related_grouping[
+                                field
+                            ]:
+                                # reverse_related_obj.save()
+                                related_model.objects.update_or_create(
+                                    id=reverse_related_obj.id,
+                                    defaults={
+                                        field: getattr(reverse_related_obj, field)
+                                        for field in update_fields
+                                    },
+                                )
+                        post_generic_import.send(
+                            sender=related_model,
+                            records=bulk_create_from_update_reverse_related_grouping[
+                                field
+                            ],
+                            view=self,
+                        )
+            status = "Success"
+            if error_records:
+                status = "Error Found"
 
+            return render(
+                request,
+                "cbv/import_response.html",
+                context={
+                    "view_id": self.view_id,
+                    "status": status,
+                    "imported": len(without_ref),
+                    "updated": len(with_ref),
+                    "errors": error_records[:10],  # Optional: truncate if too large
+                    "total_errors": error_records,  # Optional: truncate if too large
+                    "more_error": len(error_records) > 10,
+                },
+            )
+        except Exception as e:
+            traceback_message = traceback.format_exc()
+            error = e
         return render(
             request,
             "cbv/import_response.html",
             context={
                 "view_id": self.view_id,
-                "status": status,
-                "imported": len(without_ref),
-                "updated": len(with_ref),
-                "errors": error_records[:10],  # Optional: truncate if too large
-                "total_errors": error_records,  # Optional: truncate if too large
-                "more_error": len(error_records) > 10,
+                "status": "Error Found",
+                "imported": 0,
+                "updated": 0,
+                "errors": 0,  # Optional: truncate if too large
+                "error_message": error,  # Optional: truncate if too large
+                "traceback_message": traceback_message,  # Optional: truncate if too large
             },
         )
 
