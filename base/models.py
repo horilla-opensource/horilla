@@ -1777,6 +1777,10 @@ class Tags(HorillaModel):
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
 
+    class Meta:
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
+
     def __str__(self):
         return self.title
 
@@ -2184,6 +2188,10 @@ class MultipleApprovalManagers(models.Model):
     reporting_manager = models.CharField(max_length=100, null=True, blank=True)
     objects = HorillaCompanyManager(related_company_field="condition_id__company_id")
 
+    class Meta:
+        verbose_name = _("Multiple Approval Managers")
+        verbose_name_plural = _("Multiple Approval Managers")
+
     def get_manager(self):
         manager = self.employee_id
         if manager:
@@ -2441,6 +2449,10 @@ class DashboardEmployeeCharts(HorillaModel):
         verbose_name=_("Excluded Charts"), default=list, blank=True, null=True
     )
 
+    class Meta:
+        verbose_name = _("Dashboard Employee Charts")
+        verbose_name_plural = _("Dashboard Employee Charts")
+
     def __str__(self):
         return f"{self.employee} - charts"
 
@@ -2534,6 +2546,10 @@ class Holidays(HorillaModel):
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
 
+    class Meta:
+        verbose_name = _("Holiday")
+        verbose_name_plural = _("Holidays")
+
     def __str__(self):
         return self.name
 
@@ -2594,14 +2610,24 @@ class Holidays(HorillaModel):
 
 class CompanyLeaves(HorillaModel):
     based_on_week = models.CharField(
-        max_length=100, choices=WEEKS, blank=True, null=True
+        max_length=100,
+        choices=WEEKS,
+        blank=True,
+        null=True,
+        verbose_name=_("Based On Week"),
     )
-    based_on_week_day = models.CharField(max_length=100, choices=WEEK_DAYS)
-    company_id = models.ForeignKey(Company, null=True, on_delete=models.PROTECT)
+    based_on_week_day = models.CharField(
+        max_length=100, choices=WEEK_DAYS, verbose_name=_("Based On Week Day")
+    )
+    company_id = models.ForeignKey(
+        Company, null=True, on_delete=models.PROTECT, verbose_name=_("Company")
+    )
     objects = HorillaCompanyManager()
 
     class Meta:
         unique_together = ("based_on_week", "based_on_week_day")
+        verbose_name = _("Company Leave")
+        verbose_name_plural = _("Company Leaves")
 
     def __str__(self):
         return f"{dict(WEEK_DAYS).get(self.based_on_week_day)} | {dict(WEEKS).get(self.based_on_week)}"
@@ -2770,6 +2796,8 @@ class PenaltyAccounts(HorillaModel):
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name = _("Penalty Account")
+        verbose_name_plural = _("Penalty Accounts")
 
 
 class NotificationSound(models.Model):

@@ -46,6 +46,12 @@ class EmployeeListSerializer(serializers.ModelSerializer):
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
+    department_name = serializers.CharField(
+        source="employee_work_info.department_id.department", read_only=True
+    )
+    department_id = serializers.CharField(
+        source="employee_work_info.department_id.id", read_only=True
+    )
     job_position_name = serializers.CharField(
         source="employee_work_info.job_position_id.job_position", read_only=True
     )

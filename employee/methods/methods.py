@@ -330,6 +330,8 @@ def process_employee_records(data_frame):
             errors["Badge ID Error"] = "An employee with this badge ID already exists."
             save = False
         else:
+            # To resolve Badge ID Type Mismatch (Float vs String)
+            emp["Badge ID"] = badge_id
             seen_badge_ids.add(badge_id)
 
         # Username/email uniqueness

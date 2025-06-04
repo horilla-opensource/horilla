@@ -35,13 +35,17 @@
                                     <div class="row">
                                         <div class="col-sm-12 col-md-12 col-lg-12">
                                             <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "Based On week" %}</label>
+                                                <label class="oh-label" for="{{form.based_on_week.id_for_label}}">
+                                                    {{form.based_on_week.label}}
+                                                </label>
                                                 {{form.based_on_week}}
                                             </div>
                                         </div>
                                         <div class="col-sm-12 col-md-12">
                                             <div class="oh-input-group">
-                                                <label class="oh-label">{% trans "Based On Weekday" %}</label>
+                                                <label class="oh-label" for="{{form.based_on_week_day.id_for_label}}">
+                                                    {{form.based_on_week_day.label}}
+                                                </label>
                                                 {{form.based_on_week_day}}
                                             </div>
                                         </div>

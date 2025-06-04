@@ -43,8 +43,8 @@
                                             {% if perms.recruitment.change_surveytemplate %}
                                                 <li class="oh-dropdown__item">
                                                     <a hx-get="{% url 'survey-template-create' %}?title={{grouper.grouper}}"
-                                                        hx-target="#genericModalBody" data-toggle="oh-modal-toggle"
-                                                        data-target="#genericModal" class="oh-dropdown__link">
+                                                        hx-target="#templateModalBody" data-toggle="oh-modal-toggle"
+                                                        data-target="#templateModal" class="oh-dropdown__link">
                                                         {% trans "Edit" %}
                                                     </a>
                                                 </li>

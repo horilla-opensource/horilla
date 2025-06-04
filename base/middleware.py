@@ -4,9 +4,11 @@ middleware.py
 
 from django.apps import apps
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.core.cache import cache
 from django.db.models import Q
 from django.shortcuts import redirect
+from django.utils.translation import gettext_lazy as _
 
 from base.backends import ConfiguredEmailBackend
 from base.context_processors import AllCompany
@@ -58,7 +60,15 @@ class CompanyMiddleware:
         """
         Set the company session data based on the company ID.
         """
-        user = request.user.employee_get
+        try:
+            user = request.user.employee_get
+        except Exception:
+            logout(request)
+            messages.error(
+                request,
+                _("An employee related to this user's credentials does not exist."),
+            )
+            return redirect("login")
         user_company_id = getattr(
             getattr(user, "employee_work_info", None), "company_id", None
         )

@@ -86,7 +86,7 @@
                                                     {% if perms.recruitment.change_interviewschedule or request.user.employee_get in interview.employee_id.all %}
                                                         <a hx-confirm="{% trans 'Are you sure you want to remove this interviewer?' %}"
                                                             hx-post="{% url 'interview-employee-remove' interview.id employee.id %}"
-                                                            title="{% trans " Remove" %}" hx-swap="outerHTML" hx-target="#section"
+                                                            title="{% trans " Remove" %}" hx-swap="outerHTML"
                                                             onclick="event.stopPropagation()">
                                                             <ion-icon name="close-outline"></ion-icon>
                                                         </a>

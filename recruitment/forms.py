@@ -227,7 +227,7 @@ class DropDownForm(forms.ModelForm):
                 field.widget.attrs.update({"class": "oh-switch__checkbox "})
 
 
-class RecruitmentCreationForm(ModelForm):
+class RecruitmentCreationForm(BaseModelForm):
     """
     Form for Recruitment model
     """
@@ -251,14 +251,13 @@ class RecruitmentCreationForm(ModelForm):
             "end_date": forms.DateInput(attrs={"type": "date"}),
             "description": forms.Textarea(attrs={"data-summernote": ""}),
         }
-        labels = {"description": _("Description"), "vacancy": _("Vacancy")}
 
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
         """
         context = {"form": self}
-        table_html = render_to_string("attendance_form.html", context)
+        table_html = render_to_string("horilla_form.html", context)
         return table_html
 
     def __init__(self, *args, **kwargs):
@@ -274,7 +273,7 @@ class RecruitmentCreationForm(ModelForm):
                     filter_template_path="employee_filters.html",
                     required=True,
                 ),
-                label="Employee",
+                label=f"{self._meta.model()._meta.get_field('recruitment_managers').verbose_name}",
             )
 
         skill_choices = [("", _("---Choose Skills---"))] + list(
@@ -288,6 +287,9 @@ class RecruitmentCreationForm(ModelForm):
         self.fields["publish_in_linkedin"].widget.attrs.update(
             {"onchange": "toggleLinkedIn()"}
         )
+
+    # def create_option(self, *args,**kwargs):
+    #     option = super().create_option(*args,**kwargs)
 
     def clean(self):
         if isinstance(self.fields["recruitment_managers"], HorillaMultiSelectField):
@@ -314,7 +316,7 @@ class RecruitmentCreationForm(ModelForm):
         super().clean()
 
 
-class StageCreationForm(ModelForm):
+class StageCreationForm(BaseModelForm):
     """
     Form for Stage model
     """
@@ -344,7 +346,7 @@ class StageCreationForm(ModelForm):
                     filter_template_path="employee_filters.html",
                     required=True,
                 ),
-                label="Stage Managers",
+                label=f"{self._meta.model()._meta.get_field('stage_managers').verbose_name}",
             )
 
     def clean(self):
@@ -355,7 +357,7 @@ class StageCreationForm(ModelForm):
         super().clean()
 
 
-class CandidateCreationForm(ModelForm):
+class CandidateCreationForm(BaseModelForm):
     """
     Form for Candidate model
     """
@@ -408,13 +410,6 @@ class CandidateCreationForm(ModelForm):
         widgets = {
             "scheduled_date": forms.DateInput(attrs={"type": "date"}),
             "dob": forms.DateInput(attrs={"type": "date"}),
-        }
-        labels = {
-            "name": _("Name"),
-            "email": _("Email"),
-            "mobile": _("Mobile"),
-            "address": _("Address"),
-            "zip": _("Zip"),
         }
 
     def save(self, commit: bool = ...):
@@ -908,7 +903,7 @@ class SurveyPreviewForm(forms.Form):
         # self
 
 
-class TemplateForm(ModelForm):
+class TemplateForm(BaseModelForm):
     """
     TemplateForm
     """
@@ -1199,7 +1194,7 @@ class RejectedCandidateForm(ModelForm):
         self.fields["candidate_id"].widget = self.fields["candidate_id"].hidden_widget()
 
 
-class ScheduleInterviewForm(ModelForm):
+class ScheduleInterviewForm(BaseModelForm):
     """
     ScheduleInterviewForm
     """

@@ -2,9 +2,15 @@
 employee view page
 """
 
+import logging
+import threading
 from typing import Any
 
 from django import forms
+from django.contrib.auth.hashers import identify_hasher, make_password
+from django.contrib.auth.models import User
+from django.core.exceptions import ImproperlyConfigured
+from django.db import transaction
 from django.dispatch import receiver
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -20,7 +26,7 @@ from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformati
 from employee.templatetags.employee_filter import edit_accessibility
 from employee.views import _check_reporting_manager
 from horilla.horilla_middlewares import _thread_locals
-from horilla.signals import post_generic_delete
+from horilla.signals import post_generic_delete, post_generic_import
 from horilla_views.cbv_methods import login_required
 from horilla_views.forms import DynamicBulkUpdateForm
 from horilla_views.generic.cbv.views import (
@@ -29,6 +35,8 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def profile_edit_accessibility_display(self):
@@ -123,6 +131,7 @@ class EmployeesList(HorillaListView):
 
     import_fields = [
         "badge_id",
+        # "test",
         "employee_first_name",
         "employee_last_name",
         "employee_user_id__username",
@@ -174,6 +183,8 @@ class EmployeesList(HorillaListView):
 
     import_help = {
         "Id | Reference": ["Dont Alter this column"],
+        "Badge ID": ["Ensure no Duplicate Codes"],
+        "Reporting Manager": ["Ensure Badge ID with employee exists"],
         "Gender": ["male", "female", "other"],
         "Marital Status": ["single", "married", "divorced"],
         "Date Formats": ["yyyy-mm-dd"],
@@ -181,6 +192,7 @@ class EmployeesList(HorillaListView):
 
     import_related_model_column_mapping = {
         "employee_user_id": base_models.User,
+        # "test": base_models.Department,
         "employee_work_info": EmployeeWorkInformation,
         "employee_bank_details": EmployeeBankDetails,
         "employee_work_info__reporting_manager_id": Employee,
@@ -205,6 +217,7 @@ class EmployeesList(HorillaListView):
 
     primary_key_mapping = {
         "employee_user_id": "username",
+        # "test":"department",
         "employee_work_info__reporting_manager_id": "badge_id",
         "employee_work_info__department_id": "department",
         "employee_work_info__job_position_id": "job_position",
@@ -219,6 +232,8 @@ class EmployeesList(HorillaListView):
         "employee_work_info": "employee_id",
         "employee_bank_details": "employee_id",
     }
+
+    o2o_related_name_mapping = {"employee_user_id": "employee_get"}
 
     # fk_o2o_field_in_base_model = ["employee_user_id", "test"]
     fk_o2o_field_in_base_model = ["employee_user_id"]
@@ -447,6 +462,39 @@ class EmployeeNav(HorillaNavView):
         ("employee_work_info__reporting_manager_id", _("Reporting Manager")),
         ("employee_work_info__company_id", _("Company")),
     ]
+
+
+@receiver(post_generic_import, sender=User)
+def user_generic_import_or_update(sender, **kwargs):
+    """
+    Handle bulk user imports
+    """
+    records = kwargs["records"]
+
+    def _set_password(records):
+        # Create a list to store users that need to be updated
+        users_to_update = []
+
+        for instance in records:
+            try:
+                password = str(instance.password)
+                # Try to detect if the password is already hashed
+                identify_hasher(password)
+            except (ValueError, ImproperlyConfigured):
+                # Password is raw, so hash and update it
+                instance.password = make_password(password)
+                users_to_update.append(instance)
+
+        if users_to_update:
+            # Bulk update only the users that were changed
+            with transaction.atomic():
+                User.objects.bulk_update(users_to_update, ["password"])
+                logger.info(
+                    f"{len(users_to_update)} user passwords were successfully updated."
+                )
+
+    thread = threading.Thread(target=_set_password, args=(records,))
+    thread.start()
 
 
 @method_decorator(login_required, name="dispatch")

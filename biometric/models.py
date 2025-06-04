@@ -88,8 +88,8 @@ class BiometricDevices(HorillaModel):
     )
     api_token = models.CharField(max_length=500, null=True, blank=True)
     api_expires = models.CharField(max_length=100, null=True, blank=True)
-    is_live = models.BooleanField(default=False)
-    is_scheduler = models.BooleanField(default=False)
+    is_live = models.BooleanField(default=False, verbose_name=_("Is Live"))
+    is_scheduler = models.BooleanField(default=False, verbose_name=_("Is Scheduled"))
     scheduler_duration = models.CharField(
         null=True,
         default="00:00",
@@ -406,6 +406,10 @@ class COSECAttendanceArguments(models.Model):
         BiometricDevices, on_delete=models.CASCADE, null=True, blank=True
     )
     objects = models.Manager()
+
+    class Meta:
+        verbose_name = _("COSEC Attendance Arguments")
+        verbose_name_plural = _("COSEC Attendance Arguments")
 
     def __str__(self):
         return f"{self.device_id} - {self.last_fetch_roll_ovr_count} - {self.last_fetch_seq_number}"

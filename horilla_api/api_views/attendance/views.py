@@ -843,11 +843,21 @@ class CheckingStatus(APIView):
             .first()
         )
         if attendance_activity:
-            clock_in_time = attendance_activity_first.clock_in.strftime("%I:%M %p")
-            if attendance_activity.clock_out_date:
-                status = False
-            else:
-                status = True
+            try:
+                clock_in_time = attendance_activity_first.clock_in.strftime("%I:%M %p")
+                if attendance_activity.clock_out_date:
+                    status = False
+                else:
+                    status = True
+                    return Response(
+                        {
+                            "status": status,
+                            "duration": duration,
+                            "clock_in": clock_in_time,
+                        },
+                        status=200,
+                    )
+            except:
                 return Response(
                     {"status": status, "duration": duration, "clock_in": clock_in_time},
                     status=200,

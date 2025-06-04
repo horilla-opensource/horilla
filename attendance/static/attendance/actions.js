@@ -124,6 +124,55 @@ function getCurrentLanguageCode(callback) {
     }
 }
 
+function validateActivityIds(event) {
+    event.preventDefault();
+
+    getCurrentLanguageCode(function (languageCode) {
+        var textMessage = norowdeleteMessages[languageCode];
+        var $selectedActivity = $("#selectedActivity");
+        var idsRaw = $selectedActivity.attr("data-ids");
+
+        if (!idsRaw) {
+            Swal.fire({
+                text: textMessage,
+                icon: "warning",
+                confirmButtonText: "Close",
+            });
+            return;
+        }
+
+        let ids;
+        try {
+            ids = JSON.parse(idsRaw);
+        } catch (e) {
+            console.error("Invalid JSON in data-ids:", e);
+            Swal.fire({
+                text: "An unexpected error occurred. Please refresh the page.",
+                icon: "error",
+                confirmButtonText: "Close",
+            });
+            return;
+        }
+
+        if (!Array.isArray(ids) || ids.length === 0) {
+            Swal.fire({
+                text: textMessage,
+                icon: "warning",
+                confirmButtonText: "Close",
+            });
+            return;
+        }
+
+        $("#bulkDeleteIds").val(idsRaw);
+
+        // Submit the form programmatically
+        document.getElementById('bulkDeleteForm').dispatchEvent(
+            new Event('submit', { bubbles: true, cancelable: true })
+        );
+    });
+}
+
+
 $(".validate").change(function (e) {
     var is_checked = $(this).is(":checked");
     var closest = $(this)
@@ -1259,53 +1308,53 @@ $("#hourAccountbulkDelete").click(function (e) {
     });
 });
 
-$("#attendanceActivityDelete").click(function (e) {
-    e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = deleteMessages[languageCode];
-        var textMessage = norowdeleteMessages[languageCode];
-        ids = [];
-        ids.push($("#selectedActivity").attr("data-ids"));
-        ids = JSON.parse($("#selectedActivity").attr("data-ids"));
-        if (ids.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            Swal.fire({
-                text: confirmMessage,
-                icon: "error",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    ids = [];
-                    ids.push($("#selectedActivity").attr("data-ids"));
-                    ids = JSON.parse($("#selectedActivity").attr("data-ids"));
-                    $.ajax({
-                        type: "POST",
-                        url: "/attendance/attendance-activity-bulk-delete",
-                        data: {
-                            csrfmiddlewaretoken: getCookie("csrftoken"),
-                            ids: JSON.stringify(ids),
-                        },
-                        success: function (response, textStatus, jqXHR) {
-                            if (jqXHR.status === 200) {
-                                location.reload();
-                            }
-                        },
-                    });
-                }
-            });
-        }
-    });
-});
+// $("#attendanceActivityDelete").click(function (e) {
+//     e.preventDefault();
+//     var languageCode = null;
+//     getCurrentLanguageCode(function (code) {
+//         languageCode = code;
+//         var confirmMessage = deleteMessages[languageCode];
+//         var textMessage = norowdeleteMessages[languageCode];
+//         ids = [];
+//         ids.push($("#selectedActivity").attr("data-ids"));
+//         ids = JSON.parse($("#selectedActivity").attr("data-ids"));
+//         if (ids.length === 0) {
+//             Swal.fire({
+//                 text: textMessage,
+//                 icon: "warning",
+//                 confirmButtonText: "Close",
+//             });
+//         } else {
+//             Swal.fire({
+//                 text: confirmMessage,
+//                 icon: "error",
+//                 showCancelButton: true,
+//                 confirmButtonColor: "#008000",
+//                 cancelButtonColor: "#d33",
+//                 confirmButtonText: "Confirm",
+//             }).then(function (result) {
+//                 if (result.isConfirmed) {
+//                     ids = [];
+//                     ids.push($("#selectedActivity").attr("data-ids"));
+//                     ids = JSON.parse($("#selectedActivity").attr("data-ids"));
+//                     $.ajax({
+//                         type: "POST",
+//                         url: "/attendance/attendance-activity-bulk-delete",
+//                         data: {
+//                             csrfmiddlewaretoken: getCookie("csrftoken"),
+//                             ids: JSON.stringify(ids),
+//                         },
+//                         success: function (response, textStatus, jqXHR) {
+//                             if (jqXHR.status === 200) {
+//                                 location.reload();
+//                             }
+//                         },
+//                     });
+//                 }
+//             });
+//         }
+//     });
+// });
 
 $("#lateComeBulkDelete").click(function (e) {
     e.preventDefault();

@@ -269,6 +269,10 @@ class AssetDocuments(HorillaModel):
     )
     objects = models.Manager()
 
+    class Meta:
+        verbose_name = _("Asset Document")
+        verbose_name_plural = _("Asset Documents")
+
     def __str__(self):
         return f"document for {self.asset_report}"
 

@@ -1,41 +1,44 @@
 {% load i18n %}{% load static %}
-  <div class="oh-dropdown__filter-body">
+<div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
-    <div class="oh-accordion-header">{% trans "Stage" %}</div>
-    <div class="oh-accordion-body">
-      <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-              <label class="oh-label">{% trans "Recruitment Managers" %}</label>
-              {{f.form.recruitment_id__recruitment_managers}}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans "Recruitment" %}</label>
-            {{f.form.recruitment_id}}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans "Stage Type" %}</label>
-            {{f.form.stage_type}}
-          </div>
+        <div class="oh-accordion-header">{% trans "Stage" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.recruitment_id__recruitment_managers.id_for_label}}">{{f.form.recruitment_id__recruitment_managers.label}}</label>
+                        {{f.form.recruitment_id__recruitment_managers}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.recruitment_id.id_for_label}}">{{f.form.recruitment_id.label}}</label>
+                        {{f.form.recruitment_id}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.stage_type.id_for_label}}">{{f.form.stage_type.label}}</label>
+                        {{f.form.stage_type}}
+                    </div>
+                </div>
 
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.stage_managers.id_for_label}}">{{f.form.stage_managers.label}}</label>
+                        {{f.form.stage_managers}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            for="{{f.form.recruitment_id__company_id.id_for_label}}">{{f.form.recruitment_id__company_id.label}}</label>
+                        {{f.form.recruitment_id__company_id}}
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div class="col-sm-12 col-md-12 col-lg-6">
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans "Stage Managers" %}</label>
-            {{f.form.stage_managers}}
-          </div>
-          <div class="oh-input-group">
-            <label class="oh-label">{% trans "Company" %}</label>
-            {{f.form.recruitment_id__company_id}}
-          </div>
-
-        </div>
-      </div>
     </div>
-  </div>
 </div>
 <div class="oh-dropdown__filter-footer">
-  <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="">{% trans "Filter" %}</button>
+    <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton" id="">{% trans "Filter" %}</button>
 </div>
 <script src="{% static '/base/filter.js' %}"></script>

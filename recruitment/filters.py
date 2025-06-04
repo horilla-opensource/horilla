@@ -9,6 +9,7 @@ import uuid
 
 import django_filters
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from base.filters import FilterSet
 from horilla.filters import HorillaFilterSet, filter_by_name
@@ -178,9 +179,57 @@ class CandidateFilter(HorillaFilterSet):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.form.fields["is_active"].initial = True
-        for field in self.form.fields.keys():
-            self.form.fields[field].widget.attrs["id"] = f"{uuid.uuid4()}"
+
+        form_fields = self.form.fields
+        form_fields["is_active"].initial = True
+
+        for field in form_fields:
+            form_fields[field].widget.attrs["id"] = str(uuid.uuid4())
+
+        self._update_field_labels(form_fields)
+
+    def _update_field_labels(self, form_fields):
+        """Helper method to update field labels from model verbose names"""
+
+        models = {
+            "recruitment": Recruitment(),
+            "interview": InterviewSchedule(),
+            "skill_zone": SkillZoneCandidate(),
+        }
+
+        interview_date_label = (
+            models["interview"]._meta.get_field("interview_date").verbose_name
+        )
+
+        field_label_map = {
+            "interview_date": interview_date_label,
+            "scheduled_from": f"{interview_date_label} From",
+            "scheduled_till": f"{interview_date_label} Till",
+            "rejected_candidate__reject_reason_id": _("Reject Reason"),
+            "job_position_id__department_id": _("Department"),
+            "stage_id__stage_type": _("Stage Type"),
+            "stage_id__stage_managers": _("Stage Managers"),
+            "skillzonecandidate_set__skill_zone_id": models["skill_zone"]
+            ._meta.get_field("skill_zone_id")
+            .verbose_name,
+            "start_date": models["recruitment"]
+            ._meta.get_field("start_date")
+            .verbose_name,
+            "end_date": models["recruitment"]._meta.get_field("end_date").verbose_name,
+            "recruitment_id__company_id": models["recruitment"]
+            ._meta.get_field("company_id")
+            .verbose_name,
+            "recruitment_id__closed": models["recruitment"]
+            ._meta.get_field("closed")
+            .verbose_name,
+            "recruitment_id__recruitment_managers": models["recruitment"]
+            ._meta.get_field("recruitment_managers")
+            .verbose_name,
+        }
+
+        for field_name, label in field_label_map.items():
+            if field_name in form_fields:
+                form_fields[field_name].label = label
 
     def filter_mail_sent(self, queryset, name, value):
         return queryset.filter(onboarding_portal__isnull=(not value))
@@ -254,6 +303,13 @@ class RecruitmentFilter(HorillaFilterSet):
             "job_position_id",
             "open_positions",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        start_date_verbose = self.Meta.model._meta.get_field("start_date").verbose_name
+        end_date_verbose = self.Meta.model._meta.get_field("end_date").verbose_name
+        self.form.fields["start_from"].label = f"{start_date_verbose} From"
+        self.form.fields["end_till"].label = f"{end_date_verbose} Till"
 
     def filter_by_name(self, queryset, _, value):
         """
@@ -514,6 +570,7 @@ class SkillZoneCandFilter(FilterSet):
         field_name="candidate__id__joining_date",
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
+        label=_("Joining From"),
     )
     probation_end = django_filters.DateFilter(
         field_name="candidate__id__probation_end",
@@ -523,11 +580,13 @@ class SkillZoneCandFilter(FilterSet):
         field_name="candidate__id__probation_end",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
+        label=_("Probation Till"),
     )
     probation_end_from = django_filters.DateFilter(
         field_name="candidate__id__probation_end",
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
+        label=_("Probation From"),
     )
     schedule_date = django_filters.DateFilter(
         field_name="candidate__id__schedule_date",
@@ -537,6 +596,7 @@ class SkillZoneCandFilter(FilterSet):
         field_name="candidate__id__joining_date",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
+        label=_("Joining Till"),
     )
     recruitment = django_filters.CharFilter(
         field_name="candidate__id__recruitment_id__title", lookup_expr="icontains"
@@ -546,11 +606,13 @@ class SkillZoneCandFilter(FilterSet):
         field_name="candidate__id__onboarding_portal",
         method="filter_mail_sent",
         widget=django_filters.widgets.BooleanWidget(),
+        label=_("Portal Sent"),
     )
     joining_set = django_filters.BooleanFilter(
         field_name="candidate__id__joining_date",
         method="filter_joining_set",
         widget=django_filters.widgets.BooleanWidget(),
+        label=_("Joining Set"),
     )
 
     class Meta:
@@ -623,10 +685,6 @@ class InterviewFilter(HorillaFilterSet):
         lookup_expr="gte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
-    # schedule_date = django_filters.DateFilter(
-    #     field_name="interview_date",
-    #     widget=forms.DateInput(attrs={"type": "date"}),
-    # )
     scheduled_till = django_filters.DateFilter(
         field_name="interview_date",
         lookup_expr="lte",
@@ -643,39 +701,16 @@ class InterviewFilter(HorillaFilterSet):
             "candidate_id",
             "employee_id",
             "interview_date",
-            # "recruitment",
-            # "recruitment_id",
-            # "stage_id",
-            # "schedule_date",
-            # "email",
-            # "mobile",
-            # "country",
-            # "state",
-            # "city",
-            # "zip",
-            # "gender",
-            # "start_onboard",
-            # "hired",
-            # "canceled",
-            # "is_active",
-            # "recruitment_id__company_id",
-            # "job_position_id",
-            # "recruitment_id__closed",
-            # "recruitment_id__is_active",
-            # "job_position_id__department_id",
-            # "recruitment_id__recruitment_managers",
-            # "stage_id__stage_managers",
-            # "stage_id__stage_type",
-            # "joining_date",
-            # "skillzonecandidate_set__skill_zone_id",
-            # "skillzonecandidate_set__candidate_id",
-            # "portal_sent",
-            # "joining_set",
-            # "rejected_candidate__reject_reason_id",
-            # "offer_letter_status",
-            # "candidate_rating__rating",
-            # "candidate_interview__employee_id",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.form["scheduled_from"].label = (
+            f"{self.Meta.model()._meta.get_field('interview_date').verbose_name} From"
+        )
+        self.form["scheduled_till"].label = (
+            f"{self.Meta.model()._meta.get_field('interview_date').verbose_name} Till"
+        )
 
 
 class LinkedInAccountFilter(FilterSet):

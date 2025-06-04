@@ -2847,7 +2847,9 @@ def open_recruitments(request):
     """
     This method is used to render the open recruitment page
     """
-    recruitments = Recruitment.default.filter(closed=False, is_published=True)
+    recruitments = Recruitment.default.filter(
+        closed=False, is_published=True, is_active=True
+    )
     context = {
         "recruitments": recruitments,
     }
