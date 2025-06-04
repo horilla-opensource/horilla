@@ -22,9 +22,11 @@ def _clear_accessibility_cache():
 
 def _clear_bulk_employees_cache(queryset):
     for instance in queryset:
-        cache_key = ACCESSIBILITY_CACHE_USER_KEYS.get(
-            instance.employee_id.employee_user_id.id
-        )
+        cache_key = None
+        if instance.employee_id and instance.employee_id.employee_user_id:
+            cache_key = ACCESSIBILITY_CACHE_USER_KEYS.get(
+                instance.employee_id.employee_user_id.id
+            )
         if cache_key:
             cache.delete(cache_key)
 
