@@ -14,8 +14,11 @@ from bs4 import BeautifulSoup
 from django import forms
 from django.contrib import messages
 from django.core.cache import cache as CACHE
+from django.core.exceptions import FieldDoesNotExist
 from django.core.paginator import Page
 from django.db import transaction
+from django.db.models import CharField, F
+from django.db.models.functions import Cast
 from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -376,12 +379,14 @@ class HorillaListView(ListView):
                             **{f"{field}__in": list(values)}
                         ).only("pk", field)
 
-                    existing_values = existing_objects.values_list(field, flat=True)
+                    existing_values = existing_objects.annotate(
+                        field_as_str=Cast(F(field), CharField())
+                    ).values_list("field_as_str", flat=True)
 
                     to_create = [
                         related_model(**{field: value})
                         for value in values
-                        if value not in existing_values
+                        if str(value) not in existing_values
                     ]
 
                     if to_create:
@@ -868,7 +873,13 @@ class HorillaListView(ListView):
                             records=bulk_update_reverse_related_grouping[field],
                             view=self,
                         )
+
                     elif field in bulk_create_from_update_reverse_related_grouping:
+                        update_fields = [
+                            key
+                            for key in related_update_fields[field]
+                            if key not in ["id", "pk"]
+                        ]
                         pre_generic_import.send(
                             sender=related_model,
                             records=bulk_create_from_update_reverse_related_grouping[
@@ -2041,9 +2052,45 @@ class HorillaNavView(TemplateView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self._initialize_model_and_group_fields()
         request = getattr(_thread_locals, "request", None)
         self.request = request
         # update_initial_cache(request, CACHE, HorillaNavView)
+
+    def _initialize_model_and_group_fields(self) -> None:
+        """
+        Initialize model_class and reinitialize filter_instance if model exists
+        for updating group_by_fields with verbose names.
+        """
+        if not self.filter_instance:
+            return
+
+        model_class_ref = self.filter_instance._meta.model
+        if not model_class_ref:
+            return
+
+        model_instance = model_class_ref()
+        self.nav_title = self.nav_title or model_instance._meta.verbose_name_plural
+        self.filter_instance = self.filter_instance.__class__()
+
+        if not self.group_by_fields:
+            return
+
+        get_field = model_instance._meta.get_field
+        updated_fields = []
+        append = updated_fields.append
+
+        for field in self.group_by_fields:
+            if isinstance(field, str):
+                try:
+                    verbose_name = get_field(field).verbose_name
+                    append((field, verbose_name))
+                except FieldDoesNotExist:
+                    append(field)
+            else:
+                append(field)
+
+        self.group_by_fields = updated_fields
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

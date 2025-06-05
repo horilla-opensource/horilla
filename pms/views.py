@@ -1523,7 +1523,7 @@ def feedback_creation(request):
             instance.subordinate_id.set(employees)
 
             messages.success(request, _("Feedback created successfully."))
-            send_feedback_notifications(request, form=instance)
+            send_feedback_notifications(request, feedback=instance)
             return redirect(reverse("feedback-view"))
         else:
             context["feedback_form"] = form
