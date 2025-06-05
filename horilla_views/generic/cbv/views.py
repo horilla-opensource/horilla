@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from django import forms
 from django.contrib import messages
 from django.core.cache import cache as CACHE
+from django.core.exceptions import FieldDoesNotExist
 from django.core.paginator import Page
 from django.http import HttpRequest, HttpResponse, QueryDict
 from django.shortcuts import render
@@ -1263,9 +1264,57 @@ class HorillaNavView(TemplateView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self._initialize_model_and_group_fields()
         request = getattr(_thread_locals, "request", None)
         self.request = request
         # update_initial_cache(request, CACHE, HorillaNavView)
+
+    def _initialize_model_and_group_fields(self) -> None:
+        """
+        Initialize model_class and reinitialize filter_instance if model exists
+        for updating group_by_fields with verbose names.
+        """
+        if not self.filter_instance:
+            return
+
+        model_class_ref = self.filter_instance._meta.model
+        if not model_class_ref:
+            return
+
+        model_instance = model_class_ref()
+        self.nav_title = self.nav_title or model_instance._meta.verbose_name_plural
+        self.filter_instance = self.filter_instance.__class__()
+
+        if not self.group_by_fields:
+            return
+
+        get_field = model_instance._meta.get_field
+        updated_fields = []
+        append = updated_fields.append
+
+        for field in self.group_by_fields:
+            if isinstance(field, str):
+                try:
+                    verbose_name = get_field(field).verbose_name
+                    append((field, verbose_name))
+                except FieldDoesNotExist:
+                    # Check for related fields (field paths with '__')
+                    if "__" in field and hasattr(
+                        model_class_ref, "get_verbose_name_related_field"
+                    ):
+                        try:
+                            verbose_name = (
+                                model_class_ref.get_verbose_name_related_field(field)
+                            )
+                            append((field, verbose_name))
+                            continue
+                        except Exception as e:
+                            pass
+                    append(field)
+            else:
+                append(field)
+
+        self.group_by_fields = updated_fields
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

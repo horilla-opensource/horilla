@@ -22,7 +22,7 @@ from horilla.horilla_middlewares import _thread_locals
 register = template.Library()
 
 
-numeric_test = re.compile(r'^\d+$')
+numeric_test = re.compile(r"^\d+$")
 
 date_format_mapping = {
     "DD-MM-YYYY": "%d-%m-%Y",
@@ -87,28 +87,31 @@ def getattribute(value, attr: str):
 @register.filter(name="format")
 def format(string: str, instance: object):
     """
-    format
+    Format a string by resolving instance attributes, including method calls like get_status_display.
     """
     attr_placeholder_regex = r"{([^}]*)}"
     attr_placeholders = re.findall(attr_placeholder_regex, string)
 
     if not attr_placeholders:
         return string
-    flag = instance
-    format_context = {}
-    for attr_placeholder in attr_placeholders:
-        attr_name: str = attr_placeholder
-        attrs = attr_name.split("__")
-        for attr in attrs:
-            value = getattr(instance, attr, "")
-            if isinstance(value, types.MethodType):
-                value = value()
-            instance = value
-            format_context[attr_name] = value
-        instance = flag
-    formatted_string = string.format(**format_context)
 
-    return formatted_string
+    original_instance = instance
+    format_context = {}
+
+    for attr_placeholder in attr_placeholders:
+        instance = original_instance  # reset each time
+        attrs = attr_placeholder.split("__")
+        try:
+            for attr in attrs:
+                instance = getattr(instance, attr, "")
+            # If final resolved attr is a method, call it
+            if callable(instance):
+                instance = instance()
+        except Exception:
+            instance = ""
+        format_context[attr_placeholder] = instance
+
+    return string.format(**format_context)
 
 
 @register.filter("accessibility")
