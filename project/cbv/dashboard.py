@@ -10,6 +10,7 @@ from django.db.models import Count, Q
 from django.db.models.query import QuerySet
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_subordinates
@@ -70,16 +71,6 @@ class ProjectDetailView(HorillaDetailedView):
     model = Project
     title = _("Details")
     header = {"title": "title", "subtitle": "", "avatar": "get_avatar"}
-    body = [
-        (_("Manager"), "manager"),
-        (_("Members"), "get_members"),
-        (_("Status"), "status_column"),
-        (_("No of Tasks"), "task_count"),
-        (_("Start date"), "start_date"),
-        (_("End date"), "end_date"),
-        (_("Document"), "get_document_html"),
-        (_("Description"), "description"),
-    ]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -106,3 +97,17 @@ class ProjectDetailView(HorillaDetailedView):
         queryset = super().get_queryset()
         queryset = queryset.annotate(task_count=Count("task"))
         return queryset
+
+    @cached_property
+    def body(self):
+        get_field = self.model()._meta.get_field
+        return [
+            (get_field("managers").verbose_name, "get_managers"),
+            (get_field("members").verbose_name, "get_members"),
+            (get_field("status").verbose_name, "get_status_display"),
+            (_("No of Tasks"), "task_count"),
+            (get_field("start_date").verbose_name, "start_date"),
+            (get_field("end_date").verbose_name, "end_date"),
+            (get_field("document").verbose_name, "get_document_html"),
+            (get_field("description").verbose_name, "description"),
+        ]

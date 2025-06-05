@@ -12,6 +12,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import get_subordinates
@@ -52,6 +53,7 @@ class TaskListView(HorillaListView):
 
     model = Task
     filter_class = TaskAllFilter
+    action_method = "actions"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -81,26 +83,30 @@ class TaskListView(HorillaListView):
             )
         return queryset.distinct()
 
-    columns = [
-        (_("Task"), "title"),
-        (_("Project"), "project"),
-        (_("Stage"), "stage"),
-        (_("Mangers"), "get_managers"),
-        (_("Members"), "get_members"),
-        (_("End Date"), "end_date"),
-        (_("Status"), "status_column"),
-        (_("Description"), "description"),
-    ]
+    @cached_property
+    def columns(self):
+        get_field = self.model()._meta.get_field
+        return [
+            (get_field("title").verbose_name, "title"),
+            (get_field("project").verbose_name, "project"),
+            (get_field("stage").verbose_name, "stage"),
+            (get_field("task_managers").verbose_name, "get_managers"),
+            (get_field("task_members").verbose_name, "get_members"),
+            (get_field("end_date").verbose_name, "end_date"),
+            (get_field("status").verbose_name, "get_status_display"),
+            (get_field("description").verbose_name, "get_description"),
+        ]
 
-    sortby_mapping = [
-        ("Task", "title"),
-        ("Project", "project__title"),
-        ("Stage", "stage"),
-        ("End Date", "end_date"),
-        ("Status", "status"),
-    ]
-
-    action_method = "actions"
+    @cached_property
+    def sortby_mapping(self):
+        get_field = self.model()._meta.get_field
+        return [
+            (get_field("title").verbose_name, "title"),
+            (get_field("project").verbose_name, "project__title"),
+            (get_field("stage").verbose_name, "stage"),
+            (get_field("end_date").verbose_name, "end_date"),
+            (get_field("status").verbose_name, "status"),
+        ]
 
     row_status_indications = [
         (
@@ -164,11 +170,15 @@ class TasksNavBar(HorillaNavView):
     navbar of teh page
     """
 
-    nav_title = _("Tasks")
-    filter_instance = TaskAllFilter()
+    group_by_fields = [
+        "project",
+        "stage",
+        "status",
+    ]
     filter_form_context_name = "form"
-    filter_body_template = "cbv/tasks/task_filter.html"
+    filter_instance = TaskAllFilter()
     search_swap_target = "#listContainer"
+    filter_body_template = "cbv/tasks/task_filter.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -237,12 +247,6 @@ class TasksNavBar(HorillaNavView):
                 },
             ]
 
-    group_by_fields = [
-        ("project", _("Project")),
-        ("stage", _("Stage")),
-        ("status", _("Status")),
-    ]
-
 
 @method_decorator(login_required, name="dispatch")
 class TaskCreateForm(HorillaFormView):
@@ -250,10 +254,10 @@ class TaskCreateForm(HorillaFormView):
     Form view for create and update tasks
     """
 
-    form_class = TaskAllForm
     model = Task
+    form_class = TaskAllForm
     template_name = "cbv/tasks/task_form.html"
-    new_display_title = _("Create Task")
+    new_display_title = _("Create") + " " + model._meta.verbose_name
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -407,22 +411,23 @@ class TaskDetailView(HorillaDetailedView):
 
     model = Task
     title = _("Task Details")
-
+    action_method = "detail_view_actions"
     header = {"title": "title", "subtitle": "project", "avatar": "get_avatar"}
 
-    body = [
-        (_("Task"), "title"),
-        (_("Project"), "project"),
-        (_("Stage"), "stage"),
-        (_("Task Mangers"), "get_managers"),
-        (_("Task Members"), "get_members"),
-        (_("Status"), "status_column"),
-        (_("End Date"), "end_date"),
-        (_("Description"), "description"),
-        (_("Document"), "document_col", True),
-    ]
-
-    action_method = "detail_view_actions"
+    @cached_property
+    def body(self):
+        get_field = self.model()._meta.get_field
+        return [
+            (get_field("title").verbose_name, "title"),
+            (get_field("project").verbose_name, "project"),
+            (get_field("stage").verbose_name, "stage"),
+            (get_field("task_managers").verbose_name, "get_managers"),
+            (get_field("task_members").verbose_name, "get_members"),
+            (get_field("status").verbose_name, "get_status_display"),
+            (get_field("end_date").verbose_name, "end_date"),
+            (get_field("description").verbose_name, "description"),
+            (get_field("document").verbose_name, "document_col", True),
+        ]
 
 
 @method_decorator(login_required, name="dispatch")

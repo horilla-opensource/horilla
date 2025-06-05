@@ -6,29 +6,29 @@
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Project" %}</label>
+                        <label class="oh-label" for="{{form.project_id.id_for_label}}">{{form.project_id.label}}</label>
                         {{form.project_id}}
                     </div>
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Status" %}</label>
+                        <label class="oh-label" for="{{form.status.id_for_label}}">{{form.status.label}}</label>
                         {{form.status}}
                     </div>
                 </div>
 
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Task" %}</label>
+                        <label class="oh-label" for="{{form.task.id_for_label}}">{{form.task.label}}</label>
                         {{form.task}}
                     </div>
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Date" %}</label>
+                        <label class="oh-label" for="{{form.date.id_for_label}}">{{form.date.label}}</label>
                         {{form.date}}
                     </div>
                 </div>
                 {% if perms.project.view_timesheet or request.user|is_reportingmanager %}
                     <div class="col-sm-12 col-md-12 col-lg-6">
                         <div class="oh-input-group">
-                            <label class="oh-label">{% trans "Employee" %}</label>
+                            <label class="oh-label" for="{{form.employee_id.id_for_label}}">{{form.employee_id.label}}</label>
                             {{form.employee_id}}
                         </div>
                     </div>
@@ -43,13 +43,13 @@
             <div class="row">
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Start Date From" %}</label>
+                        <label class="oh-label" for="{{form.start_from.id_for_label}}">{{form.start_from.label}}</label>
                         {{form.start_from}}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Till End Date" %}</label>
+                        <label class="oh-label" for="{{form.end_till.id_for_label}}">{{form.end_till.label}}</label>
                         {{form.end_till}}
                     </div>
                 </div>
