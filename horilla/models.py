@@ -160,5 +160,21 @@ class HorillaModel(models.Model):
             obj.is_active = not obj.is_active
             obj.save()
 
+    @classmethod
+    def get_verbose_name_related_field(cls, field_path):
+        """
+        Traverse related fields to get verbose_name using Django's _meta API.
+        Example: "employee_id__employee_work_info__reporting_manager_id"
+        """
+        parts = field_path.split("__")
+        instance_model = cls
+
+        for part in parts[:-1]:
+            field = instance_model._meta.get_field(part)
+            instance_model = field.remote_field.model
+
+        final_field = instance_model()._meta.get_field(parts[-1])
+        return final_field.verbose_name
+
 
 auditlog.register(HorillaModel, serialize_data=True)
