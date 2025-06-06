@@ -46,14 +46,16 @@ time_format_mapping = {
 
 @register.filter(name="selected_format")
 def selected_format(date: datetime.date, company: object = None) -> str:
-    if company and (company.date_format or company.time_format):
-        if isinstance(date, datetime.date):
-            format = company.date_format
-            date_format_mapping.get(format)
-            return date.strftime(date_format_mapping[format])
-        elif isinstance(date, datetime.time):
-            format = company.time_format
-            return date.strftime(time_format_mapping[format])
+    if isinstance(date, datetime.date):
+        format = (
+            company.date_format if company and company.date_format else "MMM. D, YYYY"
+        )
+        strftime_format = date_format_mapping.get(format, "%b. %d, %Y")
+        return date.strftime(strftime_format)
+    elif isinstance(date, datetime.time):
+        format = company.time_format if company and company.time_format else "hh:mm A"
+        strftime_format = time_format_mapping.get(format, "%I:%M %p")
+        return date.strftime(strftime_format)
     return date
 
 
