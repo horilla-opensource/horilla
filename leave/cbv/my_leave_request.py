@@ -538,7 +538,9 @@ class MyLeaveRequestSingleForm(HorillaFormView):
             form.add_error(
                 None, _("There is already a leave request for this date range")
             )
-        elif requested_days <= available_total_leave:
+        elif requested_days <= available_total_leave or form.instance.status not in [
+            "approved"
+        ]:
             if form.is_valid():
                 leave_request = form.save(commit=False)
                 save = True

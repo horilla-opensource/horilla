@@ -9,13 +9,21 @@ from django.db import models
 from django.db.models.query import QuerySet
 
 from horilla.horilla_middlewares import _thread_locals
-from horilla.signals import post_bulk_update, pre_bulk_update
+from horilla.signals import (
+    post_bulk_update,
+    post_model_clean,
+    pre_bulk_update,
+    pre_model_clean,
+)
 
 logger = logging.getLogger(__name__)
 django_filter_update = QuerySet.update
 
 
 def update(self, *args, **kwargs):
+    """
+    Bulk Update
+    """
     # pre_update signal
     request = getattr(_thread_locals, "request", None)
     self.request = request
@@ -26,6 +34,21 @@ def update(self, *args, **kwargs):
 
     return result
 
+
+django_model_clean = models.Model.clean
+
+
+def clean(self, *args, **kwargs):
+    """
+    Method to override django clean and trigger to signals
+    """
+    pre_model_clean.send(sender=self._meta.model, instance=self, **kwargs)
+    result = django_model_clean(self)
+    post_model_clean.send(sender=self._meta.model, instance=self, **kwargs)
+    return result
+
+
+models.Model.clean = clean
 
 setattr(QuerySet, "update", update)
 

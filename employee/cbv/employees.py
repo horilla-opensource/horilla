@@ -286,6 +286,7 @@ class EmployeesList(HorillaListView):
         (_("Department"), "employee_work_info__department_id"),
         (_("Shift"), "employee_work_info__shift_id"),
         (_("Work Type"), "employee_work_info__work_type_id"),
+        (_("Employee Type"), "employee_work_info__employee_type_id"),
         (_("Job Role"), "employee_work_info__job_role_id"),
         (_("Reporting Manager"), "employee_work_info__reporting_manager_id"),
         (_("Company"), "employee_work_info__company_id"),

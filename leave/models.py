@@ -288,8 +288,14 @@ class LeaveType(HorillaModel):
         return expired_date
 
     def clean(self, *args, **kwargs):
+        super().clean(self)
         if self.is_compensatory_leave:
-            if LeaveType.objects.filter(is_compensatory_leave=True).count() >= 1:
+            if (
+                LeaveType.objects.filter(is_compensatory_leave=True)
+                .exclude(pk=self.pk)
+                .count()
+                >= 1
+            ):
                 raise ValidationError(_("Compensatory Leave Request already exists."))
 
     def save(self, *args, **kwargs):
