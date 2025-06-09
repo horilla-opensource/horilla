@@ -34,7 +34,7 @@ from base.models import (
 from employee.methods.duration_methods import format_time, strtime_seconds
 from horilla import horilla_middlewares
 from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, has_xss
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
@@ -114,6 +114,26 @@ class Employee(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_work_info__company_id"
     )
+
+    def clean_fields(self, exclude=None):
+        errors = {}
+
+        # Get the list of fields to exclude from validation
+        total_exclude = set(exclude or []).union(getattr(self, "xss_exempt_fields", []))
+
+        for field in self._meta.get_fields():
+            if (
+                isinstance(field, (models.CharField, models.TextField))
+                and field.name not in total_exclude
+            ):
+                value = getattr(self, field.name, None)
+                if value and has_xss(value):
+                    errors[field.name] = ValidationError(
+                        "Potential XSS content detected."
+                    )
+
+        if errors:
+            raise ValidationError(errors)
 
     def get_image(self):
         """
