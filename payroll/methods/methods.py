@@ -295,7 +295,9 @@ def get_daily_salary(wage, wage_date) -> dict:
     end_date = date(wage_date.year, wage_date.month, last_day)
     start_date = date(wage_date.year, wage_date.month, 1)
     working_days = get_working_days(start_date, end_date)["total_working_days"]
-    day_wage = wage / working_days  # if working_days != 0 else 0
+    day_wage = (
+        wage / working_days if working_days else 0.0
+    )  # if working_days != 0 else 0 #769
 
     return {
         "day_wage": day_wage,
@@ -349,8 +351,10 @@ def months_between_range(wage, start_date, end_date):
             # month period
             "working_days_on_period": total_working_days_on_period,
             "working_days_on_month": working_days_on_month,
-            "per_day_amount": wage
-            / working_days_on_month,  # if working_days_on_month != 0 else 0,
+            "per_day_amount": (
+                wage / working_days_on_month if working_days_on_month else 0.0
+            ),
+            # if working_days_on_month != 0 else 0 #769,
         }
 
         months_data.append(month_info)
