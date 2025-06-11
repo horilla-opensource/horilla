@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {% include "horilla_theme/components/header_scripts.html" %}
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+            rel="stylesheet"
+        />
+
+        <script src="/static/horilla_theme/assets/js/global.js"></script>
+        <link
+            rel="stylesheet"
+            href="/static/horilla_theme/assets/css/global.css"
+        />
+        <link
+            rel="stylesheet"
+            href="/static/horilla_theme/assets/css/v1_styles.css"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+            rel="stylesheet"
+        />
+
+        <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    </head>
+
+    <body class="bg-secondary-50 font-[Inter,_sans-serif]">
+        <!-- Include Sidebar -->
+        <div id="sidebar">
+            {% include "horilla_theme/components/sidebar.html" %}
+        </div>
+
+        <!-- Main Content -->
+        <div class="ml-[4.7rem] h-screen">
+            <div class="bg-[#F6F6F6]">
+                <!-- Include Header -->
+                <div id="header">
+                    {% include "horilla_theme/components/header.html" %}
+                </div>
+
+                <div class="p-6 pt-24">
+                    {% block content %} 
+                        {% include "horilla_theme/components/dashboard.html" %} 
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+        {% include "generic/components.html" %}
+        {% include "horilla_theme/components/footer_scripts.html" %}
+    </body>
+</html>

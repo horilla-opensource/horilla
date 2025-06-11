@@ -1,0 +1,182 @@
+{% load static %} {% load i18n %}
+<div class="oh-dropdown__filter-body">
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="select-all-fields">
+              <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        {% for field in export_column.selected_fields %}
+        <div class="col-sm-12 col-md-12 col-lg-4">
+          <div class="oh-input-group">
+            <label class="oh-label"> {{ field }} </label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Contract" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.contract_start_date.id_for_label}}">{% trans "Start Date" %}</label>
+            {{ export_filter.form.contract_start_date }}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.contract_end_date.id_for_label}}">{% trans "End Date" %}</label>
+            {{ export_filter.form.contract_end_date }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.wage_type.id_for_label}}">{% trans "Wage Type" %}</label>
+            {{ export_filter.form.wage_type }}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.filing_status.id_for_label}}">{% trans "Filing Status" %}</label>
+            {{ export_filter.form.filing_status }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.pay_frequency.id_for_label}}">{% trans "Pay Frequency" %}</label>
+            {{ export_filter.form.pay_frequency }}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.contract_status.id_for_label}}">{% trans "Status" %}</label>
+            {{ export_filter.form.contract_status }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Work Info" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
+            {{ export_filter.form.employee_id__employee_work_info__company_id }}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.department.id_for_label}}">{% trans "Department" %}</label>
+            {{ export_filter.form.department }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.job_position.id_for_label}}">{% trans "Job Position" %}</label>
+            {{ export_filter.form.job_position }}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.job_role.id_for_label}}">{% trans "Job Role" %}</label>
+            {{ export_filter.form.job_role }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.shift.id_for_label}}">{% trans "Shift" %}</label>
+            {{ export_filter.form.shift }}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.work_type.id_for_label}}">{% trans "Work Type" %}</label>
+            {{ export_filter.form.work_type }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.contract_start_date_from.id_for_label}}"
+              >{% trans "Contract Start Date From" %}</label
+            >
+            {{ export_filter.form.contract_start_date_from }}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.contract_start_date_till.id_for_label}}"
+              >{% trans "Contract Start Date Till" %}</label
+            >
+            {{ export_filter.form.contract_start_date_till }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.contract_end_date_from.id_for_label}}">{% trans "Contract End Date From" %}</label>
+            {{ export_filter.form.contract_end_date_from }}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.contract_end_date_till.id_for_label}}">{% trans "Contract End Date Till" %}</label>
+            {{ export_filter.form.contract_end_date_till }}
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.basic_pay__lte.id_for_label}}"
+              >{% trans "Basic Salary Less Than or Equal" %}</label
+            >
+            {{ export_filter.form.basic_pay__lte }}
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{export_filter.form.basic_pay__gte.id_for_label}}"
+              >{% trans "Basic Salary Greater or Equal" %}</label
+            >
+            {{ export_filter.form.basic_pay__gte }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="oh-dropdown__filter-footer">
+  <button
+      class="oh-btn oh-btn--secondary oh-btn--small w-100"
+  >
+      {% trans "Export" %}
+  </button>
+</div>

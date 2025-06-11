@@ -1,0 +1,8 @@
+{% load i18n %}
+{% include "generic/components.html" %}
+    <span class="oh-timeoff-modal__stat-title">{% trans "Activities" %}</span>
+    <span data-target="#activityViewModal" data-toggle="oh-modal-toggle" hx-get="{% url 'get-attendance-activities' instance.id  %}"
+        hx-target="#activityViewModalBody" class="oh-timeoff-modal__stat-count" style="display: flex;" title="{% trans 'View Activities' %}">
+        <p class="m-0">{{instance.activities.count}} {% trans "Activity" %}</p>
+        <ion-icon name="eye-outline" class="md hydrated ml-1 mt-1" role="img" aria-label="chevron back outline"></ion-icon>
+    </span>

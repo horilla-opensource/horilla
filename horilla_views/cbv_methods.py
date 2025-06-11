@@ -659,3 +659,243 @@ def export_xlsx(json_data, columns, file_name="quick_export"):
     )
     response["Content-Disposition"] = f'attachment; filename="{file_name}.xlsx"'
     return response
+
+
+from django.apps import apps
+from django.core.exceptions import FieldDoesNotExist
+from django.db.models import Model
+from django.db.models.fields.related import (
+    ForeignKey,
+    ManyToManyRel,
+    ManyToOneRel,
+    OneToOneField,
+    OneToOneRel,
+)
+from openpyxl import Workbook
+
+
+def get_verbose_name_from_field_path(model, field_path, import_mapping):
+    """
+    Get verbose name
+    """
+    parts = field_path.split("__")
+    current_model = model
+    verbose_name = None
+
+    for i, part in enumerate(parts):
+        try:
+            field = current_model._meta.get_field(part)
+
+            # Skip reverse relations (e.g., OneToOneRel)
+            if isinstance(field, (OneToOneRel, ManyToOneRel, ManyToManyRel)):
+                related_model = field.related_model
+                field = getattr(related_model, parts[-1]).field
+                return field.verbose_name.title()
+
+            verbose_name = field.verbose_name
+
+            if isinstance(field, (ForeignKey, OneToOneField)):
+                current_model = field.related_model
+
+        except FieldDoesNotExist:
+            return f"[Invalid: {field_path}]"
+
+    return verbose_name.title() if verbose_name else field_path
+
+
+def generate_import_excel(
+    base_model, import_fields, reference_field="id", import_mapping={}, queryset=[]
+):
+    """
+    Generate import excel
+    """
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Import Sheet"
+
+    # Style definitions
+    header_fill = PatternFill(
+        start_color="FFD700", end_color="FFD700", fill_type="solid"
+    )
+    bold_font = Font(bold=True)
+    wrap_alignment = Alignment(wrap_text=True, vertical="center", horizontal="center")
+    thin_border = Border(
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin"),
+    )
+
+    # Generate headers
+    headers = [
+        get_verbose_name_from_field_path(base_model, field, import_mapping)
+        for field in import_fields
+    ]
+    headers = [
+        f"{get_verbose_name_from_field_path(base_model, reference_field,import_mapping)} | Reference"
+    ] + headers
+    ws.append(headers)
+
+    # Apply styles to header row
+    for col_num, _ in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.font = bold_font
+        cell.fill = header_fill
+        cell.alignment = wrap_alignment
+        cell.border = thin_border
+
+        col_letter = get_column_letter(col_num)
+        ws.column_dimensions[col_letter].width = 30
+
+    for obj in queryset:
+        row = [str(getattribute(obj, reference_field))] + [
+            str(getattribute(obj, import_mapping.get(field, field)))
+            for field in import_fields
+        ]
+        ws.append(row)
+    ws.freeze_panes = "A2"
+    ws.freeze_panes = "B2"
+    return wb
+
+
+def split_by_import_reference(employee_data):
+    with_import_reference = []
+    without_import_reference = []
+
+    for record in employee_data:
+        if record.get("id_import_reference") is not None:
+            with_import_reference.append(record)
+        else:
+            without_import_reference.append(record)
+
+    return with_import_reference, without_import_reference
+
+
+def resolve_foreign_keys(
+    base_model,
+    record,
+    import_column_mapping,
+    model_lookup,
+    primary_key_mapping,
+    pk_values_mapping,
+    prefix="",
+):
+    resolved = {}
+
+    for key, value in record.items():
+        full_key = f"{prefix}__{key}" if prefix else key
+
+        if isinstance(value, dict):
+            try:
+                field = base_model._meta.get_field(key)
+                related_model = field.related_model
+            except Exception:
+                resolved[key] = value
+                continue
+
+            # Recursively resolve nested foreign keys
+            nested_data = resolve_foreign_keys(
+                related_model,
+                value,
+                import_column_mapping,
+                model_lookup,
+                primary_key_mapping,
+                pk_values_mapping,
+                prefix=full_key,
+            )
+            instance = related_model.objects.create(**nested_data)
+            resolved[key] = instance
+
+        else:
+            model_class = model_lookup.get(full_key)
+            lookup_field = primary_key_mapping.get(full_key)
+
+            if model_class and lookup_field:
+                if value in [None, ""]:
+                    resolved[key] = None
+                    continue
+
+                try:
+                    instance, _ = model_class.objects.get_or_create(
+                        **{lookup_field: value}
+                    )
+                    resolved[key] = instance
+                except Exception as e:
+                    raise ValueError(
+                        f"Failed to get_or_create '{model_class.__name__}' using {lookup_field}={value}: {e}"
+                    )
+            else:
+                resolved[key] = value
+
+    return resolved
+
+
+def update_related(
+    obj,
+    record,
+    primary_key_mapping,
+    reverse_model_relation_to_base_model,
+):
+    related_objects = {
+        key: getattribute(obj, key) or None
+        for key in reverse_model_relation_to_base_model
+    }
+    for relation in reverse_model_relation_to_base_model:
+        related_record_info = record.get(relation)
+        for key, value in related_record_info.items():
+            related_object = related_objects[relation]
+            obj_related_field = relation + "__" + key
+            pk_mapping = primary_key_mapping.get(obj_related_field)
+            if obj_related_field in primary_key_mapping and pk_mapping:
+                previous_obj = getattr(related_object, key, None)
+                if previous_obj and value is not None:
+                    new_obj = previous_obj._meta.model.objects.get(
+                        **{pk_mapping: value}
+                    )
+                    setattr(related_object, key, new_obj)
+            else:
+                if value is not None:
+                    setattr(related_object, key, value)
+            if related_object:
+                related_object.save()
+
+
+def assign_related(
+    record,
+    reverse_field,
+    pk_values_mapping,
+    pk_field_mapping,
+):
+    """
+    Method to assign related records
+    """
+    reverse_obj_dict = {}
+    if reverse_field in record:
+        if isinstance(record[reverse_field], dict):
+            for field, value in record[reverse_field].items():
+                full_field = reverse_field + "__" + field
+                if full_field in pk_values_mapping:
+                    reverse_obj_dict.update(
+                        {
+                            field: data
+                            for data in pk_values_mapping[full_field]
+                            if getattr(data, pk_field_mapping[full_field], None)
+                            == value
+                        }
+                    )
+                else:
+                    reverse_obj_dict[field] = value
+        else:
+            instance = [
+                data
+                for data in pk_values_mapping[reverse_field]
+                if getattr(
+                    data,
+                    pk_field_mapping[reverse_field],
+                    record[reverse_field],
+                )
+                == record[reverse_field]
+            ][0]
+            reverse_obj_dict.update({reverse_field: instance})
+
+    return reverse_obj_dict

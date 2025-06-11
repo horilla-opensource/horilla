@@ -21,6 +21,7 @@ from base.forms import TagsForm
 from base.methods import (
     filtersubordinates,
     get_key_instances,
+    get_pagination,
     is_reportingmanager,
     paginator_qry,
     sortby,
@@ -596,6 +597,46 @@ def ticket_archive(request, ticket_id):
             return HttpResponse(
                 f'<script>window.location.href = "{previous_url}"</script>'
             )
+
+
+@login_required
+def ticket_status_change(request, ticket_id):
+    if request.method != "POST":
+        messages.error(request, _("Invalid request method."))
+        return HttpResponse("error")
+    ticket = Ticket.objects.get(id=ticket_id)
+    status = request.POST.get("status")
+    ticket.status = status
+    if ticket.status == "resolved":
+        ticket.resolved_date = datetime.today()
+    ticket.save()
+
+    employees = ticket.assigned_to.all()
+    assignees = [employee.employee_user_id for employee in employees]
+    assignees.append(ticket.employee_id.employee_user_id)
+    if hasattr(ticket.get_raised_on_object(), "dept_manager"):
+        if ticket.get_raised_on_object().dept_manager.all():
+            manager = ticket.get_raised_on_object().dept_manager.all().first().manager
+            assignees.append(manager.employee_user_id)
+    notify.send(
+        request.user.employee_get,
+        recipient=assignees,
+        verb=f"The status of the ticket has been changed to {ticket.status}.",
+        verb_ar="تم تغيير حالة التذكرة.",
+        verb_de="Der Status des Tickets wurde geändert.",
+        verb_es="El estado del ticket ha sido cambiado.",
+        verb_fr="Le statut du ticket a été modifié.",
+        icon="infinite",
+        redirect=reverse("ticket-detail", kwargs={"ticket_id": ticket.id}),
+    )
+    mail_thread = TicketSendThread(
+        request,
+        ticket,
+        type="status_change",
+    )
+    mail_thread.start()
+    messages.success(request, _("The Ticket status updated successfully."))
+    return HttpResponse("success")
 
 
 @login_required
@@ -1535,10 +1576,12 @@ def update_department_manager(request, dep_id):
 @permission_required("helpdesk.delete_departmentmanager")
 def delete_department_manager(request, dep_id):
     department_manager = DepartmentManager.objects.get(id=dep_id)
+    count = DepartmentManager.objects.count()
     department_manager.delete()
     messages.success(request, _("The department manager has been deleted successfully"))
-
-    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    if count == 1:
+        return HttpResponse("<script>$('.reload-record').click();</script>")
+    return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
 @login_required
@@ -1656,11 +1699,21 @@ def ticket_type_update(request, t_type_id):
 def ticket_type_delete(request, t_type_id):
     ticket_type = TicketType.find(t_type_id)
     if ticket_type:
-        ticket_type.delete()
-        messages.success(request, _("Ticket type has been deleted successfully!"))
-    else:
-        messages.error(request, _("Ticket type not found"))
-    return HttpResponse()
+        try:
+            ticket_type.delete()
+            messages.success(request, _("Ticket type has been deleted successfully!"))
+            count = TicketType.objects.count
+            if count == 0:
+                return HttpResponse("<script>$('.reload-record').click()</script>")
+            else:
+                return HttpResponse(
+                    "<script>$('#reloadMessagesButton').click()</script>"
+                )
+        except:
+            messages.error(request, _("Ticket type can not delete"))
+            return HttpResponse("<script>$('.reload-record').click()</script>")
+    # return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
 
 
 @login_required
@@ -1680,7 +1733,7 @@ def view_department_managers(request):
 @permission_required("helpdesk.change_departmentmanager")
 def get_department_employees(request):
     """
-    Method to return employee in the department
+    Method to return employees in the department.
     """
     department = (
         Department.objects.filter(id=request.GET.get("dep_id")).first()

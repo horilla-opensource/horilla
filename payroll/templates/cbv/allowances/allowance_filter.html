@@ -1,0 +1,37 @@
+{% load static %}
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Allowance" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Taxable" %}</label>
+              {{ form.is_taxable }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Condition Based" %}</label>
+              {{ form.is_condition_based }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Fixed" %}</label>
+              {{ form.is_fixed }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Based" %}</label>
+              {{ form.based_on }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

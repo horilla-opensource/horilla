@@ -1,0 +1,9 @@
+{% load i18n %}
+{% if instance.note %}
+            <div class="mt-3 mb-5" style="width:100%;">
+                <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Note" %}</span>
+                    <span class="oh-timeoff-modal__stat-count">{{instance.note}} </span>
+                </div>
+            </div>
+        {% endif %}

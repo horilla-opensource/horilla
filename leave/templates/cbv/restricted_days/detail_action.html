@@ -1,0 +1,35 @@
+{% load i18n %}
+{% if perms.leave.change_restrictleave or perms.leave.delete_restrictleave %}
+            <div class="oh-btn-group" style="width: 100%;" >
+              {% if perms.leave.change_restrictleave %}
+              <button
+                class="oh-btn oh-btn--info w-50"
+                title="{% trans 'Edit' %}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{% url 'restrict-update' instance.id %}?{{pd}}"
+                hx-target="#genericModalBody"
+              >
+                <ion-icon name="create-outline" role="img"
+                class="md hydrated" aria-label="create outline"></ion-icon>
+              </button>
+              {% endif %} {% if perms.leave.delete_restrictleave %}
+              <a
+                class="oh-btn oh-btn--secondary w-50"
+                id="delete-link"
+                hx-confirm="{% trans 'Are you sure you want to delete?' %}"
+                hx-post="{% url 'restrict-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
+                hx-target="#genericModalBody"
+                title="{% trans 'Delete' %}"
+              >
+                <ion-icon name="trash-outline"></ion-icon>
+              </a>
+              {% endif %}
+            </div>
+        
+          {% endif %}
+{% if request.GET.deleted %}
+<script>
+$(".reload-record").click()
+</script>
+{% endif %}

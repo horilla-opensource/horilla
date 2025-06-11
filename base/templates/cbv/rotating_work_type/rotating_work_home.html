@@ -1,0 +1,21 @@
+{% extends "index.html" %}
+{% block content %}
+{% load static %}
+{% load i18n %}
+<script src="{% static '/base/actions.js' %}"></script>
+<div hx-get="{% url 'rotating-navbar-view' %}" hx-trigger="load"></div>
+
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+{% include "generic/components.html" %}
+<div class="oh-wrapper"  id="listContainer">
+    <div class="animated-background"></div>
+</div>
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+</div>
+
+
+<script src="{% static 'basedOn.js' %}"></script>
+<script src="{% static 'cbv/work_type_request/work_request_bulk_action.js' %}"></script>
+
+{% endblock content %}

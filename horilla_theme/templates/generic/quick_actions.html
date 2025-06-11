@@ -1,0 +1,54 @@
+{% load i18n %}
+<div class="flex justify-between items-center mb-2">
+    <div class="flex flex-wrap gap-1 items-center">
+        <button
+            class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+        >
+            {% trans "Select All" %}
+        </button>
+        <button
+            class="px-4 py-2 bg-[#720c80] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+        >
+            <i class="fa-solid fa-xmark pe-1"></i> {% trans "Unselect" %}
+        </button>
+        <button
+            class="px-4 py-2 bg-[#15159e] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+        >
+            <i class="fa-solid fa-print pe-1"></i>{% trans "Export" %}
+        </button>
+        <button
+            class="px-4 py-2 bg-[#0f800f] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+        >
+            <i class="fa-solid fa-pen pe-1"></i>{% trans "Update" %}
+        </button>
+        <button
+            class="px-4 py-2 bg-[#129192] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+        >
+            <i class="fa-solid fa-download pe-1"></i>{% trans "Import" %}
+        </button>
+        <button
+            class="px-4 py-2 bg-[#a4933b] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
+        >
+            <i class="fa-solid fa-filter pe-1"></i>{% trans "Filter" %}
+        </button>
+        <p class="ps-3 text-sm text-primary-600">57 {% trans "Selected" %}</p>
+    </div>
+
+
+
+    <div class="flex flex-wrap gap-2">
+        <button
+            class="px-4 py-2 bg-[white] border border-[#FFB400] rounded-md text-xs flex gap-2 items-center"><span
+                class="h-3 w-3 rounded-full bg-[#FFB400] flex"></span>{% trans "Requested" %}</button>
+        <button
+            class="px-4 py-2 bg-[white] rounded-md text-xs flex gap-2 items-center border border-primary-500 hover:border-[#9D9D9D] transition duration-300"><span
+                class="h-3 w-3 rounded-full bg-[#9D9D9D] flex"></span>{% trans "Cancelled" %}</button>
+        <button
+            class="px-4 py-2 bg-[white] rounded-md text-xs flex gap-2 items-center border border-primary-500 hover:border-[#FF2200] transition duration-300"><span
+                class="h-3 w-3 rounded-full bg-[#FF2200] flex"></span>{% trans "Rejected" %}</button>
+        <button
+            class="px-4 py-2 bg-[white] rounded-md text-xs flex gap-2 items-center border border-primary-500 hover:border-[#00C490] transition duration-300"><span
+                class="h-3 w-3 rounded-full bg-[#00C490] flex"></span>{% trans "Approved" %}</button>
+    </div>
+</div>
+

@@ -1,0 +1,25 @@
+{% load i18n %}
+{% if not instance.return_status %}
+<div onclick="event.stopPropagation();" >
+    <button
+        href="#"
+        class="oh-btn oh-btn--secondary"
+        role="button"
+        data-toggle="oh-modal-toggle"
+        data-target="#objectCreateModal"
+        hx-get="{% url 'asset-allocate-return'  asset_id=instance.asset_id.id %}"
+        hx-target="#objectCreateModalTarget"
+    >
+        <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
+    </button>
+</div>
+{% else %}
+<div >
+    <div class="d-flex align-items-center">
+        <span
+            class="oh-dot oh-dot--small me-1 oh-dot--color oh-dot--info"
+        ></span>
+        <span class="link-primary"> {% trans "Returned" %} </span>
+    </div>
+</div>
+{% endif %}

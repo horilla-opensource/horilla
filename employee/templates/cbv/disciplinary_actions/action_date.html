@@ -1,0 +1,10 @@
+
+           {% load i18n %} {% load basefilters %} {% load employee_filter %}
+        {% if instance.action.action_type == 'suspension' and instance.unit_in == "days" %}
+                  <div>
+                    <span class="dateformat_changer">{{ instance.start_date }}</span>
+                    &nbsp to &nbsp<span class="dateformat_changer">{{ instance.start_date | add_days:instance.days }}</span>
+                  </div>
+                {% else %}
+                    <div  class="dateformat_changer">{{ instance.start_date }}</div>
+                {% endif %}

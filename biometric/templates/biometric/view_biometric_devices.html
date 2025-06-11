@@ -1,10 +1,44 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+{% include 'generic/components.html' %}
+<style>
+    .notconnected--dot{
+        background-color:red;
+      }
+      .sheduled--dot{
+        background-color: rgb(103, 171, 238);
+      }
+      .live--dot{
+        background-color: orange;
+      }
+      .is_live-False{
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+      }
+      .is_scheduler-True{
+        border-left: 3.4px solid rgb(103, 171, 238) !important;
+        border-radius: 4px 0 0 4px;
+      }
+      .is_live-True{
+        border-left: 4px solid orange !important;
+        border-radius: 4    px 0 0 4px;
+      }
+    </style>
+    <div class="oh-modal" id="BiometricDeviceTestModal" role="dialog" aria-labelledby="BiometricDeviceTestModal"
+        aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px" id="BiometricDeviceTestFormTarget">
+            {% include "animation.html" %}
+        </div>
+    </div>
 <div class="oh-wrapper">
-    {% include 'biometric/nav_biometric_devices.html' %}
+    <div  hx-get="{% url "biometric-navbar" %}" hx-trigger="load">
+    </div>
+
+
+    {% comment %} {% include 'biometric/nav_biometric_devices.html' %} {% endcomment %}
     <div class="oh-checkpoint-badge mb-2" id="selectedDevices" data-ids="[]" data-clicked="" style="display: none">
     </div>
 
-    <div class="d-flex flex-row-reverse">
+    {% comment %} <div class="d-flex flex-row-reverse">
         <span class="m-3"
             onclick="$('[name=hired]').val('false'); $('[name=hired]').first().change(); $('.filterButton').click()"
             style="cursor: pointer">
@@ -23,10 +57,14 @@
             <span class="oh-dot oh-dot--small me-1" style="background-color: orange"></span>
             {% trans "Live Capture" %}
         </span>
-    </div>
+    </div> {% endcomment %}
+
+
     <div id="biometricDeviceList">
         {% if devices %}
-            {% include 'biometric/card_biometric_devices.html' %}
+            <div class="oh-wrapper" hx-get="{% url "biometric-card-view" %}?is_active=True" hx-trigger="load" id="listContainer">
+            </div>
+            {% comment %} {% include 'biometric/card_biometric_devices.html' %}  {% endcomment %}
         {% else %}
             {% include 'biometric/empty_view_biometric.html' %}
         {% endif %}

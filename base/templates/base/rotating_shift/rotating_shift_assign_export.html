@@ -1,11 +1,5 @@
 {% load i18n %} {% load static %}
-<div class="oh-modal__dialog-header">
-  <h2 class="oh-modal__dialog-title" id="rotatingShiftAssignExportLavel">{% trans 'Export Rotating Shift Assigns' %}</h2>
-  <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-</div>
-<div class="oh-modal__dialog-body" id="rotatingShiftAssignExportModalBody">
-  <form action="{% url 'rotating-shift-assign-info-export' %}" method="get" onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');" id="rotatingShiftAssignExportForm" class="oh-profile-section">
-    {% csrf_token %} <div class="oh-dropdown__filter-body">
+<div class="oh-dropdown__filter-body">
       <div class="oh-accordion">
         <div class="oh-accordion-header">
           {% trans 'Excel columns' %}
@@ -121,8 +115,3 @@
         </div>
       </div>
     </div>
-    <div class="oh-modal__dialog-footer p-0 pt-3">
-      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans 'Export' %}</button>
-    </div>
-  </form>
-</div>

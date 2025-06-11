@@ -1,0 +1,12 @@
+{% load static i18n offboarding_filter %}
+{% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or	perms.offboarding.change_offboardingemployee %}
+    <form onclick="event.stopPropagation()" hx-get="{% url "change-offboarding-stage" %}?employee_ids={{employee.id}}"
+        hx-target="#reloadMessagesButton">
+        {{ stage_form.stage_id }}
+        <input type="submit" hidden />
+    </form>
+{% else %}
+    <span class="oh-timeoff-modal__stat-count">
+        {{employee.stage_id}}
+    </span>
+{% endif %}

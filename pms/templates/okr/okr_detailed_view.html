@@ -1,205 +1,136 @@
 {% extends 'index.html' %} {% load static i18n %} {% load i18n %}
 {% load widget_tweaks %} {% block content %} {% load basefilters %}
 {% include 'filter_tags.html' %}
-<style>
-  .avatars {
-    display: flex;
-    padding: 8px 10px 8px 10px;
-  }
-
-  .avatars__item {
-    background-color: #596376;
-    border: 2px solid white;
-    border-radius: 100%;
-    color: #ffffff;
-    display: block;
-    font-family: sans-serif;
-    font-size: 12px;
-    font-weight: 100;
-    height: 26px;
-    width: 26px;
-    line-height: 17px;
-    text-align: center;
-    transition: margin 0.1s ease-in-out;
-    overflow: hidden;
-    margin-left: -10px;
-  }
-
-  .avatars__item:first-child {
-    z-index: 5;
-  }
-
-  .avatars__item:nth-child(2) {
-    z-index: 4;
-  }
-
-  .avatars__item:nth-child(3) {
-    z-index: 3;
-  }
-
-  .avatars__item:nth-child(4) {
-    z-index: 2;
-  }
-
-  .avatars__item:nth-child(5) {
-    z-index: 1;
-  }
-
-  .avatars__item:last-child {
-    z-index: 0;
-  }
-
-  .avatars__item img {
-    width: 100%;
-  }
-
-  .avatars:hover .avatars__item {
-    margin-right: 10px;
-  }
-  .select2-container .select2-selection.select2-selection--multiple {
-    padding: 5px !important;
-    max-height: 70px !important;
-    overflow: hidden;
-    overflow-y: scroll;
-  }
-  .search-highlight {
-    background-color: rgba(255, 68, 0, 0.076);
-  }
-  #enlargeImageContainer {
-    position: absolute;
-    left: -300px;
-    top: 100px;
-    height: 200px;
-    width: 200px;
-  }
-</style>
 {% include "okr/emp_objective/emp_objective_nav.html" %}
+{% include "generic/components.html" %}
 <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-  <div class="oh-wrapper" style="margin-top: 5px">
-    <div class="oh-card">
-      <div class="oh-helpdesk__header">
-        <div class="d-flex justify-content-between align-items-center">
-          <p class="oh-helpdesk__header-title">{{objective}}</p>
-          <span class="helpdesk__card-value me-3">
-            <div class="oh-btn-group">
-              {% if perms.pms.change_objective %}
-              <a
-                onclick="event.preventDefault();event.stopPropagation()"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-                hx-get="{% url 'objective-update' objective.id %}"
-                hx-target="#objectCreateModalTarget"
-                class="oh-btn oh-btn--light-bkg w-100"
-                title="{% trans 'Edit' %}"
-                ><ion-icon name="create-outline"></ion-icon
-              ></a>
-              {% endif %} {% if perms.pms.add_employeeobjective %}
-              <a
-                onclick="event.preventDefault();event.stopPropagation()"
-                hx-get="{% url 'add-assignees' objective.id %}"
-                hx-target="#objectDetailsModalTarget"
-                hx-swap="innerHTML"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectDetailsModal"
-                class="oh-btn oh-btn--light-bkg w-100"
-                title="Add assignees"
-                ><ion-icon name="add-outline"></ion-icon
-              ></a>
-              {% endif %}
-            </div>
-          </span>
-        </div>
-
-        <ul class="helpdesk__card-items">
-          <li class="helpdesk__card-item">
-            <span class="helpdesk__card-label">{% trans "Managers:" %}</span>
-            <span class="helpdesk__card-value" name="" id="">
-              <div class="d-flex justify-content-between custom-scroll">
-                <div class="avatars" id="avatarsContainer">
-                  {% for manager in objective.managers.all %}
-                  <a
-                    href="{% url 'employee-view-individual' manager.id %}"
-                    class="avatars__item"
-                    title="{{manager}}"
-                    ><img class="avatar" src="{{manager.get_avatar}}" alt=""
-                  /></a>
-                  {% endfor %}
-                </div>
+  <div id="ObjectiveDetailedViewContainer">
+    <div class="oh-wrapper" style="margin-top: 5px">
+      <div class="oh-card">
+        <div class="oh-helpdesk__header">
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="oh-helpdesk__header-title">{{objective}}</p>
+            <span class="helpdesk__card-value me-3">
+              <div class="oh-btn-group">
+                {% if perms.pms.change_objective %}
+                <a
+                  onclick="event.preventDefault();event.stopPropagation()"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#objectCreateModal"
+                  hx-get="{% url 'objective-update' objective.id %}"
+                  hx-target="#objectCreateModalTarget"
+                  class="oh-btn oh-btn--light-bkg w-100"
+                  title="{% trans 'Edit' %}"
+                  ><ion-icon name="create-outline"></ion-icon
+                ></a>
+                {% endif %} {% if perms.pms.add_employeeobjective or request.user.employee_get in objective.managers.all %}
+                <a
+                  onclick="event.preventDefault();event.stopPropagation()"
+                  hx-get="{% url 'add-assignees' objective.id %}"
+                  hx-target="#objectDetailsModalTarget"
+                  hx-swap="innerHTML"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#objectDetailsModal"
+                  class="oh-btn oh-btn--light-bkg w-100"
+                  title="Add assignees"
+                  ><ion-icon name="add-outline"></ion-icon
+                ></a>
+                {% endif %}
               </div>
             </span>
-          </li>
-          <li class="helpdesk__card-item">
-            <span class="helpdesk__card-label">{% trans "Duration:" %}</span>
-            <span class="helpdesk__card-value" name="" id=""
-              >{{objective.duration}}
-              {{objective.get_duration_unit_display}}</span
-            >
-          </li>
-          <li class="helpdesk__card-item">
-            <span class="helpdesk__card-label">{% trans "Description:" %}</span>
-            <span class="helpdesk__card-value" name="" id=""
-              >{{objective.description}}</span
-            >
-          </li>
-        </ul>
+          </div>
+
+          <ul class="helpdesk__card-items">
+            <li class="helpdesk__card-item">
+              <span class="helpdesk__card-label">{% trans "Managers:" %}</span>
+              <span class="helpdesk__card-value" name="" id="">
+                <div class="d-flex justify-content-between custom-scroll">
+                  <div class="avatars" id="avatarsContainer">
+                    {% for manager in objective.managers.all %}
+                    <a
+                      href="{% url 'employee-view-individual' manager.id %}"
+                      class="avatars__item"
+                      title="{{manager}}"
+                      ><img class="avatar" src="{{manager.get_avatar}}" alt=""
+                    /></a>
+                    {% endfor %}
+                  </div>
+                </div>
+              </span>
+            </li>
+            <li class="helpdesk__card-item">
+              <span class="helpdesk__card-label">{% trans "Duration:" %}</span>
+              <span class="helpdesk__card-value" name="" id=""
+                >{{objective.duration}}
+                {{objective.get_duration_unit_display}}</span
+              >
+            </li>
+            <li class="helpdesk__card-item">
+              <span class="helpdesk__card-label">{% trans "Description:" %}</span>
+              <span class="helpdesk__card-value" name="" id=""
+                >{{objective.description}}</span
+              >
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
 
-    {% if objective.employee_objective.all %}
-    <div
-      class="oh-card"
-      id="emp_objective_card"
-      hx-get="{% url 'emp-objective-search' objective.id %}?{{request.GET.urlencode}}"
-      hx-trigger="load"
-    ></div>
-    {% else %}
-    <!-- start of empty page-->
-    <div
-      style="
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-      "
-    >
-      <img
+      {% if objective.employee_objective.all %}
+      <div
+        class="oh-card"
+        id="emp_objective_card"
+        hx-get="{% url 'emp-objective-search' objective.id %}?{{request.GET.urlencode}}"
+        hx-trigger="load"
+      ></div>
+      {% else %}
+      <!-- start of empty page-->
+      <div
         style="
-          display: block;
-          width: 15%;
-          margin: 20px auto;
-          filter: opacity(0.5);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
         "
-        src="{% static 'static/images/ui/target.png' %}"
-        class=""
-        alt="Page not found. 404."
-      />
-      <h5 class="oh-404__subtitle">
-        {% trans "There are no assignees for this objective at the moment." %}
-      </h5>
+      >
+        <img
+          style="
+            display: block;
+            width: 15%;
+            margin: 20px auto;
+            filter: opacity(0.5);
+          "
+          src="{% static 'static/images/ui/target.png' %}"
+          class=""
+          alt="Page not found. 404."
+        />
+        <h5 class="oh-404__subtitle">
+          {% trans "There are no assignees for this objective at the moment." %}
+        </h5>
+      </div>
+      <!-- end of empty page-->
+      {% endif %}
     </div>
-    <!-- end of empty page-->
-    {% endif %}
-  </div>
 
-  <!-- Modals -->
+    <!-- Modals -->
 
-  <div
-    class="oh-modal"
-    id="objectivesModal"
-    role="dialog"
-    aria-labelledby="objectivesModal"
-    aria-hidden="true"
-  >
-    <div class="oh-modal__dialog" id="objectivesTarget"></div>
-  </div>
+    <div
+      class="oh-modal"
+      id="objectivesModal"
+      role="dialog"
+      aria-labelledby="objectivesModal"
+      aria-hidden="true"
+    >
+      <div class="oh-modal__dialog" id="objectivesTarget"></div>
+    </div>
 
-  <div class="oh-activity-sidebar" id="OKRactivitySidebar">
-    <div class="oh-activity-sidebar__body" id="activityContainer"></div>
+    <div class="oh-activity-sidebar" id="OKRactivitySidebar">
+      <div class="oh-activity-sidebar__body" id="activityContainer"></div>
+    </div>
+    <button id="keyresultDataButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=target_value" hx-target="#empKeyrsultForm #id_target_value" hx-swap="outerHTML" hidden></button>
+    <button id="endDateChangeButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=end_date" hx-target="#empKeyrsultForm #id_end_date" hx-swap="outerHTML" hidden></button>
+    <button id="changeObjStatusButton" hx-get="{% url 'change-employee-objective-status' %}" hx-target="" hidden></button>
   </div>
-  <button id="keyresultDataButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=target_value" hx-target="#empKeyrsultForm #id_target_value" hx-swap="outerHTML" hidden></button>
-  <button id="endDateChangeButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=end_date" hx-target="#empKeyrsultForm #id_end_date" hx-swap="outerHTML" hidden></button>
-  <button id="changeObjStatusButton" hx-get="{% url 'change-employee-objective-status' %}" hx-target="" hidden></button>
   <script>
     $(document).ready(function () {
       $(".oh-accordion-meta__header").click(function () {
@@ -268,24 +199,18 @@
     }
     function progress(element) {
       var currentValue = $(element).val();
-      keyResultTable = $(element).closest(".oh-sticky-table__tbody");
-      keyResultRow = $(element).closest(".oh-sticky-table__tr");
-      empKeyResultId = keyResultRow.attr("data-kr-id");
-      var targetValue = keyResultRow.find("[data-value]").attr("data-value");
+      var keyResultRow = $(element).closest(".oh-employee-okr-row");
+      var empKeyResultId = keyResultRow.data("kr-id");
+      var progressCol = keyResultRow.find(".progressPercentage")
 
-      // Extract only the numeric part using a regular expression
-      var numericValue = parseFloat(targetValue.replace(/[^\d.]/g, ""));
-      var prgressPercentage = parseInt((currentValue * 100) / numericValue);
-      // Ensure totalProgress doesn't exceed 100
-      if (prgressPercentage > 100) {
-        prgressPercentage = 100;
+      if (currentValue < 0) {
         Swal.fire({
           icon: "error",
           title: "Oops...",
-          text: "Current Value cannot exceed target value!",
-          timer: 3000, // Display the alert for 3 seconds
-          timerProgressBar: true, // Show the progress bar
-          showConfirmButton: false, // Hide the "OK" button
+          text: "Current Value Cannot be -ve",
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false,
         });
       } else {
         $.ajax({
@@ -298,37 +223,10 @@
           },
           success: function (response) {
             if (response.type != "error") {
-              keyResultRow.find(".p-percentage").text(prgressPercentage + "%");
-
-              // Iterate over each span and get its text content
-              var total_percentage = 0;
-              var total_kr = 0;
-              keyResultTable.find(".p-percentage").each(function () {
-                strPercentage = $(this).text();
-                numPercentage = parseFloat(
-                  strPercentage.replace(/[^\d.]/g, "")
-                );
-                total_percentage += numPercentage;
-                total_kr += 1;
-              });
-              totalProgress = parseInt(total_percentage / total_kr);
-              // Ensure totalProgress doesn't exceed 100
-              if (totalProgress > 100) {
-                totalProgress = 100;
-              }
-              objectiveProgressContainer = $(element)
-                .closest(".oh-accordion-meta__item")
-                .find(".progress_bar_objective");
-              objectiveProgressContainer.html(
-                '<div class="oh-progress" role="progressbar">' +
-                  '<div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc(' +
-                  totalProgress +
-                  '%)"></div>' +
-                  "</div>" +
-                  '<div class="oh-progress-container__percentage" style="width:50px" name= "key_result_percentage">' +
-                  totalProgress +
-                  " %</div>"
-              );
+              $(`#kr${response.pk}`).attr("style",`width:${response.progress}% !important;`)
+              $(`#kr${response.pk}Html`).html(`${response.progress}%`)
+              $(progressCol).html(`${response.kr_progress}%`)
+              $("#reloadMessagesButton").click()
             }
           },
         });

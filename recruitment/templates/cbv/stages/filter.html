@@ -1,0 +1,47 @@
+{% load i18n %}{% load static %}
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Stage" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+              <label class="oh-label">{% trans "Recruitment Managers" %}</label>
+              {{form.recruitment_id__recruitment_managers}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Recruitment" %}</label>
+            {{form.recruitment_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Department" %}</label>
+            {{form.recruitment_id__job_position_id__department_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Stage Type" %}</label>
+            {{form.stage_type}}
+          </div>
+
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Stage Managers" %}</label>
+            {{form.stage_managers}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Company" %}</label>
+            {{form.recruitment_id__company_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Job Position" %}</label>
+            {{form.recruitment_id__job_position_id}}
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static '/base/filter.js' %}"></script>

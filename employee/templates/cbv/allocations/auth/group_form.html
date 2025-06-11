@@ -1,0 +1,11 @@
+{% load i18n %}
+<form hx-post="{% url "allocation-assign-group-user" %}?employee={{employee}}" hx-target="#groupAssignBody" method="post">
+    {{form.group.errors}}
+    {{form.group}}
+    <input type="hidden" name="employee" value="{{employee_id}}" id="{{employee_id}}">
+    <div class="d-flex flex-row-reverse">
+        <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
+          {% trans "Save" %}
+        </button>
+    </div>
+</form>

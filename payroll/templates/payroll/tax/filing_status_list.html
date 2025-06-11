@@ -63,7 +63,7 @@
                       class="oh-dropdown__link oh-dropdown__link"
                       data-toggle="oh-modal-toggle"
                       data-target="#objectUpdateModal"
-                      hx-get="{% url 'filing-status-update' filing_status_id=filing_status.id %}"
+                      hx-get="{% url 'filing-status-update' pk=filing_status.id %}"
                       onclick="event.stopPropagation()"
                       hx-target="#objectUpdateModalTarget"
                     >
@@ -73,16 +73,16 @@
                   {% endif %}
                   {% if perms.payroll.delete_filingstatus %}
                   <li class="oh-dropdown__item">
-                    <form
-                      hx-confirm="{% trans 'Are you sure to delete this status ?' %}"
-                      hx-post="{% url 'filing-status-delete' filing_status_id=filing_status.id %}"
-                      hx-target="#FilingStatusList"
+                    <a
+                      hx-get="{% url 'generic-delete' %}?model=payroll.FilingStatus&pk={{filing_status.id}}"
+                      hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+                      data-target="#deleteConfirmation"
                       style="display: contents">
                       {% csrf_token %}
                       <button class="oh-dropdown__link oh-dropdown__link--danger">
                         {% trans 'Delete' %}
                       </button>
-                    </form>
+                    </a>
                   </li>
                   {% endif %}
                 </ul>

@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load basefilters %}
+{% load onboardingfilters %}
+{% if perms.recruitment.change_recruitment or request.user|stage_manages:instance.onboarding_stage_id %}
+<div data-cell-index="3" onclick="event.stopPropagation();">
+  <select hx-post="{% url "onboarding-cbv-change-stage" instance.pk %}" name="onboarding_stage_id"
+          class="row-dropdown"
+          style="width: 90%;color: hsl(0,0%,11%); background-color: transparent; height: 100%; border: 1px solid transparent;"
+          >
+    {% for stage in stages %}
+    <option value="{{stage.pk}}"{% if stage.pk == instance.onboarding_stage_id.pk %}selected{% endif %}>{{stage}}</option>
+    {% endfor %}
+  </select>
+</div>
+{% else %}
+  {{instance.onboarding_stage_id}}
+{% endif %}

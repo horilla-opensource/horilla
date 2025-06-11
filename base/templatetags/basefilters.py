@@ -50,6 +50,18 @@ def is_reportingmanager(user):
     ).exists()
 
 
+@register.filter(name="is_self_reporting_manager")
+def is_self_reporting_manager(user):
+    """
+    This method returns true if the user employee reporting manager to himself
+    args:
+        user    : request.user
+    """
+    employee = user.employee_get
+    employee_manages = employee.reporting_manager.all()
+    return employee_manages.filter(employee_id=employee).exists()
+
+
 @register.filter(name="is_leave_approval_manager")
 def is_leave_approval_manager(user):
     """
@@ -84,9 +96,22 @@ def filtersubordinates(user):
     args:
         user    : request.user
     """
+
     employee = user.employee_get
     employee_manages = employee.reporting_manager.all()
     return employee_manages.exists()
+
+
+@register.filter(name="is_self_reporting_manager")
+def is_self_reporting_manager(user):
+    """
+    This method returns true if the user employee reporting manager to himself
+    args:
+        user    : request.user
+    """
+    employee = user.employee_get
+    employee_manages = employee.reporting_manager.all()
+    return employee_manages.filter(employee_id=employee).exists()
 
 
 @register.filter(name="filter_field")
@@ -144,6 +169,14 @@ def config_perms(user):
 def startswith(value, arg):
     """Checks if the value starts with the provided argument."""
     return value.startswith(arg)
+
+
+@register.filter(name="has_content")
+def has_content(value):
+    """Returns True if the input string has non-whitespace content."""
+    if isinstance(value, str):
+        return bool(value.strip())
+    return True
 
 
 @register.filter(name="readable")

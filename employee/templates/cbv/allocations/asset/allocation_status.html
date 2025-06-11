@@ -1,0 +1,16 @@
+{% if instance.asset_status != "Available" %}
+<div class="d-flex align-items-center">
+    <span class="oh-dot oh-dot--small me-1 oh-dot--color  oh-dot--success ">
+    </span>
+    <span class=" link-success ">Allocated
+    </span>
+</div>
+{% else %}
+{% comment %} <div class="d-flex align-items-center">
+    <span class="oh-dot oh-dot--small me-1 oh-dot--color  oh-dot--info ">
+    </span>
+    <span class=" link-info ">Available
+    </span>
+</div> {% endcomment %}
+Available
+{% endif %}

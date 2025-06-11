@@ -1,0 +1,75 @@
+<input
+                                                    id = {{instance.id}}
+                                                    type="number" class="oh-input p-1"  min="0"
+                                                    max="{{instance.target_value}}"
+                                                    value="{{instance.current_value}}"
+                                                    name="current_value"
+                                                    onchange="progress(this)"
+                                                />
+
+<script>
+    function progress (element) {
+        var currentValue = $(element).val()
+       // keyResultTable = $(element).closest('.oh-sticky-table__tbody');
+        keyResultRow = $(element).closest('tr');
+        empKeyResultId = keyResultRow.attr("data-kr-id")
+        var targetValue = keyResultRow.find('[data-value]').attr("data-value")
+        console.log(targetValue)
+
+        // Extract only the numeric part using a regular expression
+        var numericValue = parseFloat(targetValue.replace(/[^\d.]/g, ''));
+        var prgressPercentage = parseInt( currentValue*100/numericValue )
+        // Ensure totalProgress doesn't exceed 100
+        if (prgressPercentage < 0) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Current Value Cannot be -ve',
+                timer: 3000, // Display the alert for 3 seconds
+                timerProgressBar: true, // Show the progress bar
+                showConfirmButton: false // Hide the "OK" button
+            });
+        }
+        else{
+            $.ajax({
+            type: "post",
+            url: "{% url 'key-result-current-value-update' %}",
+            data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                "current_value":currentValue,
+                "emp_key_result_id":empKeyResultId
+
+            },
+            success: function (response) {
+                if (response.type != 'error'){
+                keyResultRow.find('.p-percentage').text(prgressPercentage+'%');
+
+                // Iterate over each span and get its text content
+                var total_percentage = 0
+                var total_kr = 0
+                keyResultRow.find('.p-percentage').each(function() {
+                    strPercentage =  $(this).text();
+                    numPercentage = parseFloat(strPercentage.replace(/[^\d.]/g, ''));
+                    total_percentage += numPercentage
+                    total_kr += 1
+                });
+                totalProgress = parseInt( total_percentage/total_kr)
+                // Ensure totalProgress doesn't exceed 100
+                if (totalProgress > 100) {
+                    totalProgress = 100;
+                }
+                objectiveProgressContainer = $(element).closest('.oh-accordion-meta__item').find('.progress_bar_objective');
+                objectiveProgressContainer.html(
+                    '<div class="oh-progress" role="progressbar">'+
+                    '<div class="oh-progress__bar oh-progress__bar--secondary" style="width: calc('+ totalProgress + '%)"></div>' +
+                    '</div>' +
+                    '<div class="oh-progress-container__percentage" style="width:50px" name= "key_result_percentage">'+ totalProgress +' %</div>'
+
+                    )
+                }
+            }
+            });
+        }
+    }
+
+</script>

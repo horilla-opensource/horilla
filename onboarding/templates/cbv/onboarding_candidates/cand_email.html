@@ -1,0 +1,7 @@
+
+<a  style="color: inherit; text-decoration: none">
+    {{instance.email|truncatechars:10}}
+    {% if instance.get_last_sent_mail %}
+      <span title="{{instance.get_last_sent_mail.subject}} | {{instance.get_last_sent_mail.get_status_display}}" class="oh-dot oh-dot--small me-1" style="background-color:{% if instance.get_last_sent_mail.status == "sent" %}yellowgreen{% else %}red{% endif %}"></span>
+    {% endif %}
+  </a>

@@ -2,10 +2,21 @@
 
 
 <div class="oh-inner-sidebar-content">
-    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+    {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
         <h2 class="oh-inner-sidebar-content__title">{% trans 'Enable Check In/Check out' %}</h2>
+    </div> {% endcomment %}
+    <div id="defaultGraceNav" hx-get="{% url "check-in-check-out-nav" %}" hx-trigger="load">
+	</div>
+
+      <div
+      class="oh-wrapper"
+      hx-get="{% url "check-in-check-out-list"  %}?{{request.GET.urlencode}}"
+      hx-trigger="load"
+      id="listContainer">
+      <div class="animated-background">
+      </div>
     </div>
-    <div class="oh-sticky-table">
+    {% comment %} <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
             <div class="oh-sticky-table__thead">
                 <div class="oh-sticky-table__tr">
@@ -53,6 +64,6 @@
                 {% endfor %}
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
 </div>
 {% endblock %}

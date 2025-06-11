@@ -1,0 +1,12 @@
+<div>
+    {% include 'generic/horilla_list_table.html' %}
+</div>
+<script>
+    $(document).ready(function () {
+        $("[data-toggle-count]").click(function (e) {
+          e.preventDefault();
+          let recViewContainer = $(this).closest('tr');
+          span = recViewContainer.find(".count-span").toggle()
+        });
+      })
+</script>

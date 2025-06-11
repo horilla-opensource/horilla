@@ -236,6 +236,9 @@ class Project(HorillaModel):
     def __str__(self):
         return self.title
 
+    def status_column(self):
+        return dict(self.PROJECT_STATUS).get(self.status)
+
     class Meta:
         """
         Meta class to add the additional info
@@ -537,7 +540,7 @@ class TimeSheet(HorillaModel):
         on_delete=models.CASCADE,
         verbose_name=_("Employee"),
     )
-    date = models.DateField(default=timezone.now, verbose_name=_("Date"))
+    date = models.DateField(default=timezone.now)
     time_spent = models.CharField(
         null=True,
         default="00:00",
@@ -632,5 +635,5 @@ class TimeSheet(HorillaModel):
         return url
 
     class Meta:
-        verbose_name = _("Time Sheet")
-        verbose_name_plural = _("Time Sheets")
+        verbose_name = _("TimeSheet")
+        verbose_name_plural = _("TimeSheets")

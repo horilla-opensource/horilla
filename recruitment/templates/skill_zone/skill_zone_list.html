@@ -24,9 +24,9 @@
                                 class="oh-btn oh-btn--light-bkg w-100"
                                 onclick="event.stopPropagation();"
                                 data-toggle="oh-modal-toggle"
-                                data-target="#editCandModal"
+                                data-target="#genericModal"
                                 hx-get="{% url 'skill-zone-cand-create' skill_zone.grouper.id %}"
-                                hx-target="#editCandTarget"
+                                hx-target="#genericModalBody"
                                 title="Add candidate"
                             >
                                 <ion-icon name="person-add-outline"></ion-icon>
@@ -149,9 +149,9 @@
                                                           class="oh-btn oh-btn--light-bkg w-100"
                                                           title="{% trans 'Edit' %}"
                                                           data-toggle="oh-modal-toggle"
-                                                          data-target="#editCandModal"
+                                                          data-target="#genericModal"
                                                           hx-get="{% url 'skill-zone-cand-edit' sz_candidate.id %}"
-                                                          hx-target="#editCandTarget">
+                                                          hx-target="#genericModalBody"                                                          >
                                                           <ion-icon name="create-outline"></ion-icon>
                                                       </button>
                                                     {% endif %}

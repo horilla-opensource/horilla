@@ -1,13 +1,13 @@
 {% load i18n %}
-<div class="oh-modal__dialog-header pb-0">
+{% comment %} <div class="oh-modal__dialog-header pb-0">
     <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
         {% trans "Bulk Payslip" %}
     </h1>
     <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
     </button>
-</div>
-<div class="oh-modal__dialog-body" id="bulkPayslipModal">
+</div> {% endcomment %}
+<div class="oh-modal__dialog-body p-0" id="bulkPayslipModal">
     <form action="{% url 'generate-payslip' %}" class="oh-profile-section pt-2" method="post">
         {% csrf_token %}
         <div class="row">

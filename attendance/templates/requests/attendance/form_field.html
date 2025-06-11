@@ -1,6 +1,23 @@
 {% load i18n %}
-<label class="oh-label" for="id_{{field.name }}" title="{{field.help_text|safe }}">{{field.label}}</label>
-{{field}}
+{% load widget_tweaks %}
+{% comment %} <label class="oh-label" for="id_{{field.name }}" title="{{field.help_text|safe }}">{{field.label}}</label>
+{{field}} {% endcomment %}
+    <div class="oh-label__info" for="id_{{ field.name }}">
+      <label class="oh-label {% if field.field.required %} required-star{% endif %}" for="id_{{ field.name }}"
+        >{% trans field.label %}</label
+      >
+      {% if field.help_text != '' %}
+      <span
+        class="oh-info mr-2"
+        title="{{ field.help_text|safe }}"
+      ></span>
+      {% endif %}
+    </div>
+    <div id="dynamic_field_{{field.name}}">
+        {{ field|add_class:'form-control' }}
+        {{ field.errors }}
+      </div>
+
 <script>
     $(document).ready(function () {
         $("select").on("select2:select", function (e) {

@@ -1,6 +1,4 @@
 {% load i18n %}
-{% include 'filter_tags.html' %}
-
 <style>
     .oh-scrollable-container {
         overflow-x: auto;
@@ -18,8 +16,6 @@
         border-radius:15px;
     }
 </style>
-
-
 <div class="oh-scrollable-container oh-wrapper mb-3">
     <div class="oh-layout--grid-3 mt-2 mb-2">
         {% for user_leave in user_leaves %}

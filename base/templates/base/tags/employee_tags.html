@@ -1,37 +1,44 @@
 {% extends 'settings.html' %}
 {% load i18n %}
 {% block settings %}{% load static %}
+{% include "generic/components.html" %}
+<meta name="csrf-token" content="{{ csrf_token }}">
 
 <!-- ******************* EMPLOYEE TAGS ******************* -->
 
 <div class="oh-inner-sidebar-content">
-    {% if perms.employee.view_employeetag %}
-        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Tags" %}</h2>
-			{% if perms.employee.add_employeetag %}
-				<button
-					class="oh-btn oh-btn--secondary oh-btn--shadow"
-					data-toggle="oh-modal-toggle"
-					data-target="#objectCreateModal"
-					hx-get="{% url 'employee-tag-create' %}"
-					hx-target="#objectCreateModalTarget"
-				>
-					<ion-icon name="add-outline" class="me-1"></ion-icon>
-					{% trans "Create" %}
-				</button>
-			{% endif %}
-        </div>
+	{% if perms.employee.view_employeetag %}
+	{% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+		<h2 class="oh-inner-sidebar-content__title">{% trans "Employee Tags" %}</h2>
+		<button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+			data-target="#objectCreateModal" hx-get="{% url 'employee-tag-create' %}"
+			hx-target="#objectCreateModalTarget">
+			<ion-icon name="add-outline" class="me-1"></ion-icon>
+			{% trans "Create" %}
+		</button>
 		{% if employeetags %}
 			<div id="employeeTags">
         		{% include 'base/employee_tag/employee_tag_view.html' %}
 			</div>
 		{% else %}
-			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/price-tag.png' %}" class="" alt="Page not found. 404." />
-				<h5 class="oh-404__subtitle">{% trans "There is no employee tags at this moment." %}</h5>
-			</div>
+		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+			<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);"
+				src="{% static 'images/ui/price-tag.png' %}" class="" alt="Page not found. 404." />
+			<h5 class="oh-404__subtitle">{% trans "There is no employee tags at this moment." %}</h5>
+		</div>
 		{% endif %}
-    {% endif %}
+		{% endcomment %}
+		{% if perms.employee.view_employeetag %}
+			<div hx-get="{% url 'employee-tag-navbar' %}" hx-trigger="load"></div>
+		{% endif %}
 
+
+	<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+	<div class="oh-wrapper"  id="listContainer">
+		<div class="animated-background"></div>
+	</div>
+	{% endif %}
 </div>
+
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
 {% endblock settings %}

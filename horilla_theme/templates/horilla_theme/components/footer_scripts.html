@@ -1,0 +1,47 @@
+{% load static i18n horillafilters %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+<script src="{% static 'htmx/htmx.min.js' %}"></script>
+<script>
+  document.body.addEventListener('htmx:configRequest', (event) => {
+    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}'
+  })
+</script>
+<script src="{% static '/index/index.js' %}"></script>
+<script src="{% static '/index/saveFilters.js' %}"></script>
+<script src="{% static 'build/js/htmxSelect2.js' %}"></script>
+<script src="{% static 'build/js/summernote-lite.min.js' %}"></script>
+
+<!-- This CDN is for date format change -->
+<script src="{% static 'build/js/moment.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"></script>
+
+<script src="{% static '/base/date_settings.js' %}"></script>
+<script src="{% static '/base/time_formatting.js' %}"></script>
+<script src="{% static '/base/time_settings.js' %}"></script>
+<script src="{% static '/base/date_formatting.js' %}"></script>
+
+<script src="{% static 'build/js/pivottable.min.js' %}"></script>
+<script src="{% static 'build/js/pivottable_plot.min.js' %}"></script>
+<script src="{% static 'build/js/pivottable_ploty.min.js' %}"></script>
+<script src="{% static 'build/js/pivottable_excel.min.js' %}"></script>
+{% if 'attendance'|app_installed %}
+  <script src="{% static 'attendance/actions.js' %}"></script>
+{% endif %}
+<script type="module" src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
+<script src="{% static '/build/js/sweetAlert.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Clear all query parameters from the URL
+  function clearQueryParameters() {
+    var urlWithoutQuery = window.location.origin + window.location.pathname
+    window.history.replaceState({}, document.title, urlWithoutQuery)
+  }
+</script>
+{% if enabled_timerunner %}
+  <script src="{% static 'horilla_theme/assets/js/timeRunner.js' %}"></script>
+{% endif %}
+
+{% block footer_scripts %}
+
+{% endblock %}

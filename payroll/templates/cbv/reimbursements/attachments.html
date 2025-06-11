@@ -1,0 +1,12 @@
+{% for doc in instance.other_attachments.all %}
+                        <a
+                            href="{{doc.attachment.url}}"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            ><span
+                                class="oh-file-icon oh-file-icon--pdf"
+                                onmouseover="enlargeattachment('{{doc.attachment.url}}')"
+                                style="width:40px;height:40px"
+                            ></span
+                        ></a>
+                    {% endfor %}

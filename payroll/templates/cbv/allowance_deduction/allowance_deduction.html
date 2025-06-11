@@ -1,0 +1,31 @@
+{% load i18n %}
+{%load static%}
+{% if active_contracts %}
+    {% if basic_pay <= 0 %}
+    <div class="d-flex justify-content-center align-items-center" style="height:40vh">
+    <h5 class="oh-404__subtitle">{% trans "Basic pay not added . Please update in the active contract." %}</h5>
+    </div>
+    {% else %}
+<div id="allowance-deduction">
+{% if request.GET.deleted %}
+    <script>
+    $("#reloadMessagesButton").click()
+    </script>
+{% endif %}
+    {% include "generic/horilla_list.html" %}
+</div>
+    {% endif %}
+{% else %}
+
+<div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
+    <div align="center">
+      <img src="{% static "images/ui/contract.png" %}" class="oh-404__image" alt="Page not found. 404.">
+      <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "This employee doesn't have an active contract. Please check the employee's contract" %}</h5>
+    </div>
+  </div>
+{% comment %} 
+
+<div class="d-flex justify-content-center align-items-center" style="height:40vh">
+    <h5 class="oh-404__subtitle">{% trans "This employee doesn't have an active contract. Please check the employee's contract" %}</h5>
+</div> {% endcomment %}
+{% endif %}

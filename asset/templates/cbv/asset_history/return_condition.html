@@ -1,0 +1,16 @@
+{% load i18n %}
+{% for doc in instance.return_images.all %}
+<span class="oh-timeoff-modal__stat-title">{% trans "Return Condition Images" %}</span>
+<div class="d-flex ">
+        <a
+            href="{{doc.image.url}}"
+            rel="noopener noreferrer"
+            target="_blank"
+            ><span
+                class="oh-file-icon oh-file-icon--pdf"
+                onmouseover="enlargeattachment('{{doc.image.url}}')"
+                style="width:40px;height:40px"
+            ></span
+        ></a>
+    {% endfor %}
+</div>

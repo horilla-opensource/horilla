@@ -1,5 +1,4 @@
-{% load i18n %}
-{% load recruitmentfilters %}
+{% load i18n %} {% load recruitmentfilters %}
 <ul class="oh-tabs__tablist">
     {% for rec in recruitment %}
     {% if request.user|stage_manages:rec or perms.recruitment.view_recruitment %}
@@ -72,17 +71,15 @@
               {% endif %}
               {% if perms.recruitment.delete_recruitment %}
               <li class="oh-dropdown__item">
-                <form
-                action = "{% url 'recruitment-delete-pipeline' rec.id %}"
-                onsubmit="return confirm('{% trans "Are you sure you want to delete this recruitment?" %}');"
-                  method='post'
-                  action=""
+                <a
+                  hx-get="{% url 'generic-delete' %}?model=recruitment.Recruitment&pk={{rec.id}}"
+                  hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+                  data-target="#deleteConfirmation"
                   >
-                  {% csrf_token %}
                   <button type="submit" class="oh-dropdown__link oh-dropdown__link--danger">
                     {% trans "Delete" %}
                   </button>
-                  </form
+                  </a
                   >
                 </li>
                 {% endif %}
@@ -95,4 +92,4 @@
     </li>
     {% endif %}
     {% endfor %}
-  </ul>
+</ul>

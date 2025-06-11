@@ -1,4 +1,5 @@
 {% load i18n %}
+{% include "generic/components.html" %}
 <section class="oh-wrapper oh-main__topbar" style="padding-bottom: 1rem;">
   <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
     <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Policies' %}</h1>
@@ -13,7 +14,7 @@
     {% if perms.employee.add_policy %}
       <div class="oh-main__titlebar-button-container">
         <div class="oh-main__titlebar-button-container">
-          <a hx-get="{% url 'create-policy' %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
+          <a hx-get="{% url 'create-policy' %}" hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModal" class="oh-btn oh-btn--secondary">
             <ion-icon name="add-outline"></ion-icon>
             {% trans 'Create' %}
           </a>

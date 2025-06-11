@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="oh-btn-group" onclick="event.stopPropagation();">
+    {% if perms.base.change_employeeshiftschedule %}
+        <a data-toggle="oh-modal-toggle" data-target="#genericModal"
+            hx-get="{% url 'settings-employee-shift-shedule-update' instance.id %}" hx-target="#genericModalBody"
+            class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}">
+            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+        </a>
+    {% endif %}
+    {% if perms.base.delete_employeeshiftschedule %}
+        <a class="oh-btn oh-btn--light-bkg w-100 text-danger"
+            hx-confirm="{% trans 'Are you sure you want to delete this schedule?' %}"
+            hx-post="{% url 'employee-shift-schedule-delete' instance.id %}" hx-target="#scheduleTr{{instance.id}}"
+            hx-swap="outerHTML">
+            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+        </a>
+    {% endif %}
+</div>

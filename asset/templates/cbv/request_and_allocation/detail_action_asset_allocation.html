@@ -1,0 +1,15 @@
+{% load i18n %}
+<div class="oh-modal__button-container text-center w-100 mt-3">
+    {% if not instance.return_status %}
+    <button
+        class="oh-btn oh-btn--secondary w-100"
+        role="button"
+        data-toggle="oh-modal-toggle"
+        data-target="#objectCreateModal"
+        hx-get="{% url 'asset-allocate-return'  asset_id=instance.asset_id.id %}"
+        hx-target="#objectCreateModalTarget"
+    >
+        <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
+    </button>
+    {% endif %}
+</div>

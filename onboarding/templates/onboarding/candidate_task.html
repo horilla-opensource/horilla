@@ -1,6 +1,6 @@
 {% load i18n %}
 {% if single_view %}
-  {% if candidate == task.candidate_id %}
+  {% if candidate.candidate_id == task.candidate_id %}
   <select name="task"  class="w-100" id="{{task.id}}"
       data-task-id="{{task.id}}" data-candidate-id={{candidate.id}}
       data-onboarding-task-id={{task.id}}
@@ -24,7 +24,6 @@
       {% trans "Assign" %}
   </button>
   {% endif %}
-
   </select>
 {% else %}
   {% if candidate.candidate_id  in task.candidates.all %}
@@ -107,6 +106,7 @@ function updateSingleStatus(selectElement,event) {
   var taskId = $(selectElement).data("task-id");
   var candId = $(selectElement).data('candidate-id');
   var status = $(selectElement).val();
+  console.log(status)
   $.ajax({
       type: "POST",
       url: "{% url 'candidate-task-update' 0 %}".replace('0', taskId),
@@ -123,6 +123,7 @@ function updateSingleStatus(selectElement,event) {
         }
 
   });
+  $('#taskUpdate').click();
 }
 
 </script>

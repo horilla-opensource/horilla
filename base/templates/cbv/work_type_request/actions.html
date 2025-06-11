@@ -1,0 +1,40 @@
+{% load basefilters %}
+{% load i18n %}
+
+<div class="" onclick="event.stopPropagation();">
+    {% if request.user.employee_get == instance.employee_id or perms.base.add_worktyperequest or perms.base.change_worktyperequest or perms.base.delete_worktyperequest or request.user|is_reportingmanager %}
+        <div class="oh-btn-group">
+            {% if request.user.employee_get == instance.employee_id or perms.base.change_worktyperequest or request.user|is_reportingmanager %}
+                {% if instance.approved == False and not instance.canceled %}
+                    <a hx-get="{% url 'work-type-request-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
+                        hx-target='#genericModalBody' data-toggle="oh-modal-toggle" data-target='#genericModal'
+                        class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon
+                            name="create-outline"></ion-icon></a>
+                {% else %}
+                    <button class="oh-btn oh-btn--light-bkg w-100" disabled><ion-icon name="create-outline"></ion-icon></button>
+                {% endif %}
+            {% endif %}
+
+            {% if request.user.employee_get == instance.employee_id or perms.base.add_worktyperequest or request.user|is_reportingmanager %}
+                <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg w-100" data-toggle="oh-modal-toggle"
+                    data-target="#genericModal" hx-get="{% url 'work-type-request-duplicate' instance.id %}?{{pg}}"
+                    title="{% trans 'Duplicate' %}" hx-target="#genericModalBody" style="cursor: pointer;">
+                    <ion-icon name="copy-outline"></ion-icon>
+                </a>
+            {% endif %}
+
+            {% if request.user.employee_get == instance.employee_id or perms.base.delete_worktyperequest or request.user|is_reportingmanager %}
+                {% if instance.approved == False and instance.canceled == False %}
+                    <a hx-confirm="{% trans 'Are you sure you want to delete this work type request?' %}"
+                        hx-post="{% url 'work-type-request-delete' instance.id  %}" hx-target="#work-shift"
+                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}">
+
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </a>
+                {% else %}
+                    <button class="oh-btn oh-btn--light-bkg w-100" disabled><ion-icon name="trash-outline"></ion-icon></button>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

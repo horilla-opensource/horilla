@@ -1,0 +1,33 @@
+{% load basefilters %}
+{% load i18n %}
+{% if perms.leave.change_companyleave or perms.leave.delete_companyleave %}
+    {% if perms.leave.change_companyleave %}
+    <a hx-get="{% url 'company-leave-update' instance.id %}" 
+    hx-target='#genericModalBody' 
+    data-toggle="oh-modal-toggle"
+    data-target='#genericModal' 
+    class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}">
+    <ion-icon name="create-outline"></ion-icon>
+</a>
+{% endif %}
+{% if perms.leave.delete_companyleave %}
+<form
+hx-post="{% url 'company-leave-delete' instance.id %}"
+hx-target = "#companyleavedelete"
+hx-confirm="{% trans "Are you sure you want to delete ?" %}"
+method="post"
+style="display: contents;width:100%">
+{% csrf_token %}
+<button onclick="event.stopPropagation()" type="submit" class="oh-btn oh-btn--secondary w-50" title="{% trans 'Delete' %}">
+<ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+</button> 
+
+
+{% endif %}
+{% endif %}
+{% if request.GET.query_string %}
+<script>
+    "<script>window.location.reload();</script>"
+</script>
+{% endif %}
+

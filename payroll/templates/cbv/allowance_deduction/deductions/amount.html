@@ -1,0 +1,15 @@
+{% load i18n %}
+{% if instance.update_compensation %}
+{% if instance.is_fixed %}
+    <span class="oh-timeoff-modal__stat-count">{{instance.amount}}{{currency}} Deduct From {{instance.get_update_compensation_display}}</span>
+{% else %}
+    <span class="oh-timeoff-modal__stat-count">{{instance.rate}}% {% trans "of" %} {{instance.get_update_compensation_display}}</span>
+{% endif %}
+{% else %}
+{% if instance.is_fixed %}
+    <span class="oh-timeoff-modal__stat-count">{{instance.amount}}{{currency}}</span>
+{% else %}
+    <span class="oh-timeoff-modal__stat-count">{% trans "Employer Rate :" %} {{instance.employer_rate}}% {% trans "of" %} {{instance.get_based_on_display}}</span><br>
+    <span class="oh-timeoff-modal__stat-count">{% trans "Employee Rate :" %} {{instance.rate}}% {% trans "of" %} {{instance.get_based_on_display}}</span>
+{% endif %}
+{% endif %}

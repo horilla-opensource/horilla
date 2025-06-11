@@ -34,8 +34,8 @@
                   justify-content: center;
                   width: 50px;
                   height: 28px;" class="oh-btn oh-btn--secondary-outline float-end ms-3"
-                hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.id}}" hx-target="#createTarget"
-                data-toggle="oh-modal-toggle" data-target="#createModal" title="Add Candidate">
+                hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.id}}" hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle" data-target="#genericModal" title="Add Candidate">
                 <ion-icon name="add-outline" class="m-0 md hydrated" role="img" aria-label="add outline"></ion-icon>
             </button>
             {% endif %}

@@ -1,0 +1,16 @@
+<div>
+    {% include "generic/horilla_form.html" %}
+</div>
+<script>
+	{% include 'country.js' %}
+
+    
+    $(document).ready(function() {
+        var country = "{{ form.instance.country |escapejs }}"
+        var state = "{{ form.instance.state |escapejs }}"
+        document.getElementById('id_country').value = country;
+        document.getElementById('id_state').value = state;
+        $("#id_country").trigger('change');
+        $("#id_state").val(state).trigger('change');
+    });
+</script>

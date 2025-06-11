@@ -13,14 +13,17 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import (
+    closest_numbers,
     eval_validate,
     filtersubordinates,
     get_key_instances,
     paginator_qry,
 )
+from base.views import paginator_qry
 from employee.filters import DisciplinaryActionFilter, PolicyFilter
 from employee.forms import DisciplinaryActionForm, PolicyForm
 from employee.models import (
@@ -361,7 +364,7 @@ def remove_employee_disciplinary_action(request, action_id, emp_id):
     messages.success(
         request, _("Employee removed from disciplinary action successfully.")
     )
-    return redirect(f"/employee/disciplinary-filter-view?click_id={dis_action.id}")
+    return redirect(f"/employee/disciplinary-actions-list?click_id={dis_action.id}")
 
 
 @login_required
@@ -371,6 +374,9 @@ def delete_actions(request, action_id):
     """
     This method is used to delete Disciplinary action
     """
+    request_copy = request.GET.copy()
+    request_copy.pop("instances_ids", None)
+    previous_data = request_copy.urlencode()
 
     dis = DisciplinaryAction.objects.get(id=action_id)
 
@@ -394,8 +400,21 @@ def delete_actions(request, action_id):
     messages.success(request, _("Disciplinary action deleted."))
     dis_actions = DisciplinaryAction.objects.all()
 
+    hx_target = request.META.get("HTTP_HX_TARGET")
+    if hx_target and hx_target == "genericModalBody":
+        instances_ids = request.GET.get("instances_ids")
+        instances_list = json.loads(instances_ids)
+        if action_id in instances_list:
+            instances_list.remove(action_id)
+            previous_instance, next_instance = closest_numbers(
+                json.loads(instances_ids), action_id
+            )
+        return redirect(
+            f"/employee/disciplinary-actions-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
+        )
+
     if dis_actions.exists():
-        return redirect(disciplinary_filter_view)
+        return redirect(reverse("disciplinary-actions-list"))
     return HttpResponse("<script>window.location.reload()</script>")
 
 

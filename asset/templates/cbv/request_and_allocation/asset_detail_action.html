@@ -1,0 +1,32 @@
+{% load i18n %}
+<div class="oh-modal__button-container text-center mt-3 w-100">
+    {% if perms.asset.change_assetassignment or not instance.return_request %}
+      <div class="oh-btn-group">
+          {% if perms.asset.change_assetassignment  %}
+            <button
+                href="#"
+                class="oh-btn oh-btn--secondary w-100"
+                role="button"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-get="{%url 'asset-allocate-return'  asset_id=instance.asset_id.id %}"
+                hx-target="#objectCreateModalTarget"
+              >
+                <ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
+            </button>
+          {% else %}
+            {% if not instance.return_request %}
+              <form class=" w-100" action = "{% url 'asset-allocate-return-request' asset_id=instance.id %}"
+                  onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
+                  >
+                  {% csrf_token %}
+                  <button type="submit" class="oh-btn oh-btn--secondary w-100">
+                      <ion-icon name="return-down-back-sharp"></ion-icon>
+                      {% trans "Return Request" %}
+                  </button>
+              </form>
+            {% endif %}
+          {% endif %}
+      </div>
+    {% endif %}
+  </div>

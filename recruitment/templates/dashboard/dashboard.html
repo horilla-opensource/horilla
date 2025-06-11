@@ -8,7 +8,7 @@
     }
     .scheduled-task{
         background-color: #00afff2e !important;
-    }
+    }prett
     .ongoing-task{
         background-color: #e6ff002e !important;
     }
@@ -29,6 +29,15 @@
 	}
 
 </style>
+<div class="oh-modal" id="taskModal" role="dialog" aria-hidden="true">
+	<div class="oh-modal__dialog" style="max-width: 550px">
+	  <div class="oh-modal__dialog-header">
+		<button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+	  </div>
+
+	  <div class="oh-modal__dialog-body" id="taskModalBody"></div>
+	</div>
+  </div>
 <div class="oh-wrapper">
 	<div class="oh-dashboard row">
 		<div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
@@ -120,7 +129,10 @@
 							<span class="oh-card-dashboard__title">{% trans "Skill Zone Status" %}</span>
 						</div>
 						<div class="oh-card-dashboard__body" style="height:325px; overflow-y:auto;">
-							{% if skill_zone %}
+							<div class="oh-sticky-table h-100"  hx-get='{% url "skill-zone-status-dashboard" %}' hx-trigger="load" style="border: none;">
+							</div>
+
+							{% comment %} {% if skill_zone %}
 								<ul class="oh-card-dashboard__user-list">
 									{% for skill in skill_zone %}
 									<li class="oh-card-dashboard__user-item">
@@ -146,7 +158,7 @@
 										<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No skill zone available." %}</h3>
 									</div>
 								</div>
-							{% endif %}
+							{% endif %} {% endcomment %}
 
 						</div>
 					</div>
@@ -208,7 +220,10 @@
 								{% if onboarding_count %}<span class="oh-card-dashboard__title float-end"><a href="{% url 'candidate-view' %}?start_onboard=true" style="text-decoration:none; color:orange;">{% trans "View" %}</a></span>{% endif %}
 							</div>
 							<div class="oh-card-dashboard__body" style="height:325px; overflow-y:auto;">
-								{% if onboarding_count %}
+
+								<div class="oh-sticky-table h-100"  hx-get='{% url "candidate-on-onboard-dashboard" %}' hx-trigger="load" style="border: none;">
+								</div>
+								{% comment %} {% if onboarding_count %}
 									<ul class="oh-card-dashboard__user-list">
 										{% for cand in onboard_candidates %}
 										<li class="oh-card-dashboard__user-item">
@@ -234,7 +249,7 @@
 											<h3 style="font-size:16px" class="oh-404__subtitle">{% trans "No candidates started onboarding." %}</h3>
 										</div>
 									</div>
-								{% endif %}
+								{% endif %} {% endcomment %}
 							</div>
 						</div>
 					{% endif %}
@@ -269,12 +284,14 @@
 						</div>
 
 						{% if ongoing_recruitments %}
-							<div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable">
+							<div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable" >
 								<div>
 									<div class="oh-card-dashboard__header">
 									<span class="oh-card-dashboard__title">{% trans "Current Hiring Pipeline" %}</span>
 								</div>
-								<div class="oh-sticky-table float-start" style="height:500px">
+								<div  class="oh-card-dashboard__body"  hx-get='{% url "current-hiring-pipeline-dashboard" %}' hx-trigger="load" style="border: none;">
+								</div>
+								{% comment %} <div class="oh-sticky-table float-start" style="height:500px">
 									<div class="oh-sticky-table__table">
 										<div class="oh-sticky-table__thead">
 											<div class="oh-sticky-table__tr">
@@ -302,7 +319,7 @@
 											{% endfor %}
 										</div>
 									</div>
-								</div>
+								</div> {% endcomment %}
 							</div>
 						{% endif %}
 					</div>
@@ -367,7 +384,10 @@
 							<div class="oh-card-dashboard__header">
 								<span class="oh-card-dashboard__title">{% trans "Ongoing Recruitments & Hiring Managers" %}</span>
 							</div>
-							<div class="oh-sticky-table float-start">
+
+							<div  class="oh-card-dashboard__body"  hx-get='{% url "ongoing-recruitment-dashboard" %}' hx-trigger="load" style="border: none;">
+							</div>
+							{% comment %} <div class="oh-sticky-table float-start">
 								<div class="oh-sticky-table__table">
 									<div class="oh-sticky-table__thead">
 										<div class="oh-sticky-table__tr">
@@ -387,7 +407,7 @@
 										{% endfor %}
 									</div>
 								</div>
-							</div>
+							</div> {% endcomment %}
 						</div>
 					{% endif %}
 				</div>

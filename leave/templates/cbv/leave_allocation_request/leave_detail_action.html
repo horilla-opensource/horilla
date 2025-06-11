@@ -1,0 +1,39 @@
+{% load i18n %} {% load basefilters %}
+{% if perms.leave.Change_leaveallocationrequest or request.user|is_reportingmanager %}
+                    {% if instance.status == 'requested' %}
+                        <a
+                            href="{% url 'leave-allocation-request-approve' instance.id %}"
+                            class="oh-btn oh-btn--success w-100"
+                            title="{% trans 'Approve' %}"                        >
+                            <ion-icon class="me-1 " name="checkmark-outline"></ion-icon>
+                            {% trans "Approve" %}
+                        </a>
+                    {% else %}
+                        <a href="" class="oh-btn oh-btn--success oh-btn--disabled w-100"
+                            title="{% trans 'Approved' %}"
+                            onclick="event.preventDefault()">
+                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                            {% trans "Approve" %}
+                        </a>
+                    {% endif %}
+                    {% if instance.status == 'requested' or instance.status == 'approved' %}
+                        <a
+                            hx-get="{% url 'leave-allocation-request-reject' instance.id %}"
+                            data-target="{% if dashboard == 'true' %}#bigModal {% else %}#rejectModal {% endif %}"
+                            hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#rejectTarget{% endif %}"
+                            class="oh-btn oh-btn--danger w-100"
+                            data-toggle="oh-modal-toggle"
+                            title="{% trans 'Reject' %}"
+                        >
+                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                            {% trans "Reject" %}
+                        </a>
+                    {% else %}
+                        <a href="" class="oh-btn oh-btn--danger oh-btn--disabled w-100"
+                            title="{% trans 'Rejected' %}"
+                            onclick="event.preventDefault()">
+                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                            {% trans "Reject" %}
+                        </a>
+                    {% endif %}
+                {% endif %}

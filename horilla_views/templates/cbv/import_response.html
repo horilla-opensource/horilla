@@ -1,0 +1,69 @@
+{% load i18n %}
+<style>
+  table.import {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  table.import th,
+  table.import td {
+    border: 1px solid #cdd5df;
+    padding: 8px;
+    text-align: left;
+  }
+
+  table.import th {
+    background-color: #f2f2f2;
+  }
+</style>
+<table class="table import">
+  <tr>
+    <th>Status</th>
+    <th>Imported</th>
+    <th>Updated</th>
+  </tr>
+  <tr>
+    <td>{{ status }}</td>
+    <td>{{ imported }}</td>
+    <td>{{ updated }}</td>
+  </tr>
+</table>
+{% if traceback_message %}
+   <h6 class="mt-2">{{error_message}}</h6>
+
+  <button id="toggleErrorBtn" class="toggle-button" onclick="
+  $(this).next().toggleClass('d-none');
+  ">Show Error Details</button>
+
+  <div id="errorDetails" class="error-details d-none">
+    <pre style="white-space: pre-wrap;">{{ traceback_message }}</pre>
+  </div>
+
+  <style>
+    .toggle-button {
+      background-color: #eee;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+
+    .toggle-button:hover {
+      background-color: #ddd;
+    }
+
+    .error-details {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+  </style>
+{% endif %}
+<div class="modal-footer d-flex flex-row-reverse">
+  <input type="button" onclick="$('#{{ view_id }} .reload-record').click()" class="oh-btn oh-btn--small oh-btn--success w-100 mr-1 mt-2" value="Refresh" />
+</div>

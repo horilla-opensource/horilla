@@ -10,6 +10,8 @@ import django_filters
 from django import forms
 
 from base.filters import FilterSet
+from employee.models import Employee
+from horilla.filters import HorillaFilterSet
 from offboarding.models import (
     Offboarding,
     OffboardingEmployee,
@@ -18,7 +20,7 @@ from offboarding.models import (
 )
 
 
-class LetterFilter(FilterSet):
+class LetterFilter(HorillaFilterSet):
     """
     LetterFilter class
     """
@@ -41,12 +43,15 @@ class LetterFilter(FilterSet):
         ]
 
 
-class PipelineFilter(FilterSet):
+class PipelineFilter(HorillaFilterSet):
     """
     PipelineFilter
     """
 
     search = django_filters.CharFilter(method="search_method", lookup_expr="icontains")
+    offboarding_manager = django_filters.ModelChoiceFilter(
+        field_name="managers", queryset=Employee.objects.all()
+    )
 
     class Meta:
         model = Offboarding
@@ -65,7 +70,7 @@ class PipelineFilter(FilterSet):
         ).distinct()
 
 
-class PipelineStageFilter(FilterSet):
+class PipelineStageFilter(HorillaFilterSet):
     """
     PipelineStageFilter
     """
@@ -93,7 +98,7 @@ class PipelineStageFilter(FilterSet):
         ).distinct()
 
 
-class PipelineEmployeeFilter(FilterSet):
+class PipelineEmployeeFilter(HorillaFilterSet):
     """
     PipelineEmployeeFilter
     """
@@ -109,6 +114,9 @@ class PipelineEmployeeFilter(FilterSet):
         field_name="notice_period_ends",
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    offboarding_stage_id = django_filters.CharFilter(
+        field_name="stage_id",
     )
 
     class Meta:

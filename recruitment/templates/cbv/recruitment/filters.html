@@ -1,0 +1,70 @@
+{% load i18n %}{% load static %}
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Recruitment" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+              <label class="oh-label">{% trans "Managers" %}</label>
+              {{form.recruitment_managers}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Start Date" %}</label>
+            {{form.start_date}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Is Closed" %}</label>
+            {% comment %} {{form.closed}} {% endcomment %}
+            <select name="closed" id="closed" class="oh-select oh-select-2 w-100">
+              <option value="unknown">{% trans "Unknown" %}</option>
+              <option value="true">{% trans "True" %}</option>
+              <option value="false" selected>{% trans "False" %}</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Company" %}</label>
+            {{form.company_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "End Date" %}</label>
+            {{form.end_date}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Is Published" %}</label>
+            {{form.is_published}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Start Date From" %}</label>
+            {{form.start_from}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Is Active" %}?</label>
+            {{form.is_active}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans "Till End Date" %}</label>
+            {{form.end_till}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{% static '/base/filter.js' %}"></script>

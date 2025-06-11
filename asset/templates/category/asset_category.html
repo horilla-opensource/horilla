@@ -72,7 +72,7 @@
                                             <li class="oh-dropdown__item">
                                                 <a href="#" class="oh-dropdown__link " data-toggle="oh-modal-toggle"
                                                     onclick="event.stopPropagation()" data-target="#objectUpdateModal"
-                                                    hx-get="{% url 'asset-category-update' cat_id=asset_category.id %}?{{pg}}"
+                                                    hx-get="{% url 'asset-category-update' pk=asset_category.id %}?{{pg}}"
                                                     hx-target="#objectUpdateModalTarget">{% trans "Edit" %}</a>
                                             </li>
                                         {% endif %}

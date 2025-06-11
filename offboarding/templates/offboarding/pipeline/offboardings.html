@@ -46,9 +46,7 @@
 
     // Highlight active tabs
     if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
-        parentContainerEl
-            .querySelectorAll(".oh-tabs__tab--active")
-            .forEach(function (item) {
+        parentContainerEl.querySelectorAll(".oh-tabs__tab--active").forEach(function (item) {
                 item.classList.remove("oh-tabs__tab--active");
             });
 
@@ -59,9 +57,7 @@
 
     // Switch tabs
     if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
-        parentContainerEl
-            .querySelectorAll(".oh-tabs__content--active")
-            .forEach(function (item) {
+        parentContainerEl.querySelectorAll(".oh-tabs__content--active").forEach(function (item) {
                 item.classList.remove("oh-tabs__content--active");
             });
         targetEl.classList.add("oh-tabs__content--active");
@@ -93,7 +89,7 @@
                   <ul class="oh-dropdown__items">
                     {% if perms.offboarding.change_offboarding or request.user.employee_get|is_offboarding_manager %}
                     <li class="oh-dropdown__item">
-                      <a hx-get="{% url "create-offboarding" %}?instance_id={{offboarding.offboarding.id}}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
+                      <a hx-get="{% url "update-offboarding" offboarding.offboarding.id %}" hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" class="oh-dropdown__link">{% trans "Edit" %}</a>
                     </li>
                     {% endif %}
                     {% if perms.offboarding.delete_offboarding %}

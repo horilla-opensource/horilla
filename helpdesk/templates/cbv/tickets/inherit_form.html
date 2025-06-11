@@ -1,0 +1,90 @@
+{% include 'generic/horilla_form.html' %}
+<div hidden id="cur_raised_on" value="{{form.instance.raised_on}}">
+    {{form.instance.raised_on}}
+</div>
+<script>
+    $(document).ready(function () {
+        var assigning_type = $('#id_assigning_type').find(":selected").val();
+        if (assigning_type) {
+            $.ajax({
+                type: "GET",
+                url: "/helpdesk/get-raised-on",
+                data: {
+                    'assigning_type': assigning_type,
+                },
+                success: function (response) {
+                    var raised_on = response.raised_on;
+                    var cur_raised_on = $("#cur_raised_on").attr("value");
+                    // Clear the existing options
+                    $("#id_raised_on").empty();
+                    var options = $('<option value="" >').text("---------");
+                    $("#id_raised_on").append(options);
+
+                    $.each(raised_on, function (id, obj) {
+                        // looping all raised_on
+                        var options = $(
+                            '<option value="' +
+                                obj.id +
+                                '" ' +
+                                (obj.id == cur_raised_on
+                                    ? 'selected="selected"'
+                                    : "") +
+                                ">"
+                        ).text(obj.name);
+                        $("#id_raised_on").append(options);
+                    });
+                },
+            });
+        }
+
+        $("#id_assigning_type").change(function () {
+            var assigning_type = $(this).find(":selected").val();
+            $.ajax({
+                type: "GET",
+                url: "/helpdesk/get-raised-on",
+                data: {
+                    assigning_type: assigning_type,
+                },
+                success: function (response) {
+                    var raised_on = response.raised_on;
+                    // Clear the existing options
+                    $("#id_raised_on").empty();
+                    var options = $(
+                        `<option value=" " selected="selected">`
+                    ).text(`---------`);
+
+                    $("#id_raised_on").append(options);
+                    $.each(raised_on, function (id, obj) {
+                        // looping all raised_on
+                        var options = $(`<option value=" ${obj.id}">`).text(
+                            obj.name
+                        );
+                        $("#id_raised_on").append(options);
+                    });
+                },
+            });
+        });
+        $("#id_tags").change(function () {
+            var selectedValues = $("#id_tags option:selected")
+                .map(function () {
+                    return $(this).val();
+                })
+                .get();
+            // Check if 'create_new_tag' exists in the list
+            if (selectedValues.includes("create_new_tag")) {
+                $("#createTagModal").addClass("oh-modal--show");
+            }
+        });
+
+        $("#id_ticket_type").change(function () {
+
+            var selectedValue = $(this).find(":selected").val(); // Get the selected value
+
+            // Check if 'create_new_ticket_type' is selected
+            if (selectedValue == "create_new_ticket_type") {
+
+                $("#createTicketTypeModal").addClass("oh-modal--show");
+            }
+        });
+    });
+</script>

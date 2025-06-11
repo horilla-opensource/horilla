@@ -1,12 +1,16 @@
 {% extends 'settings.html' %}
 {% load i18n %}
 {% block settings %}{% load static %}
+{% include "generic/components.html" %}
+<meta name="csrf-token" content="{{ csrf_token }}">
 <div class="oh-inner-sidebar-content">
     {% if perms.helpdesk.view_tickettype %}
-        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Ticket Type" %}</h2>
+        {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Ticket Type" %}</h2> {% endcomment %}
 			{% if perms.helpdesk.add_tickettype %}
-            <button
+				<div hx-get="{% url "ticket-nav" %}" hx-trigger="load">
+				</div>
+            {% comment %} <button
                 class="oh-btn oh-btn--secondary oh-btn--shadow"
                 data-toggle="oh-modal-toggle"
                 data-target="#ticketModal"
@@ -15,17 +19,28 @@
             	>
                 <ion-icon name="add-outline" class="me-1"></ion-icon>
                 {% trans "Create" %}
-            </button>
+            </button> {% endcomment %}
 			{% endif %}
         </div>
-		{% if ticket_types %}
-        	{% include 'base/ticket_type/ticket_type_view.html' %}
-		{% else %}
+		{% comment %} {% if ticket_types %} {% endcomment %}
+			<div
+				class="oh-checkpoint-badge mb-2"
+				id="selectedInstances"
+				data-ids="[]"
+				data-clicked=""
+				style="display: none"
+			></div>
+				<div class="oh-wrapper"  id="listContainer">
+					<div class="animated-background">
+				</div>
+			</div>
+        	{% comment %} {% include 'base/ticket_type/ticket_type_view.html' %} {% endcomment %}
+		{% comment %} {% else %}
 			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
 				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/ticket.png' %}" class="" alt="Page not found. 404." />
 				<h5 class="oh-404__subtitle">{% trans "There is no ticket types at this moment." %}</h5>
 			</div>
-		{% endif %}
+		{% endif %} {% endcomment %}
     {% endif %}
 
 </div>
@@ -77,4 +92,6 @@
 </div>
 <!-- end of edit modal -->
 <!-- end of modals -->
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+
 {% endblock settings %}

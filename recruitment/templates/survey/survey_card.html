@@ -10,60 +10,74 @@
     {% include "survey/template_accordion.html" %}
 </div>
 <div class="oh-tabs__content" id="questionTab">
-    {% if questions %}
-        <div>
-            <div class="oh-layout--grid-3">
-                {% for question in questions %}
-                    <div class="oh-kanban-card" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
-                        hx-get="{% url 'single-survey-view' question.id %}?instances_ids={{requests_ids}}"
-                        hx-target="#objectDetailsModalTarget">
-                        <div class="oh-kanban-card__details">
-                            <span class="oh-kanban-card__title">{{question}}</span>
-                            <span class="oh-kanban-card__subtitle">
-                                {% for rec in question.recruitment_ids.all %} {{rec}},&nbsp;
-                                {% endfor %}
-                            </span>
-                        </div>
-                        {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
-                        <div class="oh-kanban-card__dots">
-                            <div class="oh-dropdown" x-data="{show: false}">
-                                <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title="{% trans 'Actions' %}" onclick="event.stopPropagation()">
-                                    <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
-                                </button>
-                                <div class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
-                                    x-show="show" @click.outside="show = false">
-                                    <ul class="oh-dropdown__items">
-                                        {% if perms.recruitment.change_recruitmentsurvey %}
-                                            <li class="oh-dropdown__item">
-                                                <a hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
-                                                    data-toggle="oh-modal-toggle" data-target="#updateSurvey"
-                                                    hx-target="#updateSurveyModalBody" class="oh-dropdown__link">{% trans "Edit" %}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                        {% if perms.recruitment.add_recruitmentsurvey %}
-                                            <li class="oh-dropdown__item">
-                                                <a hx-get="{% url 'recruitment-survey-question-template-duplicate' question.id %}"
-                                                    data-toggle="oh-modal-toggle" data-target="#addSurvey"
-                                                    hx-target="#addSurveyModalBody" class="oh-dropdown__link">{% trans "Duplicate" %}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                        {% if perms.recruitment.delete_recruitmentsurvey %}
-                                            <li class="oh-dropdown__item">
-                                                <a href="{% url 'recruitment-survey-question-template-delete' question.id %}"
-                                                    onclick="event.preventDefault();event.stopPropagation(); confirm('{% trans "Are you sure want to delete?" %}')" class="text-danger">
-                                                    {% trans "Delete" %}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+  {% if questions %}
+  <div>
+    <div class="oh-layout--grid-3">
+      {% for question in questions %}
+      <div
+        class="oh-kanban-card"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        hx-get="{% url 'single-survey-view' question.id %}?instance_ids={{requests_ids}}"
+        hx-target="#genericModalBody"
+      >
+        <div class="oh-kanban-card__details">
+          <span class="oh-kanban-card__title">{{question}}</span>
+          <span class="oh-kanban-card__subtitle">
+            {% for rec in question.recruitment_ids.all %} {{rec}},&nbsp;
+            {% endfor %}
+          </span>
+        </div>
+        {% if perms.recruitment.delete_recruitmentsurvey or perms.recruitment.change_recruitmentsurvey or perms.recruitment.add_recruitmentsurvey %}
+        <div class="oh-kanban-card__dots">
+          <div class="oh-dropdown" x-data="{show: false}">
+            <button class="oh-btn oh-btn--transparent text-muted p-3" @click="show = !show" title={% trans "Actions" %} onclick="event.stopPropagation()" >
+              <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--dark-border oh-dropdown__menu--right"
+              x-show="show"
+              @click.outside="show = false"
+            >
+              <ul class="oh-dropdown__items">
+                {% if perms.recruitment.change_recruitmentsurvey %}
+                <li class="oh-dropdown__item">
+                  <a
+                    hx-get="{% url 'recruitment-survey-question-template-edit' question.id %}"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-target="#genericModalBody"
+                    class="oh-dropdown__link"
+                    >{% trans "Edit" %}
+                  </a>
+                </li>
+                {% endif %} {% if perms.recruitment.add_recruitmentsurvey %}
+                <li class="oh-dropdown__item">
+                  <a
+                    hx-get="{% url 'recruitment-survey-question-template-duplicate' question.id %}"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-target="#genericModalBody"
+                    class="oh-dropdown__link"
+                    >{% trans "Duplicate" %}
+                  </a>
+                </li>
+                {% endif %} {% if perms.recruitment.delete_recruitmentsurvey %}
+                <li class="oh-dropdown__item">
+                  <a href="{% url 'recruitment-survey-question-template-delete' question.id %}" onclick="event.preventDefault();event.stopPropagation(); confirm('{% trans "Are you sure want to delete?" %}')"
+                      class="text-danger" >
+                    {% trans "Delete" %}
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endfor %}
+
             </div>
 
             <div class="oh-pagination">

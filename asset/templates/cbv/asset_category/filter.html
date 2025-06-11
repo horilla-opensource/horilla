@@ -1,0 +1,53 @@
+{% load i18n %}
+{% load assets_custom_filter %}
+{% load widget_tweaks %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Asset" %}</div>
+        <div class="oh-accordion-body">
+            {% comment %} <form hx-get="{%url 'asset-category-view-search-filter' %}" name="asset_list" hx-target="#assetCategoryList" hx-swap="innerHTML" id="filterForm2"> {% endcomment %}
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.asset_name.id_for_label}}">{% trans "Asset Name" %}</label>
+                        {{form.asset_name}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.asset_tracking_id.id_for_label}}">{% trans "Tracking Id" %}</label>
+                        {{form.asset_tracking_id}}
+                    </div>
+
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.asset_purchase_date.id_for_label}}">{% trans "Purchase Date" %}</label>
+                        {{form.asset_purchase_date |attr:"type:date"}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.asset_purchase_cost.id_for_label}}">{% trans "Purchase Cost" %}</label>
+                        {{form.asset_purchase_cost}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.asset_lot_number_id.id_for_label}}">{% trans "Asset Batch Number" %}</label>
+                        {{form.asset_lot_number_id}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.asset_category_id.id_for_label}}">{% trans "Category" %}</label>
+                        {{form.asset_category_id}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.asset_status.id_for_label}}">{% trans "Status" %}</label>
+                        {{form.asset_status}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% comment %} </form> {% endcomment %}
+</div>

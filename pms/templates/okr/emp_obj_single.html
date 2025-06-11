@@ -121,7 +121,7 @@
         <div class="oh-modal__button-container text-center mt-3">
             <div class="oh-btn-group">
                 {% if perms.pms.change_employeeobjective or instance|is_manager:request.user %}
-                    <a class="oh-btn oh-btn--info" hx-get='{% url "update-employee-objective" instance.id %}' hx-target="#objectDetailsModalTarget" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" style="width: 50%;">
+                    <a class="oh-btn oh-btn--info" hx-get='{% url "update-employee-objective" instance.id %}' hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModalBody" style="width: 50%;">
                         <ion-icon name="create-outline">
                         </ion-icon>{% trans "Edit" %}
                     </a>

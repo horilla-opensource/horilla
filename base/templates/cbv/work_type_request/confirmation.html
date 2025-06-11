@@ -1,0 +1,35 @@
+{% load basefilters %}
+{% load i18n %}
+{% if perms.base.change_worktyperequest or request.user|is_reportingmanager %}
+<div class="w-100" onclick="event.stopPropagation();">
+  <div class="oh-btn-group" >
+    {% if instance.approved == False and instance.canceled == False %}
+      <a href="/work-type-request-approve/{{instance.id}}/"
+        title="{% trans 'Approve' %}"
+        onclick="return confirm('{% trans "Do you want to approve this request?" %}')"
+        class="oh-btn oh-btn--success w-100">
+        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+      </a>
+    {% else %}
+      <a type="submit" href="#" title="{% trans 'Approve' %}"
+          class="oh-btn oh-btn--success oh-btn--disabled w-100">
+          <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+      </a>
+    {% endif %}
+    {% if instance.canceled == False %}
+      <a href="/work-type-request-cancel/{{instance.id}}/"
+          title="{% trans 'Reject' %}"
+          onclick="return confirm('{% trans "Do you want to reject this request?" %}')"
+          class="oh-btn oh-btn--danger w-100">
+          <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+      </a>
+    {% else %}
+      <a type="submit" href="#" title="{% trans 'Reject' %}"
+          class="oh-btn oh-btn--danger oh-btn--disabled
+          w-100" >
+          <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}

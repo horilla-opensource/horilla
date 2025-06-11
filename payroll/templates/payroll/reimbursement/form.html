@@ -42,14 +42,14 @@
         </tbody>
     </table>
 <script>
-    toggleReimbursmentType($("#objectCreateModalTarget [name=type]").first());
+    toggleReimbursmentType($("#genericModalBody [name=type]").first());
     removeHighlight();
     var attachemntLabelElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
+        "#genericModalBody [for=id_attachment]"
     );
-    var attachemntlElement = $("#objectCreateModalTarget #id_attachment");
+    var attachemntlElement = $("#genericModalBody #id_attachment");
     var attachemntParentlElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
+        "#genericModalBody [for=id_attachment]"
     ).parent();
 
     // Detach both elements from the DOM

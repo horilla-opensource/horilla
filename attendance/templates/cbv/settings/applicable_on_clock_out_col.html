@@ -1,0 +1,7 @@
+<div class="oh-switch">
+    {% if perms.attendance.change_gracetime %}
+        <input type="checkbox" id="isAllowedClockOut" data-id ="{{instance.id}}" data-update ="clock_out" class="oh-switch__checkbox" {% if instance.allowed_clock_out %} checked {% endif %} onchange="updateAllowedClockInOrOut(this)">
+    {% else %}
+        <input type="checkbox" id="isAllowedClockOut" class="oh-switch__checkbox" {% if instance.allowed_clock_out %} checked {% endif %} disabled>
+    {% endif %}
+</div>

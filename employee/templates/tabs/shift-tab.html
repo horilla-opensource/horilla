@@ -13,12 +13,30 @@
 {% endif %}
 
 <div class="oh-wrapper mt-4">
-    {% if employee.employee_work_info.shift_id %}
-        <span class="fw-bold" style="font-size: 17px">
-            {% if employee.employee_work_info.shift_id %}
-                {% trans "Current Shift" %} &nbsp : &nbsp {{employee.employee_work_info.shift_id}}
-            {% endif %}
-        </span>
+	{% if employee.employee_work_info.shift_id %}
+	<span class="fw-bold" style="font-size:17px;"> {% if employee.employee_work_info.shift_id %} {% trans "Current Shift" %} &nbsp : &nbsp {{employee.employee_work_info.shift_id}} {% endif %}</span>
+	<button style="display:inline-block;"
+			class="oh-btn oh-btn--secondary ms-3"
+			data-toggle="oh-modal-toggle"
+			data-target="#genericModal"
+			hx-get="{% url 'shift-request-reallocate' %}?emp_id={{emp_id}}"
+			hx-target="#genericModalBody"
+		>
+		<ion-icon name="add-sharp" class="mr-1 md hydrated" role="img" aria-label="add sharp"></ion-icon>{% trans "Reallocate Shift." %}
+	</button>
+	{% endif %}
+
+  <div class="oh-tabs mt-3">
+    <ul class="oh-tabs__tablist">
+      <li class="oh-tabs__tab oh-tabs__tab--active" data-target="#shift_tab_1">
+        <div>
+          <img
+            src="{% static 'images/ui/work-from-home (1).png' %}"
+            alt=""
+            style="width: 25px; height: 25px; margin-right: 3px"
+          />
+          {% trans "Work type request" %}
+        </div>
         <button
             style="display: inline-block"
             class="oh-btn oh-btn--secondary ms-3"

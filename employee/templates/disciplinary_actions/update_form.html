@@ -9,9 +9,12 @@
     {% endfor %}
 </div>
 <script>
-    setTimeout(function () {
-        $(".oh-modal__close").click();
-    }, 1000);
+  setTimeout(function () {
+    $(".oh-modal__close").click();
+  }, 1000);
+  $(document).ready(function(){
+    $('.reload-record').click();
+  })
 </script>
 {% endif %}
 {% if form.errors %}

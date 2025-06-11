@@ -1,0 +1,32 @@
+{% load i18n %}
+{% if  perms.payroll.delete_contract or perms.payroll.change_contract %}
+            
+                
+                    {% if perms.payroll.change_contract  %}
+                        <a href="{% url 'update-contract' instance.id %}" class="oh-btn-group oh-btn oh-btn--info" style="width: 50%;">
+                            <ion-icon
+                            name="create-outline"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="create outline"
+                            ></ion-icon>{% trans "Edit" %}
+                        </a>
+                    {% endif %}
+                    {% if perms.payroll.delete_contract  %}
+                        <a
+                            class="oh-btn-group oh-btn oh-btn--danger"style="width: 50%;"
+                            hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
+                            hx-post="{% url 'delete-contract-modal' instance.id %}?{{pd}}"
+                            hx-target="{{delete_hx_target}}"
+                            >
+                            <ion-icon
+                            name="trash-outline"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="create outline"
+                            ></ion-icon>{% trans "Delete" %}
+                        </a>
+                    {% endif %}
+            
+           
+        {% endif %}

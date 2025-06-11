@@ -1,0 +1,120 @@
+{% load i18n %} {% load static %}
+<div class="oh-dropdown__filter-body">
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label">
+              <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        {% for field in export_form.selected_fields %}
+        <div class="col-sm-12 col-md-12 col-lg-4">
+          <div class="oh-input-group">
+            <label class="oh-label"> {{ field }} </label>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Employee" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{export_filter.form.country.id_for_label}}"
+              >{% trans "Country" %}</label
+            >
+            {{export_filter.form.country}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{export_filter.form.gender.id_for_label}}"
+              >{% trans "Gender" %}</label
+            >
+            {{export_filter.form.gender}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Work Info" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_work_info__company_id.id_for_label}}"
+              >{% trans "Company" %}</label
+            >
+            {{export_filter.form.employee_work_info__company_id}}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_work_info__department_id.id_for_label}}"
+              >{% trans "Department" %}</label
+            >
+            {{export_filter.form.employee_work_info__department_id}}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_work_info__shift_id.id_for_label}}"
+              >{% trans "Shift" %}</label
+            >
+            {{export_filter.form.employee_work_info__shift_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_work_info__reporting_manager_id.id_for_label}}"
+              >{% trans "Reporting Manager" %}</label
+            >
+            {{export_filter.form.employee_work_info__reporting_manager_id}}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_work_info__job_position_id.id_for_label}}"
+              >{% trans "Job Position" %}</label
+            >
+            {{export_filter.form.employee_work_info__job_position_id}}
+          </div>
+          <div class="oh-input-group">
+            <label
+              class="oh-label"
+              for="{{export_filter.form.employee_work_info__work_type_id.id_for_label}}"
+              >{% trans "Work Type" %}</label
+            >
+            {{export_filter.form.employee_work_info__work_type_id}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="oh-dropdown__filter-footer">
+    <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+      {% trans "Export" %}
+    </button>
+  </div>
+
+
+<script src='{% static "/base/filter.js" %}'></script>

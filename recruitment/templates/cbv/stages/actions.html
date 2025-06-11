@@ -1,0 +1,43 @@
+{% load i18n %}
+<div>
+    <div class="oh-btn-group" onclick="event.stopPropagation();">
+      {% if perms.recruitment.change_stage %}
+        <a
+          hx-get="{% url 'rec-stage-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
+          hx-target="#genericModalBody"
+          data-toggle="oh-modal-toggle"
+          data-target="#genericModal"
+          class="oh-btn oh-btn--light-bkg w-50"
+          title="{% trans 'Edit' %}"
+        >
+          <ion-icon name="create-outline"></ion-icon>
+        </a>
+      {% endif %}
+      {% if perms.recruitment.change_stage %}
+        <a
+          hx-get="{% url 'rec-stage-duplicate' instance.id %}"
+          hx-target="#genericModalBody"
+          data-toggle="oh-modal-toggle"
+          data-target="#genericModal"
+          class="oh-btn oh-btn--light-bkg w-50"
+          title="{% trans 'Duplicate' %}"
+        >
+          <ion-icon name="copy-outline"></ion-icon>
+        </a>
+      {% endif %}
+      {% if perms.recruitment.delete_stage %}
+      <form action="{% url 'rec-stage-delete' instance.id %}"
+        onsubmit="return confirm('{% trans "Are you sure you want to delete this stage?" %}');" method='post' class="w-50"
+        >
+        {% csrf_token %}
+        <button
+          type="submit"
+          class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+          title="Remove"
+        >
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </div>

@@ -135,6 +135,7 @@
       {{ form.multi_approval_manager }}
       {{ form.multi_approval_manager.errors }}
     </div>
+
     {% for field in form.visible_fields %}
       {% if field.name|startswith:"multi_approval_manager_" %}
       <div id="{{field.name}}">

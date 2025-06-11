@@ -1,0 +1,56 @@
+{% load i18n %}
+{% if perms.asset.add_assetassignment %}
+    {% if instance.asset_request_status == 'Requested' %}
+        <div>
+            <div class="oh-btn-group">
+                <a
+                    class="oh-btn oh-btn--success w-50"
+                    role="button"
+                    onclick="event.stopPropagation()"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'asset-request-approve-form' req_id=instance.id %}"
+                    hx-target="#genericModalBody"
+                    title="{% trans 'Approve' %}"
+                >
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                </a>
+                <form
+                    action="{% url 'asset-request-reject' req_id=instance.id %}"
+                    method="post"
+                    onsubmit="return confirm('{% trans "Do you want to reject this request?" %}')"
+                    title="{% trans 'Reject' %}"
+                    class='w-50'
+                >
+                    {% csrf_token %}
+                    <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <div>
+            <div class="oh-btn-group">
+                <a
+                    href="#"
+                    class="oh-btn oh-btn--success oh-btn--disabled w-50"
+                    role="button"
+                    onclick="event.stopPropagation()"
+                    title='{% trans "Approve" %}'
+                >
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                </a>
+                <a
+                    href="#"
+                    class="oh-btn oh-btn--danger oh-btn--disabled w-50"
+                    role="button"
+                    onclick="event.stopPropagation()"
+                    title='{% trans "Reject" %}'
+                >
+                    <ion-icon name="close-outline"></ion-icon>
+                </a>
+            </div>
+        </div>
+    {% endif %}
+{% endif %}

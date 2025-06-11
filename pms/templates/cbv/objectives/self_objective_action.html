@@ -1,0 +1,52 @@
+{% load i18n %}
+{% if perms.pms.change_objective or perms.pms.delete_objective %}
+<div>
+    <div class="oh-btn-group" onclick="event.stopPropagation()">
+        {% if perms.pms.change_objective %}
+            <a
+                onclick="event.preventDefault();event.stopPropagation()"
+                hx-get="{% url 'update-employee-objective' instance.get_employee_objective.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
+            ><ion-icon name="create-outline"></ion-icon></a>
+        {% endif %}
+        {% if perms.pms.delete_objective %}
+            {% if instance.get_employee_objective.archive %}
+                    <form
+                        hx-post='{% url "archive-employee-objective" instance.get_employee_objective.id %}?detail_view=True'
+                        hx-confirm="{% trans "Do you want to unarchive this employee objective?" %}"
+                        hx-swap="innerHTML"
+                        hx-target="#tr{{ instance.id }}"
+                        style="display: contents;width:100%">
+                        {% csrf_token %}
+                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Unarchive' %}">
+                            <ion-icon name="archive"></ion-icon>
+                        </button>
+                    </form>
+            {% else %}
+                    <form
+                        hx-post='{% url "archive-employee-objective" instance.get_employee_objective.id %}?detail_view=True'
+                        hx-confirm="{% trans "Do you want to archive this employee objective?" %}"
+                        hx-swap="innerHTML"
+                        hx-target="#tr{{ instance.id }}"
+                        style="display: contents;width:100%">
+                        {% csrf_token %}
+                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
+                            <ion-icon name="archive"></ion-icon>
+                        </button>
+                    </form>
+            {% endif %}
+        {% endif %}
+        {% if perms.pms.delete_objective %}
+        <form hx-post='{% url "objective-delete" instance.id %}'
+        hx-confirm="{% trans 'Are you sure to delete this objective?' %}"
+        hx-swap="innerHTML"
+        hx-target="#tr{{ instance.id }}"
+        style="display: contents;width:100%">
+    {% csrf_token %}
+    <button class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
+    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+    </button>
+</form>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

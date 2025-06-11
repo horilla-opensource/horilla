@@ -1,0 +1,70 @@
+{% load static i18n %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="genericModalLabel">
+        {% trans "Update Stage Order" %}
+    </span>
+    <button
+        class="oh-modal__close--custom"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+        aria-label="Close"
+    >
+        <ion-icon
+            name="close-outline"
+            role="img"
+            class="md hydrated"
+        ></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative rounded ">
+    <div class="oh-profile-section" id="sequenceForm">
+        <ul class="mt-3 p-0" id="sortable">
+            {% for stage in stages %}
+            <li
+                class="oh-btn oh-btn--small border d-flex align-items-center justify-content-start p-3 rounded mb-2"
+                style="cursor: grab"
+                data-id = "{{stage.id}}"
+            >
+                <span class="text-secondary me-3 fs-5">≡</span>
+                <span class="fw-bold text-primary me-2">{{stage.sequence}}.</span>
+                <span>{{stage}}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="d-flex flex-row-reverse">
+            <button
+                type="submit"
+                class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+            >
+                {% trans "Save" %}
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $("#sortable").sortable();
+        $("#sequenceForm button[type=submit]").on("click", function (e) {
+            e.preventDefault();
+            let order = [];
+            $("#sortable li").each(function (index) {
+                order.push($(this).data("id"));
+            });
+
+            $.ajax({
+                url: "{% url 'rec-update-stage-seq' recruitment.id %}",
+                method: "POST",
+                data: {
+                    order: JSON.stringify(order),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    $(".oh-modal--show").removeClass("oh-modal--show");
+                    $("#applyFilter").click()
+                },
+                error: function (response) {
+                    console.log("Error updating order");
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,14 @@
+{% load i18n %}
+{% include 'generic/components.html' %}
+<button
+      type="button"
+      hx-get="{% url 'send-mail-employee' instance.id %}"
+      title="{% trans "Send Mail" %}"
+      hx-target="#mail-content"
+      hx-swap="innerHTML"
+      class="oh-btn oh-btn--light-bkg w-100"
+      data-toggle="oh-modal-toggle"
+      data-target="#sendMailModal"
+    >
+      <ion-icon name="mail-open-outline"></ion-icon>
+    </button>

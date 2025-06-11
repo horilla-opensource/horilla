@@ -1,0 +1,10 @@
+{% load i18n %}
+<div class="d-flex align-items-center">
+    <span
+        class="oh-dot oh-dot--small me-1 oh-dot--color {% if instance.asset_request_status == 'Approved' %} oh-dot--success {% elif instance.asset_request_status == 'Rejected' %} oh-dot--danger {% elif instance.asset_request_status == 'Requested' %} oh-dot--info {% endif %}">
+    </span>
+    <span
+        class="{% if instance.asset_request_status == 'Approved' %} link-success {% elif instance.asset_request_status == 'Rejected' %} link-danger {% elif instance.asset_request_status == 'Requested' %} link-info {% endif %}"
+        >{% trans instance.asset_request_status %}
+    </span>
+</div>

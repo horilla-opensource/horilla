@@ -1,0 +1,20 @@
+{% load i18n %}
+{% if instance.is_fixed %}
+        <span class="oh-timeoff-modal__stat-count">{{instance.amount}}</span>
+    {% else %}
+        {% if instance.based_on == "basic_pay" %}
+            <span class="oh-timeoff-modal__stat-count">{{instance.rate}}% of {{instance.get_based_on_display}}</span>
+        {% endif %}
+        {% if instance.based_on == "attendance" %}
+            <span class="oh-timeoff-modal__stat-count">{{instance.per_attendance_fixed_amount}} {{currency}} {% trans "Amount Per Attendance" %}</span>
+        {% endif %}
+        {% if instance.based_on == "shift_id" %}
+            <span class="oh-timeoff-modal__stat-count">{{instance.shift_per_attendance_amount}} {{currency}} {% trans "Amount Per" %} {{instance.shift_id}}</span>
+        {% endif %}
+        {% if instance.based_on == "work_type_id" %}
+            <span class="oh-timeoff-modal__stat-count">{{instance.work_type_per_attendance_amount}} {{currency}} {% trans "Amount Per" %} {{instance.work_type_id}}</span>
+        {% endif %}
+        {% if instance.based_on == "overtime" %}
+            <span class="oh-timeoff-modal__stat-count">{{instance.amount_per_one_hr}} {{currency}} {% trans "Amount Per One Hour" %}</span>
+        {% endif %}
+    {% endif %}

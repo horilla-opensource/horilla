@@ -1,0 +1,117 @@
+{% load i18n %}
+{% load static %}
+{% load horillafilters %}
+
+ <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Employee" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_first_name.id_for_label}}">{% trans "First Name" %}</label>
+            {{form.employee_first_name}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.email.id_for_label}}">{% trans "Email" %}</label>
+            {{form.email}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label">{% trans 'Country' %}</label>
+            <select name="country" class="oh-select-2 oh-select w-100 country" id="country">
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_last_name.id_for_label}}">{% trans "Last Name" %}</label>
+            {{form.employee_last_name}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.phone.id_for_label}}">{% trans "Phone" %}</label>
+            {{form.phone}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.gender.id_for_label}}">{% trans "Gender" %}</label>
+            {{form.gender}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Work Info" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
+            {{form.employee_work_info__company_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
+            {{form.employee_work_info__department_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
+            {{form.employee_work_info__shift_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_work_info__tags.id_for_label}}">{% trans "Employee tag" %}</label>
+            {{form.employee_work_info__tags}}
+          </div>
+
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_work_info__reporting_manager_id.id_for_label}}">{% trans "Reporting Manager" %}</label>
+            {{form.employee_work_info__reporting_manager_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
+            {{form.employee_work_info__job_position_id}}
+          </div>
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
+            {{form.employee_work_info__work_type_id}}
+          </div>
+          {% if "attendance"|app_installed %} 
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.working_today.id_for_label}}">{% trans "Currently Working" %}</label>
+            {{form.working_today}}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{form.employee_user_id__groups.id_for_label}}">{% trans "Groups" %}?</label>
+              {{form.employee_user_id__groups}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{form.is_active.id_for_label}}">{% trans "Is Active" %}?</label>
+              {{form.is_active}}
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_user_id__user_permissions.id_for_label}}">{% trans "Permissions" %}</label>
+            {{form.employee_user_id__user_permissions}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 
+<script src="{% static '/base/filter.js' %}"></script>
+<script>
+{% include 'filter_country.js' %}
+</script> 

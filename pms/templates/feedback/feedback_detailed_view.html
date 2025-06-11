@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
 {% block content %}
+{% include 'generic/components.html' %}
 {% load static i18n %}
 {% load i18n %}
 {% load basefilters %}
@@ -121,7 +122,7 @@
                           data-toggle="oh-modal-toggle"
                           class="oh-btn oh-btn--light-bkg w-100"
                           data-target="#feedbackModalPopup"
-                          hx-get="{% url 'feedback-update' id=feedback.id %}"
+                          hx-get="{% url 'feedback-update' feedback.id %}"
                           hx-target="#feedbackModalTarget"
                           title = {% trans "Edit" %}>
                           <ion-icon name="create-outline" class="me-1" ></ion-icon>
@@ -301,6 +302,7 @@
           <div class="row">
             <div class="col-12 col-sm-12 col-md-12 col-lg-12">
               <div class="m-2">
+                {% if feedback.manager_id %}
                 <div class="oh-card__body">
                   <div class="oh-sticky-table">
                     <div class="oh-sticky-table__table">
@@ -359,6 +361,8 @@
                     </div>
                   </div>
                 </div>
+                {% endif %}
+              </div>
               </div>
             </div>
           </div>
@@ -517,17 +521,16 @@
           <!-- end of other employees section -->
         </div>
         </div>
-
-      </div>
       <div class="oh-tabs__content" id="feedback-overview">
         <div id="feedback_overview_div">
-          <button hx-get="{% url 'get-feedback-overview' feedback.id %}"
-              hx-target="#feedback-overview" id="feedback-overview-button" hidden>
-          </button>
-      </div>
+        </div>
       </div>
     </div>
 </div>
+<button
+  hx-get="{% url 'get-feedback-overview' feedback.id %}"
+  hx-target="#feedback-overview" id="feedback-overview-button" hidden>
+</button>
 </main>
 
   <!-- answer off canvas -->
@@ -552,12 +555,6 @@
   <!-- update modal  -->
   <div class="oh-modal" id="feedbackModalPopup" role="dialog" aria-labelledby="" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width:885px;" id="">
-      <div class="oh-modal__dialog-header">
-        <span class="oh-modal__dialog-title" id="addEmployeeObjectiveModalLabel">{% trans "Update Feedback" %}</span>
-        <button type="button" class="oh-modal__close reloadButton" aria-label="Close">
-            <ion-icon name="close-outline"></ion-icon>
-        </button>
-      </div>
       <div class="oh-modal__dialog-body" id="feedbackModalTarget">
       </div>
     </div>
@@ -578,7 +575,15 @@
   });
 
   function get_collegues(element) {
-      var employee_id = $(element).val();
+
+        if (typeof element === 'object')
+        {
+            var employee_id = $(element).val();
+        }
+        else {
+          var employee_id = element
+        }
+
 
       // Check if the employee_id is valid
       if (employee_id) {

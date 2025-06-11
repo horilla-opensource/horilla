@@ -119,11 +119,12 @@ x-data="{searchShow: false}"
                       <label class="oh-label" for="{{f.form.approved.id_for_label}}">{% trans "Approved" %}?</label>
                       {{f.form.approved}}
                     </div>
-                    <div class="oh-input-group">
-                      <label class="oh-label" for="{{f.form.canceled.id_for_label}}">{% trans "Canceled" %}?</label>
-                      {{f.form.canceled}}
-                    </div>
+
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="{{f.form.requested.id_for_label}}">{% trans "Requested" %}?</label>
+                    {{f.form.requested}}
                   </div>
+                </div>
                   <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
                       <label class="oh-label" for="{{f.form.work_type_id.id_for_label}}">{% trans "Requested Work Type" %}</label>

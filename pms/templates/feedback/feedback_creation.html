@@ -16,13 +16,11 @@
 <div class="oh-wrapper" id="message"></div>
 <!-- Feedback form'-->
 <main class="oh-onboarding">
-    <div class="oh-onboarding-card oh-profile-section" style="max-width: 868px">
-        <form
-            action="{%url 'feedback-creation' %}"
-            id="feedbackCreationForm"
-            method="post"
-        >
-            {% csrf_token %} {{feedback_form.non_field_errors}}
+    <div class="oh-onboarding-card oh-profile-section" style="max-width: 868px;">
+        {{feedback_form.non_field_errors}}
+        <form action="{%url 'feedback-creation' %}" id="feedbackCreationForm" method="post">
+            {{feedback_form.non_field_errors}}
+            {% csrf_token %}
             <div class="oh-onboarding-card__address-group">
                 <h2 class="oh-onboarding-card__section-title">
                     {{feedback_form.verbose_name}}

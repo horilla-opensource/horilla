@@ -1,5 +1,5 @@
+{% include "generic/components.html" %}
 {% load i18n recruitmentfilters horillafilters %}
-
 <!-- start of messages -->
 {% if messages %}
 <div class="oh-wrapper">
@@ -180,7 +180,7 @@
                     {% if candidate_ratings|has_candidate_rating:cand %}
                     <form hx-swap="none" hx-post='{% url "update-candidate-rating" cand.id %}' method="post">
                         {% csrf_token %}
-                        <div class="d-block mb-0">
+                        <div class="d-block mb-0" style="width: max-content;">
                             <div class="oh-rate" onclick="$(this).parents().closest('form').find('button').click()">
                                 {% for i in "54321" %}
                                 <input type="radio" id="star{{i}}{{cand.id}}" name="rating" class="rating-radio"
@@ -237,9 +237,9 @@
                         <div class="oh-btn-group">
                             {% if perms.recruitment.add_interviewschedule or request.user.employee_get in stage.stage_managers.all %}
                                 <button type="button" hx-get='{% url "interview-schedule" cand.id %}' title="{% trans "Schedule Interview" %}"
-                                        hx-target="#createTarget"
+                                        hx-target="#genericModalBody"
                                         hx-swap="innerHTML"
-                                        data-target="#createModal" class="oh-btn oh-btn--light"
+                                        data-target="#genericModal" class="oh-btn oh-btn--light"
                                         data-toggle="oh-modal-toggle"
                                         style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;">
                                     <ion-icon name="time-outline"></ion-icon>
@@ -258,9 +258,9 @@
                                 <button type="button" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'To Skill zone' %}"
                                     data-toggle="oh-modal-toggle"
                                     hx-get="{% url 'to-skill-zone' cand.id %}"
-                                    hx-target="#createTarget"
+                                    hx-target="#genericModalBody"
                                     hx-swap="innerHTML"
-                                    data-target="#createModal"
+                                    data-target="#genericModal"
                                     style="flex: 1 0 auto; width:25px !important;height: 40.68px; padding: 0;color: orangered;">
                                     <ion-icon name="heart-circle-outline"></ion-icon>
                                 </button>

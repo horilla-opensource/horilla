@@ -1,0 +1,28 @@
+{% load i18n %}
+<div id="{{ view_id }}">
+  <div class="oh-layout_horizontal">
+    {% for allowance in assigned_allowances %}
+      <div class="oh-kanban-card">
+        <div class="d-flex flex-column gap-2">
+          <div class="oh-kanban-card__avatar">
+            <div class="oh-kanban-card__profile-container">
+              <img src="{{allowance.get_avatar}}" class="oh-kanban-card__profile-image"/>
+            </div>
+          </div>
+          <div class="oh-kanban-card__details">
+            <span class="oh-kanban-card__title">{{allowance}}</span>
+            <span class="oh-kanban-card__subtitle">{% trans "Amount" %}: {% if allowance.is_fixed %}{{allowance.amount}}{{currency}}{% else %}{{allowance.rate|default:"0"}}% of {{allowance.get_based_on_display}}{% endif %}</span>
+            <br>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if not request.GET.card_only %}
+  {% include 'generic/horilla_list_table.html' %}
+  {% elif not queryset.exists %}
+    <div class="oh-checkpoint-badge text-success quick-bulk-action" onclick="$(`[hx-get='{% url "allocation-allowance" %}?instance_id={{request.GET.instance_id}}']`).click();" style="cursor: pointer;">
+      <span class="label">+ Allocate</span>
+    </div>
+  {% endif %}
+</div>

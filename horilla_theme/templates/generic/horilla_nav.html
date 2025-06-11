@@ -1,0 +1,131 @@
+{% load i18n %}
+<div class="flex flex-wrap justify-between items-center mb-3">
+    <h3 class="text-lg font-semibold">{{nav_title}}</h3>
+
+    {% if search_url %}
+        <form autocomplete="off" 
+            id="filterForm" 
+            onsubmit="event.preventDefault()" 
+            hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}" 
+            hx-replace-url="false" 
+            hx-target="{{search_swap_target}}"
+            hx-on:submit="htmxLoadIndicator(this);"
+        >
+            <div class="flex flex-wrap gap-1">
+
+                <input type="text" name="nav_url" value="{{request.path}}" hidden>
+
+                <div class="relative">
+                    <input
+                        type="text"
+                        class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                        name="search"
+                        aria-label="Search Input"
+                        placeholder="Search"
+                        autocomplete="false"
+                        autofocus ="true"
+                        onkeyup="
+                        $(this).closest('form').find('#applyFilter').click();
+                        {% comment %} {% if search_in %}
+                            $('#applyFilter')[0].click();if(this.value) {
+                            $('.search_text').html(this.value)
+                            $(this).parent().find('#dropdown').show()
+                            }else{
+                            $(this).parent().find('#dropdown').hide()
+                            }
+                        {% endif %} {% endcomment %}
+                        "
+                        {% comment %} {% if search_in %}
+                            onfocus="
+                                if (this.value) {
+                                    $(this).parent().find('#dropdown').show()
+                                }"
+                            onfocusout="
+                                setTimeout(function() {
+                                    $('#dropdown').hide()
+                                }, 300);
+                            "
+                        {% endif %} {% endcomment %}
+                        {{search_input_attrs|safe}}
+                    />
+                    <i
+                        class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"
+                    ></i>
+                    {% comment %} {% if search_in %}
+                        <input type="text" hidden name="search_field">
+                        <div class="custom-dropdown" id="dropdown" style="z-index: 1000 !important;">
+                            <ul class="search_content">
+                                {% for option in search_in %}
+                                <li>
+                                    <a href="#" onclick="$('[name=search_field]').val('{{option.0}}'); $(this).closest('form').find('#applyFilter').click()">
+                                        {% trans "Search" %} <b>{{option.1}}</b> {% trans "for:" %}
+                                        <b class="search_text"></b>
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %} {% endcomment %}
+                </div>
+                {% if group_by_fields %}
+                    <button
+                        class="px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                    >
+                        <img src="/static/horilla_theme/assets/img/icons/adjust.svg" alt="" width="15" />Group
+                        By
+                    </button>
+                {% endif %}
+
+                {% if filter_body_template %}
+                    <button
+                        class="px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                        id="applyFilter"
+                    >
+                        <img
+                            src="/static/horilla_theme/assets/img/icons/sort.svg"
+                            alt=""
+                            width="16"
+                            class="mt-[-1px]"
+                        />Filter
+                    </button>
+                {% else %}
+                    <button 
+                        hidden
+                        type="submit"
+                        id="applyFilter"
+                        class="oh-btn oh-btn--secondary oh-btn--small w-100">
+                        {% trans "Filter" %}
+                    </button>
+                {% endif %}
+                <input type="hidden" id="pageInput">
+                <input type="hidden" id="sortInput">
+            
+                {% if create_attrs %}
+                    <a
+                        {% comment %} data-modal-open="deletemodal" {% endcomment %}
+                        class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                        {{create_attrs|safe}}
+                    >
+                        <img
+                            src="/static/horilla_theme/assets/img/icons/more.svg"
+                            alt=""
+                            width="13"
+                            class="filter brightness-0 invert"
+                        />
+                        Create
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    {% endif %}
+</div>
+<script>
+    setTimeout(() => {
+      // $(".oh-btn--view-active").click();
+      {% if apply_first_filter %}
+      if (!$(".oh-btn--view-active").length) {
+        $("#applyFilter").click()
+      }
+      {% endif %}
+    }, 100);
+</script>

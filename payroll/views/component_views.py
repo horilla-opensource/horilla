@@ -25,6 +25,7 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, Side
 from openpyxl.utils import get_column_letter
 
+import payroll.models.models
 from base.backends import ConfiguredEmailBackend
 from base.methods import (
     closest_numbers,
@@ -85,6 +86,8 @@ from payroll.models.models import (
     ReimbursementMultipleAttachment,
 )
 from payroll.threadings.mail import MailSendThread
+
+# from asset.models import Asset
 
 
 def return_none(a, b):
@@ -386,7 +389,8 @@ def create_allowance(request):
             form.save()
             form = forms.AllowanceForm()
             messages.success(request, _("Allowance created."))
-            return redirect(view_allowance)
+            # return redirect(view_allowance)
+            return redirect(reverse("view-allowance"))
     return render(request, "payroll/common/form.html", {"form": form})
 
 
@@ -396,7 +400,10 @@ def view_allowance(request):
     """
     This method is used render template to view all the allowance instances
     """
-    allowances = Allowance.objects.exclude(only_show_under_employee=True)
+
+    allowances = payroll.models.models.Allowance.objects.exclude(
+        only_show_under_employee=True
+    )
     allowance_filter = AllowanceFilter(request.GET)
     allowances = paginator_qry(allowances, request.GET.get("page"))
     allowance_ids = json.dumps([instance.id for instance in allowances.object_list])
@@ -483,46 +490,94 @@ def update_allowance(request, allowance_id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Allowance updated."))
-            return redirect(view_allowance)
+            return redirect(reverse("view-allowance"))
     return render(request, "payroll/common/form.html", {"form": form})
+
+
+# @login_required
+# @hx_request_required
+# @permission_required("payroll.delete_allowance")
+# def delete_allowance(request, allowance_id):
+#     """
+#     This method is used to delete the allowance instance
+#     """
+#     target = request.META.get("HTTP_HX_TARGET")
+
+
+#     try:
+#         allowance = payroll.models.models.Allowance.objects.filter(
+#             id=allowance_id
+#         ).first()
+#         if allowance:
+#             # allowance.delete()
+#             messages.success(request, _("Allowance deleted successfully"))
+#         else:
+#             messages.error(request, _("Allowance not found"))
+
+#     except ValidationError as validation_error:
+#         messages.error(
+#             request, _("Validation error occurred while deleting the allowance")
+#         )
+#         messages.error(request, str(validation_error))
+#     except Exception as exception:
+#         messages.error(request, _("An error occurred while deleting the allowance"))
+#         messages.error(request, str(exception))
+#     if target and target == "allowance_id":
+#         return redirect(reverse("allowances-list-view"))
+#         # return HttpResponse("<script>location.reload();</script>")
+#     if target and target == "allowance_tab_id":
+#         # return redirect(reverse("allowance-tab-list"))
+#         return HttpResponse("<script>location.reload();</script>")
+
+#     if (
+#         request.path.split("/")[2] == "delete-employee-allowance"
+#         or not payroll.models.models.Allowance.objects.filter()
+#     ):
+#         return HttpResponse("<script>window.location.reload();</script>")
+#     return redirect(filter_allowance)
 
 
 @login_required
 @hx_request_required
 @permission_required("payroll.delete_allowance")
-def delete_allowance(request, allowance_id):
-    """
-    This method is used to delete the allowance instance
-    """
-    previous_data = get_urlencode(request)
-    try:
-        allowance = Allowance.objects.filter(id=allowance_id).first()
-        if allowance:
-            allowance.delete()
-            messages.success(request, _("Allowance deleted successfully"))
-        else:
-            messages.error(request, _("Allowance not found"))
-    except Exception as e:
-        messages.error(request, _("An error occurred while deleting the allowance"))
-        messages.error(request, str(e))
-
-    if (
-        request.path.split("/")[2] == "delete-employee-allowance"
-        or not Allowance.objects.exists()
-    ):
-        return HttpResponse("<script>window.location.reload();</script>")
-
+def delete_allowance(request, allowance_id, emp_id=None):
+    target = request.META.get("HTTP_HX_TARGET")
     instances_ids = request.GET.get("instances_ids")
+    next_instance = None
+    instances_list = None
     if instances_ids:
         instances_list = json.loads(instances_ids)
         previous_instance, next_instance = closest_numbers(instances_list, allowance_id)
-        if allowance_id in instances_list:
-            instances_list.remove(allowance_id)
-            url = f"/payroll/single-allowance-view/{next_instance}"
-            params = f"?{previous_data}&instances_ids={instances_list}"
-            return redirect(url + params)
+        instances_list.remove(allowance_id)
+    allowance = payroll.models.models.Allowance.objects.filter(id=allowance_id).first()
+    if allowance:
+        allowance.delete()
+        messages.success(request, _("Allowance deleted successfully"))
+    else:
+        messages.error(request, _("Allowance not found"))
 
-    return redirect(f"/payroll/filter-allowance?{previous_data}")
+    paths = {
+        "payroll-deduction-container": f"/payroll/filter_allowance?{request.GET.urlencode()}",
+        "allowance_tab_id": f"/payroll/allowance-tab-list/{emp_id}?deleted=true",
+        "allowance_id": "/payroll/allowances-list-view/",
+        "allowance_card": "/payroll/allowances-card-view/",
+        "genericModalBody": f"/payroll/allowance-detail-view/{next_instance}?instance_ids={instances_list}&deleted=true",
+    }
+    http_hx_target = request.META.get("HTTP_HX_TARGET")
+    redirected_path = paths.get(http_hx_target)
+    if http_hx_target:
+        if (
+            http_hx_target == "payroll-deduction-container"
+            and not Deduction.objects.filter()
+        ):
+            return HttpResponse("<script>window.location.reload();</script>")
+        if redirected_path:
+            return redirect(redirected_path)
+
+    default_redirect = (
+        request.path if http_hx_target else request.META.get("HTTP_REFERER", "/")
+    )
+    return HttpResponseRedirect(default_redirect)
 
 
 @login_required
@@ -537,7 +592,8 @@ def create_deduction(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Deduction created."))
-            return redirect(view_deduction)
+            # return redirect(view_deduction)
+            return redirect(reverse("view-deduction"))
     return render(request, "payroll/common/form.html", {"form": form})
 
 
@@ -660,7 +716,7 @@ def update_deduction(request, deduction_id, **kwargs):
         if form.is_valid():
             form.save()
             messages.success(request, _("Deduction updated."))
-            return redirect(view_deduction)
+            return redirect(reverse("view-deduction"))
     return render(request, "payroll/common/form.html", {"form": form})
 
 
@@ -685,9 +741,12 @@ def delete_deduction(request, deduction_id, emp_id=None):
         messages.error(request, _("Deduction not found"))
 
     paths = {
+        "deduct-container": f"/payroll/deduction-view-list?{request.GET.urlencode()}",
         "payroll-deduction-container": f"/payroll/filter-deduction?{request.GET.urlencode()}",
-        "allowance_deduction": f"/payroll/allowances-deductions-tab/{emp_id}",
-        "objectDetailsModalTarget": f"/payroll/single-deduction-view/{next_instance}?{previous_data}&instances_ids={instances_list}",
+        "allowance_deduction": f"/employee/allowances-deductions-tab/{emp_id}",
+        "deduct-div": f"/payroll/deduction-tab-list/{emp_id}?deleted=true",
+        "objectDetailsModalTarget": f"/payroll/single-deduction-view/{next_instance}?instances_ids={instances_list}",
+        "genericModalBody": f"/payroll/deduction-detail-view/{next_instance}?instance_ids={instances_list}&deleted=true",
     }
     http_hx_target = request.META.get("HTTP_HX_TARGET")
     redirected_path = paths.get(http_hx_target)
@@ -699,6 +758,7 @@ def delete_deduction(request, deduction_id, emp_id=None):
             return HttpResponse("<script>window.location.reload();</script>")
         if redirected_path:
             return redirect(redirected_path)
+
     default_redirect = (
         request.path if http_hx_target else request.META.get("HTTP_REFERER", "/")
     )
@@ -807,6 +867,7 @@ def check_contract_start_date(request):
     """
     Check if the employee's contract start date is after the provided payslip start date.
     """
+
     employee_id = request.GET.get("employee_id")
     start_date = request.GET.get("start_date")
 
@@ -1172,14 +1233,18 @@ def hx_create_allowance(request):
 
 
 @login_required
+# @hx_request_required
 @permission_required("payroll.add_payslip")
 def send_slip(request):
     """
     Send payslip method
     """
+
     email_backend = ConfiguredEmailBackend()
     view = request.GET.get("view")
     payslip_ids = request.GET.getlist("id")
+
+    # payslip_ids = request.GET.get("id")
     payslips = Payslip.objects.filter(id__in=payslip_ids)
     if not getattr(
         email_backend, "dynamic_from_email_with_display_name", None
@@ -1188,7 +1253,7 @@ def send_slip(request):
         if view:
             return HttpResponse("<script>window.location.reload()</script>")
         else:
-            return redirect(filter_payslip)
+            return redirect(reverse("payslip-list"))
 
     result_dict = defaultdict(
         lambda: {"employee_id": None, "instances": [], "count": 0}
@@ -1198,13 +1263,14 @@ def send_slip(request):
         result_dict[employee_id]["employee_id"] = employee_id
         result_dict[employee_id]["instances"].append(payslip)
         result_dict[employee_id]["count"] += 1
+
     mail_thread = MailSendThread(request, result_dict=result_dict, ids=payslip_ids)
     mail_thread.start()
     messages.info(request, "Mail processing")
     if view:
         return HttpResponse("<script>window.location.reload()</script>")
     else:
-        return redirect(filter_payslip)
+        return redirect(reverse("payslip-list"))
 
 
 @login_required
@@ -1257,6 +1323,9 @@ def add_bonus(request):
                         ).format(employee),
                     )
             return HttpResponse("<script>window.location.reload()</script>")
+    else:
+        print(form.errors)
+
     return render(
         request,
         "payroll/bonus/form.html",
@@ -1384,6 +1453,7 @@ def view_installments(request):
     installments = loan.deduction_ids.all()
 
     requests_ids_json = request.GET.get("instances_ids")
+    previous_id, next_id = None, None
     if requests_ids_json:
         requests_ids = json.loads(requests_ids_json)
         previous_id, next_id = closest_numbers(requests_ids, int(loan_id))
@@ -1423,7 +1493,8 @@ def delete_loan(request):
             messages.success(request, "Loan account deleted")
         else:
             messages.error(request, "Loan account cannot be deleted")
-    return redirect(view_loans)
+    # return redirect(view_loans)
+    return redirect(reverse("view-loan"))
 
 
 @login_required
@@ -1467,6 +1538,7 @@ def edit_installment_amount(request):
 
     return render(
         request,
+        # "cbv/loan/loan_detail_view.html",
         "payroll/loan/installments.html",
         {
             "installments": loan.deduction_ids.all(),
@@ -1747,7 +1819,7 @@ def approve_reimbursements(request):
                 redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
                 icon="checkmark",
             )
-    return redirect(view_reimbursement)
+    return redirect(reverse("view-reimbursement"))
 
 
 @login_required
@@ -1774,7 +1846,7 @@ def delete_reimbursements(request):
         icon="trash",
     )
 
-    return redirect(view_reimbursement)
+    return redirect("view-reimbursement")
 
 
 @login_required

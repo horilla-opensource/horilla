@@ -14,6 +14,9 @@
                 spanElement.click();
             }
         }, 1000);
+        $(document).ready(function(){
+            $('.reload-record').click();
+          })
     </script>
     {% if late_in_early_out_ids %}
         <span class="oh-span__class" hx-get="{% url 'late-come-early-out-search' %}?{{pd}}" hx-target="#report-container"></span>
@@ -82,8 +85,7 @@
                     <i>{% trans "By default minus leave will cut/deduct from available leaves" %}</i>
                 </li>
                 <li>
-                    <i>{% trans "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days"
-                        %}</i>
+                    <i>{% trans "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days" %}</i>
                 </li>
             </ol>
         {% endif %}

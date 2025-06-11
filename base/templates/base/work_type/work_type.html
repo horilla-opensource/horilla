@@ -1,43 +1,39 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %} {% load static %}
 <div class="oh-inner-sidebar-content">
-  {% if perms.base.view_worktype %}
-  <div
-    class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
-  >
-    <h2 class="oh-inner-sidebar-content__title">{% trans "Work Type" %}</h2>
-    {% if perms.base.add_worktype %}
-    <button
-      class="oh-btn oh-btn--secondary oh-btn--shadow"
-      data-toggle="oh-modal-toggle"
-      data-target="#workTypeModal"
-      hx-get="{% url 'work-type-create' %}"
-      hx-target="#workTypeForm"
-    >
-      <ion-icon name="add-outline" class="me-1"></ion-icon>
-      {% trans "Create" %}
-    </button>
-    {% endif %}
-  </div>
-    {% if work_types %}
-      {% include 'base/work_type/work_type_view.html' %}
-    {% else %}
-      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-        <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/work-type.png' %}" class="" alt="Page not found. 404." />
-        <h5 class="oh-404__subtitle">{% trans "There is no work types at this moment." %}</h5>
-      </div>
-    {% endif %}
+    {% include "generic/components.html" %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
 
-  {% endif %}
+    {% if perms.base.view_worktype %}
+        <div hx-get="{% url 'worktype-nav' %}" hx-trigger="load"></div>
+        <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+        <div class="oh-wrapper"  id="listContainer">
+            <div class="animated-background"></div>
+        </div>
+        {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Work Type" %}</h2>
+            <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                data-target="#workTypeModal" hx-get="{% url 'work-type-create-form' %}" hx-target="#workTypeForm">
+                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                {% trans "Create" %}
+            </button>
+            </div>
+            {% if work_types %}
+                {% include 'base/work_type/work_type_view.html' %}
+            {% else %}
+                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+                    <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);"
+                        src="{% static 'images/ui/work-type.png' %}" class="" alt="Page not found. 404." />
+                    <h5 class="oh-404__subtitle">{% trans "There is no work types at this moment." %}</h5>
+                </div>
+            {% endif %}
+        {% endcomment %}
+    {% endif %}
 </div>
 
-<div
-  class="oh-modal"
-  id="workTypeModal"
-  role="dialog"
-  aria-labelledby="workTypeModalLabel"
-  aria-hidden="true"
->
-  <div class="oh-modal__dialog" id="workTypeForm"></div>
+<div class="oh-modal" id="workTypeModal" role="dialog" aria-labelledby="workTypeModalLabel" aria-hidden="true">
+    <div class="oh-modal__dialog" id="workTypeForm"></div>
 </div>
+
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
 
 {% endblock settings %}

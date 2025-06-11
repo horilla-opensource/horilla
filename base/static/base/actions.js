@@ -1,3 +1,5 @@
+
+
 var excelMessages = {
   ar: "هل ترغب في تنزيل ملف Excel؟",
   de: "Möchten Sie die Excel-Datei herunterladen?",

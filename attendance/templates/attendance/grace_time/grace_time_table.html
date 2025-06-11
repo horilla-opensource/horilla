@@ -1,4 +1,5 @@
 {% load static %}{% load i18n %}
+{% include "generic/components.html" %}
 <div id="ohMessages"></div>
 {% if messages %}
 <div class="oh-wrapper">
@@ -12,7 +13,11 @@
 </div>
 {% endif %}
 <div class="oh-inner-sidebar-content mt-3">
-    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center pb-3">
+
+    <div id="defaultGraceNav" hx-get="{% url "default-grace-time-nav" %}" hx-trigger="load,click" class="defaultGraceNav" >
+	</div>
+
+    {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center pb-3">
         <h2 class="oh-inner-sidebar-content__title">{% trans 'Default Grace Time' %}</h2>
         {% if not default_grace_time and perms.attendance.add_gracetime %}
         <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-target="#objectCreateModalTarget" type="button"
@@ -22,8 +27,28 @@
             {% trans 'Create' %}
         </button>
         {% endif %}
-    </div>
-    {% if default_grace_time %}
+    </div> {% endcomment %}
+
+
+
+		<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstancesDefault"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  hx-get="{% url "default-grace-time-list"  %}?{{request.GET.urlencode}}"
+  hx-trigger="load"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+    {% comment %} {% if default_grace_time %}
         <div class="oh-sticky-table">
             <div class="oh-sticky-table__table oh-table--sortable">
                 <div class="oh-sticky-table__thead">
@@ -121,13 +146,15 @@
                 src="{% static 'images/ui/Hour_glass.png' %}" class="" alt="Page not found. 404." />
             <h5 class="oh-404__subtitle">{% trans "There is no default grace time at this moment." %}</h5>
         </div>
-    {% endif %}
+    {% endif %} {% endcomment %}
 </div>
 <!--end of Defualt Grace time  -->
 
 <!--start of Grace time  -->
 <div class="oh-inner-sidebar-content">
-    <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+    <div hx-get="{% url "grace-time-nav" %}" hx-trigger="load" >
+	</div>
+    {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
         <h2 class="oh-inner-sidebar-content__title">{% trans 'Grace Time' %}</h2>
         {% if perms.attendance.add_gracetime %}
         <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-target="#objectCreateModalTarget" type="button"
@@ -137,8 +164,27 @@
             {% trans 'Create' %}
         </button>
         {% endif %}
+    </div> {% endcomment %}
+
+
+		<div
+        class="oh-checkpoint-badge mb-2"
+        id="selectedInstancesData"
+        data-ids="[]"
+        data-clicked=""
+        style="display: none"
+      ></div>
+
+
+      <div
+      class="oh-wrapper"
+      hx-get="{% url "grace-time-list"  %}?{{request.GET.urlencode}}"
+      hx-trigger="load"
+      id="grace-time-container">
+      <div class="animated-background">
+      </div>
     </div>
-    {% if grace_times %}
+    {% comment %} {% if grace_times %}
     <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
             <div class="oh-sticky-table__thead">
@@ -257,7 +303,7 @@
             src="{% static 'images/ui/Hour_glass.png' %}" class="" alt="Page not found. 404." />
         <h5 class="oh-404__subtitle">{% trans "There is no grace time at this moment." %}</h5>
     </div>
-    {% endif %}
+    {% endif %} {% endcomment %}
 </div>
 <!--end of Grace time  -->
 

@@ -1,0 +1,16 @@
+{% load basefilters %}
+{% load i18n %}
+{% load recruitmentfilters%}
+{% with instance.request.user.employee_get.candidate_rating.all as candidate_ratings  %}
+<form >
+  <div class="d-block mb-0">
+    <div class="oh-rate" onmouseenter="event.stopPropagation()">
+      {% for i in "54321" %}
+      <input type="radio" id="star{{i}}{{instance.id}}" name="rating" class="rating-radio" value="{{i}}" disabled {% if instance.candidate_rating.all|avg_rating:instance == i %} checked {% endif %} />
+      <label for="star{{i}}{{instance.id}}" >5 {% trans "Stars" %}</label>
+      {% endfor %}
+    </div>
+    <span id="rating-radio-error"></span>
+  </div>
+</form>
+{% endwith %}

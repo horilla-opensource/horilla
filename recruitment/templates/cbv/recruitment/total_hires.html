@@ -1,0 +1,4 @@
+{% load i18n %}
+<div>
+    {{instance.total_hires}} {% trans "Hired" %} <span style="font-size: 12px; color: gray;">{% trans "of" %} {{instance.candidate.all|length}} {% trans "Candidates" %}</span>
+  </div>
