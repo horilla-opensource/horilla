@@ -3,12 +3,14 @@ this page is handling the cbv methods for Job Position in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.filters import DepartmentViewFilter
 from base.forms import JobPositionForm
 from base.models import Department, JobPosition
@@ -32,7 +34,6 @@ class JobPositionListView(HorillaListView):
         self.search_url = reverse("job-position-list")
         self.view_id = "job_position"
 
-
     model = Department
     filter_class = DepartmentViewFilter
 
@@ -42,14 +43,14 @@ class JobPositionListView(HorillaListView):
     ]
 
     row_attrs = """
-                class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"   
+                class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
                 data-label="Job Position"
                 data-count="{toggle_count}"
                 """
-    
+
     header_attrs = {
         "get_department_col": """ style="width:300px !important; " """,
-        "get_job_position_col": """ style="width:300px !important; " """
+        "get_job_position_col": """ style="width:300px !important; " """,
     }
 
 

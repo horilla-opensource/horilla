@@ -1,7 +1,11 @@
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _trans
+
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
@@ -10,9 +14,6 @@ from horilla_views.generic.cbv.views import (
 from whatsapp.filters import CredentialsViewFilter
 from whatsapp.forms import WhatsappForm
 from whatsapp.models import WhatsappCredientials
-from django.utils.translation import gettext_lazy as _trans
-from django.contrib import messages
-
 from whatsapp.utils import send_text_message
 
 
@@ -33,7 +34,7 @@ class CredentialListView(HorillaListView):
     row_attrs = """
                     id = "credential{get_instance}"
                 """
-    option_method ="get_publish_button"
+    option_method = "get_publish_button"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -4,40 +4,38 @@ this page is handling the cbv methods of  attendances page
 
 import datetime
 from typing import Any
+
+import django_filters
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import resolve, reverse, reverse_lazy
-from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-import django_filters
+from django.utils.translation import gettext_lazy as _
+
 from attendance.cbv.attendance_activity import AttendanceActivityListView
+from attendance.cbv.attendance_tab import AttendanceTabView
 from attendance.filters import AttendanceFilters
 from attendance.forms import AttendanceExportForm, AttendanceForm, AttendanceUpdateForm
-from attendance.cbv.attendance_tab import AttendanceTabView
-from attendance.models import (
-    Attendance,
-    AttendanceValidationCondition,
-    strtime_seconds,
-)
+from attendance.models import Attendance, AttendanceValidationCondition, strtime_seconds
 from base.decorators import manager_can_enter
 from base.filters import PenaltyFilter
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
 from base.models import PenaltyAccounts
 from employee.cbv.employee_profile import EmployeeProfileView
-from employee.cbv.employees import EmployeeNav, EmployeeCard, EmployeesList
+from employee.cbv.employees import EmployeeCard, EmployeeNav, EmployeesList
 from employee.filters import EmployeeFilter
 from employee.models import Employee
 from horilla.filters import HorillaFilterSet
+from horilla_views.cbv_methods import login_required, render_template
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     HorillaTabView,
     TemplateView,
-    HorillaFormView,
 )
-from horilla_views.cbv_methods import login_required, render_template
 
 
 @method_decorator(login_required, name="dispatch")
@@ -291,7 +289,7 @@ class ValidateAttendancesList(AttendancesListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
-    
+
     header_attrs = {
         "action": """
                     style="width:150px !important;"
@@ -341,6 +339,7 @@ class OTAttendancesList(AttendancesListView):
                     style="width:150px !important;"
                 """
     }
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(manager_can_enter("attendance.view_attendance"), name="dispatch")
@@ -535,24 +534,22 @@ class PenaltyAccountListView(HorillaListView):
         (_("Deducted From CFD"), "get_deduct_from_carry_forward"),
         (_("Penalty amount"), "penalty_amount"),
         (_("Created Date"), "created_at"),
-        (_("Penalty Type"),"penalty_type_col")
+        (_("Penalty Type"), "penalty_type_col"),
     ]
 
     actions = [
-
         {
             "action": _("Delete"),
             "icon": "trash-outline",
-            "attrs" : """
+            "attrs": """
                         class="oh-btn oh-btn--light-bkg w-100 text-danger"
                         hx-confirm="Are you sure you want to delete this penalty?"
                         hx-post="{get_delete_url}"
                         hx-target="#penaltyTr{get_delete_instance}"
                         hx-swap="delete"
-                                    
-                      """
-        }
 
+                      """,
+        }
     ]
 
     row_attrs = """

@@ -2,26 +2,29 @@
 This page handles the cbv methods for existing process
 """
 
-from datetime import datetime, timedelta
 import re
+from datetime import datetime, timedelta
+
 from django import forms
-from django.http import HttpResponse
 from django.contrib import messages
+from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.context_processors import intial_notice_period
 from base.methods import eval_validate
+from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
-    HorillaSectionView,
-    HorillaNavView,
     HorillaListView,
+    HorillaNavView,
+    HorillaSectionView,
     HorillaTabView,
 )
-from horilla_views.generic.cbv.pipeline import Pipeline
-from horilla_views.cbv_methods import login_required, permission_required
+from notifications.signals import notify
 from offboarding.cbv_decorators import (
     any_manager_can_enter,
     offboarding_manager_can_enter,
@@ -34,19 +37,17 @@ from offboarding.filters import (
 )
 from offboarding.forms import (
     OffboardingEmployeeForm,
-    OffboardingStageForm,
     OffboardingForm,
+    OffboardingStageForm,
     TaskForm,
 )
 from offboarding.models import (
     EmployeeTask,
-    OffboardingEmployee,
-    OffboardingStage,
     Offboarding,
     OffboardingEmployee,
+    OffboardingStage,
     OffboardingTask,
 )
-from notifications.signals import notify
 from offboarding.templatetags.offboarding_filter import (
     any_manager,
     is_offboarding_manager,
@@ -406,10 +407,10 @@ class OffboardingPipelineStage(Pipeline):
                     "action": "Edit",
                     "accessibility": "offboarding.cbv.accessibility.edit_stage_accessibility",
                     "attrs": """
-                        hx-target="#genericModalBody" 
-                        hx-get="{get_update_url}" 
-                        data-toggle="oh-modal-toggle" 
-                        data-target="#genericModal" 
+                        hx-target="#genericModalBody"
+                        hx-get="{get_update_url}"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
                     """,
                 },
                 {
@@ -522,7 +523,7 @@ class OffboardingEmployeeList(HorillaListView):
                                 <button
                                     hx-get="{reverse("offboarding-update-task",kwargs={"pk":task.pk})}"
                                     hx-target="#genericModalBody"
-                                    data-toggle="oh-modal-toggle" 
+                                    data-toggle="oh-modal-toggle"
                                     data-target="#genericModal"
                                     class="oh-hover-btn__small"
                                     style="
@@ -532,8 +533,8 @@ class OffboardingEmployeeList(HorillaListView):
                                 >
                                     <ion-icon name="create-outline"></ion-icon>
                                 </button>
-                                <a 
-                                    hx-get="{reverse("generic-delete")}?model=offboarding.OffboardingTask&pk={task.id}" 
+                                <a
+                                    hx-get="{reverse("generic-delete")}?model=offboarding.OffboardingTask&pk={task.id}"
                                     hx-target="#deleteConfirmationBody"
                                     data-target="#deleteConfirmation"
                                     data-toggle="oh-modal-toggle"
@@ -557,9 +558,9 @@ class OffboardingEmployeeList(HorillaListView):
             context["columns"].append(
                 (
                     f"""
-                        <button 
-                            class="oh-checkpoint-badge text-success" 
-                            data-toggle="oh-modal-toggle" 
+                        <button
+                            class="oh-checkpoint-badge text-success"
+                            data-toggle="oh-modal-toggle"
                             data-target="#genericModal"
                             hx-get="{reverse('offboarding-add-task')}?stage_id={stage_id}"
                             hx-target="#genericModalBody"
@@ -587,7 +588,7 @@ class OffboardingEmployeeList(HorillaListView):
             "stage_id"
         ).queryset.filter(offboarding_id=offboarding_id)
 
-        tasks = OffboardingTask.objects.filter(stage_id= offboarding_stage_id)
+        tasks = OffboardingTask.objects.filter(stage_id=offboarding_stage_id)
         for task in tasks:
             form.fields[f"bulk_task_status_{task.pk}"] = forms.ChoiceField(
                 choices=[
@@ -596,9 +597,7 @@ class OffboardingEmployeeList(HorillaListView):
                 + list(EmployeeTask.statuses),
                 label=task.title,
                 required=False,
-                widget=forms.Select(
-                    attrs={"class": "oh-select oh-select-2 w-100"}
-                ),
+                widget=forms.Select(attrs={"class": "oh-select oh-select-2 w-100"}),
             )
 
         if not self.bulk_update_accessibility():

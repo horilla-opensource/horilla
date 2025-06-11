@@ -1,6 +1,8 @@
 from django.urls import path
-from . import views
+
 from whatsapp.cbv import whatsapp
+
+from . import views
 
 urlpatterns = [
     path("", views.whatsapp, name="whatsapp"),
@@ -24,7 +26,6 @@ urlpatterns = [
     #     views.end_point,
     #     name="leave-request",
     # ),
-
     path(
         "whatsapp-credential-view/",
         views.whatsapp_credential_view,

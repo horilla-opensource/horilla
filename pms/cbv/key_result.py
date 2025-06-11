@@ -16,6 +16,7 @@ from django.views import View
 from base.methods import closest_numbers
 from horilla.decorators import manager_can_enter
 from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.history import HorillaHistoryView
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
     HorillaDetailedView,
@@ -24,10 +25,9 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
-from horilla_views.generic.cbv.history import HorillaHistoryView
 from pms.filters import ActualKeyResultFilter
 from pms.forms import KRForm
-from pms.models import KeyResult, EmployeeKeyResult
+from pms.models import EmployeeKeyResult, KeyResult
 
 
 @method_decorator(login_required, name="dispatch")

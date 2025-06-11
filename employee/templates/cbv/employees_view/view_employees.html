@@ -45,7 +45,7 @@
 
 
  <div hx-get="{% url "employees-nav" %}" hx-trigger="load">
-</div> 
+</div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
 
@@ -60,9 +60,9 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -162,8 +162,8 @@
           id="employeeExportForm"
         >
           {% csrf_token %} {% include 'cbv/employees_view/employee_export.html' %}
-         
-          
+
+
         </form>
       </div>
     </div>
@@ -233,7 +233,7 @@
   function getCSRFToken() {
     return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
   }
-  
+
   function deleteEmployee(url) {
     Swal.fire({
         text: "All non-active contracts of the employee will also be deleted. Do you want to continue ?",
@@ -247,13 +247,13 @@
             const form = document.createElement('form');
             form.setAttribute('action', url);
             form.setAttribute('method', 'post');
-            
+
             const csrfTokenInput = document.createElement('input');
             csrfTokenInput.setAttribute('type', 'hidden');
             csrfTokenInput.setAttribute('name', 'csrfmiddlewaretoken');
             csrfTokenInput.value = getCSRFToken();
             form.appendChild(csrfTokenInput);
-            
+
             document.body.appendChild(form);
             form.submit();
         }
@@ -276,7 +276,7 @@
                   <p class='ms-2'>${finalErrorMessage}</p>
               </div>
               `,
-              
+
           });
         });
 

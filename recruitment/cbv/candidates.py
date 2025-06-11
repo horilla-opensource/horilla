@@ -2,29 +2,43 @@
 This module used for recruitment candidates
 """
 
-import io
 import ast
+import io
 import json
 import re
-from bs4 import BeautifulSoup
-from xhtml2pdf import pisa
-from openpyxl import Workbook
-from openpyxl.styles import PatternFill, Font, Border, Side, Alignment
-from openpyxl.utils import get_column_letter
 from typing import Any
-from import_export import fields, resources
+
+from bs4 import BeautifulSoup
+from django import forms
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.decorators import method_decorator
-from django.urls import reverse, reverse_lazy
-from django.views import View
-from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from django import forms
 from django.template.loader import render_to_string
-from horilla.horilla_middlewares import _thread_locals
+from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+from django.views import View
+from import_export import fields, resources
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.utils import get_column_letter
+from xhtml2pdf import pisa
+
 from employee.forms import BulkUpdateFieldForm
+from horilla.horilla_middlewares import _thread_locals
+from horilla_views.cbv_methods import export_xlsx, login_required, permission_required
+from horilla_views.forms import DynamicBulkUpdateForm
+from horilla_views.generic.cbv.views import (
+    HorillaCardView,
+    HorillaDetailedView,
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+    TemplateView,
+)
+from horilla_views.templatetags.generic_template_filters import getattribute
 from recruitment.cbv.candidate_reject_reason import DynamicRejectReasonFormView
+from recruitment.cbv_decorators import all_manager_can_enter, manager_can_enter
 from recruitment.filters import CandidateFilter
 from recruitment.forms import (
     CandidateExportForm,
@@ -33,23 +47,11 @@ from recruitment.forms import (
 )
 from recruitment.models import (
     Candidate,
-    RejectedCandidate,
-    SkillZoneCandidate,
     RecruitmentSurvey,
     RecruitmentSurveyAnswer,
+    RejectedCandidate,
+    SkillZoneCandidate,
 )
-from recruitment.cbv_decorators import manager_can_enter, all_manager_can_enter
-from horilla_views.forms import DynamicBulkUpdateForm
-from horilla_views.templatetags.generic_template_filters import getattribute
-from horilla_views.generic.cbv.views import (
-    HorillaFormView,
-    HorillaListView,
-    TemplateView,
-    HorillaNavView,
-    HorillaCardView,
-    HorillaDetailedView,
-)
-from horilla_views.cbv_methods import export_xlsx, login_required, permission_required
 
 _getattribute = getattribute
 
@@ -199,7 +201,7 @@ class ListCandidates(HorillaListView):
             "attrs": """
                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                 onclick="event.stopPropagation()
-                archiveCandidate({get_archive_url});  "  
+                archiveCandidate({get_archive_url});  "
             """,
         },
         {
@@ -209,7 +211,7 @@ class ListCandidates(HorillaListView):
             "attrs": """
                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
                 onclick="event.stopPropagation()
-                archiveCandidate({get_archive_url});  "  
+                archiveCandidate({get_archive_url});  "
             """,
         },
         {
@@ -457,7 +459,9 @@ class ListCandidates(HorillaListView):
         ws.title = "Exported Data"
 
         # Styling
-        header_fill = PatternFill(start_color="FFD700", end_color="FFD700", fill_type="solid")
+        header_fill = PatternFill(
+            start_color="FFD700", end_color="FFD700", fill_type="solid"
+        )
         bold_font = Font(bold=True)
         thin_border = Border(
             left=Side(style="thin"),
@@ -473,7 +477,9 @@ class ListCandidates(HorillaListView):
             cell.fill = header_fill
             cell.font = bold_font
             cell.border = thin_border
-            cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+            cell.alignment = Alignment(
+                horizontal="center", vertical="center", wrap_text=True
+            )
 
         # Write data rows
         for row_idx, item in enumerate(json_data, start=2):
@@ -483,7 +489,9 @@ class ListCandidates(HorillaListView):
                 if isinstance(value, list):
                     value = "\n".join(str(v) for v in value)
                 elif isinstance(value, dict):
-                    value = json.dumps(value, ensure_ascii=False)  # or format it as needed
+                    value = json.dumps(
+                        value, ensure_ascii=False
+                    )  # or format it as needed
                 cell = ws.cell(row=row_idx, column=col_idx, value=value)
                 cell.border = thin_border
                 cell.alignment = wrap_alignment
@@ -536,7 +544,7 @@ class CardCandidates(HorillaCardView):
                 return confirm('Are you sure you want to convert this candidate into an employee?')"
                 href='{get_convert_to_emp}'
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -548,7 +556,7 @@ class CardCandidates(HorillaCardView):
                 hx-get="{get_add_to_skill}"
                 hx-target="#genericModalBody"
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -580,7 +588,7 @@ class CardCandidates(HorillaCardView):
                 data-target="#genericModal"
                 hx-get="{get_add_to_reject}"
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -593,7 +601,7 @@ class CardCandidates(HorillaCardView):
                 data-target="#genericModal"
                 hx-get="{get_add_to_reject}"
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -602,7 +610,7 @@ class CardCandidates(HorillaCardView):
                 onclick="event.stopPropagation()
                 window.location.href='{get_update_url}' "
                 class="oh-dropdown__link"
-                
+
             """,
         },
         {
@@ -610,8 +618,8 @@ class CardCandidates(HorillaCardView):
             "attrs": """
                 class="oh-dropdown__link"
                 onclick="archiveCandidate({get_archive_url});"
-                
-                
+
+
             """,
         },
         {
@@ -620,7 +628,7 @@ class CardCandidates(HorillaCardView):
                 class="oh-dropdown__link oh-dropdown__link--danger"
                 onclick="event.stopPropagation();
                 deleteCandidate('{get_delete_url}'); "
-                
+
             """,
         },
     ]
@@ -708,14 +716,14 @@ class CandidateNav(HorillaNavView):
                 "action": "Archive",
                 "attrs": """
                 id="archiveCandidates"
-                 
+
                 """,
             },
             {
                 "action": "Un archive",
                 "attrs": """
                 id="unArchiveCandidates"
-                 
+
                 """,
             },
             {

@@ -39,7 +39,7 @@
                 },
                 success: function (response) {
                     var interviews = response.interviews;
-                    
+
                     title = "Leave Request Alert.";
                     var content = `<div>
                         <p>{{request.user.employee_get}} has interview in the requested date.</p>
@@ -50,7 +50,7 @@
                             content += `</ol>
                             <p style="font-weight:700">Are you sure you want to proceed with the request?</p>
                         </div>`;
-                        
+
                         if (interviews.length != 0) {
                             Swal.fire({
                                 title: title,

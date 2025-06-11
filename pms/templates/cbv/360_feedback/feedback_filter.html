@@ -18,14 +18,14 @@
     <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Feedback" %}</div>
       <div class="oh-accordion-body">
-        <div class="row">        
+        <div class="row">
           <div class="col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
               <label class="oh-label" for="{{feedback_filter_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
               {{feedback_filter_form.employee_id}}
             </div>
           </div>
-        
+
           <div class="col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
               <label class="oh-label" for="{{feedback_filter_form.manager_id.id_for_label}}">{% trans "Manager" %}</label>
@@ -44,20 +44,20 @@
               {{feedback_filter_form.colleague_id}}
             </div>
           </div>
-        
+
           <div class="col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
               <label class="oh-label" for="{{feedback_filter_form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
               {{feedback_filter_form.start_date}}
             </div>
           </div>
-        
+
           <div class="col-sm-12 col-md-12 col-lg-6">
             <div class="oh-input-group">
               <label class="oh-label" for="{{feedback_filter_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
               {{feedback_filter_form.end_date}}
             </div>
-          </div>       
+          </div>
           <div class="col-sm-12 col-md-12 col-lg-4">
             <div class="oh-input-group">
               <label class="oh-label" for="{{feedback_filter_form.status.id_for_label}}">{% trans "Status" %}</label>
@@ -77,10 +77,10 @@
             </div>
           </div>
         </div>
-        
+
       </div>
     </div>
-    
+
     <div class="oh-accordion">
       <div class="oh-accordion-header">{% trans "Advanced" %}</div>
       <div class="oh-accordion-body">
@@ -94,7 +94,7 @@
                 {{ feedback_filter_form.start_date_range.1 }}
               </div>
             </div>
-          
+
             <!-- End Date Range -->
             <div class="col-md-6 col-lg-12">
               <label class="oh-label">{% trans "End Date Range" %}</label>
@@ -103,7 +103,7 @@
                 {{ feedback_filter_form.end_date_range.1 }}
               </div>
             </div>
-          
+
             <!-- Created At Range (if needed) -->
             <div class="col-md-6 col-lg-12">
               <label class="oh-label">{% trans "Created At Range" %}</label>
@@ -112,7 +112,7 @@
                 {{ feedback_filter_form.created_at_date_range.1 }}
               </div>
             </div>
-          </div>        
+          </div>
           <div class="col-md-6 col-lg-12">
             <div class="oh-input-group">
               <label class="oh-label">{% trans "Quick Filters" %}</label>
@@ -155,5 +155,3 @@
       </div>
     </div>
   </div>
-
-  

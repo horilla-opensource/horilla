@@ -1,4 +1,4 @@
-   
+
    {% load i18n %}
    <div>
     {% include 'generic/horilla_form.html' %}
@@ -21,7 +21,7 @@
    $(document).ready(function () {
     if (!$('#id_cyclic_feedback').is(':checked')) {
         $("#id_cyclic_feedback_days_count_parent_div").hide();
-        $("#id_cyclic_feedback_period_parent_div").hide(); 
+        $("#id_cyclic_feedback_period_parent_div").hide();
     }
     $("#id_cyclic_feedback").on("change", function () {
         if (this.checked) {
@@ -41,5 +41,3 @@
 
 
 </script>
-
-      

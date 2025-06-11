@@ -5,7 +5,7 @@ var closeButtonText = {
     en: "Close",
     fr: "Fermer",
   };
-  
+
   var confirmButtonText = {
     ar: "تأكيد",
     de: "Bestätigen",
@@ -13,7 +13,7 @@ var closeButtonText = {
     en: "Confirm",
     fr: "Confirmer",
   };
-  
+
   var deleteCompensatoryMessages = {
     ar: "هل تريد حقًا حذف جميع طلبات الإجازة المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Urlaubsanfragen löschen?",
@@ -23,17 +23,17 @@ var closeButtonText = {
   };
 
 
-  
+
   tickLeaverequestsCheckboxes();
   function makeLeaverequestsListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   tickUserrequestsCheckboxes();
   function makeUserrequestsListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];

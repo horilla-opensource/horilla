@@ -1,9 +1,10 @@
 """
-This page handles the cbv methods for onboarding view 
+This page handles the cbv methods for onboarding view
 """
 
 import contextlib
 from typing import Any
+
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
@@ -11,10 +12,15 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from notifications.signals import notify
+
 from employee.models import Employee
-from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaFormView
 from horilla_views.cbv_methods import login_required
+from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaFormView
+from notifications.signals import notify
+from onboarding.cbv_decorators import (
+    recruitment_manager_can_enter,
+    stage_manager_can_enter,
+)
 from onboarding.forms import (
     OnboardingTaskForm,
     OnboardingViewStageForm,
@@ -22,10 +28,6 @@ from onboarding.forms import (
 )
 from onboarding.models import CandidateTask, OnboardingStage, OnboardingTask
 from recruitment.models import Candidate
-from onboarding.cbv_decorators import (
-    recruitment_manager_can_enter,
-    stage_manager_can_enter,
-)
 
 
 @method_decorator(login_required, name="dispatch")

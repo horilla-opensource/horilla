@@ -116,7 +116,7 @@ function tickLeaverequestsCheckboxes() {
     }
   });
 }
-  
+
   // function bulkApproveLeaveRequests() {
   //   var languageCode = null;
   //   getCurrentLanguageCode(function (code) {
@@ -127,7 +127,7 @@ function tickLeaverequestsCheckboxes() {
   //     ids.push($("#selectedInstances").attr("data-ids"));
   //     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
   //     console.log(ids) // Parse IDs
-  
+
   //     if (ids.length === 0) {
   //       Swal.fire({
   //         text: textMessage,
@@ -171,7 +171,7 @@ function tickLeaverequestsCheckboxes() {
   //     }
   //   });
   // }
-  
+
 
 
 function bulkApproveLeaveRequests() {
@@ -181,7 +181,7 @@ function bulkApproveLeaveRequests() {
         var confirmMessage = approveLeaveRequests[languageCode];
         var textMessage = noRowMessage[languageCode];
         ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-  
+
         if (ids.length === 0) {
             Swal.fire({
                 text: textMessage,

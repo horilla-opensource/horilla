@@ -45,6 +45,9 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 # Application definition
 
+THEME_APP = "horilla_theme"
+
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -57,6 +60,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "simple_history",
     "django_filters",
+    THEME_APP,
     "base",
     "employee",
     "recruitment",
@@ -96,13 +100,21 @@ TEMPLATES = [
         "DIRS": [
             BASE_DIR / "templates",
         ],
-        "APP_DIRS": True,
+        "APP_DIRS": False,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+            ],
+            "loaders": [
+                (
+                    "django.template.loaders.filesystem.Loader",
+                    [BASE_DIR / THEME_APP / "templates"],
+                ),
+                "django.template.loaders.app_directories.Loader",
+                ("django.template.loaders.filesystem.Loader", [BASE_DIR / "templates"]),
             ],
         },
     },
@@ -126,7 +138,7 @@ else:
                 "DB_NAME",
                 default=os.path.join(
                     BASE_DIR,
-                    "TestDB_Horilla.sqlite3",
+                    "TestDB.sqlite3",
                 ),
             ),
             "USER": env("DB_USER", default=""),
@@ -229,15 +241,3 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-# Production settings
-if not DEBUG:
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

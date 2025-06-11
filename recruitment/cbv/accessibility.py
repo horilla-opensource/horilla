@@ -4,6 +4,7 @@ Accessibility
 
 from django.contrib.auth.context_processors import PermWrapper
 from django.contrib.auth.models import User
+
 from base.methods import check_manager
 from employee.models import Employee
 from recruitment.methods import (
@@ -99,7 +100,11 @@ def onboarding_accessibility(
     accessibility for onboarding tab in candidate individual view
     """
     candidate = Candidate.objects.get(pk=instance.pk)
-    if candidate.cand_onboarding_task.exists() and in_all_managers(request) or request.user.has_perm("onboarding.view_onboardingtask"):
+    if (
+        candidate.cand_onboarding_task.exists()
+        and in_all_managers(request)
+        or request.user.has_perm("onboarding.view_onboardingtask")
+    ):
         return True
     return False
 
@@ -112,7 +117,11 @@ def rating_accessibility(
     """
     candidate = Candidate.objects.get(pk=instance.pk)
     stage_manage = stage_manages(request.user.employee_get, candidate.recruitment_id)
-    if stage_manage or request.user.has_perm("recruitment.view_candidate") or request.user.has_perm("recruitment.view_candidate"):
+    if (
+        stage_manage
+        or request.user.has_perm("recruitment.view_candidate")
+        or request.user.has_perm("recruitment.view_candidate")
+    ):
         return True
     return False
 
@@ -121,7 +130,11 @@ def if_manager_accessibility(request, instance, *args, **kwargs):
     """
     If manager accessibility
     """
-    return is_recruitmentmanager(request) or is_stagemanager(request) or request.user.has_perm("recruitment.view_candidate")
+    return (
+        is_recruitmentmanager(request)
+        or is_stagemanager(request)
+        or request.user.has_perm("recruitment.view_candidate")
+    )
 
 
 def empl_scheduled_interview_accessibility(

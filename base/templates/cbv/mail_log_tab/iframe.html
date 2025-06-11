@@ -33,26 +33,25 @@
 <script>
     // Get the iframe element
     var iframe = document.getElementById('myIframe');
-    
+
     // Access the iframe's document
     var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    
+
     var logSubject = "{{ log.subject|escapejs }}";
     var logBody = "{{ log.body|escapejs }}";
     var trimmedBody = logBody.trim();
     var hasContent = trimmedBody.length > 0;
     console.log(hasContent)
-    
-    
+
+
     if (hasContent) {
       content = '<div class="oh-modal__dialog-body">' + logBody + '</div>';
     } else {
       content = '<div class="oh-modal__dialog-title" style="padding:25px;">' + logSubject + '</div>';
     }
-    
+
     // Write the content into the iframe
     iframeDoc.open();
     iframeDoc.write(content);
     iframeDoc.close();
   </script>
-  

@@ -68,7 +68,7 @@ var downloadMessages = {
     en: "Do you really want to approve all the selected attendance requests?",
     fr: "Voulez-vous vraiment approuver toutes les demandes de présence sélectionnées?",
   };
-  
+
   var reqAttendanceApproveMessages = {
     ar: "هل ترغب حقًا في رفض جميع طلبات الحضور المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen ablehnen?",
@@ -76,22 +76,22 @@ var downloadMessages = {
     en: "Do you really want to reject all the selected attendance requests?",
     fr: "Voulez-vous vraiment rejeter toutes les demandes de présence sélectionnées?",
   };
-  
+
   tickCheckboxes();
   function makeListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   tickactivityCheckboxes();
   function makeactivityListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   ticklatecomeCheckboxes();
   function makelatecomeListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -116,8 +116,8 @@ var downloadMessages = {
       });
     }
   }
-  
-  
+
+
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -134,9 +134,9 @@ var downloadMessages = {
     return cookieValue;
   }
 
-  
 
-  
+
+
 function deleteAttendanceNav() {
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
@@ -185,7 +185,7 @@ function deleteAttendanceNav() {
   }
 
 
-  function importAttendanceNav() {      
+  function importAttendanceNav() {
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
@@ -228,7 +228,7 @@ function deleteAttendanceNav() {
 
 
 
-  function importAttendanceActivity() {      
+  function importAttendanceActivity() {
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
@@ -317,7 +317,7 @@ function deleteAttendanceNav() {
     });
   }
 
-  
+
 
 
   function showApproveAlert(dataReqValue) {
@@ -385,7 +385,7 @@ function deleteAttendanceNav() {
       }
     });
   }
-  
+
   function otBulkValidateTabAttendance(dataReqValue) {
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
@@ -414,7 +414,7 @@ function deleteAttendanceNav() {
             ids = [];
             ids.push($("#overtimeselectedInstances").attr("data-ids"));
             ids = JSON.parse($("#overtimeselectedInstances").attr("data-ids"));
-            
+
             $.ajax({
               type: "POST",
               url: "/attendance/approve-bulk-overtime",
@@ -434,5 +434,3 @@ function deleteAttendanceNav() {
       }
     });
   }
-
-  

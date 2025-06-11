@@ -5,7 +5,7 @@ var excelMessages = {
     en: "Do you want to download the excel file?",
     fr: "Voulez-vous télécharger le fichier Excel?",
   };
-  
+
   var archiveMessages = {
     ar: "هل ترغب حقًا في أرشفة كل الحضور المحدد؟",
     de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten archivieren?",
@@ -13,7 +13,7 @@ var excelMessages = {
     en: "Do you really want to archive all the selected allocations?",
     fr: "Voulez-vous vraiment archiver toutes les présences sélectionnées?",
   };
-  
+
   var unarchiveMessages = {
     ar: "هل ترغب حقًا في إلغاء أرشفة كل الحضور المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten archivierten Zuweisungen wiederherstellen?",
@@ -21,7 +21,7 @@ var excelMessages = {
     en: "Do you really want to un-archive all the selected allocations?",
     fr: "Voulez-vous vraiment désarchiver toutes les allocations sélectionnées?",
   };
-  
+
   var rotatedeleteRequestMessages = {
     ar: "هل ترغب حقًا في حذف كل الحجوزات المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Zuweisungen löschen?",
@@ -29,7 +29,7 @@ var excelMessages = {
     en: "Do you really want to delete all the selected Requests?",
     fr: "Voulez-vous vraiment supprimer toutes les allocations sélectionnées?",
   };
-  
+
   var approveMessages = {
     ar: "هل ترغب حقًا في الموافقة على جميع الطلبات المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Anfragen genehmigen?",
@@ -65,27 +65,27 @@ var excelMessages = {
     en: " Selected",
     fr: " Sélectionné",
   };
-  
+
   tickShiftCheckboxes();
   function makeShiftListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   tickWorktypeCheckboxes();
   function makeWorktypeListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   tickRShiftCheckboxes();
   function makeRShiftListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   tickRWorktypeCheckboxes();
   function makeRWorktypeListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -101,7 +101,7 @@ var excelMessages = {
     }
     return cookieValue;
   }
-  
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -126,7 +126,7 @@ var excelMessages = {
       });
     }
   }
-  
+
 
   function handleApproveRequestsClick() {
      // e.preventDefault();
@@ -177,9 +177,9 @@ var excelMessages = {
        }
      });
     }
-  
-  
-  
+
+
+
 function handleRejectRequestsClick() {
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
@@ -229,7 +229,7 @@ function handleRejectRequestsClick() {
       }
     });
   }
-  
+
   function handleDeleteRequestsClick() {
     var languageCode = null;
   getCurrentLanguageCode(function (code) {
@@ -382,7 +382,7 @@ function handleRejectRequestsClick() {
   }
 
   function deleteWorkRotateNav() {
-  
+
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
@@ -430,4 +430,3 @@ function handleRejectRequestsClick() {
       }
     });
   }
-

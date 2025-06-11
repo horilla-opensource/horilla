@@ -1,12 +1,10 @@
-import json
 import base64
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.primitives import serialization
+import json
+
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding, rsa
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-
-
 
 PRIVATE_KEY = """-----BEGIN PRIVATE KEY-----
 MIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQCitHXNMGC04pSI
@@ -49,14 +47,12 @@ class FlowEndpointException(Exception):
 
 def decrypt_request(body, private_pem, passphrase):
     # Extract encrypted data from the request body
-    encrypted_aes_key = body['encrypted_aes_key']
-    encrypted_flow_data = body['encrypted_flow_data']
-    initial_vector = body['initial_vector']
+    encrypted_aes_key = body["encrypted_aes_key"]
+    encrypted_flow_data = body["encrypted_flow_data"]
+    initial_vector = body["initial_vector"]
 
     private_key = serialization.load_pem_private_key(
-        private_pem.encode(),
-        password=None,
-        backend=default_backend()
+        private_pem.encode(), password=None, backend=default_backend()
     )
 
     decrypted_aes_key = private_key.decrypt(
@@ -64,8 +60,8 @@ def decrypt_request(body, private_pem, passphrase):
         padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA256()),
             algorithm=hashes.SHA256(),
-            label=None
-        )
+            label=None,
+        ),
     )
 
     flow_data_buffer = base64.b64decode(encrypted_flow_data)
@@ -75,48 +71,55 @@ def decrypt_request(body, private_pem, passphrase):
     encrypted_flow_data_body = flow_data_buffer[:-TAG_LENGTH]
     encrypted_flow_data_tag = flow_data_buffer[-TAG_LENGTH:]
 
-    cipher = Cipher(algorithms.AES(decrypted_aes_key), modes.GCM(iv_buffer, encrypted_flow_data_tag), backend=default_backend())
+    cipher = Cipher(
+        algorithms.AES(decrypted_aes_key),
+        modes.GCM(iv_buffer, encrypted_flow_data_tag),
+        backend=default_backend(),
+    )
     decryptor = cipher.decryptor()
 
-    decrypted_json_string = decryptor.update(encrypted_flow_data_body) + decryptor.finalize()
+    decrypted_json_string = (
+        decryptor.update(encrypted_flow_data_body) + decryptor.finalize()
+    )
 
     return {
-        'decrypted_body': json.loads(decrypted_json_string.decode('utf-8')),
-        'aes_key_buffer': decrypted_aes_key,
-        'initial_vector_buffer': iv_buffer
+        "decrypted_body": json.loads(decrypted_json_string.decode("utf-8")),
+        "aes_key_buffer": decrypted_aes_key,
+        "initial_vector_buffer": iv_buffer,
     }
 
+
 def encrypt_response(response, aes_key_buffer, initial_vector_buffer):
-    response_bytes = json.dumps(response).encode('utf-8')
+    response_bytes = json.dumps(response).encode("utf-8")
 
     flipped_iv = bytearray((b ^ 0xFF) for b in initial_vector_buffer)
 
     cipher = Cipher(
         algorithms.AES(aes_key_buffer),
         modes.GCM(bytes(flipped_iv)),
-        backend=default_backend()
+        backend=default_backend(),
     )
     encryptor = cipher.encryptor()
     ciphertext = encryptor.update(response_bytes) + encryptor.finalize()
     ciphertext_with_tag = ciphertext + encryptor.tag
-    encrypted_message = base64.b64encode(ciphertext_with_tag).decode('utf-8')
+    encrypted_message = base64.b64encode(ciphertext_with_tag).decode("utf-8")
 
     return encrypted_message
+
 
 # -------------------------------------------------views.py ------------------------------------------------
 
 import base64
 import hashlib
 import hmac
-
 import json
 import os
 from base64 import b64decode, b64encode
-from cryptography.hazmat.primitives.asymmetric.padding import OAEP, MGF1, hashes
-from cryptography.hazmat.primitives.ciphers import algorithms, Cipher, modes
+
+from cryptography.hazmat.primitives.asymmetric.padding import MGF1, OAEP, hashes
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
-from django.http import HttpResponse
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # Load the private key string
@@ -277,5 +280,6 @@ def is_request_signature_valid(request, app_secret, request_body):
     ).hexdigest()
 
     return hmac.compare_digest(signature, hmac_digest)
+
 
 # ----------------------------------------------------------------------------------------------------------

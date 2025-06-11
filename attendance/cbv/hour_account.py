@@ -3,12 +3,14 @@ Hour account page
 """
 
 from typing import Any
+
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from attendance.filters import AttendanceOverTimeFilter
 from attendance.forms import AttendanceOverTimeExportForm, AttendanceOverTimeForm
 from attendance.models import AttendanceOverTime
@@ -32,6 +34,7 @@ class HourAccount(TemplateView):
 
     template_name = "cbv/hour_account/hour_account.html"
 
+
 @method_decorator(login_required, name="dispatch")
 class HourAccountList(HorillaListView):
     """
@@ -46,9 +49,7 @@ class HourAccountList(HorillaListView):
         self.search_url = reverse("attendance-ot-search")
         self.view_id = "ot-table"
 
-        if self.request.user.has_perm(
-            "attendance.add_attendanceovertime"
-        ):
+        if self.request.user.has_perm("attendance.add_attendanceovertime"):
             self.action_method = "hour_actions"
 
     def get_queryset(self):
@@ -72,15 +73,15 @@ class HourAccountList(HorillaListView):
     ]
 
     header_attrs = {
-        "employee_id" : """
+        "employee_id": """
                       style='width:200px !important'
                       """,
-        "not_approved_ot_hrs" : """
+        "not_approved_ot_hrs": """
                       style='width:180px !important'
                       """,
-        "action" : """
-                   style="width:160px !important" 
-                   """
+        "action": """
+                   style="width:160px !important"
+                   """,
     }
 
     row_attrs = """
@@ -97,6 +98,7 @@ class HourAccountList(HorillaListView):
         ("Overtime Hours", "overtime"),
     ]
     records_per_page = 20
+
 
 @method_decorator(login_required, name="dispatch")
 class HourAccountNav(HorillaNavView):
@@ -165,7 +167,10 @@ class HourAccountNav(HorillaNavView):
         ("month", _("Month")),
         ("year", _("Year")),
         ("employee_id__country", _("Country")),
-        ("employee_id__employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
         ("employee_id__employee_work_info__shift_id", _("Shift")),
         ("employee_id__employee_work_info__work_type_id", _("Work Type")),
         ("employee_id__employee_work_info__department_id", _("Department")),
@@ -173,6 +178,7 @@ class HourAccountNav(HorillaNavView):
         ("employee_id__employee_work_info__employee_type_id", _("Employment Type")),
         ("employee_id__employee_work_info__company_id", _("Company")),
     ]
+
 
 @method_decorator(login_required, name="dispatch")
 class HourExportView(TemplateView):
@@ -190,6 +196,7 @@ class HourExportView(TemplateView):
         context["export_fields"] = export_fields
         context["export_obj"] = export_obj
         return context
+
 
 @method_decorator(login_required, name="dispatch")
 class HourAccountDetailView(HorillaDetailedView):
@@ -216,8 +223,11 @@ class HourAccountDetailView(HorillaDetailedView):
 
     action_method = "hour_detail_actions"
 
+
 @method_decorator(login_required, name="dispatch")
-@method_decorator(manager_can_enter("attendance.add_attendanceovertime"),name='dispatch')
+@method_decorator(
+    manager_can_enter("attendance.add_attendanceovertime"), name="dispatch"
+)
 class HourAccountFormView(HorillaFormView):
     """
     Form View

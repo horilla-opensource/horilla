@@ -1,10 +1,13 @@
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.methods import filter_own_records
 from horilla_views.cbv_methods import login_required
-from django.utils.translation import gettext_lazy as _
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaFormView,
@@ -16,8 +19,6 @@ from horilla_views.generic.cbv.views import (
 from payroll.filters import ReimbursementFilter
 from payroll.forms.component_forms import ReimbursementForm
 from payroll.models.models import Reimbursement
-from django.contrib import messages
-
 
 
 @method_decorator(login_required, name="dispatch")
@@ -52,6 +53,7 @@ class ReimbursementsAndEncashmentsTabView(HorillaTabView):
                 "url": f"{reverse('list-bonus-encash')}",
             },
         ]
+
 
 @method_decorator(login_required, name="dispatch")
 class ReimbursementsAndEncashmentsListView(HorillaListView):
@@ -116,13 +118,14 @@ class ReimbursementsAndEncashmentsListView(HorillaListView):
     ]
 
     header_attrs = {
-        "description" : """
+        "description": """
                         style="width:250px !important;"
                         """,
-        "action" : """
+        "action": """
                         style="width:200px !important;"
-                        """
+                        """,
     }
+
 
 @method_decorator(login_required, name="dispatch")
 class ReimbursementsListView(ReimbursementsAndEncashmentsListView):
@@ -131,7 +134,7 @@ class ReimbursementsListView(ReimbursementsAndEncashmentsListView):
         ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
         ("Date", "created_at"),
         ("Amount", "amount"),
-        ("Status", "get_status_display")
+        ("Status", "get_status_display"),
     ]
 
     row_attrs = """
@@ -152,6 +155,7 @@ class ReimbursementsListView(ReimbursementsAndEncashmentsListView):
             self.request, queryset, "payroll.view_reimbursement"
         )
         return queryset
+
 
 @method_decorator(login_required, name="dispatch")
 class LeaveEncashmentsListView(ReimbursementsAndEncashmentsListView):
@@ -193,6 +197,7 @@ class LeaveEncashmentsListView(ReimbursementsAndEncashmentsListView):
             self.request, queryset, "payroll.view_reimbursement"
         )
         return queryset
+
 
 @method_decorator(login_required, name="dispatch")
 class BonusEncashmentsListView(ReimbursementsAndEncashmentsListView):
@@ -281,6 +286,7 @@ class ReimbursementsDetailView(HorillaDetailedView):
         "avatar": "employee_id__get_avatar",
     }
 
+
 @method_decorator(login_required, name="dispatch")
 class LeaveEncashmentsDetailedView(ReimbursementsDetailView):
 
@@ -291,6 +297,7 @@ class LeaveEncashmentsDetailedView(ReimbursementsDetailView):
     body.insert(position, (_("Leave type"), "leave_type_id"))
     body.insert(position + 1, (_("Available days to encash"), "ad_to_encash"))
     body.insert(position + 2, (_("Carryforward to encash"), "cfd_to_encash"))
+
 
 @method_decorator(login_required, name="dispatch")
 class BonusEncashmentsDetailedView(ReimbursementsDetailView):
@@ -310,7 +317,7 @@ class ReimbursementsFormView(HorillaFormView):
     model = Reimbursement
     form_class = ReimbursementForm
     new_display_title = _("Create Reimbursement / Encashment")
-    template_name =  "cbv/reimbursements/forms.html"
+    template_name = "cbv/reimbursements/forms.html"
 
     def get_context_data(self, **kwargs):
         """

@@ -168,5 +168,3 @@ function myLeaveRequestBulkDelete() {
       }
     });
   }
-
- 

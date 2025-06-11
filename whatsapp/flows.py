@@ -1,4 +1,5 @@
 import json
+
 from asset.models import AssetCategory
 from base.models import Department, EmployeeShift, JobPosition, Tags, WorkType
 from employee.models import Employee
@@ -114,7 +115,7 @@ def get_attendance_request_json():
                             {"id": "1", "title": "WFH"},
                             {"id": "2", "title": "WFO"},
                         ],
-                    }
+                    },
                 },
                 "layout": {
                     "type": "SingleColumnLayout",

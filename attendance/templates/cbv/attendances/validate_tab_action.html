@@ -16,7 +16,7 @@
             {% trans 'Edit' %}
         </button>
     </a>
-   
+
     {% comment %} {% if request.user.employee_get != instance.employee_id and request.user|is_reportingmanager or perms.attendance.change_attendance or request.user|is_self_reporting_manager %} {% endcomment %}
 
         <a href='{% url "validate-this-attendance" instance.id %}'

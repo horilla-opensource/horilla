@@ -2,10 +2,10 @@
 Accessibility page to specify the permissions
 """
 
-from base.context_processors import resignation_request_enabled
-from employee.models import Employee
 from django.contrib.auth.context_processors import PermWrapper
 
+from base.context_processors import resignation_request_enabled
+from employee.models import Employee
 from offboarding.templatetags.offboarding_filter import (
     is_any_stage_manager,
     is_offboarding_manager,
@@ -50,6 +50,7 @@ def add_employee_accessibility(
         or is_any_stage_manager(request.user.employee_get)
     )
     return perms
+
 
 def delete_stage_accessibility(
     request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs

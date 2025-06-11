@@ -4,7 +4,7 @@
    {% with dates=instance.month_days %}
    {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
 <a class="oh-btn oh-btn-group oh-btn--warning" style="width: 50%;" onclick="validateHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}');">
-    <button 
+    <button
       style="
         background: none;
         color: inherit;
@@ -65,14 +65,6 @@
                   >
                   {{ instance.not_approved_ot_hrs }} hrs {% trans "OT to Approve" %}</button>
               </a>
-              
+
               {% endif %}
               {% endwith %}
-
-           
-
-              
-            
-
-    
-          

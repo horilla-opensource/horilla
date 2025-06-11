@@ -2,15 +2,17 @@
 Meetings page
 """
 
-from typing import Any
 import contextlib
+from typing import Any
+
+from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
 from django.urls import reverse, reverse_lazy
-from django.db.models import Q
-from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -45,7 +47,6 @@ class MeetingsList(HorillaListView):
         self.search_url = reverse("meetings-list")
         self.view_id = "meetingManagerContainer"
 
-
     def get_queryset(self):
         queryset = super().get_queryset()
         if not self.request.user.has_perm("pms.view_meetings"):
@@ -59,8 +60,6 @@ class MeetingsList(HorillaListView):
     model = Meetings
     filter_class = MeetingsFilter
 
-
-
     columns = [
         (_("Title"), "title_col"),
         (_("Employees"), "employees_col"),
@@ -69,13 +68,9 @@ class MeetingsList(HorillaListView):
         (_("MoM"), "mom_col"),
     ]
 
-    sortby_mapping = [
-        ("Date", "date_col")
-    ]
+    sortby_mapping = [("Date", "date_col")]
 
-    bulk_update_fields = [
-        "manager"
-    ]
+    bulk_update_fields = ["manager"]
 
     action_method = "action_col"
 

@@ -27,10 +27,10 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
-  hx-get="{% url "restrict-filter"  %}?{{request.GET.urlencode}}" 
+
+  <div
+  class="oh-wrapper"
+  hx-get="{% url "restrict-filter"  %}?{{request.GET.urlencode}}"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -43,5 +43,5 @@
   hx-post="{% url 'restrict-days-bulk-delete' %}?{{pd}}"
   hx-target="#restrictday"
 ></span>
-    
+
 {% endblock %}

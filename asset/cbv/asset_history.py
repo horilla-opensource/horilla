@@ -3,19 +3,20 @@ this page is handling the cbv methods of asset history page
 """
 
 from typing import Any
+
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from asset.filters import AssetHistoryFilter
 from asset.models import AssetAssignment
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
-    TemplateView,
     HorillaListView,
     HorillaNavView,
+    TemplateView,
 )
-from horilla_views.cbv_methods import login_required, permission_required
-
 
 
 @method_decorator(login_required, name="dispatch")
@@ -43,20 +44,20 @@ class AssetHistorylistView(HorillaListView):
         self.search_url = reverse("asset-history-list")
 
     columns = [
-        (_("Asset"),"asset_id__asset_name", "get_avatar"),
-        (_("Employee"),"assigned_to_employee_id"),
-        (_("Assigned Date"),"assigned_date"),
-        (_("Returned Date"),"return_date"),
-        (_("Return Status"),"return_status")
+        (_("Asset"), "asset_id__asset_name", "get_avatar"),
+        (_("Employee"), "assigned_to_employee_id"),
+        (_("Assigned Date"), "assigned_date"),
+        (_("Returned Date"), "return_date"),
+        (_("Return Status"), "return_status"),
     ]
 
     records_per_page = 5
 
     sortby_mapping = [
-        ("Asset","asset_id__asset_name", "get_avatar"),
-        ("Employee","assigned_to_employee_id"),
-        ("Assigned Date","assigned_date"),
-        ("Returned Date","return_date"),
+        ("Asset", "asset_id__asset_name", "get_avatar"),
+        ("Employee", "assigned_to_employee_id"),
+        ("Assigned Date", "assigned_date"),
+        ("Returned Date", "return_date"),
     ]
 
     row_attrs = """
@@ -85,11 +86,10 @@ class AssetHistoryNavView(HorillaNavView):
     search_swap_target = "#listContainer"
 
     group_by_fields = [
-        ("asset_id__asset_name",_("Asset")),
-        ("assigned_to_employee_id",_("Employee")),
-        ("assigned_date",_("Assigned Date")),
-        ("return_date",_("Returned Date")),
-
+        ("asset_id__asset_name", _("Asset")),
+        ("assigned_to_employee_id", _("Employee")),
+        ("assigned_date", _("Assigned Date")),
+        ("return_date", _("Returned Date")),
     ]
 
 
@@ -103,17 +103,17 @@ class AssetHistoryDetailView(HorillaDetailedView):
     model = AssetAssignment
     title = _("Asset Details")
     header = {
-        "title":"asset_id",
-        "subtitle":"asset_id__asset_category_id",
-        "avatar":"assigned_to_employee_id__get_avatar"
+        "title": "asset_id",
+        "subtitle": "asset_id__asset_category_id",
+        "avatar": "assigned_to_employee_id__get_avatar",
     }
     body = [
-        (_("Allocated User"),"assigned_to_employee_id"),
-        (_("Returned Status"),"return_status"),
-        (_("Allocated Date"),"assigned_date"),
-        (_("Returned Date"),"return_date"),
-        (_("Asset"),"asset_id"),
-        (_("Return Description"),"return_condition"),
-        (_("Assign Condition Images"),"assign_condition_img",True),
-        (_("Return Condition Images"),"return_condition_img",True)
+        (_("Allocated User"), "assigned_to_employee_id"),
+        (_("Returned Status"), "return_status"),
+        (_("Allocated Date"), "assigned_date"),
+        (_("Returned Date"), "return_date"),
+        (_("Asset"), "asset_id"),
+        (_("Return Description"), "return_condition"),
+        (_("Assign Condition Images"), "assign_condition_img", True),
+        (_("Return Condition Images"), "return_condition_img", True),
     ]

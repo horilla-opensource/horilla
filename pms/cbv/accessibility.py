@@ -3,6 +3,7 @@ Accessiblility for pms
 """
 
 from django.contrib.auth.context_processors import PermWrapper
+
 from base.methods import check_manager
 from employee.models import Employee
 
@@ -29,4 +30,3 @@ def create_objective_accessibility(
     To check the user has permission to add objectives
     """
     return request.user.has_perm("pms.add_objective")
-        

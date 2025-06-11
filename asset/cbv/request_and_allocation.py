@@ -3,18 +3,19 @@ Request and allocation page
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
-from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+
 from asset.filters import AssetAllocationFilter, AssetRequestFilter, CustomAssetFilter
 from asset.forms import AssetAllocationForm, AssetRequestForm
 from asset.models import Asset, AssetAssignment, AssetRequest, ReturnImages
 from base.methods import filtersubordinates
 from employee.models import Employee
-from notifications.signals import notify
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
@@ -25,6 +26,7 @@ from horilla_views.generic.cbv.views import (
     HorillaTabView,
     TemplateView,
 )
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -44,9 +46,7 @@ class AllocationList(HorillaListView):
 
     # view_id = "view-container"
 
-    bulk_update_fields = [
-        "asset_id__expiry_date"
-    ]
+    bulk_update_fields = ["asset_id__expiry_date"]
 
     model = AssetAssignment
     filter_class = AssetAllocationFilter
@@ -61,25 +61,24 @@ class AllocationList(HorillaListView):
         (_("Expiry Date"), "asset_id__expiry_date"),
     ]
 
-
     header_attrs = {
-        "action" : """
+        "action": """
                    style = "width:180px !important"
                    """,
-        "asset_id__asset_name" :"""
+        "asset_id__asset_name": """
                    style = "width:250px !important"
                    """,
-        "asset_id__asset_category_id" : """
+        "asset_id__asset_category_id": """
                    style = "width:250px !important"
                    """,
-        "asset_id__expiry_date" : """
+        "asset_id__expiry_date": """
                    style = "width:250px !important"
                    """,
     }
 
     sortby_mapping = [
         ("Category", "asset_id__asset_category_id__asset_category_name"),
-        ("Expiry Date", "asset_id__expiry_date")
+        ("Expiry Date", "asset_id__expiry_date"),
     ]
 
     action_method = "asset_action"
@@ -112,8 +111,6 @@ class AssetList(AllocationList):
         return queryset
 
     selected_instances_key_id = "assetlistInstances"
-    
-    
 
 
 @method_decorator(login_required, name="dispatch")
@@ -138,7 +135,7 @@ class AssetAllocationList(AllocationList):
     ]
 
     sortby_mapping = [
-        ("Allocated User","assigned_to_employee_id__get_full_name"),
+        ("Allocated User", "assigned_to_employee_id__get_full_name"),
         ("Asset", "asset_id__asset_name"),
         ("Assigned Date", "assigned_date"),
         ("Return Date", "return_status_col"),
@@ -198,13 +195,13 @@ class AssetRequestList(HorillaListView):
     ]
 
     header_attrs = {
-        "action" : """
+        "action": """
                    style = "width:180px !important"
                    """
     }
 
     sortby_mapping = [
-        ("Request User","requested_employee_id__get_full_name"),
+        ("Request User", "requested_employee_id__get_full_name"),
         ("Asset Category", "asset_category_id__asset_category_name"),
         ("Requested Date", "asset_request_date"),
         ("Status", "status_col"),
@@ -402,10 +399,10 @@ class AssetRequestCreateForm(HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.request.GET.get('pk'):
-            pk = self.request.GET.get('pk')
-            self.form.fields["requested_employee_id"].queryset = Employee.objects.filter(
-                id=pk
+        if self.request.GET.get("pk"):
+            pk = self.request.GET.get("pk")
+            self.form.fields["requested_employee_id"].queryset = (
+                Employee.objects.filter(id=pk)
             )
             self.form.fields["requested_employee_id"].initial = pk
         return context
@@ -423,7 +420,7 @@ class AssetRequestCreateForm(HorillaFormView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="asset.add_asset"),name="dispatch")
+@method_decorator(permission_required(perm="asset.add_asset"), name="dispatch")
 class AssetAllocationFormView(HorillaFormView):
     """
     Create Asset Allocation
@@ -433,8 +430,6 @@ class AssetAllocationFormView(HorillaFormView):
     form_class = AssetAllocationForm
     template_name = "cbv/request_and_allocation/forms/allo_form.html"
     new_display_title = _("Asset Allocation")
-
-    
 
     def form_valid(self, form: AssetAllocationForm) -> HttpResponse:
         """
@@ -459,7 +454,7 @@ class AssetAllocationFormView(HorillaFormView):
             messages.success(self.request, message)
             return self.HttpResponse()
         return super().form_valid(form)
-    
+
 
 class AssetApproveFormView(HorillaFormView):
     """
@@ -473,15 +468,19 @@ class AssetApproveFormView(HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        req_id = self.kwargs.get('req_id')
+        req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
         asset_category = asset_request.asset_category_id
         assets = asset_category.asset_set.filter(asset_status="Available")
         self.form.fields["asset_id"].queryset = assets
-        self.form.fields["assigned_to_employee_id"].initial = asset_request.requested_employee_id
-        self.form.fields["assigned_by_employee_id"].initial = self.request.user.employee_get
+        self.form.fields["assigned_to_employee_id"].initial = (
+            asset_request.requested_employee_id
+        )
+        self.form.fields["assigned_by_employee_id"].initial = (
+            self.request.user.employee_get
+        )
         return context
-    
+
     def form_invalid(self, form: Any) -> HttpResponse:
         if not form.is_valid():
             errors = form.errors.as_data()
@@ -490,12 +489,11 @@ class AssetApproveFormView(HorillaFormView):
             )
         return super().form_invalid(form)
 
-
     def form_valid(self, form: AssetAllocationForm) -> HttpResponse:
         """
         form valid function
         """
-        req_id = self.kwargs.get('req_id')
+        req_id = self.kwargs.get("req_id")
         asset_request = AssetRequest.objects.filter(id=req_id).first()
         if form.is_valid():
             asset = form.instance.asset_id.id
@@ -533,12 +531,3 @@ class AssetApproveFormView(HorillaFormView):
             )
             return HttpResponse("<script>window.location.reload()</script>")
         return super().form_valid(form)
-    
-
-
-    
-
-    
-
-    
-

@@ -28,9 +28,9 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
+
+  <div
+  class="oh-wrapper"
   id="listContainer">
   <div class="animated-background">
   </div>
@@ -42,12 +42,12 @@
     <script>
       var errorElement = $('#id_question_template_error')
       $(errorElement).hide()
-    
+
       $('form').on('submit', function (event) {
         event.preventDefault();
-    
+
         var fieldValue = $('#id_question_template').val();
-    
+
         if (fieldValue.trim() === '') {
           $(errorElement).show()
           errorElement.text('This field is required.');
@@ -63,6 +63,6 @@
           this.submit();
         }
       });
-    
+
     </script>
 {% endblock %}

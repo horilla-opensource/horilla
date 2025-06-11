@@ -3,21 +3,23 @@ this page is handling the cbv methods for skills in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from recruitment.filters import SkillsFilter
-from recruitment.forms import SkillsForm
-from recruitment.models import Skill
+
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
     HorillaNavView,
 )
+from recruitment.filters import SkillsFilter
+from recruitment.forms import SkillsForm
+from recruitment.models import Skill
 
 
 @method_decorator(login_required, name="dispatch")
@@ -41,7 +43,7 @@ class SkillsListView(HorillaListView):
     row_attrs = """
                     id="skillsTr{get_delete_instance}"
                 """
-    
+
     actions = [
         {
             "action": _("Edit"),
@@ -62,14 +64,14 @@ class SkillsListView(HorillaListView):
                         hx-post="{get_delete_url}"
                         hx-swap="delete"
                         hx-confirm="Are you sure want to delete this skill?"
-                        hx-target="#skillsTr{get_delete_instance}"         
+                        hx-target="#skillsTr{get_delete_instance}"
                       """,
         },
     ]
 
     header_attrs = {
         "title": """ style="width:200px !important" """,
-        "action": """ style="width:200px !important" """
+        "action": """ style="width:200px !important" """,
     }
 
 

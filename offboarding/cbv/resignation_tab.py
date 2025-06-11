@@ -1,19 +1,20 @@
 """
-This page handles the cbv methods for resignation tab 
+This page handles the cbv methods for resignation tab
 """
 
 from typing import Any
+
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+
 from employee.cbv.employee_profile import EmployeeProfileView
+from horilla_views.cbv_methods import check_feature_enabled, login_required
 from offboarding.cbv.resignation import ResignationLetterDetailView, ResignationListView
-from horilla_views.cbv_methods import login_required, check_feature_enabled
 from offboarding.models import OffboardingGeneralSetting
 
 
 # @method_decorator(check_feature_enabled("resignation_request", OffboardingGeneralSetting), name="dispatch")
 class ResignationTabView(ResignationListView):
-
     """
     List view of resignation Tab in profile
     """
@@ -25,7 +26,7 @@ class ResignationTabView(ResignationListView):
         self.action_method = None
         self.view_id = "resignation-container"
         pk = self.request.resolver_match.kwargs.get("pk")
-        self.search_url = reverse("individual-resignation-tab-list",kwargs={'pk':pk})
+        self.search_url = reverse("individual-resignation-tab-list", kwargs={"pk": pk})
 
     template_name = "cbv/resignation/resignation_tab.html"
 

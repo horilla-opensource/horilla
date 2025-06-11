@@ -5,16 +5,17 @@ My attendances
 from typing import Any
 
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from attendance.filters import AttendanceFilters
 from attendance.models import Attendance
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaDetailedView,
 )
 
 
@@ -26,9 +27,8 @@ class MyAttendances(TemplateView):
 
     template_name = "cbv/my_attendances/my_attendances.html"
 
-class MyAttendancesListView(HorillaListView):
 
-    
+class MyAttendancesListView(HorillaListView):
 
     model = Attendance
     filter_class = AttendanceFilters
@@ -73,12 +73,12 @@ class MyAttendancesListView(HorillaListView):
     ]
 
 
-
 @method_decorator(login_required, name="dispatch")
 class MyAttendanceList(MyAttendancesListView):
     """
     List view
     """
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("my-attendance-list")
@@ -93,7 +93,7 @@ class MyAttendanceList(MyAttendancesListView):
                 $('[name=attendance_validated]').val('unknown').change();
                 $('[name=is_validate_request]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -106,7 +106,7 @@ class MyAttendanceList(MyAttendancesListView):
                 $('[name=attendance_validated]').val('unknown').change();
                 $('[name=is_validate_request_approved]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -131,7 +131,7 @@ class MyAttendanceList(MyAttendancesListView):
                 $('[name=is_validate_request]').val('unknown').change();
                 $('[name=is_validate_request_approved]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -144,9 +144,6 @@ class MyAttendanceList(MyAttendancesListView):
         employee = self.request.user.employee_get
         queryset = queryset.filter(employee_id=employee)
         return queryset
-
-    
-
 
 
 @method_decorator(login_required, name="dispatch")

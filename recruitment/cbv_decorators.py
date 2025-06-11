@@ -1,10 +1,11 @@
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.contrib import messages
+
 from employee.models import Employee
+from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import decorator_with_arguments
 from recruitment.models import Recruitment, Stage
-from horilla.horilla_middlewares import _thread_locals
 
 
 @decorator_with_arguments

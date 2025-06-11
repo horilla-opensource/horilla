@@ -1,21 +1,23 @@
 """
-recruitment 
+recruitment
 """
 
 from typing import Any
+
+from django import forms
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from django import forms
+
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaFormView,
 )
 from recruitment.filters import RecruitmentFilter
 from recruitment.forms import AddCandidateForm, RecruitmentCreationForm, SkillsForm
@@ -69,7 +71,7 @@ class RecruitmentList(HorillaListView):
     action_method = "rec_actions"
 
     header_attrs = {
-        "recruitment_column" : """
+        "recruitment_column": """
                                 style="width : 200px !important"
                                """
     }
@@ -82,7 +84,7 @@ class RecruitmentList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=closed]').val('true');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -93,7 +95,7 @@ class RecruitmentList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=closed]').val('false');
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -149,10 +151,13 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
     extended form view for create
     """
 
-    cols = {"title": 12, "description": 12,
-            "is_published":4,
-            "optional_profile_image":4,
-            "optional_resume":4,}
+    cols = {
+        "title": 12,
+        "description": 12,
+        "is_published": 4,
+        "optional_profile_image": 4,
+        "optional_resume": 4,
+    }
 
     class Meta:
         """
@@ -174,8 +179,8 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             "is_published",
             "optional_profile_image",
             "optional_resume",
-            'publish_in_linkedin',
-            'linkedin_account_id',
+            "publish_in_linkedin",
+            "linkedin_account_id",
         ]
         exclude = ["is_active"]
         widgets = {
@@ -192,8 +197,8 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             "vacancy": _("Vacancy"),
             "open_positions": _("Job Position"),
             "recruitment_managers": _("Managers"),
-            "optional_profile_image":_("Optional Profile Image?"),
-            "optional_resume": _("Optional Resume?")
+            "optional_profile_image": _("Optional Profile Image?"),
+            "optional_resume": _("Optional Resume?"),
         }
 
 
@@ -231,8 +236,6 @@ class RecruitmentForm(HorillaFormView):
     dynamic_create_fields = [("skills", RecruitmentNewSkillForm)]
     template_name = "cbv/recruitment/recruitment_form.html"
 
-    
-
     def get_context_data(self, **kwargs):
         """
         Return context data with optional verbose name for form based on instance state.
@@ -253,24 +256,27 @@ class RecruitmentForm(HorillaFormView):
                 recruitment_managers = self.request.POST.getlist("recruitment_managers")
                 if recruitment_managers:
                     recruitment.recruitment_managers.set(recruitment_managers)
-                if (recruitment.publish_in_linkedin and recruitment.linkedin_account_id):
+                if recruitment.publish_in_linkedin and recruitment.linkedin_account_id:
                     delete_post(recruitment)
-                    post_recruitment_in_linkedin(self.request,recruitment,recruitment.linkedin_account_id)
+                    post_recruitment_in_linkedin(
+                        self.request, recruitment, recruitment.linkedin_account_id
+                    )
                 message = _("Recruitment Updated Successfully")
             else:
                 recruitment = form.save()
                 recruitment_managers = self.request.POST.getlist("recruitment_managers")
                 if recruitment_managers:
                     recruitment.recruitment_managers.set(recruitment_managers)
-                if (recruitment.publish_in_linkedin and recruitment.linkedin_account_id):
-                    post_recruitment_in_linkedin(self.request,recruitment,recruitment.linkedin_account_id)
+                if recruitment.publish_in_linkedin and recruitment.linkedin_account_id:
+                    post_recruitment_in_linkedin(
+                        self.request, recruitment, recruitment.linkedin_account_id
+                    )
                 message = _("Recruitment Created Successfully")
             messages.success(self.request, message)
-            if self.request.GET.get("pipeline") == "true" :
+            if self.request.GET.get("pipeline") == "true":
                 return HttpResponse("<script>window.location.reload();</script>")
             return self.HttpResponse()
         return super().form_valid(form)
-
 
 
 class AddCandidateFormView(HorillaFormView):

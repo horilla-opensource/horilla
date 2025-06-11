@@ -3,11 +3,11 @@
     <h3 class="text-lg font-semibold">{{nav_title}}</h3>
 
     {% if search_url %}
-        <form autocomplete="off" 
-            id="filterForm" 
-            onsubmit="event.preventDefault()" 
-            hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}" 
-            hx-replace-url="false" 
+        <form autocomplete="off"
+            id="filterForm"
+            onsubmit="event.preventDefault()"
+            hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}"
+            hx-replace-url="false"
             hx-target="{{search_swap_target}}"
             hx-on:submit="htmxLoadIndicator(this);"
         >
@@ -89,7 +89,7 @@
                         />Filter
                     </button>
                 {% else %}
-                    <button 
+                    <button
                         hidden
                         type="submit"
                         id="applyFilter"
@@ -99,7 +99,7 @@
                 {% endif %}
                 <input type="hidden" id="pageInput">
                 <input type="hidden" id="sortInput">
-            
+
                 {% if create_attrs %}
                     <a
                         {% comment %} data-modal-open="deletemodal" {% endcomment %}

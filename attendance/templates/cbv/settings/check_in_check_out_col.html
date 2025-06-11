@@ -7,7 +7,7 @@
         {% if perms.attendance.change_attendancegeneralsetting %}
             hx-post="{% url 'enable-disable-check-in' %}" hx-target="#attendance-activity-container" hx-trigger="change"
             hx-include="#companyId{{instance.id}}" hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 200);"
-            {% if request.session.selected_company == 'all'  %} 
+            {% if request.session.selected_company == 'all'  %}
                 {% if not instance.company_id %}
                     hx-swap="innerHTML"
                 {% else %}

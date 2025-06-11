@@ -11,7 +11,7 @@
                         hx-get="{% url "cut-penalty" instance.id %}"
                         style="width: 50%;"
                         >
-                       
+
                         <ion-icon name="information-circle-outline" role="img"
                             class="md hydrated" aria-label="information circle outline">
                         </ion-icon>{% trans "Penalty" %}
@@ -33,7 +33,7 @@
                             ></ion-icon>{% trans "Delete" %}</button>
                     </form>
                 {% endif %}
-            
+
     {% endif %}
 
 {% if request.GET.deleted %}

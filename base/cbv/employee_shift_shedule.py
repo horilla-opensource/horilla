@@ -3,12 +3,14 @@ this page is handling the cbv methods for Employee shift shedule in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.filters import EmployeeShiftFilter, EmployeeShiftScheduleFilter
 from base.forms import EmployeeShiftScheduleForm
 from base.models import EmployeeShift, EmployeeShiftSchedule
@@ -48,7 +50,9 @@ class EmployeeShiftSheduleNav(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="base.add_employeeshiftschedule"), name="dispatch")
+@method_decorator(
+    permission_required(perm="base.add_employeeshiftschedule"), name="dispatch"
+)
 class EmployeeShiftSheduleCreateForm(HorillaFormView):
     """
     form view for creating  and updating job position in settings

@@ -17,7 +17,7 @@ function deleteItem(url,message) {
             const csrfTokenInput = document.createElement('input');
             csrfTokenInput.setAttribute('type', 'hidden');
             csrfTokenInput.setAttribute('name', 'csrfmiddlewaretoken');
-            csrfTokenInput.value = getCSRFToken(); 
+            csrfTokenInput.value = getCSRFToken();
             form.appendChild(csrfTokenInput);
             document.body.appendChild(form);
             form.submit();

@@ -3,22 +3,22 @@ this page is handling the cbv methods of  attendance activity page
 """
 
 from typing import Any
+
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from attendance.filters import AttendanceActivityFilter
 from attendance.forms import AttendanceActivityExportForm
-from attendance.models import (
-    AttendanceActivity,
-)
+from attendance.models import AttendanceActivity
 from base.methods import filtersubordinates, is_reportingmanager
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
 )
-from horilla_views.cbv_methods import login_required
 
 
 @method_decorator(login_required, name="dispatch")
@@ -67,8 +67,6 @@ class AttendanceActivityListView(HorillaListView):
         (_("Check Out"), "clock_out"),
         (_("Out Date"), "clock_out_date"),
         (_("Duration (HH:MM:SS)"), "duration_format"),
-
-
     ]
 
     row_attrs = """
@@ -85,7 +83,7 @@ class AttendanceActivityListView(HorillaListView):
         ("In Date", "clock_in_date"),
         ("Check Out", "clock_out"),
         ("Out Date", "clock_out_date"),
-        ("Duration (HH:MM:SS)", "duration_format")
+        ("Duration (HH:MM:SS)", "duration_format"),
     ]
 
 
@@ -100,7 +98,6 @@ class AttendanceActivityNavView(HorillaNavView):
         self.search_url = reverse("attendance-activity-search")
 
         actions = [
-           
             {
                 "action": _("Import"),
                 "attrs": f"""
@@ -121,8 +118,7 @@ class AttendanceActivityNavView(HorillaNavView):
                     hx-get ="{reverse_lazy('attendance-bulk-export')}"
                     style="cursor: pointer;"
                 """,
-            }
-
+            },
         ]
 
         if self.request.user.has_perm("attendance.delete_attendanceactivity"):
@@ -157,7 +153,10 @@ class AttendanceActivityNavView(HorillaNavView):
         ("clock_out_date", _("Out Date")),
         ("shift_day", _("Shift Day")),
         ("employee_id__country", _("Country")),
-        ("employee_id__employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
         ("employee_id__employee_work_info__shift_id", _("Shift")),
         ("employee_id__employee_work_info__work_type_id", _("Work Type")),
         ("employee_id__employee_work_info__department_id", _("Department")),

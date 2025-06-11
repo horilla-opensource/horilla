@@ -14,17 +14,17 @@
       .approved-True{
         border-left: 3.4px solid yellowgreen !important;
         border-radius: 4px 0 0 4px;
-      
+
       }
       .canceled-True {
-      
+
         border-left: 3.4px solid red !important;
         border-radius: 4px 0 0 4px;
-      
+
       }
     </style>
 <div hx-get="{% url "holiday-navbar" %}" hx-trigger="load">
-</div> 
+</div>
 
 {% include "generic/components.html" %}
 <div
@@ -35,7 +35,7 @@
     style="display: none"
   ></div>
 
-<div class="oh-wrapper"  
+<div class="oh-wrapper"
    id="listContainer">
   <div class="animated-background">
 </div>

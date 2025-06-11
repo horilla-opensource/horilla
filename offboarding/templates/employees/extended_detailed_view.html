@@ -10,7 +10,7 @@
               $("#resignationCells").find("[type=checkbox]").prop("checked", true);
           }
           $("[type=checkbox]").change();
-          
+
           function resignLetterConfirmation(params, target, approve = false) {
             // Define the select box options
             var selectOptions = ``;
@@ -18,7 +18,7 @@
             `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_starts" name="notice_period_starts">` +
             '<label style="display:block;" for="notice_period_ends">End Date:</label>' +
             `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_ends" name="notice_period_ends">`;
-        
+
           html = '<p>' + params + '</p>'
           if (approve) { html = html + "<div >" + selectOptions + `
             <div class='row' style='overflow-x:hidden;'>
@@ -62,7 +62,7 @@
                 target.siblings("input[name=offboarding_id]").val(selectedOffboarding)
               }
               target.click();
-        
+
               if (event.target.tagName.toLowerCase() === 'form') {
                 event.target.submit();
               } else if (event.target.tagName.toLowerCase() === 'a') {
@@ -74,4 +74,3 @@
           });
         }
       </script>
-  

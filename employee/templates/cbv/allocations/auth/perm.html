@@ -49,7 +49,7 @@
         })
       </script>
       {% if perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}
-      {% load i18n %} 
+      {% load i18n %}
       {% for perm in permissions %}
       <span type="button" class="perm-accordion w-100 p-2 oh-user_permission-list_item app-permissions" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');">
           <div class="d-flex flex-row bd-highlight">
@@ -176,7 +176,7 @@
                                                       if (!$(this).is(':checked')) {
                                                           $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
                                                       }
-                                                  "    
+                                                  "
                                                   data-group-id="{{group.id}}"
                                                   data-group-name="{{group.name}}"
                                               />
@@ -211,7 +211,7 @@
           </div>
       </div>
       {% endfor %}
-      
+
       {% endif %}
     </div>
   </div>

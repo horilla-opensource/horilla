@@ -2,7 +2,7 @@
 <div id="formContainer">
     {% include "generic/horilla_form.html" %}
     <div class ="oh-modal__dialog-body oh-modal__dialog-relative">
-    <table 
+    <table
     class="oh-table  custom-table"
     {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "bonus_encashment" %}
         id="availableTable"

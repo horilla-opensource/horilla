@@ -3,10 +3,13 @@ Onboarding candidate view.
 """
 
 from typing import Any
+
+from django.db.models import Q
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.db.models import Q
+
+from base.models import HorillaMailTemplate
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaListView,
@@ -15,7 +18,6 @@ from horilla_views.generic.cbv.views import (
 )
 from recruitment.filters import CandidateFilter
 from recruitment.models import Candidate
-from base.models import HorillaMailTemplate
 
 
 @method_decorator(login_required, name="dispatch")
@@ -99,7 +101,7 @@ class OnboardingCandidatesList(HorillaListView):
                 $('#applyFilter').closest('form').find('[name=joining_set]').val('true');
                 $('[name=portal_sent]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -111,7 +113,7 @@ class OnboardingCandidatesList(HorillaListView):
                 $('#applyFilter').closest('form').find('[name=joining_set]').val('false');
                 $('[name=portal_sent]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -134,7 +136,7 @@ class OnboardingCandidatesList(HorillaListView):
                 $('#applyFilter').closest('form').find('[name=portal_sent]').val('true');
                 $('[name=joining_set]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -190,7 +192,7 @@ class OnboardingCandidatesNav(HorillaNavView):
         {
             "action": _("Send Portal"),
             "attrs": """
-                    
+
                     data-target="#addAttachments"
                     data-toggle="oh-modal-toggle"
                     id="send-port"

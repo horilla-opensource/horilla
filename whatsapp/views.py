@@ -2,16 +2,15 @@ import json
 import logging
 import string
 import threading
-from bs4 import BeautifulSoup
+from typing import Iterable
 
+from bs4 import BeautifulSoup
+from django.contrib import messages
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.contrib import messages
-
-from typing import Iterable
 
 from base.models import Announcement
 from employee.models import Employee
@@ -40,14 +39,13 @@ from whatsapp.utils import (
     reimbursement_create,
     send_document_message,
     send_flow_message,
+    send_image_message,
     send_template_message,
     send_text_message,
-    send_image_message,
     shift_create,
     update_flow,
     work_type_create,
 )
-
 
 DETAILED_FLOW = [
     {
@@ -246,7 +244,7 @@ def whatsapp(request):
     return HttpResponse("error", status=200)
 
 
-def create_generic_templates(request,id):
+def create_generic_templates(request, id):
     """
     Creates generic message templates for WhatsApp.
 
@@ -267,9 +265,9 @@ def create_generic_templates(request,id):
         credential.created_templates = True
         credential.save()
 
-        messages.success(request,"Message templates and flows created successfully.")
+        messages.success(request, "Message templates and flows created successfully.")
     except:
-        messages.error(request,"Message templates and flows creation failed.")
+        messages.error(request, "Message templates and flows creation failed.")
     return HttpResponse("<script>window.location.reload();</script>")
 
 
@@ -305,7 +303,7 @@ def create_flows(cred_id):
                 )
 
             # Update flow
-            update_response = update_flow(flow_id, flow_json,credential.meta_token)
+            update_response = update_flow(flow_id, flow_json, credential.meta_token)
             update_response_data = update_response.json()
             if update_response_data.get("validation_error", {}):
                 return HttpResponse(
@@ -315,7 +313,7 @@ def create_flows(cred_id):
                 )
 
             # Publish flow
-            publish_response = publish_flow(flow_id,credential.meta_token)
+            publish_response = publish_flow(flow_id, credential.meta_token)
             publish_response_data = publish_response.json()
             if publish_response_data.get("error", {}):
                 return HttpResponse(

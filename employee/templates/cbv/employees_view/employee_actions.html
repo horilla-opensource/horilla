@@ -64,9 +64,9 @@
       {% endif %}
     {% endif %}
     {% if perms.employee.delete_employee %}
-      <a 
-        hx-get="{% url 'generic-delete' %}?model=employee.Employee&pk={{instance.id}}" 
-        hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle" 
+      <a
+        hx-get="{% url 'generic-delete' %}?model=employee.Employee&pk={{instance.id}}"
+        hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
         data-target="#deleteConfirmation" style = "width:100%">
           <button
             type="submit"

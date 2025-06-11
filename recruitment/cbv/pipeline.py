@@ -3,27 +3,29 @@ recruitment/cbv/pipeline.py
 """
 
 from typing import Any
+
+from django.contrib import messages
+from django.core.cache import cache as CACHE
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _
 from django.utils.http import urlencode
-from django.core.cache import cache as CACHE
-from django.contrib import messages
+from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
     HorillaNavView,
-    TemplateView,
     HorillaTabView,
+    TemplateView,
     get_short_uuid,
 )
-from recruitment import models, filters, forms
+from recruitment import filters, forms, models
+from recruitment.cbv_decorators import manager_can_enter
 from recruitment.templatetags.recruitmentfilters import (
     recruitment_manages,
     stage_manages,
 )
-from recruitment.cbv_decorators import manager_can_enter
 
 
 @method_decorator(login_required, name="dispatch")
@@ -344,7 +346,7 @@ class CandidateList(HorillaListView):
             "icon": "document-outline",
             "attrs": """
                     class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    href="{get_resume_url}" target="_blank" 
+                    href="{get_resume_url}" target="_blank"
                 """,
         },
     ]

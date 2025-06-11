@@ -33,35 +33,35 @@
     .initial--dot{
         background-color:cyan;
       }
-  
-  
+
+
 
     .stage-type-initial{
       border-left: 3.4px solid cyan !important;
       border-radius: 4px 0 0 4px;
-    
+
     }
     .stage-type-test{
         border-left: 3.4px solid blue !important;
         border-radius: 4px 0 0 4px;
-      
+
       }
     .stage-type-interview{
         border-left: 3.4px solid orange !important;
         border-radius: 4px 0 0 4px;
-      
+
       }
     .stage-type-cancelled{
         border-left: 3.4px solid red !important;
         border-radius: 4px 0 0 4px;
-      
+
       }
     .stage-type-hired{
         border-left: 3.4px solid yellowgreen !important;
         border-radius: 4px 0 0 4px;
-      
+
       }
-    
+
   </style>
 
 
@@ -69,7 +69,7 @@
 
 
  <div hx-get="{% url 'nav-stage' %}" hx-trigger="load">
-</div>  
+</div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
 
@@ -85,10 +85,10 @@
     style="display: none"
   ></div>
 
-  
-  <div 
-  class="oh-wrapper" 
- 
+
+  <div
+  class="oh-wrapper"
+
   id="listContainer">
   <div class="animated-background">
   </div>

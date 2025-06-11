@@ -1,7 +1,10 @@
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+
 from base.methods import is_reportingmanager
 from helpdesk.filter import TicketFilter, TicketReGroup
 from helpdesk.models import TICKET_STATUS, Ticket
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaListView,
@@ -9,8 +12,6 @@ from horilla_views.generic.cbv.views import (
     HorillaSectionView,
     HorillaTabView,
 )
-from django.utils.decorators import method_decorator
-from horilla_views.cbv_methods import login_required
 
 
 @method_decorator(login_required, name="dispatch")
@@ -55,7 +56,7 @@ class TicketPipelineNav(HorillaNavView):
                 role="button"
                 class="oh-dropdown__link"
                 onclick = "ticketBulkArchive(event)"
-            """
+            """,
         },
         {
             "action": "Unarchive",
@@ -64,7 +65,7 @@ class TicketPipelineNav(HorillaNavView):
                 role="button"
                 class="oh-dropdown__link"
                 onclick = "ticketBulkUnArchive(event)"
-            """
+            """,
         },
         {
             "action": "Delete",
@@ -73,7 +74,7 @@ class TicketPipelineNav(HorillaNavView):
                 role="button"
                 class="oh-dropdown__link oh-dropdown__link--danger"
                 onclick = "ticketsBulkDelete(event)"
-            """
+            """,
         },
     ]
 
@@ -101,24 +102,25 @@ class TicketTabView(HorillaTabView):
             {
                 "title": "My Tickets",
                 # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=my_tickets&',
-                "url":f'{ reverse("ticket-tab-list")}?ticket_tab=my_tickets&',
+                "url": f'{ reverse("ticket-tab-list")}?ticket_tab=my_tickets&',
             },
             {
                 "title": "Suggested Tickets",
                 # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=suggested_tickets&',
-                "url":f'{ reverse("ticket-tab-list")}?ticket_tab=suggested_tickets&',
-            }
+                "url": f'{ reverse("ticket-tab-list")}?ticket_tab=suggested_tickets&',
+            },
         ]
-        
-        if is_reportingmanager(self.request) or self.request.user.has_perm("helpdesk.view_ticket"):
+
+        if is_reportingmanager(self.request) or self.request.user.has_perm(
+            "helpdesk.view_ticket"
+        ):
             self.tabs.append(
                 {
                     "title": "All Tickets",
                     # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=all_tickets&',
-                    "url":f'{ reverse("ticket-tab-list")}?ticket_tab=all_tickets&',
+                    "url": f'{ reverse("ticket-tab-list")}?ticket_tab=all_tickets&',
                 }
             )
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -149,7 +151,7 @@ class TicketTabView(HorillaTabView):
 #             def __init__(self,status):
 #                 self.name = status
 #                 self.status = status[0]
-            
+
 #             def __str__(self):
 #                 return self.name[1]
 

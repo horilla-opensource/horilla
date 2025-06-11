@@ -3,9 +3,11 @@ this page handles cbv of allowances page
 """
 
 from typing import Any
+
 from django.urls import reverse, reverse_lazy
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
@@ -18,11 +20,8 @@ from payroll.filters import AllowanceFilter
 from payroll.models.models import Allowance
 
 
-
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required(perm="payroll.view_allowance"), name="dispatch"
-)
+@method_decorator(permission_required(perm="payroll.view_allowance"), name="dispatch")
 class AllowanceViewPage(TemplateView):
     """
     for interview page
@@ -31,11 +30,8 @@ class AllowanceViewPage(TemplateView):
     template_name = "cbv/allowances/allowances_home.html"
 
 
-
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required(perm="payroll.view_allowance"), name="dispatch"
-)
+@method_decorator(permission_required(perm="payroll.view_allowance"), name="dispatch")
 class AllowanceListView(HorillaListView):
     """
     list view of the page
@@ -48,8 +44,7 @@ class AllowanceListView(HorillaListView):
         "is_fixed",
         "amount",
         "based_on",
-        "rate"
-
+        "rate",
     ]
 
     model = Allowance
@@ -72,11 +67,11 @@ class AllowanceListView(HorillaListView):
         (_("Excluded Employees"), "get_exclude_employees"),
         (_("Is Taxable"), "get_is_taxable_display"),
         (_("Is Condition Based"), "get_is_condition_based"),
-        (_("Condition"),"condition_based_display"),
+        (_("Condition"), "condition_based_display"),
         (_("Is Fixed"), "get_is_fixed"),
         (_("Amount"), "amount"),
         (_("Based On"), "get_based_on_display"),
-        (_("Rate"),"rate")
+        (_("Rate"), "rate"),
     ]
 
     sortby_mapping = [
@@ -84,20 +79,18 @@ class AllowanceListView(HorillaListView):
         ("Specific Employees", "get_specific_employees"),
         ("Excluded Employees", "get_exclude_employees"),
         ("Amount", "amount"),
-
     ]
 
     header_attrs = {
         "title": """
                 style="width:200px !important;"
                 """,
-        
         "get_specific_employees": """
                                 style="width:200px !important;"
-                                """,   
+                                """,
         "get_exclude_employees": """
                                 style="width:200px !important;"
-                                """,                  
+                                """,
     }
 
     row_attrs = """
@@ -106,7 +99,7 @@ class AllowanceListView(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
-    
+
     row_status_class = "taxable-{is_taxable} fixed-{is_fixed}"
 
     row_status_indications = [
@@ -131,7 +124,7 @@ class AllowanceListView(HorillaListView):
             "
             """,
         ),
-         (
+        (
             "fixed--dot",
             _("Fixed"),
             """
@@ -141,7 +134,7 @@ class AllowanceListView(HorillaListView):
             "
             """,
         ),
-         (
+        (
             "not-fixed--dot",
             _("Not Fixed"),
             """
@@ -152,9 +145,9 @@ class AllowanceListView(HorillaListView):
             """,
         ),
     ]
-    
+
     def get_context_data(self, **kwargs: Any):
-        context =  super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         self.request.allowance_div = "allowance_div"
         return context
 
@@ -164,18 +157,13 @@ class AllowanceListView(HorillaListView):
         """
 
         queryset = super().get_queryset()
-        queryset = queryset.exclude(
-            only_show_under_employee=True
-        )
+        queryset = queryset.exclude(only_show_under_employee=True)
 
         return queryset
-    
 
-    
+
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required(perm="payroll.view_allowance"), name="dispatch"
-)
+@method_decorator(permission_required(perm="payroll.view_allowance"), name="dispatch")
 class AllowanceNavView(HorillaNavView):
     """
     nav bar of the page
@@ -188,27 +176,25 @@ class AllowanceNavView(HorillaNavView):
         self.create_attrs = f"""
                             href="{reverse_lazy('create-allowance')}"
                             """
-        
+
         self.view_types = [
-                {
-                    "type": "list",
-                    "icon": "list-outline",
-                    "url": reverse("allowances-list-view"),
-                    "attrs" : """
+            {
+                "type": "list",
+                "icon": "list-outline",
+                "url": reverse("allowances-list-view"),
+                "attrs": """
                             title='List'
-                            """
-                },
-                {
-                    "type": "card",
-                    "icon": "grid-outline",
-                    "url": reverse("allowances-card-view"),
-                    "attrs" : """
+                            """,
+            },
+            {
+                "type": "card",
+                "icon": "grid-outline",
+                "url": reverse("allowances-card-view"),
+                "attrs": """
                             title='Card'
-                            """
-                },
-            ]
-
-
+                            """,
+            },
+        ]
 
     nav_title = _("Allowances")
     filter_instance = AllowanceFilter()
@@ -218,9 +204,7 @@ class AllowanceNavView(HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required(perm="payroll.view_allowance"), name="dispatch"
-)
+@method_decorator(permission_required(perm="payroll.view_allowance"), name="dispatch")
 class AllowancesCardView(HorillaCardView):
     """
     card view for the page
@@ -240,18 +224,15 @@ class AllowancesCardView(HorillaCardView):
         """
 
         queryset = super().get_queryset()
-        queryset = queryset.exclude(
-            only_show_under_employee=True
-        )
+        queryset = queryset.exclude(only_show_under_employee=True)
 
         return queryset
-    
+
     details = {
         "image_src": "get_avatar",
         "title": "{title}",
         "subtitle": "Amount : {based_on_amount} <br> One Time Allowance : {one_time_date_display} <br> Taxable : {get_is_taxable_display}",
     }
-
 
     card_attrs = """
                 hx-get='{allowance_detail_view}?instance_ids={ordered_ids}'
@@ -259,7 +240,7 @@ class AllowancesCardView(HorillaCardView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
-    
+
     card_status_class = "taxable-{is_taxable} fixed-{is_fixed}"
 
     card_status_indications = [
@@ -284,7 +265,7 @@ class AllowancesCardView(HorillaCardView):
             "
             """,
         ),
-         (
+        (
             "fixed--dot",
             _("Fixed"),
             """
@@ -294,7 +275,7 @@ class AllowancesCardView(HorillaCardView):
             "
             """,
         ),
-         (
+        (
             "not-fixed--dot",
             _("Not Fixed"),
             """
@@ -327,14 +308,8 @@ class AllowancesCardView(HorillaCardView):
     ]
 
 
-
-
-
-
 @method_decorator(login_required, name="dispatch")
-@method_decorator(
-    permission_required(perm="payroll.view_allowance"), name="dispatch"
-)
+@method_decorator(permission_required(perm="payroll.view_allowance"), name="dispatch")
 class AllowanceDetailView(HorillaDetailedView):
     """
     detail view for allowances
@@ -359,6 +334,3 @@ class AllowanceDetailView(HorillaDetailedView):
     ]
 
     action_method = "allowance_detail_actions"
-
-
-

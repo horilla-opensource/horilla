@@ -1,25 +1,26 @@
 """
 This page handles the cbv methods for recruitment survey page
 """
+
 from typing import Any
+
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.shortcuts import render
-from horilla_views.generic.cbv.views import (
-    HorillaDetailedView,
-    HorillaFormView,
-)
+
 from horilla_views.cbv_methods import login_required, permission_required
-from recruitment.forms import QuestionForm,TemplateForm
-from recruitment.models import RecruitmentSurvey,SurveyTemplate
+from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaFormView
+from recruitment.forms import QuestionForm, TemplateForm
+from recruitment.models import RecruitmentSurvey, SurveyTemplate
 
 
-
-@method_decorator(login_required,name="dispatch")
-@method_decorator(permission_required("recruitment.add_recruitmentsurvey"),name="dispatch")
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("recruitment.add_recruitmentsurvey"), name="dispatch"
+)
 class QuestionFormView(HorillaFormView):
     """
     form view for create button
@@ -49,13 +50,15 @@ class QuestionFormView(HorillaFormView):
             messages.success(self.request, _(message))
             return HttpResponse("<script>window.location.reload()</script>")
         return super().form_valid(form)
-    
 
-@method_decorator(login_required,name="dispatch")
-@method_decorator(permission_required("recruitment.add_recruitmentsurvey"),name="dispatch")
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("recruitment.add_recruitmentsurvey"), name="dispatch"
+)
 class QuestionDuplicateFormView(HorillaFormView):
     """
-    form view for create duplicate for asset 
+    form view for create duplicate for asset
     """
 
     form_class = QuestionForm
@@ -91,10 +94,10 @@ class QuestionDuplicateFormView(HorillaFormView):
         return super().form_valid(form)
 
 
-
-
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("recruitment.add_surveytemplate"),name="dispatch")
+@method_decorator(
+    permission_required("recruitment.add_surveytemplate"), name="dispatch"
+)
 class SurveyTemplateFormView(HorillaFormView):
     """
     form view for create and edit survey templates
@@ -108,12 +111,11 @@ class SurveyTemplateFormView(HorillaFormView):
         instance = SurveyTemplate.objects.filter(title=title).first()
 
         if not self.request.POST:
-            self.form =  self.form_class(instance=instance)
+            self.form = self.form_class(instance=instance)
         else:
-            self.form =  self.form_class(self.request.POST,instance=instance)
+            self.form = self.form_class(self.request.POST, instance=instance)
         return self.form
 
-    
     def form_invalid(self, form: Any) -> HttpResponse:
         if not form.is_valid():
             errors = form.errors.as_data()
@@ -131,9 +133,10 @@ class SurveyTemplateFormView(HorillaFormView):
         return super().form_valid(form)
 
 
-
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("recruitment.add_surveytemplate"),name="dispatch")
+@method_decorator(
+    permission_required("recruitment.add_surveytemplate"), name="dispatch"
+)
 class RecruitmentSurveyDetailView(HorillaDetailedView):
     """
     detail view of the page
@@ -142,19 +145,16 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
     model = RecruitmentSurvey
     title = _("Details")
     body = [
-        (_("Question"),"question"),
-        (_("Question Type"),"get_question_type"),
-        (_("Sequence"),"sequence"),
-        (_("Recruitment"),"recruitment_col"),
-        (_("Options"),"options_col",True),
+        (_("Question"), "question"),
+        (_("Question Type"), "get_question_type"),
+        (_("Sequence"), "sequence"),
+        (_("Recruitment"), "recruitment_col"),
+        (_("Options"), "options_col", True),
     ]
 
-    header = {"title": "question", "subtitle": "","avatar":""}
+    header = {"title": "question", "subtitle": "", "avatar": ""}
 
-
-    cols = {
-        "question" : 12
-    }
+    cols = {"question": 12}
 
     actions = [
         {
@@ -165,7 +165,7 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
                      hx-get="{get_edit_url}"
                      hx-target ="#genericModalBody"
                      data-target = "#genericModal"
-                     data-toggle ="oh-modal-toggle"   
+                     data-toggle ="oh-modal-toggle"
                      """,
         },
         {
@@ -178,6 +178,3 @@ class RecruitmentSurveyDetailView(HorillaDetailedView):
                     """,
         },
     ]
-
-
-

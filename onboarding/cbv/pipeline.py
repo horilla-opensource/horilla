@@ -3,16 +3,18 @@ onboarding/cbv/pipeline.py
 """
 
 import re
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.views import View
-from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
+from django.views import View
+from django.views.generic import TemplateView
+
 from base.methods import eval_validate
 from horilla.horilla_middlewares import _thread_locals
-from horilla_views.cbv_methods import render_template, login_required
+from horilla_views.cbv_methods import login_required, render_template
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -20,12 +22,14 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     HorillaTabView,
 )
+from onboarding import filters as onboarding_filters
+from onboarding import forms
+from onboarding import models as onboarding_models
+from onboarding.cbv_decorators import all_manager_can_enter, stage_manager_can_enter
+from onboarding.templatetags.onboardingfilters import stage_manages
+from recruitment import models as recruitment_models
 from recruitment.cbv.candidates import CandidateDetail
 from recruitment.methods import recruitment_manages
-from recruitment import models as recruitment_models
-from onboarding.templatetags.onboardingfilters import stage_manages
-from onboarding import models as onboarding_models, filters as onboarding_filters, forms
-from onboarding.cbv_decorators import all_manager_can_enter, stage_manager_can_enter
 
 
 @method_decorator(login_required, name="dispatch")
@@ -228,19 +232,19 @@ class CandidatePipeline(Pipeline):
                     "action": "Edit",
                     "accessibility": "onboarding.cbv.accessibility.edit_stage_accessibility",
                     "attrs": """
-                    hx-target="#genericModalBody" 
-                    hx-get="{edit_stage_path}" 
-                    data-toggle="oh-modal-toggle" 
-                    data-target="#genericModal" 
+                    hx-target="#genericModalBody"
+                    hx-get="{edit_stage_path}"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
                 """,
                 },
                 {
                     "action": "Bulk Mail",
                     "attrs": """
                     hx-target="#objectCreateModalTarget"
-                    hx-get="{bulk_send_mail_path}" 
-                    data-toggle="oh-modal-toggle" 
-                    data-target="#objectCreateModal"  
+                    hx-get="{bulk_send_mail_path}"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
                 """,
                 },
                 {
@@ -551,7 +555,7 @@ class CandidateList(HorillaListView):
                   <button
                    hx-get="{reverse("task-update",kwargs={"pk":task.pk})}"
                    hx-target="#genericModalBody"
-                   data-toggle="oh-modal-toggle" 
+                   data-toggle="oh-modal-toggle"
                    data-target="#genericModal"
                    class="oh-hover-btn__small"
                    style="
@@ -561,8 +565,8 @@ class CandidateList(HorillaListView):
                    >
                     <ion-icon name="create-outline"></ion-icon>
                    </button>
-                  <a 
-                    hx-get="{reverse("generic-delete")}?model=onboarding.OnboardingTask&pk={task.id}" 
+                  <a
+                    hx-get="{reverse("generic-delete")}?model=onboarding.OnboardingTask&pk={task.id}"
                     hx-target="#deleteConfirmationBody"
                     data-target="#deleteConfirmation"
                     data-toggle="oh-modal-toggle"
@@ -584,9 +588,9 @@ class CandidateList(HorillaListView):
         context["columns"].append(
             (
                 f"""
-            <button 
-                class="oh-checkpoint-badge text-success" 
-                data-toggle="oh-modal-toggle" 
+            <button
+                class="oh-checkpoint-badge text-success"
+                data-toggle="oh-modal-toggle"
                 data-target="#genericModal"
                 hx-get="{reverse('task-creation',kwargs={'obj_id':stage_id})}"
                 hx-target="#genericModalBody"

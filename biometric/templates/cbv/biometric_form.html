@@ -26,7 +26,7 @@
           $("#id_machine_ip_parent_div, #id_port_parent_div").show();
         }
         else {
-            $("#id_machine_ip_parent_div, #id_port_parent_div").hide(); 
+            $("#id_machine_ip_parent_div, #id_port_parent_div").hide();
         }
         if (selectedOption === 'Anviz Biometric'){
             $("#id_anviz_request_id_parent_div, #id_api_url_parent_div, #id_api_key_parent_div, #id_api_secret_parent_div").show();
@@ -47,7 +47,7 @@
 
         var passwordField = $('input[type="password"]');
         passwordField.wrap('<div class="password-wrapper" style="position: relative;"></div>');
-            
+
         var button = $(
           '<button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">' +
             '<ion-icon class="oh-passowrd-input__show-icon" title="Show Password" name="eye-outline"></ion-icon>' +
@@ -60,7 +60,7 @@
           'padding-right': '30px'
         });
 
-    
+
         $(".oh-password-input--toggle").click(function () {
             var passwordInput = $(this).prev('input[name="cosec_password"]');
             var showIcon = $(this).find(".oh-passowrd-input__show-icon");

@@ -25,7 +25,7 @@
                 <ion-icon name="archive"></ion-icon>
             </a>
         {% else %}
-            <a class="oh-btn oh-btn--danger-outline oh-btn oh-btn--light-bkg w-100" hx-confirm="{% trans 'Do you Want to un-archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' instance.id %}?{{pd}}" 
+            <a class="oh-btn oh-btn--danger-outline oh-btn oh-btn--light-bkg w-100" hx-confirm="{% trans 'Do you Want to un-archive this rotating shift assign?' %}" hx-get="{% url 'rotating-shift-assign-archive' instance.id %}?{{pd}}"
                 hx-target="#rotating-shift-container" title="{% trans 'Un-Archive' %}">
                 <ion-icon name="archive"></ion-icon>
             </a>

@@ -57,7 +57,7 @@
           </form>
           <script>
             let htmxBusy = false
-            
+
             document.body.addEventListener('htmx:configRequest', function (event) {
               if (htmxBusy) {
                 event.preventDefault()
@@ -66,11 +66,11 @@
                 htmxBusy = true
               }
             })
-            
+
             document.body.addEventListener('htmx:afterRequest', function () {
               htmxBusy = false
             })
-            
+
             document.body.addEventListener('htmx:responseError', function () {
               htmxBusy = false
             })

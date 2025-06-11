@@ -3,20 +3,22 @@ This page handles the cbv methods for mail template page
 """
 
 from typing import Any
+
 from django import forms
-from django.http import HttpResponse
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from horilla_views.generic.cbv.views import HorillaFormView
-from horilla_views.cbv_methods import login_required, permission_required
+
+from base.forms import MailTemplateForm
 from base.models import HorillaMailTemplate
-from base.forms import  MailTemplateForm
+from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.views import HorillaFormView
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("base.add_horillamailtemplate"),name="dispatch")
+@method_decorator(permission_required("base.add_horillamailtemplate"), name="dispatch")
 class MailTemplateFormView(HorillaFormView):
     """
     form view for create and edit mail template
@@ -45,10 +47,10 @@ class MailTemplateFormView(HorillaFormView):
             messages.success(self.request, message)
             return self.HttpResponse("<script>window.location.reload()</script>")
         return super().form_valid(form)
-    
+
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("base.add_horillamailtemplate"),name="dispatch")
+@method_decorator(permission_required("base.add_horillamailtemplate"), name="dispatch")
 class MailTemplateDuplicateForm(HorillaFormView):
     """
     from view for duplicate mail templates
@@ -56,7 +58,6 @@ class MailTemplateDuplicateForm(HorillaFormView):
 
     model = HorillaMailTemplate
     form_class = MailTemplateForm
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -73,7 +74,7 @@ class MailTemplateDuplicateForm(HorillaFormView):
 
         if hasattr(form.instance, "id"):
             form.instance.id = None
-            
+
         context["form"] = form
         self.form_class.verbose_name = _("Duplicate Template")
         return context
@@ -96,6 +97,3 @@ class MailTemplateDuplicateForm(HorillaFormView):
             form.save()
             return self.HttpResponse("<script>window.location.reload()</script>")
         return self.form_invalid(form)
-
-
-

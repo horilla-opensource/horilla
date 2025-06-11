@@ -4,39 +4,37 @@ employee/cbv/allocations.py
 Detailed view to manage all modules employee information
 """
 
-import logging
 import ast
-from django.http import HttpResponse
+import logging
 from datetime import datetime
+
 from django.contrib import messages
+from django.db.models import Q
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.db.models.signals import post_save
 from django.utils.decorators import method_decorator
-from django.dispatch import receiver
-from django.db.models import Q
 from django.utils.translation import gettext as _
 from django.views.generic import View
-from employee.models import (
-    Employee,
-    EmployeeWorkInformation,
-    EmployeeBankDetails,
-    models as django_models,
-)
-from employee.methods.methods import get_model_class
-from horilla_views.cbv_methods import render_template, login_required
-from horilla_views.generic.cbv.views import (
-    HorillaDetailedView,
-    HorillaListView,
-    TemplateView,
-    HorillaFormView,
-)
-from horilla.horilla_middlewares import _thread_locals
-from horilla.horilla_settings import APPS, NO_PERMISSION_MODALS
+
 from base.forms import AddToUserGroupForm, ModelForm, forms
 from base.methods import paginator_qry
 from base.templatetags.horillafilters import app_installed
 from base.views import get_models_in_app
+from employee.methods.methods import get_model_class
+from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
+from employee.models import models as django_models
+from horilla.horilla_middlewares import _thread_locals
+from horilla.horilla_settings import APPS, NO_PERMISSION_MODALS
+from horilla_views.cbv_methods import login_required, render_template
+from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
+    HorillaFormView,
+    HorillaListView,
+    TemplateView,
+)
 
 if app_installed("asset"):
     from asset.cbv.request_and_allocation import Asset
@@ -45,18 +43,17 @@ if app_installed("asset"):
     from asset.views import asset_allocate_return
     from asset.forms import AssetReturnForm
 
-
 from onboarding.cbv_decorators import (
     all_manager_can_enter,
     recruitment_manager_can_enter,
 )
 
 if app_installed("leave"):
-    from leave.cbv.leave_types import LeaveTypeListView, LeaveType, AvailableLeave
+    from leave.cbv.leave_types import AvailableLeave, LeaveType, LeaveTypeListView
 
 if app_installed("payroll"):
-    from payroll.cbv.allowances import AllowanceListView, Allowance
-    from payroll.cbv.deduction import DeductionListView, Deduction
+    from payroll.cbv.allowances import Allowance, AllowanceListView
+    from payroll.cbv.deduction import Deduction, DeductionListView
 
 logger = logging.getLogger(__name__)
 
@@ -525,7 +522,7 @@ if app_installed("leave"):
             )
 
             return context
-        
+
         def dispatch(self, request, *args, **kwargs):
             """
             To avoide parent permissions
@@ -563,11 +560,14 @@ if app_installed("leave"):
                 avaiable_instance.available_days = leave_type.total_days
                 try:
                     avaiable_instance.save()
-                    messages.success(self.request, _("Assigned ") + f" {leave_type.name}")
+                    messages.success(
+                        self.request, _("Assigned ") + f" {leave_type.name}"
+                    )
                 except:
                     messages.error(
                         self.request,
-                        _("Cannot Assign or Already Assigned") + f" `{leave_type.name}`",
+                        _("Cannot Assign or Already Assigned")
+                        + f" `{leave_type.name}`",
                     )
             if not types:
                 messages.info(self.request, _("Select Types to Assign"))
@@ -943,7 +943,9 @@ if app_installed("payroll"):
                 allowance.exclude_employees.add(self.instance)
                 allowance.specific_employees.remove(self.instance)
 
-                messages.success(self.request, _("Allowance excluded") + f" {allowance}")
+                messages.success(
+                    self.request, _("Allowance excluded") + f" {allowance}"
+                )
             else:
                 ids = ast.literal_eval(self.request.POST["ids"])
                 allowances = Allowance.objects.filter(pk__in=ids)
@@ -987,13 +989,12 @@ if app_installed("payroll"):
                 exclude_employees=self.instance
             )
             return self.queryset
-        
+
         def dispatch(self, request, *args, **kwargs):
             """
             To avoide parent permissions
             """
             return super(AllowanceListView, self).dispatch(request, *args, **kwargs)
-
 
     def deduction_allocation_metod(self):
         """
@@ -1053,7 +1054,9 @@ if app_installed("payroll"):
                 deduction.exclude_employees.add(self.instance)
                 deduction.specific_employees.remove(self.instance)
 
-                messages.success(self.request, _("Deduction excluded") + f" {deduction}")
+                messages.success(
+                    self.request, _("Deduction excluded") + f" {deduction}"
+                )
             else:
                 ids = ast.literal_eval(self.request.POST["ids"])
                 deductions = Deduction.objects.filter(pk__in=ids)
@@ -1097,13 +1100,12 @@ if app_installed("payroll"):
                 exclude_employees=self.instance
             )
             return self.queryset
-    
+
         def dispatch(self, request, *args, **kwargs):
             """
             To avoide parent permissions
             """
             return super(DeductionListView, self).dispatch(request, *args, **kwargs)
-
 
 
 def is_any_recruitment_manager(request, instance, *args, **kwargs):

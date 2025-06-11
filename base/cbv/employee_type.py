@@ -3,11 +3,13 @@ This page handles employee type in settings page
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.filters import EmployeeTypeFilter
 from base.forms import EmployeeTypeForm
 from base.models import EmployeeType

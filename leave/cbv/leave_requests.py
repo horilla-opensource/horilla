@@ -6,35 +6,33 @@ import contextlib
 from typing import Any
 
 from django.contrib import messages
-from django.http import HttpResponse
-from django.utils.translation import gettext_lazy as _
-from django.shortcuts import get_object_or_404, render
 from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
 from django.urls import resolve, reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.cbv.penalty import ViewPenaltyList
-from base.filters import PenaltyFilter
-from base.models import PenaltyAccounts
-from leave.views import multiple_approvals_check
-from notifications.signals import notify
 from base.decorators import manager_can_enter
-from base.methods import (
-    choosesubordinates,
-    filtersubordinates,
-)
-from leave.methods import filter_conditional_leave_request
+from base.filters import PenaltyFilter
+from base.methods import choosesubordinates, filtersubordinates
+from base.models import PenaltyAccounts
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
+    HorillaFormView,
+    HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaListView,
-    HorillaFormView,
 )
 from leave.filters import LeaveRequestFilter
 from leave.forms import LeaveRequestCreationForm, LeaveRequestExportForm
+from leave.methods import filter_conditional_leave_request
 from leave.models import AvailableLeave, LeaveRequest, LeaveType
 from leave.threading import LeaveMailSendThread
+from leave.views import multiple_approvals_check
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -59,10 +57,7 @@ class LeaveRequestsListView(HorillaListView):
         self.search_url = reverse("request-filter")
         self.view_id = "leaveRequest"
         if self.request.user.has_perm("leave.change_leaverequest"):
-            self.bulk_update_fields = [
-                "status"
-            ]
-
+            self.bulk_update_fields = ["status"]
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -108,10 +103,9 @@ class LeaveRequestsListView(HorillaListView):
         "leave_requests_custom_emp_col": """
                                 style="width:200px !important;"
                                 """,
-        
         "option": """
                                 style="width:200px !important;"
-                                """,                  
+                                """,
     }
 
     row_status_indications = [
@@ -175,7 +169,6 @@ class LeaveRequestsListView(HorillaListView):
     row_status_class = (
         "rejected-{status} cancelled-{status} requested-{status} approved-{status}"
     )
-
 
 
 @method_decorator(login_required, name="dispatch")
@@ -248,12 +241,16 @@ class LeaveRequestsNavView(HorillaNavView):
         ("end_date", _("End Date")),
         ("status", _("Status")),
         ("requested_days", _("Requested Days")),
-        ("employee_id__employee_work_info__reporting_manager_id", _("Reporting Manager")),
+        (
+            "employee_id__employee_work_info__reporting_manager_id",
+            _("Reporting Manager"),
+        ),
         ("employee_id__employee_work_info__department_id", _("Department")),
         ("employee_id__employee_work_info__job_position_id", _("Job Position")),
         ("employee_id__employee_work_info__employee_type_id", _("Employement Type")),
         ("employee_id__employee_work_info__company_id", _("Company")),
     ]
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(manager_can_enter("leave.view_leaverequest"), name="dispatch")
@@ -330,7 +327,7 @@ class LeaveRequestFormView(HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-      
+
         if self.request:
             employee = self.request.user.employee_get
             if employee:
@@ -340,7 +337,6 @@ class LeaveRequestFormView(HorillaFormView):
                 )
                 self.form.fields["leave_type_id"].queryset = assigned_leave_types
 
-        
         if self.form.instance.pk:
             leave_request = LeaveRequest.objects.get(id=self.form.instance.pk)
             leave_type_id = leave_request.leave_type_id
@@ -360,7 +356,9 @@ class LeaveRequestFormView(HorillaFormView):
                     )
                 self.form.fields["leave_type_id"].queryset = assigned_leave_types
                 # form = self.form_class(instance = self.form.instance)
-        self.form = choosesubordinates(self.request, self.form, "leave.add_leaverequest")
+        self.form = choosesubordinates(
+            self.request, self.form, "leave.add_leaverequest"
+        )
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Leave Request")
 
@@ -447,7 +445,9 @@ class LeaveRequestFormView(HorillaFormView):
                     leave_request.save()
 
                     if multiple_approvals_check(leave_request.id):
-                        conditional_requests = multiple_approvals_check(leave_request.id)
+                        conditional_requests = multiple_approvals_check(
+                            leave_request.id
+                        )
                         managers = []
                         for manager in conditional_requests["managers"]:
                             managers.append(manager.employee_user_id)
@@ -491,7 +491,7 @@ class LeaveRequestFormView(HorillaFormView):
 
             return self.HttpResponse("")
         return super().form_valid(form)
-    
+
 
 @method_decorator(login_required, name="dispatch")
 class LeaveClashListView(LeaveRequestsListView):
@@ -503,34 +503,40 @@ class LeaveClashListView(LeaveRequestsListView):
         queryset = HorillaListView.get_queryset(self)
         pk = self.kwargs.get("pk")
         record = LeaveRequest.objects.get(id=pk)
-        if  record.status != 'rejected' or record.status != 'cancelled':
-            queryset = queryset.filter(
-                Q(
-                    employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
+        if record.status != "rejected" or record.status != "cancelled":
+            queryset = (
+                queryset.filter(
+                    Q(
+                        employee_id__employee_work_info__department_id=record.employee_id.employee_work_info.department_id
+                    )
+                    | Q(
+                        employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
+                    ),
+                    start_date__lte=record.end_date,
+                    end_date__gte=record.start_date,
                 )
-                | Q(
-                    employee_id__employee_work_info__job_position_id=record.employee_id.employee_work_info.job_position_id
-                ),
-                start_date__lte=record.end_date,
-                end_date__gte=record.start_date,
-            ).exclude(id=pk).exclude(Q(status='cancelled') | Q(status='rejected'))
+                .exclude(id=pk)
+                .exclude(Q(status="cancelled") | Q(status="rejected"))
+            )
 
         return queryset.distinct()
 
-
     columns = [
-            col for col in LeaveRequestsListView.columns
-            if col[1] not in ["leave_clash_col", "penality_col", "actions_col"]
-        ] + [(_("Clased Due To"), "clashed_due_to")]
-    
+        col
+        for col in LeaveRequestsListView.columns
+        if col[1] not in ["leave_clash_col", "penality_col", "actions_col"]
+    ] + [(_("Clased Due To"), "clashed_due_to")]
+
     row_status_class = ""
     row_status_indications = None
     bulk_select_option = None
     row_attrs = ""
 
 
-ViewPenaltyList.columns.extend([
-    (_("Leave Type"), "leave_type_id"),
-    (_("Minus Days"), "minus_leaves"),
-    (_("Deducted FromCFD"), "get_deduct_from_carry_forward")
-])
+ViewPenaltyList.columns.extend(
+    [
+        (_("Leave Type"), "leave_type_id"),
+        (_("Minus Days"), "minus_leaves"),
+        (_("Deducted FromCFD"), "get_deduct_from_carry_forward"),
+    ]
+)

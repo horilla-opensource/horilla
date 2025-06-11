@@ -63,7 +63,7 @@
             type="button"
             hx-confirm="Do you want to delete this offboarding user?"
             hx-post="{% url "delete-offboarding-employee" %}?employee_ids={{employee.id}}"
-            hx-swap="none" 
+            hx-swap="none"
             hx-on-htmx-after-request = "$(`#offboardingStageContainer{{stage.pk}}`).find('.reload-record').click()"
             title="{% trans 'Delete' %}"
             class="oh-btn oh-btn--light w-100"

@@ -5,7 +5,7 @@ var excelMessages = {
     en: "Do you want to download the excel file?",
     fr: "Voulez-vous télécharger le fichier Excel?",
   };
-  
+
   var deletePayslipMessages = {
     ar: "هل تريد حقًا حذف جميع كشوف الدفع المحددة؟",
     de: "Sind Sie sicher, dass Sie alle ausgewählten Gehaltsabrechnungen löschen möchten?",
@@ -13,7 +13,7 @@ var excelMessages = {
     en: "Do you really want to delete all the selected payslips?",
     fr: "Voulez-vous vraiment supprimer tous les bulletins de paie sélectionnés?",
   };
-  
+
   var deleteContractMessages = {
     ar: "هل ترغب حقًا في حذف جميع العقود المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Verträge löschen?",
@@ -21,7 +21,7 @@ var excelMessages = {
     en: "Do you really want to delete all the selected contracts?",
     fr: "Voulez-vous vraiment supprimer tous les contrats sélectionnés?",
   };
-  
+
   var noRowMessagesMail = {
     ar: "لم يتم تحديد أي صفوف.",
     de: "Es wurden keine Zeilen ausgewählt.",
@@ -36,7 +36,7 @@ var excelMessages = {
     en: "Do you want to send the payslip by mail?",
     fr: "Voulez-vous envoyer le bulletin de salaire par e-mail?",
   };
-  
+
   var rowMessages = {
     ar: " تم الاختيار",
     de: " Ausgewählt",
@@ -44,17 +44,17 @@ var excelMessages = {
     en: " Selected",
     fr: " Sélectionné",
   };
-  
 
-  
+
+
   function makeEmpListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   function makePayslipListUnique(list) {
     return Array.from(new Set(list));
   }
-  
+
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -70,7 +70,7 @@ var excelMessages = {
     }
     return cookieValue;
   }
-  
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -122,10 +122,10 @@ var excelMessages = {
           confirmButtonText: "Confirm",
         }).then(function (result) {
           if (result.isConfirmed) {
-              
+
              // ids.push($("#selectedInstances").attr("data-ids"));
               //ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-    
+
             $.ajax({
 
               type: "GET",
@@ -137,7 +137,7 @@ var excelMessages = {
                   location.reload();
                 }
               },
-              
+
             });
           }
         });

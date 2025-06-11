@@ -3,12 +3,14 @@ this page is handling the cbv methods for Audit tags in settings
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.forms import AuditTagForm
 from horilla.decorators import permission_required
 from horilla_audit.filters import AudiTagFilter
@@ -35,9 +37,7 @@ class AudiTagsList(HorillaListView):
     model = AuditTag
     filter_class = AudiTagFilter
 
-    bulk_update_fields = [
-        "highlight"
-    ]
+    bulk_update_fields = ["highlight"]
 
     columns = [
         (_("Title"), "title"),
@@ -69,15 +69,17 @@ class AudiTagsList(HorillaListView):
                         hx-post="{get_delete_url}"
                         hx-target="#auditTagTr{get_delete_instance}"
                         hx-swap="delete"
-                   
+
                       """,
         },
     ]
 
     header_attrs = {
         "title": """ style="width:180px !important" """,
-        "custom_highlight_col": """ style="width:180px !important" """
+        "custom_highlight_col": """ style="width:180px !important" """,
     }
+
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("horilla_audit.view_audittag"), name="dispatch")
 class AuditTagsNavView(HorillaNavView):
@@ -143,13 +145,9 @@ class AuditTagCreateForm(HorillaFormView):
         """
         if form.is_valid():
             if form.instance.pk:
-                messages.success(
-                    self.request, _("Tag has been updated successfully!")
-                )
+                messages.success(self.request, _("Tag has been updated successfully!"))
             else:
-                messages.success(
-                    self.request, _("Tag has been created successfully!")
-                )
+                messages.success(self.request, _("Tag has been created successfully!"))
             form.save()
             return self.HttpResponse()
         return super().form_valid(form)

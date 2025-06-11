@@ -2,16 +2,17 @@
 disciplinary actions
 """
 
-from typing import Any
 import contextlib
+from typing import Any
+
 from django import forms
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
-from notifications.signals import notify
+
 from base.methods import filtersubordinates
 from employee.filters import DisciplinaryActionFilter
 from employee.forms import ActiontypeForm, DisciplinaryActionForm
@@ -24,6 +25,7 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")

@@ -37,8 +37,8 @@
     {% if perms.base.delete_rotatingworktypeassign or request.user|is_reportingmanager %}
         <a title="{% trans 'Remove' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100" hx-confirm="{% trans 'Are you sure you want to delete this rotating work type assign?' %}"
             hx-post="{% url 'rotating-work-type-assign-delete' instance.id %}?{{pd}}" hx-target="#rotating-work-container">
-            
-                
+
+
                 <ion-icon name="trash-outline"></ion-icon>
             </button>
         </a>

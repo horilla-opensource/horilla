@@ -3,24 +3,26 @@ Question Template page
 """
 
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
-from base.methods import is_reportingmanager
+
 from base.decorators import manager_can_enter
+from base.methods import is_reportingmanager
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
     HorillaFormView,
     HorillaListView,
     HorillaNavView,
     TemplateView,
-    HorillaDetailedView
 )
-from horilla_views.cbv_methods import login_required
+from pms.filters import PeriodFilter
 from pms.forms import PeriodForm
 from pms.models import Period
-from pms.filters import PeriodFilter
 
 
 @method_decorator(login_required, name="dispatch")
@@ -54,16 +56,15 @@ class PeriodList(HorillaListView):
         (_("Title"), "period_name"),
         (_("Start Date"), "start_date"),
         (_("End date"), "end_date"),
-        
     ]
 
     header_attrs = {
-        "action" : """
+        "action": """
                    style = "width:180px !important"
                    """,
-        "period_name" : """
+        "period_name": """
                    style = "width:180px !important"
-                   """
+                   """,
     }
 
     sortby_mapping = [
@@ -114,11 +115,7 @@ class PeriodDetailView(HorillaDetailedView):
     model = Period
     title = _("Details")
 
-    header = {
-        "title": "period_name",
-        "subtitle": "",
-        "avatar": "" 
-    }
+    header = {"title": "period_name", "subtitle": "", "avatar": ""}
 
     body = {
         (_("Title"), "period_name"),

@@ -19,8 +19,8 @@ from horilla_views.generic.cbv.views import (
     HorillaNavView,
     TemplateView,
 )
-from recruitment.decorators import recruitment_manager_can_enter, manager_can_enter
 from notifications.signals import notify
+from recruitment.decorators import manager_can_enter, recruitment_manager_can_enter
 from recruitment.filters import InterviewFilter
 from recruitment.forms import ScheduleInterviewForm
 from recruitment.models import Candidate, InterviewSchedule

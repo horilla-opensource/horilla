@@ -3,21 +3,23 @@ This page is handling the cbv methods of work type and shift tab in employee pro
 """
 
 from typing import Any
-from django.utils.translation import gettext_lazy as _
-from django.utils.decorators import method_decorator
+
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.cbv.rotating_shift_assign import (
     RotatingShiftDetailview,
     RotatingShiftListParent,
 )
 from base.cbv.rotating_work_type import GeneralParent, RotatingWorkDetailView
-from base.cbv.work_type_request import WorkRequestListView
 from base.cbv.shift_request import ShiftRequestList
+from base.cbv.work_type_request import WorkRequestListView
 from base.methods import filtersubordinates, is_reportingmanager
 from base.models import WorkTypeRequest
 from employee.models import Employee
-from horilla_views.generic.cbv.views import HorillaTabView
 from horilla_views.cbv_methods import login_required
+from horilla_views.generic.cbv.views import HorillaTabView
 
 
 class WorkAndShiftTabView(HorillaTabView):
@@ -109,10 +111,9 @@ class WorkTypeIndividualTabList(WorkRequestListView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        pk = self.request.resolver_match.kwargs.get('pk')
-        self.search_url = reverse("employee-worktype-tab-list",kwargs= {'pk': pk} )
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse("employee-worktype-tab-list", kwargs={"pk": pk})
         self.view_id = "work_target"
-
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -134,8 +135,10 @@ class ShiftRequestIndividualTabView(ShiftRequestList):
         super().__init__(**kwargs)
         self.view_id = "shift-reques-individual-div"
         self.selected_instances_key_id = "shiftselectedInstancesIndividual"
-        pk = self.request.resolver_match.kwargs.get('pk')
-        self.search_url = reverse("shift-request-individual-tab-view",kwargs= {'pk': pk} )
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse(
+            "shift-request-individual-tab-view", kwargs={"pk": pk}
+        )
 
     columns = [
         column for column in ShiftRequestList.columns if column[1] != "comment"
@@ -152,13 +155,14 @@ class RotatingShiftAssignIndividualView(RotatingShiftListParent):
     """
     List view for Rotating shift request tab
     """
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        pk = self.request.resolver_match.kwargs.get('pk')
-        self.search_url = reverse("rotating-shift-individual-tab-view",kwargs= {'pk': pk} )
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse(
+            "rotating-shift-individual-tab-view", kwargs={"pk": pk}
+        )
         self.view_id = "rotating-div"
-
-    
 
     columns = RotatingShiftListParent.columns + [
         (_("Status"), "check_active"),
@@ -185,8 +189,8 @@ class RotatingWorkIndividualTab(GeneralParent):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        pk = self.request.resolver_match.kwargs.get('pk')
-        self.search_url = reverse("employee-rotating-work-tab-list",kwargs= {'pk': pk} )
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse("employee-rotating-work-tab-list", kwargs={"pk": pk})
         self.view_id = "rotating-work-div"
 
     columns = GeneralParent.columns + [

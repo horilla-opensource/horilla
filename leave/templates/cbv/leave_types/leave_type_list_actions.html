@@ -4,7 +4,7 @@
     <a data-toggle="oh-modal-toggle" data-target="#genericModal"
         hx-get="{% url 'assign-one' instance.id %}" hx-target="#genericModalBody" class="oh-btn oh-btn--light-bkg w-100 text-success" title="{% trans 'Assign' %}">
         <ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
-        
+
     </a>
     {% endif %}
 
@@ -16,14 +16,14 @@
         {% else %}
         <a href="{% url 'type-update' instance.id %}" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}">
             <ion-icon class="me-1" name="create-outline"></ion-icon>
-            
+
         </a>
         {% endif %}
     {% endif %}
 
     {% if perms.leave.delete_leavetype and perms.leave.add_availableleave %}
-    <a hx-get="{% url 'generic-delete' %}?model=leave.LeaveType&pk={{instance.id}}" 
-        hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle" 
+    <a hx-get="{% url 'generic-delete' %}?model=leave.LeaveType&pk={{instance.id}}"
+        hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
         data-target="#deleteConfirmation"
         class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Delete' %}"
     >
@@ -31,5 +31,5 @@
     </a>
     {% endif %}
 
-    
+
 </div>

@@ -2,9 +2,10 @@
 decorator functions for base
 """
 
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.contrib import messages
+
 from base.models import MultipleApprovalManagers
 from employee.models import EmployeeWorkInformation
 

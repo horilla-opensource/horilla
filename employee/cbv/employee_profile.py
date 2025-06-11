@@ -2,28 +2,29 @@
 This page handles the cbv methods of employee individual view
 """
 
-from django.urls import reverse_lazy
+from django.contrib import messages
+from django.contrib.auth.models import Group
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views import View
+
+from base import views as base_views
 from base.cbv.mail_log_tab import MailLogTabList
 from base.cbv.work_shift_tab import WorkAndShiftTabView
-from base import views as base_views
 from base.context_processors import enable_profile_edit
 from base.forms import AddToUserGroupForm
 from employee import views
 from employee.filters import EmployeeFilter
 from employee.models import Employee
+from horilla import settings
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import HorillaProfileView
-from horilla import settings
-from django.utils.decorators import method_decorator
-from django.contrib.auth.models import Group
-from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
-
 
 Employee.cbv_employee_profile_edi_url = reverse_lazy("edit-profile")
+
 
 class EmployeeProfileView(HorillaProfileView):
     """

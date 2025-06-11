@@ -3,13 +3,15 @@ this page is handling the cbv methods for company in settings
 """
 
 from typing import Any
+
 from django import forms
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.filters import CompanyFilter
 from base.forms import CompanyForm
 from base.models import Company
@@ -197,7 +199,9 @@ class CompanyCreateForm(HorillaFormView):
         if form.is_valid():
             form.save()
             if self.form.instance.pk:
-                messages.success(self.request, _("Company have been successfully updated."))
+                messages.success(
+                    self.request, _("Company have been successfully updated.")
+                )
             else:
                 messages.success(
                     self.request, _("Company have been successfully created.")

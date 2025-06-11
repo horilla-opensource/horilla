@@ -23,7 +23,7 @@
                 <button class="oh-btn oh-btn--light-bkg w-50" disabled>
                   <ion-icon name="create-outline"></ion-icon>
                 </button>
-          
+
           {% endif %}
           {% if instance.status == 'requested' %}
             <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
@@ -33,7 +33,7 @@
             hx-target="#leaveRequest"
             >
             <ion-icon name="trash-outline"></ion-icon>
-        </a>  
+        </a>
           {% else %}
             <button class="oh-btn oh-btn--light-bkg w-50" disabled>
               <ion-icon name="trash-outline"></ion-icon>
@@ -42,5 +42,3 @@
           {% endif %}
     </div>
 </div>
-
-

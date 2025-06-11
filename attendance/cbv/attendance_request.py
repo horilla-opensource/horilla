@@ -4,31 +4,33 @@ Attendance requests
 
 import json
 from typing import Any
+
+from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
-from django.contrib import messages
+
 from attendance.filters import AttendanceFilters
 from attendance.forms import (
     AttendanceRequestForm,
     BulkAttendanceRequestForm,
     NewRequestForm,
 )
-from attendance.models import Attendance
 from attendance.methods.utils import get_employee_last_name
+from attendance.models import Attendance
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
 from employee.models import Employee
-from notifications.signals import notify
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
     HorillaTabView,
-    HorillaFormView,
     TemplateView,
 )
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -86,7 +88,6 @@ class AttendancesRequestListView(HorillaListView):
         (_("Min Hour"), "minimum_hour"),
         (_("At Work"), "attendance_worked_hour"),
         (_("Overtime"), "attendance_overtime"),
-      
     ]
     sortby_mapping = [
         ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
@@ -127,7 +128,7 @@ class AttendancesRequestListView(HorillaListView):
                 $('#applyFilter').closest('form').find('[name=attendance_validated]').val('true');
                 $('[name=is_bulk_request]').val('unknown').change();
                 $('#applyFilter').click();
-                
+
             "
             """,
         ),
@@ -213,7 +214,7 @@ class AttendanceListTab(AttendancesRequestListView):
                 data-target="#genericModal"
                 hx-get="{change_attendance}"
                 hx-target="#genericModalBody"
-                        
+
                 """,
         }
     ]
@@ -332,7 +333,7 @@ class AttendanceListTabDetailView(HorillaDetailedView):
                     data-target="#genericModalEdit"
                     hx-get="{change_attendance}?all_attendance=true"
                     hx-target="#genericModalEditBody"
-                        
+
                 """,
         }
     ]

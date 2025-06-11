@@ -3,12 +3,14 @@ This page is handling the cbv methods of asset tab in profile page.
 """
 
 from typing import Any
-from django.utils.translation import gettext_lazy as _
+
 from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
+
 from asset.cbv.request_and_allocation import AllocationList, AssetRequestList
+from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
 from horilla_views.generic.cbv.views import HorillaTabView
-from employee.cbv.employee_profile import EmployeeProfileView
 
 
 class AssetTabListView(AllocationList):
@@ -18,11 +20,9 @@ class AssetTabListView(AllocationList):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        pk = self.request.resolver_match.kwargs.get('pk')
-        self.search_url = reverse("assets-tab-list-view",kwargs= {'pk': pk} )
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse("assets-tab-list-view", kwargs={"pk": pk})
         self.view_id = "asset-div"
-
-
 
     columns = AllocationList.columns + [
         (_("Status"), "status_display"),
@@ -46,10 +46,11 @@ class AssetRequestTab(AssetRequestList):
     """
     Asset request tab
     """
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        pk = self.request.resolver_match.kwargs.get('pk')
-        self.search_url = reverse("asset-request-tab-list-view",kwargs= {'pk': pk} )
+        pk = self.request.resolver_match.kwargs.get("pk")
+        self.search_url = reverse("asset-request-tab-list-view", kwargs={"pk": pk})
         self.view_id = "asset-request-div"
 
     def get_queryset(self):
@@ -93,7 +94,7 @@ class AssetTabView(HorillaTabView):
                 "actions": [
                     {
                         "action": "Create Request",
-                        "accessibility" :"asset.cbv.accessibility.create_asset_request_accessibility",
+                        "accessibility": "asset.cbv.accessibility.create_asset_request_accessibility",
                         "attrs": f"""
                                 data-toggle="oh-modal-toggle"
                                 data-target="#genericModal"

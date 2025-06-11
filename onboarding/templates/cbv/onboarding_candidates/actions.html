@@ -15,7 +15,7 @@
     {% endif %}
     {% if not instance.onboarding_stage %}
     <form hx-post="{% url 'email-send' %}?&no_portal=True" hx-target="#reloadMessages">
-    <a class="oh-btn oh-btn--light-bkg w-100" 
+    <a class="oh-btn oh-btn--light-bkg w-100"
       onclick="
       event.preventDefault()
       Swal.fire({
@@ -31,7 +31,7 @@
           }
       })"
     {% comment %} style="background-color: yellowgreen;color: white;" {% endcomment %}
-      title="{% trans 'Start Onboarding' %}" 
+      title="{% trans 'Start Onboarding' %}"
       >
       <ion-icon name="add-outline"></ion-icon>
     </a>
@@ -39,7 +39,7 @@
     <input type="submit" hidden>
     </form>
     {% else %}
-    <a class="oh-btn w-100" 
+    <a class="oh-btn w-100"
       disabled
       onclick="
       event.preventDefault();
@@ -51,7 +51,7 @@
       });
       "
       style="background-color: #1dbfca;color: white;"
-      title="{% trans 'Added to Onobarding' %}" 
+      title="{% trans 'Added to Onobarding' %}"
       >
       <ion-icon name="add-outline"></ion-icon>
       </a>

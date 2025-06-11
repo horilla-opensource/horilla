@@ -4,28 +4,30 @@ this page is handling the cbv methods of work request page
 
 import contextlib
 from typing import Any
+
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from employee.models import Employee
-from notifications.signals import notify
 from django.utils.translation import gettext_lazy as _
+
 from base.filters import WorkTypeRequestFilter
 from base.forms import WorkTypeForm, WorkTypeRequestColumnForm, WorkTypeRequestForm
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
 from base.models import WorkType, WorkTypeRequest
 from base.views import include_employee_instance
+from employee.models import Employee
+from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
-    TemplateView,
+    HorillaFormView,
     HorillaListView,
     HorillaNavView,
-    HorillaFormView,
+    TemplateView,
 )
-from horilla_views.cbv_methods import login_required, permission_required
+from notifications.signals import notify
 
 
 @method_decorator(login_required, name="dispatch")
@@ -154,7 +156,9 @@ class WorkRequestNavView(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("work-list-view")
         self.actions = []
-        if self.request.user.has_perm("base.change_worktyperequest") or is_reportingmanager(self.request):
+        if self.request.user.has_perm(
+            "base.change_worktyperequest"
+        ) or is_reportingmanager(self.request):
             self.actions.append(
                 {
                     "action": _("Approve Requests"),
@@ -174,10 +178,12 @@ class WorkRequestNavView(HorillaNavView):
                     handleRejectRequestsClick();
                     "
                     style="cursor: pointer;"
-                    """
+                    """,
                 }
             )
-        if self.request.user.has_perm("base.delete_worktyperequest") or is_reportingmanager(self.request):
+        if self.request.user.has_perm(
+            "base.delete_worktyperequest"
+        ) or is_reportingmanager(self.request):
             self.actions.append(
                 {
                     "action": _("Delete"),
@@ -187,11 +193,13 @@ class WorkRequestNavView(HorillaNavView):
                     "
                     data-action ="delete"
                     style="cursor: pointer; color:red !important"
-                    
+
                     """,
                 }
             )
-        if self.request.user.has_perm("base.view_worktyperequest") or is_reportingmanager(self.request):
+        if self.request.user.has_perm(
+            "base.view_worktyperequest"
+        ) or is_reportingmanager(self.request):
             self.actions.insert(
                 0,
                 {

@@ -27,7 +27,7 @@
         >{{manager.employee_first_name|truncatechars:4}}</span
         >
       </div>
-      <a  hx-confirm="{% trans 'Are you sure you want to remove this recruitment manager?' %}" hx-post="{% url 'remove-recruitment-manager' manager.id instance.id %}?{{pd}}&page={{data.number}}"  title="{% trans "Remove" %}" 
+      <a  hx-confirm="{% trans 'Are you sure you want to remove this recruitment manager?' %}" hx-post="{% url 'remove-recruitment-manager' manager.id instance.id %}?{{pd}}&page={{data.number}}"  title="{% trans "Remove" %}"
       hx-target="#listContainer" hx-swap="outerHTML" class="oh-user-panel__remove" onclick="event.stopPropagation()">
         <ion-icon name="close-outline"></ion-icon>
       </a>

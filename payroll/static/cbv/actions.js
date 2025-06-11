@@ -5,7 +5,7 @@ var excelMessages = {
     en: "Do you want to download the excel file?",
     fr: "Voulez-vous télécharger le fichier Excel?",
   };
-  
+
   var deletePayslipMessages = {
     ar: "هل تريد حقًا حذف جميع كشوف الدفع المحددة؟",
     de: "Sind Sie sicher, dass Sie alle ausgewählten Gehaltsabrechnungen löschen möchten?",
@@ -13,7 +13,7 @@ var excelMessages = {
     en: "Do you really want to delete all the selected payslips?",
     fr: "Voulez-vous vraiment supprimer tous les bulletins de paie sélectionnés?",
   };
-  
+
   var deleteContractMessage = {
     ar: "هل ترغب حقًا في حذف جميع العقود المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Verträge löschen?",
@@ -21,7 +21,7 @@ var excelMessages = {
     en: "Do you really want to delete all the selected contracts?",
     fr: "Voulez-vous vraiment supprimer tous les contrats sélectionnés?",
   };
-  
+
   var noRowMessage = {
     ar: "لم يتم تحديد أي صفوف.",
     de: "Es wurden keine Zeilen ausgewählt.",
@@ -29,7 +29,7 @@ var excelMessages = {
     en: "No rows have been selected.",
     fr: "Aucune ligne n'a été sélectionnée.",
   };
-  
+
   var rowMessages = {
     ar: " تم الاختيار",
     de: " Ausgewählt",
@@ -53,8 +53,8 @@ var excelMessages = {
     }
     return cookieValue;
   }
-  
-  
+
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -79,11 +79,11 @@ var excelMessages = {
       });
     }
   }
-  
-  
+
+
 function DeleteContractBulk() {
-   
-  
+
+
     var languageCode = null;
     getCurrentLanguageCode(function (code) {
       languageCode = code;
@@ -111,7 +111,7 @@ function DeleteContractBulk() {
             ids = [];
             ids.push($("#selectedInstances").attr("data-ids"));
             ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-  
+
             $.ajax({
               type: "POST",
               url: "/payroll/contract-bulk-delete",
@@ -132,4 +132,3 @@ function DeleteContractBulk() {
       }
     });
   };
-  

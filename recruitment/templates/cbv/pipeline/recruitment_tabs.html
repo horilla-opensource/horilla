@@ -87,10 +87,10 @@
     </div>
   </div>
 
-  
+
 
   <script>
-    $("li.oh-tabs__tab").click(function (e) { 
+    $("li.oh-tabs__tab").click(function (e) {
       var target = `li[data-target="${$(this).attr("data-target")}"]`
       e.preventDefault();
       $.ajax({
@@ -101,7 +101,7 @@
           "target":target,
         },
         success: function (response) {
-          
+
         }
       });
     });

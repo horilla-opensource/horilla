@@ -3,27 +3,29 @@ this page handles cbv of assigned leave page
 """
 
 from typing import Any
-from django.shortcuts import render
-from django.urls import reverse,reverse_lazy
+
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.http import HttpResponse
 from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.decorators import manager_can_enter
-from notifications.signals import notify
 from base.methods import choosesubordinates, is_reportingmanager
 from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
-from horilla_views.generic.cbv.views import (
-    TemplateView,
-    HorillaListView,
-    HorillaTabView,
-    HorillaNavView,
-    HorillaFormView,
-)
 from horilla_views.cbv_methods import login_required
+from horilla_views.generic.cbv.views import (
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+    HorillaTabView,
+    TemplateView,
+)
+from notifications.signals import notify
 from pms.filters import AnonymousFilter, FeedbackFilter
 from pms.forms import AnonymousFeedbackForm, FeedbackForm
 from pms.models import AnonymousFeedback, EmployeeKeyResult, Feedback
@@ -87,7 +89,7 @@ class FeedbackListView(HorillaListView):
     row_attrs = """
                 onclick="
                 event.stopPropagation();
-                window.location.href='{get_individual_feedback}'" 
+                window.location.href='{get_individual_feedback}'"
                 """
 
     row_status_indications = [
@@ -227,7 +229,7 @@ class RequestedFeedbackTab(FeedbackListView):
         super().__init__(**kwargs)
         self.search_url = reverse("requested-feedback-tab")
         self.request.request_feedback = "request_feedback"
-        self.row_attrs = ''
+        self.row_attrs = ""
 
     def get_queryset(self):
         queryset = super().get_queryset()

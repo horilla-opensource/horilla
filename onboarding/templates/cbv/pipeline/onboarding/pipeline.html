@@ -36,18 +36,18 @@
       visibility: visible;
       opacity: 1;
 
-  
-      
+
+
   }
 </style>
 {% include "generic/components.html" %}
 
 <div hx-get="{% url "cbv-pipeline-nav-onboarding" %}" hx-trigger="load"></div>
 
-<div 
-  class="oh-wrapper" 
-  id="pipelineContainer" 
-  hx-get="{% url "cbv-pipeline-tab-onboarding" %}?is_active=true" 
+<div
+  class="oh-wrapper"
+  id="pipelineContainer"
+  hx-get="{% url "cbv-pipeline-tab-onboarding" %}?is_active=true"
   hx-trigger="load"
 >
 </div>

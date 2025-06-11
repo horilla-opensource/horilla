@@ -5,7 +5,7 @@ var archiveMessagedata = {
     en: "Do you really want to archive all the selected feedbacks?",
     fr: "Voulez-vous vraiment archiver tous les retours sélectionnés?",
   };
-  
+
   var unarchiveMessagedata = {
     ar: "هل ترغب حقاً في إلغاء الأرشفة عن كل التعليقات المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Rückmeldungen aus der Archivierung nehmen?",
@@ -13,7 +13,7 @@ var archiveMessagedata = {
     en: "Do you really want to unarchive all the selected feedbacks?",
     fr: "Voulez-vous vraiment désarchiver tous les retours sélectionnés?",
   };
-  
+
   var deleteMessagedata = {
     ar: "هل ترغب حقاً في حذف كل التعليقات المحددة؟",
     de: "Möchten Sie wirklich alle ausgewählten Rückmeldungen löschen?",
@@ -21,7 +21,7 @@ var archiveMessagedata = {
     en: "Do you really want to delete all the selected feedbacks?",
     fr: "Voulez-vous vraiment supprimer tous les retours sélectionnés?",
   };
-  
+
   var norowMessages = {
     ar: "لم يتم تحديد أي صفوف.",
     de: "Es wurden keine Zeilen ausgewählt.",
@@ -29,7 +29,7 @@ var archiveMessagedata = {
     en: "No rows have been selected.",
     fr: "Aucune ligne n'a été sélectionnée.",
   };
-  
+
   $(".all-feedbacks").change(function (e) {
     var is_checked = $(this).is(":checked");
     if (is_checked) {
@@ -38,7 +38,7 @@ var archiveMessagedata = {
       $(".all-feedback-row").prop("checked", false);
     }
   });
-  
+
   $(".self-feedbacks").change(function (e) {
     var is_checked = $(this).is(":checked");
     if (is_checked) {
@@ -47,7 +47,7 @@ var archiveMessagedata = {
       $(".self-feedback-row").prop("checked", false);
     }
   });
-  
+
   $(".requested-feedbacks").change(function (e) {
     var is_checked = $(this).is(":checked");
     if (is_checked) {
@@ -56,7 +56,7 @@ var archiveMessagedata = {
       $(".requested-feedback-row").prop("checked", false);
     }
   });
-  
+
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
@@ -72,7 +72,7 @@ var archiveMessagedata = {
     }
     return cookieValue;
   }
-  
+
   function getCurrentLanguageCode(callback) {
     var languageCode = $("#main-section-data").attr("data-lang");
     var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
@@ -98,25 +98,25 @@ var archiveMessagedata = {
     }
   }
 
-  
+
 
 $(document).on('click', '#archiveFeedback', function(e) {
               e.preventDefault();
-            
+
               var languageCode = null;
               getCurrentLanguageCode(function(code) {
                 languageCode = code;
-            
+
                 var confirmMessage = archiveMessagedata[languageCode];
                 var textMessage = norowMessages[languageCode];
-            
+
                 var ids = JSON.parse($("#selectedInstances").attr("data-ids")) || [];
                 var announy_ids = JSON.parse($("#anounyselectedInstances").attr("data-ids")) || [];
-      
+
                 if (announy_ids.length > 0) {
-                  ids = []; 
+                  ids = [];
                 }
-            
+
                 if (ids.length === 0 && announy_ids.length === 0) {
                   Swal.fire({
                     text: textMessage,
@@ -157,21 +157,21 @@ $(document).on('click', '#archiveFeedback', function(e) {
 
 $(document).on('click', '#UnarchiveFeedback', function(e) {
               e.preventDefault();
-            
+
               var languageCode = null;
               getCurrentLanguageCode(function(code) {
                 languageCode = code;
-            
+
                 var confirmMessage = unarchiveMessagedata[languageCode];
                 var textMessage = norowMessages[languageCode];
-            
+
                 var ids = JSON.parse($("#selectedInstances").attr("data-ids")) || [];
                 var announy_ids = JSON.parse($("#anounyselectedInstances").attr("data-ids")) || [];
-      
+
                 if (announy_ids.length > 0) {
-                  ids = []; 
+                  ids = [];
                 }
-            
+
                 if (ids.length === 0 && announy_ids.length === 0) {
                   Swal.fire({
                     text: textMessage,
@@ -211,18 +211,18 @@ $(document).on('click', '#UnarchiveFeedback', function(e) {
 
 $(document).on('click', '#deleteFeedback', function(e) {
       e.preventDefault();
-    
+
       var languageCode = null;
       getCurrentLanguageCode(function(code) {
         languageCode = code;
-    
+
         var confirmMessage = deleteMessagedata[languageCode];
         var textMessage = norowMessages[languageCode];
-    
+
         var ids = JSON.parse($("#selectedInstances").attr("data-ids")) || [];
         console.log(ids)
         var announy_ids = JSON.parse($("#anounyselectedInstances").attr("data-ids")) || [];
-    
+
         if (ids.length === 0 && announy_ids.length === 0) {
           Swal.fire({
             text: textMessage,
@@ -259,8 +259,3 @@ $(document).on('click', '#deleteFeedback', function(e) {
         }
       });
     });
-
-
-
-
-      

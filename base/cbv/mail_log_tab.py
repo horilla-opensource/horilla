@@ -3,17 +3,18 @@ This page is handling the cbv methods of mail log tab in employee individual pag
 """
 
 from typing import Any
+
 from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
+from accessibility.cbv_decorators import enter_if_accessible
 from base.filters import MailLogFilter
 from base.models import EmailLog
 from employee.models import Employee
-from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaListView
 from horilla_views.cbv_methods import login_required
-from accessibility.cbv_decorators import enter_if_accessible
-from accessibility.cbv_decorators import enter_if_accessible
+from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaListView
 
 
 def _check_reporting_manager(request, *args, **kwargs):

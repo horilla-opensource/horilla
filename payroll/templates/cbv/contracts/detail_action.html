@@ -1,7 +1,7 @@
 {% load i18n %}
 {% if  perms.payroll.delete_contract or perms.payroll.change_contract %}
-            
-                
+
+
                     {% if perms.payroll.change_contract  %}
                         <a href="{% url 'update-contract' instance.id %}" class="oh-btn-group oh-btn oh-btn--info" style="width: 50%;">
                             <ion-icon
@@ -27,6 +27,6 @@
                             ></ion-icon>{% trans "Delete" %}
                         </a>
                     {% endif %}
-            
-           
+
+
         {% endif %}

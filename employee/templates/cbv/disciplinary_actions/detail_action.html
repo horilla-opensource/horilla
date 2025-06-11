@@ -1,6 +1,6 @@
 {% load basefilters %}{% load i18n %}
       {% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
-                  
+
                     <div class="oh-btn-group"  style="width: 100%;">
                       {% if perms.payroll.change_disciplinaryaction %}
                         <a hx-get="{% url 'update-actions' instance.id %}" hx-target='#genericModalBody' data-toggle='oh-modal-toggle' data-target="#genericModal" class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}">
@@ -14,7 +14,7 @@
                         </form>
                       {% endif %}
                     </div>
-                 
+
                 {% endif %}
   {% if request.GET.deleted %}
   <script>

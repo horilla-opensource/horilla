@@ -3,16 +3,15 @@ This page handles employee shift page in settings
 """
 
 from typing import Any
+
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+
 from base.filters import EmployeeShiftFilter
 from base.models import EmployeeShift
-from horilla_views.generic.cbv.views import (
-    HorillaListView,
-    HorillaNavView,
-)
 from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.views import HorillaListView, HorillaNavView
 
 
 @method_decorator(login_required, name="dispatch")

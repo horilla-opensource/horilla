@@ -2,19 +2,20 @@
 This page handles the cbv methods for canidate profile page
 """
 
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from employee.cbv.employee_profile import EmployeeProfileView
 from horilla import settings
-from horilla_views.generic.cbv.views import HorillaProfileView, HorillaListView
-from recruitment.cbv.candidate_mail_log import CandidateMailLogTabList
-from recruitment.filters import CandidateFilter
-from recruitment.views import views
-from recruitment.models import Candidate
-from recruitment.cbv_decorators import all_manager_can_enter
 from horilla_views.cbv_methods import login_required
-from onboarding.models import CandidateTask
+from horilla_views.generic.cbv.views import HorillaListView, HorillaProfileView
 from onboarding.filters import CandidateTaskFilter
+from onboarding.models import CandidateTask
+from recruitment.cbv.candidate_mail_log import CandidateMailLogTabList
+from recruitment.cbv_decorators import all_manager_can_enter
+from recruitment.filters import CandidateFilter
+from recruitment.models import Candidate
+from recruitment.views import views
 
 
 @method_decorator(login_required, name="dispatch")
