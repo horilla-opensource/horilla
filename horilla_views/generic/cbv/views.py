@@ -491,7 +491,7 @@ class HorillaListView(ListView):
                 """
 
                 model = _model
-                fields = []
+                fields = [field[1] for field in _columns]  # 773
 
             def dehydrate_id(self, instance):
                 """
