@@ -172,40 +172,6 @@ function validateActivityIds(event) {
     });
 }
 
-
-$(".validate").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    var closest = $(this)
-        .closest(".oh-sticky-table__thead")
-        .siblings(".oh-sticky-table__tbody");
-    if (is_checked) {
-        $(closest)
-            .children()
-            .find(".validate-row")
-            .prop("checked", true)
-            .closest(".oh-sticky-table__tr")
-            .addClass("highlight-selected");
-    } else {
-        $(closest)
-            .children()
-            .find(".validate-row")
-            .prop("checked", false)
-            .closest(".oh-sticky-table__tr")
-            .removeClass("highlight-selected");
-    }
-});
-
-$(".validate-row").change(function () {
-    var parentTable = $(this).closest(".oh-sticky-table");
-    var body = parentTable.find(".oh-sticky-table__tbody");
-    var parentCheckbox = parentTable.find(".validate");
-    parentCheckbox.prop(
-        "checked",
-        body.find(".validate-row:checked").length ===
-        body.find(".validate-row").length
-    );
-});
-
 $(".all-hour-account").change(function (e) {
     var is_checked = $(this).is(":checked");
     var closest = $(this)
@@ -469,71 +435,33 @@ function unselectAllHourAcconts() {
     });
 }
 
-$(".all-attendances").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    var closest = $(this)
-        .closest(".oh-sticky-table__thead")
-        .siblings(".oh-sticky-table__tbody");
-    if (is_checked) {
+function toggleTableAllRowIds(headerSelector, rowCheckboxClass) {
+    $(headerSelector).change(function (e) {
+        var is_checked = $(this).is(":checked");
+        var closest = $(this)
+            .closest(".oh-sticky-table__thead")
+            .siblings(".oh-sticky-table__tbody");
         $(closest)
             .children()
-            .find(".all-attendance-row")
-            .prop("checked", true)
+            .find(rowCheckboxClass)
+            .prop("checked", is_checked)
             .closest(".oh-sticky-table__tr")
-            .addClass("highlight-selected");
-    } else {
-        $(closest)
-            .children()
-            .find(".all-attendance-row")
-            .prop("checked", false)
-            .closest(".oh-sticky-table__tr")
-            .removeClass("highlight-selected");
-    }
-});
+            .toggleClass("highlight-selected", is_checked);
+    });
+}
 
-$(".all-attendance-row").change(function () {
-    var parentTable = $(this).closest(".oh-sticky-table");
-    var body = parentTable.find(".oh-sticky-table__tbody");
-    var parentCheckbox = parentTable.find(".all-attendances");
-    parentCheckbox.prop(
-        "checked",
-        body.find(".all-attendance-row:checked").length ===
-        body.find(".all-attendance-row").length
-    );
-});
+function toggleTableHeaderCheckbox(rowCheckboxSelector, headerCheckboxSelector) {
+    $(document).on("change", rowCheckboxSelector, function () {
+        var parentTable = $(this).closest(".oh-sticky-table");
+        var body = parentTable.find(".oh-sticky-table__tbody");
+        var parentCheckbox = parentTable.find(headerCheckboxSelector);
+        var totalRows = body.find(rowCheckboxSelector).length;
+        var checkedRows = body.find(`${rowCheckboxSelector}:checked`).length;
+        parentCheckbox.prop("checked", totalRows > 0 && totalRows === checkedRows);
+    });
+}
 
-$(".ot-attendances").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    var closest = $(this)
-        .closest(".oh-sticky-table__thead")
-        .siblings(".oh-sticky-table__tbody");
-    if (is_checked) {
-        $(closest)
-            .children()
-            .find(".ot-attendance-row")
-            .prop("checked", true)
-            .closest(".oh-sticky-table__tr")
-            .addClass("highlight-selected");
-    } else {
-        $(closest)
-            .children()
-            .find(".ot-attendance-row")
-            .prop("checked", false)
-            .closest(".oh-sticky-table__tr")
-            .removeClass("highlight-selected");
-    }
-});
 
-$(".ot-attendance-row").change(function () {
-    var parentTable = $(this).closest(".oh-sticky-table");
-    var body = parentTable.find(".oh-sticky-table__tbody");
-    var parentCheckbox = parentTable.find(".ot-attendances");
-    parentCheckbox.prop(
-        "checked",
-        body.find(".ot-attendance-row:checked").length ===
-        body.find(".ot-attendance-row").length
-    );
-});
 
 function getCookie(name) {
     let cookieValue = null;

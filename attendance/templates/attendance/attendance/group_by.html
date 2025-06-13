@@ -68,6 +68,7 @@
                   <div class="oh-sticky-table__th" style="width:10px;" onclick="event.stopPropagation()">
                     <div class="centered-div">
                       <input type="checkbox" class="oh-input oh-input__checkbox ot-attendances"
+                        hx-on:click="toggleTableAllRowIds('.ot-attendances', '.ot-attendance-row');"
                         title="{% trans 'Select All' %}"
                       />
                     </div>
@@ -104,7 +105,7 @@
                       type="checkbox"
                       id="{{attendance.id}}"
                       onclick="event.stopPropagation()"
-                      onchange="highlightRow($(this))"
+                      hx-on:click="toggleTableHeaderCheckbox('.ot-attendance-row', '.ot-attendances'); highlightRow($(this));"
                       class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 ot-attendance-row"
                     />
                   </div>
@@ -369,6 +370,7 @@
                   <div class="oh-sticky-table__th" style="width:10px;">
                     <div class="centered-div">
                       <input type="checkbox" class="oh-input oh-input__checkbox validate" title="{% trans 'Select All' %}"
+                        hx-on:click="toggleTableAllRowIds('.validate', '.validate-row');"
                         />
                     </div>
                   </div>
@@ -403,7 +405,7 @@
                     <input
                       type="checkbox"
                       id="{{attendance.id}}"
-                      onchange="highlightRow($(this))"
+                      hx-on:click="toggleTableHeaderCheckbox('.validate-row', '.validate'); highlightRow($(this));"
                       class="oh-input attendance-checkbox oh-input__checkbox mt-2 mr-2 validate-row"
                     />
                   </div>
@@ -661,7 +663,7 @@
                 <div class="oh-sticky-table__tr">
                   <div class="oh-sticky-table__th" style="width:10px;">
                     <div class="centered-div">
-                      <input type="checkbox" class="oh-input oh-input__checkbox all-attendances" title="{% trans 'Select All' %}" />
+                      <input type="checkbox" class="oh-input oh-input__checkbox all-attendances" title="{% trans 'Select All' %}" hx-on:click="toggleTableAllRowIds('.all-attendances', '.all-attendance-row');"/>
                     </div>
                   </div>
                   <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
@@ -694,7 +696,7 @@
                     <div class="centered-div">
                       <input
                       type="checkbox"
-                      onchange="highlightRow($(this))"
+                      hx-on:click="toggleTableHeaderCheckbox('.all-attendance-row', '.all-attendances'); highlightRow($(this));"
                       id="{{attendance.id}}"
                       class="form-check-input all-attendance-row"
                       />
