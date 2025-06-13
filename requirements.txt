@@ -10,13 +10,12 @@ charset-normalizer
 click
 cryptography
 cssselect2
-Django==4.2.21
+Django
 django-auditlog
 django-apscheduler
 django-cors-headers
 django-environ
 django-filter
-django-haystack
 django-import-export
 django-jsonfield
 django-mathfilters
@@ -45,7 +44,7 @@ pillow
 pycparser
 pyHanko
 pyhanko-certvalidator
-PyMuPDF== 1.24.5
+PyMuPDF
 pypdf
 pypng
 python-bidi
@@ -70,7 +69,6 @@ uritools
 urllib3
 utils
 webencodings
-Whoosh
 xhtml2pdf
 XlsxWriter
 gunicorn
