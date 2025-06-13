@@ -1,12 +1,154 @@
-  .dropdown-content {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-  }
+/* CUSTOM POPUP */
+.dropdown-content {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
 
-  .dropdown-wrapper:hover .dropdown-content {
+.dropdown-wrapper:hover .dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* KANBAN BORDER ON HOVER */
+
+.kanban-block {
+  border: 2px solid transparent;
+}
+.kanban-block.highlight {
+  border: 2px dashed #4a90e2;
+}
+
+/* SIDEBAR  */
+
+.sidebarModal {
+  width: 350px;
+  max-width: calc(100% - 1rem);
+  height: calc(-2rem + 100vh);
+  position: fixed;
+  z-index: 999;
+  border-radius: 1rem;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(2px);
+  padding: 1rem;
+  transform: translateX(calc(100% + 1rem));
+  transition: 0.3s;
+}
+.sidebarModal.active {
+  transform: translateX(0px);
+  box-shadow: rgba(0, 0, 0, 0.1) -15px 5px 20px;
+}
+@media (max-width: 575px) {
+  .sidebarModal {
+    width: 300px;
+  }
+}
+
+/* LIST DESIGN */
+.mylist {
+  display: flex;
+  flex-flow: column;
+}
+.mylist li {
+  margin: 5px 0;
+  position: relative;
+  padding-left: 20px;
+}
+.mylist li:before {
+  content: "\f058";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 600;
+  font-size: 12px;
+  color: #e54f38;
+  position: absolute;
+  left: 0;
+}
+
+.sidebox {
+  opacity: 0;
+  transition: 0.3s;
+  top: 0;
+  height: 100vh;
+  top: 75px;
+  visibility: hidden;
+  font-size: 0.85rem;
+}
+.sideboxmain:hover .sidebox {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    background: #ffffffdb;
+    backdrop-filter: blur(3px);
+}
+
+.sidebox ul li {
+  border-bottom: 1px solid #0000000c;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+.sidebox ul li a {
+  transition: 0.3s;
+  display: flex;
+}
+.sidebox ul li a:hover {
+  color: #e54f38;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-flow: wrap;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+@media (max-width: 767px) {
+  .breadcrumb {
+    row-gap: 0;
   }
+}
+.breadcrumb li {
+  position: relative;
+}
+.breadcrumb li:not(:last-child):before {
+  content: "\f105";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 600;
+  font-size: 10px;
+  position: absolute;
+  right: -15px;
+  top: 5px;
+  bottom: 0;
+  margin: auto;
+}
+.breadcrumb li:last-child {
+  color: #e54f38;
+  font-weight: 500;
+}
+.breadcrumb li a {
+  transition: 0.3s;
+}
+.breadcrumb li a:hover {
+  color: #e54f38;
+}
+
+.stickyleft {
+  position: sticky;
+  left: 12px;
+  background-color: white;
+  z-index: 1;
+}
+.stickyleft-second {
+  position: sticky;
+  left: 50px;
+  background-color: white;
+  z-index: 1;
+}
+.stickyright {
+  position: sticky;
+  right: 0;
+  background-color: white;
+  z-index: 1;
+}

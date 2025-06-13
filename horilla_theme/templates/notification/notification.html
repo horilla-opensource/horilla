@@ -1,0 +1,91 @@
+{% load static i18n basefilters notifications_tags %}
+{% notifications_unread as unread_count %}
+
+<div
+    class="dropdown-content w-80 absolute z-10 bg-white rounded-lg shadow-card right-0"
+>
+    <div
+        class="flex justify-between items-center p-3 border-b border-b-dark-50"
+    >
+        <h5 class="font-semibold text-sm">{% trans "Notifications" %}</h5>
+        <div class="flex gap-1">
+            <span
+                class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
+                onclick="event.stopPropagation();event.preventDefault();"
+                hx-get="{% url 'read-notifications' %}"
+                hx-target="#notificationContainer"
+                title="Mark All as Read"
+            >
+                <i class="fa-solid fa-check-double"></i>
+            </span>
+            <span
+                class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
+                onclick="event.stopPropagation();event.preventDefault();"
+                hx-get="{% url 'clear-notifications' %}" 
+                hx-target="#notificationContainer"
+                title="{% trans 'Clear Notifications' %}"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </span>
+        </div>
+    </div>
+
+    <div class="p-3" id="notificationContainer" >
+        {% include "notification/notification_items.html" %}
+    </div>
+    <div class="p-3 border-t border-t-dark-50 flex justify-center">
+        <button
+            class="toggleSidemenu text-primary-600 text-xs flex justify-center font-semibold hover:text-[#ac3b2a] transition duration-300"
+            data-sidebar="sidebarModal3"
+            hx-get="{% url 'all-notifications' %}"
+            hx-target="#sidebarModalBody"
+        >
+            {% trans "View all Notification" %}
+        </button>
+    </div>
+</div>
+<script src="{% static 'notifications/notify.js' %}" type="text/javascript" ></script>
+{% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
+
+<script>
+    var staticUrl = $("#statiUrl").attr("data-url");
+    var notification_sound = {{request.user.employee_get.notification_sound.sound_enabled|yesno:"true,false"}};
+    function fill_notification_badge(data) {
+        var badges = document.getElementsByClassName(notify_badge_class);
+        let previousUnreadCount = parseInt(localStorage.getItem('previousUnreadCount')) || 0;
+        if (notification_sound) {
+            if (
+                previousUnreadCount !== null &&
+                previousUnreadCount < data.unread_count
+            ) {
+                const audio = new Audio(
+                    `${staticUrl}static/audio/notification-sound.wav`
+                );
+                audio.play();
+            }
+        }
+
+        if (badges) {
+            for (var i = 0; i < badges.length; i++) {
+                badges[i].innerHTML = data.unread_count;
+            }
+        }
+        localStorage.setItem('previousUnreadCount', data.unread_count);
+    }
+    function markAsRead(notificationId) {
+        fetch("/notifications/mark-as-read/" + notificationId + "/").then(
+            (response) => {
+                if (response.ok) {
+                    // Reload the page to update the notifications
+                    location.reload();
+                } else {
+                    console.error("Failed to mark notification as read");
+                }
+            }
+        );
+    }
+
+    $("#viewallnotification").click(function () {
+        $("#showallnotificationbtn").toggle();
+    });
+</script>

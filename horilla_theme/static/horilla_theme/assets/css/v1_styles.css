@@ -1,3 +1,49 @@
+@font-face {
+    font-family: "Material Icons";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/static/fonts/material_icons.woff2") format("woff2");
+}
+
+.material-icons {
+    font-family: "Material Icons";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+}
+
+@font-face {
+    font-family: 'Material Symbols Outlined';
+    font-style: normal;
+    font-weight: 400;
+    src: url("/static/fonts/material_icons_outlined.woff2") format('woff2');
+}
+
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
 .oh-modal {
     position: fixed;
     background-color: rgba(28.05, 28.05, 28.05, 0.2);
@@ -122,44 +168,7 @@
     gap: 0.5rem;
 }
 
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #fff;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    top: 168px;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.dropdown-content .oh-input {
-    padding: 0.4rem 1rem;
-    padding-left: 28px;
-}
-
-.dropdown-content a {
-    color: black;
-    padding: 6px 10px;
-    text-decoration: none;
-    display: block;
-    border-radius: 10px;
-}
-
-.dropdown-content a span {
-    padding-left: 5px;
-}
-
-.dropdown-content a img {
-    width: 28px;
-}
-
-.dropdown-content a:hover {
-    background-color: #e7e7e9;
-    border-radius: 12px;
-}
-
+/*
 .oh-input--medium {
     font-size: 0.9rem;
     padding: 0.65rem 1rem;
@@ -474,7 +483,7 @@ select.oh-select--lg {
     height: 32px;
     object-fit: cover;
     border-radius: 50%;
-}
+} */
 
 .row {
     --bs-gutter-x: 1.5rem;

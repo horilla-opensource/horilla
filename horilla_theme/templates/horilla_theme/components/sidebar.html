@@ -1,70 +1,191 @@
-<div class="fixed inset-y-0 left-0 w-auto bg-white border-r border-r-dark-50">
-  <div class="p-4">
-    <div class="flex items-center justify-center gap-2 mb-6">
-      <img src="/static/horilla_theme/assets/img/horilla-logo.png" alt="Logo" class="w-10 h-10" />
+{% load static %}
+<div
+    class="fixed inset-y-0 left-0 w-auto bg-white border-r border-r-dark-50 z-50"
+>
+    <div class="p-4">
+        <div class="flex items-center justify-center gap-2 mb-6">
+            <img
+                src="/static/horilla_theme/assets/img/horilla-logo.png"
+                alt="Logo"
+                class="w-10 h-10"
+            />
+        </div>
+
+        <nav class="space-y-2.5 overflow-hidden overflow-y-auto h-screen">
+            <a
+                href="#"
+                class="flex items-center gap-3 p-3 rounded-full transition duration-300 bg-primary-600"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/home.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 filter brightness-0 invert"
+                />
+            </a>
+            <button
+                class="sideboxmain group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/usersearch.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+                <div
+                    class="sidebox absolute shadow-card mb-3 bg-white min-w-56 left-[75px]"
+                >
+                    <h5
+                        class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]"
+                    >
+                        Recruitment
+                    </h5>
+                    <ul class="p-3">
+                        <li><a href="">Dashbord</a></li>
+                        <li><a href="">Recruitment Pipeline</a></li>
+                        <li><a href="">Recruitment Survey</a></li>
+                        <li><a href="">Candidates</a></li>
+                        <li><a href="">Interview</a></li>
+                        <li><a href="">Recruitment</a></li>
+                        <li><a href="">Open Jobs</a></li>
+                        <li><a href="">Stages</a></li>
+                        <li><a href="">Skill Zone</a></li>
+                    </ul>
+                </div>
+            </button>
+
+            <button
+                class="sideboxmain group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/users.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+
+                <div
+                    class="sidebox absolute shadow-card mb-3 bg-white min-w-56 left-[75px]"
+                >
+                    <h5
+                        class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]"
+                    >
+                        Onboarding
+                    </h5>
+                    <ul class="p-3">
+                        <li><a href="">Onboarding View</a></li>
+                        <li><a href="">Candidates View</a></li>
+                    </ul>
+                </div>
+            </button>
+            <button
+                class="sideboxmain group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/users1.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+
+                <div
+                    class="sidebox absolute shadow-card mb-3 bg-white min-w-56 left-[75px]"
+                >
+                    <h5
+                        class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]"
+                    >
+                        Employee
+                    </h5>
+                    <ul class="p-3">
+                        <li><a href="">Profile</a></li>
+                        <li><a href="">Employees</a></li>
+                        <li><a href="">Document Requests</a></li>
+                        <li><a href="">Shift Requests</a></li>
+                        <li><a href="">Work Type Requestes</a></li>
+                        <li><a href="">Rotating Shift Assign</a></li>
+                        <li><a href="">Rotating Work Type Assign</a></li>
+                        <li><a href="">Disciplinary Actions</a></li>
+                        <li><a href="">Policies</a></li>
+                        <li><a href="">Orgnization Chart</a></li>
+                    </ul>
+                </div>
+            </button>
+            <a
+                href="#"
+                class="group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/calendar.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+            </a>
+            <a
+                href="#"
+                class="group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/cancel.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+            </a>
+            <a
+                href="#"
+                class="group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/wallet.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+            </a>
+            <a
+                href="#"
+                class="group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/bar-chart.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+            </a>
+            <a
+                href="#"
+                class="group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/exit.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+            </a>
+            <a
+                href="#"
+                class="group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/building.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+            </a>
+            <a
+                href="#"
+                class="group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/support.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+            </a>
+            <a
+                href="#"
+                class="group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300"
+            >
+                <img
+                    src="/static/horilla_themeassets/img/icons/setting.svg"
+                    alt=""
+                    class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert"
+                />
+            </a>
+        </nav>
     </div>
-
-    <nav class="space-y-2.5 overflow-hidden overflow-y-auto h-screen">
-      <a href="#" class="flex items-center gap-3 p-3 rounded-full transition duration-300 bg-primary-600">
-        <img src="/static/horilla_theme/assets/img/icons/home.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 filter brightness-0 invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/usersearch.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 group-hover:filter group-hover:brightness-0 group-hover:invert " />
-      </a>
-
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/users.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/users1.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/calendar.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/cancel.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/wallet.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/bar-chart.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/exit.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/building.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/support.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-      <a href="#"
-        class="group flex items-center gap-3 p-3 rounded-full bg-gray-100 hover:bg-primary-600 transition duration-300">
-        <img src="/static/horilla_theme/assets/img/icons/setting.svg" alt=""
-          class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" />
-      </a>
-    </nav>
-  </div>
 </div>

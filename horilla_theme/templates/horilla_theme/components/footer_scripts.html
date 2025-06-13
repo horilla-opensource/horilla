@@ -1,6 +1,6 @@
 {% load static i18n horillafilters %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{% static 'build/js/web.frontend.min.js' %}"></script>
+{% comment %} <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> {% endcomment %}
+{% comment %} <script src="{% static 'build/js/web.frontend.min.js' %}"></script> {% endcomment %}
 <script src="{% static 'htmx/htmx.min.js' %}"></script>
 <script>
   document.body.addEventListener('htmx:configRequest', (event) => {
@@ -40,6 +40,7 @@
 </script>
 {% if enabled_timerunner %}
   <script src="{% static 'horilla_theme/assets/js/timeRunner.js' %}"></script>
+  <script src="{% static 'horilla_theme/assets/js/footerScripts.js' %}"></script>
 {% endif %}
 
 {% block footer_scripts %}

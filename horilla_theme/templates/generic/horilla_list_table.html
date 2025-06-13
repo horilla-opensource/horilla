@@ -29,11 +29,11 @@
             hx-swap="outerHTML"
             hx-on:click="htmxLoadIndicator(this);"
         ></button>
-        {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %} 
-        
-        {% if queryset|length %} 
+        {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
+
+        {% if queryset|length %}
             {% if bulk_select_option %} {% include "generic/quick_actions.html" %} {% endif %}
-            {% comment %} 
+            {% comment %}
             {% if show_toggle_form %}
             <div class="oh-sticky-dropdown--header" style="z-index: 13;">
             <div class="oh-dropdown" x-data="{ open: false }">
@@ -80,12 +80,12 @@
 
                                 {% for cell in columns %}
                                     {% with cell_attr=header_attrs|get_item:cell.1 %}
-                                    <th 
+                                    <th
                                         class="text-sm font-medium text-left p-3"
                                         id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
 
                                     >
-                                        <div class="flex gap-3" 
+                                        <div class="flex gap-3"
                                             style="min-width:150px;"
                                             {{cell_attr|safe}}
                                             {% for sort_map in sortby_mapping %}
@@ -161,7 +161,7 @@
                                     </td>
                                     {% endif %}
                                     {% for cell in columns %}
-                                        {% with attribute=cell.1 index=forloop.counter %} 
+                                        {% with attribute=cell.1 index=forloop.counter %}
                                             <td class="text-sm text-left p-3 text-[#666]">
                                                 {% if not cell.2 %}
                                                     {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
@@ -208,7 +208,7 @@
                                                         <i class="fa-solid fa-xmark"></i>
                                                     </button> {% endcomment %}
                                                 </div>
-                                            {% else %} 
+                                            {% else %}
                                                 {{instance|getattribute:option_method|safe}}
                                             {% endif %}
 
@@ -241,7 +241,7 @@
                                                         <i class="fa-solid fa-xmark"></i>
                                                     </button> {% endcomment %}
                                                 </div>
-                                            {% else %} 
+                                            {% else %}
                                                 {{instance|getattribute:action_method|safe}}
                                             {% endif %}
 

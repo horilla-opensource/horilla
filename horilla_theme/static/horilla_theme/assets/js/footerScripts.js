@@ -79,124 +79,124 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Department chart
 
-document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document
-        .getElementById("departmentChart")
-        .getContext("2d");
+// document.addEventListener("DOMContentLoaded", () => {
+//     const ctx = document
+//         .getElementById("departmentChart")
+//         .getContext("2d");
 
-    const departmentLabels = [
-        "Sales Dept",
-        "IT Dept",
-        "DM Dept",
-        "SEO Dept",
-        "Odoo Dept",
-        "Horilla Dept",
-    ];
+//     const departmentLabels = [
+//         "Sales Dept",
+//         "IT Dept",
+//         "DM Dept",
+//         "SEO Dept",
+//         "Odoo Dept",
+//         "Horilla Dept",
+//     ];
 
-    const departmentColors = [
-        "#facc15",
-        "#f87171",
-        "#ddd6fe",
-        "#a5b4fc",
-        "#93c5fd",
-        "#d1d5db",
-    ];
+//     const departmentColors = [
+//         "#facc15",
+//         "#f87171",
+//         "#ddd6fe",
+//         "#a5b4fc",
+//         "#93c5fd",
+//         "#d1d5db",
+//     ];
 
-    const departmentValues = [1000, 800, 900, 1100, 2000, 1070];
+//     const departmentValues = [1000, 800, 900, 1100, 2000, 1070];
 
-    const visibility = Array(departmentLabels.length).fill(true);
+//     const visibility = Array(departmentLabels.length).fill(true);
 
-    const departmentChart = new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: departmentLabels,
-            datasets: [
-                {
-                    data: departmentValues,
-                    backgroundColor: departmentColors,
-                    borderWidth: 0,
-                    borderRadius: 10,
-                    hoverOffset: 8,
-                },
-            ],
-        },
-        options: {
-            cutout: "70%",
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: "#111827",
-                    bodyColor: "#f3f4f6",
-                    borderColor: "#e5e7eb",
-                    borderWidth: 1,
-                },
-            },
-        },
-        plugins: [
-            {
-                id: "centerText",
-                afterDraw(chart) {
-                    const { width, height, ctx } = chart;
-                    ctx.save();
+//     const departmentChart = new Chart(ctx, {
+//         type: "doughnut",
+//         data: {
+//             labels: departmentLabels,
+//             datasets: [
+//                 {
+//                     data: departmentValues,
+//                     backgroundColor: departmentColors,
+//                     borderWidth: 0,
+//                     borderRadius: 10,
+//                     hoverOffset: 8,
+//                 },
+//             ],
+//         },
+//         options: {
+//             cutout: "70%",
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             plugins: {
+//                 legend: { display: false },
+//                 tooltip: {
+//                     backgroundColor: "#111827",
+//                     bodyColor: "#f3f4f6",
+//                     borderColor: "#e5e7eb",
+//                     borderWidth: 1,
+//                 },
+//             },
+//         },
+//         plugins: [
+//             {
+//                 id: "centerText",
+//                 afterDraw(chart) {
+//                     const { width, height, ctx } = chart;
+//                     ctx.save();
 
-                    const total =
-                        chart.data.datasets[0].data.reduce(
-                            (sum, val) => sum + val,
-                            0
-                        );
+//                     const total =
+//                         chart.data.datasets[0].data.reduce(
+//                             (sum, val) => sum + val,
+//                             0
+//                         );
 
-                    ctx.font = "bold 22px sans-serif";
-                    ctx.fillStyle = "#374151";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "middle";
-                    ctx.fillText(total, width / 2, height / 2 - 5);
+//                     ctx.font = "bold 22px sans-serif";
+//                     ctx.fillStyle = "#374151";
+//                     ctx.textAlign = "center";
+//                     ctx.textBaseline = "middle";
+//                     ctx.fillText(total, width / 2, height / 2 - 5);
 
-                    ctx.font = "15px sans-serif";
-                    ctx.fillStyle = "#9ca3af";
-                    ctx.fillText(
-                        "Total",
-                        width / 2,
-                        height / 2 + 20
-                    );
+//                     ctx.font = "15px sans-serif";
+//                     ctx.fillStyle = "#9ca3af";
+//                     ctx.fillText(
+//                         "Total",
+//                         width / 2,
+//                         height / 2 + 20
+//                     );
 
-                    ctx.restore();
-                },
-            },
-        ],
-    });
+//                     ctx.restore();
+//                 },
+//             },
+//         ],
+//     });
 
-    // Make custom legend items clickable
-    const legendItems =
-        document.querySelectorAll("#chartLegend > div");
+//     // Make custom legend items clickable
+//     const legendItems =
+//         document.querySelectorAll("#chartLegend > div");
 
-    legendItems.forEach((item, index) => {
-        item.style.cursor = "pointer";
+//     legendItems.forEach((item, index) => {
+//         item.style.cursor = "pointer";
 
-        item.addEventListener("click", () => {
-            visibility[index] = !visibility[index];
+//         item.addEventListener("click", () => {
+//             visibility[index] = !visibility[index];
 
-            // Update chart dataset
-            departmentChart.data.datasets[0].data =
-                departmentValues.map((val, i) =>
-                    visibility[i] ? val : 0
-                );
+//             // Update chart dataset
+//             departmentChart.data.datasets[0].data =
+//                 departmentValues.map((val, i) =>
+//                     visibility[i] ? val : 0
+//                 );
 
-            // Dim legend dot and strike-through label
-            const span = item.querySelector("span");
-            if (visibility[index]) {
-                span.style.opacity = "1";
-                item.style.textDecoration = "none";
-            } else {
-                span.style.opacity = "0.4";
-                item.style.textDecoration = "line-through";
-            }
+//             // Dim legend dot and strike-through label
+//             const span = item.querySelector("span");
+//             if (visibility[index]) {
+//                 span.style.opacity = "1";
+//                 item.style.textDecoration = "none";
+//             } else {
+//                 span.style.opacity = "0.4";
+//                 item.style.textDecoration = "line-through";
+//             }
 
-            departmentChart.update();
-        });
-    });
-});
+//             departmentChart.update();
+//         });
+//     });
+// });
 
 // Onboarding Chart
 
@@ -490,3 +490,58 @@ function validateFile(element, fileTarget, reload = false) {
     }
     $(this).closest("form").submit();
 }
+
+
+function initSidebarToggle() {
+    // Reusable Sidebar Toggle
+    document.querySelectorAll(".toggleSidemenu").forEach((button) => {
+        button.addEventListener("click", () => {
+            const sidebarId = button.getAttribute("data-sidebar");
+            const sidebar = document.getElementById(sidebarId);
+            if (sidebar) {
+                sidebar.classList.toggle("active");
+                document.body.classList.toggle("overflow-hidden");
+            }
+        });
+    });
+
+    document.querySelectorAll(".closeSidemenu").forEach((button) => {
+        button.addEventListener("click", () => {
+            const sidebarId = button.getAttribute("data-sidebar");
+            const sidebar = document.getElementById(sidebarId);
+            if (sidebar) {
+                sidebar.classList.remove("active");
+                document.body.classList.remove("overflow-hidden");
+            }
+        });
+    });
+}
+
+document.querySelectorAll('.accordion-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+        const panel = btn.nextElementSibling;
+        const icon = btn.querySelector('.icon');
+        const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+
+        // Collapse all others (optional — comment this block if you want multiple open)
+        document.querySelectorAll('.accordion-panel').forEach(p => {
+            p.style.maxHeight = null;
+            p.previousElementSibling.querySelector('.icon').textContent = '+';
+            p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
+            p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+        });
+
+        // Toggle current
+        if (!isOpen) {
+            panel.style.maxHeight = panel.scrollHeight + 'px';
+            icon.textContent = '−';
+            btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
+            btn.classList.add("bg-[#e54f38]", "text-white");
+        } else {
+            panel.style.maxHeight = null;
+            icon.textContent = '+';
+            btn.classList.remove("bg-[#e54f38]", "text-white");
+            btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+        }
+    });
+});
