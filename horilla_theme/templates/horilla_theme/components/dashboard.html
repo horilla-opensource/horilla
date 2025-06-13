@@ -1,702 +1,1139 @@
+{% load static i18n %}
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 xl:grid-cols-4 md:grid-cols-2 gap-4 mb-4">
-  <div class="bg-white p-6 rounded-md shadow-card relative">
-    <div class="flex items-center gap-4">
-      <div class="bg-[#1cba5121] p-3 rounded-md">
-        <img src="/static/horilla_theme/assets/img/icons/add-user.svg" width="20" />
-        <!-- <i class="fas fa-users text-primary-600"></i> -->
-      </div>
-      <div>
-        <p class="text-sm">Todays's New Joiner</p>
-        <div class="flex items-center gap-2">
-          <p class="text-xl font-bold text-secondary-900">01</p>
-          <!-- <p class="text-success text-sm">+23%</p> -->
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+        <div class="flex items-center gap-4">
+            <div class="bg-[#1cba5121] p-3 rounded-md">
+                <img
+                    src="/static/horilla_theme/assets/img/icons/add-user.svg"
+                    width="20"
+                />
+                <!-- <i class="fas fa-users text-primary-600"></i> -->
+            </div>
+            <div>
+                <p class="text-sm">{% trans "Todays's New Joiners" %}</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-xl font-bold text-secondary-900"
+                        hx-get="{% url 'joining-today-count' %}"
+                        hx-trigger="load"
+                    ></p>
+                    <!-- <p class="text-success text-sm">+23%</p> -->
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <!--  <button class="w-3 h-3 absolute right-6 top-6">
+        <!--  <button class="w-3 h-3 absolute right-6 top-6">
               <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
             </button>  -->
-  </div>
-  <div class="bg-white p-6 rounded-md shadow-card relative">
-    <div class="flex items-center gap-4">
-      <div class="bg-[#b71db01f] p-3 rounded-md">
-        <img src="/static/horilla_theme/assets/img/icons/absent.svg" width="20" />
-      </div>
-      <div>
-        <p class="text-sm">Leave on today</p>
-        <div class="flex items-center gap-2">
-          <p class="text-xl font-bold text-secondary-900">002</p>
-          <!-- <p class="text-success text-sm">+23%</p> -->
-        </div>
-      </div>
     </div>
-    <!--  <button class="w-3 h-3 absolute right-6 top-6">
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+        <div class="flex items-center gap-4">
+            <div class="bg-[#b71db01f] p-3 rounded-md">
+                <img
+                    src="/static/horilla_theme/assets/img/icons/absent.svg"
+                    width="20"
+                />
+            </div>
+            <div>
+                <p class="text-sm">{% trans "Leave on today" %}</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-xl font-bold text-secondary-900"></p>
+                    <!-- <p class="text-success text-sm">+23%</p> -->
+                </div>
+            </div>
+        </div>
+        <!--  <button class="w-3 h-3 absolute right-6 top-6">
               <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
             </button>  -->
-  </div>
-  <div class="bg-white p-6 rounded-md shadow-card relative">
-    <div class="flex items-center gap-4">
-      <div class="bg-[#ea7f2f2e] p-3 rounded-md">
-        <img src="/static/horilla_theme/assets/img/icons/joining.svg" width="20" />
-      </div>
-      <div>
-        <p class="text-sm">Joining this week</p>
-        <div class="flex items-center gap-2">
-          <p class="text-xl font-bold text-secondary-900">000</p>
-          <!-- <p class="text-red-600 text-sm">-25%</p> -->
-        </div>
-      </div>
     </div>
-    <!--  <button class="w-3 h-3 absolute right-6 top-6">
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+        <div class="flex items-center gap-4">
+            <div class="bg-[#ea7f2f2e] p-3 rounded-md">
+                <img
+                    src="/static/horilla_theme/assets/img/icons/joining.svg"
+                    width="20"
+                />
+            </div>
+            <div>
+                <p class="text-sm">{% trans "Joining this week" %}</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-xl font-bold text-secondary-900"
+                        hx-get="{% url 'joining-week-count' %}"
+                        hx-trigger="load"
+                    ></p>
+                    <!-- <p class="text-red-600 text-sm">-25%</p> -->
+                </div>
+            </div>
+        </div>
+        <!--  <button class="w-3 h-3 absolute right-6 top-6">
               <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
             </button>  -->
-  </div>
-  <div class="bg-white p-6 rounded-md shadow-card relative">
-    <div class="flex items-center gap-4">
-      <div class="bg-[#d821491c] p-3 rounded-md">
-        <img src="/static/horilla_theme/assets/img/icons/strenth.svg" width="20" />
-      </div>
-      <div>
-        <p class="text-sm">Total Strength</p>
-        <div class="flex items-center gap-2">
-          <p class="text-xl font-bold text-secondary-900">250</p>
-          <!-- <p class="text-success text-sm">+23%</p> -->
-        </div>
-      </div>
     </div>
-    <!--  <button class="w-3 h-3 absolute right-6 top-6">
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+        <div class="flex items-center gap-4">
+            <div class="bg-[#d821491c] p-3 rounded-md">
+                <img
+                    src="/static/horilla_theme/assets/img/icons/strenth.svg"
+                    width="20"
+                />
+            </div>
+            <div>
+                <p class="text-sm">{% trans "Total Strength" %}</p>
+                <div class="flex items-center gap-2">
+                    <p class="text-xl font-bold text-secondary-900"
+                        hx-get="{% url 'total-employees-count' %}"
+                        hx-trigger="load"
+                    ></p>
+                    <!-- <p class="text-success text-sm">+23%</p> -->
+                </div>
+            </div>
+        </div>
+        <!--  <button class="w-3 h-3 absolute right-6 top-6">
               <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
             </button>  -->
-  </div>
+    </div>
 </div>
 
 <div class="grid grid-cols-12 gap-4 mb-4">
-  <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Shift Requests to Approve</h3>
-      <!--  <button class="w-3 h-3">
+    <div
+        class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Shift Requests to Approve</h3>
+            <!--  <button class="w-3 h-3">
                 <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
               </button>  -->
+        </div>
+        <div class="overflow-hidden overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-[#ececec]">
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Employee</span>
+                        </th>
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Requested Shift</span>
+                        </th>
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Action</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            Regular Shift
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            Regular Shift
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            Regular Shift
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            Regular Shift
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="overflow-hidden overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-[#ececec]">
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Employee</span>
-            </th>
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Requested Shift</span>
-            </th>
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Action</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">Regular Shift</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">Regular Shift</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">Regular Shift</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">Regular Shift</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
 
-  <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Gender Chart</h3>
-      <!--  <button class="w-3 h-3">
+    <div
+        class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Gender Chart</h3>
+            <!--  <button class="w-3 h-3">
                 <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
               </button>  -->
+        </div>
+
+        <div class="w-full max-w-xs mx-auto">
+            <div class="relative">
+                <canvas id="genderChart"></canvas>
+            </div>
+        </div>
     </div>
 
-    <div class="w-full max-w-xs mx-auto">
-      <div class="relative">
-        <canvas id="genderChart"></canvas>
-      </div>
-    </div>
-  </div>
+    <div
+        class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-md font-semibold">Announcements</h3>
+            <button class="w-4 h-4">
+                <img
+                    src="/static/horilla_theme/assets/img/icons/more.svg"
+                    alt=""
+                />
+            </button>
+        </div>
 
-  <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-md font-semibold">Announcements</h3>
-      <button class="w-4 h-4"><img src="/static/horilla_theme/assets/img/icons/more.svg" alt="" /></button>
-    </div>
-
-    <ul>
-      <li>
-        <div class="flex gap-3 items-center text-sm font-medium py-1">
-          <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Horilla Tour</span>
-        </div>
-      </li>
-      <li>
-        <div class="flex gap-3 items-center text-sm font-medium py-1">
-          <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Horilla Tour</span>
-        </div>
-      </li>
-      <li>
-        <div class="flex gap-3 items-center text-sm font-medium py-1">
-          <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Horilla Tour</span>
-        </div>
-      </li>
-      <li>
-        <div class="flex gap-3 items-center text-sm font-medium py-1">
-          <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Horilla Tour</span>
-        </div>
-      </li>
-      <li>
-        <div class="flex gap-3 items-center text-sm font-medium py-1">
-          <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Horilla Tour</span>
-        </div>
-      </li>
-      <li>
-        <div class="flex gap-3 items-center text-sm font-medium py-1">
-          <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Horilla Tour</span>
-        </div>
-      </li>
-    </ul>
-  </div>
-
-  <!-- Recent Activities -->
-  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Employee Work Information</h3>
-    </div>
-    <div class="flex items-center gap-2 w-full mb-3 flex-wrap sm:flex-nowrap">
-      <div class="relative w-full">
-        <input type="text" placeholder="Search Here..." class="text-color-600 ps-10 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600" />
-        <i class="fas fa-search absolute left-3 top-0 bottom-0 m-auto flex items-center opacity-50 text-sm"></i>
-      </div>
-      <button class="cursor-pointer border border-dark-50 p-1.5 rounded-md flex justify-between gap-2 text-sm items-center" style="width: 100px; height: 38px;"><span>Filter</span> <img src="/static/horilla_theme/assets/img/icons/sort.svg" alt="" width="20" /></button>
-    </div>
-
-    <div class="overflow-hidden overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-[#ececec]">
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Name</span>
-            </th>
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Progress</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666] pe-0">
-              <div class="flex gap-3 items-center">
-                <div class="w-full bg-gray-200 rounded-full h-1.5">
-                  <div class="bg-[#ff5613] h-1.5 rounded-full" style="width: 45%"></div>
+        <ul>
+            <li>
+                <div class="flex gap-3 items-center text-sm font-medium py-1">
+                    <img
+                        src="/static/horilla_theme/assets/icons/user1.png"
+                        alt=""
+                        width="30"
+                    /><span>Horilla Tour</span>
                 </div>
-                <div class="text-sm font-medium">60%</div>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666] pe-0">
-              <div class="flex gap-3 items-center">
-                <div class="w-full bg-gray-200 rounded-full h-1.5">
-                  <div class="bg-[#81d620] h-1.5 rounded-full" style="width: 45%"></div>
+            </li>
+            <li>
+                <div class="flex gap-3 items-center text-sm font-medium py-1">
+                    <img
+                        src="/static/horilla_theme/assets/icons/user1.png"
+                        alt=""
+                        width="30"
+                    /><span>Horilla Tour</span>
                 </div>
-                <div class="text-sm font-medium">60%</div>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666] pe-0">
-              <div class="flex gap-3 items-center">
-                <div class="w-full bg-gray-200 rounded-full h-1.5">
-                  <div class="bg-[#26d6e2] h-1.5 rounded-full" style="width: 45%"></div>
+            </li>
+            <li>
+                <div class="flex gap-3 items-center text-sm font-medium py-1">
+                    <img
+                        src="/static/horilla_theme/assets/icons/user1.png"
+                        alt=""
+                        width="30"
+                    /><span>Horilla Tour</span>
                 </div>
-                <div class="text-sm font-medium">60%</div>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666] pe-0">
-              <div class="flex gap-3 items-center">
-                <div class="w-full bg-gray-200 rounded-full h-1.5">
-                  <div class="bg-[#2661e2] h-1.5 rounded-full" style="width: 45%"></div>
+            </li>
+            <li>
+                <div class="flex gap-3 items-center text-sm font-medium py-1">
+                    <img
+                        src="/static/horilla_theme/assets/icons/user1.png"
+                        alt=""
+                        width="30"
+                    /><span>Horilla Tour</span>
                 </div>
-                <div class="text-sm font-medium">60%</div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </li>
+            <li>
+                <div class="flex gap-3 items-center text-sm font-medium py-1">
+                    <img
+                        src="/static/horilla_theme/assets/icons/user1.png"
+                        alt=""
+                        width="30"
+                    /><span>Horilla Tour</span>
+                </div>
+            </li>
+            <li>
+                <div class="flex gap-3 items-center text-sm font-medium py-1">
+                    <img
+                        src="/static/horilla_theme/assets/icons/user1.png"
+                        alt=""
+                        width="30"
+                    /><span>Horilla Tour</span>
+                </div>
+            </li>
+        </ul>
     </div>
 
-    <div class="flex justify-between items-center mt-4">
-      <p class="text-xs text-[#666]">Page 1 / 2</p>
-      <div class="flex gap-3 text-[#666]">
-        <button class="text-xs hover:text-primary-600 transition duration-300"><i class="fa-solid fa-arrow-left"></i></button>
-        <button class="text-xs hover:text-primary-600 transition duration-300"><i class="fa-solid fa-arrow-right"></i></button>
-      </div>
-    </div>
-  </div>
+    <!-- Recent Activities -->
+    <div
+        class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Employee Work Information</h3>
+        </div>
+        <div
+            class="flex items-center gap-2 w-full mb-3 flex-wrap sm:flex-nowrap"
+        >
+            <div class="relative w-full">
+                <input
+                    type="text"
+                    placeholder="Search Here..."
+                    class="text-color-600 ps-10 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                />
+                <i
+                    class="fas fa-search absolute left-3 top-0 bottom-0 m-auto flex items-center opacity-50 text-sm"
+                ></i>
+            </div>
+            <button
+                class="cursor-pointer border border-dark-50 p-1.5 rounded-md flex justify-between gap-2 text-sm items-center"
+                style="width: 100px; height: 38px"
+            >
+                <span>Filter</span>
+                <img
+                    src="/static/horilla_theme/assets/img/icons/sort.svg"
+                    alt=""
+                    width="20"
+                />
+            </button>
+        </div>
 
-  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Assets Requests To Approve</h3>
+        <div class="overflow-hidden overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-[#ececec]">
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Name</span>
+                        </th>
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Progress</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666] pe-0">
+                            <div class="flex gap-3 items-center">
+                                <div
+                                    class="w-full bg-gray-200 rounded-full h-1.5"
+                                >
+                                    <div
+                                        class="bg-[#ff5613] h-1.5 rounded-full"
+                                        style="width: 45%"
+                                    ></div>
+                                </div>
+                                <div class="text-sm font-medium">60%</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666] pe-0">
+                            <div class="flex gap-3 items-center">
+                                <div
+                                    class="w-full bg-gray-200 rounded-full h-1.5"
+                                >
+                                    <div
+                                        class="bg-[#81d620] h-1.5 rounded-full"
+                                        style="width: 45%"
+                                    ></div>
+                                </div>
+                                <div class="text-sm font-medium">60%</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666] pe-0">
+                            <div class="flex gap-3 items-center">
+                                <div
+                                    class="w-full bg-gray-200 rounded-full h-1.5"
+                                >
+                                    <div
+                                        class="bg-[#26d6e2] h-1.5 rounded-full"
+                                        style="width: 45%"
+                                    ></div>
+                                </div>
+                                <div class="text-sm font-medium">60%</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666] pe-0">
+                            <div class="flex gap-3 items-center">
+                                <div
+                                    class="w-full bg-gray-200 rounded-full h-1.5"
+                                >
+                                    <div
+                                        class="bg-[#2661e2] h-1.5 rounded-full"
+                                        style="width: 45%"
+                                    ></div>
+                                </div>
+                                <div class="text-sm font-medium">60%</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flex justify-between items-center mt-4">
+            <p class="text-xs text-[#666]">Page 1 / 2</p>
+            <div class="flex gap-3 text-[#666]">
+                <button
+                    class="text-xs hover:text-primary-600 transition duration-300"
+                >
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button
+                    class="text-xs hover:text-primary-600 transition duration-300"
+                >
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="flex flex-col items-center justify-center h-full">
-      <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4" />
-      <p class="text-[#666]">No records available at the moment</p>
-    </div>
-  </div>
+    <div
+        class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Assets Requests To Approve</h3>
+        </div>
 
-  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Department Chart</h3>
-      <!--  <button class="w-3 h-3">
+        <div class="flex flex-col items-center justify-center h-full">
+            <img
+                src="/static/horilla_theme/assets/img/no-records.svg"
+                alt=""
+                width="300"
+                class="mb-4"
+            />
+            <p class="text-[#666]">No records available at the moment</p>
+        </div>
+    </div>
+
+    <div
+        class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Department Chart</h3>
+            <!--  <button class="w-3 h-3">
                 <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
               </button>  -->
+        </div>
+
+        <div class="flex items-center justify-between flex-col">
+            <!-- Chart container -->
+            <div class="md:w-60 w-full max-w-xs mx-auto">
+                <canvas id="departmentChart"></canvas>
+            </div>
+
+            <!-- Custom legend -->
+            <div
+                id="chartLegend"
+                class="text-xs flex gap-3 flex-wrap justify-center"
+            >
+                {% comment %}
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#facc15]"></span>
+                    Sales Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#f87171]"></span> IT
+                    Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#ddd6fe]"></span> DM
+                    Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#a5b4fc]"></span> SEO
+                    Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#93c5fd]"></span> Odoo
+                    Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#d1d5db]"></span>
+                    Horilla Dept
+                </div>
+                {% endcomment %}
+            </div>
+        </div>
     </div>
 
-    <div class="flex items-center justify-between flex-col">
-      <!-- Chart container -->
-      <div class="md:w-60 w-full max-w-xs mx-auto">
-        <canvas id="departmentChart"></canvas>
-      </div>
-
-      <!-- Custom legend -->
-      <div id="chartLegend" class="text-xs flex gap-3 flex-wrap justify-center">
-        <div class="flex items-center gap-2">
-          <span class="w-4 h-4 rounded-full bg-[#facc15]"></span> Sales Dept
+    <!-- Recent Activities -->
+    <div
+        class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Key Result Status</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="w-4 h-4 rounded-full bg-[#f87171]"></span> IT Dept
+        <div class="flex flex-col items-center justify-center h-full pb-4">
+            <img
+                src="/static/horilla_theme/assets/img/no-chart.svg"
+                alt=""
+                width="200"
+                class="mb-4"
+            />
+            <p class="text-md font-medium text-[#666]">Not Started</p>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="w-4 h-4 rounded-full bg-[#ddd6fe]"></span> DM Dept
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-4 h-4 rounded-full bg-[#a5b4fc]"></span> SEO Dept
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-4 h-4 rounded-full bg-[#93c5fd]"></span> Odoo Dept
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="w-4 h-4 rounded-full bg-[#d1d5db]"></span> Horilla Dept
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recent Activities -->
-  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Key Result Status</h3>
-    </div>
-    <div class="flex flex-col items-center justify-center h-full pb-4">
-      <img src="/static/horilla_theme/assets/img/no-chart.svg" alt="" width="200" class="mb-4" />
-      <p class="text-md font-medium text-[#666]">Not Started</p>
-    </div>
-  </div>
-
-  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Attendance to Validate</h3>
     </div>
 
-    <div class="overflow-hidden overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-[#ececec]">
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Employee</span>
-            </th>
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">At Work</span>
-            </th>
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Action</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:46 PM</td>
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-md">Validate</button>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:46 PM</td>
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-md">Validate</button>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:46 PM</td>
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-md">Validate</button>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:46 PM</td>
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-md">Validate</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <div
+        class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Attendance to Validate</h3>
+        </div>
 
-  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Candidate Started Onboarding</h3>
-      <!--  <button class="w-3 h-3">
+        <div class="overflow-hidden overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-[#ececec]">
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Employee</span>
+                        </th>
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">At Work</span>
+                        </th>
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Action</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:46 PM
+                        </td>
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button
+                                class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-md"
+                            >
+                                Validate
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:46 PM
+                        </td>
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button
+                                class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-md"
+                            >
+                                Validate
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:46 PM
+                        </td>
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button
+                                class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-md"
+                            >
+                                Validate
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:46 PM
+                        </td>
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button
+                                class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-md"
+                            >
+                                Validate
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div
+        class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Candidate Started Onboarding</h3>
+            <!--  <button class="w-3 h-3">
                 <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
               </button>  -->
+        </div>
+
+        <div>
+            <canvas id="recruitmentChart" class="w-40 h-64"></canvas>
+        </div>
+
+        <div
+            id="recruitmentLegend"
+            class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+        ></div>
     </div>
 
-    <div>
-      <canvas id="recruitmentChart" class="w-40 h-64"></canvas>
-    </div>
-
-    <div id="recruitmentLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
-  </div>
-
-  <div class="xl:col-span-7 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Recruitment Analytics</h3>
-      <!--  <button class="w-3 h-3">
+    <div
+        class="xl:col-span-7 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Recruitment Analytics</h3>
+            <!--  <button class="w-3 h-3">
                 <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
               </button>  -->
+        </div>
+
+        <div>
+            <canvas id="recruitmentFlowChart" class="w-full h-96"></canvas>
+        </div>
     </div>
 
-    <div>
-      <canvas id="recruitmentFlowChart" class="w-full h-96"></canvas>
+    <div
+        class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Offline Employees</h3>
+        </div>
+
+        <div class="overflow-hidden overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-[#ececec]">
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Employee</span>
+                        </th>
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Mail</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                                <button
+                                    class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs"
+                                >
+                                    Expected working
+                                </button>
+                            </div>
+                        </td>
+
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button class="cursor-pointer">
+                                <img
+                                    src="/static/horilla_theme/assets/img/icons/email.svg"
+                                    alt=""
+                                    width="25"
+                                />
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                                <button
+                                    class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs"
+                                >
+                                    Expected working
+                                </button>
+                            </div>
+                        </td>
+
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button class="cursor-pointer">
+                                <img
+                                    src="/static/horilla_theme/assets/img/icons/email.svg"
+                                    alt=""
+                                    width="25"
+                                />
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                                <button
+                                    class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs"
+                                >
+                                    Expected working
+                                </button>
+                            </div>
+                        </td>
+
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button class="cursor-pointer">
+                                <img
+                                    src="/static/horilla_theme/assets/img/icons/email.svg"
+                                    alt=""
+                                    width="25"
+                                />
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                                <button
+                                    class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs"
+                                >
+                                    Expected working
+                                </button>
+                            </div>
+                        </td>
+
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button class="cursor-pointer">
+                                <img
+                                    src="/static/horilla_theme/assets/img/icons/email.svg"
+                                    alt=""
+                                    width="25"
+                                />
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                                <button
+                                    class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs"
+                                >
+                                    Expected working
+                                </button>
+                            </div>
+                        </td>
+
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button class="cursor-pointer">
+                                <img
+                                    src="/static/horilla_theme/assets/img/icons/email.svg"
+                                    alt=""
+                                    width="25"
+                                />
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                                <button
+                                    class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs"
+                                >
+                                    Expected working
+                                </button>
+                            </div>
+                        </td>
+
+                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
+                            <button class="cursor-pointer">
+                                <img
+                                    src="/static/horilla_theme/assets/img/icons/email.svg"
+                                    alt=""
+                                    width="25"
+                                />
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
-  </div>
 
-  <div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Offline Employees</h3>
+    <div
+        class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Overtime TO Approve</h3>
+        </div>
+
+        <div class="overflow-hidden overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-[#ececec]">
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Employee</span>
+                        </th>
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Overtime</span>
+                        </th>
+                        <th class="text-sm font-medium text-left p-3 pl-0">
+                            <span class="flex w-max">Action</span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:45
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:45
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:45
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:45
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:45
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="border-b border-[#ececec]">
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-3 items-center w-max">
+                                <img
+                                    src="/static/horilla_theme/assets/icons/user1.png"
+                                    alt=""
+                                    width="30"
+                                /><span>Richard Dom</span>
+                            </div>
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            10:45
+                        </td>
+                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
+                            <div class="flex gap-1">
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="overflow-hidden overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-[#ececec]">
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Employee</span>
-            </th>
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Mail</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">Expected working</button>
-              </div>
-            </td>
-
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer"><img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" /></button>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">Expected working</button>
-              </div>
-            </td>
-
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer"><img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" /></button>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">Expected working</button>
-              </div>
-            </td>
-
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer"><img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" /></button>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">Expected working</button>
-              </div>
-            </td>
-
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer"><img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" /></button>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">Expected working</button>
-              </div>
-            </td>
-
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer"><img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" /></button>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">Expected working</button>
-              </div>
-            </td>
-
-            <td class="text-xs text-left p-3 pl-0 text-[#666]">
-              <button class="cursor-pointer"><img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" /></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-2">
-      <h3 class="text-md font-semibold">Overtime TO Approve</h3>
-    </div>
-
-    <div class="overflow-hidden overflow-x-auto">
-      <table class="w-full">
-        <thead>
-          <tr class="border-b border-[#ececec]">
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Employee</span>
-            </th>
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Overtime</span>
-            </th>
-            <th class="text-sm font-medium text-left p-3 pl-0">
-              <span class="flex w-max">Action</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:45</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:45</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:45</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:45</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:45</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-          <tr class="border-b border-[#ececec]">
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-3 items-center w-max">
-                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-              </div>
-            </td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">10:45</td>
-            <td class="text-sm text-left p-3 pl-0 text-[#666]">
-              <div class="flex gap-1">
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-check"></i></button>
-                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-    <div class="flex justify-between items-center mb-5">
-      <h3 class="text-md font-semibold">Hired Candidates</h3>
-      <!--  <button class="w-3 h-3">
+    <div
+        class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    >
+        <div class="flex justify-between items-center mb-5">
+            <h3 class="text-md font-semibold">Hired Candidates</h3>
+            <!--  <button class="w-3 h-3">
                 <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
               </button>  -->
-    </div>
+        </div>
 
-    <div>
-      <canvas id="hiredChart" class="w-40 h-72"></canvas>
+        <div>
+            <canvas id="hiredChart" class="w-40 h-72"></canvas>
+        </div>
+        <div
+            id="hiredLegend"
+            class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+        >
+            <div class="flex items-center gap-2 cursor-pointer">
+                <span
+                    class="w-4 h-4 rounded-full inline-block bg-[#a5b4fc]"
+                ></span>
+                <span>Recruitment drive</span>
+            </div>
+            <div class="flex items-center gap-2 cursor-pointer">
+                <span
+                    class="w-4 h-4 rounded-full inline-block bg-[#fca5a5]"
+                ></span>
+                <span>Future force recruitment</span>
+            </div>
+            <div class="flex items-center gap-2 cursor-pointer">
+                <span
+                    class="w-4 h-4 rounded-full inline-block bg-[#fdba74]"
+                ></span>
+                <span>Administrative assistant</span>
+            </div>
+        </div>
     </div>
-    <div id="hiredLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs">
-      <div class="flex items-center gap-2 cursor-pointer">
-        <span class="w-4 h-4 rounded-full inline-block bg-[#a5b4fc]"></span>
-        <span>Recruitment drive</span>
-      </div>
-      <div class="flex items-center gap-2 cursor-pointer">
-        <span class="w-4 h-4 rounded-full inline-block bg-[#fca5a5]"></span>
-        <span>Future force recruitment</span>
-      </div>
-      <div class="flex items-center gap-2 cursor-pointer">
-        <span class="w-4 h-4 rounded-full inline-block bg-[#fdba74]"></span>
-        <span>Administrative assistant</span>
-      </div>
-    </div>
-  </div>
 </div>
+<script src="{% static 'dashboard/employeeChart.js' %}"></script>

@@ -1,163 +1,95 @@
+{% load static i18n %}
 <div
-  class="flex justify-between items-center bg-[#fff] py-3 px-5 border-b border-b-dark-50 fixed w-[calc(100%-76px)] z-40">
+    class="flex justify-between items-center bg-[#fff] py-3 px-5 border-b border-b-dark-50 fixed w-[calc(100%-76px)] z-40"
+>
+    {% if breadcrumbs %}
+        {% include "base/navbar_components/breadcrumbs_view.html" %}
+    {% endif %}
 
-
-  <div class="relative">
+    <!-- <div class="relative">
     <input type="text" placeholder="Search Here..."
       class="text-color-600 ps-10 p-2 placeholder:text-sm w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600" />
     <i class="fas fa-search absolute left-3 top-0 bottom-0 m-auto flex items-center opacity-50 text-sm"></i>
-  </div>
+  </div> -->
 
-  <!-- Right side - Search and Actions -->
+    <!-- Right side - Search and Actions -->
 
-  <div class="flex items-center gap-8">
-    <!-- Search Bar -->
+    <div class="flex items-center gap-8">
+        <!-- Search Bar -->
 
-    <!-- Action Icons -->
-    <div class="flex items-center gap-2">
-
-      <button
-        class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center">
-        <i class="fas fa-cog transition duration-300 group-hover:text-white"></i>
-      </button>
-
-      <button
-        class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 relative before:content[''] before:absolute before:bg-[#1dd75b] before:w-3 before:h-3 before:top-0 before:-right-0 before:rounded-full">
-
-        <i class="fas fa-bell transition duration-300  group-hover:text-white"></i>
-      </button>
-
-      <button
-        class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300">
-        <i class="fas fa-globe transition duration-300  group-hover:text-white"></i>
-      </button>
-      <!-- <div id="langdropdown"
-        class="z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2">
-        <ul class="text-sm" aria-labelledby="langbtn">
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>English</span>
+        <!-- Action Icons -->
+        <div class="flex items-center gap-2">
+            <button
+                class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
+            >
+                <i
+                    class="fas fa-cog transition duration-300 group-hover:text-white"
+                ></i>
             </button>
-          </li>
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>Arabic</span>
-            </button>
-          </li>
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>Spanish</span>
-            </button>
-          </li>
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>Chinese</span>
-            </button>
-          </li>
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>Korea</span>
-            </button>
-          </li>
-        </ul>
-      </div> -->
 
-
-      <button
-        class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300">
-        <i class="fa-solid fa-building transition duration-300  group-hover:text-white"></i>
-      </button>
-      <!-- <div id="companydropdown"
-        class="z-10 hidden bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2">
-        <ul class="text-sm" aria-labelledby="companybtn">
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>Company 1</span>
-            </button>
-          </li>
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>Company 2</span>
-            </button>
-          </li>
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>Company 3</span>
-            </button>
-          </li>
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>Company 4</span>
-            </button>
-          </li>
-          <li>
-            <button data-modal-target="default-modal1" data-modal-toggle="default-modal1"
-              class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-3 items-center">
-              <span>Company 5</span>
-            </button>
-          </li>
-        </ul>
-      </div> -->
-
-
-
-    </div>
-
-    <!-- User Profile -->
-
-    <div class="relative dropdown-wrapper">
-      <button>
-        <div class="flex gap-3">
-          <div class="relative flex items-center cursor-pointer w-max">
-            <img src="/static/horilla_theme/assets/icons/user1.png" alt="" class="w-11 h-11 rounded-full" />
-            <span class="absolute bottom-0 right-0 w-3 h-3 bg-[#1dd75b] rounded-full border-2 border-white"></span>
-          </div>
-          <div class="hidden md:block">
-            <div class="flex flex-col justify-center items-start h-full">
-              <h5 class="font-semibold text-sm">John Mc</h5>
-              <p class="text-xs text-dark-200">Admin</p>
+            <div class="relative dropdown-wrapper">
+                <button
+                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 relative before:content[''] before:absolute before:bg-[#1dd75b] before:w-3 before:h-3 before:top-0 before:-right-0 before:rounded-full"
+                    hx-get="{% url 'notifications' %}"
+                    hx-target="#notificationContainer"
+                    hx-trigger="load"
+                >
+                    <i
+                        class="fas fa-bell transition duration-300 group-hover:text-white"
+                    ></i>
+                </button>
+                {% include "notification/notification.html" %}
             </div>
-          </div>
-          <div class="hidden md:block pt-2.5">
-            <img src="/static/horilla_theme/assets/img/icons/downarrow.svg" alt="">
-          </div>
+
+            <div class="relative dropdown-wrapper">
+                <button
+                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300"
+                >
+                    <i
+                        class="fas fa-globe transition duration-300 group-hover:text-white"
+                    ></i>
+                </button>
+                {% include "base/navbar_components/language_settings.html" %}
+            </div>
+
+            <div class="relative dropdown-wrapper">
+                <button
+                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300"
+                >
+                    <i
+                        class="fa-solid fa-building transition duration-300 group-hover:text-white"
+                    ></i>
+                </button>
+                {% include "base/navbar_components/company_selection.html" %}
+            </div>
         </div>
-      </button>
 
-      <div
-        class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
-        <ul class="text-sm" aria-labelledby="profilebtn">
-          <li>
-            <button
-              class="block px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm flex gap-4 items-center">
-              Profile
-            </button>
-          </li>
-          <li>
-            <button
-              class="block px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm flex gap-4 items-center">
-              Settings
-            </button>
-          </li>
-          <li>
-            <button
-              class="block px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm flex gap-4 items-center">
-              Logout
-            </button>
-          </li>
-        </ul>
-      </div>
+        <div class="relative dropdown-wrapper">
+            {% include "base/navbar_components/profile_section.html" %}
+        </div>
     </div>
+</div>
 
+<!-- All Notification -->
+<div class="sidebarModal overflow-hidden overflow-y-auto" id="sidebarModal3">
+    <!-- <button class="closebtn closeSidemenu absolute top-3 right-3" data-sidebar="sidebarModal3"><i
+      class="fa-solid fa-xmark"></i></button> -->
 
-  </div>
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold flex items-center gap-2">
+            <button
+                class="closebtn closeSidemenu cursor-pointer text-xs group text-primary-600 w-6 h-6 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
+                data-sidebar="sidebarModal3"
+            >
+                <i class="fa-solid fa-angle-right"></i></button
+            >{% trans "All Notifications" %}
+        </h3>
+        <button
+            class="text-primary-600 text-xs flex justify-center font-semibold hover:text-[#ac3b2a] transition duration-300"
+        >
+            {% trans "Clear All" %}
+        </button>
+    </div>
+    <div class="" id="sidebarModalBody"></div>
+    <!--sidecont-->
 </div>

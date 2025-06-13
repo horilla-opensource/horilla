@@ -1,0 +1,33 @@
+{% load static i18n %}
+<div
+    class="dropdown-content w-44 absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] py-2 right-0"
+>
+    <ul class="text-sm overflow-hidden overflow-y-auto">
+        {% for company in all_companies %}
+            <li>
+                <button
+                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
+                    hx-get="{% url 'update-selected-company' %}?company_id={{company.0}}&next={{ request.path }}"
+                >
+                    <div class="flex items-center gap-2">
+                        <span class="rounded-full overflow-hidden"
+                            ><img
+                                src="{{ company.2 }}"
+                                alt=""
+                                width="20" /></span
+                        >{{ company.1 }}
+
+                        {% if company.3 %}
+                            <ion-icon name="checkmark-circle-outline" style="position: relative; top: 3.3px; color: green; font-size: 1.2em;"></ion-icon>
+                        {% endif %}
+
+                        {% if not company_selected and request.user.employee_get.employee_work_info.company_id.id == company.0 %}
+                            <ion-icon name="checkmark-circle-outline" style="position: relative; top: 3.3px; color: green; font-size: 1.2em;"></ion-icon>
+                        {% endif %}
+
+                    </div>
+                </button>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
