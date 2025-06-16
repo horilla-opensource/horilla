@@ -10,6 +10,7 @@
             hx-replace-url="false"
             hx-target="{{search_swap_target}}"
             hx-on:submit="htmxLoadIndicator(this);"
+            class="navFilterForm"
         >
             <div class="flex flex-wrap gap-1">
 
@@ -67,27 +68,91 @@
                         </div>
                     {% endif %} {% endcomment %}
                 </div>
-                {% if group_by_fields %}
-                    <button
-                        class="px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
-                    >
-                        <img src="/static/horilla_theme/assets/img/icons/adjust.svg" alt="" width="15" />Group
-                        By
-                    </button>
-                {% endif %}
+                <div class="flex gap-1 text-[#000]">
+                    {% if view_types %}
+                        {% for type in view_types %}
+                            <li
+                                hx-swap="none"
+                                data-url="{{type.url}}" data-type="{{type.type}}"
+                                hx-get="{% url "active-hnv-view-type" %}?view={{type.type}}&path={{request.path}}"
+                                class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 nav-view-btn"
+                                onclick="
+                                    $(this).closest('form').attr('hx-get','{{type.url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}');
+                                    $(this).closest('form').find('#applyFilter').click();
+                                "
+                            >
+                                <a {{type.attrs|safe}}>
+                                    <ion-icon name="{{type.icon}}"></ion-icon
+                                ></a>
+                                {% if active_view.type == type.type %}
+                                    <script>
+                                        $("navFilterForm").attr('hx-get','{{type.url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}');
+                                        $(".nav-view-btn[data-type={{type.type}}]").addClass("oh-view-btn--active")
+                                    </script>
+                                {% endif %}
+                            </li >
+                        {% endfor %}
+                    {% endif %}
+                </div>
 
                 {% if filter_body_template %}
-                    <button
-                        class="px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
-                        id="applyFilter"
-                    >
-                        <img
-                            src="/static/horilla_theme/assets/img/icons/sort.svg"
-                            alt=""
-                            width="16"
-                            class="mt-[-1px]"
-                        />Filter
-                    </button>
+                    <div class="relative dropdown-wrapper">
+                        <button
+                            class="px-5 py-2 h-full bg-[white]  rounded-md text-xs flex items-center gap-2  border border-primary-500 hover:border-primary-600 transition duration-300"
+                        >
+                            <img src="/static/horilla_theme/assets/img/icons/sort.svg" alt="" width="15"
+                                class="mt-[-1px]"
+                            >
+                                {% trans "Filter" %}
+                        </button>
+
+                        <div
+                            class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0">
+                            <div class="accordion-wrapper space-y-2">
+                                {% include filter_body_template %}
+                                {% if group_by_fields %}
+                                    <div class="oh-accordion">
+                                        <div class="oh-accordion-header">
+                                            {% trans 'Group By' %}
+                                        </div>
+                                        <div class="oh-accordion-body">
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <label class="oh-label" for="id_field">{% trans "Field" %}</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="oh-input-group">
+                                                        <select onchange="$(this).closest('form').find('#applyFilter').click()" class="oh-select mt-1 w-100" id="id_field" name="field" style="width:100%;">
+                                                            <option value="">{% trans "Select" %}</option>
+                                                            {% for field in group_by_fields %}
+                                                                <option value="{{field.0}}">{{field.1}}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="flex justify-end ">
+                                    <button
+                                        class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                                        id="applyFilter"
+                                    >
+                                        <img
+                                            src="/static/horilla_theme/assets/img/icons/sort.svg"
+                                            alt=""
+                                            width="16"
+                                            class="mt-[-1px] invert"
+                                        />Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 {% else %}
                     <button
                         hidden
@@ -99,6 +164,34 @@
                 {% endif %}
                 <input type="hidden" id="pageInput">
                 <input type="hidden" id="sortInput">
+                {% if actions %}
+                    <div class="relative dropdown-wrapper">
+                        <button
+                            class="px-5 py-2 h-full bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                        >
+                            <img src="/static/horilla_theme/assets/img/icons/setting-line.svg" alt="" width="15"
+                                class="mt-[-1px]"
+                            >
+                                {% trans "Actions" %}
+                        </button>
+
+                        <div
+                            class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
+                            <ul class="text-sm">
+                                {% for action in actions %}
+                                <li>
+                                    <a
+                                        class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full"
+                                        {{action.attrs|safe}}
+                                        >
+                                        {{action.action}}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
 
                 {% if create_attrs %}
                     <a
@@ -120,12 +213,36 @@
     {% endif %}
 </div>
 <script>
-    setTimeout(() => {
-      // $(".oh-btn--view-active").click();
-      {% if apply_first_filter %}
-      if (!$(".oh-btn--view-active").length) {
-        $("#applyFilter").click()
-      }
-      {% endif %}
-    }, 100);
+
+    $(document).ready(function() {
+        $("#filterForm").on("htmx:configRequest", function(event) {
+          if (event.detail.verb == "get" && event.target.tagName == "FORM") {
+            event.detail.path = $(this).attr("hx-get");
+          }
+        });
+
+        setTimeout(() => {
+            $(".oh-view-btn--active").click();
+            {% if apply_first_filter %}
+                if (!$(".oh-view-btn--active").length) {
+                    $("#applyFilter").click()
+                }
+            {% endif %}
+        }, 100);
+
+        $(".nav-view-btn").click(function (e) {
+            e.preventDefault();
+            $(".oh-view-btn--active").removeClass("oh-view-btn--active");
+            $(this).addClass("oh-view-btn--active");
+        });
+    });
+
+    $(document).ready(function () {
+        $(document).on("htmx:afterSwap", function (event, data) {
+            $('.oh-accordion-header').on('click', function () {
+                $(this).parent().toggleClass('oh-accordion--show');
+            })
+        });
+    });
+
 </script>

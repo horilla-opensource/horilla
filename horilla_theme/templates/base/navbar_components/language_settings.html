@@ -16,9 +16,9 @@
                                 <img
                                     src="{% static IMAGE_PATH %}"
                                     alt=""
-                                    class="object-cover w-full h-full" 
+                                    class="object-cover w-full h-full"
                                 />
-                            </span> 
+                            </span>
                             {{ language.1 }}
                             {% if language.0 == LANGUAGE_CODE %}
                                 <span class="rounded-full overflow-hidden w-6 h-6">
@@ -29,8 +29,8 @@
                             {% endif %}
                         </div>
                     </button>
-                    <form id="language-form-{{ language.0 }}" 
-                        action="{% url 'set_language' %}" 
+                    <form id="language-form-{{ language.0 }}"
+                        action="{% url 'set_language' %}"
                         method="post"
                         style="display: none;"
                     >

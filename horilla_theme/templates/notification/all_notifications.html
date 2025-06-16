@@ -2,7 +2,7 @@
 {% for notification in notifications %}
     <div class="border border-dark-50 p-3 rounded-md mb-2 relative">
         <button class="closebtn closeSidemenu absolute top-2 right-2 text-xs"
-            hx-post="{% url 'delete-notifications' notification.id %}" 
+            hx-post="{% url 'delete-notifications' notification.id %}"
             hx-swap="delete"
             hx-target="closest div"
             hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
@@ -26,8 +26,8 @@
                 <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.verb }}</p>
             {% endif %}
         </h5>
-        <p class="text-xs text-[#777777] mt-1 flex">{{ notification.timesince }} {% trans "ago by " %} 
-            <b> 
+        <p class="text-xs text-[#777777] mt-1 flex">{{ notification.timesince }} {% trans "ago by " %}
+            <b>
             {{notification.actor.get_full_name}}</b>
         </p>
     </div>

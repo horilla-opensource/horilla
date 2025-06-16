@@ -21,7 +21,7 @@
             <span
                 class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
                 onclick="event.stopPropagation();event.preventDefault();"
-                hx-get="{% url 'clear-notifications' %}" 
+                hx-get="{% url 'clear-notifications' %}"
                 hx-target="#notificationContainer"
                 title="{% trans 'Clear Notifications' %}"
             >
