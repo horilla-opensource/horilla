@@ -306,7 +306,7 @@ class ListCandidates(HorillaListView):
                 """
 
                 model = _model
-                fields = []
+                fields = [field[1] for field in _columns]  # 773
 
             def __init__(self, **kwargs):
                 super().__init__(**kwargs)
