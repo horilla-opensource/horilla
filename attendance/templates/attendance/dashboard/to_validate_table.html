@@ -86,11 +86,10 @@
         </div>
     </div>
 {% else %}
-    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
-        <div style="" class="">
-            <img style="display: block;width: 70px;margin: 20px auto ;" src="{% static '/images/ui/attendance-validate.png' %}" class="" alt="" />
-            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "All Attendance Validated." %}</h3>
-        </div>
+    <div class="oh-empty h-100">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "No pending attendance to validate." %}</p>
     </div>
 {% endif %}
 {% if validate_attendances.has_previous or validate_attendances.has_next %}

@@ -34,8 +34,8 @@
 					<div class="oh-sticky-table__td oh-sticky-table__right">
 						<div class="oh-btn-group">
 							{% if perms.base.change_company %}
-								<button data-toggle="oh-modal-toggle" data-target="#companyEditModal"
-									hx-get="{% url 'company-update' company.id %}" hx-target="#companyEditForm"
+								<button data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+									hx-get="{% url 'company-update' company.id %}" hx-target="#objectUpdateModalTarget"
 									class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
 									<ion-icon name="create-outline"></ion-icon>
 								</button>

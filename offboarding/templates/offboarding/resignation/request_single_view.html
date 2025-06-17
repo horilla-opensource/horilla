@@ -112,7 +112,7 @@
         </div>
     </div>
     <h3 class="oh-faq-card__title">{{ letter.title }}</h3>
-    <div class="oh-faq-card__desc">{{ letter.description|safe }}</div>
+    <div class="oh-faq-card__desc" style="max-height:200px;overflow:auto">{{ letter.description|safe }}</div>
     <form action="{% url 'update-letter-status' %}">
         {% if perms.offboarding.change_resignationletter %}
         <div class="oh-btn-group">
@@ -158,6 +158,7 @@
             <input type="hidden" name="status" />
             <input type="hidden" name="letter_ids" value="{{letter.id}}" />
             <input type="hidden" name="offboarding_id" />
+            <input type="hidden" name="employee_id" value="{{letter.employee_id.id}}" />
             <input type="hidden" name="notice_period_starts" value="{% now
             "Y-m-d" %}" id="notice_period_starts{{letter.id}}">
             <input

@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from employee.models import Employee
@@ -52,7 +53,22 @@ class TimeSheetNavView(HorillaNavView):
     Nav bar
     """
 
+    filter_form_context_name = "form"
+    filter_instance = TimeSheetFilter()
+    search_swap_target = "#listContainer"
     template_name = "cbv/timesheet/timesheet_nav.html"
+    filter_body_template = "cbv/timesheet/filter.html"
+    group_by_fields = [
+        "employee_id",
+        "project_id",
+        "date",
+        "status",
+        "employee_id__employee_work_info__reporting_manager_id",
+        "employee_id__employee_work_info__department_id",
+        "employee_id__employee_work_info__job_position_id",
+        "employee_id__employee_work_info__employee_type_id",
+        "employee_id__employee_work_info__company_id",
+    ]
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -105,27 +121,6 @@ class TimeSheetNavView(HorillaNavView):
                                 hx-get="{reverse('create-time-sheet')}"
                                 """
 
-    group_by_fields = [
-        ("employee_id", _("Employee")),
-        ("project_id", _("Project")),
-        ("date", _("Date")),
-        ("status", _("Status")),
-        (
-            "employee_id__employee_work_info__reporting_manager_id",
-            _("Reporting Manager"),
-        ),
-        ("employee_id__employee_work_info__department_id", _("Department")),
-        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
-        ("employee_id__employee_work_info__employee_type_id", _("Employement Type")),
-        ("employee_id__employee_work_info__company_id", _("Company")),
-    ]
-
-    nav_title = _("Time Sheet")
-    filter_instance = TimeSheetFilter()
-    filter_form_context_name = "form"
-    filter_body_template = "cbv/timesheet/filter.html"
-    search_swap_target = "#listContainer"
-
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -135,6 +130,9 @@ class TimeSheetList(HorillaListView):
     """
     Time sheet list view
     """
+
+    model = TimeSheet
+    filter_class = TimeSheetFilter
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -153,26 +151,37 @@ class TimeSheetList(HorillaListView):
         self.search_url = reverse("time-sheet-list")
         self.action_method = "actions"
 
-    model = TimeSheet
-    filter_class = TimeSheetFilter
+    @cached_property
+    def columns(self):
+        get_field = self.model()._meta.get_field
+        return [
+            (
+                get_field("employee_id").verbose_name,
+                "employee_id",
+                "employee_id__get_avatar",
+            ),
+            (get_field("project_id").verbose_name, "project_id"),
+            (get_field("task_id").verbose_name, "task_id"),
+            (get_field("date").verbose_name, "date"),
+            (get_field("time_spent").verbose_name, "time_spent"),
+            (get_field("status").verbose_name, "get_status_display"),
+            (get_field("description").verbose_name, "description"),
+        ]
 
-    columns = [
-        (_("Employee"), "employee_id", "employee_id__get_avatar"),
-        (_("Project"), "project_id"),
-        (_("Task"), "task_id"),
-        (_("Date"), "date"),
-        (_("Time Spent"), "time_spent"),
-        (_("Status"), "status_column"),
-        (_("Description"), "description"),
-    ]
-
-    sortby_mapping = [
-        ("Employee", "employee_id__employee_first_name", "employee_id__get_avatar"),
-        ("Project", "project_id__title"),
-        ("Task", "task_id__title"),
-        ("Time Spent", "time_spent"),
-        ("Date", "date"),
-    ]
+    @cached_property
+    def sortby_mapping(self):
+        get_field = self.model()._meta.get_field
+        return [
+            (
+                get_field("employee_id").verbose_name,
+                "employee_id__employee_first_name",
+                "employee_id__get_avatar",
+            ),
+            (get_field("project_id").verbose_name, "project_id__title"),
+            (get_field("task_id").verbose_name, "task_id__title"),
+            (get_field("time_spent").verbose_name, "time_spent"),
+            (get_field("date").verbose_name, "date"),
+        ]
 
     row_status_indications = [
         (
@@ -267,6 +276,10 @@ class TimeSheetFormView(HorillaFormView):
     form view for create project
     """
 
+    form_class = TimeSheetForm
+    model = TimeSheet
+    new_display_title = _("Create") + " " + model._meta.verbose_name
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.dynamic_create_fields = [
@@ -279,7 +292,7 @@ class TimeSheetFormView(HorillaFormView):
 
     form_class = TimeSheetForm
     model = TimeSheet
-    new_display_title = _("Create Time Sheet")
+    new_display_title = _("Create") + " " + model._meta.verbose_name
     # template_name = "cbv/timesheet/form.html"
 
     def get_initial(self) -> dict:
@@ -485,13 +498,15 @@ class TimeSheetDetailView(HorillaDetailedView):
         "subtitle": "project_id",
         "avatar": "employee_id__get_avatar",
     }
-
-    body = [
-        (_("Task"), "task_id"),
-        (_("Date"), "date"),
-        (_("Time Spent"), "time_spent"),
-        (_("Status"), "status_column"),
-        (_("Description"), "description"),
-    ]
-
     action_method = "detail_actions"
+
+    @cached_property
+    def body(self):
+        get_field = self.model()._meta.get_field
+        return [
+            (get_field("task_id").verbose_name, "task_id"),
+            (get_field("date").verbose_name, "date"),
+            (get_field("time_spent").verbose_name, "time_spent"),
+            (get_field("status").verbose_name, "get_status_display"),
+            (get_field("description").verbose_name, "description"),
+        ]

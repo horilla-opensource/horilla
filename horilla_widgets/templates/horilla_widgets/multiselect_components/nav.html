@@ -26,24 +26,32 @@
     <div class="oh-main__titlebar-button-container">
       <div class="oh-dropdown" x-data="{open: false}">
         <button
-         hx-get="{% url 'get-filter-form' %}?template_path={{filter_template_path}}"
-         hx-target="#wodgetFilterContainer"
-         class="oh-btn ml-2" @click="open = !open">
-          <ion-icon
-            name="filter"
-            class="mr-1 md hydrated"
-            role="img"
-            aria-label="filter"
-          ></ion-icon
-          >{% trans "Filter" %}
-          <div id="filterCount"></div>
+          hx-get="{% url 'get-filter-form' %}?template_path={{filter_template_path}}"
+          hx-target="#widgetFilterContainer"
+          hx-swap="innerHTML"
+          hx-trigger="load"
+          id="hxButton"
+          hidden
+        >
+          <button
+          onclick="$(this).closest('.oh-main__titlebar-button-container').find('#hxButton').click();"
+          class="oh-btn ml-2" @click="open = !open">
+            <ion-icon
+              name="filter"
+              class="mr-1 md hydrated"
+              role="img"
+              aria-label="filter"
+            ></ion-icon
+            >{% trans "Filter" %}
+            <div id="filterCount"></div>
+          </button>
         </button>
         <div
           class="oh-dropdown__menu oh-dropdown__menu--left oh-dropdown__filter p-4"
           x-show="open"
           @click.outside="open = false"
         >
-          <div id="wodgetFilterContainer">
+          <div id="widgetFilterContainer">
             {% comment %} {% include filter_template_path %} {% endcomment %}
           </div>
           <div class="oh-dropdown__filter-footer">

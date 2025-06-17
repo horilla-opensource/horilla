@@ -31,10 +31,16 @@ class MailAutomation(HorillaModel):
         ("on_update", "On Update"),
         ("on_delete", "On Delete"),
     ]
+    SEND_OPTIONS = [
+        ("email", "Send as Email"),
+        ("notification", "Send as Notification"),
+        ("both", "Send as Email and Notification"),
+    ]
+
     title = models.CharField(max_length=256, unique=True)
     method_title = models.CharField(max_length=50, editable=False)
     model = models.CharField(max_length=100, choices=MODEL_CHOICES, null=False)
-    mail_to = models.TextField(verbose_name="Mail to")
+    mail_to = models.TextField(verbose_name="Mail to/Notify to")
     mail_details = models.CharField(
         max_length=250,
         help_text=_trans(
@@ -53,6 +59,12 @@ class MailAutomation(HorillaModel):
         blank=True,
         verbose_name=_trans("Also Send to"),
     )
+    delivary_channel = models.CharField(
+        default="email",
+        max_length=50,
+        choices=SEND_OPTIONS,
+        verbose_name=_trans("Choose Delivary Channel"),
+    )
     template_attachments = models.ManyToManyField(
         HorillaMailTemplate,
         related_name="template_attachment",
@@ -62,6 +74,12 @@ class MailAutomation(HorillaModel):
     condition_querystring = models.TextField(null=True, editable=False)
 
     condition = models.TextField()
+
+    xss_exempt_fields = [
+        "condition_html",
+        "condition",
+        "condition_querystring",
+    ]
 
     def save(self, *args, **kwargs):
         if not self.pk:

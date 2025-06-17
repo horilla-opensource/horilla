@@ -573,7 +573,10 @@ def biometric_device_edit(request, device_id):
     - HttpResponse: Renders the 'edit_biometric_device.html' template with the biometric
                     device form pre-filled with existing data.
     """
-    device = BiometricDevices.objects.get(id=device_id)
+    device = BiometricDevices.find(device_id)
+    if not device:
+        messages.error(request, _("Biometric device not found."))
+        return render(request, "biometric/edit_biometric_device.html")
     biometric_form = BiometricDeviceForm(instance=device)
     if request.method == "POST":
         biometric_form = BiometricDeviceForm(request.POST, instance=device)
@@ -596,7 +599,10 @@ def biometric_device_archive(request, device_id):
     This method is used to archive or un-archive devices
     """
     previous_data = request.GET.urlencode()
-    device_obj = BiometricDevices.objects.get(id=device_id)
+    device_obj = BiometricDevices.find(device_id)
+    if not device_obj:
+        messages.error(request, _("Biometric device not found."))
+        return redirect(f"/biometric/search-devices?{previous_data}")
     device_obj.is_active = not device_obj.is_active
     device_obj.save()
     message = _("archived") if not device_obj.is_active else _("un-archived")
@@ -621,9 +627,12 @@ def biometric_device_delete(request, device_id):
                             biometric device.
 
     """
-    device = BiometricDevices.objects.get(id=device_id)
-    device.delete()
     previous_data = request.GET.urlencode()
+    device_obj = BiometricDevices.find(device_id)
+    if not device_obj:
+        messages.error(request, _("Biometric device not found."))
+        return redirect(f"/biometric/search-devices?{previous_data}")
+    device_obj.delete()
     messages.success(request, _("Biometric device deleted successfully."))
     return redirect(f"/biometric/search-devices?{previous_data}")
 
@@ -1164,11 +1173,7 @@ def find_employees_in_zk(device_id):
             device_id_id=device_id,
         )
         for employee_id, badge_id in employees
-        if badge_id
-        and badge_id.isalnum()
-        and len(badge_id) <= 9
-        and badge_id in zk_users
-        and badge_id not in existing_user_ids
+        if badge_id and badge_id in zk_users and badge_id not in existing_user_ids
     ]
     BiometricEmployees.objects.bulk_create(biometric_employees_to_create)
     conn.disconnect()

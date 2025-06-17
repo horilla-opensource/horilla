@@ -1,0 +1,5 @@
+.github
+.gitignore
+*.md
+LICENSE
+docker-compose.yaml

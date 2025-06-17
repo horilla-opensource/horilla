@@ -37,6 +37,14 @@ var noRowMessages = {
     fr: "Aucune ligne n'a été sélectionnée pour supprimer des employés.",
 };
 
+var noRowUpdateMessages = {
+    "ar": "لم يتم تحديد أي صفوف لتحديث الموظفين.",
+    "de": "Es wurden keine Zeilen ausgewählt, um Mitarbeiter zu aktualisieren.",
+    "es": "No se han seleccionado filas para actualizar empleados.",
+    "en": "No rows have been selected to update employees.",
+    "fr": "Aucune ligne n'a été sélectionnée pour mettre à jour des employés."
+};
+
 var rowMessages = {
     ar: " تم الاختيار",
     de: " Ausgewählt",
@@ -335,8 +343,8 @@ $("#employeeBulkUpdateId").click(function (e) {
     var languageCode = null;
     languageCode = $("#main-section-data").attr("data-lang");
     var textMessage =
-        noRowMessages[languageCode] ||
-        ((languageCode = "en"), noRowMessages[languageCode]);
+        noRowUpdateMessages[languageCode] ||
+        ((languageCode = "en"), noRowUpdateMessages[languageCode]);
     ids = [];
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));

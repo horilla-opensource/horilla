@@ -1,9 +1,8 @@
-{% load horillafilters i18n %}
+{% load horillafilters attendancefilters i18n %}
 {% if request.user.employee_get %}
     {% with get_forecasted_at_work=request.user.employee_get.get_forecasted_at_work %}
         {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
             <!-- "CHEKING WETHER Check in/check out enabled" -->
-
             {% if request|is_check_in_enabled %}
                 <!-- "CHEKING WETHER ITS IS THE CURRENT EMPLOYEES COMPANY OR ALL COMPANY, THEN ONLY SHOWS THE CHECK-IN, CHECK-OUT BUTTON" -->
                 {% if request.user|is_clocked_in and get_forecasted_at_work.has_attendance %}

@@ -298,7 +298,23 @@ def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
-    employee = Employee.objects.get(id=obj_id)
+    try:
+        employee = Employee.objects.get(id=obj_id)
+    except ObjectDoesNotExist:
+        try:
+            employee = Employee.objects.entire().get(id=obj_id)
+            company = getattr(
+                getattr(employee, "employee_work_info", None), "company_id", None
+            )
+            company_id = getattr(company, "pk", None)
+            if company_id != request.session["selected_company"]:
+                messages.error(
+                    request, "Employee is not working in the selected company."
+                )
+                return redirect("employee-view")
+        except Exception as e:
+            return render(request, "404.html", status=404)
+
     employee_leaves = (
         employee.available_leave.all() if apps.is_installed("leave") else None
     )
@@ -692,12 +708,12 @@ def document_delete(request, id):
                             hx-target='#document_target' hx-trigger='load'></span>
                         """
                     )
-            return HttpResponse()
+            return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
         else:
             messages.error(request, _("Document not found"))
     except ProtectedError:
         messages.error(request, _("You cannot delete this document."))
-    return HttpResponse("<script>window.location.reload();</script>")
+    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 
 @login_required
@@ -868,40 +884,69 @@ def document_reject(request, id):
 @manager_can_enter("horilla_documents.add_document")
 def document_bulk_approve(request):
     """
-    This function used to view the approve uploaded document.
-    Parameters:
+    This function is used to bulk-approve uploaded documents.
 
-    request (HttpRequest): The HTTP request object.
+    Parameters:
+        request (HttpRequest): The HTTP request object.
 
     Returns:
+        HttpResponse: A 204 No Content response with HX-Refresh header.
     """
-    ids = request.GET.getlist("ids")
-    document_obj = Document.objects.filter(
-        id__in=ids,
-    ).exclude(document="")
-    document_obj.update(status="approved")
-    messages.success(request, _(f"{len(document_obj)} Document request approved"))
+    if request.method == "POST":
+        ids = request.POST.getlist("ids")
 
-    return HttpResponse("success")
+        # Documents with uploaded files
+        approved_docs = Document.objects.filter(id__in=ids).exclude(document="")
+        count_approved = approved_docs.update(status="approved")
+
+        # Documents without uploaded files
+        not_uploaded_count = len(ids) - approved_docs.count()
+
+        if count_approved:
+            messages.success(
+                request, _(f"{count_approved} document request(s) approved")
+            )
+
+        if not_uploaded_count:
+            messages.info(
+                request, _(f"{not_uploaded_count} document(s) skipped (not uploaded)")
+            )
+
+    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 
 @login_required
 @manager_can_enter("horilla_documents.add_document")
 def document_bulk_reject(request):
     """
-    This function used to view the reject uploaded document.
-    Parameters:
+    Handle bulk rejection of documents.
 
-    request (HttpRequest): The HTTP request object.
-
-    Returns:
+    On GET request, display a form to enter the rejection reason for selected documents.
+    On POST request, validate the rejection reason and update the status of documents
+    (excluding those already rejected) to 'rejected' with the provided reason.
     """
-    ids = request.POST.getlist("ids")
-    reason = request.POST.get("reason")
-    document_obj = Document.objects.filter(id__in=ids)
-    document_obj.update(status="rejected", reject_reason=reason)
-    messages.success(request, _("Document request rejected"))
-    return HttpResponse("success")
+    ids = (
+        request.POST.getlist("ids")
+        if request.method == "POST"
+        else request.GET.getlist("ids")
+    )
+    form = DocumentRejectForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        reject_reason = form.cleaned_data["reject_reason"]
+        updated_count = (
+            Document.objects.filter(id__in=ids)
+            .exclude(status="rejected")
+            .update(status="rejected", reject_reason=reject_reason)
+        )
+        messages.success(
+            request, _("{} Document request rejected").format(updated_count)
+        )
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
+    return render(
+        request, "documents/document_reject_reason.html", {"ids": ids, "form": form}
+    )
 
 
 @login_required
@@ -1237,21 +1282,17 @@ def save_employee_bulk_update(request):
         for id in employee_list:
             try:
                 employee_instance = Employee.objects.get(id=int(id))
-                (
-                    employee_work_info,
-                    created,
-                ) = EmployeeWorkInformation.objects.get_or_create(
-                    employee_id=employee_instance
+                employee_work_info, created = (
+                    EmployeeWorkInformation.objects.get_or_create(
+                        employee_id=employee_instance
+                    )
                 )
-                (
-                    employee_bank,
-                    created,
-                ) = EmployeeBankDetails.objects.get_or_create(
+                employee_bank, created = EmployeeBankDetails.objects.get_or_create(
                     employee_id=employee_instance
                 )
             except (ValueError, OverflowError):
                 employee_list.remove(id)
-                pass
+
         for field in update_fields:
             parts = str(field).split("__")
             if parts[-1]:
@@ -1339,24 +1380,40 @@ def employee_view_update(request, obj_id, **kwargs):
     """
     This method is used to render update form for employee.
     """
-    company = request.session["selected_company"]
+    selected_company_id = request.session["selected_company"]
     user = Employee.objects.filter(employee_user_id=request.user).first()
-    work_info = HistoryTrackingFields.objects.first()
-    work_info_history = False
-    if work_info and work_info.work_info_track == True:
-        work_info_history = True
+    work_info_history = HistoryTrackingFields.objects.filter(
+        work_info_track=True
+    ).exists()
 
     employee = Employee.objects.filter(id=obj_id).first()
-    all_employees = Employee.objects.entire()
-    emp = all_employees.filter(id=obj_id).first()
+    emp = Employee.objects.entire().filter(id=obj_id).first()
+    if not employee and emp and hasattr(emp, "employee_work_info"):
+        if (
+            emp.employee_work_info
+            and emp.employee_work_info.company_id
+            and emp.employee_work_info.company_id_id != selected_company_id
+        ):
+
+            messages.error(
+                request, _("Employee is not working in the selected company.")
+            )
+            return redirect(employee_view)
+
     if employee is None:
         employee = emp
-        all_work_info = EmployeeWorkInformation.objects.entire()
-        cmpny = Company.objects.get(id=company)
-        work = all_work_info.filter(employee_id=employee).first()
-        if company != "all":
+        cmpny = Company.objects.get(id=selected_company_id)
+
+        work = (
+            EmployeeWorkInformation.objects.entire()
+            .filter(employee_id=employee)
+            .first()
+        )
+
+        if work and selected_company_id != "all":
             work.company_id = cmpny
             work.save()
+
         employee.save()
 
     if (
@@ -2437,22 +2494,22 @@ def work_info_import_file(request):
             "Badge ID",
             "First Name",
             "Last Name",
-            "Phone",
             "Email",
+            "Phone",
             "Gender",
             "Department",
             "Job Position",
             "Job Role",
-            "Work Type",
             "Shift",
-            "Employee Type",
+            "Work Type",
             "Reporting Manager",
-            "Company",
+            "Employee Type",
             "Location",
             "Date Joining",
-            "Contract End Date",
             "Basic Salary",
             "Salary Hour",
+            "Contract End Date",
+            "Company",
         ]
     )
 
@@ -2511,11 +2568,6 @@ def work_info_import(request):
                 try:
                     users = bulk_create_user_import(success_list)
                     employees = bulk_create_employee_import(success_list)
-                    thread = threading.Thread(
-                        target=set_initial_password, args=(employees,)
-                    )
-                    thread.start()
-
                     bulk_create_department_import(success_list)
                     bulk_create_job_position_import(success_list)
                     bulk_create_job_role_import(success_list)
@@ -2523,6 +2575,10 @@ def work_info_import(request):
                     bulk_create_shifts(success_list)
                     bulk_create_employee_types(success_list)
                     bulk_create_work_info_import(success_list)
+                    thread = threading.Thread(
+                        target=set_initial_password, args=(employees,)
+                    )
+                    thread.start()
 
                 except Exception as e:
                     messages.error(request, _("Error Occured {}").format(e))
@@ -2715,7 +2771,9 @@ def get_employees_birthday(request):
         }
         for emp in employees
     ]
-    return render(request, "birthdays_container.html", {"birthdays": birthdays})
+    return render(
+        request, "dashboard/birthdays_container.html", {"birthdays": birthdays}
+    )
 
 
 @login_required
@@ -3249,12 +3307,14 @@ def organisation_chart(request):
         and selected_company != "all"
     ):
         reporting_managers = Employee.objects.filter(
+            is_active=True,
             reporting_manager__isnull=False,
             employee_work_info__company_id=selected_company,
         ).distinct()
     else:
         reporting_managers = Employee.objects.filter(
-            reporting_manager__isnull=False
+            is_active=True,
+            reporting_manager__isnull=False,
         ).distinct()
 
     # Iterate through the queryset and add reporting manager id and name to the dictionary
@@ -3273,7 +3333,7 @@ def organisation_chart(request):
             entered_req_managers.append(manager)
         # filter the subordinates
         subordinates = Employee.objects.filter(
-            employee_work_info__reporting_manager_id=manager
+            is_active=True, employee_work_info__reporting_manager_id=manager
         ).exclude(id=manager.id)
 
         # itrating through subordinates
@@ -3313,12 +3373,13 @@ def organisation_chart(request):
         and selected_company != "all"
     ):
         reporting_managers = Employee.objects.filter(
+            is_active=True,
             reporting_manager__isnull=False,
             employee_work_info__company_id=selected_company,
         ).distinct()
     else:
         reporting_managers = Employee.objects.filter(
-            reporting_manager__isnull=False
+            is_active=True, reporting_manager__isnull=False
         ).distinct()
 
     manager = request.user.employee_get

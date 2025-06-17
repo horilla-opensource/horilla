@@ -29,7 +29,14 @@ class ToggleColumnForm(forms.Form):
     Toggle column form
     """
 
-    def __init__(self, columns, default_columns, hidden_fields: list, *args, **kwargs):
+    def __init__(
+        self,
+        columns,
+        default_columns,
+        hidden_fields: list,
+        *args,
+        **kwargs,
+    ):
         request = getattr(_thread_locals, "request", {})
         self.request = request
         super().__init__(*args, **kwargs)
@@ -38,7 +45,7 @@ class ToggleColumnForm(forms.Form):
             if column[1] in hidden_fields:
                 initial = False
             if not hidden_fields:
-                if column not in default_columns:
+                if default_columns and column not in default_columns:
                     initial = False
             self.fields[column[1]] = forms.BooleanField(
                 label=column[0], initial=initial

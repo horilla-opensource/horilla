@@ -1,0 +1,38 @@
+{% load static i18n %}
+{% if leaves %}
+    <div class="oh-card-dashboard__body">
+        <ul class="oh-card-dashboard__user-list" id="leaveEmployee">
+            {% for leave in leaves %}
+                <li class="oh-card-dashboard__user-item" role="button">
+                    <div class="oh-profile oh-profile--md"
+                        {% if perms.leave.view_leaverequest %}
+                            onclick="$('#objectDetailsModalW25').addClass('oh-modal--show');" data-target="#objectDetailsModalW25"
+                            hx-get="{% url 'one-request-view' leave.id %}?instances_ids={{requests_ids}}"
+                            hx-target="#objectDetailsModalW25Target"
+                        {% endif %}>
+                        <div class="oh-profile__avatar mr-1">
+                            <img src="{{leave.employee_id.get_avatar}}" class="oh-profile__image" alt="" />
+                        </div>
+                        <span class="oh-profile__name oh-text--dark">{{leave.employee_id.get_full_name}}
+                        </span>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% elif today_holidays %}
+    <div style="height: 380px; display:flex;align-items: center;justify-content: center;" class="">
+        <div>
+            <img style="display: block;width: 70px;margin: 20px auto ;"
+                src="{% static 'images/ui/sunbed outline.png' %}" class="" alt="" />
+            <h3 style="font-size:16px" class="oh-404__subtitle">{% trans "Today is a holiday." %}
+            </h3>
+        </div>
+    </div>
+{% else %}
+    <div class="oh-empty h-100">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "No employees have taken leave today." %}</p>
+    </div>
+{% endif %}

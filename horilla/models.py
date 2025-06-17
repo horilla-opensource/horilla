@@ -8,9 +8,12 @@ the application, such as tracking creation and modification timestamps and user
 information, audit logging, and active/inactive status management.
 """
 
+import re
+
 from auditlog.models import AuditlogHistoryField
 from auditlog.registry import auditlog
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.fields.files import FieldFile
 from django.urls import reverse
@@ -32,6 +35,14 @@ def url(self: FieldFile):
 
 
 setattr(FieldFile, "url", url)
+
+
+def has_xss(value):
+    """Basic check for common XSS patterns."""
+    if not isinstance(value, str):
+        return False
+    xss_pattern = re.compile(r"<.*?script.*?>|javascript:|on\w+=", re.IGNORECASE)
+    return bool(xss_pattern.search(value))
 
 
 class HorillaModel(models.Model):
@@ -80,6 +91,8 @@ class HorillaModel(models.Model):
         Override the save method to automatically set the created_by and
         modified_by fields based on the current request user.
         """
+        self.full_clean()
+
         request = getattr(_thread_locals, "request", None)
 
         if request:
@@ -99,8 +112,31 @@ class HorillaModel(models.Model):
 
         super(HorillaModel, self).save(*args, **kwargs)
 
+    def clean_fields(self, exclude=None):
+        errors = {}
+
+        # Get the list of fields to exclude from validation
+        total_exclude = set(exclude or []).union(getattr(self, "xss_exempt_fields", []))
+
+        for field in self._meta.get_fields():
+            if (
+                isinstance(field, (models.CharField, models.TextField))
+                and field.name not in total_exclude
+            ):
+                value = getattr(self, field.name, None)
+                if value and has_xss(value):
+                    errors[field.name] = ValidationError(
+                        "Potential XSS content detected."
+                    )
+
+        if errors:
+            raise ValidationError(errors)
+
     def get_verbose_name(self):
         return self._meta.verbose_name
+
+    def get_verbose_name_plural(self):
+        return self._meta.verbose_name_plural
 
     @classmethod
     def find(cls, object_id):
@@ -123,6 +159,22 @@ class HorillaModel(models.Model):
         if obj:
             obj.is_active = not obj.is_active
             obj.save()
+
+    @classmethod
+    def get_verbose_name_related_field(cls, field_path):
+        """
+        Traverse related fields to get verbose_name using Django's _meta API.
+        Example: "employee_id__employee_work_info__reporting_manager_id"
+        """
+        parts = field_path.split("__")
+        instance_model = cls
+
+        for part in parts[:-1]:
+            field = instance_model._meta.get_field(part)
+            instance_model = field.remote_field.model
+
+        final_field = instance_model()._meta.get_field(parts[-1])
+        return final_field.verbose_name
 
 
 auditlog.register(HorillaModel, serialize_data=True)

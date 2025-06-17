@@ -146,6 +146,19 @@
                   style="display: none;"
                 >
                     <ul class="oh-dropdown__items">
+                      {% if perms.pms.add_feedback %}
+                      <li class="oh-dropdown__item">
+                        <a
+                          data-toggle="oh-modal-toggle"
+                          data-target="#objectCreateModal"
+                          hx-get="{% url "bulk-feedback-create" %}"
+                          hx-target="#objectCreateModalTarget"
+                          class="oh-dropdown__link"
+                          id="bulkfeedback"
+                          >{% trans "Bulk Feedback" %}</a
+                        >
+                      </li>
+                      {% endif %}
 
                       <li class="oh-dropdown__item">
                         <a href="#" class="oh-dropdown__link " id="archiveFeedback"
@@ -231,9 +244,9 @@
 <script src="{% static '/base/filter.js' %}"></script>
 <script>
 
-$(".fil").click(function() {
-  $("#filterCount").text("(1)");
-});
+  $(".fil").click(function() {
+    $("#filterCount").text("(1)");
+  });
 
 </script>
 

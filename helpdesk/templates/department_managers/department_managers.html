@@ -4,14 +4,14 @@
 <div class="oh-inner-sidebar-content">
     {% if perms.helpdesk.view_departmentmanager %}
         <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Department managers" %}</h2>
+            <h2 class="oh-inner-sidebar-content__title">{{model.get_verbose_name_plural}}</h2>
 			{% if perms.helpdesk.add_departmentmanager %}
             <button
                 class="oh-btn oh-btn--secondary oh-btn--shadow"
                 data-toggle="oh-modal-toggle"
-                data-target="#deparmentManagersModal"
+                data-target="#objectCreateModal"
                 hx-get="{% url 'department-manager-create' %}"
-                hx-target="#deparmentManagersModal"
+                hx-target="#objectCreateModalTarget"
             >
                 <ion-icon name="add-outline" class="me-1"></ion-icon>
                 {% trans "Create" %}
@@ -30,40 +30,6 @@
 
 </div>
 
-<!-- start of modals -->
-
-<!-- start of create modal -->
-<div
-	class="oh-modal"
-	id="deparmentManagersModal"
-	role="dialog"
-	aria-labelledby="deparmentManagersModal"
-	aria-hidden="true"
->
-</div>
-<!-- end of create modal -->
-<!-- start of edit modal -->
-<div
-	class="oh-modal"
-	id="depatmentManagerEditModal"
-	role="dialog"
-	aria-labelledby="depatmentManagerEditModal"
-	aria-hidden="true"
->
-	<div class="oh-modal__dialog">
-		<div class="oh-modal__dialog-header">
-			<h2 class="oh-modal__dialog-title" id="editModaltitle">
-				{% trans "Department Manager Update" %}
-			</h2>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div class="oh-modal__dialog-body" id="departmentManagerEditForm"></div>
-	</div>
-</div>
-<!-- end of edit modal -->
-<!-- end of modals -->
 <button id="getDepartmentEmployeesButton" hx-get="{% url "get-department-employee" %}" hx-target="#id_manager" hidden></button>
 <script>
 	function getDepartmentEmployees(element){

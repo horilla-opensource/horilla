@@ -3,7 +3,6 @@
 <!-- form errors  -->
 <div class="oh-wrapper">
     <div class="oh-alert-container">
-
         {% for error in form.non_field_errors %}
         <div class="oh-alert oh-alert--animated oh-alert--danger">
             {{ error }}
@@ -12,29 +11,39 @@
     </div>
 </div>
 {% endif %}
-<div class="p-3">
-    <div style="border:2px solid hsl(213, 22%, 84%);">
-        <form  hx-post="{% url 'task-update' task_id %}">
-            <div class="oh-modal__dialog-body pb-2">
-                <label class="oh-label d-block">{% trans "Task Title" %}</label>
-                {{form.task_title}}
-                {{form.task_title.errors}}
-            </div>
-            <div class="oh-modal__dialog-body pb-2" id="taskUpdateEmployee">
-                <label class="oh-label d-block">{% trans "Task Managers" %}</label>
-                {{form.employee_id}}
-                {{form.employee_id.errors}}
-            </div>
-            <div class="oh-modal__dialog-body pb-2" >
-                <label class="oh-label d-block">{% trans "Candidates" %}</label>
-                {{form.candidates}}
-                {{form.candidates.errors}}
-            </div>
-            <div class="oh-modal__dialog-footer">
-                <button type="submit" class="oh-btn oh-btn--secondary w-100">
-                    {% trans "Update" %}
-                </button>
-            </div>
-        </form>
-    </div>
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="objectUpdateModalLabel">{% trans "Update" %} {{form.verbose_name}}</span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline" role="img" class="md hydrated"></ion-icon>
+    </button>
+</div>
+
+<div class="oh-modal__dialog-body">
+    <form hx-post="{% url 'task-update' task_id %}" hx-target="#objectUpdateModalTarget"
+        class="oh-profile-section">
+
+        <div class="oh-input-group">
+            <label class="oh-label" for="{{form.task_title.id_for_label}}">{{form.task_title.label}}</label>
+            {{ form.task_title }}
+            {{ form.task_title.errors }}
+        </div>
+
+        <div class="oh-input-group">
+            <label class="oh-label" for="{{form.employee_id.id_for_label}}">{{form.employee_id.label}}</label>
+            {{ form.employee_id }}
+            {{ form.employee_id.errors }}
+        </div>
+
+        <div class="oh-input-group">
+            <label class="oh-label d-block">{{form.candidates.label}}</label>
+            {{ form.candidates }}
+            {{ form.candidates.errors }}
+        </div>
+
+        <div class="oh-modal__dialog-footer p-0 pt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Apply" %}
+            </button>
+        </div>
+    </form>
 </div>

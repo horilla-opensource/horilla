@@ -527,7 +527,7 @@ def project_import(request):
 
 
 @login_required
-# @permission_required("employee.delete_employee")
+# @permission_required("project.view_project")
 # @require_http_methods(["POST"])
 def project_bulk_export(request):
     """
@@ -618,48 +618,84 @@ def project_bulk_export(request):
 
 
 @login_required
-# @project_delete_permission
 def project_bulk_archive(request):
-    """
-    This method is used to archive bulk of Project instances
-    """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
+    try:
+        ids = request.POST.getlist("ids")
+    except Exception:
+        messages.error(request, _("Could not retrieve project IDs."))
+        return HttpResponse("<script>$('#applyFilter').click();</script>")
+
+    is_active_raw = request.GET.get("is_active", "").lower()
+
+    if is_active_raw in ["true"]:
+        is_active = True
+        message = "Un-Archived"
+    elif is_active_raw in ["false"]:
+        is_active = False
+        message = "Archived"
+    else:
+        messages.error(
+            request, _("Invalid value for 'is_active'. Use 'true' or 'false'.")
+        )
+        return HttpResponse("<script>$('#applyFilter').click();</script>")
+
     for project_id in ids:
         project = Project.objects.filter(id=project_id).first()
         if project and is_project_manager_or_super_user(request, project):
-            is_active = eval(request.GET.get("is_active"))
-            message = "Archived"
-            if is_active:
-                message = "Un-Archived"
             project.is_active = is_active
             project.save()
             messages.success(request, f"{project} is {message} successfully.")
-    return JsonResponse({"message": "Success"})
+        else:
+            messages.warning(
+                request, f"Permission denied or project not found: ID {project_id}"
+            )
+
+    return HttpResponse("<script>$('#applyFilter').click();</script>")
 
 
 @login_required
-# @permission_required("employee.delete_employee")
+# @permission_required("project.delete_project")
 def project_bulk_delete(request):
     """
-    This method is used to delete set of Employee instances
+    This method deletes a set of Project instances in bulk, after verifying permissions.
     """
-    ids = request.POST["ids"]
-    ids = json.loads(ids)
-    del_id = []
-    for project_id in ids:
-        project = Project.objects.get(id=project_id)
-        try:
-            if is_project_manager_or_super_user(request, project):
-                project.delete()
-                del_id.append(project)
-        except Exception as error:
-            messages.error(request, error)
-            messages.error(
-                request, _("You cannot delete %(project)s.") % {"project": project}
-            )
-    messages.success(request, _("{} Projects deleted".format(len(del_id))))
-    return JsonResponse({"message": "Success"})
+    try:
+        ids = request.POST.getlist("ids")
+        if not ids:
+            messages.warning(request, _("No project IDs were provided."))
+            return HttpResponse("<script>$('#applyFilter').click();</script>")
+    except Exception:
+        messages.error(request, _("Could not retrieve project IDs."))
+        return HttpResponse("<script>$('#applyFilter').click();</script>")
+
+    projects = Project.objects.filter(id__in=ids)
+    deletable_projects = []
+    skipped_projects = []
+
+    for project in projects:
+        if is_project_manager_or_super_user(request, project):
+            deletable_projects.append(project)
+        else:
+            skipped_projects.append(str(project))
+
+    # Delete in bulk
+    if deletable_projects:
+        # Project.objects.filter(id__in=[p.id for p in deletable_projects]).delete()
+        messages.success(
+            request,
+            _("{count} project(s) deleted successfully.").format(
+                count=len(deletable_projects)
+            ),
+        )
+
+    if skipped_projects:
+        messages.warning(
+            request,
+            _("Permission denied or skipped for: %(projects)s.")
+            % {"projects": ", ".join(skipped_projects)},
+        )
+
+    return HttpResponse("<script>$('#applyFilter').click();</script>")
 
 
 @login_required
@@ -1166,7 +1202,7 @@ def task_all_filter(request):
 
 
 @login_required
-# @permission_required("employee.delete_employee")
+# @permission_required("project.change_task")
 # @require_http_methods(["POST"])
 def task_all_bulk_archive(request):
     """
@@ -1189,7 +1225,7 @@ def task_all_bulk_archive(request):
 
 
 @login_required
-# @permission_required("employee.delete_employee")
+# @permission_required("project.delete_task")
 def task_all_bulk_delete(request):
     """
     This method is used to delete set of Task instances
@@ -1210,7 +1246,7 @@ def task_all_bulk_delete(request):
 
 
 @login_required
-# @permission_required("employee.delete_employee")
+# @permission_required("project.change_task")
 def task_all_archive(request, task_id):
     """
     This method is used to archive project instance

@@ -2,6 +2,7 @@
 horilla/generic/views.py
 """
 
+import io
 import json
 import logging
 from typing import Any
@@ -11,13 +12,16 @@ from bs4 import BeautifulSoup
 from django import forms
 from django.contrib import messages
 from django.core.cache import cache as CACHE
+from django.core.exceptions import FieldDoesNotExist
 from django.core.paginator import Page
 from django.http import HttpRequest, HttpResponse, QueryDict
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, FormView, ListView, TemplateView
+from xhtml2pdf import pisa
 
 from base.methods import closest_numbers, eval_validate, get_key_instances
 from horilla.filters import FilterSet
@@ -49,7 +53,13 @@ class HorillaListView(ListView):
 
     view_id: str = """"""
 
-    export_file_name: str = None
+    export_file_name: str = "quick_export"
+    export_formats: list = [
+        ("xlsx", "Excel"),
+        ("json", "Json"),
+        ("csv", "CSV"),
+        ("pdf", "PDF"),
+    ]
 
     template_name: str = "generic/horilla_list_table.html"
     context_object_name = "queryset"
@@ -445,7 +455,7 @@ class HorillaListView(ListView):
             )
             context["bulk_update_fields"] = self.bulk_update_fields
             context["bulk_path"] = get_bulk_path
-
+        context["export_formats"] = self.export_formats
         return context
 
     def select_all(self, *args, **kwargs):
@@ -463,6 +473,7 @@ class HorillaListView(ListView):
         request = getattr(_thread_locals, "request", None)
         ids = eval_validate(request.POST["ids"])
         _columns = eval_validate(request.POST["columns"])
+        export_format = request.POST.get("format", "xlsx")
         queryset = self.model.objects.filter(id__in=ids)
 
         _model = self.model
@@ -480,7 +491,7 @@ class HorillaListView(ListView):
                 """
 
                 model = _model
-                fields = []
+                fields = [field[1] for field in _columns]  # 773
 
             def dehydrate_id(self, instance):
                 """
@@ -496,12 +507,38 @@ class HorillaListView(ListView):
 
             def remove_extra_spaces(self, text, field_tuple):
                 """
-                Remove blank space but keep line breaks and add new lines for <li> tags.
+                Clean the text:
+                - If it's a <select> element, extract the selected option's value.
+                - If it's an <input> or <textarea>, extract its 'value'.
+                - Otherwise, remove blank spaces, keep line breaks, and handle <li> tags.
                 """
                 soup = BeautifulSoup(str(text), "html.parser")
+
+                # Handle <select> tag
+                select_tag = soup.find("select")
+                if select_tag:
+                    selected_option = select_tag.find("option", selected=True)
+                    if selected_option:
+                        return selected_option["value"]
+                    else:
+                        first_option = select_tag.find("option")
+                        return first_option["value"] if first_option else ""
+
+                # Handle <input> tag
+                input_tag = soup.find("input")
+                if input_tag:
+                    return input_tag.get("value", "")
+
+                # Handle <textarea> tag
+                textarea_tag = soup.find("textarea")
+                if textarea_tag:
+                    return textarea_tag.text.strip()
+
+                # Default: clean normal text and <li> handling
                 for li in soup.find_all("li"):
                     li.insert_before("\n")
                     li.unwrap()
+
                 text = soup.get_text()
                 lines = text.splitlines()
                 non_blank_lines = [line.strip() for line in lines if line.strip()]
@@ -563,6 +600,49 @@ class HorillaListView(ListView):
                 column = (column[0], column[1])
             columns.append(column)
 
+        if export_format == "json":
+            response = HttpResponse(
+                json.dumps(json_data, indent=4), content_type="application/json"
+            )
+            response["Content-Disposition"] = (
+                f'attachment; filename="{self.export_file_name}.json"'
+            )
+            return response
+        # CSV
+        elif export_format == "csv":
+            csv_data = dataset.export("csv")
+            response = HttpResponse(csv_data, content_type="text/csv")
+            response["Content-Disposition"] = (
+                f'attachment; filename="{self.export_file_name}.csv"'
+            )
+            return response
+        elif export_format == "pdf":
+
+            headers = dataset.headers
+            rows = dataset.dict
+
+            # Render to HTML using a template
+            html_string = render_to_string(
+                "generic/export_pdf.html",
+                {
+                    "headers": headers,
+                    "rows": rows,
+                },
+            )
+
+            # Convert HTML to PDF using xhtml2pdf
+            result = io.BytesIO()
+            pisa_status = pisa.CreatePDF(html_string, dest=result)
+
+            if pisa_status.err:
+                return HttpResponse("PDF generation failed", status=500)
+
+            # Return response
+            response = HttpResponse(result.getvalue(), content_type="application/pdf")
+            response["Content-Disposition"] = (
+                f'attachment; filename="{self.export_file_name}.pdf"'
+            )
+            return response
         return export_xlsx(json_data, columns)
 
 
@@ -1184,9 +1264,57 @@ class HorillaNavView(TemplateView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self._initialize_model_and_group_fields()
         request = getattr(_thread_locals, "request", None)
         self.request = request
         # update_initial_cache(request, CACHE, HorillaNavView)
+
+    def _initialize_model_and_group_fields(self) -> None:
+        """
+        Initialize model_class and reinitialize filter_instance if model exists
+        for updating group_by_fields with verbose names.
+        """
+        if not self.filter_instance:
+            return
+
+        model_class_ref = self.filter_instance._meta.model
+        if not model_class_ref:
+            return
+
+        model_instance = model_class_ref()
+        self.nav_title = self.nav_title or model_instance._meta.verbose_name_plural
+        self.filter_instance = self.filter_instance.__class__()
+
+        if not self.group_by_fields:
+            return
+
+        get_field = model_instance._meta.get_field
+        updated_fields = []
+        append = updated_fields.append
+
+        for field in self.group_by_fields:
+            if isinstance(field, str):
+                try:
+                    verbose_name = get_field(field).verbose_name
+                    append((field, verbose_name))
+                except FieldDoesNotExist:
+                    # Check for related fields (field paths with '__')
+                    if "__" in field and hasattr(
+                        model_class_ref, "get_verbose_name_related_field"
+                    ):
+                        try:
+                            verbose_name = (
+                                model_class_ref.get_verbose_name_related_field(field)
+                            )
+                            append((field, verbose_name))
+                            continue
+                        except Exception as e:
+                            pass
+                    append(field)
+            else:
+                append(field)
+
+        self.group_by_fields = updated_fields
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

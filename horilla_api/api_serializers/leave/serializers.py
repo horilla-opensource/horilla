@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from employee.models import Employee
-from leave.forms import cal_effective_requested_days, calculate_requested_days
+from leave.methods import calculate_requested_days
 from leave.models import *
 
 

@@ -35,11 +35,18 @@
         <input type="hidden" name="columns" id="{{view_id}}ExportColumns">
 
           <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+              <div class="oh-input-group d-flex justify-content-between" style="align-items: center;">
                 <label class="oh-label" style="color:hsl(8deg 76.82% 46.12%);">
-                  <input type="checkbox" id="select-all-fields" /> {% trans "Select All Columns" %}
+                  <input type="checkbox" id="select-all-export-fields" onchange="
+                      $(this).closest('form').find('[type=checkbox]').prop('checked',$(this).is(':checked')).change();
+                    " /> {% trans "Select All Columns" %}
                 </label>
+                <select name="format" style="height: 30px;">
+                  {% for format in export_formats %}
+                  <option value="{{format.0}}">{{format.1}}</option>
+                  {% endfor %}
+                </select>
               </div>
             </div>
           </div>

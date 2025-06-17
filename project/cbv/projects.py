@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
@@ -55,7 +56,12 @@ class ProjectsNavView(HorillaNavView):
     Nav bar
     """
 
+    filter_form_context_name = "form"
+    filter_instance = ProjectFilter()
+    search_swap_target = "#listContainer"
+    group_by_fields = ["status", "is_active"]
     template_name = "cbv/projects/project_nav.html"
+    filter_body_template = "cbv/projects/filter.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -87,6 +93,8 @@ class ProjectsNavView(HorillaNavView):
                     "attrs": """
                         id="archiveProject"
                         style="cursor: pointer;"
+                        onclick="validateProjectIds(event);"
+                        data-action="archive"
                         """,
                 },
                 {
@@ -94,6 +102,8 @@ class ProjectsNavView(HorillaNavView):
                     "attrs": """
                         id="unArchiveProject"
                         style="cursor: pointer;"
+                        onclick="validateProjectIds(event);"
+                        data-action="unarchive"
                         """,
                 },
                 {
@@ -102,6 +112,7 @@ class ProjectsNavView(HorillaNavView):
                         class="oh-dropdown__link--danger"
                         data-action ="delete"
                         id="deleteProject"
+                        onclick="validateProjectIds(event);"
                         style="cursor: pointer; color:red !important"
                         """,
                 },
@@ -133,16 +144,6 @@ class ProjectsNavView(HorillaNavView):
                                 hx-get="{reverse('create-project')}"
                                 """
 
-    group_by_fields = [
-        ("status", _("Status")),
-        ("is_active", _("Is active")),
-    ]
-    nav_title = _("Projects")
-    filter_instance = ProjectFilter()
-    filter_form_context_name = "form"
-    filter_body_template = "cbv/projects/filter.html"
-    search_swap_target = "#listContainer"
-
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -152,6 +153,9 @@ class ProjectsList(HorillaListView):
     """
     Projects list view
     """
+
+    model = Project
+    filter_class = ProjectFilter
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -170,25 +174,28 @@ class ProjectsList(HorillaListView):
         if self.request.user.is_superuser:
             self.action_method = "actions"
 
-    model = Project
-    filter_class = ProjectFilter
+    @cached_property
+    def columns(self):
+        get_field = self.model()._meta.get_field
+        return [
+            (get_field("title").verbose_name, "title"),
+            (get_field("managers").verbose_name, "get_managers"),
+            (get_field("members").verbose_name, "get_members"),
+            (get_field("status").verbose_name, "get_status_display"),
+            (get_field("start_date").verbose_name, "start_date"),
+            (get_field("end_date").verbose_name, "end_date"),
+            (get_field("document").verbose_name, "get_document_html"),
+            (get_field("description").verbose_name, "get_description"),
+        ]
 
-    columns = [
-        (_("Project"), "title"),
-        (_("Project Managers"), "get_managers"),
-        (_("Project Members"), "get_members"),
-        (_("Status"), "status_column"),
-        (_("Start Date"), "start_date"),
-        (_("End Date"), "end_date"),
-        (_("File"), "get_document_html"),
-        (_("Description"), "get_description"),
-    ]
-
-    sortby_mapping = [
-        ("Project", "title"),
-        ("Start Date", "start_date"),
-        ("End Date", "end_date"),
-    ]
+    @cached_property
+    def sortby_mapping(self):
+        get_field = self.model()._meta.get_field
+        return [
+            (get_field("title").verbose_name, "title"),
+            (get_field("start_date").verbose_name, "start_date"),
+            (get_field("end_date").verbose_name, "end_date"),
+        ]
 
     row_status_indications = [
         (
@@ -272,9 +279,9 @@ class ProjectFormView(HorillaFormView):
     form view for create project
     """
 
-    form_class = ProjectForm
     model = Project
-    new_display_title = _("Create Project")
+    form_class = ProjectForm
+    new_display_title = _("Create") + " " + model._meta.verbose_name
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -286,7 +293,9 @@ class ProjectFormView(HorillaFormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.form.instance.pk:
-            self.form_class.verbose_name = _("Update project")
+            self.form_class.verbose_name = (
+                _("Update") + " " + self.model._meta.verbose_name
+            )
         return context
 
     def form_valid(self, form: ProjectForm) -> HttpResponse:
@@ -382,7 +391,7 @@ class ProjectCardView(HorillaCardView):
     details = {
         "image_src": "get_avatar",
         "title": "{get_task_badge_html}",
-        "subtitle": "Status : {status_column} <br> Start date : {start_date} <br>End date : {end_date}",
+        "subtitle": "Status : {get_status_display} <br> Start date : {start_date} <br>End date : {end_date}",
     }
     card_status_class = "status-{status}"
 

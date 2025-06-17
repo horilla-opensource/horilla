@@ -62,9 +62,9 @@
                                                 <ul class="oh-dropdown__items">
                                                     <li class="oh-dropdown__item">
                                                         <a data-toggle="oh-modal-toggle"
-                                                        data-target="#editModal3"
+                                                        data-target="#objectUpdateModal"
                                                         hx-get="{% url 'stage-update' stage.grouper.id rec.id %}"
-                                                        hx-target="#updateStage" class="oh-dropdown__link" style="cursor:pointer;">{% trans "Edit" %}</a>
+                                                        hx-target="#objectUpdateModalTarget" class="oh-dropdown__link" style="cursor:pointer;">{% trans "Edit" %}</a>
                                                     </li>
                                                     <li class="oh-dropdown__item">
                                                         <a  href="{% url 'stage-delete' stage.grouper.id %}"
@@ -77,9 +77,9 @@
                                         <button
                                             class="oh-btn oh-btn--small oh-btn--transparent p-0"
                                             data-toggle="oh-modal-toggle"
-                                            data-target="#taskModal"
+                                            data-target="#objectCreateModal"
                                             hx-get="{% url 'task-creation' %}?stage_id={{stage.grouper.id}}"
-                                            hx-target = "#taskModalBody"
+                                            hx-target = "#objectCreateModalTarget"
 
                                             title="{% trans 'Add task' %}">
                                             <ion-icon name="add-sharp" role="img" class="md hydrated"
@@ -143,7 +143,7 @@
                     {% if request.user|task_manages:rec or perms.onboarding.add_candidatestage %}
                     <div class="oh-kanban__add-container">
                         <button class="oh-btn oh-btn--x-small oh-kanban__add-section" onclick="event.stopPropagation()"  data-action="toggle"
-                            data-target="#addStageModal" hx-get="{% url 'stage-creation' rec.id %}" hx-target="#stageForm" data-toggle="oh-modal-toggle">
+                            data-target="#objectCreateModal" hx-get="{% url 'stage-creation' rec.id %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle">
                             <ion-icon class="me-1" name="add-outline"></ion-icon>
                             {% trans "Stage" %}
                         </button>

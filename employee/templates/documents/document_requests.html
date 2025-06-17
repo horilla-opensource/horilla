@@ -9,9 +9,10 @@
 	}
 
 	.custom-dialog {
-		max-width:1000px;
+		max-width: 1000px;
 		max-height: 800px;
 	}
+
 	.oh-not-found {
 		display: flex;
 		justify-content: center;
@@ -21,167 +22,22 @@
 		opacity: 0.5;
 	}
 
-.file-validation {
-	color: #4f5bd9;
-	background-color: #d8e7f0;
-	border-color: #d6e9c6;
-	padding: 15px;
-	border: 1px solid transparent;
-	border-radius: 4px;
-
-}
+	.file-validation {
+		color: #4f5bd9;
+		background-color: #d8e7f0;
+		border-color: #d6e9c6;
+		padding: 15px;
+		border: 1px solid transparent;
+		border-radius: 4px;
+	}
 </style>
 {% include 'documents/document_nav.html' %}
-<div
-	class="oh-checkpoint-badge mb-2"
-	id="selectedDocuments"
-	data-ids="[]"
-	data-clicked=""
-	style="display: none"
->
+<div class="oh-checkpoint-badge mb-2" id="selectedDocuments" data-ids="[]" data-clicked="" style="display: none">
 	{% trans "Selected Documents" %}
 </div>
 <div id="view-container" class="oh-wrapper">
 	{% include 'documents/requests.html' %}
 </div>
 
-<script>
-	var norowMessages = {
-	  ar: "لم يتم تحديد أي صفوف.",
-	  de: "Es wurden keine Zeilen ausgewählt.",
-	  es: "No se han seleccionado filas.",
-	  en: "No rows have been selected.",
-	  fr: "Aucune ligne n'a été sélectionnée.",
-	};
-	var approveMessages = {
-	  ar: "هل ترغب حقًا في الموافقة على جميع الطلبات المحددة؟",
-	  de: "Möchten Sie wirklich alle ausgewählten Anfragen genehmigen?",
-	  es: "Realmente quieres aprobar todas las solicitudes seleccionadas?",
-	  en: "Do you really want to approve all the selected requests?",
-	  fr: "Voulez-vous vraiment approuver toutes les demandes sélectionnées?",
-	};
-	var rejectMessages = {
-	  ar: "هل تريد حقًا رفض جميع الطلبات المحددة؟",
-	  de: "Möchten Sie wirklich alle ausgewählten Anfragen ablehnen?",
-	  es: "¿Realmente deseas rechazar todas las solicitudes seleccionadas?",
-	  en: "Do you really want to reject all the selected requests?",
-	  fr: "Voulez-vous vraiment rejeter toutes les demandes sélectionnées?",
-	};
-
-	$(document).ready(function () {
-		$(".bulk_approve").on("click", function () {
-			var languageCode = null;
-			getCurrentLanguageCode(function (code) {
-				languageCode = code;
-				var confirmMessage = approveMessages[languageCode];
-				var textMessage = norowMessages[languageCode];
-				checkedRows = $("[type=checkbox]:checked");
-				ids = [];
-				checkedRows.each(function () {
-					if($(this).attr("id") != ""){
-						ids.push($(this).attr("id"));
-					}
-				});
-				if (ids.length === 0) {
-					Swal.fire({
-					text: textMessage,
-					icon: "warning",
-					confirmButtonText: "Close",
-					});
-				} else {
-					// Use SweetAlert for the confirmation dialog
-					Swal.fire({
-					text: confirmMessage,
-					icon: "success",
-					showCancelButton: true,
-					confirmButtonColor: "#008000",
-					cancelButtonColor: "#d33",
-					confirmButtonText: "Confirm",
-					}).then(function (result) {
-					if (result.isConfirmed) {
-						$.ajax({
-							type: "GET",
-							url: "{% url 'document-bulk-approve' %}",
-							data: {
-								"ids": ids,
-							},
-							traditional:true,
-							success: function () {
-								window.location.reload()
-
-							},
-							error: function () {
-								console.log("Error");
-							},
-						});
-					}
-					});
-				}
-			})
-		});
-		$("#BulkRejectDocument").on("click", function () {
-			var languageCode = null;
-			getCurrentLanguageCode(function (code) {
-				languageCode = code;
-				var rejectMessage = rejectMessages[languageCode];
-				var textMessage = norowMessages[languageCode];
-				checkedRows = $("[type=checkbox]:checked");
-				reason = $("#bulk_rejection_reason").val()
-				ids = [];
-				checkedRows.each(function () {
-					if($(this).attr("id") != ""){
-						ids.push($(this).attr("id"));
-					}
-				});
-				if (ids.length === 0) {
-				Swal.fire({
-					text: textMessage,
-					icon: "warning",
-					confirmButtonText: "Close",
-				});
-				} else {
-					$("#BulkRejectModal").addClass("oh-modal--show");
-					$(".bulk-reject-form").on("submit", function(){
-						event.preventDefault()
-						Swal.fire({
-							text: rejectMessage,
-							icon: "info",
-							showCancelButton: true,
-							confirmButtonColor: "#008000",
-							cancelButtonColor: "#d33",
-							confirmButtonText: "Confirm",
-						}).then(function (result) {
-							if (result.isConfirmed) {
-								$.ajax({
-									type: "POST",
-									url: "{% url 'document-bulk-reject' %}",
-									data: {
-										"ids": ids,
-										"reason": reason,
-										csrfmiddlewaretoken: getCookie("csrftoken"),
-									},
-									traditional:true,
-									success: function () {
-										window.location.reload()
-									},
-									error: function () {
-										console.log("Error");
-									},
-								});
-							}
-						});
-					})
-
-				}
-			});
-		});
-
-		$(".select_all").on("change", function(){
-			var is_checked = $(this).prop("checked");
-
-			$(this).closest(".oh-accordion-meta__header").siblings(".oh-accordion-meta__body").find("[type=checkbox]").prop("checked", is_checked);
-		})
-	});
-</script>
 
 {% endblock content %}

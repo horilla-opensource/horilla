@@ -1,0 +1,173 @@
+{% load static %}
+<style>
+    .note-hint-popover {
+        position: absolute;
+        z-index: 1000;
+        display: none;
+        width: 220px;
+        background-color: white;
+        border: 1px solid #ccc;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        font-size: 14px;
+        border-radius: 4px;
+    }
+    .note-popover-arrow {
+        display: none;
+    }
+    .note-children-container {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .note-hint-item {
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+    .note-hint-item.active,
+    .note-hint-item:hover {
+        background-color: #f0f0f0;
+    }
+    .note-hint-item.active {
+        background-color: #d0e7ff; /* light blue */
+    }
+
+</style>
+
+{% include "generic/horilla_form.html" %}
+
+<div class="note-popover bottom note-hint-popover" id="hint-popover">
+    <div class="note-popover-arrow"></div>
+    <div class="popover-content note-children-container" id="hint-content"></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#id_cyclic_feedback_period_parent_div').addClass('d-none');
+        $('#id_cyclic_feedback_days_count_parent_div').addClass('d-none');
+
+        let selectedIndex = -1;
+        const input = document.querySelector('[name=title]');
+        const popover = document.getElementById('hint-popover');
+        const content = document.getElementById('hint-content');
+        const suggestion = {{ hints|safe }};
+        const hints = Object.keys(suggestion);
+
+        input.addEventListener('input', function (e) {
+            const cursorPos = input.selectionStart;
+            const value = input.value.slice(0, cursorPos);
+            const match = value.match(/\{[^}]*$/);
+
+            if (match) {
+                const query = match[0].slice(1); // after '{'
+                const filtered = hints.filter(h => h.toLowerCase().includes(query.toLowerCase()));
+
+                if (filtered.length > 0) {
+                    selectedIndex = 0;
+                    renderHints(filtered, cursorPos);
+                } else {
+                    popover.style.display = 'none';
+                }
+            } else {
+                popover.style.display = 'none';
+            }
+        });
+
+        input.addEventListener('keydown', function (e) {
+            const items = content.querySelectorAll('.note-hint-item');
+            if (!items.length || popover.style.display === 'none') return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateSelection(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateSelection(items);
+            } else if (e.key === 'Enter') {
+                if (selectedIndex >= 0 && selectedIndex < items.length) {
+                    e.preventDefault();
+                    const selectedItem = items[selectedIndex];
+                    const word = suggestion[selectedItem.textContent];
+                    const cursorPos = input.selectionStart;
+                    const before = input.value.slice(0, cursorPos).replace(/\{[^}]*$/, '{'+'{' + word +'}'+'}');
+                    const after = input.value.slice(cursorPos);
+                    input.value = before + after;
+                    popover.style.display = 'none';
+                }
+            }
+        });
+
+        function renderHints(filtered, cursorPos) {
+            content.innerHTML = filtered.map((h, i) =>
+                `<div class="note-hint-item ${i === selectedIndex ? 'active' : ''}">${h}</div>`
+            ).join('');
+
+            const rect = input.getBoundingClientRect();
+            popover.style.left = `${rect.left + window.scrollX}px`;
+            popover.style.top = `${rect.bottom + window.scrollY}px`;
+            popover.style.display = 'block';
+
+            content.querySelectorAll('.note-hint-item').forEach((item, i) => {
+                item.addEventListener('mousedown', () => {
+                    const word = suggestion[item.textContent];
+                    const cursorPos = input.selectionStart;
+                    const before = input.value.slice(0, cursorPos).replace(/\{[^}]*$/, '{'+'{' + word +'}'+'}');
+                    const after = input.value.slice(cursorPos);
+                    input.value = before + after;
+                    popover.style.display = 'none';
+                });
+            });
+        }
+
+        function updateSelection(items) {
+            items.forEach((item, i) => {
+                item.classList.toggle('active', i === selectedIndex);
+                if (i === selectedIndex) {
+                    item.scrollIntoView({ block: 'nearest' });
+                }
+            });
+        }
+    });
+
+   // this function is used to generate csrf token
+   function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function periodChange(element){
+        period_id = element.val()
+        $.ajax({
+            url: '/pms/period-change',
+            type: "POST",
+            dataType: "json",
+            data: JSON.stringify(period_id),
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            success: (data) => {
+                // Adding data to start and end date
+                $('#BulkFeedbackForm #id_start_date').val(data.start_date)
+                $('#BulkFeedbackForm #id_end_date').val(data.end_date);
+            },
+            error: (error) => {
+                console.log('Error', error);
+            }
+        });
+    }
+    function cyclicFeedback(){
+        $('#id_cyclic_feedback_period_parent_div').toggleClass('d-none')
+        $('#id_cyclic_feedback_days_count_parent_div').toggleClass('d-none')
+    }
+</script>

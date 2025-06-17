@@ -24,6 +24,7 @@
   {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
   <div class="oh-card">
     {% if not groups.paginator.count %}
+    {% if not custom_empty_template %}
     <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
       <div align="center">
         <img src="{% static "images/ui/search.svg" %}" class="oh-404__image" alt="Page not found. 404.">
@@ -33,6 +34,9 @@
         </p>
       </div>
     </div>
+    {% else %}
+    {% include custom_empty_template %}
+    {% endif %}
     {% endif %}
     {% for group in groups %}
     <div class="oh-accordion-meta">

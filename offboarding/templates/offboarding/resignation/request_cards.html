@@ -1,162 +1,307 @@
-{% load i18n %} {% load static %}
-{% include 'filter_tags.html' %}
+{% load i18n %} {% load static %} {% include 'filter_tags.html' %}
 {% if perms.offboarding.view_resignationletter %}
-<div class="d-flex flex-row-reverse oh-wrapper">
-  <span class="mb-3" onclick="$('[name=status]').val('rejected').change();  $('.filterButton').click()"
-  style="cursor: pointer; margin-right: 15px;">
-  <span class="oh-dot oh-dot--small me-1" style="background-color:red"></span>
-  {% trans 'Rejected' %}
-  </span>
-  <span class="mb-3" onclick="$('[name=status]').val('requested').change(); $('.filterButton').click()"
-    style="cursor: pointer; margin-right: 15px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span>
-    {% trans 'Requested' %}
-  </span>
-  <span class="mb-3" onclick="$('[name=status]').val('approved').change();$('.filterButton').click()"
-    style="cursor: pointer; margin-right: 15px;">
-    <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span>
-    {% trans 'Approved' %}
-  </span>
-</div>
+    <div class="d-flex flex-row-reverse oh-wrapper">
+        <span
+            class="mb-3"
+            onclick="$('[name=status]').val('rejected').change();  $('.filterButton').click()"
+            style="cursor: pointer; margin-right: 15px"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: red"
+            ></span>
+            {% trans 'Rejected' %}
+        </span>
+        <span
+            class="mb-3"
+            onclick="$('[name=status]').val('requested').change(); $('.filterButton').click()"
+            style="cursor: pointer; margin-right: 15px"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: rgba(128, 128, 128, 0.482)"
+            ></span>
+            {% trans 'Requested' %}
+        </span>
+        <span
+            class="mb-3"
+            onclick="$('[name=status]').val('approved').change();$('.filterButton').click()"
+            style="cursor: pointer; margin-right: 15px"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: yellowgreen"
+            ></span>
+            {% trans 'Approved' %}
+        </span>
+    </div>
 {% endif %}
-
 {% if letters %}
-<div class="oh-wrapper oh-faq-cards">
-  {% for record in letters %}
-  <div class="oh-faq-card" id="requestCard{{ record.id }}">
-    <div class="d-flex justify-content-between">
-      <div style="margin-bottom: 10px;">
-        <div class="resign-status" style="display: inline;">{{ record.status|capfirst }}</div>
-      </div>
-      <div>
-        <div class="oh-btn-group">
-          {% if perms.offboarding.change_resignationletter %}
-          <button type="button" hx-get="{% url 'send-mail-employee' record.employee_id.id %}"
-            title="{% trans " Send Mail" %}" hx-target="#resignationModalBody" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle"
-            data-target="#resignationModal" style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"
-            onclick="event.stopPropagation()"><ion-icon name="mail-open-outline" role="img" class="md hydrated"
-              aria-label="mail open outline"></ion-icon>
-          </button>
-          {% endif %}
-          {% if perms.offboarding.change_resignationletter or record.status == "requested" %}
-            <a hx-get="{% url 'create-resignation-request' %}?instance_id={{ record.id }}" title = {% trans "Edit" %}
-              class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" hx-target="#resignationModalBody"
-              data-target="#resignationModal" style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"><ion-icon
-                class="text-dark md hydrated" name="create-outline" role="img" aria-label="create outline"></ion-icon>
-            </a>
-          {% endif %}
-          {% if perms.offboarding.delete_resignationletter or record.status == "requested" %}
-            <a href="{% url 'delete-resignation-request' %}?letter_ids={{record.id}}" class="oh-btn oh-btn--light"
-              title = {%trans "Delete" %} style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"
-              onclick="return confirm('{% trans 'Do you want to delete this record' %}?')"><ion-icon
-                class="text-danger md hydrated" name="trash-outline" role="img" aria-label="trash outline"></ion-icon>
-            </a>
-          {% endif %}
-
+    <div class="oh-wrapper oh-faq-cards">
+        {% for record in letters %}
+        <div class="oh-faq-card" id="requestCard{{ record.id }}">
+            <div class="d-flex justify-content-between">
+                <div style="margin-bottom: 10px">
+                    <div class="resign-status" style="display: inline">
+                        {{ record.status|capfirst }}
+                    </div>
+                </div>
+                <div>
+                    <div class="oh-btn-group">
+                        {% if perms.offboarding.change_resignationletter %}
+                        <button
+                            type="button"
+                            hx-get="{% url 'send-mail-employee' record.employee_id.id %}"
+                            title="{% trans ' Send Mail' %}"
+                            hx-target="#resignationModalBody"
+                            class="oh-btn oh-btn--light"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#resignationModal"
+                            style="
+                                flex: 1 0 auto;
+                                width: 40px;
+                                height: 40.68px;
+                                padding: 0;
+                            "
+                            onclick="event.stopPropagation()"
+                        >
+                            <ion-icon
+                                name="mail-open-outline"
+                                role="img"
+                                class="md hydrated"
+                                aria-label="mail open outline"
+                            ></ion-icon>
+                        </button>
+                        {% endif %}
+                        {% if perms.offboarding.change_resignationletter or record.status == "requested" %}
+                        <a
+                            hx-get="{% url 'create-resignation-request' %}?instance_id={{ record.id }}"
+                            title="{% trans 'Edit' %}"
+                            class="oh-btn oh-btn--light"
+                            data-toggle="oh-modal-toggle"
+                            hx-target="#resignationModalBody"
+                            data-target="#resignationModal"
+                            style="
+                                flex: 1 0 auto;
+                                width: 40px;
+                                height: 40.68px;
+                                padding: 0;
+                            "
+                            ><ion-icon
+                                class="text-dark md hydrated"
+                                name="create-outline"
+                                role="img"
+                                aria-label="create outline"
+                            ></ion-icon>
+                        </a>
+                        {% endif %}
+                        {% if perms.offboarding.delete_resignationletter or record.status == "requested" %}
+                        <a
+                            href="{% url 'delete-resignation-request' %}?letter_ids={{record.id}}"
+                            class="oh-btn oh-btn--light"
+                            title="{%trans 'Delete' %}"
+                            style="
+                                flex: 1 0 auto;
+                                width: 40px;
+                                height: 40.68px;
+                                padding: 0;
+                            "
+                            onclick="return confirm(`{% trans 'Do you want to delete this record' %}?`)"
+                            ><ion-icon
+                                class="text-danger md hydrated"
+                                name="trash-outline"
+                                role="img"
+                                aria-label="trash outline"
+                            ></ion-icon>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="oh-timeoff-modal__profile-content">
+                <div class="oh-profile mb-2">
+                    <div class="oh-profile__avatar">
+                        <img
+                            src="{{ record.employee_id.get_avatar }}"
+                            class="oh-profile__image me-2"
+                        />
+                    </div>
+                    <div class="oh-timeoff-modal__profile-info">
+                        <span class="oh-timeoff-modal__user m-0 fw-bold"
+                            >{{ record.employee_id.get_full_name }}</span
+                        >
+                        <span
+                            class="oh-timeoff-modal__user m-0"
+                            style="font-size: 12px; color: #4d4a4a"
+                        >
+                            {{ record.employee_id.get_department }} /
+                            {{ record.employee_id.get_job_position }}</span
+                        >
+                    </div>
+                </div>
+            </div>
+            <h3 class="oh-faq-card__title">{{ record.title }}</h3>
+            <div
+                class="oh-faq-card__desc"
+                style="overflow: auto; min-height: 200px"
+            >
+                {{ record.description|safe }}
+            </div>
+            <form action="{% url 'update-letter-status' %}">
+                {% if perms.offboarding.change_resignationletter %}
+                <div class="oh-btn-group">
+                    {% if record.status != "approved" %}
+                    <button
+                        title="By approving the request employee will added to the offboarding pipeline"
+                        type="button"
+                        onclick="$(this).closest('form').find('input[name=status]').val('approved');
+                            resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
+                        class="oh-btn oh-btn--success w-100 oh-btn--block w-100"
+                    >
+                        <ion-icon
+                            name="checkmark"
+                            class="mr-1 md hydrated"
+                            role="img"
+                            aria-label="checkmark"
+                        ></ion-icon>
+                    </button>
+                    {% else %}
+                    <button
+                        type="button"
+                        class="oh-btn oh-btn--success oh-btn--disabled oh-btn--block w-100"
+                    >
+                        <ion-icon
+                            name="checkmark"
+                            class="mr-1 md hydrated"
+                            role="img"
+                            aria-label="checkmark"
+                        ></ion-icon>
+                    </button>
+                    {% endif %}
+                    <button
+                        type="button"
+                        onclick="$(this).closest('form').find('input[name=status]').val('rejected');
+                            resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
+                        class="oh-btn oh-btn--danger oh-btn--block w-100"
+                    >
+                        <ion-icon
+                            name="close-circle-outline"
+                            class="mr-1 md hydrated"
+                            role="img"
+                            aria-label="close"
+                        ></ion-icon>
+                    </button>
+                    <input type="hidden" name="status" />
+                    <input type="hidden" name="letter_ids" value="{{record.id}}" />
+                    <input type="hidden" name="offboarding_id" />
+                    <input type="hidden" name="employee_id" value="{{record.employee_id.id}}" />
+                    <input type="hidden" name="notice_period_starts"
+                        value="{{record.planned_to_leave_on|date:"Y-m-d"}}"
+                        id="notice_period_starts{{record.id}}">
+                    <input
+                        type="hidden"
+                        name="notice_period_ends"
+                        id="notice_period_ends{{record.id}}"
+                    />
+                    <button type="submit" hidden></button>
+                </div>
+                {% endif %}
+                <input type="submit" hidden="" id="requestCard1Button" />
+            </form>
         </div>
-
-      </div>
+        {% endfor %}
     </div>
-    <div class="oh-timeoff-modal__profile-content">
-      <div class="oh-profile mb-2">
-        <div class="oh-profile__avatar">
-          <img src="{{ record.employee_id.get_avatar }}" class="oh-profile__image me-2" />
-        </div>
-        <div class="oh-timeoff-modal__profile-info">
-          <span class="oh-timeoff-modal__user m-0 fw-bold">{{ record.employee_id.get_full_name }}</span>
-          <span class="oh-timeoff-modal__user m-0" style="font-size: 12px; color: #4d4a4a">
-            {{ record.employee_id.get_department }} / {{ record.employee_id.get_job_position }}</span>
-        </div>
-      </div>
-    </div>
-    <h3 class="oh-faq-card__title">{{ record.title }}</h3>
-    <div class="oh-faq-card__desc" style="overflow:auto; min-height:200px">{{ record.description|safe }}</div>
-    <form action="{% url 'update-letter-status' %}">
-      {% if perms.offboarding.change_resignationletter %}
-      <div class="oh-btn-group">
-        {% if record.status != "approved" %}
-        <button title="By approving the request employee will added to the offboarding pipeline" type="button"
-          onclick="$(this).closest('form').find('input[name=status]').val('approved');resignLetterConfirmation('{% trans 'Do You really want to approve the request' %}?',$(this).closest('form').find('[type=submit]'),true);"
-          class="oh-btn oh-btn--success w-100 oh-btn--block w-100">
-          <ion-icon name="checkmark" class="mr-1 md hydrated" role="img" aria-label="checkmark"></ion-icon>
-        </button>
-        {% else %}
-        <button type="button" class="oh-btn oh-btn--success oh-btn--disabled oh-btn--block w-100">
-          <ion-icon name="checkmark" class="mr-1 md hydrated" role="img" aria-label="checkmark"></ion-icon>
-        </button>
-        {% endif %}
-        <button type="button"
-          onclick="$(this).closest('form').find('input[name=status]').val('rejected');resignLetterConfirmation('{% trans 'Do You really want to reject the request?' %}',$(this).closest('form').find('[type=submit]'));"
-          class="oh-btn oh-btn--danger oh-btn--block w-100">
-          <ion-icon name="close-circle-outline" class="mr-1 md hydrated" role="img" aria-label="close"></ion-icon>
-        </button>
-        <input type="hidden" name="status">
-        <input type="hidden" name="letter_ids" value="{{record.id}}">
-        <input type="hidden" name="offboarding_id">
-        <input type="hidden" name="notice_period_starts" value="{% now "Y-m-d" %}" id="notice_period_starts{{record.id}}">
-        <input type="hidden" name="notice_period_ends" id="notice_period_ends{{record.id}}">
-        <button type="submit" hidden></button>
-      </div>
-      {% endif %}
-      <input type="submit" hidden="" id="requestCard1Button" />
-    </form>
-  </div>
-  {% endfor %}
-</div>
-{% if pagination %}
-  <div class="oh-wrapper w-100">
-    <div class="oh-pagination">
-      <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">{% trans 'Page' %}
-        {{ letters.number }} {% trans 'of' %} {{ letters.paginator.num_pages }}.</span>
+    {% if pagination %}
+        <div class="oh-wrapper w-100">
+            <div class="oh-pagination">
+                <span
+                    class="oh-pagination__page"
+                    data-toggle="modal"
+                    data-target="#addEmployeeModal"
+                    >{% trans 'Page' %} {{ letters.number }} {% trans 'of' %}
+                    {{ letters.paginator.num_pages }}.</span
+                >
 
-      <nav class="oh-pagination__nav">
-        <div class="oh-pagination__input-container me-3">
-          <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
+                <nav class="oh-pagination__nav">
+                    <div class="oh-pagination__input-container me-3">
+                        <span class="oh-pagination__label me-1"
+                            >{% trans 'Page' %}</span
+                        >
 
-          <input type="number" name="page" class="oh-pagination__input" value="{{ letters.number }}"
-            hx-get="{% url 'search-resignation-request' %}?{{ pd }}" hx-target="#resignationLetterContianer" min="1" />
-          <span class="oh-pagination__label">{% trans 'of' %} {{ letters.paginator.num_pages }}</span>
+                        <input
+                            type="number"
+                            name="page"
+                            class="oh-pagination__input"
+                            value="{{ letters.number }}"
+                            hx-get="{% url 'search-resignation-request' %}?{{ pd }}"
+                            hx-target="#resignationLetterContianer"
+                            min="1"
+                        />
+                        <span class="oh-pagination__label"
+                            >{% trans 'of' %} {{ letters.paginator.num_pages }}</span
+                        >
+                    </div>
+
+                    <ul class="oh-pagination__items">
+                        {% if letters.has_previous %}
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                                <a
+                                    hx-target="#resignationLetterContianer"
+                                    hx-get="{% url 'search-resignation-request' %}?{{ pd }}&page=1"
+                                    class="oh-pagination__link"
+                                    >{% trans 'First' %}</a
+                                >
+                            </li>
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                                <a
+                                    hx-target="#resignationLetterContianer"
+                                    hx-get="{% url 'search-resignation-request' %}?{{ pd }}&page={{ letters.previous_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans 'Previous' %}</a
+                                >
+                            </li>
+                        {% endif %}
+                        {% if letters.has_next %}
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                                <a
+                                    hx-target="#resignationLetterContianer"
+                                    hx-get="{% url 'search-resignation-request' %}?{{ pd }}&page={{ letters.next_page_number }}"
+                                    class="oh-pagination__link"
+                                    >{% trans 'Next' %}</a
+                                >
+                            </li>
+                            <li class="oh-pagination__item oh-pagination__item--wide">
+                                <a
+                                    hx-target="#resignationLetterContianer"
+                                    hx-get="{% url 'search-resignation-request' %}?{{ pd }}&page={{ letters.paginator.num_pages }}"
+                                    class="oh-pagination__link"
+                                    >{% trans 'Last' %}</a
+                                >
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
         </div>
-
-        <ul class="oh-pagination__items">
-          {% if letters.has_previous %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target="#resignationLetterContianer" hx-get="{% url 'search-resignation-request' %}?{{ pd }}&page=1"
-              class="oh-pagination__link">{% trans 'First' %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target="#resignationLetterContianer"
-              hx-get="{% url 'search-resignation-request' %}?{{ pd }}&page={{ letters.previous_page_number }}"
-              class="oh-pagination__link">{% trans 'Previous' %}</a>
-          </li>
-          {% endif %}
-          {% if letters.has_next %}
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target="#resignationLetterContianer"
-              hx-get="{% url 'search-resignation-request' %}?{{ pd }}&page={{ letters.next_page_number }}"
-              class="oh-pagination__link">{% trans 'Next' %}</a>
-          </li>
-          <li class="oh-pagination__item oh-pagination__item--wide">
-            <a hx-target="#resignationLetterContianer"
-              hx-get="{% url 'search-resignation-request' %}?{{ pd }}&page={{ letters.paginator.num_pages }}"
-              class="oh-pagination__link">{% trans 'Last' %}</a>
-          </li>
-          {% endif %}
-        </ul>
-      </nav>
-    </div>
-  </div>
-{% endif %}
+    {% endif %}
 {% else %}
-<div class="d-flex justify-content-center align-items-center" style="height: 40vh;">
-  <div class="text-center">
-      <img class="oh-404__image mb-3" style="width: 150px; height: 150px;" src="{% static 'images/ui/no-results.png' %}" alt="No documents">
-      <h5 class="oh-404__subtitle">{% trans "No search results found!" %}</h5>
-  </div>
-</div>
+    <div
+        class="d-flex justify-content-center align-items-center"
+        style="height: 40vh"
+    >
+        <div class="text-center">
+            <img
+                class="oh-404__image mb-3"
+                style="width: 150px; height: 150px"
+                src="{% static 'images/ui/no-results.png' %}"
+                alt="No documents"
+            />
+            <h5 class="oh-404__subtitle">{% trans "No search results found!" %}</h5>
+        </div>
+    </div>
 {% endif %}
 <style>
-  .swal2-html-container{
-    overflow-x: hidden !important;
-  }
+    .swal2-html-container {
+        overflow-x: hidden !important;
+    }
 </style>

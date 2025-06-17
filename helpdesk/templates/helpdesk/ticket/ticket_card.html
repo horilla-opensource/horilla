@@ -424,7 +424,7 @@
 
                                                             {% else %}
 
-                                                                {% if not ticket|calim_request_exists:request.user.employee_get and request.user.employee_get not in ticket.assigned_to.all %}
+                                                                {% if not ticket|claim_request_exists:request.user.employee_get and request.user.employee_get not in ticket.assigned_to.all %}
                                                                     <li
                                                                         class="oh-dropdown__item"
                                                                     >
@@ -950,8 +950,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
         "
-        class=""
     >
         <div style="" class="oh-404">
             <img

@@ -318,14 +318,15 @@ def comment_view(request, anoun_id):
     """
     This method is used to view all comments in the announcements
     """
+    announcement = Announcement.objects.get(id=anoun_id)
     comments = AnnouncementComment.objects.filter(announcement_id=anoun_id).order_by(
         "-created_at"
     )
-    announcement = Announcement.objects.get(id=anoun_id)
-    comments = filter_own_records(request, comments, "base.view_announcementcomment")
-    no_comments = False
-    if not comments.exists():
-        no_comments = True
+    if not announcement.public_comments:
+        comments = filter_own_records(
+            request, comments, "base.view_announcementcomment"
+        )
+    no_comments = not comments.exists()
 
     return render(
         request,

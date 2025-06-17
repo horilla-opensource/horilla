@@ -104,6 +104,7 @@ from recruitment.models import (
     CandidateDocument,
     CandidateRating,
     InterviewSchedule,
+    LinkedInAccount,
     Recruitment,
     RecruitmentGeneralSetting,
     RecruitmentSurvey,
@@ -116,6 +117,7 @@ from recruitment.models import (
     StageFiles,
     StageNote,
 )
+from recruitment.views.linkedin import delete_post, post_recruitment_in_linkedin
 from recruitment.views.paginator_qry import paginator_qry
 
 
@@ -248,6 +250,13 @@ def recruitment(request):
             recruitment_obj.open_positions.set(
                 JobPosition.objects.filter(id__in=form.data.getlist("open_positions"))
             )
+            if (
+                recruitment_obj.publish_in_linkedin
+                and recruitment_obj.linkedin_account_id
+            ):
+                post_recruitment_in_linkedin(
+                    request, recruitment_obj, recruitment_obj.linkedin_account_id
+                )
             for survey in form.cleaned_data["survey_templates"]:
                 for sur in survey.recruitmentsurvey_set.all():
                     sur.recruitment_ids.add(recruitment_obj)
@@ -322,7 +331,12 @@ def recruitment_update(request, rec_id):
     Args:
         id : recruitment_id
     """
-    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    recruitment_obj = Recruitment.find(rec_id)
+    if not recruitment_obj:
+        messages.error(
+            request, _("The recruitment entry you are trying to edit does not exist.")
+        )
+        return HttpResponse("<script>window.location.reload();</script>")
     survey_template_list = []
     survey_templates = RecruitmentSurvey.objects.filter(
         recruitment_ids=rec_id
@@ -343,6 +357,15 @@ def recruitment_update(request, rec_id):
                 for sur in survey.recruitmentsurvey_set.all():
                     sur.recruitment_ids.add(recruitment_obj)
             recruitment_obj.save()
+            if len(form.changed_data) > 0:
+                if (
+                    recruitment_obj.publish_in_linkedin
+                    and recruitment_obj.linkedin_account_id
+                ):
+                    delete_post(recruitment_obj)
+                    post_recruitment_in_linkedin(
+                        request, recruitment_obj, recruitment_obj.linkedin_account_id
+                    )
             messages.success(request, _("Recruitment Updated."))
             response = render(
                 request, "recruitment/recruitment_form.html", {"form": form}
@@ -566,11 +589,15 @@ def update_candidate_sequence(request):
         .first()
     )
     data = {}
+
     for index, cand_id in enumerate(order_list):
         candidate = CACHE.get(request.session.session_key + "pipeline")[
             "candidates"
         ].filter(id=cand_id)
-        candidate.update(sequence=index, stage_id=stage)
+        candidate.update(
+            sequence=index, stage_id=stage, hired=(stage.stage_type == "hired")
+        )
+
     return JsonResponse(data)
 
 
@@ -647,7 +674,7 @@ def change_candidate_stage(request):
                             if stage.recruitment_id.is_vacancy_filled():
                                 context["message"] = _("Vaccancy is filled")
                                 context["vacancy"] = stage.recruitment_id.vacancy
-                        messages.success(request, "Candidate stage updated")
+                        messages.success(request, _("Candidate stage updated"))
                 except Candidate.DoesNotExist:
                     messages.error(request, _("Candidate not found."))
         else:
@@ -665,7 +692,7 @@ def change_candidate_stage(request):
                             context["vacancy"] = stage.recruitment_id.vacancy
                     candidate.stage_id = stage
                     candidate.save()
-                    messages.success(request, "Candidate stage updated")
+                    messages.success(request, _("Candidate stage updated"))
             except Candidate.DoesNotExist:
                 messages.error(request, _("Candidate not found."))
         return JsonResponse(context)
@@ -678,7 +705,7 @@ def change_candidate_stage(request):
     if stage:
         candidate.stage_id = stage
         candidate.save()
-        messages.success(request, "Candidate stage updated")
+        messages.success(request, _("Candidate stage updated"))
     return stage_component(request)
 
 
@@ -1473,7 +1500,7 @@ def interview_employee_remove(request, interview_id, employee_id):
     interview.employee_id.remove(employee_id)
     messages.success(request, "Interviewer removed succesfully.")
     interview.save()
-    return redirect(interview_filter_view)
+    return HttpResponse("<script>$('.filterButton')[0].click()</script>")
 
 
 @login_required
@@ -2593,7 +2620,9 @@ def open_recruitments(request):
     """
     This method is used to render the open recruitment page
     """
-    recruitments = Recruitment.default.filter(closed=False, is_published=True)
+    recruitments = Recruitment.default.filter(
+        closed=False, is_published=True, is_active=True
+    )
     context = {
         "recruitments": recruitments,
     }

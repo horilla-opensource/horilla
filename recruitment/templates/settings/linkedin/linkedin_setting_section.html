@@ -1,0 +1,70 @@
+{% extends 'settings.html' %}
+{% block settings %}
+{% load i18n %} {% load static %}
+
+
+{% for path in style_path %}
+<link rel="stylesheet" href="{{path}}"/>
+{% endfor %}
+{% for path in script_static_paths %}
+<script src="{{path}}"></script>
+{% endfor %}
+
+
+{% include "generic/components.html" %}
+
+<div
+  class="oh-checkpoint-badge mb-2"
+  id="selectedInstances"
+  data-ids="[]"
+  data-clicked=""
+  style="display: none"
+>
+</div>
+
+<div
+  hx-get="{{nav_url}}?{{request.GET.urlencode}}"
+  hx-trigger="load"
+>
+   <div
+     class="mt-5 oh-wrapper animated-background"
+     style="height:80px;"
+   >
+   </div>
+</div>
+
+<div
+  class="oh-wrapper"
+  hx-get="{{view_url}}?{{request.GET.urlencode}}"
+  hx-trigger="load"
+  id="{{view_container_id}}"
+>
+   <div
+     class="mt-4 animated-background"
+     style="height:600px;"
+   >
+   </div>
+</div>
+
+<script>
+  function ModelChange (element) {
+    var model = element.val()
+    $.ajax({
+      url: "bonus-setting-form-values",
+      data: { model: model},
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+
+      },
+      error: function (xhr, status, error) {
+        console.error("Error:", error);
+      },
+    });
+  };
+  $(".oh-inner-sidebar__item .oh-accordion").click(function (e) {
+		e.stopPropagation();
+		$(this).toggleClass('oh-accordion--show')
+	});
+</script>
+{% endblock settings %}
