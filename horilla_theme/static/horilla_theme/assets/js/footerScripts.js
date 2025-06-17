@@ -545,3 +545,35 @@ document.querySelectorAll('.accordion-btn').forEach((btn) => {
         }
     });
 });
+
+function switchTab(e) {
+    let parentContainerEl = e.target.closest(".oh-tabs");
+    let tabElement = e.target.closest(".oh-tabs__tab");
+    let targetSelector = e.target.dataset.target;
+    let targetEl = parentContainerEl
+        ? parentContainerEl.querySelector(targetSelector)
+        : null;
+
+    // Highlight active tabs
+    if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
+        parentContainerEl
+            .querySelectorAll(".oh-tabs__tab--active")
+            .forEach(function (item) {
+                item.classList.remove("oh-tabs__tab--active");
+            });
+
+        if (!tabElement.classList.contains("oh-tabs__new-tab")) {
+            tabElement.classList.add("oh-tabs__tab--active");
+        }
+    }
+
+    // Switch tabs
+    if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
+        parentContainerEl
+            .querySelectorAll(".oh-tabs__content--active")
+            .forEach(function (item) {
+                item.classList.remove("oh-tabs__content--active");
+            });
+        targetEl.classList.add("oh-tabs__content--active");
+    }
+}

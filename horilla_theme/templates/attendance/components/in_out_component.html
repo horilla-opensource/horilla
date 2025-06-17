@@ -1,0 +1,101 @@
+{% load static horillafilters attendancefilters i18n %}
+{% if request.user.employee_get %}
+    {% with get_forecasted_at_work=request.user.employee_get.get_forecasted_at_work %}
+        {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
+            <!-- "CHEKING WETHER Check in/check out enabled" -->
+            {% if request|is_check_in_enabled %}
+                {% if request.user|is_clocked_in and get_forecasted_at_work.has_attendance %}
+                    <button class="check checkout" hx-get="{% url 'clock-out' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'>
+                        <span class="date">
+                            <i class="fa-solid fa-right-from-bracket pe-2"></i> {% if get_forecasted_at_work.has_attendance %} <div class="time-runner"></div> {% endif %}
+                        </span>
+                        <span class="con hr-Check-In-out-text">{% trans "Check Out" %}</span>
+                    </button>
+                    <span class="at_work_seconds" data-at-work-seconds = "{{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}" data-run= "{{run|default:1}}" ></span>
+
+                {% else %}
+                    <button class="check checkin" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'>
+                        <span class="date">
+                            <i class="fa-solid fa-right-to-bracket pe-2"></i> <div class="at-work-seconds"></div>
+                        </span>
+                        <span class="con">{% trans "Check In" %}</span>
+                    </button>
+                    <span class="at_work_seconds" data-at-work-seconds = "{{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}" data-run= "{{run|default:0}}" ></span>
+                    {% if enabled_timerunner %}
+                        <script>
+                            $(document).ready(function () {
+                            $('.at-work-seconds').html(secondsToDuration({{get_forecasted_at_work.forecasted_at_work_seconds}}))
+                            });
+                            run = 0
+                        </script>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+    {% endwith %}
+{% endif %}
+
+
+{% comment %} <script>
+
+var at_work_seconds = {{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}
+var run = {{run|default:0}};
+
+// time-runner
+function secondsToDuration(seconds) {
+    var hours = Math.floor(seconds / 3600);
+    var minutes = Math.floor((seconds % 3600) / 60);
+    var remainingSeconds = Math.floor(seconds % 60);
+
+    // add leading zeros if necessary
+    var formattedHours = (hours < 10) ? "0" + hours : hours;
+    var formattedMinutes = (minutes < 10) ? "0" + minutes : minutes;
+    var formattedSeconds = (remainingSeconds < 10) ? "0" + remainingSeconds : remainingSeconds;
+
+    return formattedHours + ":" + formattedMinutes + ":" + formattedSeconds;
+}
+
+// accessing initial worked hours from the user
+$(".time-runner").not("title").html(secondsToDuration(at_work_seconds));
+$("title.time-runner").html("{{white_label_company_name}} | " + secondsToDuration(at_work_seconds));
+setInterval(() => {
+    if (run) {
+        at_work_seconds = parseInt(at_work_seconds) + 1
+        $("div.time-runner").html(secondsToDuration(at_work_seconds));
+        $("title").html("{{white_label_company_name}} | " + secondsToDuration(at_work_seconds));
+    }
+}, 1000);
+
+function switchTab(e) {
+    let parentContainerEl = e.target.closest(".oh-tabs");
+    let tabElement = e.target.closest(".oh-tabs__tab");
+    let targetSelector = e.target.dataset.target;
+    let targetEl = parentContainerEl
+        ? parentContainerEl.querySelector(targetSelector)
+        : null;
+
+    // Highlight active tabs
+    if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
+        parentContainerEl
+            .querySelectorAll(".oh-tabs__tab--active")
+            .forEach(function (item) {
+                item.classList.remove("oh-tabs__tab--active");
+            });
+
+        if (!tabElement.classList.contains("oh-tabs__new-tab")) {
+            tabElement.classList.add("oh-tabs__tab--active");
+        }
+    }
+
+    // Switch tabs
+    if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
+        parentContainerEl
+            .querySelectorAll(".oh-tabs__content--active")
+            .forEach(function (item) {
+                item.classList.remove("oh-tabs__content--active");
+            });
+        targetEl.classList.add("oh-tabs__content--active");
+    }
+}
+</script> {% endcomment %}

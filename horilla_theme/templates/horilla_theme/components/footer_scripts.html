@@ -38,10 +38,8 @@
     window.history.replaceState({}, document.title, urlWithoutQuery)
   }
 </script>
-{% if enabled_timerunner %}
-  <script src="{% static 'horilla_theme/assets/js/timeRunner.js' %}"></script>
-  <script src="{% static 'horilla_theme/assets/js/footerScripts.js' %}"></script>
-{% endif %}
+<script src="{% static 'horilla_theme/assets/js/footerScripts.js' %}"></script>
+
 
 {% block footer_scripts %}
 

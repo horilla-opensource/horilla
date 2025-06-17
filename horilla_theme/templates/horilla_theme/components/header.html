@@ -1,9 +1,19 @@
-{% load static i18n %}
+{% load static i18n horillafilters %}
 <div
     class="flex justify-between items-center bg-[#fff] py-3 px-5 border-b border-b-dark-50 fixed w-[calc(100%-76px)] z-40"
 >
     {% if breadcrumbs %}
         {% include "base/navbar_components/breadcrumbs_view.html" %}
+    {% endif %}
+
+    {% if messages %}
+        <div class="oh-alert-container">
+            {% for message in messages %}
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
     {% endif %}
 
     <!-- <div class="relative">
@@ -19,6 +29,14 @@
 
         <!-- Action Icons -->
         <div class="flex items-center gap-2">
+            {% if "attendance"|app_installed %}
+                {% if enabled_timerunner %}
+                    <div id="attendance-activity-container">
+                        {% include "attendance/components/in_out_component.html" %}
+                    </div>
+                    <script src="{% static 'horilla_theme/assets/js/timeRunner.js' %}"></script>
+                {% endif %}
+            {% endif %}
             <button
                 class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
             >

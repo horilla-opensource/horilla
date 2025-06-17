@@ -68,7 +68,7 @@
                             <tr class="border-b border-[#ececec]">
                                 {% if bulk_select_option %}
                                     <th
-                                        class="text-sm font-medium text-left p-3 w-30"
+                                        class="stickyleft text-sm font-medium text-left p-3 w-30"
                                     >
                                         <input
                                             type="checkbox"
@@ -81,7 +81,7 @@
                                 {% for cell in columns %}
                                     {% with cell_attr=header_attrs|get_item:cell.1 %}
                                     <th
-                                        class="text-sm font-medium text-left p-3"
+                                        class="{% if forloop.first %}stickyleft-second{% endif %} text-sm font-medium text-left p-3"
                                         id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
 
                                     >
@@ -123,7 +123,7 @@
                                     </th>
                                 {% endif %}
                                 {% if actions or action_method %}
-                                    <th class="text-sm font-medium p-3" class="lastTh" {{header_attrs.action|safe}}>
+                                    <th class="stickyright text-sm font-medium p-3" {{header_attrs.action|safe}}>
                                         {% trans "Actions" %}
                                     </th>
                                 {% endif %}
@@ -136,7 +136,7 @@
                                     {{row_attrs|format:instance|safe}}
                                 >
                                     {% if bulk_select_option %}
-                                    <td class="text-sm text-left p-3 text-[#666]">
+                                    <td class="stickyleft text-sm text-left p-3 text-[#666]">
                                         <input
                                             type="checkbox"
                                             class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
@@ -162,7 +162,7 @@
                                     {% endif %}
                                     {% for cell in columns %}
                                         {% with attribute=cell.1 index=forloop.counter %}
-                                            <td class="text-sm text-left p-3 text-[#666]">
+                                            <td class="{% if forloop.first %}stickyleft-second{% endif %} text-sm text-left p-3 text-[#666]">
                                                 {% if not cell.2 %}
                                                     {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
                                                 {% else %}
@@ -216,7 +216,7 @@
                                     {% endif %}
 
                                     {% if actions or action_method %}
-                                        <td class="text-sm text-center p-3 text-[#666]"
+                                        <td class="stickyright text-sm text-center p-3 text-[#666]"
                                             onclick="event.stopPropagation()"
                                         >
                                             {% if not action_method %}
