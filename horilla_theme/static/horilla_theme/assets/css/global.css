@@ -4,6 +4,7 @@
   visibility: hidden;
   transform: translateY(10px);
   transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 999;
 }
 
 .dropdown-wrapper:hover .dropdown-content {

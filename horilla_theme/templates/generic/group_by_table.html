@@ -6,8 +6,8 @@
             $("#reloadMessagesButton").click();
         }
     </script>
-    {% if bulk_select_option and queryset|length %} 
-        {% include "generic/quick_actions.html" %} 
+    {% if bulk_select_option and queryset|length %}
+        {% include "generic/quick_actions.html" %}
     {% endif %}
     <button
         class="reload-record"
@@ -27,7 +27,7 @@
             >
                 <button
                     class="oh-accordion-header no-after accordion-btn w-full flex justify-between items-center px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all"
-                    data-field="{{saved_filters.field}}" 
+                    data-field="{{saved_filters.field}}"
                     data-path="{{request.path}}"
                     data-group="{{forloop.counter}}"
                 >
@@ -47,7 +47,7 @@
                     <div class="py-3">
                         <div class="overflow-auto h-[400px] overflow-x-auto">
                             <table class="fixed-table w-full">
-                                <thead class="sticky top-0 bg-[white] text-left">
+                                <thead class="sticky top-0 bg-[white] text-left z-10">
                                     <tr class="border-b border-[#ececec]">
                                         {% if bulk_select_option %}
                                             <th
@@ -71,13 +71,13 @@
 
                                         {% for cell in columns %}
                                             {% with cell_attr=header_attrs|get_item:cell.1 %}
-                                            <th 
+                                            <th
                                                 class="{% if forloop.first %}stickyleft-second{% endif %} text-sm font-medium text-left p-3"
                                                 id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
-                                                
+
 
                                             >
-                                                <div class="flex gap-3" 
+                                                <div class="flex gap-3"
                                                     style="min-width:150px;"
                                                     {{cell_attr|safe}}
                                                     {% for sort_map in sortby_mapping %}
@@ -153,7 +153,7 @@
                                                 </td>
                                             {% endif %}
                                             {% for cell in columns %}
-                                                {% with attribute=cell.1 index=forloop.counter %} 
+                                                {% with attribute=cell.1 index=forloop.counter %}
                                                     <td class="{% if forloop.first %}stickyleft-second{% endif %} text-sm text-left p-3 text-[#666]">
                                                         {% if not cell.2 %}
                                                             {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
@@ -200,7 +200,7 @@
                                                                 <i class="fa-solid fa-xmark"></i>
                                                             </button> {% endcomment %}
                                                         </div>
-                                                    {% else %} 
+                                                    {% else %}
                                                         {{instance|getattribute:option_method|safe}}
                                                     {% endif %}
 
@@ -233,7 +233,7 @@
                                                                 <i class="fa-solid fa-xmark"></i>
                                                             </button> {% endcomment %}
                                                         </div>
-                                                    {% else %} 
+                                                    {% else %}
                                                         {{instance|getattribute:action_method|safe}}
                                                     {% endif %}
 
