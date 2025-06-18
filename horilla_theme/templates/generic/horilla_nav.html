@@ -236,13 +236,4 @@
             $(this).addClass("oh-view-btn--active");
         });
     });
-
-    $(document).ready(function () {
-        $(document).on("htmx:afterSwap", function (event, data) {
-            $('.oh-accordion-header').on('click', function () {
-                $(this).parent().toggleClass('oh-accordion--show');
-            })
-        });
-    });
-
 </script>

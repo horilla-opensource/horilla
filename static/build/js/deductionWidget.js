@@ -1,4 +1,6 @@
 function conditionalVisibility() {
+  console.log("______________deduction========")
+
   if (!$("#id_is_condition_based").is(":checked")) {
     $('[onclick="conditionAdd()"]').parent().hide()
     $("#conditionContainer").hide();

@@ -1802,11 +1802,17 @@ select.oh-select--lg {
 }
 
 .oh-accordion-body {
-  display: none;
+    opacity: 0;
+    /* max-height: 0; */
+    transition: all 500ms ease;
+    display:none;
 }
 
 .oh-accordion--show .oh-accordion-body {
-  display: block;
+    display: block;
+    opacity: 1;
+    transition: all 500ms ease;
+    /* max-height: 400px; */
 }
 
 .oh-dropdown__filter-footer {
@@ -1877,4 +1883,8 @@ select.oh-select--lg {
 
 .oh-tabs__content--active {
   display: block;
+}
+
+.no-after::after {
+    content: none !important;
 }

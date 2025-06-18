@@ -4002,13 +4002,13 @@ staticUrl = $("#statiUrl").attr("data-url");
 $(document).on("htmx:afterRequest", function (event, data) {
     var response = event.detail.xhr.response;
     var target = $(event.detail.elt.getAttribute("hx-target"));
-    target.find(".oh-select").select2();
+    target.find(".oh-select").select2({ width: '100%' });
 });
 
 $(document).on("htmx:afterSettle", function (event, data) {
     var response = event.detail.xhr.response;
     target = $(event.target);
-    target.find(".oh-select").select2();
+    target.find(".oh-select").select2({ width: '100%' });
 });
 
 // Helper function to hash data using SHA-256
@@ -4104,27 +4104,28 @@ function loadScripts(installedApps) {
 
 $(document).on("htmx:afterSettle", function (e) {
     var targetId = e.detail.target.id;
+    var $target = $(e.detail.target);
     if (targetId == "") {
         targetId = "someDemoId"
     }
-    $(`#${targetId} .oh-accordion-header`).on("click", function (e) {
+    $target.find(`.oh-accordion-header`).on("click", function (e) {
         e.preventDefault();
         $(this).parent().toggleClass("oh-accordion--show");
     });
 
-    $(`#${targetId} .oh-table__toggle-parent`).on("click", function () {
+    $target.find(` .oh-table__toggle-parent`).on("click", function () {
         $(this)
             .parent()
             .find(".oh-table__toggle-child")
             .toggleClass("oh-table__toggle-child--show");
     });
 
-    //   $(`#${targetId} .oh-accordion-meta__header`).on("click", function () {
+    //   $target.find(` .oh-accordion-meta__header`).on("click", function () {
     //     $(this).toggleClass("oh-accordion-meta__header--show");
     //     $(this).next().toggleClass("d-none");
     //   });
 
-    $(`#${targetId} .oh-permission-table--toggle`).on("click", function (e) {
+    $target.find(` .oh-permission-table--toggle`).on("click", function (e) {
         e.stopPropagation();
         let clickedEl = $(e.target).closest(".oh-permission-table--toggle");
         let parentRow = clickedEl.parents(".oh-permission-table__tr");
@@ -4156,33 +4157,33 @@ $(document).on("htmx:afterSettle", function (e) {
         }
     });
 
-    $(`#${targetId} [data-toggle='oh-modal-toggle']`).on("click", function () {
+    $target.find(` [data-toggle='oh-modal-toggle']`).on("click", function () {
         let modalId = $(this).attr("data-target");
         $(`${modalId}`).addClass("oh-modal--show");
     });
-    $(`#${targetId} .oh-modal__close, .oh-modal__cancel`).on(
+    $target.find(` .oh-modal__close, .oh-modal__cancel`).on(
         "click",
         function () {
             $(".oh-modal--show").removeClass("oh-modal--show");
         }
     );
 
-    $(`#${targetId} .oh-activity-sidebar__open`).on("click", function () {
+    $target.find(` .oh-activity-sidebar__open`).on("click", function () {
         let sideBarId = $(this).attr("data-target");
         $(`${sideBarId}`).addClass("oh-activity-sidebar--show");
     });
 
-    $(`#${targetId} .oh-activity-sidebar__open`).on("click", function () {
+    $target.find(` .oh-activity-sidebar__open`).on("click", function () {
         $(".oh-modal--show").removeClass("oh-activity-sidebar__close");
     });
 
-    $(`#${targetId} .oh-accordion-meta__header`).on("click", function () {
+    $target.find(` .oh-accordion-meta__header`).on("click", function () {
         target = $(this).attr("data-target");
         $(this).toggleClass("oh-accordion-meta__header--show");
         $(target).toggleClass("d-none");
     });
 
-    $(`#${targetId} .oh-accordion-meta__item`).on('click', function (e) {
+    $target.find(` .oh-accordion-meta__item`).on('click', function (e) {
         e.preventDefault;
         e.stopPropagation;
         let clickedEl = $(e.target).closest(".oh-accordion-meta__header");
@@ -4198,11 +4199,11 @@ $(document).on("htmx:afterSettle", function (e) {
         }
     });
 
-    $(`#${targetId} .oh-sticky-table__tr.oh-table__toggle-parent`).on("click", function (e) {
+    $target.find(` .oh-sticky-table__tr.oh-table__toggle-parent`).on("click", function (e) {
         $(this).parent().find(".oh-table__toggle-child").toggleClass("oh-table__toggle-child--show")
     })
 
-    $(`#${targetId} [data-toggle-count]`).click(function (e) {
+    $target.find(` [data-toggle-count]`).click(function (e) {
         e.preventDefault();
         span = $(this).parent().find(".count-span").toggle()
     });

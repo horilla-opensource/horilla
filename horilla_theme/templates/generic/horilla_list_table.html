@@ -63,7 +63,7 @@
                 <div
                     class="h-[calc(100vh_-_240px)] overflow-hidden overflow-y-auto overflow-x-auto"
                 >
-                    <table class="w-full">
+                    <table class="fixed-table w-full">
                         <thead class="sticky top-0 bg-[white]" style="z-index: 1;">
                             <tr class="border-b border-[#ececec]">
                                 {% if bulk_select_option %}
@@ -73,7 +73,15 @@
                                         <input
                                             type="checkbox"
                                             value=""
-                                            class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+                                            class="bulk-list-table-row w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+                                            title="Select All"
+                                            onchange="
+                                                $(this).closest('.fixed-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
+                                                $(document).ready(function () {
+                                                reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                                                reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                                                });
+                                            "
                                         />
                                     </th>
                                 {% endif %}
@@ -139,7 +147,7 @@
                                     <td class="stickyleft text-sm text-left p-3 text-[#666]">
                                         <input
                                             type="checkbox"
-                                            class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+                                            class="list-table-row w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
                                             data-view-id="{{view_id|safe}}"
                                             title="{% trans "Select Row" %}"
                                             value = "{{instance.pk}}"

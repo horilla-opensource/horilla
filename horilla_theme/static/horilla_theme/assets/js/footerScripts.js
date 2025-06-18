@@ -577,3 +577,18 @@ function switchTab(e) {
         targetEl.classList.add("oh-tabs__content--active");
     }
 }
+
+  function toggleHighlight(ids) {
+    $.each(ids, function (indexInArray, id) {
+      setTimeout(() => {
+        $(`#${id}`)
+          .closest(".oh-sticky-table__tr")
+          .removeClass("highlight-selected");
+        if ($(`#${id}`).is(":checked")) {
+          $(`#${id}`)
+            .closest(".oh-sticky-table__tr")
+            .addClass("highlight-selected");
+        }
+      }, 1);
+    });
+  }

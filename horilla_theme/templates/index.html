@@ -6,6 +6,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title class="time-runner stop-runner">{{white_label_company_name}}</title>
         {% include "horilla_theme/components/header_scripts.html" %}
         <link
             rel="stylesheet"
@@ -40,6 +41,7 @@
         {% get_current_language_bidi as LANGUAGE_BIDI %}
         {% get_current_language as LANGUAGE_CODE %}
         <div hidden id="statiUrl" data-url='{% static "" %}'></div>
+        <span hidden id="whiteLabelCompany" data-company = '{{ white_label_company_name }}'></span>
         <!-- Include Sidebar -->
         <div id="sidebar">
             {% include "horilla_theme/components/sidebar.html" %}
