@@ -105,22 +105,7 @@ function getCurrentLanguageCode(callback) {
     if (allowedLanguageCodes.includes(languageCode)) {
         callback(languageCode);
     } else {
-        $.ajax({
-            type: "GET",
-            url: "/employee/get-language-code/",
-            success: function (response) {
-                var ajaxLanguageCode = response.language_code;
-                $("#main-section-data").attr("data-lang", ajaxLanguageCode);
-                callback(
-                    allowedLanguageCodes.includes(ajaxLanguageCode)
-                        ? ajaxLanguageCode
-                        : "en"
-                );
-            },
-            error: function () {
-                callback("en");
-            },
-        });
+        callback("en");
     }
 }
 
