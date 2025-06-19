@@ -1877,14 +1877,71 @@ select.oh-select--lg {
   color: hsl(0, 0%, 11%);
 }
 
-.oh-tabs__content {
-  display: none;
-}
-
-.oh-tabs__content--active {
-  display: block;
-}
-
 .no-after::after {
     content: none !important;
+}
+
+.oh-kanban-card__subtitle {
+  font-size: 0.85rem;
+  color: hsl(0, 0%, 45%);
+    margin: 0.25rem 0;
+}
+@media (max-width: 575.98px) {
+  .oh-kanban-card__subtitle {
+    font-size: 0.7rem;
+  }
+}
+
+.oh-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.oh-dot--small {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.oh-timeoff-modal__stat-count {
+  font-weight: 600;
+}
+
+.oh-password-input--toggle {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  height: 100%;
+  font-size: 1.25rem;
+}
+
+ul.errorlist {
+    color: #d9534f;
+    background-color: #f0d8d8;
+    border: 1px solid #d6e9c6;
+    font-size: 0.875rem;
+    list-style-type: disc;
+    padding: 1rem 1rem 1rem 2rem;
+    border-radius: 4px;
+    margin: 12px 0;
+}
+
+ul.errorlist li {
+    margin-bottom: 0.25rem;
+    padding-left: 0.25rem;
+}
+
+ul.errorlist ul.errorlist {
+    list-style-type: none;
+    margin-left: 1rem;
+    margin-top: 0.25rem;
+    padding: 0;
+    border: none;
+}
+
+ul.errorlist ul.errorlist li {
+    margin-bottom: 0.125rem;
+    padding-left: 0;
 }

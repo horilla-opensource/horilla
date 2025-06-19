@@ -1,0 +1,172 @@
+{% load i18n generic_template_filters %}
+  <div id="{{view_id}}" x-data="tabsComponent('{{view_id}}')" x-init="init()">
+    {% if show_filter_tags %}
+      {% include "generic/filter_tags.html" %}
+    {% endif %}
+  
+    <div class="bg-white p-3 rounded-md shadow-card">
+      <div class="flex flex-wrap gap-2 justify-between mb-3">
+        <div class="flex gap-1 flex-wrap">
+          {% for tab in tabs %}
+          <div class="relative inline-block dropdown-wrapper" x-data="{ open: false }">
+            <button
+              :class="{ 
+                'oh-tabs__tab--active': activeIndex === {{ forloop.counter0 }},
+                'bg-primary-300 text-primary-600 border border-primary-600': activeIndex === {{ forloop.counter0 }},
+                'border border-dark-50 text-gray-800': activeIndex !== {{ forloop.counter0 }}
+              }"
+              class="px-2 py-1 oh-tabs__tab rounded-md text-xs flex items-center gap-2 transition duration-300"
+              data-tab-index="{{ forloop.counter0 }}"
+              hx-get="{{ tab.url }}?{{ request.GET.urlencode }}"
+              hx-target="#{{ view_id }}{{ forloop.counter }}"
+              hx-trigger="click"
+              hx-swap="innerHTML"
+              @click="setActive({{ forloop.counter0 }})"
+            >
+          
+              <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center"
+                    id="badge-{{view_id}}{{forloop.counter}}"
+                    {% if tab.badge_label %}
+                      data-badge-label="{{tab.badge_label}}"
+                      title="0 {{tab.badge_label}}"
+                    {% else %}
+                      title="0 {% trans 'Records' %}"
+                    {% endif %}
+                    onclick="event.stopPropagation()">
+                0
+              </span>
+              {{ tab.title }}
+        
+              {% if tab.actions %}
+                <span class="ps-3 cursor-pointer" onclick=actionClick(event)>
+                  <i class="fa-solid fa-ellipsis-vertical text-black" title="Actions"></i>
+                </span>
+              {% endif %}
+            </button>
+  
+            {% if tab.actions %}
+            <div
+              class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
+              x-show="open"
+              x-cloak
+            >
+              <ul class="text-xs">
+                {% for action in tab.actions %}
+                  {% if instance %}
+                    {% if action.accessibility|accessibility:instance %}
+                    <li>
+                      <a {{ action.attrs|safe }} class="block w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300">
+                        {{ action.action }}
+                      </a>
+                    </li>
+                    {% endif %}
+                  {% else %}
+                    <li>
+                      <a {{ action.attrs|safe }} class="block w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300">
+                        {{ action.action }}
+                      </a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+  
+      <div class="oh-tabs__contents">
+        {% for tab in tabs %}
+          <div
+            x-show="activeIndex === {{ forloop.counter0 }}"
+            x-cloak
+            class="oh-tabs__content"
+            id="{{view_id}}{{forloop.counter}}"
+          >
+            <div class="animated-background"></div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+  
+<script>
+  function toggleHighlight(checkbox) {
+    const row = checkbox.closest("tr");
+    if (checkbox.checked) {
+      row.classList.add("highlight");
+    } else {
+      row.classList.remove("highlight");
+    }
+  }
+</script>
+
+<script>
+  document.body.addEventListener("htmx:afterSettle", function (event) {
+    const target = event.target;
+    if (window.Alpine && Alpine.initTree) {
+      Alpine.initTree(target);
+    }
+  }); 
+</script>
+
+<script>
+  function tabsComponent(viewId) {
+    return {
+      activeIndex: 0,
+  
+      init() {
+        const savedIndex = localStorage.getItem(`${viewId}_activeIndex`);
+        this.activeIndex = savedIndex !== null ? Number(savedIndex) : 0;
+  
+        const tabBtn = document.querySelector(`[data-tab-index="${this.activeIndex}"]`);
+        const targetId = tabBtn?.getAttribute("hx-target")?.replace("#", "");
+        const url = tabBtn?.getAttribute("hx-get");
+  
+        if (url && targetId) {
+          const target = document.getElementById(targetId);
+          if (target) {
+            target.innerHTML = '<div class="animated-background"></div>';
+            htmx.ajax('GET', url, { target: `#${targetId}`, swap: 'innerHTML' });
+          }
+        }
+      },
+  
+      setActive(index) {
+        this.activeIndex = index;
+        localStorage.setItem(`${viewId}_activeIndex`, index);
+      }
+    }
+  }
+  function actionClick(event) {
+    event.stopPropagation(); // Prevents closing when clicking inside
+    const icon = event.currentTarget;
+    const dropdownMenu = $(icon).closest('.dropdown-wrapper').find('.dropdown-menu');
+  
+    const isOpen = dropdownMenu.is(":visible");
+  
+    // Close all other dropdowns
+    $(".dropdown-menu").not(dropdownMenu).hide();
+  
+    if (isOpen) {
+      dropdownMenu.hide();
+    } else {
+      dropdownMenu.show();
+    }
+  }
+
+  document.addEventListener("click", function (e) {
+    const $clickedWrapper = $(e.target).closest(".dropdown-wrapper");
+  
+    $(".dropdown-wrapper").each(function () {
+      const $wrapper = $(this);
+      if (!$wrapper.is($clickedWrapper)) {
+        $wrapper.find(".dropdown-menu").hide();
+      }
+    });
+  });
+
+</script>
+  
