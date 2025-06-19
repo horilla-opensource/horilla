@@ -296,6 +296,7 @@ class LeaveRequestsDetailView(HorillaDetailedView):
         (_("Created Date"), "requested_date"),
         (_("Created By"), "created_by"),
         (_("Description"), "description"),
+        (_("Status"), "get_status_display"),
         (_("View attachment"), "attachment_action", True),
         (_("Reason for Rejection"), "rejected_action", True),
         (_("Reason for Cancellation"), "cancelled_action", True),

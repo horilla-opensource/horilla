@@ -66,7 +66,7 @@
                     </a>
                   {% endif %}
                 {% else %}
-                  {% if leave.is_approved and leave.status == 'requested' and leave.end_date >= current_date %}
+                  {% if leave.is_approvable_by_user and leave.status == 'requested' and leave.end_date >= current_date %}
                     <a href="{% url 'request-approve' leave.id %}" title="{% trans 'Approve' %}"
                         class="oh-btn oh-btn--success w-100" {% if leave.end_date.month > current_date.month %} onclick = "leaveRequestConfirm('This leave request is for the month of {{leave.start_date|date:'F'}}. Approval depends on the {{leave.employee_id.get_full_name}} having available leave days for this month.',event);" {% else %}  onclick = "return confirm('Do You really want to Approve this request?')"; {% endif %}>
                         <ion-icon class="me-1" name="checkmark-outline"></ion-icon>

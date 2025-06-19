@@ -28,22 +28,7 @@ function getCurrentLanguageCode(callback) {
     if (allowedLanguageCodes.includes(languageCode)) {
         callback(languageCode);
     } else {
-        $.ajax({
-            type: "GET",
-            url: "/employee/get-language-code/",
-            success: function (response) {
-                var ajaxLanguageCode = response.language_code;
-                $("#main-section-data").attr("data-lang", ajaxLanguageCode);
-                callback(
-                    allowedLanguageCodes.includes(ajaxLanguageCode)
-                        ? ajaxLanguageCode
-                        : "en"
-                );
-            },
-            error: function () {
-                callback("en");
-            },
-        });
+        callback("en");
     }
 }
 
@@ -274,33 +259,33 @@ $("#bulkRestrictedDaysDelete").click(function (e) {
 
 
 function bulkRestrictedDaysDelete() {
-  var languageCode = null;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var confirmMessage = deleteDaysMessages[languageCode];
-    var textMessage = noRowsDeleteMessages[languageCode];
-    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-    if (ids.length === 0) {
-      Swal.fire({
-        text: textMessage,
-        icon: "warning",
-        confirmButtonText: "Close",
-      });
-    } else {
-      Swal.fire({
-        text: confirmMessage,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Confirm",
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          var hxVals = JSON.stringify(ids);
-          $("#bulkDeleteSpan").attr("hx-vals", `{"ids":${hxVals}}`);
-          $("#bulkDeleteSpan").click();
+    var languageCode = null;
+    getCurrentLanguageCode(function (code) {
+        languageCode = code;
+        var confirmMessage = deleteDaysMessages[languageCode];
+        var textMessage = noRowsDeleteMessages[languageCode];
+        ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+        if (ids.length === 0) {
+            Swal.fire({
+                text: textMessage,
+                icon: "warning",
+                confirmButtonText: "Close",
+            });
+        } else {
+            Swal.fire({
+                text: confirmMessage,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#008000",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirm",
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    var hxVals = JSON.stringify(ids);
+                    $("#bulkDeleteSpan").attr("hx-vals", `{"ids":${hxVals}}`);
+                    $("#bulkDeleteSpan").click();
+                }
+            });
         }
-      });
-    }
-  });
+    });
 };

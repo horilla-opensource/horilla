@@ -98,7 +98,7 @@
                 <span class="oh-timeoff-modal__stat-title">{% trans "Multiple Approvals" %}</span>
                 {% for approval in  leave_request.multiple_approvals.approvals %}
                     <div class="oh-timeoff-modal__stat-description">{{forloop.counter}}.{{approval.manager_id}} :
-                        {% if approval.is_approved %}{% trans "Approved" %}
+                        {% if approval.is_approvable_by_user %}{% trans "Approved" %}
                         {% else %}
                             {% if approval.is_rejected %}
                                 {% trans "Rejected" %}

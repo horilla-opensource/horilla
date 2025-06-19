@@ -246,7 +246,7 @@
                                             </a>
                                         {% endif %}
                                     {% else %}
-                                        {% if leave_request.is_approved and leave_request.status == 'requested' %}
+                                        {% if leave_request.is_approvable_by_user and leave_request.status == 'requested' %}
                                             <a href="{% url 'request-approve' leave_request.id %}" title="{% trans 'Approve' %}"
                                                 class="oh-btn oh-btn--success w-100"
                                                 {% if leave_request.end_date.month > current_date.month %}

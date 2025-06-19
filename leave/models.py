@@ -1631,7 +1631,7 @@ class LeaveRequest(HorillaModel):
             result = False
         return result
 
-    def is_approved(self):
+    def is_approvable_by_user(self):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         if request:
             employee = Employee.objects.filter(employee_user_id=request.user).first()
