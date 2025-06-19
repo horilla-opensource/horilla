@@ -592,3 +592,19 @@ function switchTab(e) {
       }, 1);
     });
   }
+
+
+$(document).on('htmx:afterSettle', function (event) {
+    $(".dropdown-toggle").on("click", function () {
+        const dropdownMenu = $(this).next(".dropdown-menu");
+        const isOpen = dropdownMenu.is(":visible");
+
+        $(".dropdown-menu").not(dropdownMenu).hide();
+
+        if (isOpen) {
+            dropdownMenu.hide();
+        } else {
+            dropdownMenu.show();
+        }
+    })
+})

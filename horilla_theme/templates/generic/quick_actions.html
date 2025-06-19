@@ -34,20 +34,16 @@
         <p class="ps-3 text-sm text-primary-600">57 {% trans "Selected" %}</p>
     </div>
 
-
-
-    <div class="flex flex-wrap gap-2">
-        <button
-            class="px-4 py-2 bg-[white] border border-[#FFB400] rounded-md text-xs flex gap-2 items-center"><span
-                class="h-3 w-3 rounded-full bg-[#FFB400] flex"></span>{% trans "Requested" %}</button>
-        <button
-            class="px-4 py-2 bg-[white] rounded-md text-xs flex gap-2 items-center border border-primary-500 hover:border-[#9D9D9D] transition duration-300"><span
-                class="h-3 w-3 rounded-full bg-[#9D9D9D] flex"></span>{% trans "Cancelled" %}</button>
-        <button
-            class="px-4 py-2 bg-[white] rounded-md text-xs flex gap-2 items-center border border-primary-500 hover:border-[#FF2200] transition duration-300"><span
-                class="h-3 w-3 rounded-full bg-[#FF2200] flex"></span>{% trans "Rejected" %}</button>
-        <button
-            class="px-4 py-2 bg-[white] rounded-md text-xs flex gap-2 items-center border border-primary-500 hover:border-[#00C490] transition duration-300"><span
-                class="h-3 w-3 rounded-full bg-[#00C490] flex"></span>{% trans "Approved" %}</button>
-    </div>
+    {% if row_status_indications %}
+        <div class="flex flex-wrap gap-2">
+            {% for indication in row_status_indications %}
+            <button
+                class="px-4 py-2 bg-[white] border border-[#b3bac0] rounded-md text-xs flex gap-2 items-center">
+                <span
+                    class="h-3 w-3 rounded-full flex {{indication.0}}">
+                </span>{{indication.1}}
+            </button>
+            {% endfor %}
+        </div>
+    {% endif %}
 </div>

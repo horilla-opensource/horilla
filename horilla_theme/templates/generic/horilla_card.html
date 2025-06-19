@@ -1,0 +1,114 @@
+{% load static i18n generic_template_filters %}
+<div id="{{view_id|safe}}">
+    <script>
+        if (!$(".HTV").length) {
+            reloadMessage(null);
+        }
+    </script>
+    <button
+        class="reload-record"
+        id="{{view_id|safe}}Reload"
+        hidden
+        hx-get="{{request.path}}?{{saved_filters.urlencode}}"
+        hx-target="#{{view_id|safe}}"
+        hx-swap="outerHTML"
+        hx-on:click="htmxLoadIndicator(this);"
+    ></button>
+    {% if show_filter_tags %} 
+        {% include "generic/filter_tags.html" %} 
+    {% endif %} 
+    {% if queryset|length %} 
+        {% if bulk_select_option %} 
+            {% include "generic/quick_actions.html" %} 
+        {% endif %}
+        <div class="bg-white  rounded-md shadow-card ">
+            <div class="h-[calc(100vh_-_210px)] overflow-hidden overflow-y-auto overflow-x-auto ">
+                <div id="gridView" class="p-5">
+                    <div class="grid grid-cols-4 gap-4">
+                        {% for instance in queryset %}
+                            <div class="border border-[#ebebeb] p-4 rounded-md shadow-card {{card_status_class|format:instance|safe}}" {{card_attrs|format:instance|safe}}>
+                                <div class="flex gap-5 relative">
+                                    <div
+                                        class="absolute inline-block right-0 -top-1" onclick="event.stopPropagation();"
+                                    >
+                                        <div class="cursor-pointer dropdown-toggle w-[20px]">
+                                            <i
+                                                class="fa-solid fa-ellipsis-vertical text-black ms-[10px]"
+                                            ></i>
+                                        </div>
+
+                                        {% if actions %}
+                                            <div
+                                                class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200"
+                                            >
+                                                <ul class="text-xs">
+                                                    {% for action in actions %}
+                                                        {% if action.accessibility|accessibility:instance %}
+                                                            <li>
+                                                                <p
+                                                                    class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+                                                                >
+                                                                    <a {{action.attrs|format:instance|safe}}>{{instance|getattribute:action.action|default:action.action}}</a>
+                                                                </p>
+                                                            </li>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    {% if instance|getattribute:details.image_src %}
+                                        <div class="relative flex items-center w-max">
+                                            <img
+                                                src="{{instance|getattribute:details.image_src}}"
+                                                class="w-11 h-11 rounded-full"
+                                                alt="Username"
+                                            />
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <h5 class="mb-1 font-medium text-sm">
+                                            {{details.title|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
+                                        </h5>
+                                        <div class="text-xs text-[#565E6C] mb-1 grid">
+                                            {{details.subtitle|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if queryset.paginator.count %}
+        <div
+            class="flex justify-between items-center mt-4 w-full inset-0"
+        >
+            <p class="text-[#666]">{% trans "Page" %} {{ queryset.number }} {% trans "of" %} {{ queryset.paginator.num_pages }}</p>
+            <div class="flex gap-3 text-[#666] items-center">
+                {% if queryset.has_previous %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#{{view_id}}"
+                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.previous_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                {% endif %}
+                {{ queryset.number }} / {{ queryset.paginator.num_pages }}
+                {% if queryset.has_next %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#{{view_id}}"
+                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.next_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
