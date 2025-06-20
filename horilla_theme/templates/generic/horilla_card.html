@@ -14,12 +14,12 @@
         hx-swap="outerHTML"
         hx-on:click="htmxLoadIndicator(this);"
     ></button>
-    {% if show_filter_tags %} 
-        {% include "generic/filter_tags.html" %} 
-    {% endif %} 
-    {% if queryset|length %} 
-        {% if bulk_select_option %} 
-            {% include "generic/quick_actions.html" %} 
+    {% if show_filter_tags %}
+        {% include "generic/filter_tags.html" %}
+    {% endif %}
+    {% if queryset|length %}
+        {% if bulk_select_option %}
+            {% include "generic/quick_actions.html" %}
         {% endif %}
         <div class="bg-white  rounded-md shadow-card ">
             <div class="h-[calc(100vh_-_210px)] overflow-hidden overflow-y-auto overflow-x-auto ">

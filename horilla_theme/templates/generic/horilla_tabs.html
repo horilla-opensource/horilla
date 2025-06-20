@@ -3,14 +3,14 @@
     {% if show_filter_tags %}
       {% include "generic/filter_tags.html" %}
     {% endif %}
-  
+
     <div class="bg-white p-3 rounded-md shadow-card">
       <div class="flex flex-wrap gap-2 justify-between mb-3">
         <div class="flex gap-1 flex-wrap">
           {% for tab in tabs %}
           <div class="relative inline-block dropdown-wrapper" x-data="{ open: false }">
             <button
-              :class="{ 
+              :class="{
                 'oh-tabs__tab--active': activeIndex === {{ forloop.counter0 }},
                 'bg-primary-300 text-primary-600 border border-primary-600': activeIndex === {{ forloop.counter0 }},
                 'border border-dark-50 text-gray-800': activeIndex !== {{ forloop.counter0 }}
@@ -23,7 +23,7 @@
               hx-swap="innerHTML"
               @click="setActive({{ forloop.counter0 }})"
             >
-          
+
               <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center"
                     id="badge-{{view_id}}{{forloop.counter}}"
                     {% if tab.badge_label %}
@@ -36,14 +36,14 @@
                 0
               </span>
               {{ tab.title }}
-        
+
               {% if tab.actions %}
                 <span class="ps-3 cursor-pointer" onclick=actionClick(event)>
                   <i class="fa-solid fa-ellipsis-vertical text-black" title="Actions"></i>
                 </span>
               {% endif %}
             </button>
-  
+
             {% if tab.actions %}
             <div
               class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
@@ -75,7 +75,7 @@
           {% endfor %}
         </div>
       </div>
-  
+
       <div class="oh-tabs__contents">
         {% for tab in tabs %}
           <div
@@ -91,7 +91,7 @@
     </div>
 
   </div>
-  
+
 <script>
   function toggleHighlight(checkbox) {
     const row = checkbox.closest("tr");
@@ -109,22 +109,22 @@
     if (window.Alpine && Alpine.initTree) {
       Alpine.initTree(target);
     }
-  }); 
+  });
 </script>
 
 <script>
   function tabsComponent(viewId) {
     return {
       activeIndex: 0,
-  
+
       init() {
         const savedIndex = localStorage.getItem(`${viewId}_activeIndex`);
         this.activeIndex = savedIndex !== null ? Number(savedIndex) : 0;
-  
+
         const tabBtn = document.querySelector(`[data-tab-index="${this.activeIndex}"]`);
         const targetId = tabBtn?.getAttribute("hx-target")?.replace("#", "");
         const url = tabBtn?.getAttribute("hx-get");
-  
+
         if (url && targetId) {
           const target = document.getElementById(targetId);
           if (target) {
@@ -133,7 +133,7 @@
           }
         }
       },
-  
+
       setActive(index) {
         this.activeIndex = index;
         localStorage.setItem(`${viewId}_activeIndex`, index);
@@ -144,12 +144,12 @@
     event.stopPropagation(); // Prevents closing when clicking inside
     const icon = event.currentTarget;
     const dropdownMenu = $(icon).closest('.dropdown-wrapper').find('.dropdown-menu');
-  
+
     const isOpen = dropdownMenu.is(":visible");
-  
+
     // Close all other dropdowns
     $(".dropdown-menu").not(dropdownMenu).hide();
-  
+
     if (isOpen) {
       dropdownMenu.hide();
     } else {
@@ -159,7 +159,7 @@
 
   document.addEventListener("click", function (e) {
     const $clickedWrapper = $(e.target).closest(".dropdown-wrapper");
-  
+
     $(".dropdown-wrapper").each(function () {
       const $wrapper = $(this);
       if (!$wrapper.is($clickedWrapper)) {
@@ -169,4 +169,3 @@
   });
 
 </script>
-  

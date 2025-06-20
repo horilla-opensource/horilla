@@ -608,3 +608,22 @@ $(document).on('htmx:afterSettle', function (event) {
         }
     })
 })
+
+$('.oh-password-input--toggle').on('click', function(e) {
+    e.preventDefault();
+
+    const $toggle = $(this);
+    const $passwordInput = $toggle.siblings('.oh-input--password');
+    const $showIcon = $toggle.find('.oh-password-input__show-icon');
+    const $hideIcon = $toggle.find('.oh-password-input__hide-icon');
+
+    if ($passwordInput.attr('type') === 'password') {
+        $passwordInput.attr('type', 'text');
+        $showIcon.addClass('hidden');
+        $hideIcon.removeClass('hidden');
+    } else {
+        $passwordInput.attr('type', 'password');
+        $showIcon.removeClass('hidden');
+        $hideIcon.addClass('hidden');
+    }
+});
