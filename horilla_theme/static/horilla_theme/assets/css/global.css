@@ -352,58 +352,119 @@
 
 /* MULTI SELECT */
 .select2-container--default .select2-selection--multiple {
-  border: 1px solid #e7e7e7;
+    border: 1px solid hsl(0, 0%, 85%);
+    border-radius: 0.375rem;
+    padding: 0.25rem;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
 }
+/*
+.select2-container .select2-selection{
+  padding: 5px !important;
+  max-height: 60px !important;
+  overflow: hidden;
+  overflow-y: auto;
+}  */
+
 .select2-container--default .select2-selection--multiple:focus {
-  outline: unset;
+    outline: hsl(0, 0%, 13%) solid 2px;
+    outline-offset: 2px;
+    border-color: hsl(0, 0%, 13%);
 }
-.select2-container--default
-  .select2-selection--multiple
-  .select2-selection__choice__display {
-  font-size: 10px;
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+    font-size: 0.75rem;
+    font-weight: 500;
 }
-.select2-container--default
-  .select2-selection--multiple
-  .select2-selection__choice {
-  background-color: #e54f38;
-  color: white;
-  border: unset;
-  height: 28px;
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #fff;
+    border: 1px solid #aaa;
+    border-radius: 0.25rem;
+    height: 28px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: all 0.3s ease;
 }
-.select2-container--default
-  .select2-selection--multiple
-  .select2-selection__choice__remove {
-  border-right: 1px solid #ffffff57;
-  color: white;
-  font-size: 10px;
-  height: 100%;
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 0.75rem;
+    height: 100%;
+    padding: 0 0.25rem;
+    border-radius: 0;
+    transition: all 0.3s ease;
 }
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
 .select2-results__option {
-  font-size: 12px;
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
 }
-.select2-container--default
-  .select2-results__option--highlighted.select2-results__option--selectable {
-  background-color: #fff5f1;
-  color: #e54f38;
+
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: hsl(8, 100%, 97%);
+    color: hsl(8, 77%, 56%);
 }
+
+/* Removed background color and color for selected items */
 .select2-container--default .select2-results__option--selected {
-  background-color: #fff5f1;
-  color: #e54f38;
+    font-weight: 500;
 }
-.select2-container--default.select2-container--focus
-  .select2-selection--multiple {
-  border: solid #e7e7e7 1px;
-  outline: 0;
+
+/* Removed duplicate focus styling to prevent double borders */
+.select2-container--default.select2-container--focus .select2-selection--multiple {
+    /* Removed: border-color, outline, outline-offset - these are already handled by :focus */
 }
+
 .select2-container .select2-search--inline .select2-search__field {
-  height: 25px;
+    height: 28px;
+    font-size: 0.75rem;
+    padding: 0.25rem;
+    border: none;
+    outline: none;
 }
+
 .select2-dropdown {
-  border: 1px solid #e7e7e7;
+    border: 1px solid hsl(0, 0%, 85%);
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-top: 0.25rem;
 }
-/* .select2-container {
+
+.select2-container--default .select2-selection--single {
+    border: 1px solid hsl(0, 0%, 85%);
+    border-radius: 0.375rem;
+    height: 36px;
+    font-size: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: hsl(219, 9%, 29%);
+    line-height: 34px;
+    padding-left: 1rem;
+    font-size: 0.75rem;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 34px;
+    right: 0.75rem;
+}
+
+.select2-container {
   width: 100% ;
-} */
+  max-height: 60px !important;
+}
 
 .userbox {
   border: 1px solid #ebebeb;
