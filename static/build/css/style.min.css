@@ -8171,12 +8171,12 @@ body {
 
 .oh-btn--secondary-outline {
   background-color: transparent;
-  border: 1px solid hsl(8, 77%, 56%);
-  color: hsl(8, 77%, 56%);
+  border: 1px solid blue;
+  color: black;
 }
 .oh-btn--secondary-outline:hover, .oh-btn--secondary-outline:focus, .oh-btn--secondary-outline:focus-visible {
-  background-color: hsl(8, 77%, 56%);
-  color: hsl(0, 0%, 100%);
+  background-color: rgb(109, 109, 213);
+  color: black;
 }
 
 .oh-btn--white-outline {
@@ -8191,22 +8191,21 @@ body {
 
 .oh-btn--warning-outline {
   background-color: transparent;
-  border: 1px solid hsl(40, 91%, 60%);
-  color: hsl(40, 91%, 60%);
+  border: 1px solid hsl(4, 82%, 46%);
+  color: hsl(4, 82%, 46%);
 }
 .oh-btn--warning-outline:hover, .oh-btn--warning-outline:focus, .oh-btn--warning-outline:focus-visible {
-  background-color: hsl(40, 91%, 60%);
+  background-color: hsl(0, 83%, 49%);
   color: hsl(0, 0%, 11%);
 }
 
 .oh-btn--success-outline {
   background-color: transparent;
-  border: 1px solid hsl(148, 71%, 44%);
-  color: hsl(148, 71%, 44%);
+  border: 1px solid blue;
+  color: blue;
 }
 .oh-btn--success-outline:hover, .oh-btn--success-outline:focus, .oh-btn--success-outline:focus-visible {
-  background-color: hsl(148, 71%, 44%);
-  color: hsl(0, 0%, 100%);
+  background-color: hsl(152, 72%, 50%);
 }
 
 .oh-btn--info-outline {
