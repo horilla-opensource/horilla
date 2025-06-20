@@ -1117,7 +1117,7 @@ body {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #212529;
+  color:hsl(232.23deg 80.41% 48.16%);
   background-color: hsl(0, 0%, 100%);
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -4013,7 +4013,7 @@ progress {
 }
 
 .text-dark {
-  color: #212529 !important;
+  color: #2424e2 !important;
 }
 
 .text-white {
@@ -6971,7 +6971,8 @@ a.oh-link__unstyled:hover {
  * Basic typography style for copy text
  */
 body {
-  color: hsl(0, 0%, 11%);
+  /* color: hsl(244.54deg 82.94% 45.96%); */
+    color: hsl(0, 0%, 3%);
   font: normal 80%/1.4 "Poppins", "Open Sans", "Helvetica Neue Light", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
@@ -8094,12 +8095,12 @@ body {
 }
 
 .oh-btn--secondary {
-  background-color: hsl(8, 77%, 56%);
+  background-color:#1910af;
   color: hsl(0, 0%, 100%);
   text-decoration: none;
 }
 .oh-btn--secondary:hover, .oh-btn--secondary:focus, .oh-btn--secondary:focus-visible {
-  background-color: hsl(8, 61%, 50%);
+  background-color: blue;
   color: white;
   text-decoration: none;
 }
@@ -8899,7 +8900,7 @@ body {
   height: 100%;
 }
 .oh-dropdown__link:hover {
-  color: hsl(8, 77%, 56%) !important;
+  color: hsl(216, 75%, 39%) !important;
   text-decoration: none !important;
 }
 @media (max-width: 575.98px) {
@@ -10367,8 +10368,8 @@ select.oh-select--lg {
 }
 
 .oh-sidebar {
-  background-color: hsl(0, 0%, 13%);
-  color: hsl(0, 0%, 100%);
+  background-color: rgb(249, 249, 250);
+  color: hsla(230, 12%, 91%, 0.4);
   max-width: 230px;
   min-height: 100vh;
   height: 100%;
@@ -10406,13 +10407,13 @@ select.oh-select--lg {
 }
 
 .oh-sidebar__company-title {
-  color: hsl(0, 0%, 100%);
+  color: darkblue;
   font-size: 0.95rem;
 }
 
 .oh-sidebar__company-link {
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: blue;
 }
 .oh-sidebar__company-link:hover {
   color: rgba(255, 255, 255, 0.9);
@@ -10436,7 +10437,7 @@ select.oh-select--lg {
 .oh-sidebar__menu-link {
   display: grid;
   grid-template-columns: auto 1fr;
-  color: hsl(0, 0%, 100%);
+  color: hsl(0, 0%, 3%);
   opacity: 1;
   padding-left: 20px;
   padding-right: 20px;
@@ -10447,9 +10448,8 @@ select.oh-select--lg {
   width: auto;
 }
 .oh-sidebar__menu-link:hover {
-  color: hsl(0, 0%, 100%);
+  color:blue;
   text-decoration: none;
-  opacity: 0.7;
 }
 .oh-sidebar__menu-link:active, .oh-sidebar__menu-link:focus, .oh-sidebar__menu-link:focus-visible {
   color: hsl(0, 0%, 100%);
@@ -10458,16 +10458,22 @@ select.oh-select--lg {
 
 .oh-sidebar__menu-link--active {
   color: hsl(0, 0%, 100%);
-  background-color: hsl(0, 0%, 20%);
+  background-color: darkblue;
+}
+
+.oh-sidebar__menu-link--active:hover {
+  color: hsl(0, 0%, 100%);
+  background-color: none;
 }
 
 .oh-sidebar__menu-icon {
+  background-color: hsl(0, 0%, 20%);
   margin-right: 10px;
 }
 
 .oh-sidebar__submenu {
   padding: 17px 25px;
-  background-color: hsl(0, 0%, 13%);
+  background-color: white;
   width: 230px;
 }
 
@@ -10477,6 +10483,7 @@ select.oh-select--lg {
 }
 
 .oh-sidebar__submenu-item {
+  color:black;
   font-size: 0.85rem;
   padding-left: 15px;
   margin-top: 15px;
@@ -10490,10 +10497,10 @@ select.oh-select--lg {
 }
 
 .oh-sidebar__submenu-link {
-  color: rgba(255, 255, 255, 0.7);
+  color: black;
 }
 .oh-sidebar__submenu-link:hover, .oh-sidebar__submenu-link:focus, .oh-sidebar__submenu-link:focus-visible, .oh-sidebar__submenu-link:visited {
-  color: white;
+  color: black;
   text-decoration: none;
 }
 
@@ -10668,14 +10675,14 @@ span.oh-activity-sidebar__a img {
   width: 100%;
 }
 .oh-inner-sidebar__link:hover, .oh-inner-sidebar__link:focus, .oh-inner-sidebar__link:focus-visible {
-  color: hsl(8, 77%, 56%);
+  color: blue;
   text-decoration: none;
 }
 
 .oh-inner-sidebar__link--active {
-  background-color: #fff6f4;
+  background-color: hsl(213, 22%, 93%);
   color: hsl(8, 77%, 56%);
-  border: solid 1px;
+  border: solid 3px;
   border-radius: 5px;
 }
 
@@ -10691,6 +10698,7 @@ span.oh-activity-sidebar__a img {
 }
 
 .oh-inner-sidebar-content__title {
+  color:#1910af;
   font-size: 1.25rem;
   font-weight: bold;
 }
@@ -13202,6 +13210,7 @@ div.ui-tooltip {
 }
 
 .oh-card-dashboard__title {
+  color:blue;
   font-weight: bold;
 }
 
@@ -16626,3 +16635,14 @@ a.oh-profile-dropdown-link:hover {
 }
 
 /*# sourceMappingURL=style.min.css.map */
+
+
+
+
+.oh-main__titlebar-title {
+ color:blue;
+}
+
+.oh-sticky-table__th{
+color:darkblue;
+}
