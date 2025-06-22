@@ -19,6 +19,7 @@ from horilla_views.cbv_methods import (
     FIELD_WIDGET_MAP,
     MODEL_FORM_FIELD_MAP,
     get_field_class_map,
+    get_original_model_field,
     structured,
 )
 from horilla_views.templatetags.generic_template_filters import getattribute
@@ -202,6 +203,8 @@ class DynamicBulkUpdateForm(forms.Form):
         fiels_mapping = {}
         parent_model = self.root_model
         for key, val in mappings.items():
+            if val.model.__name__.startswith("Historical"):
+                val.model = get_original_model_field(val.model)
             field = MODEL_FORM_FIELD_MAP.get(type(val))
             if field:
                 if not fiels_mapping.get(val.model):
@@ -216,6 +219,8 @@ class DynamicBulkUpdateForm(forms.Form):
                         else:
                             related_key = key.split("__")[-2]
                             field = getattribute(parent_model, related_key)
+                            if not hasattr(field, "related"):
+                                continue
                             relation_mapp[val.model] = (
                                 field.related.field.name
                                 + "__"
@@ -246,6 +251,8 @@ class DynamicBulkUpdateForm(forms.Form):
                 data_mapp[val.model][key] = value[0]
 
         for model, data in data_mapp.items():
+            if not model in relation_mapp:
+                continue
             queryset = model.objects.filter(**{relation_mapp[model]: self.ids})
             # here fields, files, and related fields-
             # get updated but need to save the files manually
