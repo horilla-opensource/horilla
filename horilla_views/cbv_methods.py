@@ -473,6 +473,20 @@ def structured(self):
     return table_html
 
 
+def get_original_model_field(historical_model):
+    """
+    Given a historical model and a field name,
+    return the actual model field from the original model.
+    """
+    model_name = historical_model.__name__.replace("Historical", "")
+    app_label = historical_model._meta.app_label
+    try:
+        original_model = apps.get_model(app_label, model_name)
+        return original_model
+    except Exception as e:
+        return historical_model
+
+
 def value_to_field(field: object, value: list) -> Any:
     """
     return value according to the format of the field
