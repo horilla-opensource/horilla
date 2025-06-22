@@ -1,49 +1,101 @@
-{% load i18n %}
-<div class="flex justify-between items-center mb-2">
-    <div class="flex flex-wrap gap-1 items-center">
-        <button
-            class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-        >
-            {% trans "Select All" %}
-        </button>
-        <button
-            class="px-4 py-2 bg-[#720c80] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-        >
-            <i class="fa-solid fa-xmark pe-1"></i> {% trans "Unselect" %}
-        </button>
-        <button
-            class="px-4 py-2 bg-[#15159e] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-        >
-            <i class="fa-solid fa-print pe-1"></i>{% trans "Export" %}
-        </button>
-        <button
-            class="px-4 py-2 bg-[#0f800f] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-        >
-            <i class="fa-solid fa-pen pe-1"></i>{% trans "Update" %}
-        </button>
-        <button
-            class="px-4 py-2 bg-[#129192] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-        >
-            <i class="fa-solid fa-download pe-1"></i>{% trans "Import" %}
-        </button>
-        <button
-            class="px-4 py-2 bg-[#a4933b] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300"
-        >
-            <i class="fa-solid fa-filter pe-1"></i>{% trans "Filter" %}
-        </button>
-        <p class="ps-3 text-sm text-primary-600">57 {% trans "Selected" %}</p>
-    </div>
+{% load i18n generic_template_filters %}
+{% if request.actual_ids and request.session.prev_path == request.path %}
+  <script>
+  var ids =  {{request.session.hlv_selected_ids|safe}}
+  $("#{{selected_instances_key_id}}").attr("data-ids", JSON.stringify(ids));
+</script>
+{% endif %}
 
-    {% if row_status_indications %}
-        <div class="flex flex-wrap gap-2">
-            {% for indication in row_status_indications %}
-            <button
-                class="px-4 py-2 bg-[white] border border-[#b3bac0] rounded-md text-xs flex gap-2 items-center">
-                <span
-                    class="h-3 w-3 rounded-full flex {{indication.0}}">
-                </span>{{indication.1}}
-            </button>
-            {% endfor %}
-        </div>
+<div class="flex justify-between items-center mb-2">
+  <div class="flex flex-wrap gap-1 items-center">
+    <button class="quick-bulk-action px-4 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" onclick="
+        addToSelectedId({{ select_all_ids|safe }},'{{ selected_instances_key_id }}');
+        selectSelected('#{{ view_id|safe }}','{{ selected_instances_key_id }}');
+        reloadSelectedCount($('#count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}');
+        reloadSelectedCount($('.count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}');
+    ">
+      <span class="label">{% trans 'Select' %}</span>
+      ({{ queryset.paginator.count }})
+    </button>
+
+    <button class="d-none quick-bulk-action px-4 py-2 bg-[#720c80] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" id="unselect_{{ view_id }}" onclick="
+        $('#{{ selected_instances_key_id }}').attr('data-ids',JSON.stringify([]));
+        selectSelected('#{{ view_id|safe }}','{{ selected_instances_key_id }}');
+        reloadSelectedCount($('#count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}');
+        reloadSelectedCount($('.count_{{ view_id|safe }}'),'{{ selected_instances_key_id }}');
+        $('#{{ view_id }} .list-table-row').prop('checked',false);
+        $('#{{ view_id }} .highlight-selected').removeClass('highlight-selected');
+        $('#{{ view_id }} .bulk-list-table-row').prop('checked',false);
+    ">
+      <span class="label">{% trans 'Unselect' %}</span>
+      (<span id="count_{{ view_id }}">0</span>)
+    </button>
+    {% if quick_export %}
+      <button id="export_{{ view_id }}" class="d-none quick-bulk-action px-4 py-2 bg-[#15159e] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" data-toggle="oh-modal-toggle" data-target="#exportFields{{ view_id|safe }}">
+        <span class="label">{% trans 'Export' %}</span>
+        (<span class="count_{{ view_id }}">0</span>)
+      </button>
     {% endif %}
+    {% if bulk_path and bulk_update %}
+      <button id="bulk_udate_{{ view_id }}" class="d-none quick-bulk-action px-4 py-2 bg-[#0f800f] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" data-toggle="oh-modal-toggle" data-target="#bulkUpdateModal{{ view_id|safe }}" onclick="
+        ids = $('#{{ selected_instances_key_id }}').attr('data-ids')
+        $('#bulk_update_get_form{{ view_id }}').closest('form').find('[name=instance_ids]').val(ids);
+        $('#bulk_update_get_form{{ view_id }}').click()">
+        <span class="label">{% trans 'Update' %}</span>
+        (<span class="count_{{ view_id }}">0</span>)
+      </button>
+      <form hx-post="/{{ bulk_path }}" hx-target="#bulkUpdateModalBody{{ view_id|safe }}">
+        <input type="hidden" name="instance_ids" />
+        <button type="submit" id="bulk_update_get_form{{ view_id }}" hidden></button>
+      </form>
+    {% endif %}
+
+    {% include 'generic/import_block.html' %}
+
+    {% if filter_selected %}
+      <span id="filter_selected_{{ view_id }}" class="px-4 py-2 bg-[#a4933b] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" onclick="
+      ids = $('#{{ selected_instances_key_id }}').attr('data-ids');
+      console.log(ids);
+      $('#filterSelectedForm{{ view_id }}').find('[name=selected_ids]').val(ids);
+      $('#filterSelectedForm{{ view_id }}').find('[type=submit]').click();
+    "><span class="label">{% trans 'Filter' %}</span> (<span class="count_{{ view_id }}">0</span>)</span>
+      <form id="filterSelectedForm{{view_id}}" style="display: inline;" hx-post="{{ request.path }}?show_all=false" hx-target="#{{ view_id|safe }}" hx-swap="outerHTML" onsubmit="event.preventDefault()" hx-on:submit="htmxLoadIndicator(this);">
+        <input type="hidden" name="selected_ids" value="{{ request.session.hlv_selected_ids }}" />
+        <button hidden type="submit">Submit</button>
+      </form>
+    {% endif %}
+
+    {% if request.session.hlv_selected_ids %}
+      <div hx-get="{{ request.path }}?show_all=true" hx-target="#{{ view_id|safe }}" hx-swap="outerHTML" id="show_selected{{ view_id }}" class="oh-checkpoint-badge text-warning quick-bulk-action" style="cursor: pointer;
+      color: hsl(203.16deg 91% 60%) !important;
+      ">
+        <span class="label">{% trans 'Show All' %}</span>
+        (<span class="">{{ request.actual_ids|length }}</span>)
+      </div>
+    {% endif %}
+
+    {% for filter in stored_filters %}
+      <div class="oh-hover-btn-container" hx-get="{{ request.path }}?{{ filter.urlencode }}" hx-target="#{{ view_id|safe }}" hx-swap="outerHTML">
+        <button hx-get="{% url 'last-applied-filter' %}?{{ filter.urlencode }}" hx-swap="none" class="oh-hover-btn" style="
+    cursor: pointer;
+    border: solid 2px {{ filter.color }};
+    color: {{ filter.color }} !important;
+    border-radius:30px;
+    ">{{ filter.title }}</button>
+        <div class="oh-hover-btn-drawer" onclick="event.stopPropagation()">
+          <button class="oh-hover-btn__small" onclick="$('#savedFilterModal').addClass('oh-modal--show')" hx-get="{% url 'saved-filter-update' filter.id %}" hx-target="#SavedFilterFormTarget" hx-swap="innerHTML"><ion-icon name="create-outline"></ion-icon></button>
+          <button class="oh-hover-btn__small" onclick="$(this).parent().find('button:hidden').click();$(this).closest('.oh-hover-btn-container').remove()"><ion-icon name="trash-outline"></ion-icon></button>
+          <button hidden hx-get="{% url 'delete-saved-filter' filter.id %}" hx-swap="none"></button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if row_status_indications %}
+    <div class="flex flex-wrap gap-2">
+      {% for indication in row_status_indications %}
+        <button class="px-4 py-2 bg-[white] border border-[#b3bac0] rounded-md text-xs flex gap-2 items-center" {{ indication.2|safe }}><span class="h-3 w-3 rounded-full flex {{ indication.0 }}"></span>{{ indication.1 }}</button>
+      {% endfor %}
+    </div>
+  {% endif %}
 </div>
