@@ -63,6 +63,7 @@ class RecruitmentTabView(HorillaTabView):
                 "recruitments": recruitments,
                 "candidates": False,
             },
+            timeout=600,
         )
         self.tabs = []
         view_perm = self.request.user.has_perm("recruitment.view_recruitment")
