@@ -578,20 +578,6 @@ function switchTab(e) {
     }
 }
 
-  function toggleHighlight(ids) {
-    $.each(ids, function (indexInArray, id) {
-      setTimeout(() => {
-        $(`#${id}`)
-          .closest(".oh-sticky-table__tr")
-          .removeClass("highlight-selected");
-        if ($(`#${id}`).is(":checked")) {
-          $(`#${id}`)
-            .closest(".oh-sticky-table__tr")
-            .addClass("highlight-selected");
-        }
-      }, 1);
-    });
-  }
 
 
 $(document).on('htmx:afterSettle', function (event) {

@@ -53,13 +53,13 @@
     {% include 'generic/import_block.html' %}
 
     {% if filter_selected %}
-      <span id="filter_selected_{{ view_id }}" class="px-4 py-2 bg-[#a4933b] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" onclick="
+      <span id="filter_selected_{{ view_id }}" class="d-none quick-bulk-action px-4 py-2 bg-[#a4933b] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" onclick="
       ids = $('#{{ selected_instances_key_id }}').attr('data-ids');
       console.log(ids);
       $('#filterSelectedForm{{ view_id }}').find('[name=selected_ids]').val(ids);
       $('#filterSelectedForm{{ view_id }}').find('[type=submit]').click();
     "><span class="label">{% trans 'Filter' %}</span> (<span class="count_{{ view_id }}">0</span>)</span>
-      <form id="filterSelectedForm{{view_id}}" style="display: inline;" hx-post="{{ request.path }}?show_all=false" hx-target="#{{ view_id|safe }}" hx-swap="outerHTML" onsubmit="event.preventDefault()" hx-on:submit="htmxLoadIndicator(this);">
+      <form id="filterSelectedForm{{ view_id }}" style="display: inline;" hx-post="{{ request.path }}?show_all=false" hx-target="#{{ view_id|safe }}" hx-swap="outerHTML" onsubmit="event.preventDefault()" hx-on:submit="htmxLoadIndicator(this);">
         <input type="hidden" name="selected_ids" value="{{ request.session.hlv_selected_ids }}" />
         <button hidden type="submit">Submit</button>
       </form>

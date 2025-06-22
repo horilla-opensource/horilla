@@ -238,43 +238,6 @@ function toggleReimbursmentType(element) {
     }
 }
 
-function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
-    var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length;
-    id = targetElement.attr("id");
-    if (id) {
-        id = id.split("count_")[1];
-    }
-    if (count) {
-        targetElement.html(count);
-        targetElement.parent().removeClass("d-none");
-        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass(
-            "d-none"
-        );
-    } else {
-        targetElement.parent().addClass("d-none");
-        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass(
-            "d-none"
-        );
-    }
-}
-
-function removeHighlight() {
-    setTimeout(function () {
-        $(".toggle-highlight").removeClass("toggle-highlight");
-    }, 200);
-}
-
-function removeId(element, storeKey = "selectedInstances") {
-    id = element.val();
-    viewId = element.attr("data-view-id");
-    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
-    let elementToRemove = 5;
-    if (ids[ids.length - 1] === id) {
-        ids.pop();
-    }
-    ids = JSON.stringify(ids);
-    $(`#${storeKey}`).attr("data-ids", ids);
-}
 function bulkStageUpdate(canIds, stageId, preStageId) {
     $.ajax({
         type: "POST",
