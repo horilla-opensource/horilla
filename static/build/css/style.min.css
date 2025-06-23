@@ -7961,7 +7961,7 @@ body {
 }
 
 .oh-badge--secondary {
-  background-color: hsl(8, 77%, 56%);
+  background-color: blue;
   color: hsl(0, 0%, 100%);
 }
 
@@ -8017,8 +8017,8 @@ body {
 }
 
 .oh-checkpoint-badge--secondary {
-  color: hsl(8, 77%, 56%);
-  border-color: hsl(8, 77%, 56%);
+  color: darkblue;
+  border-color: blue;
 }
 
 .oh-file-icon--html {
@@ -11211,6 +11211,7 @@ span.oh-activity-sidebar__a img {
   vertical-align: middle;
   width: 160px;
   word-break: break-word;
+  background-color:#f0f0f0;
 }
 
 .oh-hover-btn {
@@ -12701,7 +12702,7 @@ div.ui-tooltip {
 }
 
 .oh-titlebar__tag-close {
-  background-color: hsl(8, 77%, 56%);
+  background-color: blue;
   color: hsl(0, 0%, 100%);
   width: 16px;
   height: 16px;
@@ -16228,7 +16229,7 @@ a.oh-profile-dropdown-link:hover {
 }
 
 .oh-progress-bar__state {
-  background-color: hsl(8, 77%, 56%);
+  background-color: blue;
   position: absolute;
   left: 0px;
   height: 8px;
@@ -16253,9 +16254,9 @@ a.oh-profile-dropdown-link:hover {
 
 .oh-apply_btn {
   font-weight: 500;
-  border: 1px solid hsl(8, 77%, 56%);
-  background-color: hsl(0, 0%, 97.5%);
-  color: hsl(8, 77%, 56%);
+  border: 1px solid white;
+  background-color: blue;
+  color: white;
   text-decoration: none;
 }
 .oh-apply_btn:active {
@@ -16276,8 +16277,8 @@ a.oh-profile-dropdown-link:hover {
 }
 
 .oh-recuritment_tag {
-  background-color: hsl(0, 75%, 97%);
-  color: hsl(1, 100%, 61%);
+  background-color: darkblue;
+  color: white;
   padding: 0.4rem 0.6rem;
   border-radius: 0.2rem;
   margin-right: 0.2rem;

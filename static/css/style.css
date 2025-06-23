@@ -268,7 +268,7 @@ form label {
 }
 
 .oh-titlebar__tag--custom {
-    background-color: rgba(255, 68, 0, 0.543) !important;
+    background-color: blue !important;
     color: white;
 }
 

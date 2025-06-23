@@ -42,7 +42,7 @@
       data-sequence = "{{stage.grouper.sequence}}"
       data-recruitment-id = "{{rec.id}}"
     >
-      <div class="oh-kanban__section-head stage" style="cursor: pointer; {% if request.user.employee_get in stage.grouper.stage_managers.all %} background-color: hsl(38.08deg 100% 50% / 8%); {% endif %}" data-recruitment-id='{{rec.id}}'>
+      <div class="oh-kanban__section-head stage" style="cursor: pointer; {% if request.user.employee_get in stage.grouper.stage_managers.all %} background-color: hsl(241.93deg 100% 50% / 8%); {% endif %}" data-recruitment-id='{{rec.id}}'>
         <div class="d-flex">
           <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" data-rec-stage-badge="{{rec.id}}" id="stageCount{{stage.grouper.id}}" title="{{stage.list|length}} {% trans 'candidates' %}">{{stage.list|length}}</span>
           <span class="oh-kanban__section-title" data-type="label"

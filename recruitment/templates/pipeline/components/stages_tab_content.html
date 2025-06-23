@@ -4,7 +4,7 @@
 <div class="oh-tabs__movable ui-sortable stage" data-stage-sequence="{{stage.sequence}}" data-stage-id="{{stage.id}}"
     data-recruitment-id="{{rec.id}}">
     <div class="pipeline-header" onclick="$(this).next().toggleClass('d-none')" {% if request.user.employee_get in stage.stage_managers.all %}
-        style=" background-color: hsl(38.08deg 100% 50% / 8%);" {% endif %}>
+        style=" background-color: hsl(241.93deg 100% 50% / 8%);" {% endif %}>
         <div class="pipeline-toggle w-75" data-stage-id="{{stage.id}}">
             <div class="oh-tabs__input-badge-container">
                 <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 stage_count"
