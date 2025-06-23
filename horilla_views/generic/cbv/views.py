@@ -165,39 +165,58 @@ class HorillaListView(ListView):
         if not self.view_id:
             self.view_id = get_short_uuid(4)
         super().__init__(**kwargs)
-        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
 
+        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         request = getattr(_thread_locals, "request", None)
         self.request = request
-        # # update_initial_cache(request, CACHE, HorillaListView)
 
-        # hidden columns configuration
-        existing_instance = models.ToggleColumn.objects.filter(
-            user_id=request.user, path=request.path_info
-        ).first()
+        self.visible_column = list(self.columns)
 
-        hidden_fields = (
-            [] if not existing_instance else existing_instance.excluded_columns
+        hidden_fields = []
+        existing_instance = None
+        if request:
+            existing_instance = models.ToggleColumn.objects.filter(
+                user_id=request.user, path=request.path_info
+            ).first()
+            if existing_instance:
+                hidden_fields = existing_instance.excluded_columns
+
+        if not self.default_columns:
+            self.default_columns = self.columns
+
+        self.toggle_form = ToggleColumnForm(
+            self.columns, self.default_columns, hidden_fields
         )
 
-        self.visible_column = self.columns.copy()
+        # Remove hidden columns from visible_column
+        hidden_field_names = (
+            {
+                col[1] if isinstance(col, tuple) else col
+                for col in self.columns
+                if col[1] in hidden_fields
+            }
+            if existing_instance
+            else {col[1] for col in self.columns if col not in self.default_columns}
+        )
+        self.visible_column = [
+            col
+            for col in self.visible_column
+            if (col[1] if isinstance(col, tuple) else col) not in hidden_field_names
+        ]
 
-        if not existing_instance:
-            if not self.default_columns:
-                self.default_columns = self.columns
-            self.toggle_form = ToggleColumnForm(
-                self.columns, self.default_columns, hidden_fields
-            )
-            for column in self.columns:
-                if column not in self.default_columns:
-                    self.visible_column.remove(column)
-        else:
-            self.toggle_form = ToggleColumnForm(
-                self.columns, self.default_columns, hidden_fields
-            )
-            for column in self.columns:
-                if column[1] in hidden_fields:
-                    self.visible_column.remove(column)
+        # Add verbose names to fields if possible
+        updated_column = []
+        get_field = self.model()._meta.get_field
+        for col in self.visible_column:
+            if isinstance(col, str):
+                try:
+                    updated_column.append((get_field(col).verbose_name, col))
+                except FieldDoesNotExist:
+                    updated_column.append(col)
+            else:
+                updated_column.append(col)
+
+        self.visible_column = updated_column
 
     def bulk_update_accessibility(self) -> bool:
         """
