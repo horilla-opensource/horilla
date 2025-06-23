@@ -268,8 +268,16 @@ urlpatterns = [
         views.get_job_positions,
         name="get-restrict-job-positions",
     ),
-    path("restrict-view", views.restrict_view, name="restrict-view"),
-    path("restrict-filter", views.restrict_filter, name="restrict-filter"),
+    path(
+        "restrict-view",
+        restricted_days.RestrictedDaysView.as_view(),
+        name="restrict-view",
+    ),
+    path(
+        "restrict-filter",
+        restricted_days.RestrictedDaysList.as_view(),
+        name="restrict-filter",
+    ),
     path("restrict-creation", views.restrict_creation, name="restrict-creation"),
     path("restrict-update/<int:id>", views.restrict_update, name="restrict-update"),
     path("restrict-delete/<int:id>", views.restrict_delete, name="restrict-delete"),

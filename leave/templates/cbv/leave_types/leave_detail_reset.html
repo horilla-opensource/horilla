@@ -1,34 +1,41 @@
 {% load i18n %}
 {% load static %}
 {% load horillafilters %}
-<div class="oh-timeoff-modal__stat">
-    <div class="oh-label__info">
-        <span class="oh-timeoff-modal__stat-title">{% trans "Reset" %}</span>
-        <span class=" oh-info me-3" title="{% trans 'resetting the leaves based on conditions or not' %}"></span>
-    </div>
-    <span class="oh-timeoff-modal__stat-count">{{instance.reset|yes_no}}</span>
+<div class="mb-2 flex gap-5 items-center">
+    <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset" %}</span>
+    <p class="text-xs font-semibold flex items-center gap-5">
+        : <span>{{instance.reset|yes_no}}</span>
+    </p>
 </div>
 {% if instance.reset_based %}
-<div class="oh-timeoff-modal__stat">
-    <span class="oh-timeoff-modal__stat-title">{% trans "Reset Based" %}</span>
-    <span class="oh-timeoff-modal__stat-count">{{instance.get_reset_based_display}}</span>
-</div>
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset Based" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.get_reset_based_display}}</span>
+        </p>
+    </div>
 {% endif %}
 {% if instance.reset_month %}
-<div class="oh-timeoff-modal__stat">
-    <span class="oh-timeoff-modal__stat-title">{% trans "Reset Month" %}</span>
-    <span class="oh-timeoff-modal__stat-count">{{instance.get_reset_month_display}}</span>
-</div>
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset Month" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.get_reset_month_display}}</span>
+        </p>
+    </div>
 {% endif %}
 {% if instance.reset_day %}
-<div class="oh-timeoff-modal__stat">
-    <span class="oh-timeoff-modal__stat-title">{% trans "Reset Day" %}</span>
-    <span class="oh-timeoff-modal__stat-count">{{instance.reset_day}}</span>
-</div>
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset Day" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.reset_day}}</span>
+        </p>
+    </div>
 {% endif %}
 {% if instance.reset_weekend %}
-<div class="oh-timeoff-modal__stat">
-    <span class="oh-timeoff-modal__stat-title">{% trans "Reset weekend" %}</span>
-    <span class="oh-timeoff-modal__stat-count">{{instance.get_reset_weekend_display}}</span>
-</div>
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset weekend" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.get_reset_weekend_display}}</span>
+        </p>
+    </div>
 {% endif %}

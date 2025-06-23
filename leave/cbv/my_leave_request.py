@@ -236,7 +236,7 @@ class MyLeaveRequestDetailView(HorillaDetailedView):
         ("Days", "requested_days"),
         ("Start Date", "start_date"),
         ("End Date", "end_date"),
-        ("Status", "get_status"),
+        ("Status", "get_status_display"),
         ("Description", "description"),
         ("Reason for Rejection", "rejected_action", True),
         ("Reason for Cancellation", "cancelled_action", True),

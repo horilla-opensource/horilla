@@ -157,15 +157,15 @@ class LeaveTypeDetailView(HorillaDetailedView):
     header = {"title": "name", "subtitle": "", "avatar": "get_avatar"}
 
     body = [
-        (_("Period In"), "period_in"),
+        (_("Period In"), "get_period_in_display"),
         (_("Total Days"), "count"),
         (_("Reset"), "leave_detail_reset", True),
         (_("Carryforward Type"), "leave_detail_carryforward", True),
-        (_("Is paid"), "payment"),
-        (_("Require Approval"), "require_approval"),
-        (_("Require Attachment"), "require_attachment"),
-        (_("Exclude company Leaves"), "exclude_company_leave"),
-        (_("Exclude Holidays"), "exclude_holiday"),
+        (_("Is paid"), "get_payment_display"),
+        (_("Require Approval"), "get_require_approval_display"),
+        (_("Require Attachment"), "get_require_attachment_display"),
+        (_("Exclude company Leaves"), "get_exclude_company_leave_display"),
+        (_("Exclude Holidays"), "get_exclude_holiday_display"),
         (_("Is Encashable"), "encashable"),
     ]
     action_method = "detail_view_actions"

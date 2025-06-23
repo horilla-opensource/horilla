@@ -1,25 +1,31 @@
 {% load i18n %}
-<div class="oh-timeoff-modal__stats ">
-    <div class="oh-timeoff-modal__stat">
-        <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Type" %}</span>
-        <div class="oh-timeoff-modal__stat-count">{{instance.get_carryforward_type_display}}</div>
-    </div>
+<div class="mb-2 flex gap-5 items-center">
+    <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Carryforward Type" %}</span>
+    <p class="text-xs font-semibold flex items-center gap-5">
+        : <span>{{instance.get_carryforward_type_display}}</span>
+    </p>
 </div>
 {% if instance.carryforward_max %}
-<div class="oh-timeoff-modal__stat">
-    <span class="oh-timeoff-modal__stat-title">{% trans "Maximum Carryforward" %}</span>
-    <span class="oh-timeoff-modal__stat-count">{{instance.carryforward_max}}</span>
-</div>
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Maximum Carryforward" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.carryforward_max}}</span>
+        </p>
+    </div>
 {% endif %}
 {% if instance.carryforward_expire_in %}
-<div class="oh-timeoff-modal__stat">
-    <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Expire in" %}</span>
-    <span class="oh-timeoff-modal__stat-count">{{instance.carryforward_expire_in}}</span>
-</div>
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Carryforward Expire in" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.carryforward_expire_in}}</span>
+        </p>
+    </div>
 {% endif %}
 {% if instance.carryforward_expire_period %}
-<div class="oh-timeoff-modal__stat">
-    <span class="oh-timeoff-modal__stat-title">{% trans "Carryforward Expire period" %}</span>
-    <span class="oh-timeoff-modal__stat-count">{{instance.carryforward_expire_period}}</span>
-</div>
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Carryforward Expire period" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.carryforward_expire_period}}</span>
+        </p>
+    </div>
 {% endif %}

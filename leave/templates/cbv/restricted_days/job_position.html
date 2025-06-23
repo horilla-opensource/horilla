@@ -1,9 +1,7 @@
-<div>
-    {% if instance.job_position.all  %}
-      {% for i in  instance.job_position.all %}
-        <span class="d-flex">{{forloop.counter}}. {{i}}</span>
-      {% endfor %}
-    {% else %}
-      All
-    {% endif %}
-  </div>
+{% if instance.job_position.all %}
+    {% for i in instance.job_position.all %}
+        <span>{{ forloop.counter }}. {{ i }}</span></br>
+    {% endfor %}
+{% else %}
+    All
+{% endif %}

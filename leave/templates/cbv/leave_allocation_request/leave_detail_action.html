@@ -1,39 +1,32 @@
 {% load i18n %} {% load basefilters %}
-{% if perms.leave.Change_leaveallocationrequest or request.user|is_reportingmanager %}
-                    {% if instance.status == 'requested' %}
-                        <a
-                            href="{% url 'leave-allocation-request-approve' instance.id %}"
-                            class="oh-btn oh-btn--success w-100"
-                            title="{% trans 'Approve' %}"                        >
-                            <ion-icon class="me-1 " name="checkmark-outline"></ion-icon>
-                            {% trans "Approve" %}
-                        </a>
-                    {% else %}
-                        <a href="" class="oh-btn oh-btn--success oh-btn--disabled w-100"
-                            title="{% trans 'Approved' %}"
-                            onclick="event.preventDefault()">
-                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                            {% trans "Approve" %}
-                        </a>
-                    {% endif %}
-                    {% if instance.status == 'requested' or instance.status == 'approved' %}
-                        <a
-                            hx-get="{% url 'leave-allocation-request-reject' instance.id %}"
-                            data-target="{% if dashboard == 'true' %}#bigModal {% else %}#rejectModal {% endif %}"
-                            hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#rejectTarget{% endif %}"
-                            class="oh-btn oh-btn--danger w-100"
-                            data-toggle="oh-modal-toggle"
-                            title="{% trans 'Reject' %}"
-                        >
-                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                            {% trans "Reject" %}
-                        </a>
-                    {% else %}
-                        <a href="" class="oh-btn oh-btn--danger oh-btn--disabled w-100"
-                            title="{% trans 'Rejected' %}"
-                            onclick="event.preventDefault()">
-                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                            {% trans "Reject" %}
-                        </a>
-                    {% endif %}
-                {% endif %}
+{% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
+    {% if instance.status == 'requested' %}
+        <a href="{% url 'leave-allocation-request-approve' instance.id %}" role="button" title="{% trans 'Approve' %}"
+            onclick="return confirm('Are you sure you want to approve this request ?');"
+            class="btn-square btn-square1 w-28 h-8  text-sm  flex items-center justify-center bg-[#07bd072e] text-[#00c700] cursor-pointer">
+            <i class="fa-solid fa-check"></i>
+        </a>
+    {% else %}
+        <button disabled
+            class="btn-square btn-square1 w-28 h-8  text-sm  flex items-center justify-center bg-[#07bd072e] text-[#00c700] disabled:cursor-not-allowed"
+            title="{% trans 'Approve' %}">
+            <i class="fa-solid fa-check"></i>
+        </button>
+    {% endif %}
+
+    {% if instance.status == 'requested' or instance.status == 'approved' %}
+        <button class="btn-square btn-square2 w-28 h-8 cursor-pointer text-sm bg-[#ff000024] text-[red]"
+            title="{% trans 'Reject' %}" data-toggle="oh-modal-toggle"
+            hx-get="{% url 'leave-allocation-request-reject' instance.id %}"
+            data-target="{% if dashboard == 'true' %}#bigModal {% else %}#rejectModal {% endif %}"
+            hx-target="{% if dashboard == 'true' %}#bigModalTarget {% else %}#rejectTarget{% endif %}">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    {% else %}
+        <button disabled
+            class="btn-square btn-square2 w-28 h-8 cursor-pointer text-sm bg-[#ff000024] text-[red] disabled:cursor-not-allowed"
+            title="{% trans 'Reject' %}">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    {% endif %}
+{% endif %}

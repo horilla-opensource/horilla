@@ -11,6 +11,7 @@
         <script>
             setTimeout(function () {
                 $(".oh-modal__close--custom").click();
+                $('.reload-record').click();
             }, 1000);
         </script>
     </div>
@@ -23,26 +24,6 @@
             {% endfor %}
         </div>
     </div>
-  </div>
-  {% endfor %}
-  <script>
-    setTimeout(function () {
-      $(".oh-modal__close--custom").click();
-    }, 1000);
-    $(document).ready(function(){
-      $('.reload-record').click();
-    })
-  </script>
-</div>
-{% endif %} {% if form.errors %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-  <div class="oh-alert-container">
-    {% for error in form.non_field_errors %}
-    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
-    {% endfor %}
-  </div>
-</div>
 {% endif %}
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title" id="updateAssignLeaveModalLabel">{% trans "Update Available Leave" %}</span>
