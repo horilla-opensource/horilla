@@ -123,6 +123,16 @@ class MailAutomation(HorillaModel):
             "horilla_automations/mail_cc.html", {"employees": employees}
         )
 
+    def detail_actions(self):
+        """
+        This method for get custom column for actions.
+        """
+
+        return render_template(
+            path="horilla_automations/detail_action.html",
+            context={"instance": self},
+        )
+
     def detailed_url(self):
         return reverse("automation-detailed-view", kwargs={"pk": self.pk})
 

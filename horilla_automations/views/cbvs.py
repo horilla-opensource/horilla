@@ -194,7 +194,7 @@ class AutomationDetailedView(views.HorillaDetailedView):
     """
 
     model = models.MailAutomation
-    title = "Detailed View"
+    title = _("Details")
     header = {
         "title": "title",
         "subtitle": "title",
@@ -207,29 +207,7 @@ class AutomationDetailedView(views.HorillaDetailedView):
         ("Mail Cc", "get_mail_cc_display"),
         ("Trigger", "trigger_display"),
     ]
-    actions = [
-        {
-            "action": "Edit",
-            "icon": "create-outline",
-            "attrs": """
-            hx-get="{edit_url}?instance_ids={ordered_ids}"
-            hx-target="#genericModalBody"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-            class="oh-btn oh-btn--info w-50"
-            """,
-        },
-        {
-            "action": "Delete",
-            "icon": "trash-outline",
-            "attrs": """
-            class="oh-btn oh-btn--danger w-50"
-            onclick="
-                confirm('Do you want to delete the automation?','{delete_url}')
-            "
-            """,
-        },
-    ]
+    action_method = "detail_actions"
 
 
 @method_decorator(login_required, name="dispatch")
