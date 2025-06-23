@@ -1475,31 +1475,18 @@ class HorillaDetailedView(DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
-        instance_ids = self.request.session.get(self.ordered_ids_key, [])
-        if not context.get("object", False):
+        obj = context.get("object")
+
+        if not obj:
             return context
 
-        pk = context["object"].pk
-        # if instance_ids:
-        #     context["object"].ordered_ids = instance_ids
-        context["instance"] = context["object"]
+        pk = obj.pk
+        instance_ids = self.request.session.get(self.ordered_ids_key, [])
+        url_info = resolve(self.request.path)
+        url_name = url_info.url_name
+        key = next(iter(url_info.kwargs), "pk")
 
-        url = resolve(self.request.path)
-        key = list(url.kwargs.keys())[0]
-
-        url_name = url.url_name
-
-        previous_id, next_id = closest_numbers(instance_ids, pk)
-
-        next_url = reverse(url_name, kwargs={key: next_id})
-        previous_url = reverse(url_name, kwargs={key: previous_id})
-        if instance_ids:
-            context["instance_ids"] = str(instance_ids)
-            context["ids_key"] = self.ids_key
-
-            context["next_url"] = next_url
-            context["previous_url"] = previous_url
-
+        context["instance"] = obj
         context["title"] = self.title
         context["header"] = self.header
         context["body"] = self.body
@@ -1507,9 +1494,23 @@ class HorillaDetailedView(DetailView):
         context["action_method"] = self.action_method
         context["cols"] = self.cols
 
-        # CACHE.get(self.request.session.session_key + "cbv")[
-        #     HorillaDetailedView
-        # ] = context
+        if instance_ids:
+            prev_id, next_id = closest_numbers(instance_ids, pk)
+            context.update(
+                {
+                    "instance_ids": str(instance_ids),
+                    "ids_key": self.ids_key,
+                    "next_url": reverse(url_name, kwargs={key: next_id}),
+                    "previous_url": reverse(url_name, kwargs={key: prev_id}),
+                }
+            )
+
+            # Filter out instance_ids key from GET params
+            get_params = self.request.GET.copy()
+            get_params.pop(self.ids_key, None)
+            context["extra_query"] = get_params.urlencode()
+        else:
+            context["extra_query"] = ""
 
         return context
 
