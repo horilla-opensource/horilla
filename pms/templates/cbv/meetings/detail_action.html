@@ -1,18 +1,26 @@
-{% load i18n %}
+{% load static i18n %}
 {% if perms.pms.change_meetings or request.user.employee_get in instance.manager.all %}
-    <button data-toggle="oh-modal-toggle" data-target="#genericModal" hx-target="#genericModalBody" hx-get="{% url 'update-meeting' instance.id %}" type="submit" class="oh-btn oh-btn-group oh-btn--info w-100" title="dit">
-        <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
+    <!-- Start of Edit Button -->
+    <button data-toggle="oh-modal-toggle" data-target="#genericModal" hx-target="#genericModalBody"
+        hx-get="{% url 'update-meeting' instance.id %}"
+        class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+        <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
+            class="filter brightness-0 invert">
+        {% trans 'Edit' %}
     </button>
-    {% endif %}
-    {% if perms.pms.delete_meetings %}
-    <form
-        action="{% url 'meetings-delete' instance.id %}"
-        onsubmit="return confirm('{% trans "Are you sure to delete this meeting?" %}')"
-        method="post"
-        style="display: contents;width:100%">
+    <!-- End of Edit Button -->
+{% endif %}
+
+{% if perms.pms.delete_meetings %}
+    <!-- Start of Delete Form -->
+    <form action="{% url 'meetings-delete' instance.id %}" onsubmit="return confirm('{% trans 'Are you sure to delete this meeting?' %}')" method="post">
         {% csrf_token %}
-        <button onclick="event.stopPropagation()" class="oh-btn oh-btn-group oh-btn--secondary  w-100" title="{% trans 'Delete' %}">
-        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+        <button data-action="delete" type="submit"
+            class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+            <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="16"
+                class="mt-[-1px]">
+            {% trans 'Delete' %}
         </button>
     </form>
+    <!-- End of Delete Form -->
 {% endif %}

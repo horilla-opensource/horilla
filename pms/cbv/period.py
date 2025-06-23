@@ -118,7 +118,6 @@ class PeriodDetailView(HorillaDetailedView):
     header = {"title": "period_name", "subtitle": "", "avatar": ""}
 
     body = {
-        (_("Title"), "period_name"),
         (_("Start Date"), "start_date"),
         (_("End date"), "end_date"),
         (_("Company"), "company_id_detail"),
