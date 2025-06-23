@@ -139,46 +139,37 @@ class AssetBatchDetailView(HorillaDetailedView):
     detail view of the page
     """
 
-    def get_context_data(self, **kwargs: Any):
-        """
-        Return context data with the title set to the contract's name.
-        """
-
-        context = super().get_context_data(**kwargs)
-        lot_number = context["assetlot"].lot_number
-        context["title"] = "Asset Batch:" + lot_number
-        return context
-
-    model = AssetLot
+    title = _("Details")
     header = False
-
-    cols = {"assets_column": 12, "lot_description": 12, "lot_number": 12}
+    model = AssetLot
     body = {
+        (_("Batch Number"), "lot_number"),
         (_("Assets"), "assets_column"),
         (_("Description"), "lot_description"),
-        (_("Batch Number"), "lot_number"),
     }
+    action_method = "deatil_actions"
+    # actions = [
+    #     {
+    #         "action": _("Edit"),
+    #         "icon": "create-outline",
+    #         "attrs": """
+    #                     class="oh-btn oh-btn--info w-100"
+    #                     hx-get='{get_update_url}?instance_ids={ordered_ids}'
 
-    actions = [
-        {
-            "action": _("Edit"),
-            "icon": "create-outline",
-            "attrs": """
-                        class="oh-btn oh-btn--info w-100"
-                        hx-get='{get_update_url}?instance_ids={ordered_ids}'
-								hx-target="#genericModalBody"
-								data-toggle="oh-modal-toggle"
-								data-target="#genericModal"
-                      """,
-        },
-        {
-            "action": _("Delete"),
-            "icon": "trash-outline",
-            "attrs": """
-                    class="oh-btn oh-btn--danger w-100"
-                    hx-confirm="Do you want to delete this batch number?"
-                    hx-post="{get_delete_url}?instance_ids={ordered_ids}"
-                    hx-target="#AssetBatchList"
-                    """,
-        },
-    ]
+
+# 							hx-target="#genericModalBody"
+# 							data-toggle="oh-modal-toggle"
+# 							data-target="#genericModal"
+#                   """,
+#     },
+#     {
+#         "action": _("Delete"),
+#         "icon": "trash-outline",
+#         "attrs": """
+#                 class="oh-btn oh-btn--danger w-100"
+#                 hx-confirm="Do you want to delete this batch number?"
+#                 hx-post="{get_delete_url}?instance_ids={ordered_ids}"
+#                 hx-target="#AssetBatchList"
+#                 """,
+#     },
+# ]

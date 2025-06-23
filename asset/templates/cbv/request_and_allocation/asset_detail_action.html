@@ -1,32 +1,26 @@
-{% load i18n %}
-<div class="oh-modal__button-container text-center mt-3 w-100">
-    {% if perms.asset.change_assetassignment or not instance.return_request %}
-      <div class="oh-btn-group">
-          {% if perms.asset.change_assetassignment  %}
-            <button
-                href="#"
-                class="oh-btn oh-btn--secondary w-100"
-                role="button"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-                hx-get="{%url 'asset-allocate-return'  asset_id=instance.asset_id.id %}"
-                hx-target="#objectCreateModalTarget"
-              >
-                <ion-icon name="return-down-back-sharp"></ion-icon>{% trans	"Return" %}
-            </button>
-          {% else %}
-            {% if not instance.return_request %}
-              <form class=" w-100" action = "{% url 'asset-allocate-return-request' asset_id=instance.id %}"
-                  onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');"
-                  >
-                  {% csrf_token %}
-                  <button type="submit" class="oh-btn oh-btn--secondary w-100">
-                      <ion-icon name="return-down-back-sharp"></ion-icon>
-                      {% trans "Return Request" %}
-                  </button>
-              </form>
-            {% endif %}
-          {% endif %}
-      </div>
+{% load static i18n %}
+{% if perms.asset.change_assetassignment %}
+    <!-- Start of Asset Return Button -->
+    <button data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+        hx-get="{%url 'asset-allocate-return'  asset_id=instance.asset_id.id %}" hx-target="#objectCreateModalTarget"
+        class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+        <img src="{% static 'horilla_theme/assets/img/icons/backward.svg' %}" alt="{% trans 'Return' %}" width="13"
+            class="filter brightness-0 invert">
+        {% trans 'Return' %}
+    </button>
+    <!-- End of Asset Return Button -->
+{% else %}
+    {% if not instance.return_request %}
+        <!-- Start of Asset Return Request Form -->
+         <form action="{% url 'asset-allocate-return-request' asset_id=instance.id %}"
+            onsubmit="return confirm('{% trans "Are you sure you want to return this asset?" %}');">
+        <button type="submit"
+            class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+            <img src="{% static 'horilla_theme/assets/img/icons/backward.svg' %}" alt="{% trans 'Return' %}" width="13"
+                class="filter brightness-0 invert">
+            {% trans 'Return Request' %}
+        </button>
+    </form>
+        <!-- End of Asset Return Request Form -->
     {% endif %}
-  </div>
+{% endif %}

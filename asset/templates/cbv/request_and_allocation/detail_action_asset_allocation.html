@@ -1,15 +1,12 @@
-{% load i18n %}
-<div class="oh-modal__button-container text-center w-100 mt-3">
-    {% if not instance.return_status %}
-    <button
-        class="oh-btn oh-btn--secondary w-100"
-        role="button"
-        data-toggle="oh-modal-toggle"
-        data-target="#objectCreateModal"
-        hx-get="{% url 'asset-allocate-return'  asset_id=instance.asset_id.id %}"
-        hx-target="#objectCreateModalTarget"
-    >
-        <ion-icon name="return-down-back-sharp"></ion-icon>{% trans "Return" %}
+{% load static i18n %}
+{% if perms.asset.change_assetassignment and not instance.return_status%}
+    <!-- Start of Asset Return Button -->
+    <button data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+        hx-get="{%url 'asset-allocate-return'  asset_id=instance.asset_id.id %}" hx-target="#objectCreateModalTarget"
+        class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+        <img src="{% static 'horilla_theme/assets/img/icons/backward.svg' %}" alt="{% trans 'Return' %}" width="13"
+            class="filter brightness-0 invert">
+        {% trans 'Return' %}
     </button>
-    {% endif %}
-</div>
+    <!-- End of Asset Return Button -->
+{% endif %}

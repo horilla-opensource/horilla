@@ -1,30 +1,30 @@
 {% load i18n %}
-<div class="oh-modal__button-container text-center w-100 mt-3">
-    {% if perms.asset.add_assetassignment %}
-        {% if	instance.asset_request_status == 'Requested' %}
-        <div class="oh-btn-group">
-            <a
-                class="oh-btn oh-btn--success w-100"
-                role="button123"
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-                hx-get="{% url 'asset-request-approve' req_id=instance.id %}"
-                hx-target="#objectCreateModalTarget"
-            >
-                <ion-icon name="checkmark-outline"></ion-icon>{% trans 'Approve' %}
-            </a>
-            <form
-                action="{% url 'asset-request-reject' req_id=instance.id %}"
-                onsubmit="event.stopPropagation(); return confirm('{% trans "Do you want to reject this request?" %}')"
-                method="post"
-                class="w-100"
-            >
-                {% csrf_token %}
-                <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();">
-                    <ion-icon name="close-outline"></ion-icon> {% trans 'Reject' %}
-                </button>
-            </form>
-        </div>
-        {% endif %}
+{% if perms.asset.add_assetassignment %}
+    {% if instance.asset_request_status == 'Requested' %}
+        <a role="button" title="{% trans 'Approve' %}" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+            hx-get="{% url 'asset-request-approve' req_id=instance.id %}" hx-target="#objectCreateModalTarget"
+            class="btn-square btn-square1 w-28 h-8  text-sm  flex items-center justify-center bg-[#07bd072e] text-[#00c700] cursor-pointer">
+            <i class="fa-solid fa-check"></i>
+        </a>
+        <form action="{% url 'asset-request-reject' req_id=instance.id %}"
+            onsubmit="event.stopPropagation(); return confirm('{% trans "Do you want to reject this request?" %}')"
+            method="post">
+            {% csrf_token %}
+            <button class="btn-square btn-square2 w-28 h-8 cursor-pointer text-sm bg-[#ff000024] text-[red]"
+                title="{% trans 'Reject' %}">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </form>
+    {% else %}
+        <button disabled
+            class="btn-square btn-square1 w-28 h-8  text-sm  flex items-center justify-center bg-[#07bd072e] text-[#00c700] disabled:cursor-not-allowed"
+            title="{% trans 'Approve' %}">
+            <i class="fa-solid fa-check"></i>
+        </button>
+        <button disabled
+            class="btn-square btn-square2 w-28 h-8 cursor-pointer text-sm bg-[#ff000024] text-[red] disabled:cursor-not-allowed"
+            title="{% trans 'Reject' %}">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     {% endif %}
-</div>
+{% endif %}

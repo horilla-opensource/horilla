@@ -310,18 +310,6 @@ class AssetDetailView(HorillaDetailedView):
     detail view of asset tab
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.body = [
-            (_("Description"), "asset_id__asset_description"),
-            (_("Tracking Id"), "asset_id__asset_tracking_id"),
-            (_("Assigned Date"), "assigned_date"),
-            (_("Status"), "asset_detail_status"),
-            (_("Assigned by"), "assigned_by_employee_id"),
-            (_("Batch No"), "asset_id__asset_lot_number_id"),
-            # ("Category","asset_id__asset_category_id")
-        ]
-
     action_method = "asset_detail_action"
 
     model = AssetAssignment
@@ -331,6 +319,15 @@ class AssetDetailView(HorillaDetailedView):
         "subtitle": "asset_id__asset_category_id",
         "avatar": "get_avatar",
     }
+    body = [
+        (_("Tracking Id"), "asset_id__asset_tracking_id"),
+        (_("Batch No"), "asset_id__asset_lot_number_id"),
+        (_("Assigned Date"), "assigned_date"),
+        (_("Status"), "asset_detail_status"),
+        (_("Assigned by"), "assigned_by_employee_id"),
+        (_("Description"), "asset_id__asset_description"),
+        # ("Category","asset_id__asset_category_id")
+    ]
 
 
 @method_decorator(login_required, name="dispatch")
@@ -339,15 +336,6 @@ class AssetRequestDetailView(HorillaDetailedView):
     detail view of asset request tab
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.body = [
-            (_("Asset Category"), "asset_category_id"),
-            (_("Requested Date"), "asset_request_date"),
-            (_("Request Description"), "description"),
-            (_("Status"), "status_col"),
-        ]
-
     model = AssetRequest
     title = _("Details")
     header = {
@@ -355,6 +343,12 @@ class AssetRequestDetailView(HorillaDetailedView):
         "subtitle": "asset_request_detail_subtitle",
         "avatar": "requested_employee_id__get_avatar",
     }
+    body = [
+        (_("Asset Category"), "asset_category_id"),
+        (_("Requested Date"), "asset_request_date"),
+        (_("Request Description"), "description"),
+        (_("Status"), "get_asset_request_status_display"),
+    ]
     action_method = "detail_action_col"
 
 
@@ -364,18 +358,6 @@ class AssetAllocationDetailView(HorillaDetailedView):
     detail view of asset allocation tab
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.body = [
-            (_("Returned Status"), "return_status"),
-            (_("Allocated User"), "assigned_by_employee_id"),
-            (_("Allocated Date"), "assigned_date"),
-            (_("Return Date"), "return_date"),
-            (_("Asset"), "asset_id"),
-            (_("Return Description"), "return_condition"),
-            (_("Status"), "detail_status"),
-        ]
-
     model = AssetAssignment
     title = _("Details")
     header = {
@@ -383,6 +365,15 @@ class AssetAllocationDetailView(HorillaDetailedView):
         "subtitle": "asset_allocation_detail_subtitle",
         "avatar": "assigned_to_employee_id__get_avatar",
     }
+    body = [
+        (_("Returned Status"), "return_status"),
+        (_("Allocated User"), "assigned_by_employee_id"),
+        (_("Allocated Date"), "assigned_date"),
+        (_("Return Date"), "return_date"),
+        (_("Asset"), "asset_id"),
+        (_("Return Description"), "return_condition"),
+        (_("Status"), "detail_status"),
+    ]
     action_method = "asset_allocation_detail_action"
 
 

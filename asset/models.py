@@ -104,6 +104,12 @@ class AssetLot(HorillaModel):
             context={"instance": self},
         )
 
+    def deatil_actions(self):
+        return render_template(
+            path="cbv/asset_batch_no/deatil_actions.html",
+            context={"instance": self},
+        )
+
     def get_update_url(self):
         """
         This method to get update url
