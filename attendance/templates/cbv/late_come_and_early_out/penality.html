@@ -1,7 +1,14 @@
-
-
-{% if instance.get_penalties_count %}
-<div class="" data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" hx-get="{% url "view-penalties" %}?late_early_id={{instance.id}}" hx-target="#penaltyViewModalBody" align="center" style="background-color: rgba(229, 79, 56, 0.036); border: 2px solid rgb(229, 79, 56); border-radius: 18px; padding: 10px; font-weight: bold; width: 150px;" onclick="event.stopPropagation();">Penalties :{{instance.get_penalties_count}}</div>
-{% else %}
-<div class="" style="background-color: rgba(144, 238, 144, 0.036); border: 2px solid rgb(144, 238, 144); border-radius: 18px; padding: 10px;  width: 150px;" align="center">No Penalties</div>
-{% endif %}
+{% with has_penalties=instance.get_penalties_count %}
+    <!-- Start of Penalty Display Div -->
+    <div class="w-50 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 transition duration-300 {% if has_penalties %}hover:bg-primary-800 cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+        {% if has_penalties %} data-target="#penaltyViewModal" data-toggle="oh-modal-toggle"
+        hx-get="{% url 'view-penalties' %}?late_early_id={{instance.id}}" hx-target="#penaltyViewModalBody"
+        onclick="event.stopPropagation();" {% endif %}>
+        {% if has_penalties %}
+            Penalties : {{ has_penalties }}
+        {% else %}
+            No Penalties
+        {% endif %}
+    </div>
+    <!-- End of Penalty Display Div -->
+{% endwith %}

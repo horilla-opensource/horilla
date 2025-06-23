@@ -1,40 +1,33 @@
-{% load i18n %}
+{% load static i18n %}
 {% load basefilters %}
 
 {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or perms.attendance.delete_attendancelatecomeearlyout %}
-                {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
-                    <a
-                        class="oh-btn oh-btn-group oh-btn--warning"
-                        data-toggle="oh-modal-toggle"
-                        data-target="#penaltyModal"
-                        hx-target="#penaltyModalBody"
-                        hx-get="{% url "cut-penalty" instance.id %}"
-                        style="width: 50%;"
-                        >
+    {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount %}
+        <!-- Start of Penalty Button -->
+        <a class="oh-btn oh-btn-group oh-btn--warning" data-toggle="oh-modal-toggle" data-target="#penaltyModal"
+            hx-target="#penaltyModalBody" hx-get="{% url 'cut-penalty' instance.id %}" style="width: 50%;">
 
-                        <ion-icon name="information-circle-outline" role="img"
-                            class="md hydrated" aria-label="information circle outline">
-                        </ion-icon>{% trans "Penalty" %}
-                    </a>
-                {% endif %}
-                {% if perms.attendance.delete_attendancelatecomeearlyout %}
-                    <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
-                        hx-post="{% url 'late-come-early-out-delete' instance.id  %}?instances_ids={{ request.GET.instance_ids }}"
-                        hx-target="#genericModalBody"
-                        onclick="event.stopPropagation()"
-                        class="w-50"
-                    >
-                    {% csrf_token %}
-                        <button type='submit' class="oh-btn oh-btn-group oh-btn--danger w-100"><ion-icon
-                            name="trash-outline"
-                            role="img"
-                            class="md hydrated"
-                            aria-label="create outline"
-                            ></ion-icon>{% trans "Delete" %}</button>
-                    </form>
-                {% endif %}
-
+            <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="information circle outline">
+            </ion-icon>{% trans "Penalty" %}
+        </a>
+        <!-- End of Penalty Button -->
     {% endif %}
+    {% if perms.attendance.delete_attendancelatecomeearlyout %}
+        <!-- Start of Delete Form  -->
+        <form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
+            hx-post="{% url 'late-come-early-out-delete' instance.id  %}?instances_ids={{ request.GET.instance_ids }}"
+            hx-target="#genericModalBody" onclick="event.stopPropagation()" class="w-50">
+            {% csrf_token %}
+            <button data-action="delete" type="submit"
+                class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+                <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="16"
+                    class="mt-[-1px]">
+                {% trans 'Delete' %}
+            </button>
+        </form>
+        <!-- End of Delete Form  -->
+    {% endif %}
+{% endif %}
 
 {% if request.GET.deleted %}
 <script>

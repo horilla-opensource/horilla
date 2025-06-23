@@ -187,10 +187,10 @@ class AttendanceDetailView(HorillaDetailedView):
     body = [
         (_("Attendance Date"), "attendance_date"),
         (_("Day"), "get_status"),
-        (_("Check In"), "clock_in"),
         (_("Check In Date"), "clock_in_date"),
-        (_("Check Out"), "clock_out"),
+        (_("Check In"), "clock_in"),
         (_("Check Out Date"), "clock_out_date"),
+        (_("Check Out"), "clock_out"),
         (_("Duration"), "duration_format"),
         (_("Shift"), "employee_id__employee_work_info__shift_id"),
         (_("Work Type"), "employee_id__employee_work_info__work_type_id"),
