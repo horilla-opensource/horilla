@@ -54,6 +54,20 @@
                     {% block content %}
                         {% include "horilla_theme/components/dashboard.html" %}
                     {% endblock %}
+                    <div class="oh-modal" style="z-index: 100;" id="objectDetailsModal" role="dialog"
+                        aria-labelledby="objectDetailsModalLabel" aria-hidden="true">
+                        <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 550px" id="objectDetailsModalTarget"> </div>
+                    </div>
+                    <div class="oh-modal" style="z-index: 100;" id="objectDetailsModalW25" role="dialog"
+                        aria-labelledby="objectDetailsModalW25Label" aria-hidden="true">
+                        <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 410px" id="objectDetailsModalW25Target"> </div>
+                    </div>
+                    <div class="oh-modal" id="objectCreateModal" role="dialog" aria-labelledby="objectCreateModalLabel" aria-hidden="true">
+                        <div class="oh-modal__dialog" id="objectCreateModalTarget"></div>
+                    </div>
+                    <div class="oh-modal" id="objectUpdateModal" role="dialog" aria-labelledby="objectUpdateModalLabel" aria-hidden="true">
+                        <div class="oh-modal__dialog" id="objectUpdateModalTarget"></div>
+                    </div>
                 </div>
             </div>
         </div>
