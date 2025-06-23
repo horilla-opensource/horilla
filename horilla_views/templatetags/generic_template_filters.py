@@ -150,3 +150,11 @@ def get_id(string: str):
     Generate target/id for the generic delete summary
     """
     return string.split("-")[0].lower().replace(" ", "")
+
+
+@register.filter
+def is_image_file(filename):
+    """
+    Django template filter to check if a given filename is an image file.
+    """
+    return filename.lower().endswith((".png", ".jpg", ".jpeg", ".svg"))
