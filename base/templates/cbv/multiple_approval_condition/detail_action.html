@@ -1,27 +1,35 @@
-{% load i18n %}
-{% load basefilters %}
-{% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition %}
-    <div class="oh-btn-group" style="width: 100%;">
-        {% if request.user|is_reportingmanager or perms.base.change_multipleapprovalcondition %}
-            <button title="{% trans 'Edit' %}" class="oh-btn oh-btn--info w-50" data-toggle="oh-modal-toggle"
-                data-target="#objectUpdateModal" hx-target="#objectUpdateModalTarget"
-                hx-get="{% url 'multiple-level-approval-edit' instance.id %}">
-                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
-            </button>
-        {% endif %}
-        {% if perms.base.delete_multipleapprovalcondition %}
-            <a hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
-                hx-get="{% url 'multiple-level-approval-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
-                hx-target="#genericModalBody" class="oh-btn oh-btn--secondary w-50" id="delete-link"
-                title="{% trans 'Delete' %}">
-                <ion-icon name="trash-outline"></ion-icon>
-            </a>
-        {% endif %}
-    </div>
+{% load static i18n %}
+
+{% if perms.base.change_multipleapprovalcondition %}
+    <!-- Start of Edit Button -->
+    <button data-toggle="oh-modal-toggle" data-target="#genericModal"
+        hx-get="{% url 'multiple-level-approval-edit' instance.id %}" hx-target='#genericModalBody'
+        class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+        <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
+            class="filter brightness-0 invert" />
+        {% trans 'Edit' %}
+    </button>
+    <!-- End of Edit Button -->
+{% endif %}
+
+{% if perms.base.delete_multipleapprovalcondition %}
+    <!-- Start of Delete Form -->
+    <form hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+        hx-post="{% url 'multiple-level-approval-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
+        hx-target="#genericModalBody">
+        {% csrf_token %}
+        <button data-action="delete" type="submit"
+            class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+            <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="16"
+                class="mt-[-1px]" />
+            {% trans 'Delete' %}
+        </button>
+    </form>
+    <!-- End of Delete Form -->
 {% endif %}
 
 {% if request.GET.deleted %}
-    <script>
-        $(".reload-record").click()
-    </script>
+<script>
+    $(".reload-record").click()
+</script>
 {% endif %}

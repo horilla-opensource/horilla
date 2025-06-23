@@ -8,7 +8,7 @@
       <div class="flex flex-wrap gap-2 justify-between mb-3">
         <div class="flex gap-1 flex-wrap">
           {% for tab in tabs %}
-          <div class="relative inline-block dropdown-wrapper" x-data="{ open: false }">
+          <div class="relative inline-block dropdown-wrapper-tab" x-data="{ open: false }">
             <button
               :class="{
                 'oh-tabs__tab--active': activeIndex === {{ forloop.counter0 }},
@@ -143,7 +143,7 @@
   function actionClick(event) {
     event.stopPropagation(); // Prevents closing when clicking inside
     const icon = event.currentTarget;
-    const dropdownMenu = $(icon).closest('.dropdown-wrapper').find('.dropdown-menu');
+    const dropdownMenu = $(icon).closest('.dropdown-wrapper-tab').find('.dropdown-menu');
 
     const isOpen = dropdownMenu.is(":visible");
 
@@ -158,9 +158,9 @@
   }
 
   document.addEventListener("click", function (e) {
-    const $clickedWrapper = $(e.target).closest(".dropdown-wrapper");
+    const $clickedWrapper = $(e.target).closest(".dropdown-wrapper-tab");
 
-    $(".dropdown-wrapper").each(function () {
+    $(".dropdown-wrapper-tab").each(function () {
       const $wrapper = $(this);
       if (!$wrapper.is($clickedWrapper)) {
         $wrapper.find(".dropdown-menu").hide();
