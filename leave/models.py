@@ -472,6 +472,17 @@ class AvailableLeave(HorillaModel):
 
         return leave_taken["total_sum"] if leave_taken["total_sum"] else 0
 
+    def leave_usage_percentage(self):
+        """
+        Returns the percentage of leave used out of the total leave days.
+        """
+        total_days = self.leave_type_id.total_days
+        if total_days == 0:
+            return 0
+        used_days = self.leave_taken()
+        percentage_used = (used_days / total_days) * 100
+        return round(percentage_used, 2)
+    
     # Setting the expiration date for carryforward leaves
     def set_expired_date(self, available_leave, assigned_date):
         period = available_leave.leave_type_id.carryforward_expire_in
