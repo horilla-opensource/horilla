@@ -8,18 +8,14 @@ async function loadComponent(elementId, path) {
     }
 }
 
-
 // Gender Chart
 
 document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document
-        .getElementById("genderChart")
-        .getContext("2d");
+    const ctx = document.getElementById("genderChart").getContext("2d");
 
     // Load image only once
     const centerImage = new Image();
-    centerImage.src =
-        "/static/horilla_theme/assets/img/icons/gender.svg";
+    centerImage.src = "/static/horilla_theme/assets/img/icons/gender.svg";
 
     new Chart(ctx, {
         type: "doughnut",
@@ -28,11 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
             datasets: [
                 {
                     data: [35, 55, 10],
-                    backgroundColor: [
-                        "#cfe9ff",
-                        "#ffc9de",
-                        "#e6ccff",
-                    ],
+                    backgroundColor: ["#cfe9ff", "#ffc9de", "#e6ccff"],
                     borderWidth: 0,
                 },
             ],
@@ -75,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ],
     });
 });
-
 
 // Department chart
 
@@ -200,12 +191,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Onboarding Chart
 
-
-
 document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document
-        .getElementById("recruitmentChart")
-        .getContext("2d");
+    const ctx = document.getElementById("recruitmentChart").getContext("2d");
 
     const labels = [
         "Recruitment drive",
@@ -255,8 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Create clickable legend dynamically
-    const legendContainer =
-        document.getElementById("recruitmentLegend");
+    const legendContainer = document.getElementById("recruitmentLegend");
     labels.forEach((label, i) => {
         const item = document.createElement("div");
         item.className = "flex items-center gap-2 cursor-pointer";
@@ -268,12 +254,11 @@ document.addEventListener("DOMContentLoaded", () => {
             visibility[i] = !visibility[i];
 
             // Update data & bar color
-            chart.data.datasets[0].data = dataValues.map(
-                (val, index) => (visibility[index] ? val : 0)
+            chart.data.datasets[0].data = dataValues.map((val, index) =>
+                visibility[index] ? val : 0
             );
             chart.data.datasets[0].backgroundColor = colors.map(
-                (color, index) =>
-                    visibility[index] ? color : "#e5e7eb"
+                (color, index) => (visibility[index] ? color : "#e5e7eb")
             );
             chart.update();
 
@@ -281,15 +266,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const dot = item.querySelector("span");
             const text = item.querySelectorAll("span")[1];
             dot.style.opacity = visibility[i] ? "1" : "0.4";
-            text.style.textDecoration = visibility[i]
-                ? "none"
-                : "line-through";
+            text.style.textDecoration = visibility[i] ? "none" : "line-through";
         });
 
         legendContainer.appendChild(item);
     });
 });
-
 
 // Recruitment Chart
 
@@ -380,11 +362,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-
 document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document
-        .getElementById("hiredChart")
-        .getContext("2d");
+    const ctx = document.getElementById("hiredChart").getContext("2d");
 
     const labels = [
         "Recruitment drive",
@@ -434,8 +413,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Toggle bars and strike text
-    const legendItems =
-        document.querySelectorAll("#hiredLegend > div");
+    const legendItems = document.querySelectorAll("#hiredLegend > div");
     legendItems.forEach((item, i) => {
         item.addEventListener("click", () => {
             visibility[i] = !visibility[i];
@@ -444,9 +422,8 @@ document.addEventListener("DOMContentLoaded", () => {
             chart.data.datasets[0].data = values.map((val, index) =>
                 visibility[index] ? val : 0
             );
-            chart.data.datasets[0].backgroundColor = colors.map(
-                (col, index) =>
-                    visibility[index] ? col : "#e5e7eb"
+            chart.data.datasets[0].backgroundColor = colors.map((col, index) =>
+                visibility[index] ? col : "#e5e7eb"
             );
             chart.update();
 
@@ -455,14 +432,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const text = item.querySelectorAll("span")[1];
 
             dot.style.opacity = visibility[i] ? "1" : "0.4";
-            text.style.textDecoration = visibility[i]
-                ? "none"
-                : "line-through";
+            text.style.textDecoration = visibility[i] ? "none" : "line-through";
         });
     });
 });
-
-
 
 function validateFile(element, fileTarget, reload = false) {
     var fileInput = document.getElementById(fileTarget);
@@ -471,26 +444,23 @@ function validateFile(element, fileTarget, reload = false) {
 
     if (!allowedExtensions.exec(filePath)) {
         Swal.fire({
-            icon: 'error',
+            icon: "error",
             title: "Invalid File",
             text: "Please upload a valid XLSX file.",
             customClass: {
-                popup: 'file-xlsx-validation',
+                popup: "file-xlsx-validation",
             },
-        })
-            .then((result) => {
-                if (result.isConfirmed && reload) {
-                    $(".oh-modal--show").removeClass("oh-modal--show");
-                    window.location.reload()
-                }
-            })
-            ;
-        fileInput.value = '';
+        }).then((result) => {
+            if (result.isConfirmed && reload) {
+                $(".oh-modal--show").removeClass("oh-modal--show");
+                window.location.reload();
+            }
+        });
+        fileInput.value = "";
         return false;
     }
     $(this).closest("form").submit();
 }
-
 
 function initSidebarToggle() {
     // Reusable Sidebar Toggle
@@ -517,29 +487,35 @@ function initSidebarToggle() {
     });
 }
 
-document.querySelectorAll('.accordion-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
+document.querySelectorAll(".accordion-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
         const panel = btn.nextElementSibling;
-        const icon = btn.querySelector('.icon');
+        const icon = btn.querySelector(".icon");
         const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
 
         // Collapse all others (optional — comment this block if you want multiple open)
-        document.querySelectorAll('.accordion-panel').forEach(p => {
+        document.querySelectorAll(".accordion-panel").forEach((p) => {
             p.style.maxHeight = null;
-            p.previousElementSibling.querySelector('.icon').textContent = '+';
-            p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
-            p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+            p.previousElementSibling.querySelector(".icon").textContent = "+";
+            p.previousElementSibling.classList.remove(
+                "bg-[#e54f38]",
+                "text-white"
+            );
+            p.previousElementSibling.classList.add(
+                "bg-[#fff5f1]",
+                "text-[#e54f38]"
+            );
         });
 
         // Toggle current
         if (!isOpen) {
-            panel.style.maxHeight = panel.scrollHeight + 'px';
-            icon.textContent = '−';
+            panel.style.maxHeight = panel.scrollHeight + "px";
+            icon.textContent = "−";
             btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
             btn.classList.add("bg-[#e54f38]", "text-white");
         } else {
             panel.style.maxHeight = null;
-            icon.textContent = '+';
+            icon.textContent = "+";
             btn.classList.remove("bg-[#e54f38]", "text-white");
             btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
         }
@@ -578,9 +554,7 @@ function switchTab(e) {
     }
 }
 
-
-
-$(document).on('htmx:afterSettle', function (event) {
+$(document).on("htmx:afterSettle", function (event) {
     $(".dropdown-toggle").on("click", function () {
         const dropdownMenu = $(this).next(".dropdown-menu");
         const isOpen = dropdownMenu.is(":visible");
@@ -592,24 +566,24 @@ $(document).on('htmx:afterSettle', function (event) {
         } else {
             dropdownMenu.show();
         }
-    })
-})
+    });
+});
 
-$('.oh-password-input--toggle').on('click', function(e) {
+$(".oh-password-input--toggle").on("click", function (e) {
     e.preventDefault();
 
     const $toggle = $(this);
-    const $passwordInput = $toggle.siblings('.oh-input--password');
-    const $showIcon = $toggle.find('.oh-password-input__show-icon');
-    const $hideIcon = $toggle.find('.oh-password-input__hide-icon');
+    const $passwordInput = $toggle.siblings(".oh-input--password");
+    const $showIcon = $toggle.find(".oh-password-input__show-icon");
+    const $hideIcon = $toggle.find(".oh-password-input__hide-icon");
 
-    if ($passwordInput.attr('type') === 'password') {
-        $passwordInput.attr('type', 'text');
-        $showIcon.addClass('hidden');
-        $hideIcon.removeClass('hidden');
+    if ($passwordInput.attr("type") === "password") {
+        $passwordInput.attr("type", "text");
+        $showIcon.addClass("hidden");
+        $hideIcon.removeClass("hidden");
     } else {
-        $passwordInput.attr('type', 'password');
-        $showIcon.removeClass('hidden');
-        $hideIcon.addClass('hidden');
+        $passwordInput.attr("type", "password");
+        $showIcon.removeClass("hidden");
+        $hideIcon.addClass("hidden");
     }
 });

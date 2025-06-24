@@ -1,0 +1,477 @@
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %} {% load horillafilters %}
+
+<div class="h-screen overflow-hidden overflow-y-auto">
+
+<h3 class="text-lg font-semibold mb-3">
+    {% trans "Settings" %}
+</h3>
+
+
+
+<div class="">
+    <div class=" ">
+
+        <div class="grid grid-cols-12 gap-4 h-full pe-2">
+            <!-- Left Column: 6/12 -->
+            <div class="col-span-12 lg:col-span-3 border-r border-dark-50 pe-4">
+
+                <div class="bg-white rounded-md shadow-card p-3 h-full">
+                    <div class="accordion-wrapper space-y-2">
+
+                        <!-- Accordion Item -->
+                        <div
+                            class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "General" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul>
+                                        <li class="py-1"><a id="generalSettings" href="{% url 'general-settings' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "General Settings" %}
+                                                </a></li>
+                                        {% if perms.auth.view_permission %}
+                                        <li class="py-1"><a id="employeePermission" href="{% url 'employee-permission-assign' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Employee Permission" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.auth.view_permission %}
+                                        <li class="py-1"><a id="defaultAccessibility"
+														href="{% url 'user-accessibility' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Accessibility Restriction" %}
+                                            </a></li>
+                                        {% endif %}
+                                        {% if perms.auth.view_group %}
+                                        <li class="py-1"><a id="userGroup"
+														href="{% url 'user-group-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "User Group" %}
+                                                </a></li>
+                                            {% endif %}
+                                        {% if perms.base.view_company %}
+                                        <li class="py-1"><a id="date"
+														href="{% url 'date-settings' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Date & Time Format" %}
+                                               </a></li>
+                                        {% endif %}
+                                        {% if perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag %}
+                                        <li class="py-1"><a id="ticket_type"
+														href="{% url 'tag-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "History Tags" %}
+                                                Tags</a></li>
+                                        {% endif %}
+                                        {% if perms.base.view_dynamicemailconfiguration and not "outlook_auth"|app_installed %}
+                                        <li class="py-1"><a id="date"
+													href="{% url 'mail-server-conf' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Mail Server" %}
+                                                </a></li>
+                                        {% else %}
+                                        <li class="py-1"><a id="date"
+													href="{% url 'outlook_view_records' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Outlook Mail" %}
+                                               </a></li>
+                                        {% endif %}
+                                        {% if perms.horilla_backup.view_googledrivebackup %}
+                                        <li class="py-1"><a id="date"
+														href="{% url 'gdrive' %}"
+                                            class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Gdrive Backup" %}
+                                           </a></li>
+                                        {% endif %}
+                                        {% if "horilla_ldap"|app_installed %}
+                                        <li class="py-1"><a id="date"
+											href="{% url 'ldap-settings' %}"
+                                            class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "LDAP Configuration" %}
+                                           </a></li>
+                                           {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion Item -->
+                        <div
+                            class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "Base" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul>
+                                        {% if perms.base.view_department %}
+                                        <li class="py-1"><a id="department"
+													href="{% url 'department-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Department" %}</a>
+                                        </li>
+                                        {% endif %}
+                                        {% if perms.base.view_jobposition %}
+                                        <li class="py-1"><a id="jobPosition"
+														href="{% url 'job-position-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Job Positions" %}
+                                                </a></li>
+                                            {% endif %}
+                                    {% if perms.base.view_jobrole %}
+                                        <li class="py-1"><a id="jobRole"
+														href="{% url 'job-role-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Job Role" %}
+                                                </a></li>
+                                         {% endif %}
+                                         {% if perms.base.view_company %}
+                                        <li class="py-1"><a id="company"
+														href="{% url 'company-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Company" %}</a>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if "recruitment"|app_installed %}
+                        <!-- Accordion Item -->
+                        <div
+                            class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "Recruitment" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul>
+                                        {% if perms.recruitment.view_recruitment %}
+                                        <li class="py-1"><a id="skills"
+														href="{% url 'self-tracking-feature' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Candidate Self Tracking" %}
+                                               </a></li>
+                                        {% endif %}
+                                        {% if perms.recruitment.view_rejectreason %}
+                                        <li class="py-1"><a id="candidateRejectReasons"
+														href="{% url 'candidate-reject-reasons' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Candidate Reject Reason" %}
+                                               </a></li>
+                                        {% endif %}
+                                        {% if perms.recruitment.add_recruitment %}
+                                        <li class="py-1"><a id="skills"
+														href="{% url 'skills-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Skills" %}</a>
+                                        </li>
+                                        {% endif %}
+                                        <li class="py-1"><a id="skills"
+														href="{% url 'linkedin-integration-setting' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Linkedin Integration" %}
+                                                </a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "Employee" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul>
+                                        {% if perms.base.view_worktype %}
+                                        <li class="py-1"><a id="workType"
+                                                            href="{% url 'work-type-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Work Type" %}
+                                            </a></li>
+                                        {% endif %}
+                                        {% if perms.base.view_rotatingworktype %}
+                                        <li class="py-1"><a id="rotatingWorkType"
+                                                            href="{% url 'rotating-work-type-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Rotating Work Type" %}
+                                            </a></li>
+                                        {% endif %}
+                                        {% if perms.base.view_employeeshift %}
+                                        <li class="py-1"><a id="employeeShift"
+                                                            href="{% url 'employee-shift-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Employee Shift" %}</a>
+                                        </li>
+                                        {% endif %}
+                                        {% if perms.base.view_rotatingshift %}
+                                        <li class="py-1"><a id="rotatingShift"
+                                                            href="{% url 'rotating-shift-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Rotating Shift" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.base.view_employeeshiftschedule %}
+                                        <li class="py-1"><a id="employeeShiftSchedule"
+                                                            href="{% url 'employee-shift-schedule-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Employee Shift Schedule" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.base.view_employeetype %}
+                                        <li class="py-1"><a id="employeeType"
+                                                            href="{% url 'employee-type-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Employee Type" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.employee.view_actiontype %}
+                                        <li class="py-1"><a id="date"
+                                                            href="{% url 'action-type' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Disciplinary Action Type" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.employee.view_employeetag %}
+                                        <li class="py-1"><a id="ticket_type"
+                                                            href="{% url 'employee-tag-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Employee Tags" %}
+                                                </a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if "attendance"|app_installed %}
+                        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "Attendance" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul>
+                                        {% if perms.attendance.view_attendancevalidationcondition %}
+                                        <li class="py-1"><a id="trackLateComeEalryOut"
+														href="{% url 'track-late-come-early-out' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Track Late Come & Early Out" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.attendance.view_attendancevalidationcondition %}
+                                        <li class="py-1"><a id="condition"
+														href="{% url 'attendance-settings-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Attendance Break Point" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.attendance.view_attendancevalidationcondition %}
+                                        <li class="py-1"><a id="condition"
+														href="{% url 'check-in-check-out-setting' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Check In/Check Out" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.attendance.view_attendancevalidationcondition %}
+                                        <li class="py-1"><a id="condition"
+														href="{% url 'grace-settings-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Grace Time" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if biometric_app_exists %}
+												{% if perms.base.view_biometricattendance %}
+                                        <li class="py-1"><a id="condition"
+															href="{% url 'enable-biometric-attendance' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Biometric Attendance" %}
+                                               </a></li>
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if perms.attendance.add_attendance %}
+                                        <li class="py-1"><a id="ip_resriction"
+														href="{% url "allowed-ips" %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "IP Restriction" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.geofencing.add_geofencing or perms.facedetection.add_facedetection %}
+                                        <li class="py-1"><a id="geo_face_conf"
+													href="{% url "geo-face-config" %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Geo & Face Config" %}
+                                                </a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if "leave"|app_installed %}
+                        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "Leave" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul>
+                                        {% if perms.attendance.view_attendancevalidationcondition %}
+                                        <li class="py-1"><a id="condition"
+															href="{% url 'employee-past-leave-restriction' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Restrictions" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if "attendance"|app_installed %}
+                                            {% if perms.attendance.view_attendancevalidationcondition %}
+                                            <li class="py-1"><a id="condition"
+																href="{% url 'compensatory-leave-settings-view' %}"
+                                    class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Compensatory Leave" %}
+                                    </a></li>
+                                    {% endif %}
+                                    {% endif %}
+                                    
+
+                                        
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if "payroll"|app_installed %}
+                        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "Payroll" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul>
+                                        {% if perms.payroll.view_payslipautogenerate %}
+                                        <li class="py-1"><a id="autoGeneratePayslip"
+															href="{% url 'auto-payslip-settings-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Payslip Auto Generation" %}
+                                                </a></li>
+                                        {% endif %}
+
+                                     
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if "pms"|app_installed %}
+                        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "Performance" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul> 
+                                        {% if perms.pms.view_payslipautogenerate %}
+                                        <li class="py-1"><a id="bonusPoint"
+															href="{% url 'bonus-point-setting' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Bonus Point Setting" %}
+                                                </a></li>
+                                        {% endif %}
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if "helpdesk"|app_installed %}
+                        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "Help Desk" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul>
+                                        {% if perms.helpdesk.view_departmentmanager %}
+                                        <li class="py-1"><a id="department_manager"
+															href="{% url 'department-manager-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Department Managers" %}
+                                                </a></li>
+                                        {% endif %}
+                                        {% if perms.helpdesk.view_tickettype %}
+                                        <li class="py-1"><a id="ticket_type"
+															href="{% url 'ticket-type-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Ticket Type" %}
+                                                </a></li>
+                                        {% endif %}  
+                                        {% if perms.employee.view_emplyeetag %}
+                                        <li class="py-1"><a id="help_desk"
+															href="{% url 'helpdesk-tag-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Helpdesk Tags" %}
+                                                </a></li>
+                                        {% endif %}
+
+
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if "whatsapp"|app_installed %}
+                        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+                            <button
+                                class="accordion-btn font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all">
+                                {% trans "Whatsapp Configuration" %}
+                                <span class="icon text-xl font-bold">+</span>
+                            </button>
+                            <div
+                                class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                                <div class="py-3">
+                                    <ul>
+                                        {% if perms.whatsapp.add_whatsappcredentials %}
+
+                                        <li class="py-1"><a id="whatsapp_credentials"
+																href="{% url 'whatsapp-credential-view' %}"
+                                                class="hover:text-primary-600 transition duration-300 text-[13px]">General
+                                                Settings</a></li>
+                                        {% endif %}
+                                       
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: 6/12 -->
+            <div class="col-span-12 lg:col-span-9 ">
+
+                <div class="bg-white rounded-md shadow-card p-3">
+                    <div
+                        class="h-[calc(100vh_-_190px)] overflow-hidden overflow-y-auto overflow-x-auto">
+                        {% block settings %} {% endblock settings %}
+                         
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('select').removeClass('select2-hidden-accessible');
+        $('select[name="tracking_fields"]').css('height', '50px');
+        });
+</script>
+
+{% endblock content %}

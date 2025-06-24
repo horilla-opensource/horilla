@@ -6,6 +6,11 @@
         {% include "base/navbar_components/breadcrumbs_view.html" %}
     {% endif %}
 
+    <div id="reloadMessages">
+        {% include "generic/messages.html" %}
+    </div>
+    <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hx-swap="afterend" hidden hx-target="#reloadMessages"></button>
+
     {% if messages %}
         <div class="oh-alert-container">
             {% for message in messages %}
@@ -16,16 +21,9 @@
         </div>
     {% endif %}
 
-    <!-- <div class="relative">
-    <input type="text" placeholder="Search Here..."
-      class="text-color-600 ps-10 p-2 placeholder:text-sm w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600" />
-    <i class="fas fa-search absolute left-3 top-0 bottom-0 m-auto flex items-center opacity-50 text-sm"></i>
-  </div> -->
-
     <!-- Right side - Search and Actions -->
 
     <div class="flex items-center gap-8">
-        <!-- Search Bar -->
 
         <!-- Action Icons -->
         <div class="flex items-center gap-2">

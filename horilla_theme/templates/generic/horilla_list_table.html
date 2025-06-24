@@ -61,10 +61,10 @@
 
             <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card">
                 <div
-                    class="h-[calc(100vh_-_240px)] overflow-hidden overflow-y-auto overflow-x-auto"
+                    class="max-h-[calc(100vh_-_240px)] overflow-hidden overflow-y-auto overflow-x-auto"
                 >
                     <table class="fixed-table w-full">
-                        <thead class="sticky top-0 bg-[white] z-10">
+                        <thead class="sticky top-0 bg-[white] z-[1]">
                             <tr class="border-b border-[#ececec]">
                                 {% if bulk_select_option %}
                                     <th
@@ -73,7 +73,7 @@
                                         <input
                                             type="checkbox"
                                             value=""
-                                            class="bulk-list-table-row w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+                                            class="bulk-list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
                                             title="Select All"
                                             onchange="
                                                 $(this).closest('.fixed-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
@@ -147,7 +147,7 @@
                                     <td class="stickyleft text-sm text-left p-3 text-[#666]">
                                         <input
                                             type="checkbox"
-                                            class="list-table-row w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+                                            class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
                                             data-view-id="{{view_id|safe}}"
                                             title="{% trans "Select Row" %}"
                                             value = "{{instance.pk}}"
@@ -232,7 +232,6 @@
                                                     {% for action in actions %}
                                                         {% if action.accessibility|accessibility:instance %}
                                                             <a
-                                                                href="#"
                                                                 title="{{action.action|safe}}"
                                                                 {{action.attrs|format:instance|safe}}
                                                             >
@@ -260,6 +259,34 @@
                         </tbody>
                     </table>
                 </div>
+            {% if queryset.paginator.count %}
+        <div
+            class="flex justify-between items-center mt-4 w-full inset-0"
+        >
+            <p class="text-xs text-[#666]">{% trans "Page" %} {{ queryset.number }} {% trans "of" %} {{ queryset.paginator.num_pages }}</p>
+            <div class="flex gap-3 text-[#666] items-center">
+                {% if queryset.has_previous %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#{{view_id}}"
+                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.previous_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                {% endif %}
+                {{ queryset.number }} / {{ queryset.paginator.num_pages }}
+                {% if queryset.has_next %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#{{view_id}}"
+                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.next_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
             </div>
         {% endif %}
     </div>

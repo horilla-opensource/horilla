@@ -33,7 +33,7 @@
             </span>
             {{ emp_objective.employee_id }}
           </div>
-    
+
           <div class="flex items-center flex-wrap gap-2 md:gap-8">
             {% if emp_objective.employee_key_result.first %}
             <!-- Progress -->
@@ -45,7 +45,7 @@
               <div class="text-xs text-dark-200 font-medium">{{ emp_objective.progress_percentage }}%</div>
             </div>
             {% endif %}
-    
+
             <!-- Status -->
             <div id="employeeStatusWrapper-{{ emp_objective.id }}" class="inline-block dropdown-wrapper relative text-lg" onclick="event.stopPropagation()">
               <a class="w-28 flex dropdown-toggle cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs justify-between"
@@ -72,8 +72,8 @@
                 </div>
               {% endif %}
             </div>
-            
-    
+
+
             <!-- Actions -->
             <div class="flex gap-1">
               <a class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition"
@@ -111,10 +111,10 @@
                   <i class="fa-solid fa-plus"></i>
                 </a>
               {% endif %}
-              
+
               {% if request.user.employee_get in emp_objective.objective_id.managers.all or perms.pms.add_employeeobjective %}
               <div class="relative inline-block dropdown-wrapper text-md" onclick="event.stopPropagation()">
-                <a onclick="toggleDropdown(this)" 
+                <a onclick="toggleDropdown(this)"
                    class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition">
                   <i class="fa-solid fa-ellipsis-vertical"></i>
                 </a>
@@ -159,13 +159,13 @@
                 </div>
               </div>
               {% endif %}
-              
+
             </div>
-    
+
             <span class="icon text-xl font-bold">+</span>
           </div>
         </button>
-    
+
         <!-- Accordion Panel -->
         <div id="krBody{{emp_objective.id}}" class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
           <div id="krData{{emp_objective.id}}"></div>
@@ -174,7 +174,7 @@
       {% endif %}
     {% endfor %}
     </div>
-    
+
 
 <!-- Modals -->
 
@@ -240,23 +240,23 @@
       const select = document.createElement('select');
       select.name = 'status';
       select.dataset.empObj = empId;
-  
+
       const option = document.createElement('option');
       option.value = newStatus;
       option.selected = true;
       option.textContent = newStatus;  // For display update
       select.appendChild(option);
-  
+
       // update visible label immediately (optional)
       const label = document.querySelector(`#employeeStatusWrapper-${empId} .status-display`);
       if (label) {
         label.textContent = newStatus;
       }
-  
+
       // trigger existing logic
       changeObjectiveStatus(select);
     }
-    
+
   </script>
 
   <script>
@@ -269,9 +269,8 @@
       // Toggle current
       menu.classList.toggle('hidden');
     }
-  
+
     document.addEventListener('click', function () {
       document.querySelectorAll('.dropdown-menu-action').forEach(el => el.classList.add('hidden'));
     });
   </script>
-  
