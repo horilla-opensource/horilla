@@ -40,48 +40,71 @@ class AnnouncementFormView(HorillaFormView):
                 message = _("Announcement updated successfully.")
             else:
                 message = _("Announcement created successfully.")
-            anou, attachment_ids = form.save(commit=False)
-            anou.save()
-            anou.attachments.set(attachment_ids)
+            announcement, attachment_ids = form.save(commit=False)
+            announcement.save()
+            announcement.attachments.set(attachment_ids)
+
             employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
             job_positions = form.cleaned_data["job_position"]
-            anou.department.set(departments)
-            anou.job_position.set(job_positions)
-            emp_dep = User.objects.filter(
-                employee_get__employee_work_info__department_id__in=departments
+            company = form.cleaned_data["company_id"]
+
+            announcement.department.set(departments)
+            announcement.job_position.set(job_positions)
+            announcement.company_id.set(company)
+
+            dept_ids = departments.values_list("id", flat=True)
+            job_ids = job_positions.values_list("id", flat=True)
+
+            employees_from_dept = Employee.objects.filter(
+                employee_work_info__department_id__in=dept_ids
             )
-            emp_jobs = User.objects.filter(
-                employee_get__employee_work_info__job_position_id__in=job_positions
+            employees_from_job = Employee.objects.filter(
+                employee_work_info__job_position_id__in=job_ids
             )
-            employees = employees | Employee.objects.filter(
-                employee_work_info__department_id__in=departments
+
+            all_employees = (
+                employees | employees_from_dept | employees_from_job
+            ).distinct()
+            announcement.employees.add(*all_employees)
+
+            all_emps = employees_from_dept | employees_from_job | employees
+            user_map = User.objects.filter(employee_get__in=all_emps).distinct()
+
+            dept_emp_ids = set(employees_from_dept.values_list("id", flat=True))
+            job_emp_ids = set(employees_from_job.values_list("id", flat=True))
+            direct_emp_ids = set(employees.values_list("id", flat=True))
+
+            notified_ids = dept_emp_ids.union(job_emp_ids)
+            direct_only_ids = direct_emp_ids - notified_ids
+
+            sender = self.request.user.employee_get
+
+            def send_notification(users, verb):
+                if users.exists():
+                    notify.send(
+                        sender,
+                        recipient=users,
+                        verb=verb,
+                        verb_ar="لقد تم ذكرك في إعلان.",
+                        verb_de="Sie wurden in einer Ankündigung erwähnt.",
+                        verb_es="Has sido mencionado en un anuncio.",
+                        verb_fr="Vous avez été mentionné dans une annonce.",
+                        redirect="/",
+                        icon="chatbox-ellipses",
+                    )
+
+            send_notification(
+                user_map.filter(employee_get__id__in=dept_emp_ids),
+                _("Your department was mentioned in an announcement."),
             )
-            employees = employees | Employee.objects.filter(
-                employee_work_info__job_position_id__in=job_positions
+            send_notification(
+                user_map.filter(employee_get__id__in=job_emp_ids),
+                _("Your job position was mentioned in an announcement."),
             )
-            anou.employees.add(*employees)
-            notify.send(
-                self.request.user.employee_get,
-                recipient=emp_dep,
-                verb="Your department was mentioned in a post.",
-                verb_ar="تم ذكر قسمك في منشور.",
-                verb_de="Ihr Abteilung wurde in einem Beitrag erwähnt.",
-                verb_es="Tu departamento fue mencionado en una publicación.",
-                verb_fr="Votre département a été mentionné dans un post.",
-                redirect="/",
-                icon="chatbox-ellipses",
-            )
-            notify.send(
-                self.request.user.employee_get,
-                recipient=emp_jobs,
-                verb="Your job position was mentioned in a post.",
-                verb_ar="تم ذكر وظيفتك في منشور.",
-                verb_de="Ihre Arbeitsposition wurde in einem Beitrag erwähnt.",
-                verb_es="Tu puesto de trabajo fue mencionado en una publicación.",
-                verb_fr="Votre poste de travail a été mentionné dans un post.",
-                redirect="/",
-                icon="chatbox-ellipses",
+            send_notification(
+                user_map.filter(employee_get__id__in=direct_only_ids),
+                _("You have been mentioned in an announcement."),
             )
             messages.success(self.request, message)
             return HttpResponse("<script>window.location.reload();</script>")

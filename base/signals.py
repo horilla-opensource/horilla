@@ -17,6 +17,25 @@ from base.models import Announcement, PenaltyAccounts
 from horilla.methods import get_horilla_model_class
 
 
+@receiver(post_migrate)
+def create_default_shift_days(sender, **kwargs):
+    # avoids importing models too early during migrations.
+    EmployeeShiftDay = apps.get_model("base", "EmployeeShiftDay")
+    if not EmployeeShiftDay.objects.exists():
+        days = [
+            ("monday", "Monday"),
+            ("tuesday", "Tuesday"),
+            ("wednesday", "Wednesday"),
+            ("thursday", "Thursday"),
+            ("friday", "Friday"),
+            ("saturday", "Saturday"),
+            ("sunday", "Sunday"),
+        ]
+        EmployeeShiftDay.objects.bulk_create(
+            [EmployeeShiftDay(day=day[0]) for day in days]
+        )
+
+
 @receiver(post_save, sender=PenaltyAccounts)
 def create_deduction_cutleave_from_penalty(sender, instance, created, **kwargs):
     """
