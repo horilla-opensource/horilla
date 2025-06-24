@@ -1,0 +1,496 @@
+{% comment %} {% extends 'candidate/application_form_component.html' %}  {% endcomment %}
+{% block content %}
+{% load static %} {% load i18n %} {{form.load}}
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/horilla_theme/assets/js/tailwind.config.js"></script>
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
+    />
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
+    />
+    <link
+        rel="stylesheet"
+        href="/static/horilla_theme/assets/css/global.css"
+    />
+    <link
+        rel="stylesheet"
+        href="/static/horilla_theme/assets/css/v1_styles.css"
+    />
+    <style>
+        .overflow-y-auto {
+            overflow-y: auto !important;
+        }
+        .oh-select-2 {
+            padding-left: 30px !important;
+          }
+    </style>
+</head>
+
+<body class="bg-secondary-50 font-[Inter,_sans-serif]">
+    <!-- Main Content -->
+        <div class="bg-[#F6F6F6]">
+            <div class="pb-10 pt-3 pl-20 pr-20">
+                <h3 class="pb-4 pt-2 font-bold text-center text-2xl">{% trans "Application Form" %}</h3>
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="col-span-12 lg:col-span-4 bg-white rounded-md shadow-card p-5">
+                        <div class="lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
+                            {% if resume %}
+                                <div class="col-12 col-md-6 col-lg-6 sticky">
+                                    <iframe style="width: 100%;height:90vh" height="100" src="{{ resume.file.url }}" frameborder="0"></iframe>
+                                    
+                                </div>
+                                {% else %}
+                                    <p class="text-sm mb-2">{{recruitment.description|safe}}</p>
+                                {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% comment %} <form action="" method="post" enctype="multipart/form-data">  {% endcomment %}
+                        {% if messages %}
+                            <div class="oh-alert-container">
+                                {% for message in messages %}
+                                    <div class="oh-alert oh-alert--animated {{message.tags}}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %} 
+                        <form class="col-span-12 lg:col-span-8 bg-white rounded-md shadow-card p-5 myform" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class= "lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
+                                    <div>
+                                        <label class="required-star" for="name">{% trans "Name" %}</label>
+                                        <div class="relative">
+                                            <input type="text" id="name" name="name" placeholder="Enter your name" required style="padding-left: 35px;">
+                                            <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600">
+                                                <i class="fa-solid fa-user"></i></span>
+                                            </div>
+                                            {{form.name.errors}}
+                                    </div>
+                                    <div>
+                                        <label class="required-star" for="email">{% trans "Email" %}</label>
+                                        <div class="relative">
+                                            <input type="email" id="email" name="email" placeholder="e.g. janedoe@example.com" required style="padding-left: 35px;">
+                                            <span
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="fa-solid fa-envelope"></i></span>
+                                        </div>
+                                        {{form.email.errors}}
+                                    </div>
+                                    <div>
+                                        <label class="required-star" for="phone">{% trans "Phone" %}</label>
+                                        <div class="relative">
+                                            <input type="text" placeholder="e.g. +1 245 999 999" name="mobile" style="padding-left: 35px;">
+                                            <span
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="fa-solid fa-phone"></i></span>
+                                        </div>
+                                        {{form.mobile.errors}}
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="text"
+                                            name="recruitment_id"
+                                            hidden
+                                            value="{{recruitment.id}}"
+                                            />
+                                        <label for="recuitment" >{% trans "Choose Job Position" %}</label>
+                                        <div class="relative">
+                                            <select name="job_position_id" class="oh-select oh-select2 w-100" style="height: 35px"> 
+                                                 {% for job in recruitment.open_positions.all %}
+                                                    <option value="{{job.id}}">&nbsp;&nbsp;&nbsp;&nbsp;{{job.job_position}}</option>
+                                                {% endfor %}
+                                            </select>  
+                                            <span class="absolute left-2 top-3 text-sm text-primary-600 pointer-events-none">
+                                                <i class="fa-solid fa-briefcase"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="portfolio">{% trans "Portfolio" %}</label>
+                                        <div class="relative">
+                                            <input type="text" id="portfolio" name="portfolio" placeholder="e.g. https://www.linktoportfolio.com/" style="padding-left: 35px;">
+                                            <span
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="fa-solid fa-folder-open"></i></span>
+                                        </div>
+                                        {{form.portfolio.errors}}
+                                    </div>
+
+                                    <div>
+                                        <label class="required-star" for="gender">{% trans "Gender" %}</label>
+                                        <div class="relative">
+                                            {{form.gender}} 
+                                            <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600">
+                                                <i class="fa-solid fa-circle-dot"></i></span>
+                                            </div>
+                                            {{form.gender.errors}}
+                                    </div>
+
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="required-star" for="address">{% trans "Address" %}</label>
+                                    <div class="relative">
+                                        <textarea type="text" id="address" name="address" required rows="3" placeholder="Enter your address"
+                                            style="padding-left: 35px;"></textarea>
+                                            <span
+                                            class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="fa-solid fa-location-dot"></i></span>
+                                        </div>
+                                        {{form.address.errors}}
+                                </div>
+
+
+                                <div class="p-5 rounded-md bg-[#f5f5f5] mb-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- Profile Image Upload -->
+                                        <div>
+                                            <label class="{% if not recruitment.optional_profile_image %}required-star{% endif %}">{% trans "Profile Image" %}</label>
+                                            <label for="profileImageUpload"
+                                                class="bg-white flex flex-col items-center justify-center w-full h-[6rem] border-2 border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:border-gray-400 transition">
+                                                <div class="flex flex-col items-center justify-center">
+                                                    <i
+                                                        class="fa-solid fa-arrow-up-from-bracket text-xl mb-2 text-gray-500"></i>
+                                                    <p class="text-sm font-semibold text-gray-700">Upload photo</p>
+                                                    <p class="text-xs text-[#9e9e9e]">JPG, PNG up to 5MB</p>
+                                                </div>
+                                                <input id="profileImageUpload" type="file" name="profile"
+                                                    class="hidden" accept=".jpg, .jpeg, .png"
+                                                    {% if not recruitment.optional_profile_image %}required{% endif %}/>
+                                            </label>
+                                            {{form.profile.errors}}
+
+                                            <!-- Preview image -->
+                                            <div id="imagePreview" class="mt-4 hidden">
+                                                <img src="" alt="Image Preview"
+                                                    class="w-32 h-32 object-cover rounded border" />
+                                            </div>
+                                        </div>
+
+                                        <!-- Resume Upload -->
+                                        <div>
+                                            <label class="{% if not recruitment.optional_resume %}required-star{% endif %}">{% trans "Resume" %}</label>
+                                                <label for="resumeUpload"
+                                                class="bg-white flex flex-col items-center justify-center w-full h-[6rem] border-2 border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:border-gray-400 transition">
+                                                <div class="flex flex-col items-center justify-center">
+                                                    <i class="fa-solid fa-file-pdf text-xl mb-2 text-gray-500"></i>
+                                                    <p class="text-sm font-semibold text-gray-700">Upload PDF</p>
+                                                    <p class="text-xs text-[#9e9e9e]">Up to 5MB</p>
+                                                </div>
+                                                <input id="resumeUpload" name="resume" type="file" accept="application/pdf"
+                                                    class="hidden" {% if not recruitment.optional_resume %}required{% endif %}/>
+                                            </label>
+                                            {{form.resume.errors}}
+
+                                            <!-- PDF file name preview -->
+                                            <div id="pdfPreview" class="mt-4 text-sm text-gray-600 hidden">
+                                                <i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>
+                                                <span id="pdfFileName"></span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 ">
+                                    <div>
+                                        <label class="required-star" for="id_country">{% trans "Country" %}</label>
+                                        <div class="relative">
+                                            <select name="country" id="id_country" required class="oh-select oh-select-2" style="padding-left:30px;">
+                                        </select>
+                                            {{form.country.errors}}
+                                            <span class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-primary-600">
+                                                <i class="fa-solid fa-globe"></i></span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="required-star" for="id_state">{% trans "State" %}</label>
+                                        <div class="relative">
+                                            <select name="state" id="id_state" required class="oh-select oh-select-2" style="padding-left:30px;">
+                                            </select>
+                                                {{form.state.errors}}
+                                            <span class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-primary-600">
+                                                <i class="fa-solid fa-map"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="required-star" for="city">{% trans "City" %}</label>
+                                        <div class="relative">
+                                            <input type="text" id="city" required name="city" placeholder="e.g. Kerala" style="padding-left: 35px;">
+                                            {{form.city.errors}}
+                                            <span
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="fa-solid fa-city"></i></span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="required-star" for="zip">{% trans "Zip Code" %}</label>
+                                        <div class="relative">
+                                            <input type="text" id="zip" required name="zip" placeholder="e.g. 611 293" style="padding-left: 35px;">
+                                            {{form.zip.errors}}
+                                            <span
+                                            class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
+                                            class="fa-solid fa-location-dot"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" onclick="validateForm(event)"
+                                  class="px-4 py-2 bg-primary-600 text-white rounded-md text-sm flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                                  <i class="fa-solid fa-check"></i>
+                                  {% trans "Submit Application" %}
+                                </button>
+                              </div>
+                        </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+    <!-- Script to load components and all notifications -->
+    <script>
+        async function loadComponent(elementId, path, callback) {
+            try {
+                const response = await fetch(path);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+
+                if (typeof callback === "function") {
+                    callback(); // Run script after component loads
+                }
+            } catch (error) {
+                console.error("Error loading component:", error);
+            }
+        }
+
+       
+
+        function initSidebarToggle() {
+            // Reusable Sidebar Toggle
+            document.querySelectorAll(".toggleSidemenu").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const sidebarId = button.getAttribute("data-sidebar");
+                    const sidebar = document.getElementById(sidebarId);
+                    if (sidebar) {
+                        sidebar.classList.toggle("active");
+                        document.body.classList.toggle("overflow-hidden");
+                    }
+                });
+            });
+
+            document.querySelectorAll(".closeSidemenu").forEach((button) => {
+                button.addEventListener("click", () => {
+                    const sidebarId = button.getAttribute("data-sidebar");
+                    const sidebar = document.getElementById(sidebarId);
+                    if (sidebar) {
+                        sidebar.classList.remove("active");
+                        document.body.classList.remove("overflow-hidden");
+                    }
+                });
+            });
+        }
+    </script>
+
+    <script>
+        {% include 'country.js' %}
+        {% include 'select2.js' %}
+        var resume = "{{resume.file.url}}"
+        {% if resume %}
+          $("#resume").val(resume)
+        {% endif %}
+      
+        $('form label').each(function() {
+          var text = $(this).text();
+          if (text.startsWith('*')) {
+              $(this).html('<strong>' + text + '</strong>');
+            }
+        });
+        function validateForm(event) {
+          var fileInput = document.getElementById("photo");
+          var errorList = document.getElementById("error-list");
+          {% if not perms.recruitment.add_candidate %}
+            if (!fileInput.value) {
+              errorList.scrollIntoView({ behavior: "smooth", block: "center" });
+              errorList.style.display = "block"; // Show error message
+            } else {
+              errorList.style.display = "none"; // Hide error message
+            }
+          {% endif %}
+        }
+        $(document).ready(function(){
+          function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+              const cookies = document.cookie.split(";");
+              for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+                }
+              }
+            }
+            return cookieValue;
+          }
+          
+          function setIfEmpty(selector, value) {
+            if ($(selector).val() === "" ){
+              $(selector).val(value);
+              $(selector).change();
+      
+              $("[name=country]").parent().find("span").remove()
+              $("[name=country]").select2()
+            }
+          }
+      
+      
+          $("#matching_resume").on("click", function(){
+            var file = $(this).data("value");
+            var resume_id = $(this).data("id");
+            
+            $.ajax({
+              url: "{% url 'matching-resume-completion' %}",
+              type: 'GET',
+              data: {
+                "resume_id": resume_id,
+                "file":file
+              },
+              success: function(response) {
+                var full_name = response.full_name;
+                var address = response.address;
+                var country = response.country;
+                var state = response.state;
+                var phone = response.phone_number;
+                var dob = response.dob;
+                var email = response.email_id;
+                var zip = response.zip;
+      
+                setIfEmpty("[name='name']", full_name);
+                setIfEmpty("[name='email']", email);
+                setIfEmpty("[name='mobile']", phone);
+                setIfEmpty("[name='address']", address);
+                setIfEmpty("[name='country']", country);
+                setIfEmpty("[name='state']", state);
+                setIfEmpty("[name='zip']", zip);
+                $("[name='dob']").val(dob);
+      
+              },
+              error: function(xhr, status, error) {
+                  console.error('File upload failed: ', status, error);
+              }
+            });
+          })
+      
+          $("#matching_resume").click()
+      
+          $("[name='resume']").on("change", function(){
+            var formData = new FormData();
+            var file = this.files[0];
+            formData.append('resume', file);
+      
+            $.ajax({
+              url: "{% url 'resume-completion' %}",
+              type: 'POST',
+              data: formData,
+              processData: false,
+              contentType: false,
+              headers: {
+                  'X-CSRFToken': getCookie("csrftoken")
+              },
+              success: function(response) {
+      
+                var full_name = response.full_name;
+                var address = response.address;
+                var country = response.country;
+                var state = response.state;
+                var phone = response.phone_number;
+                var dob = response.dob;
+                var email = response.email_id;
+                var zip = response.zip;
+      
+                setIfEmpty("[name='name']", full_name);
+                setIfEmpty("[name='email']", email);
+                setIfEmpty("[name='mobile']", phone);
+                setIfEmpty("[name='address']", address);
+                setIfEmpty("[name='country']", country);
+                setIfEmpty("[name='state']", state);
+                setIfEmpty("[name='zip']", zip);
+                $("[name='dob']").val(dob);
+      
+              },
+              error: function(xhr, status, error) {
+                  console.error('File upload failed: ', status, error);
+              }
+            });
+          })
+        })
+      </script>
+      
+    <script>
+        // Image preview
+        document.getElementById("profileImageUpload").addEventListener("change", function () {
+            const file = this.files[0];
+            const previewContainer = document.getElementById("imagePreview");
+            const previewImg = previewContainer.querySelector("img");
+
+            if (file && file.type.startsWith("image/")) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    previewContainer.classList.remove("hidden");
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.classList.add("hidden");
+            }
+        });
+
+        // PDF file name preview
+        document.getElementById("resumeUpload").addEventListener("change", function () {
+            const file = this.files[0];
+            const previewContainer = document.getElementById("pdfPreview");
+            const fileNameSpan = document.getElementById("pdfFileName");
+
+            if (file && file.type === "application/pdf") {
+                fileNameSpan.textContent = file.name;
+                previewContainer.classList.remove("hidden");
+            } else {
+                previewContainer.classList.add("hidden");
+            }
+        });
+    </script>
+
+{% endblock content %}
