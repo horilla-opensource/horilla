@@ -31,8 +31,10 @@ from horilla_views.cbv_methods import login_required
 from horilla_views.forms import DynamicBulkUpdateForm
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
+    HorillaDetailedView,
     HorillaListView,
     HorillaNavView,
+    HorillaTabView,
     TemplateView,
 )
 
@@ -57,6 +59,16 @@ def toggle_profile_edit_access_url(self):
         reverse("profile-edit-access", kwargs={"emp_id": self.pk})
         + "?feature=profile_edit"
     )
+
+
+def get_subtitle(self):
+    """
+    Get subtitle for employee card
+    """
+    return self.get_job_position()
+
+
+Employee.get_subtitle = get_subtitle
 
 
 Employee.profile_edit_accessibility_display = profile_edit_accessibility_display
@@ -324,6 +336,119 @@ class EmployeesList(HorillaListView):
         ),
         ("Date of Joining", "employee_work_info__date_joining"),
     ]
+
+
+def get_detailed_work_url(self):
+    """
+    Get detailed work url
+    """
+    return reverse("employee-work-detailed", kwargs={"pk": self.pk})
+
+
+Employee.get_detailed_work_url = get_detailed_work_url
+
+
+@method_decorator(login_required, name="dispatch")
+class TabEmployeeWorkList(HorillaListView):
+    """
+    Self Employee Work List
+    """
+
+    model = Employee
+    filter_class = EmployeeFilter
+    # bulk_select_option = False
+    filter_selected = False
+    show_filter_tags = False
+
+    columns = [
+        (_("Badge Id"), "badge_id"),
+        (_("Job Position"), "employee_work_info__job_position_id"),
+        (_("Department"), "employee_work_info__department_id"),
+        (_("Shift"), "employee_work_info__shift_id"),
+        (_("Work Type"), "employee_work_info__work_type_id"),
+        (_("Employee Type"), "employee_work_info__employee_type_id"),
+        (_("Job Role"), "employee_work_info__job_role_id"),
+        (_("Reporting Manager"), "employee_work_info__reporting_manager_id"),
+        (_("Company"), "employee_work_info__company_id"),
+        (_("Work Email"), "employee_work_info__email"),
+        (_("Date of Joining"), "employee_work_info__date_joining"),
+    ]
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        print(kwargs)
+        self.row_attrs = """
+        hx-get="{get_detailed_work_url}"
+        hx-target="#genericModalBody"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        """
+
+    def get_queryset(self):
+        """
+        Get Queryset
+        """
+        if self.request.user.has_perm("employee.view_employee"):
+            # If user has permission to view all employees
+            return super().get_queryset().filter(id=self.request.GET.get("pk"))
+
+        return super().get_queryset(
+            queryset=self.model.objects.filter(employee_user_id=self.request.user.id),
+            filtered=True,
+        )
+
+
+@method_decorator(login_required, name="dispatch")
+class EmployeeWorkDetails(HorillaDetailedView):
+    """
+    Employee Detail View
+    """
+
+    title = _("Work Information")
+    model = Employee
+
+    body = [
+        (_("Badge Id"), "badge_id"),
+        (_("Job Position"), "employee_work_info__job_position_id"),
+        (_("Department"), "employee_work_info__department_id"),
+        (_("Shift"), "employee_work_info__shift_id"),
+        (_("Work Type"), "employee_work_info__work_type_id"),
+        (_("Employee Type"), "employee_work_info__employee_type_id"),
+        (_("Job Role"), "employee_work_info__job_role_id"),
+        (_("Reporting Manager"), "employee_work_info__reporting_manager_id"),
+        (_("Company"), "employee_work_info__company_id"),
+        (_("Work Email"), "employee_work_info__email"),
+        (_("Date of Joining"), "employee_work_info__date_joining"),
+    ]
+
+    def get_queryset(self):
+        """
+        Get Queryset
+        """
+        if self.request.user.has_perm("employee.view_employee"):
+            return super().get_queryset().filter(id=self.kwargs.get("pk"))
+
+        return self.model.objects.filter(employee_user_id=self.request.user.id)
+
+
+@method_decorator(login_required, name="dispatch")
+class WorkTab(HorillaTabView):
+    """
+    Work Tab
+    """
+
+    model = Employee
+    additional_tabs = []
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.tabs = [
+            {
+                "title": _("Work Information"),
+                "url": f"{reverse_lazy('employee-work-tab')}",
+            },
+        ] + self.additional_tabs
+        print("++++++++++++++++")
 
 
 @method_decorator(login_required, name="dispatch")

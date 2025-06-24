@@ -251,4 +251,5 @@ urlpatterns = [
         payslip_automation.DeleteAutoPayslipView.as_view(),
         name="pay-slip-automation-delete",
     ),
+    path("contract-tab", contracts.ContractsTabList.as_view(), name="contract-tab"),
 ]

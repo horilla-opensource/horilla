@@ -139,6 +139,50 @@ class ContractsList(HorillaListView):
 
 
 @method_decorator(login_required, name="dispatch")
+class ContractsTabList(HorillaListView):
+    """
+    List view for self contracts
+    """
+
+    model = Contract
+    filter_class = ContractFilter
+    # bulk_select_option = False
+    filter_selected = False
+    show_filter_tags = False
+    row_attrs = """
+                hx-get='{contracts_detail}?instance_ids={ordered_ids}'
+                hx-target="#genericModalBody"
+                data-target="#genericModal"
+                data-toggle="oh-modal-toggle"
+                """
+
+    columns = [
+        (_("Contract"), "contract_name"),
+        (_("Start Date"), "contract_start_date"),
+        (_("End Date"), "contract_end_date"),
+        (_("Wage Type"), "get_wage_type_display"),
+        (_("Basic Salary"), "wage"),
+        (_("Filing Status"), "filing_status"),
+        (_("Status"), "status_col"),
+    ]
+
+    def get_queryset(self):
+        """
+        Get Queryset
+        """
+        if self.request.user.has_perm("employee.view_employee"):
+            return (
+                super()
+                .get_queryset()
+                .filter(employee_id__id=self.request.GET.get("pk"))
+            )
+
+        return self.model.objects.filter(
+            employee_id__employee_user_id=self.request.user.id
+        )
+
+
+@method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required(perm="payroll.view_contract"), name="dispatch")
 class ContractsNav(HorillaNavView):
     """
