@@ -2361,7 +2361,6 @@ class AnnouncementForm(ModelForm):
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
             filter_template_path="employee_filters.html",
-            required=True,
         ),
         label="Employees",
     )
@@ -2421,13 +2420,31 @@ class AnnouncementForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        # Remove 'employees' field error if it's handled manually
         if isinstance(self.fields["employees"], HorillaMultiSelectField):
             self.errors.pop("employees", None)
-
             employee_data = self.fields["employees"].queryset.filter(
                 id__in=self.data.getlist("employees")
             )
             cleaned_data["employees"] = employee_data
+
+        # Get submitted M2M values
+        employees_selected = cleaned_data.get("employees")
+        departments_selected = self.cleaned_data.get("department")
+        job_positions_selected = self.cleaned_data.get("job_position")
+
+        # Check if none of the three are selected
+        if (
+            not employees_selected
+            and not departments_selected
+            and not job_positions_selected
+        ):
+            raise forms.ValidationError(
+                _(
+                    "You must select at least one of: Employees, Department, or Job Position."
+                )
+            )
 
         return cleaned_data
 
