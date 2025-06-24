@@ -56,6 +56,16 @@ from recruitment.models import (
 _getattribute = getattribute
 
 
+def get_subtitle(self):
+    """
+    Get subtitle for employee card
+    """
+    return self.get_job_position()
+
+
+Candidate.get_subtitle = get_subtitle
+
+
 def clean_column_name(question):
     """
     Convert the question text into a safe attribute name by:
