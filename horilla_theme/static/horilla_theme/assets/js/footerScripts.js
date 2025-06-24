@@ -10,63 +10,63 @@ async function loadComponent(elementId, path) {
 
 // Gender Chart
 
-document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document.getElementById("genderChart").getContext("2d");
+// document.addEventListener("DOMContentLoaded", () => {
+//     const ctx = document.getElementById("genderChart").getContext("2d");
 
-    // Load image only once
-    const centerImage = new Image();
-    centerImage.src = "/static/horilla_theme/assets/img/icons/gender.svg";
+//     // Load image only once
+//     const centerImage = new Image();
+//     centerImage.src = "/static/horilla_theme/assets/img/icons/gender.svg";
 
-    new Chart(ctx, {
-        type: "doughnut",
-        data: {
-            labels: ["Male", "Female", "Others"],
-            datasets: [
-                {
-                    data: [35, 55, 10],
-                    backgroundColor: ["#cfe9ff", "#ffc9de", "#e6ccff"],
-                    borderWidth: 0,
-                },
-            ],
-        },
-        options: {
-            cutout: "70%",
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: "bottom",
-                    labels: {
-                        usePointStyle: true,
-                        pointStyle: "circle",
-                        padding: 20,
-                        font: {
-                            size: 12,
-                        },
-                        color: "#000",
-                    },
-                },
-            },
-        },
-        plugins: [
-            {
-                id: "centerIcon",
-                afterDraw(chart) {
-                    if (!centerImage.complete) return; // Wait till image is loaded
-                    const ctx = chart.ctx;
-                    const size = 70;
-                    ctx.drawImage(
-                        centerImage,
-                        chart.width / 2 - size / 2,
-                        chart.height / 2 - size / 2 - 20,
-                        size,
-                        size
-                    );
-                },
-            },
-        ],
-    });
-});
+//     new Chart(ctx, {
+//         type: "doughnut",
+//         data: {
+//             labels: ["Male", "Female", "Others"],
+//             datasets: [
+//                 {
+//                     data: [35, 55, 10],
+//                     backgroundColor: ["#cfe9ff", "#ffc9de", "#e6ccff"],
+//                     borderWidth: 0,
+//                 },
+//             ],
+//         },
+//         options: {
+//             cutout: "70%",
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             plugins: {
+//                 legend: {
+//                     position: "bottom",
+//                     labels: {
+//                         usePointStyle: true,
+//                         pointStyle: "circle",
+//                         padding: 20,
+//                         font: {
+//                             size: 12,
+//                         },
+//                         color: "#000",
+//                     },
+//                 },
+//             },
+//         },
+//         plugins: [
+//             {
+//                 id: "centerIcon",
+//                 afterDraw(chart) {
+//                     if (!centerImage.complete) return; // Wait till image is loaded
+//                     const ctx = chart.ctx;
+//                     const size = 70;
+//                     ctx.drawImage(
+//                         centerImage,
+//                         chart.width / 2 - size / 2,
+//                         chart.height / 2 - size / 2 - 20,
+//                         size,
+//                         size
+//                     );
+//                 },
+//             },
+//         ],
+//     });
+// });
 
 // Department chart
 
@@ -567,6 +567,28 @@ $(document).on("htmx:afterSettle", function (event) {
             dropdownMenu.show();
         }
     });
+
+    // method for sticky issue
+    const $fixedTable = $('.fixed-table');
+    if ($fixedTable.length === 0) return;
+
+    const bulk_select_option = $fixedTable.data('bulk-select-option');
+    if (bulk_select_option) {
+        $('tr').each(function() {
+            const $cells = $(this).find('th, td');
+            if ($cells.length > 0) {
+                $cells.eq(0).addClass('stickyleft');
+                $cells.eq(1).addClass('stickyleft-second');
+            }
+        });
+    } else {
+        $('tr').each(function() {
+            const $cells = $(this).find('th, td');
+            if ($cells.length > 0) {
+                $cells.eq(0).addClass('stickyleft');
+            }
+        });
+    };
 });
 
 $(".oh-password-input--toggle").on("click", function (e) {

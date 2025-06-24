@@ -3,7 +3,7 @@
 <div class="accordion-wrapper space-y-2">
     {% for question, answers in feedback_overview.items %}
       <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
-        
+
         <!-- Accordion Button -->
         <button
           class="accordion-btn w-full flex justify-between items-center px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
@@ -14,7 +14,7 @@
             <span class="icon text-xl font-bold">+</span>
           </div>
         </button>
-  
+
         <!-- Accordion Panel -->
         <div class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
           <div class="py-3">
@@ -47,7 +47,7 @@
                                   </li>
                                 {% endfor %}
                               </ul>
-                              
+
                           {% elif value.1.type == '3' %}
                             <div class="oh-input__group">
                               <div class="oh-input-picker-group">
@@ -98,7 +98,7 @@
       </div>
     {% endfor %}
   </div>
-  
+
 
     <!-- ACCORDION -->
     <script>

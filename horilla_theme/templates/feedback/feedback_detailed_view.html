@@ -81,7 +81,7 @@
     <!-- Top Bar -->
     <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-5 border-b border-dark-50 pb-3">
       <h3 class="text-md font-semibold">Feedback: {{ feedback }}</h3>
-  
+
       <div class="flex items-center flex-wrap gap-1">
         {% if perms.pms.change_feedback or request.user|is_reportingmanager %}
           <div class="relative dropdown-wrapper">
@@ -100,7 +100,7 @@
         {% else %}
           <label class="px-5 py-2 bg-white rounded-md text-xs border border-primary-500">{{ feedback.get_status_display }}</label>
         {% endif %}
-  
+
         <!-- Action Buttons -->
         {% if perms.pms.change_feedback or perms.pms.delete_feedback or request.user.employee_get == feedback.created_by %}
           {% if not feedback_started and perms.pms.change_feedback or request.user.employee_get == feedback.created_by %}
@@ -146,25 +146,25 @@
         {% endif %}
       </div>
     </div>
-  
+
     <!-- Feedback Info Section -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       <div class="mb-2 flex gap-5 items-center">
         <span class="font-medium text-sm text-[#565E6C] w-28">{% trans "Owner" %}</span>
-        <p class="text-sm font-semibold flex items-center gap-5">: 
-          <img src="{{ feedback.employee_id.get_avatar }}" alt="owner" class="w-6 h-6 rounded-full inline-block"> 
+        <p class="text-sm font-semibold flex items-center gap-5">:
+          <img src="{{ feedback.employee_id.get_avatar }}" alt="owner" class="w-6 h-6 rounded-full inline-block">
           <span>{{ feedback.employee_id }}</span>
         </p>
       </div>
-  
+
       <div class="mb-2 flex gap-5 items-center">
         <span class="font-medium text-sm text-[#565E6C] w-28">{% trans "Start Date" %}</span>
         <p class="text-sm font-semibold flex items-center gap-5">: <span>{{ feedback.start_date }}</span></p>
       </div>
-  
+
       <div class="mb-2 flex gap-5 items-center">
         <span class="font-medium text-sm text-[#565E6C] w-28">{% trans "End Date" %}</span>
-        <p class="text-sm font-semibold flex items-center gap-5">: 
+        <p class="text-sm font-semibold flex items-center gap-5">:
           <span>  {{ feedback.end_date }}</span>
           <span title="Due {% if feedback.end_date == today %} today {% else %}in {{ feedback.end_date|sub:today }}{% endif %}">
             <ion-icon
@@ -173,10 +173,10 @@
           </span>
         </p>
       </div>
-  
+
       <div class="mb-2 flex gap-5 items-center ">
         <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Answered Employees" %}</span>
-        <p class="text-sm font-semibold flex items-center gap-5">: 
+        <p class="text-sm font-semibold flex items-center gap-5">:
         <ul class="flex items-center gap-1">
           {% for employee in employee_statics.yes %}
             {% if employee %}
@@ -185,10 +185,10 @@
           {% endfor %}
         </ul></p>
       </div>
-  
+
       <div class="mb-2 flex gap-5 items-center">
         <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Employees not answered yet" %}</span>
-        <p class="text-sm font-semibold flex items-center gap-5">: 
+        <p class="text-sm font-semibold flex items-center gap-5">:
         <ul class="flex items-center gap-1">
           {% for employee in employee_statics.no %}
             {% if employee %}
@@ -197,7 +197,7 @@
           {% endfor %}
         </ul></p>
       </div>
-  
+
       {% if perms.pms.view_feedback and feedback.cyclic_feedback %}
         <div class="mb-2 flex gap-5 items-center">
           <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Cyclic feedback period" %}</span>
@@ -221,14 +221,14 @@
       <div class="mytab flex sticky top-0 bg-white" role="tablist">
           <button
             class="tab-button px-4 py-2 text-sm font-medium text-blue-600 w-1/2 active"
-            onclick="switchTab(event);" 
+            onclick="switchTab(event);"
             data-target="#feedback-answers"
             data-tab="feedback-answers">
             {% trans 'Feedback Answers' %}
           </button>
           <button
             class="tab-button px-4 py-2 text-sm font-medium w-1/2"
-            onclick="switchTab(event); $('#feedback-overview-button').click()" 
+            onclick="switchTab(event); $('#feedback-overview-button').click()"
             data-target="#feedback-overview"
             data-tab='feedback-overview'>
             {% trans 'Feedback Overview' %}
@@ -431,7 +431,7 @@
 
 
 
-<button 
+<button
   hx-get="{% url 'get-feedback-overview' feedback.id %}"
   hx-target="#feedback-overview" id="feedback-overview-button" hidden>
 </button>
