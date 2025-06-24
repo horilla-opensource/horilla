@@ -259,7 +259,7 @@ urlpatterns = [
         cbvs.BulkFeedbackFormView.as_view(),
         name="bulk-feedback-create",
     ),
-    path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
+    # path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
     path("feedback-delete/<int:id>", views.feedback_delete, name="feedback-delete"),
     path("feedback-archive/<int:id>", views.feedback_archive, name="feedback-archive"),
     path("get-collegues", views.get_collegues, name="get-collegues"),

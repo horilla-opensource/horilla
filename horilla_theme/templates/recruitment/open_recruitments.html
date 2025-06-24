@@ -42,7 +42,7 @@
 </head>
 
 <body class="bg-secondary-50 font-[Inter,_sans-serif]">
-    
+
     {% if messages %}
     <div class="oh-alert-container">
         {% for message in messages %}
@@ -52,7 +52,7 @@
         {% endfor %}
     </div>
 {% endif %}
-   
+
     <div class="p-5 flex justify-center items-center h-screen flex-col">
         <div class="w-full max-w-5xl pl-5 flex justify-start mb-2">
             {% if request.user.is_authenticated %}
@@ -187,10 +187,10 @@
             document.body.classList.toggle("overflow-hidden");
         }
         });
-    });    
+    });
     });
 
-   
+
 </script>
 </body>
 

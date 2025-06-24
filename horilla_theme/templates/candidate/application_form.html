@@ -56,14 +56,14 @@
                             {% if resume %}
                                 <div class="col-12 col-md-6 col-lg-6 sticky">
                                     <iframe style="width: 100%;height:90vh" height="100" src="{{ resume.file.url }}" frameborder="0"></iframe>
-                                    
+
                                 </div>
                                 {% else %}
                                     <p class="text-sm mb-2">{{recruitment.description|safe}}</p>
                                 {% endif %}
                         </div>
                     </div>
-                    
+
                     {% comment %} <form action="" method="post" enctype="multipart/form-data">  {% endcomment %}
                         {% if messages %}
                             <div class="oh-alert-container">
@@ -73,7 +73,7 @@
                                     </div>
                                 {% endfor %}
                             </div>
-                        {% endif %} 
+                        {% endif %}
                         <form class="col-span-12 lg:col-span-8 bg-white rounded-md shadow-card p-5 myform" method="post" enctype="multipart/form-data">
                             {% csrf_token %}
                             <div class= "lg:h-[calc(100vh_-_160px)] overflow-hidden overflow-y-auto">
@@ -116,17 +116,17 @@
                                             />
                                         <label for="recuitment" >{% trans "Choose Job Position" %}</label>
                                         <div class="relative">
-                                            <select name="job_position_id" class="oh-select oh-select2 w-100" style="height: 35px"> 
+                                            <select name="job_position_id" class="oh-select oh-select2 w-100" style="height: 35px">
                                                  {% for job in recruitment.open_positions.all %}
                                                     <option value="{{job.id}}">&nbsp;&nbsp;&nbsp;&nbsp;{{job.job_position}}</option>
                                                 {% endfor %}
-                                            </select>  
+                                            </select>
                                             <span class="absolute left-2 top-3 text-sm text-primary-600 pointer-events-none">
                                                 <i class="fa-solid fa-briefcase"></i>
                                             </span>
                                         </div>
                                     </div>
-                                    
+
                                     <div>
                                         <label for="portfolio">{% trans "Portfolio" %}</label>
                                         <div class="relative">
@@ -141,7 +141,7 @@
                                     <div>
                                         <label class="required-star" for="gender">{% trans "Gender" %}</label>
                                         <div class="relative">
-                                            {{form.gender}} 
+                                            {{form.gender}}
                                             <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600">
                                                 <i class="fa-solid fa-circle-dot"></i></span>
                                             </div>
@@ -267,7 +267,7 @@
                               </div>
                         </form>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -295,7 +295,7 @@
             }
         }
 
-       
+
 
         function initSidebarToggle() {
             // Reusable Sidebar Toggle
@@ -330,7 +330,7 @@
         {% if resume %}
           $("#resume").val(resume)
         {% endif %}
-      
+
         $('form label').each(function() {
           var text = $(this).text();
           if (text.startsWith('*')) {
@@ -365,22 +365,22 @@
             }
             return cookieValue;
           }
-          
+
           function setIfEmpty(selector, value) {
             if ($(selector).val() === "" ){
               $(selector).val(value);
               $(selector).change();
-      
+
               $("[name=country]").parent().find("span").remove()
               $("[name=country]").select2()
             }
           }
-      
-      
+
+
           $("#matching_resume").on("click", function(){
             var file = $(this).data("value");
             var resume_id = $(this).data("id");
-            
+
             $.ajax({
               url: "{% url 'matching-resume-completion' %}",
               type: 'GET',
@@ -397,7 +397,7 @@
                 var dob = response.dob;
                 var email = response.email_id;
                 var zip = response.zip;
-      
+
                 setIfEmpty("[name='name']", full_name);
                 setIfEmpty("[name='email']", email);
                 setIfEmpty("[name='mobile']", phone);
@@ -406,21 +406,21 @@
                 setIfEmpty("[name='state']", state);
                 setIfEmpty("[name='zip']", zip);
                 $("[name='dob']").val(dob);
-      
+
               },
               error: function(xhr, status, error) {
                   console.error('File upload failed: ', status, error);
               }
             });
           })
-      
+
           $("#matching_resume").click()
-      
+
           $("[name='resume']").on("change", function(){
             var formData = new FormData();
             var file = this.files[0];
             formData.append('resume', file);
-      
+
             $.ajax({
               url: "{% url 'resume-completion' %}",
               type: 'POST',
@@ -431,7 +431,7 @@
                   'X-CSRFToken': getCookie("csrftoken")
               },
               success: function(response) {
-      
+
                 var full_name = response.full_name;
                 var address = response.address;
                 var country = response.country;
@@ -440,7 +440,7 @@
                 var dob = response.dob;
                 var email = response.email_id;
                 var zip = response.zip;
-      
+
                 setIfEmpty("[name='name']", full_name);
                 setIfEmpty("[name='email']", email);
                 setIfEmpty("[name='mobile']", phone);
@@ -449,7 +449,7 @@
                 setIfEmpty("[name='state']", state);
                 setIfEmpty("[name='zip']", zip);
                 $("[name='dob']").val(dob);
-      
+
               },
               error: function(xhr, status, error) {
                   console.error('File upload failed: ', status, error);
@@ -458,7 +458,7 @@
           })
         })
       </script>
-      
+
     <script>
         // Image preview
         document.getElementById("profileImageUpload").addEventListener("change", function () {
