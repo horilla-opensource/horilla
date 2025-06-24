@@ -9,7 +9,7 @@
 <div class="col-span-12">
     <form  action="{% url 'payroll-settings' %}" method="post">
         {% csrf_token %}
-       
+
                 <div class="flex align-center gap-2 ">
                     <div class="w-full">
                         <label>{% trans "Currency Symbol" %}</label>
@@ -29,7 +29,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                    <button class="btn mt-[23px] mb-[10px]" type="submit"> 
+                    <button class="btn mt-[23px] mb-[10px]" type="submit">
                         {% trans 'Save Changes' %}</button>
                 </div>
     </form>

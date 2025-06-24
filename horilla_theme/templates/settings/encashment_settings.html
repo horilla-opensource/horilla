@@ -9,7 +9,7 @@
 <div class="col-span-12">
     <form  action="{% url 'encashment-condition-create' %}" method="post">
         {% csrf_token %}
-       
+
                 <div class="flex align-center gap-2 ">
                     <div class="w-full">
                         <div class="flex space-x-2 pb-2">
@@ -27,7 +27,7 @@
                         </div>
                         {{ encashment_form.leave_amount }}
                     </div>
-                    <button class="btn mt-[23px] mb-[12px]" type="submit"> 
+                    <button class="btn mt-[23px] mb-[12px]" type="submit">
                         {% trans 'Save Changes' %}</button>
                 </div>
     </form>

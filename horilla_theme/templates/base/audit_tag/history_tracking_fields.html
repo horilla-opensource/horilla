@@ -26,7 +26,7 @@
         <span class="oh-info mr-2" title="{% trans "By enabling this feature, you can save the history of employee work information during updates." %}">
         </span>        </div>
         <label class="toggle-label">
-            <input type="checkbox" class="toggle-input" name="work_info_track" 
+            <input type="checkbox" class="toggle-input" name="work_info_track"
                 data-target="#limitFields"onchange="$(this).closest('form').find('input[type=submit]').click()" {% if history_tracking_instance.work_info_track %} checked {% endif %}>
             <div class="toggle-switch"></div>
         </label>

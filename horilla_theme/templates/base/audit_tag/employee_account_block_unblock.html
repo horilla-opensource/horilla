@@ -57,7 +57,7 @@ hx-trigger="change from:#enableBlockUnblock" hx-on-htmx-after-request="setTimeou
                 confirmButtonText: "{{ _('Confirm') }}",
                 cancelButtonText: "{{ _('Cancel') }}",
                 confirmButtonColor: 'rgb(0, 128, 0)',
-                cancelButtonColor: 'rgb(221, 51, 51)'  
+                cancelButtonColor: 'rgb(221, 51, 51)'
             }).then((result) => {
                 if (result.isConfirmed) {
                     const formData = new FormData($form[0]);

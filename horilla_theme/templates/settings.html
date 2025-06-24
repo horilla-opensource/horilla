@@ -321,9 +321,9 @@
                                     </a></li>
                                     {% endif %}
                                     {% endif %}
-                                    
 
-                                        
+
+
                                     </ul>
                                 </div>
                             </div>
@@ -348,7 +348,7 @@
                                                 </a></li>
                                         {% endif %}
 
-                                     
+
                                     </ul>
                                 </div>
                             </div>
@@ -365,7 +365,7 @@
                             <div
                                 class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
                                 <div class="py-3">
-                                    <ul> 
+                                    <ul>
                                         {% if perms.pms.view_payslipautogenerate %}
                                         <li class="py-1"><a id="bonusPoint"
 															href="{% url 'bonus-point-setting' %}"
@@ -401,7 +401,7 @@
 															href="{% url 'ticket-type-view' %}"
                                                 class="hover:text-primary-600 transition duration-300 text-[13px]">{% trans "Ticket Type" %}
                                                 </a></li>
-                                        {% endif %}  
+                                        {% endif %}
                                         {% if perms.employee.view_emplyeetag %}
                                         <li class="py-1"><a id="help_desk"
 															href="{% url 'helpdesk-tag-view' %}"
@@ -435,13 +435,13 @@
                                                 class="hover:text-primary-600 transition duration-300 text-[13px]">General
                                                 Settings</a></li>
                                         {% endif %}
-                                       
+
                                     </ul>
                                 </div>
                             </div>
                         </div>
                         {% endif %}
-                        
+
                     </div>
                 </div>
 
@@ -454,7 +454,7 @@
                     <div
                         class="h-[calc(100vh_-_190px)] overflow-hidden overflow-y-auto overflow-x-auto">
                         {% block settings %} {% endblock settings %}
-                         
+
                     </div>
                 </div>
 

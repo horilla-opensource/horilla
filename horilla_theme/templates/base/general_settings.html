@@ -8,14 +8,14 @@
                 {% include "announcement/expiry_day.html" %}
             {% endif %}
             {% if perms.base.view_dynamicpagination %}
-                {% include "base/dynamic_pagination/pagination_settings.html" %}            
+                {% include "base/dynamic_pagination/pagination_settings.html" %}
             {% endif %}
         </div>
     </div>
 </div>
 <div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
     <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
-        {% trans 'Employee Account Restrictions' %} 
+        {% trans 'Employee Account Restrictions' %}
     </h5>
     <div class="p-4">
         <div class="grid grid-cols-12 gap-4 myform">
@@ -23,7 +23,7 @@
                 {% if perms.horilla_audit.view_accountblockunblock %}
                     {% include "base/audit_tag/employee_account_block_unblock.html" %}
                 {% endif %}
-               
+
         </div>
     </div>
 </div>
@@ -45,7 +45,7 @@
     </h5>
     <div class="p-4">
         <div class="grid grid-cols-12 gap-4 myform">
-        
+
         {% if "attendance"|app_installed and perms.attendance.change_attendancegeneralsetting %}
          {% include "attendance/settings/settings.html" %}
         {% endif %}
@@ -70,7 +70,7 @@
     </h5>
     <div class="p-4">
         <div class="grid grid-cols-12 gap-4 myform">
-           
+
             {% if perms.employee.change_employeegeneralsetting %}
             {% include "settings/settings.html" %}
             {% endif %}
@@ -84,7 +84,7 @@
     </h5>
     <div class="p-4">
         <div class="grid grid-cols-12 gap-4 myform">
-           
+
         {% if "payroll"|app_installed %}
             {% if perms.payroll.change_encashmentgeneralsetting %}
                 {% include "settings/encashment_settings.html" %}
@@ -100,7 +100,7 @@
     </h5>
     <div class="p-4">
         <div class="grid grid-cols-12 gap-4 myform">
-           
+
         {% if perms.base.view_historytrackingfields %}
             {% include "base/audit_tag/history_tracking_fields.html" %}
         {% endif %}
@@ -114,11 +114,11 @@
     </h5>
     <div class="p-4">
         <div class="grid grid-cols-12 gap-4 myform">
-           
+
         {% if "payroll"|app_installed and perms.payroll.view_payrollsettings %}
             {% include "payroll/settings/payroll_settings.html" %}
         {% endif %}
-        
+
 
 
         </div>
