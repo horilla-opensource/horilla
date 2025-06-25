@@ -89,8 +89,8 @@
         <div class="w-full overflow-x-auto overflow-y-auto" id="shiftRequestApprove" hx-get="{% url 'dashboard-shift-request' %}" hx-trigger="load">
         </div>
     </div>
-    {% comment %} {% if not 'gender_chart' in charts  %} {% endcomment %}
-        {% comment %} {% if  'gender_chart'|feature_is_accessible:request or perms.employee.view_employee or request.user|is_reportingmanager %} {% endcomment %}
+    {% if not 'gender_chart' in charts  %}
+        {% if  'gender_chart'|feature_is_accessible:request or perms.employee.view_employee or request.user|is_reportingmanager %}
             <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="text-md font-semibold">{% trans "Gender Chart" %}</h3>
@@ -101,8 +101,8 @@
                     </div>
                 </div>
             </div>
-        {% comment %} {% endif %} {% endcomment %}
-    {% comment %} {% endif %} {% endcomment %}
+        {% endif %}
+    {% endif %}
 
     <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
         <div class="flex justify-between items-center mb-4">
@@ -202,9 +202,8 @@
     </div>
 
     <!-- Recent Activities -->
-    {% comment %} {% if "pms"|app_installed and not 'key_result_status' in charts %} {% endcomment %}
-        {% comment %} {% if perms.pms.view_employeekeyresult or request.user|is_reportingmanager %} {% endcomment %}
-
+    {% if "pms"|app_installed and not 'key_result_status' in charts %}
+        {% if perms.pms.view_employeekeyresult or request.user|is_reportingmanager %}
             <div class="xl:col-span-3 md:col-span-5 col-span-12 bg-white p-6 rounded-md shadow-card" style="width:98%;">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="text-md font-semibold">{% trans "Key Result Status" %}</h3>
@@ -213,8 +212,8 @@
                     <canvas id="keyResultChart" style="cursor: pointer"></canvas>
                 </div>
             </div>
-        {% comment %} {% endif %} {% endcomment %}
-    {% comment %} {% endif %} {% endcomment %}
+        {% endif %}
+    {% endif %}
 
     <div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
         <div class="flex justify-between items-center mb-2">
@@ -253,280 +252,226 @@
         {% endif %}
     {% endif %}
 
+    {% if "leave"|app_installed %}
+        {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
+            <div class="xl:col-span-3 md:col-span-4 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "On Leave" %}</h3>
+                </div>
+                <div class="flex-col items-center justify-center" hx-get="{% url 'employee-leave' %}" hx-trigger="load">
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
 
 
 
 
-    <div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-        <div class="flex justify-between items-center mb-2">
-            <h3 class="text-md font-semibold">Offline Employees</h3>
-        </div>
-        <div class="overflow-hidden overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr class="border-b border-[#ececec]">
-                        <th class="text-sm font-medium text-left p-3 pl-0">
-                            <span class="flex w-max">Employee</span>
-                        </th>
-                        <th class="text-sm font-medium text-left p-3 pl-0">
-                            <span class="flex w-max">Mail</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">
-                                    Expected working
-                                </button>
-                            </div>
-                        </td>
-                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
-                            <button class="cursor-pointer">
-                                <img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" />
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">
-                                    Expected working
-                                </button>
-                            </div>
-                        </td>
-                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
-                            <button class="cursor-pointer">
-                                <img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" />
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">
-                                    Expected working
-                                </button>
-                            </div>
-                        </td>
-                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
-                            <button class="cursor-pointer">
-                                <img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" />
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">
-                                    Expected working
-                                </button>
-                            </div>
-                        </td>
-                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
-                            <button class="cursor-pointer">
-                                <img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" />
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">
-                                    Expected working
-                                </button>
-                            </div>
-                        </td>
-                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
-                            <button class="cursor-pointer">
-                                <img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" />
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                                <button class="cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs">
-                                    Expected working
-                                </button>
-                            </div>
-                        </td>
-                        <td class="text-xs text-left p-3 pl-0 text-[#666]">
-                            <button class="cursor-pointer">
-                                <img src="/static/horilla_theme/assets/img/icons/email.svg" alt="" width="25" />
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 
     {% if "asset"|app_installed and not 'asset_request_approve' in charts %}
-    {% if perms.asset.change_assetrequest or request.user|is_reportingmanager %}
-        <div class="xl:col-span-4 md:col-span-12 col-span-12 bg-white p-6 rounded-md shadow-card">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-md font-semibold">{% trans "Asset Requests To Approve" %}</h3>
+        {% if perms.asset.change_assetrequest or request.user|is_reportingmanager %}
+            <div class="xl:col-span-7 md:col-span-8 col-span-12 bg-white p-6 rounded-md shadow-card" >
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Asset Requests To Approve" %}</h3>
+                </div>
+                <div class="flex flex-col items-center justify-center" hx-get='{% url "dashboard-asset-request-approve" %}' hx-trigger="load">
+                    {% comment %} <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4" />
+                    <p class="text-[#666]">No records available at the moment</p> {% endcomment %}
+                </div>
             </div>
-            <div class="flex flex-col items-center justify-center h-full" hx-get='{% url "dashboard-asset-request-approve" %}' hx-trigger="load">
-                {% comment %} <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4" />
-                <p class="text-[#666]">No records available at the moment</p> {% endcomment %}
-            </div>
-        </div>
+        {% endif %}
     {% endif %}
-{% endif %}
 
-    <div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
-        <div class="flex justify-between items-center mb-2">
-            <h3 class="text-md font-semibold">Overtime TO Approve</h3>
+
+    {% if "attendance"|app_installed %}
+        {% if perms.employee.view_employee or request.user|is_reportingmanager %}
+            {% if not 'online_employees' in charts %}
+                <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Online Employees" %}</h3>
+                    </div>
+                    <div class="flex-col items-center justify-center h-[400px]" hx-get="{% url 'not-out-yet' %}" hx-trigger="load">
+                    </div>
+                </div>
+            {% endif %}
+            {% if not 'offline_employees' in charts %}
+                <div class="xl:col-span-5 md:col-span-7 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Offline Employees" %}</h3>
+                    </div>
+                    <div class="flex-col items-center justify-center" hx-get="{% url 'not-in-yet' %}" hx-trigger="load">
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if not 'overtime_approve' in charts %}
+                <div class="xl:col-span-5 md:col-span-7 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Overtime To Approve" %}</h3>
+                    </div>
+                    <div class="flex-col items-center justify-center" hx-get="{% url 'dashboard-overtime-approve' %}" hx-trigger="load">
+                    </div>
+                </div>
+            {% endif %}
+    {% endif %}
+
+
+
+    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-md font-semibold">
+                {% trans "Attendance Analytic" %}
+            </h3>
         </div>
-        <div class="overflow-hidden overflow-x-auto">
-            <table class="w-full">
-                <thead>
-                    <tr class="border-b border-[#ececec]">
-                        <th class="text-sm font-medium text-left p-3 pl-0">
-                            <span class="flex w-max">Employee</span>
-                        </th>
-                        <th class="text-sm font-medium text-left p-3 pl-0">
-                            <span class="flex w-max">Overtime</span>
-                        </th>
-                        <th class="text-sm font-medium text-left p-3 pl-0">
-                            <span class="flex w-max">Action</span>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                            </div>
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            10:45
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-1">
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                            </div>
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            10:45
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-1">
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                            </div>
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            10:45
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-1">
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                            </div>
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            10:45
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-1">
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                            </div>
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            10:45
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-1">
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-[#ececec]">
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-3 items-center w-max">
-                                <img src="/static/horilla_theme/assets/icons/user1.png" alt="" width="30" /><span>Richard Dom</span>
-                            </div>
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            10:45
-                        </td>
-                        <td class="text-sm text-left p-3 pl-0 text-[#666]">
-                            <div class="flex gap-1">
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                                <button class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="flex gap-2 justify-between items-center mb-4">
+            <select id="type" class="oh-select" name="type" onchange="changeView(this)" style="
+                width: 150px;
+                padding: 5px;
+                color: #5e5c5c;
+                border-radius: 4px;
+                border: 1px solid #d1d5db;
+            ">
+                <option value="day">{% trans "Day" %}</option>
+                <option value="weekly">{% trans "Weekly" %}</option>
+                <option value="monthly">{% trans "Monthly" %}</option>
+                <option value="date_range">{% trans "Date range" %}</option>
+            </select>
+            <input type="date" id="attendance_month" onchange="changeMonth()" class="oh-select" style="
+                width: 150px;
+                padding: 5px;
+                color: #5e5c5c;
+                border-radius: 4px;
+                border: 1px solid #d1d5db;
+            " />
+        </div>
+        <div class="w-full max-w-xs mx-auto">
+            <div class="relative">
+                <canvas id="dailyAnalytic"></canvas>
+            </div>
         </div>
     </div>
+    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">{% trans "Hours Chart" %}</h3>
+            <input type="month" class="mb-2 float-end pointer oh-select"
+            id="hourAccountMonth" onchange="dynamicMonth($(this))"
+            style="
+            width: 150px;
+            padding: 5px;
+            color: #5e5c5c;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        " />
+          </div>
+        <div class="w-full max-w-xs mx-auto">
+            <div class="relative">
+                <canvas id="pendingHoursCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {% if "leave"|app_installed and not 'overall_leave_chart' in charts %}
+        {% if perms.leave.view_leaverequest %}
+            <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Overall Leave" %}</h3>
+                        <select class="oh-select oh-select--sm float-end w-[110px]" name="" id="overAllLeaveSelect" >
+                            <option value="today" selected>{% trans "Today" %}</option>
+                            <option value="week">{% trans "This Week" %}</option>
+                            <option value="month">{% trans "This Month" %}</option>
+                            <option value="year">{% trans "This Year" %}</option>
+                        </select>
+                    </div>
+                    <div class="w-full max-w-xs mx-auto">
+                        <div class="relative">
+                            <canvas id="overAllLeave"></canvas>
+                        </div>
+                    </div>
+                </div>
+        {% endif %}
+    {% endif %}
+
+    {% if "leave"|app_installed %}
+        {% if not 'leave_request_approve' in charts %}
+            {% if perms.leave.change_leaverequest or request.user|is_reportingmanager %}
+                <div class="xl:col-span-5 md:col-span-7 col-span-12 bg-white p-6 rounded-md shadow-card">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-md font-semibold">{% trans "Leave Requests To Approve" %}</h3>
+                        </div>
+                        <div class="flex-col items-center justify-center" hx-get="{% url 'leave-request-and-approve' %}" hx-trigger="load">
+                        </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if not 'leave_allocation_approve' in charts %}
+            {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
+                <div class="xl:col-span-6 md:col-span-8 col-span-12 bg-white p-6 rounded-md shadow-card">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-md font-semibold">{% trans "Leave Allocation Request To Approve" %}</h3>
+                        </div>
+                        <div class="flex-col items-center justify-center" hx-get="{% url 'leave-allocation-approve' %}" hx-trigger="load">
+                        </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endif%}
+
+    <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">{% trans "Employees Chart" %}</h3>
+        </div>
+        <div class="w-full max-w-xs mx-auto">
+            <div class="relative">
+                <canvas id="totalEmployees"></canvas>
+            </div>
+            <div id="employeeChartLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+            ></div>
+        </div>
+    </div>
+
+    {% if "pms"|app_installed %}
+        {% if not 'feedback_answer' in charts %}
+            <div class="xl:col-span-6 md:col-span-8 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Feedback To Answers" %}</h3>
+                </div>
+                <div class="flex-col items-center justify-center" hx-get="{% url 'dashboard-feedback-answer' %}" hx-trigger="load">
+                </div>
+            </div>
+        {% endif %}
+        {% if not 'feedback_status' in charts %}
+            {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
+                <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Feedback Status" %}</h3>
+                    </div>
+                    <div class="w-full max-w-xs mx-auto">
+                        <div class="relative">
+                            <canvas id="feedbackChart"></canvas>
+                        </div>
+                        <div id="feedbackChartLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+                        ></div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if not 'objective_status' in charts %}
+            <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Objective Status" %}</h3>
+                </div>
+                <div class="w-full max-w-xs mx-auto">
+                    <div class="relative">
+                        <canvas id="objectiveChart"></canvas>
+                    </div>
+                    <div id="feedbackChartLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+                    ></div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
 </div>
 
 <script src="{% static 'dashboard/employeeChart.js' %}"></script>
@@ -544,4 +489,15 @@
 {% if "onboarding"|app_installed %}
     <!-- onboarding dashboard -->
     <script src="{% static 'dashboard/onboardChart.js' %}"></script>
+{% endif %}
+
+{% if "attendance"|app_installed %}
+    {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
+        <script src="{% static 'dashboard/attendanceChart.js' %}"></script>
+    {% endif %}
+{% endif %}
+
+{% if "leave"|app_installed %}
+    <script src="{% static 'dashboard/onLeave.js' %}"></script>
+    <script src="{% static 'dashboard/leaveChart.js' %}"></script>
 {% endif %}

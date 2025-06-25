@@ -1814,6 +1814,17 @@ ul.errorlist ul.errorlist li {
     background: #00d6ff1f !important;
 }
 
+
+.oh-recuritment_tag {
+    background-color: hsl(0, 75%, 97%);
+    color: hsl(1, 100%, 61%);
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.2rem;
+    margin-right: 0.2rem;
+    font-size: 0.8rem;
+    height: fit-content;
+  }
+
 /* SIDEBAR  */
 
 .sidebarModal {
