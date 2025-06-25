@@ -37,40 +37,41 @@ $(document).ready(function () {
         }
     }
 
-    function genderChart(dataSet, labels) {
-        const data = {
-            labels: labels,
-            datasets: dataSet,
-        };
-        // Create chart using the Chart.js library
-        window["genderChart"] = {};
-        if (document.getElementById("genderChart")) {
-            const ctx = document.getElementById("genderChart").getContext("2d");
-            genderChart = new Chart(ctx, {
-                type: "doughnut",
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    onClick: (e, activeEls) => {
-                        let datasetIndex = activeEls[0].datasetIndex;
-                        let dataIndex = activeEls[0].index;
-                        let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-                        let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-                        let label = e.chart.data.labels[dataIndex];
-                        localStorage.removeItem("savedFilters");
-                        window.location.href =
-                            "/employee/employee-view?gender=" + label.toLowerCase();
-                    },
-                },
-                plugins: [
-                    {
-                        afterRender: (chart) => emptyChart(chart),
-                    },
-                ],
-            });
-        }
-    }
+    // function genderChart(dataSet, labels) {
+    //     const data = {
+    //         labels: labels,
+    //         datasets: dataSet,
+    //     };
+    //     console.log(data)
+    //     // Create chart using the Chart.js library
+    //     window["genderChart"] = {};
+    //     if (document.getElementById("genderChart")) {
+    //         const ctx = document.getElementById("genderChart").getContext("2d");
+    //         genderChart = new Chart(ctx, {
+    //             type: "doughnut",
+    //             data: data,
+    //             options: {
+    //                 responsive: true,
+    //                 maintainAspectRatio: false,
+    //                 onClick: (e, activeEls) => {
+    //                     let datasetIndex = activeEls[0].datasetIndex;
+    //                     let dataIndex = activeEls[0].index;
+    //                     let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+    //                     let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+    //                     let label = e.chart.data.labels[dataIndex];
+    //                     localStorage.removeItem("savedFilters");
+    //                     window.location.href =
+    //                         "/employee/employee-view?gender=" + label.toLowerCase();
+    //                 },
+    //             },
+    //             plugins: [
+    //                 {
+    //                     afterRender: (chart) => emptyChart(chart),
+    //                 },
+    //             ],
+    //         });
+    //     }
+    // }
 
     // function departmentChart(dataSet, labels) {
     //     console.log(dataSet);
@@ -109,6 +110,97 @@ $(document).ready(function () {
     //         });
     //     }
     // }
+
+
+    function genderChart(dataSet, labels) {
+        const centerImage = new Image();
+        centerImage.src = "/static/horilla_theme/assets/img/icons/gender.svg";
+
+        if (document.getElementById("genderChart")) {
+            const ctx = document.getElementById("genderChart").getContext("2d");
+
+            // Override dataset background colors with new design colors
+            const updatedDataSet = dataSet.map((ds) => ({
+                ...ds,
+                backgroundColor: ["#cfe9ff", "#ffc9de", "#e6ccff"],
+                borderWidth: 0,
+            }));
+
+            window["genderChart"] = new Chart(ctx, {
+                type: "doughnut",
+                data: {
+                    labels: labels,
+                    datasets: updatedDataSet,
+                },
+                options: {
+                    cutout: "70%",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    onClick: (e, activeEls) => {
+                        if (activeEls.length > 0) {
+                            let datasetIndex = activeEls[0].datasetIndex;
+                            let dataIndex = activeEls[0].index;
+                            let label = e.chart.data.labels[dataIndex];
+                            localStorage.removeItem("savedFilters");
+                            window.location.href = "/employee/employee-view?gender=" + label.toLowerCase();
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: "circle",
+                                padding: 20,
+                                font: {
+                                    size: 12,
+                                },
+                                color: "#000",
+                            },
+                        },
+                        tooltip: {
+                            padding: 10,
+                            cornerRadius: 4,
+                            backgroundColor: "#333",
+                            titleColor: "#fff",
+                            bodyColor: "#fff",
+                            callbacks: {
+                                label: function (context) {
+                                    return context.parsed; // This shows only "13", not "Employees: 13"
+                                },
+                            },
+                        },
+                    },
+                },
+                plugins: [
+                    {
+                        id: "centerIcon",
+                        afterDatasetsDraw(chart) {
+                            if (!centerImage.complete) return;
+                            const ctx = chart.ctx;
+                            const size = 70;
+                            ctx.drawImage(
+                                centerImage,
+                                chart.width / 2 - size / 2,
+                                chart.height / 2 - size / 2 - 20,
+                                size,
+                                size
+                            );
+                        },
+                    },
+                    {
+                        afterRender: (chart) => {
+                            if (typeof emptyChart === "function") {
+                                emptyChart(chart);
+                            }
+                        },
+                    },
+                ],
+            });
+        }
+    }
+
+
 
     function departmentChart(dataSet, labels) {
         $(document).ready(function () {
@@ -197,6 +289,7 @@ $(document).ready(function () {
 
             labels.forEach((label, index) => {
                 const color = colors[index % colors.length];
+                console.log(color)
 
                 const $item = $(`
                     <div style="display: flex; align-items: center; margin-bottom: 6px; cursor: pointer;">

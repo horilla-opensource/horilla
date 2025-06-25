@@ -1,7 +1,16 @@
-{% load i18n %}
+<div class="text-sm text-left p-3 pl-0 text-[#666] pe-0">
+    <div class="flex gap-3 items-center">
+        <div class="w-full bg-gray-200 rounded-full h-1.5">
+            <div class="bg-[#81d620] h-1.5 rounded-full" style="width: {{ instance.calculate_progress }}%;"></div>
+        </div>
+        <div class="text-sm font-medium">{{ instance.calculate_progress }}%</div>
+    </div>
+</div>
+
+{% comment %} {% load i18n %}
 
 <div class="progress">
     <div class="progress-bar" role="progressbar" style="width: {{ instance.calculate_progress }}%;"></div>
 </div>
 <br>
-<div class="progress-text">{{ instance.calculate_progress }} % {% trans "Completed" %}</div>
+<div class="progress-text">{{ instance.calculate_progress }} %</div> {% endcomment %}

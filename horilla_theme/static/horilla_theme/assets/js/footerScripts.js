@@ -191,251 +191,252 @@ async function loadComponent(elementId, path) {
 
 // Onboarding Chart
 
-document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document.getElementById("recruitmentChart").getContext("2d");
+// document.addEventListener("DOMContentLoaded", () => {
+//     const ctx = document.getElementById("recruitmentChart").getContext("2d");
 
-    const labels = [
-        "Recruitment drive",
-        "Future force recruitment",
-        "Administrative assistant",
-    ];
-    const colors = ["#a5b4fc", "#fca5a5", "#fdba74"];
-    const dataValues = [35, 45, 38];
-    const visibility = [true, true, true];
+//     const labels = [
+//         "Recruitment drive",
+//         "Future force recruitment",
+//         "Administrative assistant",
+//     ];
+//     const colors = ["#a5b4fc", "#fca5a5", "#fdba74"];
+//     const dataValues = [35, 45, 38];
+//     const visibility = [true, true, true];
 
-    const chart = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: "Recruitment Count",
-                    data: dataValues,
-                    backgroundColor: colors,
-                    borderRadius: 20,
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.6,
-                },
-            ],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: { enabled: true },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: { stepSize: 20 },
-                    grid: { drawBorder: false, color: "#e5e7eb" },
-                },
-                x: {
-                    ticks: { display: false },
-                    grid: { display: false },
-                    border: { display: true, color: "#d1d5db" },
-                },
-            },
-        },
-    });
+//     const chart = new Chart(ctx, {
+//         type: "bar",
+//         data: {
+//             labels: labels,
+//             datasets: [
+//                 {
+//                     label: "Recruitment Count",
+//                     data: dataValues,
+//                     backgroundColor: colors,
+//                     borderRadius: 20,
+//                     barPercentage: 0.6,
+//                     categoryPercentage: 0.6,
+//                 },
+//             ],
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             plugins: {
+//                 legend: { display: false },
+//                 tooltip: { enabled: true },
+//             },
+//             scales: {
+//                 y: {
+//                     beginAtZero: true,
+//                     max: 100,
+//                     ticks: { stepSize: 20 },
+//                     grid: { drawBorder: false, color: "#e5e7eb" },
+//                 },
+//                 x: {
+//                     ticks: { display: false },
+//                     grid: { display: false },
+//                     border: { display: true, color: "#d1d5db" },
+//                 },
+//             },
+//         },
+//     });
 
-    // Create clickable legend dynamically
-    const legendContainer = document.getElementById("recruitmentLegend");
-    labels.forEach((label, i) => {
-        const item = document.createElement("div");
-        item.className = "flex items-center gap-2 cursor-pointer";
-        item.innerHTML = `
-      <span class="w-4 h-4 rounded-full inline-block" style="background:${colors[i]}; transition: 0.3s;"></span>
-      <span>${label}</span>
-    `;
-        item.addEventListener("click", () => {
-            visibility[i] = !visibility[i];
+//     // Create clickable legend dynamically
+//     const legendContainer = document.getElementById("recruitmentLegend");
+//     labels.forEach((label, i) => {
+//         const item = document.createElement("div");
+//         item.className = "flex items-center gap-2 cursor-pointer";
+//         item.innerHTML = `
+//       <span class="w-4 h-4 rounded-full inline-block" style="background:${colors[i]}; transition: 0.3s;"></span>
+//       <span>${label}</span>
+//     `;
+//         item.addEventListener("click", () => {
+//             visibility[i] = !visibility[i];
 
-            // Update data & bar color
-            chart.data.datasets[0].data = dataValues.map((val, index) =>
-                visibility[index] ? val : 0
-            );
-            chart.data.datasets[0].backgroundColor = colors.map(
-                (color, index) => (visibility[index] ? color : "#e5e7eb")
-            );
-            chart.update();
+//             // Update data & bar color
+//             chart.data.datasets[0].data = dataValues.map((val, index) =>
+//                 visibility[index] ? val : 0
+//             );
+//             chart.data.datasets[0].backgroundColor = colors.map(
+//                 (color, index) => (visibility[index] ? color : "#e5e7eb")
+//             );
+//             chart.update();
 
-            // Update legend visuals
-            const dot = item.querySelector("span");
-            const text = item.querySelectorAll("span")[1];
-            dot.style.opacity = visibility[i] ? "1" : "0.4";
-            text.style.textDecoration = visibility[i] ? "none" : "line-through";
-        });
+//             // Update legend visuals
+//             const dot = item.querySelector("span");
+//             const text = item.querySelectorAll("span")[1];
+//             dot.style.opacity = visibility[i] ? "1" : "0.4";
+//             text.style.textDecoration = visibility[i] ? "none" : "line-through";
+//         });
 
-        legendContainer.appendChild(item);
-    });
-});
+//         legendContainer.appendChild(item);
+//     });
+// });
 
 // Recruitment Chart
 
-document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document
-        .getElementById("recruitmentFlowChart")
-        .getContext("2d");
+// document.addEventListener("DOMContentLoaded", () => {
+//     const ctx = document
+//         .getElementById("recruitmentFlowChart")
+//         .getContext("2d");
 
-    new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: [
-                "Initial",
-                "Applied",
-                "Test",
-                "Interview",
-                "Cancelled",
-                "Hired",
-            ],
-            datasets: [
-                {
-                    label: "Recruitment Drive",
-                    data: [55, 35, 0, 0, 28, 90],
-                    backgroundColor: "#a5b4fc",
-                    borderRadius: 10,
-                    barPercentage: 0.8,
-                    categoryPercentage: 0.6,
-                },
-                {
-                    label: "Future Force Recruitment",
-                    data: [0, 15, 0, 0, 0, 65],
-                    backgroundColor: "#fca5a5",
-                    borderRadius: 10,
-                    barPercentage: 0.8,
-                    categoryPercentage: 0.6,
-                },
-                {
-                    label: "Administrative Assistant",
-                    data: [0, 0, 0, 0, 0, 15],
-                    backgroundColor: "#fdba74",
-                    borderRadius: 10,
-                    barPercentage: 0.8,
-                    categoryPercentage: 0.6,
-                },
-            ],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 20,
-                        color: "#6b7280",
-                    },
-                    grid: {
-                        color: "#e5e7eb",
-                    },
-                },
-                x: {
-                    ticks: {
-                        color: "#6b7280",
-                    },
-                    grid: {
-                        display: false,
-                    },
-                },
-            },
-            plugins: {
-                legend: {
-                    position: "bottom",
-                    labels: {
-                        usePointStyle: true,
-                        pointStyle: "circle",
-                        font: {
-                            size: 12,
-                        },
-                        color: "#374151",
-                        padding: 15,
-                    },
-                },
-                tooltip: {
-                    enabled: true,
-                },
-            },
-        },
-    });
-});
+//     new Chart(ctx, {
+//         type: "bar",
+//         data: {
+//             labels: [
+//                 "Initial",
+//                 "Applied",
+//                 "Test",
+//                 "Interview",
+//                 "Cancelled",
+//                 "Hired",
+//             ],
+//             datasets: [
+//                 {
+//                     label: "Recruitment Drive",
+//                     data: [55, 35, 0, 0, 28, 90],
+//                     backgroundColor: "#a5b4fc",
+//                     borderRadius: 10,
+//                     barPercentage: 0.8,
+//                     categoryPercentage: 0.6,
+//                 },
+//                 {
+//                     label: "Future Force Recruitment",
+//                     data: [0, 15, 0, 0, 0, 65],
+//                     backgroundColor: "#fca5a5",
+//                     borderRadius: 10,
+//                     barPercentage: 0.8,
+//                     categoryPercentage: 0.6,
+//                 },
+//                 {
+//                     label: "Administrative Assistant",
+//                     data: [0, 0, 0, 0, 0, 15],
+//                     backgroundColor: "#fdba74",
+//                     borderRadius: 10,
+//                     barPercentage: 0.8,
+//                     categoryPercentage: 0.6,
+//                 },
+//             ],
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             scales: {
+//                 y: {
+//                     beginAtZero: true,
+//                     ticks: {
+//                         stepSize: 20,
+//                         color: "#6b7280",
+//                     },
+//                     grid: {
+//                         color: "#e5e7eb",
+//                     },
+//                 },
+//                 x: {
+//                     ticks: {
+//                         color: "#6b7280",
+//                     },
+//                     grid: {
+//                         display: false,
+//                     },
+//                 },
+//             },
+//             plugins: {
+//                 legend: {
+//                     position: "bottom",
+//                     labels: {
+//                         usePointStyle: true,
+//                         pointStyle: "circle",
+//                         font: {
+//                             size: 12,
+//                         },
+//                         color: "#374151",
+//                         padding: 15,
+//                     },
+//                 },
+//                 tooltip: {
+//                     enabled: true,
+//                 },
+//             },
+//         },
+//     });
+// });
 
-document.addEventListener("DOMContentLoaded", () => {
-    const ctx = document.getElementById("hiredChart").getContext("2d");
 
-    const labels = [
-        "Recruitment drive",
-        "Future force recruitment",
-        "Administrative assistant",
-    ];
-    const colors = ["#a5b4fc", "#fca5a5", "#fdba74"];
-    const values = [35, 45, 38];
-    const visibility = [true, true, true];
+// document.addEventListener("DOMContentLoaded", () => {
+//     const ctx = document.getElementById("hiredChart").getContext("2d");
 
-    const chart = new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: "Recruitment Count",
-                    data: values,
-                    backgroundColor: colors,
-                    borderRadius: 20,
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.6,
-                },
-            ],
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: { enabled: true },
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: { stepSize: 20 },
-                    grid: { drawBorder: false, color: "#e5e7eb" },
-                },
-                x: {
-                    ticks: { display: false },
-                    grid: { display: false },
-                    border: { display: true, color: "#d1d5db" },
-                },
-            },
-        },
-    });
+//     const labels = [
+//         "Recruitment drive",
+//         "Future force recruitment",
+//         "Administrative assistant",
+//     ];
+//     const colors = ["#a5b4fc", "#fca5a5", "#fdba74"];
+//     const values = [35, 45, 38];
+//     const visibility = [true, true, true];
 
-    // Toggle bars and strike text
-    const legendItems = document.querySelectorAll("#hiredLegend > div");
-    legendItems.forEach((item, i) => {
-        item.addEventListener("click", () => {
-            visibility[i] = !visibility[i];
+//     const chart = new Chart(ctx, {
+//         type: "bar",
+//         data: {
+//             labels: labels,
+//             datasets: [
+//                 {
+//                     label: "Recruitment Count",
+//                     data: values,
+//                     backgroundColor: colors,
+//                     borderRadius: 20,
+//                     barPercentage: 0.6,
+//                     categoryPercentage: 0.6,
+//                 },
+//             ],
+//         },
+//         options: {
+//             responsive: true,
+//             maintainAspectRatio: false,
+//             plugins: {
+//                 legend: { display: false },
+//                 tooltip: { enabled: true },
+//             },
+//             scales: {
+//                 y: {
+//                     beginAtZero: true,
+//                     max: 100,
+//                     ticks: { stepSize: 20 },
+//                     grid: { drawBorder: false, color: "#e5e7eb" },
+//                 },
+//                 x: {
+//                     ticks: { display: false },
+//                     grid: { display: false },
+//                     border: { display: true, color: "#d1d5db" },
+//                 },
+//             },
+//         },
+//     });
 
-            // Update chart data
-            chart.data.datasets[0].data = values.map((val, index) =>
-                visibility[index] ? val : 0
-            );
-            chart.data.datasets[0].backgroundColor = colors.map((col, index) =>
-                visibility[index] ? col : "#e5e7eb"
-            );
-            chart.update();
+//     // Toggle bars and strike text
+//     const legendItems = document.querySelectorAll("#hiredLegend > div");
+//     legendItems.forEach((item, i) => {
+//         item.addEventListener("click", () => {
+//             visibility[i] = !visibility[i];
 
-            // Update legend visuals
-            const dot = item.querySelectorAll("span")[0];
-            const text = item.querySelectorAll("span")[1];
+//             // Update chart data
+//             chart.data.datasets[0].data = values.map((val, index) =>
+//                 visibility[index] ? val : 0
+//             );
+//             chart.data.datasets[0].backgroundColor = colors.map((col, index) =>
+//                 visibility[index] ? col : "#e5e7eb"
+//             );
+//             chart.update();
 
-            dot.style.opacity = visibility[i] ? "1" : "0.4";
-            text.style.textDecoration = visibility[i] ? "none" : "line-through";
-        });
-    });
-});
+//             // Update legend visuals
+//             const dot = item.querySelectorAll("span")[0];
+//             const text = item.querySelectorAll("span")[1];
+
+//             dot.style.opacity = visibility[i] ? "1" : "0.4";
+//             text.style.textDecoration = visibility[i] ? "none" : "line-through";
+//         });
+//     });
+// });
 
 function validateFile(element, fileTarget, reload = false) {
     var fileInput = document.getElementById(fileTarget);

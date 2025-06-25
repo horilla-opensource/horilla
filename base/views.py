@@ -12,6 +12,7 @@ import threading
 import uuid
 from datetime import datetime, timedelta
 from email.mime.image import MIMEImage
+from itertools import count
 from os import path
 from urllib.parse import parse_qs, unquote, urlencode, urlparse
 
@@ -931,6 +932,11 @@ def home(request):
     today_weekday = today.weekday()
     first_day_of_week = today - timedelta(days=today_weekday)
     last_day_of_week = first_day_of_week + timedelta(days=6)
+    leaves = 0
+    if apps.is_installed("leave"):
+        from leave.models import LeaveRequest
+
+        leaves = LeaveRequest.employees_on_leave_today(status="approved").count()
 
     employee_charts = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
@@ -951,6 +957,7 @@ def home(request):
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
         "charts": employee_charts.charts,
         "is_birthday": is_birthday,
+        "leave_today": leaves,
     }
 
     return render(request, "index.html", context)

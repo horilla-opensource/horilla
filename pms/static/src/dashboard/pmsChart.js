@@ -97,92 +97,186 @@ $("#objective-status-chart").click(function (e) {
 
 // objecitve chart section end
 
+// const keyResultStatusChartCtx = document.getElementById("keyResultChart");
+
+// // data dictionary
+// var keyResultStatusData = {
+// 	labels: [],
+// 	datasets: [
+// 		{
+// 			label: "key result",
+// 			data: [],
+// 			backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
+// 			hoverOffset: 3,
+// 		},
+// 	],
+// 	message:"",
+// };
+
+// // chart constructor
+// if (keyResultStatusChartCtx != null) {
+// 	var keyResultStatusChart = new Chart(keyResultStatusChartCtx, {
+// 		type: "pie",
+// 		data: keyResultStatusData,
+// 		options: {
+// 			responsive: true,
+// 			maintainAspectRatio:false,
+// 			onClick: (e, activeEls) => {
+// 				let datasetIndex = activeEls[0].datasetIndex;
+// 				let dataIndex = activeEls[0].index;
+// 				let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+// 				let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+// 				let label = e.chart.data.labels[dataIndex];
+// 				let params = "?field=employee_objective_id__employee_id"+"&status=" + label + "&archive=false"
+// 				let statusValue = params.split("&")[1].split("=")[1];
+// 				$('input[name="status"]').val(decodeURIComponent(statusValue));
+// 				$('#dashboardKeyresult button').click();
+// 				$("#back_button").removeClass("d-none");
+// 				$("#employeeKeyRes").removeClass("d-none");
+
+
+// 			},
+// 		},
+// 		plugins: [{
+// 			afterRender: (chart)=>emptyChart(chart)
+// 		}],
+// 	});
+// }
+
+// function keyResultStatusDataUpdate(data) {
+// 	keyResultStatusData.labels = data.key_result_label;
+// 	keyResultStatusData.datasets[0].data = data.key_result_value;
+// 	keyResultStatusData.message = data.message;
+// 	if(keyResultStatusChart){
+// 		keyResultStatusChart.update();
+// 	}
+// }
+
+// $.ajax({
+// 	url: "/pms/dashbord-key-result-status",
+// 	type: "GET",
+// 	dataType: "json",
+// 	headers: {
+// 		"X-Requested-With": "XMLHttpRequest",
+// 	},
+// 	success: (response) => {
+// 		keyResultStatusDataUpdate(response);
+// 	},
+// 	error: (error) => {
+// 		console.log("Error", error);
+// 	},
+// });
+
+// // chart change
+// $("#key-result-status-chart").click(function (e) {
+// 	var chartType = keyResultStatusChart.config.type;
+// 	if (chartType === "line") {
+// 		chartType = "bar";
+// 	} else if (chartType === "bar") {
+// 		chartType = "doughnut";
+// 	} else if (chartType === "doughnut") {
+// 		chartType = "pie";
+// 	} else if (chartType === "pie") {
+// 		chartType = "line";
+// 	}
+// 	keyResultStatusChart.config.type = chartType;
+// 	if(keyResultStatusChart){
+// 		keyResultStatusChart.update();
+// 	}
+// });
+
 const keyResultStatusChartCtx = document.getElementById("keyResultChart");
 
-// data dictionary
+// Data structure setup
 var keyResultStatusData = {
-	labels: [],
-	datasets: [
-		{
-			label: "key result",
-			data: [],
-			backgroundColor: ["#8de5b3", "#f0a8a6", "#8ed1f7", "#f8e08e", "#c2c7cc"],
-			hoverOffset: 3,
-		},
-	],
-	message:"",
+  labels: [],
+  datasets: [
+    {
+      label: "key result",
+      data: [],
+      backgroundColor: ["#cfe9ff", "#ffc9de", "#e6ccff", "#fde68a", "#d1d5db"],
+      borderWidth: 0,
+      hoverOffset: 4,
+    },
+  ],
+  message: "",
 };
 
-// chart constructor
-if (keyResultStatusChartCtx != null) {
-	var keyResultStatusChart = new Chart(keyResultStatusChartCtx, {
-		type: "pie",
-		data: keyResultStatusData,
-		options: {
-			responsive: true,
-			maintainAspectRatio:false,
-			onClick: (e, activeEls) => {
-				let datasetIndex = activeEls[0].datasetIndex;
-				let dataIndex = activeEls[0].index;
-				let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-				let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-				let label = e.chart.data.labels[dataIndex];
-				let params = "?field=employee_objective_id__employee_id"+"&status=" + label + "&archive=false"
-				let statusValue = params.split("&")[1].split("=")[1];
-				$('input[name="status"]').val(decodeURIComponent(statusValue));
-				$('#dashboardKeyresult button').click();
-				$("#back_button").removeClass("d-none");
-				$("#employeeKeyRes").removeClass("d-none");
+let keyResultStatusChart = null;
 
-
-			},
-		},
-		plugins: [{
-			afterRender: (chart)=>emptyChart(chart)
-		}],
-	});
+if (keyResultStatusChartCtx) {
+  keyResultStatusChart = new Chart(keyResultStatusChartCtx, {
+    type: "doughnut",
+    data: keyResultStatusData,
+    options: {
+      cutout: "70%",
+      responsive: true,
+      maintainAspectRatio: false,
+      onClick: (e, activeEls) => {
+        if (activeEls.length > 0) {
+          const dataIndex = activeEls[0].index;
+          const label = e.chart.data.labels[dataIndex];
+          const params = `?field=employee_objective_id__employee_id&status=${label}&archive=false`;
+          const statusValue = params.split("&")[1].split("=")[1];
+          $('input[name="status"]').val(decodeURIComponent(statusValue));
+          $('#dashboardKeyresult button').click();
+          $("#back_button, #employeeKeyRes").removeClass("d-none");
+        }
+      },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: {
+            usePointStyle: true,
+            pointStyle: "circle",
+            padding: 20,
+            font: { size: 12 },
+            color: "#000",
+          },
+        },
+      },
+    },
+    plugins: [
+      {
+        afterRender: (chart) => {
+          if (typeof emptyChart === "function") {
+            emptyChart(chart);
+          }
+        },
+      },
+    ],
+  });
 }
 
+// Update function for AJAX response
 function keyResultStatusDataUpdate(data) {
-	keyResultStatusData.labels = data.key_result_label;
-	keyResultStatusData.datasets[0].data = data.key_result_value;
-	keyResultStatusData.message = data.message;
-	if(keyResultStatusChart){
-		keyResultStatusChart.update();
-	}
+  keyResultStatusData.labels = data.key_result_label;
+  keyResultStatusData.datasets[0].data = data.key_result_value;
+  keyResultStatusData.message = data.message;
+
+  if (keyResultStatusChart) {
+    keyResultStatusChart.update();
+  }
 }
 
+// Load data via AJAX
 $.ajax({
-	url: "/pms/dashbord-key-result-status",
-	type: "GET",
-	dataType: "json",
-	headers: {
-		"X-Requested-With": "XMLHttpRequest",
-	},
-	success: (response) => {
-		keyResultStatusDataUpdate(response);
-	},
-	error: (error) => {
-		console.log("Error", error);
-	},
+  url: "/pms/dashbord-key-result-status",
+  type: "GET",
+  dataType: "json",
+  headers: { "X-Requested-With": "XMLHttpRequest" },
+  success: keyResultStatusDataUpdate,
+  error: (err) => console.error("Error fetching chart data:", err),
 });
 
-// chart change
-$("#key-result-status-chart").click(function (e) {
-	var chartType = keyResultStatusChart.config.type;
-	if (chartType === "line") {
-		chartType = "bar";
-	} else if (chartType === "bar") {
-		chartType = "doughnut";
-	} else if (chartType === "doughnut") {
-		chartType = "pie";
-	} else if (chartType === "pie") {
-		chartType = "line";
-	}
-	keyResultStatusChart.config.type = chartType;
-	if(keyResultStatusChart){
-		keyResultStatusChart.update();
-	}
+// Toggle chart type on click
+$("#key-result-status-chart").click(() => {
+  if (!keyResultStatusChart) return;
+
+  const typeOrder = ["line", "bar", "doughnut", "pie"];
+  let idx = typeOrder.indexOf(keyResultStatusChart.config.type);
+  keyResultStatusChart.config.type = typeOrder[(idx + 1) % typeOrder.length];
+  keyResultStatusChart.update();
 });
 
 // key result chart section

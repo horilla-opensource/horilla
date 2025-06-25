@@ -2404,6 +2404,25 @@ span.oh-activity-sidebar__a img {
 }
 
 
+.progress {
+    height: 20px;
+    width: 110px;
+    background-color: lightgrey;
+    border: 2px solid #27C20C;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #27C20C;
+    /* Set your desired progress bar color */
+}
+
+.progress-text {
+    width: 100%;
+    text-align: center;
+}
 
 .text-center {
   text-align: center !important;
