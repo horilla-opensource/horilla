@@ -1,3 +1,13 @@
+$(function () {
+  $(document).tooltip({
+    position: {
+      my: "center top+8",
+      at: "center bottom",
+      collision: "flipfit"
+    }
+  });
+});
+
 async function loadComponent(elementId, path) {
     try {
         const response = await fetch(path);

@@ -244,6 +244,10 @@ class Recruitment(HorillaModel):
         verbose_name=_("Optional Resume"),
     )
 
+    xss_exempt_fields = [
+        "description",
+    ]
+
     class Meta:
         """
         Meta class to add the additional info

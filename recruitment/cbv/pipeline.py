@@ -225,6 +225,7 @@ class CandidateList(HorillaListView):
     filter_selected = False
     quick_export = False
     next_prev = False
+    show_filter_tags = False
     custom_empty_template = "cbv/pipeline/empty.html"
     header_attrs = {
         "action": """

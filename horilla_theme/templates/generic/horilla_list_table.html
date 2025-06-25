@@ -131,7 +131,7 @@
                                     </th>
                                 {% endif %}
                                 {% if actions or action_method %}
-                                    <th class="stickyright text-sm font-medium p-3" {{header_attrs.action|safe}}>
+                                    <th class="stickyright text-sm font-medium p-3 flex" {{header_attrs.action|safe}}>
                                         {% trans "Actions" %}
                                     </th>
                                 {% endif %}
@@ -224,7 +224,7 @@
                                     {% endif %}
 
                                     {% if actions or action_method %}
-                                        <td class="stickyright text-sm text-center p-3 text-[#666]"
+                                        <td class="stickyright text-sm text-center p-3 text-[#666] flex"
                                             onclick="event.stopPropagation()"
                                         >
                                             {% if not action_method %}
@@ -290,7 +290,7 @@
             </div>
         {% else %}
             {% if not custom_empty_template %}
-                <div class="oh-wrapper h-screen" align="center" >
+                <div class="oh-wrapper h-full" align="center" >
 
                     <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
                         <div class="flex flex-col items-center justify-center h-full">

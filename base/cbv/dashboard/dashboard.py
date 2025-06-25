@@ -145,7 +145,7 @@ class EmployeeWorkInformationList(HorillaListView):
     filter_class = EmployeeWorkInformationFilter
     bulk_select_option = False
     show_toggle_form = False
-    paginate_by = 5
+    records_per_page = 5
 
     columns = [
         (_("Employee"), "employee_id"),
