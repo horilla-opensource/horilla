@@ -104,9 +104,9 @@ class AssetLot(HorillaModel):
             context={"instance": self},
         )
 
-    def deatil_actions(self):
+    def detail_actions(self):
         return render_template(
-            path="cbv/asset_batch_no/deatil_actions.html",
+            path="cbv/asset_batch_no/detail_actions.html",
             context={"instance": self},
         )
 
@@ -183,11 +183,10 @@ class Asset(HorillaModel):
     def __str__(self):
         return f"{self.asset_name}-{self.asset_tracking_id}"
 
-    def get_status_display(self):
-        """
-        Display status
-        """
-        return dict(self.ASSET_STATUS).get(self.asset_status)
+    def action_column(self):
+        return render_template(
+            path="asset/action_column.html", context={"instance": self}
+        )
 
     def detail_view_action(self):
         """
@@ -195,9 +194,13 @@ class Asset(HorillaModel):
         """
 
         return render_template(
-            path="cbv/asset_category/detail_view_action.html",
+            path="cbv/asset/detail_action.html",
             context={"instance": self},
         )
+
+    def asset_detail(self):
+        url = reverse_lazy("asset-information", kwargs={"pk": self.pk})
+        return url
 
     def get_update_url(self):
         """

@@ -214,12 +214,43 @@ class AssetCategoryNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("asset-category-view-search-filter")
-        self.create_attrs = f"""
+        self.actions = []
+        if self.request.user.has_perm("add_assetcategory"):
+            self.create_attrs = f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{reverse('asset-category-creation')}"
+                            hx-target="#genericModalBody"
+                            """
+        if self.request.user.has_perm("add_assetcategory"):
+            self.actions.append(
+                {
+                    "action": _("Import"),
+                    "attrs": f"""
+                            onclick="getAssetImportTemplate();"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#objectCreateModal"
+                            hx-get="{reverse('asset-import')}"
+                            hx-target="#objectCreateModalTarget"
+                            style="cursor: pointer;"
+                        """,
+                },
+            )
+
+        if self.request.user.has_perm("view_asset"):
+            self.actions.append(
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
                         data-toggle="oh-modal-toggle"
-                        data-target="#genericModal"
-                        hx-get="{reverse('asset-category-creation')}"
-                        hx-target="#genericModalBody"
-                        """
+                        data-target="#objectCreateModal"
+                        hx-get="{reverse('asset-export-excel')}"
+                        hx-target="#objectCreateModalTarget"
+                        style="cursor: pointer;"
+                    """,
+                }
+            )
+
         # if self.request.user.has_perm(
         #     "attendance.add_attendanceovertime"
         # ) or is_reportingmanager(self.request):
@@ -250,55 +281,3 @@ class AssetCategoryNav(HorillaNavView):
     filter_instance = AssetFilter()
     filter_form_context_name = "form"
     search_swap_target = "#assetCategoryList"
-
-
-class AssetCategoryDetailView(HorillaDetailedView):
-    """
-    Detail view of the page
-    """
-
-    def get_context_data(self, **kwargs: Any):
-        """
-        Return context data with the title set to the contract's name.
-        """
-
-        context = super().get_context_data(**kwargs)
-        asset_name = context["asset"].asset_name
-        context["title"] = asset_name
-        return context
-
-    model = Asset
-    header = False
-    template_name = "cbv/asset_category/detail_view_action.html"
-    body = [
-        (_("Tracking Id"), "asset_tracking_id"),
-        (_("Purchase Date"), "asset_purchase_date"),
-        (_("Cost"), "asset_purchase_cost"),
-        (_("Status"), "get_status_display"),
-        (_("Batch No"), "asset_lot_number_id__lot_number"),
-        (_("Category"), "asset_category_id"),
-    ]
-
-    actions = [
-        {
-            "action": _("Edit"),
-            "icon": "create-outline",
-            "attrs": """
-                        class="oh-btn oh-btn--info w-100"
-                        hx-get='{get_update_url}?instance_ids={ordered_ids}'
-								hx-target="#genericModalBody"
-								data-toggle="oh-modal-toggle"
-								data-target="#genericModal"
-                      """,
-        },
-        {
-            "action": _("Delete"),
-            "icon": "trash-outline",
-            "attrs": """
-                    class="oh-btn oh-btn--danger w-100"
-                    hx-confirm="Do you want to delete this asset?"
-                    hx-post="{get_delete_url}?instance_ids={ordered_ids}"
-                    hx-target="#genericModalBody"
-                    """,
-        },
-    ]

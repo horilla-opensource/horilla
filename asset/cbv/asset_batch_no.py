@@ -40,19 +40,18 @@ class AssetBatchNoListView(HorillaListView):
     list view for batch number
     """
 
+    model = AssetLot
+    filter_class = AssetBatchNoFilter
+    columns = [
+        "lot_number",
+        "lot_description",
+        (_("Assets"), "assets_column"),
+    ]
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("asset-batch-list")
         self.view_id = "AssetBatchList"
-
-    model = AssetLot
-    filter_class = AssetBatchNoFilter
-
-    columns = [
-        (_("Batch Number"), "lot_number"),
-        (_("Description"), "lot_description"),
-        (_("Assets"), "assets_column"),
-    ]
 
     header_attrs = {
         "action": """
@@ -142,34 +141,5 @@ class AssetBatchDetailView(HorillaDetailedView):
     title = _("Details")
     header = False
     model = AssetLot
-    body = {
-        (_("Batch Number"), "lot_number"),
-        (_("Assets"), "assets_column"),
-        (_("Description"), "lot_description"),
-    }
-    action_method = "deatil_actions"
-    # actions = [
-    #     {
-    #         "action": _("Edit"),
-    #         "icon": "create-outline",
-    #         "attrs": """
-    #                     class="oh-btn oh-btn--info w-100"
-    #                     hx-get='{get_update_url}?instance_ids={ordered_ids}'
-
-
-# 							hx-target="#genericModalBody"
-# 							data-toggle="oh-modal-toggle"
-# 							data-target="#genericModal"
-#                   """,
-#     },
-#     {
-#         "action": _("Delete"),
-#         "icon": "trash-outline",
-#         "attrs": """
-#                 class="oh-btn oh-btn--danger w-100"
-#                 hx-confirm="Do you want to delete this batch number?"
-#                 hx-post="{get_delete_url}?instance_ids={ordered_ids}"
-#                 hx-target="#AssetBatchList"
-#                 """,
-#     },
-# ]
+    body = ["lot_number", (_("Asset"), "assets_column"), "lot_description"]
+    action_method = "detail_actions"

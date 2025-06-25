@@ -6,6 +6,7 @@ from django import views
 from django.urls import path
 
 from asset.cbv import (
+    asset,
     asset_batch_no,
     asset_category,
     asset_history,
@@ -48,7 +49,7 @@ urlpatterns = [
         asset_category.AssetFormView.as_view(),
         name="asset-creation",
     ),
-    path("asset-list/<int:cat_id>", views.asset_list, name="asset-list"),
+    path("asset-list/<int:cat_id>", asset.AssetListView.as_view(), name="asset-list"),
     # path("asset-update/<int:asset_id>/", views.asset_update, name="asset-update"),
     path(
         "asset-update/<int:pk>/",
@@ -79,7 +80,7 @@ urlpatterns = [
     # ),
     path(
         "asset-information/<int:pk>/",
-        asset_category.AssetCategoryDetailView.as_view(),
+        asset.AssetInformationView.as_view(),
         name="asset-information",
     ),
     path("asset-category-view/", views.asset_category_view, name="asset-category-view"),
