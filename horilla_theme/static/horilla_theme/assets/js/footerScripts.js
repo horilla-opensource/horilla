@@ -498,40 +498,36 @@ function initSidebarToggle() {
     });
 }
 
-document.querySelectorAll(".accordion-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-        const panel = btn.nextElementSibling;
-        const icon = btn.querySelector(".icon");
-        const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+function toggleAccordion(btn) {
 
-        // Collapse all others (optional — comment this block if you want multiple open)
-        document.querySelectorAll(".accordion-panel").forEach((p) => {
-            p.style.maxHeight = null;
-            p.previousElementSibling.querySelector(".icon").textContent = "+";
-            p.previousElementSibling.classList.remove(
-                "bg-[#e54f38]",
-                "text-white"
-            );
-            p.previousElementSibling.classList.add(
-                "bg-[#fff5f1]",
-                "text-[#e54f38]"
-            );
-        });
 
-        // Toggle current
-        if (!isOpen) {
-            panel.style.maxHeight = panel.scrollHeight + "px";
-            icon.textContent = "−";
-            btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
-            btn.classList.add("bg-[#e54f38]", "text-white");
-        } else {
-            panel.style.maxHeight = null;
-            icon.textContent = "+";
-            btn.classList.remove("bg-[#e54f38]", "text-white");
-            btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
-        }
+    const panel = btn.nextElementSibling;
+    const icon = btn.querySelector(".icon");
+    const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+
+    // Collapse all other panels
+    document.querySelectorAll(".accordion-panel").forEach((p) => {
+        p.style.maxHeight = null;
+        const prevBtn = p.previousElementSibling;
+        const prevIcon = prevBtn.querySelector(".icon");
+        if (prevIcon) prevIcon.textContent = "+";
+        prevBtn.classList.remove("bg-[#e54f38]", "text-white");
+        prevBtn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
     });
-});
+
+    // Toggle current panel
+    if (!isOpen) {
+        panel.style.maxHeight = "500px";
+        if (icon) icon.textContent = "−";
+        btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
+        btn.classList.add("bg-[#e54f38]", "text-white");
+    } else {
+        panel.style.maxHeight = null;
+        if (icon) icon.textContent = "+";
+        btn.classList.remove("bg-[#e54f38]", "text-white");
+        btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+    }
+}
 
 function switchTab(e) {
     let parentContainerEl = e.target.closest(".oh-tabs");
@@ -585,7 +581,7 @@ $(document).on("htmx:afterSettle", function (event) {
 
     const bulk_select_option = $fixedTable.data('bulk-select-option');
     if (bulk_select_option) {
-        $('tr').each(function() {
+        $('tr').each(function () {
             const $cells = $(this).find('th, td');
             if ($cells.length > 0) {
                 $cells.eq(0).addClass('stickyleft');
@@ -593,7 +589,7 @@ $(document).on("htmx:afterSettle", function (event) {
             }
         });
     } else {
-        $('tr').each(function() {
+        $('tr').each(function () {
             const $cells = $(this).find('th, td');
             if ($cells.length > 0) {
                 $cells.eq(0).addClass('stickyleft');

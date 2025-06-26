@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #d82149;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <!-- Generator: Adobe Illustrator 28.6.0, SVG Export Plug-In . SVG Version: 1.2.0 Build 709)  -->
+  <g>
+    <g id="Layer_1" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+      <g id="Layer_x5F_1">
+        <path class="cls-1" d="M337,484H33c-16,0-28-13-28-28V28C5,13,18,0,33,0h304c16,0,28,13,28,28v191c-44-30-104-24-143,15s-42,116,2,159c38,37,97,42,141,13v50c0,15-12,28-28,28ZM197,434H60c-9,0-9-14,0-14h136c10,0,10,14,1,14ZM169,372H60c-9,0-9-14,0-14h109c10,0,10,14,0,14ZM154,311H60c-9,0-9-15,0-15h94c10,0,10,15,0,15ZM174,249H60c-9,0-9-15,0-15h114c10,0,10,15,0,15ZM309,187H60c-9,0-9-15,0-15h249c10,0,10,15,0,15ZM241,125h-112c-10,0-10-15,0-15h112c10,0,10,15,0,15Z"/>
+        <path class="cls-1" d="M252,262c27-28,72-28,100-1,45,45,14,122-49,122s-96-73-51-121ZM204,313c0-88,105-131,167-71,37,36,40,94,7,133l26,26-10,10-26-25c-61,55-163,13-164-73Z"/>
+        <path class="cls-1" d="M404,418c-2,0-4-1-5-2l-36-35c-7-7,3-17,10-11l36,36c5,4,1,12-5,12Z"/>
+        <path class="cls-1" d="M459,512c-1,0-3-1-5-2l-68-67c-7-7-6-18,0-24l26-27c6-6,18-7,25,0l68,67c2,2,3,7,0,10l-40,40c-2,2-4,3-6,3Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
