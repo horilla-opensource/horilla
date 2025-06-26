@@ -1,0 +1,225 @@
+<style>
+    .oh-info {
+      top: 2px !important;
+    }
+  </style>
+  {% extends 'index.html' %} {% block content %} {% load static i18n horillafilters mathfilters basefilters attendancefilters  %}
+  <div class="grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-4 mb-4">
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+      <div class="flex items-center gap-4">
+        <div class="bg-[#1cba5121] p-3 rounded-md">
+          <img
+            src="{% static 'horilla_theme/assets/img/icons/add-user.svg' %}"
+            width="20"
+          />
+          <!-- <i class="fas fa-users text-primary-600"></i> -->
+        </div>
+        <div>
+          <p class="text-sm">{% trans "Today's Attendances" %}</p>
+          <div class="flex items-center gap-2">
+            <p class="text-xl font-bold text-secondary-900">{{marked_attendances_ratio}}%</p>
+            <!-- <p class="text-success text-sm">+23%</p> -->
+          </div>
+        </div>
+      </div>
+      <!-- <button class="w-3 h-3 absolute right-6 top-6">
+          <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+        </button> -->
+    </div>
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+      <div class="flex items-center gap-4">
+        <div class="bg-[#b71db01f] p-3 rounded-md">
+          <img src="./assets/img/icons/absent.svg" width="20" />
+        </div>
+        <div>
+          <p class="text-sm">{% trans "On Time" %}</p>
+          <div class="flex items-center gap-2">
+            <p class="text-xl font-bold text-secondary-900">
+                {{on_time}}
+            </p>
+            <!-- <p class="text-success text-sm">+23%</p> -->
+          </div>
+        </div>
+      </div>
+      <!-- <button class="w-3 h-3 absolute right-6 top-6">
+          <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+        </button> -->
+    </div>
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+      <div class="flex items-center gap-4">
+        <div class="bg-[#ea7f2f2e] p-3 rounded-md">
+          <img src="./assets/img/icons/joining.svg" width="20" />
+        </div>
+        <div>
+          <p class="text-sm">{% trans "Late Come" %}</p>
+          <div class="flex items-center gap-2">
+            <p class="text-xl font-bold text-secondary-900">
+                {{late_come}}
+            </p>
+            <!-- <p class="text-red-600 text-sm">-25%</p> -->
+          </div>
+        </div>
+      </div>
+      <!-- <button class="w-3 h-3 absolute right-6 top-6">
+          <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+        </button> -->
+    </div>
+  </div>
+  
+  <div class="grid grid-cols-12 gap-4 mb-4">
+ 
+    <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-md font-semibold">
+                {% trans "Attendance Analytics" %}
+            </h3>
+        </div>
+        <div class="flex gap-2 justify-between items-center mb-4">
+            <select id="type" class="oh-select" name="type" onchange="changeView(this)" style="
+                width: 150px;
+                padding: 5px;
+                color: #5e5c5c;
+                border-radius: 4px;
+                border: 1px solid #d1d5db;
+            ">
+                <option value="day">{% trans "Day" %}</option>
+                <option value="weekly">{% trans "Weekly" %}</option>
+                <option value="monthly">{% trans "Monthly" %}</option>
+                <option value="date_range">{% trans "Date range" %}</option>
+            </select>
+            <input type="date" id="attendance_month" onchange="changeMonth()" class="oh-select" style="
+                width: 150px;
+                padding: 5px;
+                color: #5e5c5c;
+                border-radius: 4px;
+                border: 1px solid #d1d5db;
+            " />
+        </div>
+        <div class="w-full max-w-xs mx-auto">
+            <div class="relative">
+                <canvas id="dailyAnalytic"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">   {% trans "Hours Chart" %}</h3>
+            <input type="month" class="mb-2 float-end pointer oh-select"
+            id="hourAccountMonth" onchange="dynamicMonth($(this))"
+            style="
+            width: 150px;
+            padding: 5px;
+            color: #5e5c5c;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        " />
+          </div>
+        <div class="w-full max-w-xs mx-auto">
+            <div class="relative">
+                <canvas id="pendingHoursCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">{% trans "Attendance To Validate" %}</h3>
+        </div>
+        <div class="overflow-hidden overflow-x-auto" hx-get="{% url 'dashboard-attendance-validate' %}" hx-trigger="load">
+            
+        </div>
+    </div>
+   
+    {% if "attendance"|app_installed %}
+    {% if perms.employee.view_employee or request.user|is_reportingmanager %}    
+        {% if not 'online_employees' in charts %}
+            <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Online Employees" %}</h3>
+                </div>
+                <div class="flex-col items-center justify-center h-[400px]" hx-get="{% url 'not-out-yet' %}" hx-trigger="load">
+                </div>
+            </div>
+        {% endif %}
+        {% if not 'offline_employees' in charts %}
+            <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Offline Employees" %}</h3>
+                </div>
+                <div class="flex-col items-center justify-center" hx-get="{% url 'not-in-yet' %}" hx-trigger="load">
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+    {% if not 'overtime_approve' in charts %}
+            <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Overtime To Approve" %}</h3>
+                </div>
+                <div class="flex-col items-center justify-center" hx-get="{% url 'dashboard-overtime-approve' %}" hx-trigger="load">
+                </div>
+            </div>
+        {% endif %}
+{% endif %}
+ <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-md font-semibold">
+            {% trans "Department Overtime Chart" %}
+        </h3>
+    </div>
+    <div class="flex gap-2 justify-between items-center mb-4">
+        <select id="department_date_type" class="oh-select" name="type" style="
+            width: 150px;
+            padding: 5px;
+            color: #5e5c5c;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        ">
+        <option value="day">
+            {% trans "Day" %}
+        </option>
+        <option value="weekly">
+            {% trans "Weekly" %}
+        </option>
+        <option value="monthly">
+            {% trans "Monthly" %}
+        </option>
+        <option value="date_range">
+            {% trans "Date range" %}
+        </option>
+        </select>
+        <span id="department_day_input">
+        <input type="date" id="department_month" class="oh-select" style="
+            width: 150px;
+            padding: 5px;
+            color: #5e5c5c;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        " />
+        </span>
+    </div>
+    <div class="w-full max-w-xs mx-auto">
+        <div class="relative">
+            <canvas id="departmentOverChart"></canvas>
+        </div>
+        <div id="chartLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
+
+    </div>
+</div> 
+<div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+    <div class="flex justify-between items-center mb-2">
+        <h3 class="text-md font-semibold">{% trans "On Break" %}</h3>
+    </div>
+    <div class="flex-col items-center justify-center h-[400px]" hx-get="{% url 'on-break-employees' %}" hx-trigger="load"  id="onBreakEmployeesCard" >
+    </div>
+</div>
+
+
+   
+  
+
+    <script src="{% static 'dashboard/attendanceChart.js' %}"></script>
+</div>
+    {% endblock %}
+
+  

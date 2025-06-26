@@ -1,0 +1,8 @@
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %} {% load horillafilters %}
+<div class="h-screen overflow-hidden overflow-y-auto">
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+        {% include 'task/new/task_navbar.html' %}
+    </main>
+
+</div>
+    {% endblock content %}

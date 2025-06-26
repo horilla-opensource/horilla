@@ -1,161 +1,112 @@
+
 $(document).ready(function () {
-    function recruitmentChart(dataSet, labels) {
-        // Apply new styling to datasets
-        const styledDataSets = dataSet.map((dataset, index) => {
-            const colors = ['#a5b4fc', '#fca5a5', '#fdba74', '#34d399', '#fbbf24', '#fb7185', '#60a5fa'];
-            return {
-                ...dataset,
-                backgroundColor: colors[index % colors.length],
-                borderRadius: 10,
-                barPercentage: 0.6,
-                categoryPercentage: 0.8
-            };
-        });
+	function recruitmentChart(dataSet, labels) {
+		const styledDataSets = dataSet.map((dataset, index) => {
+			const colors = ['#a5b4fc', '#fca5a5', '#fdba74', '#34d399', '#fbbf24', '#fb7185', '#60a5fa'];
+			return {
+				...dataset,
+				backgroundColor: colors[index % colors.length],
+				borderRadius: 10,
+				barPercentage: 0.6,
+				categoryPercentage: 0.8
+			};
+		});
 
-        const data = {
-            labels: labels,
-            datasets: styledDataSets,
-        };
+		const data = {
+			labels: labels,
+			datasets: styledDataSets,
+		};
 
-        // Create chart using the Chart.js library
-        window["myChart"] = {};
-        if (document.getElementById("recruitmentChart1")) {
-            const ctx = document.getElementById("recruitmentChart1").getContext("2d");
-            myChart = new Chart(ctx, {
-                type: "bar",
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                stepSize: 20,
-                                color: '#6b7280'
-                            },
-                            grid: {
-                                color: '#e5e7eb'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#6b7280'
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                usePointStyle: true,
-                                pointStyle: 'circle',
-                                font: {
-                                    size: 12
-                                },
-                                color: '#374151',
-                                padding: 15
-                            },
-                            onClick: (e, legendItem, legend) => {
-                                const index = legendItem.datasetIndex;
-                                const chart = legend.chart;
-                                if (chart.isDatasetVisible(index)) {
-                                    chart.hide(index);
-                                    legendItem.hidden = true;
-                                } else {
-                                    chart.show(index);
-                                    legendItem.hidden = false;
-                                }
-                                chart.update();
-                            }
-                        },
-                        tooltip: {
-                            enabled: true
-                        }
-                    },
-                    onClick: (e, activeEls) => {
-                        if (activeEls.length > 0) {
-                            let datasetIndex = activeEls[0].datasetIndex;
-                            let dataIndex = activeEls[0].index;
-                            let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-                            let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-                            let label = e.chart.data.labels[dataIndex];
-                            localStorage.removeItem("savedFilters");
-                            window.location.href =
-                                "/recruitment/candidate-view" +
-                                "?recruitment=" +
-                                datasetLabel +
-                                "&stage_id__stage_type=" +
-                                label.toLowerCase();
-                        }
-                    },
-                },
+		// Create chart using the Chart.js library
+		window["myChart"] = {};
+		if (document.getElementById("recruitmentChart1")) {
+			const ctx = document.getElementById("recruitmentChart1").getContext("2d");
+			myChart = new Chart(ctx, {
+				type: "bar",
+				data: data,
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: {
+						y: {
+							beginAtZero: true,
+							ticks: {
+								stepSize: 20,
+								color: '#6b7280'
+							},
+							grid: {
+								color: '#e5e7eb'
+							}
+						},
+						x: {
+							ticks: {
+								color: '#6b7280'
+							},
+							grid: {
+								display: false
+							}
+						}
+					},
+					plugins: {
+						legend: {
+							position: 'bottom',
+							labels: {
+								usePointStyle: true,
+								pointStyle: 'circle',
+								font: {
+									size: 12
+								},
+								color: '#374151',
+								padding: 15
+							},
+							onClick: (e, legendItem, legend) => {
+								const index = legendItem.datasetIndex;
+								const chart = legend.chart;
+								if (chart.isDatasetVisible(index)) {
+									chart.hide(index);
+									legendItem.hidden = true;
+								} else {
+									chart.show(index);
+									legendItem.hidden = false;
+								}
+								chart.update();
+							}
+						},
+						tooltip: {
+							enabled: true
+						}
+					},
+					onClick: (e, activeEls) => {
+						if (activeEls.length > 0) {
+							let datasetIndex = activeEls[0].datasetIndex;
+							let dataIndex = activeEls[0].index;
+							let datasetLabel = e.chart.data.datasets[datasetIndex].label;
+							let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
+							let label = e.chart.data.labels[dataIndex];
+							localStorage.removeItem("savedFilters");
+							window.location.href =
+								"/recruitment/candidate-view" +
+								"?recruitment=" +
+								datasetLabel +
+								"&stage_id__stage_type=" +
+								label.toLowerCase();
+						}
+					},
+				},
 
-            });
-        }
-    }
-// Load recruitment chart data from API
-$.ajax({
-	url: "/recruitment/dashboard-pipeline",
-	type: "GET",
-	success: function (response) {
-		const dataSet = response.dataSet;
-		const labels = response.labels;
-		recruitmentChart(dataSet, labels);
-	},
-});
-
-	// function recruitmentChart(dataSet, labels) {
-	// 	const data = {
-	// 		labels: labels,
-	// 		datasets: dataSet,
-	// 	};
-	// 	// Create chart using the Chart.js library
-	// 	window["myChart"] = {};
-	// 	if (document.getElementById("recruitmentChart1")){
-	// 		const ctx = document.getElementById("recruitmentChart1").getContext("2d");
-	// 		myChart = new Chart(ctx, {
-	// 			type: "bar",
-	// 			data: data,
-	// 			options: {
-	// 				responsive: true,
-
-	// 				onClick: (e, activeEls) => {
-	// 					let datasetIndex = activeEls[0].datasetIndex;
-	// 					let dataIndex = activeEls[0].index;
-	// 					let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-	// 					let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
-	// 					let label = e.chart.data.labels[dataIndex];
-	// 					localStorage.removeItem("savedFilters");
-	// 					window.location.href =
-	// 						"/recruitment/candidate-view" +
-	// 						"?recruitment=" +
-	// 						datasetLabel +
-	// 						"&stage_id__stage_type=" +
-	// 						label.toLowerCase();
-	// 				},
-	// 			},
-	// 			plugins: [
-	// 				{
-	// 					afterRender: (chart) => emptyChart(chart),
-	// 				},
-	// 			],
-	// 		});
-	// 	}
-	// }
-	// $.ajax({
-	// 	url: "/recruitment/dashboard-pipeline",
-	// 	type: "GET",
-	// 	success: function (response) {
-	// 		// Code to handle the response
-	// 		dataSet = response.dataSet;
-	// 		labels = response.labels;
-	// 		recruitmentChart(dataSet, labels);
-	// 	},
-	// });
+			});
+		}
+	}
+	$.ajax({
+		url: "/recruitment/dashboard-pipeline",
+		type: "GET",
+		success: function (response) {
+			// Code to handle the response
+			dataSet = response.dataSet;
+			labels = response.labels;
+			recruitmentChart(dataSet, labels);
+		},
+	});
 
 	$("#chart1").click(function (e) {
 		var chartType = myChart.config.type;
