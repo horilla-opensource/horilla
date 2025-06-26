@@ -9,7 +9,7 @@
     <div class="flex items-center gap-4">
       <div class="bg-[#1cba5121] p-3 rounded-md">
         <img
-          src="{% static 'horilla_theme/assets/img/icons/add-user.svg' %}"
+          src="{% static 'horilla_theme/assets/img/icons/total-vacancy.svg' %}"
           width="20"
         />
         <!-- <i class="fas fa-users text-primary-600"></i> -->
@@ -29,7 +29,7 @@
   <div class="bg-white p-6 rounded-md shadow-card relative">
     <div class="flex items-center gap-4">
       <div class="bg-[#b71db01f] p-3 rounded-md">
-        <img src="./assets/img/icons/absent.svg" width="20" />
+        <img  src="{% static 'horilla_theme/assets/img/icons/ongoing-rec.svg' %}" width="20" />
       </div>
       <div>
         <p class="text-sm">{% trans "Ongoing Recruitments" %}</p>
@@ -48,7 +48,7 @@
   <div class="bg-white p-6 rounded-md shadow-card relative">
     <div class="flex items-center gap-4">
       <div class="bg-[#ea7f2f2e] p-3 rounded-md">
-        <img src="./assets/img/icons/joining.svg" width="20" />
+        <img src="{% static 'horilla_theme/assets/img/icons/hired-candidates.svg' %}" width="20" />
       </div>
       <div>
         <p class="text-sm">{% trans "Hired Candidates" %}</p>
@@ -67,7 +67,8 @@
   <div class="bg-white p-6 rounded-md shadow-card relative">
     <div class="flex items-center gap-4">
       <div class="bg-[#d821491c] p-3 rounded-md">
-        <img src="./assets/img/icons/strenth.svg" width="20" />
+
+        <img src="{% static 'horilla_theme/assets/img/icons/conversion-rate.svg' %}" width="20" />
       </div>
       <div>
         <div class="flex gap-1">
@@ -92,12 +93,12 @@
   {% if "onboarding"|app_installed %}
   <div class="bg-white p-6 rounded-md shadow-card relative">
     <div class="flex items-center gap-4">
-      <div class="bg-[#d821491c] p-3 rounded-md">
-        <img src="./assets/img/icons/strenth.svg" width="20" />
+      <div class="bg-[#E6E6FA] p-3 rounded-md">
+        <img src="{% static 'horilla_theme/assets/img/icons/offer-acceptance.svg' %}" width="20" />
       </div>
       <div>
         <div class="flex gap-1">
-          <p class="text-sm">{% trans "Offer Acceptance Rate (OAR)" %}</p>
+          <p class="text-sm">{% trans "Offer Acceptance Rate" %}</p>
           <span
             class="oh-info"
             title="Offer Acceptance Rate = ( Onboarding candidates / Total Hired Candidates ) * 100"
@@ -119,9 +120,7 @@
 </div>
 
 <div class="grid grid-cols-12 gap-4 mb-4">
-  <div
-    class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
-  >
+  <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
     <div class="flex justify-between items-center mb-2">
       <h3 class="text-md font-semibold">{% trans "Skill Zone Status" %}</h3>
     </div>
@@ -156,14 +155,11 @@
   >
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-md font-semibold">{% trans "Candidate on Onboard" %}</h3>
-      {% comment %} {% if onboarding_count %} {% endcomment %}
+      {% if onboarding_count %}
       <a class="w-4 h-4" href="{% url 'candidate-view' %}?start_onboard=true">
-        <img
-          src="{% static 'horilla_theme/assets/img/icons/more.svg' %}"
-          alt=""
-        />
+        <i class="fa-solid fa-eye"></i>
       </a>
-      {% comment %} {% endif %} {% endcomment %}
+      {% endif %}
     </div>
     <div class="overflow-hidden overflow-x-auto">
       <div
@@ -174,7 +170,7 @@
   </div>
   {% endif %}
   <div
-    class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
     style="height: 425px"
   >
     <div class="flex justify-between items-center mb-2">
@@ -191,7 +187,7 @@
       class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
     ></div>
   </div>
-  <div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card" style="height: 425px">
+  <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card" style="height: 425px">
     <div class="flex justify-between items-center mb-2">
       <h3 class="text-md font-semibold">
         {% trans "Current Hiring Pipeline" %}
@@ -206,7 +202,7 @@
       ></div>
     </div>
   </div>
-  
+
   <div
     class="xl:col-span-7 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
   >
@@ -230,8 +226,8 @@
     </div>
     <div class="overflow-hidden overflow-x-auto">
         <div hx-get='{% url "ongoing-recruitment-dashboard" %}'
-             hx-trigger="load" 
-             class="" 
+             hx-trigger="load"
+             class=""
              style="max-height: 360px;">
         </div>
     </div>
@@ -272,5 +268,5 @@
       selectyear.appendChild(option);
     }
   </script>
-  {% endblock %}
 </div>
+  {% endblock %}

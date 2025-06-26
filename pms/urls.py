@@ -459,15 +459,15 @@ urlpatterns = [
         views.view_single_anonymous_feedback,
         name="single-anonymous-feedback-view",
     ),
-    # path(
-    #     "view-employee-objective/<int:emp_obj_id>/",
-    #     views.view_employee_objective,
-    #     name="view-employee-objective",
-    # ),
     path(
-        "view-employee-objective/<int:pk>/",
-        objectives.EmployeeObjectiveDetailView.as_view(),
+        "view-employee-objective/<int:emp_obj_id>/",
+        views.view_employee_objective,
         name="view-employee-objective",
+    ),
+    path(
+        "view-employee-objective-detail/<int:pk>/",
+        objectives.EmployeeObjectiveDetailView.as_view(),
+        name="view-employee-objective-detail",
     ),
     # path(
     #     "create-employee-objective/",

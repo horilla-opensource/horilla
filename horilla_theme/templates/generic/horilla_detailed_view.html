@@ -64,7 +64,7 @@
             {% if instance_ids %}
                 <div class="flex gap-1 ml-auto">
                     <button data-action="previous"
-                        hx-get="{{ next_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
+                        hx-get="{{ previous_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
                         hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');" hx-target="#genericModalBody"
                         class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
                         <i class="fa-solid fa-angle-left"></i>

@@ -31,6 +31,14 @@ $(document).ready(function () {
   function employee_chart(dataSet, labels) {
     $("#employee_canvas_body").html('<canvas id="employeeChart"></canvas>');
 
+    $.each(dataSet, (index, item) => {
+      dataSet[index] = $.extend({}, item, {
+        borderRadius: 20,
+        barPercentage: 0.8,
+        categoryPercentage: 0.8,
+      });
+    });
+
     const employeeChart = document
       .getElementById("employeeChart")
       .getContext("2d");
@@ -77,6 +85,35 @@ $(document).ready(function () {
                   },
                 },
               },
+            },
+            plugins:{
+              legend: {
+                position: 'bottom',
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  font: {
+                    size: 12
+                  },
+                  color: '#374151',
+                  padding: 15
+                },
+                onClick: (e, legendItem, legend) => {
+                  const index = legendItem.datasetIndex;
+                  const chart = legend.chart;
+                  if (chart.isDatasetVisible(index)) {
+                    chart.hide(index);
+                    legendItem.hidden = true;
+                  } else {
+                    chart.show(index);
+                    legendItem.hidden = false;
+                  }
+                  chart.update();
+                }
+              },
+              tooltip: {
+                enabled: true
+              }
             },
           },
         });
@@ -209,9 +246,35 @@ $(document).ready(function () {
       const departmentChart = document.getElementById("departmentChart");
 
       // chart constructor
-      var departmentPayrollChart = new Chart(departmentChart, {
+      const departmentPayrollChart = new Chart(departmentChart, {
         type: "pie",
         data: departmentChartData,
+
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                usePointStyle: true,
+                pointStyle: "circle",
+                font: { size: 12 },
+                color: "#374151",
+                padding: 15
+              },
+              onClick: (e, legendItem, legend) => {
+                const index = legendItem.index;
+                const chart = legend.chart;
+                const meta = chart.getDatasetMeta(0);
+                meta.data[index].hidden = !meta.data[index].hidden;
+                chart.update();
+              }
+            },
+            tooltip: {
+              enabled: true
+            }
+          }
+        }
       });
 
       $("#departmentChart").on("click", function (event) {

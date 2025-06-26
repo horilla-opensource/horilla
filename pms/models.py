@@ -445,7 +445,7 @@ class EmployeeObjective(HorillaModel):
         """
         for detail view of page
         """
-        url = reverse("view-employee-objective", kwargs={"emp_obj_id": self.pk})
+        url = reverse("view-employee-objective-detail", kwargs={"pk": self.pk})
         return url
 
     def title_col(self):

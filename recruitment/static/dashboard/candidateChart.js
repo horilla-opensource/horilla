@@ -3,14 +3,14 @@ $(document).ready(function () {
 
     // Load image only once
     const centerImage = new Image();
-    centerImage.src = "/static/horilla_theme/assets/img/icons/gender.svg"; // Adjust path as needed
+    centerImage.src = "/static/horilla_theme/assets/img/icons/offerletter.svg"; // Adjust path as needed
 
     function candidateChart(dataSet, labels) {
         const data = {
             labels: labels,
             datasets: [{
                 data: dataSet.map(item => item.data),
-                backgroundColor: ['#C6BEC4', '#FFF255', '#55C4FF', '#FF4646', '#2AFF0C'],
+                backgroundColor:[ "#87AFEB","#FFE4B3","#B3D4FF", "#FFB3B3", "#B3E5C7"  ],
                 borderWidth: 0, // Match the original design
             }]
         };
@@ -43,15 +43,17 @@ $(document).ready(function () {
                 id: "centerIcon",
                 afterDatasetDraw(chart) {
                     if (!centerImage.complete) return; // Wait till image is loaded
-                    const ctx = chart.ctx;
-                    const size = 70;
-                    ctx.drawImage(
-                        centerImage,
-                        chart.width / 2 - size / 2,
-                        chart.height / 2 - size / 2 - 20,
-                        size,
-                        size
-                    );
+                        const ctx = chart.ctx;
+                        const size = 70;
+                        const centerX = chart.getDatasetMeta(0).data[0].x; // Center X of the doughnut
+                        const centerY = chart.getDatasetMeta(0).data[0].y; // Center Y of the doughnut
+                        ctx.drawImage(
+                            centerImage,
+                            centerX - size / 2,
+                            centerY - size / 2,
+                            size,
+                            size
+                        );
                 },
             }],
         });

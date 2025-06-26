@@ -1,0 +1,127 @@
+{% load i18n %} {% load static %}
+<div class="py-3" id="assetList{{asset_category.id}}" data-count="{{total_count}}">
+    <div class="overflow-x-auto overflow-y-auto h-[300px]">
+        <table class="w-full">
+            <thead class="sticky top-0 bg-[white] text-left">
+                <tr class="border-b border-[#ececec]">
+                    <th class="sticky left-0 z-10 bg-white text-sm font-medium p-3">
+                        <input type="checkbox" value=""
+                            class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer">
+                    </th>
+                    <th class="text-sm font-medium p-3">
+                        <span class="w-max flex">{% trans "Asset" %}</span>
+                    </th>
+                    <th class="text-sm font-medium p-3">
+                        <span class="w-max flex">{% trans "Tracking ID" %}</span>
+                    </th>
+                    <th class="text-sm font-medium p-3">
+                        <span class="w-max flex">{% trans "Batch No" %}</span>
+                    </th>
+                    <th class="text-sm font-medium p-3">
+                        <span class="w-max flex">{% trans "Status" %}</span>
+                    </th>
+                    {% if perms.asset.change_asset or perms.asset.delete_asset %}
+                    <th class="text-sm font-medium p-3">
+                        {% trans "Actions" %}
+                    </th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in assets %}
+                <tr class="border-b border-[#f3f3f3]" data-toggle="oh-modal-toggle" data-target="#genericModal"
+                    hx-get="{% url 'asset-information' pk=asset.id %}?{{pd}}&instance_ids={{requests_ids}}"
+                    hx-target="#genericModalBody" id="assetDelete{{asset.id}}">
+                    <td class="text-sm  text-left p-3 text-[#666]">
+                        <input type="checkbox" value=""
+                            class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38]  cursor-pointer">
+                    </td>
+                    <td class="text-sm  text-left p-3 text-[#666]">
+                        {{asset.asset_name}}
+                    </td>
+                    <td class="text-sm text-left p-3 text-[#666]">
+                        {{asset.asset_tracking_id}}
+                    </td>
+                    <td class="text-sm text-left p-3 text-[#666]">
+                        {{asset.asset_lot_number_id}}
+                    </td>
+                    <td class="text-sm text-left p-3 text-[#666]">
+                        {% trans asset.asset_status %}
+                    </td>
+                    <td class="text-sm text-left p-3 text-[#666]" onclick="event.stopPropagation();">
+                        <div class="flex gap-1">
+                            {% if perms.asset.change_asset %}
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                    data-toggle="oh-modal-toggle" data-target="#genericModal"
+                                    hx-get="{% url 'asset-update' pk=asset.id %}?{% if asset_under == 'asset_filter' %}asset_under=asset_filter&{% endif %}{{ pg }}"
+                                    hx-target="#genericModalBody" title="{% trans 'Edit' %}">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            {% endif %}
+                            {% if perms.asset.add_asset %}
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                    data-toggle="oh-modal-toggle" data-target="#genericModal"
+                                    hx-get="{% url 'duplicate-asset' asset.id %}?{{pg}}" hx-target="#genericModalBody"
+                                    title="{% trans 'Duplicate' %}">
+                                    <i class="fa-solid fa-clone"></i>
+                                </button>
+                            {% endif %}
+                            {% if asset.assetassignment_set.all %}
+                                <button
+                                    class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                    data-toggle="oh-modal-toggle" data-target="#dynamicCreateModal"
+                                    hx-get="{% url 'add-asset-report' asset.id %}?asset_list=true"
+                                    hx-target="#dynamicCreateModalTarget" id="oh-btn-asset-update-modal"
+                                    title="{% trans 'Report' %}">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </button>
+                            {% else %}
+                                <button disabled
+                                    class="cursor-not-allowed px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                    id="oh-btn-asset-update-modal" title="{% trans 'Report' %}">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </button>
+                            {% endif %}
+                            {% if perms.asset.delete_asset %}
+                                <form hx-confirm="{% trans 'Do you want to delete this asset?' %}"
+                                    hx-post="{% url 'asset-delete' asset_id=asset.id %}?{% if asset_under == 'asset_filter' %}asset_under=asset_filter&{% endif %}{{ request.GET.urlencode }}"
+                                    hx-target="#assetCategory{{ asset.asset_category_id.id }}"
+                                    onclick="event.stopPropagation()" style="width:100%">
+                                    {% csrf_token %}
+                                    <button
+                                        class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                        title="{% trans 'Delete' %}">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="flex justify-between items-center mt-4 w-full sticky bottom-0 inset-0">
+            <p class="text-xs text-[#666]">{% trans "Page" %}  {{assets.number }} {% trans "of" %} {{ assets.paginator.num_pages }}</p>
+            <div class="flex gap-3 text-[#666] items-center">
+                {% if assets.has_previous %}
+                <button class="text-xs hover:text-primary-600 transition duration-300"
+                    hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{request.GET.urlencode}}&page={{ assets.previous_page_number }}"
+                    hx-target="#assetCategory{{asset_category_id}}" title="{% trans 'Previous' %}">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                {%endif %}
+                {{assets.number }} / {{ assets.paginator.num_pages }}
+                {% if assets.has_next %}
+                <button class="text-xs hover:text-primary-600 transition duration-300"
+                    hx-get="{% url 'asset-list' cat_id=asset_category_id %}?{{request.GET.urlencode}}&page={{ assets.next_page_number }}"
+                    class="btn btn-outline-secondary" hx-target="#assetCategory{{asset_category_id}}">
+                    <i class="fa-solid fa-arrow-right" title="{% trans 'Next' %}"></i>
+                </button>
+                {%endif %}
+            </div>
+        </div>
+    </div>
+</div>

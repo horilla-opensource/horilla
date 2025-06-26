@@ -10,7 +10,7 @@
                     <div class="flex space-x-2">
                     <h3 class="text-sm font-medium"> {% trans "Application Tracking" %}</h3>
                     <span class="oh-info mr-2" title="{% trans "By enabling the feature candidates can track their recruitment progress" %}">
-                    </span>                    
+                    </span>
                 </div>
                     <label class="toggle-label">
                         <input type="checkbox" data-target="#limitFields"  class="toggle-input" name="candidate_self_tracking" onchange="selfTrack($(this))" {% if check_candidate_self_tracking %} checked {% endif %} />
@@ -19,7 +19,7 @@
                 </div>
                 </div>
                 <div class="col-span-12 lg:col-span-6">
-    
+
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex space-x-2">
                     <h3 class="text-sm font-medium"> {% trans "Rating Visiblity" %}</h3>
@@ -29,10 +29,10 @@
                         <input type="checkbox"  data-target="#limitFields" class="toggle-input" name="candidate_self_tracking" onchange="ratingVisibility($(this))" {% if check_candidate_self_tracking_rating %} checked {% endif %} />
                         <div class="toggle-switch"></div>
                     </label>
-                
+
                 </div>
                 </div>
-               
+
         </div>
     </div>
 </div>

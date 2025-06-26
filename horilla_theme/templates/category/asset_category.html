@@ -1,0 +1,130 @@
+{% load static i18n %}
+<div class="accordion-wrapper space-y-2">
+    <!-- Accordion Item -->
+    {% for asset_category in asset_categories %}
+        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+            <button
+                class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-[#fff5f1] text-[#e54f38]"
+                hx-get="{% url 'asset-list' cat_id=asset_category.id %}?category={{ asset_category.pk }}&{{ request.GET.urlencode }}"
+                hx-target="#assetCategory{{ asset_category.id }}" hx-trigger="doRequest"
+                _="on click if isElementVisible(me) trigger doRequest" hx-on:click="toggleAccordion(this)">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
+                        id="asset-count{{asset_category.id}}" data-category-id="{{asset_category.id}}"
+                        title="{{asset_category.asset_set.count}} {% trans 'Assets' %}">
+                        {{ asset_category.asset_set.count }}
+                    </span>
+                    {{asset_category}}
+                </div>
+                <div class="flex items-center gap-5">
+                    <span onclick="event.stopPropagation();">
+                        <div class="inline-block dropdown-wrapper text-md">
+                            <a class="cursor-pointer dropdown-toggle">
+                                <i class="fa-solid fa-ellipsis-vertical "></i>
+                            </a>
+                            <!-- Dropdown Content -->
+                            <div
+                                class="dropdown-menu absolute right-[85px] min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200">
+                                <ul class="text-xs">
+                                    {% if perms.asset.add_asset %}
+                                        <li>
+                                            <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300 asset-create"
+                                                data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                                hx-get="{% url 'asset-creation' asset_category_id=asset_category.id %}?{{pg}}"
+                                                hx-target="#objectCreateModalTarget" data-category-id="{{asset_category.id}}">
+                                                {% trans "Create" %}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% if perms.asset.add_assetcategory %}
+                                        <li>
+                                            <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                                data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                                hx-get="{% url 'asset-category-duplicate' obj_id=asset_category.id %}?{{pg}}"
+                                                hx-target="#objectCreateModalTarget">
+                                                {% trans "Duplicate" %}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% if perms.asset.change_assetcategory %}
+                                        <li>
+                                            <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                                data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                                hx-get="{% url 'asset-category-update' pk=asset_category.id %}?{{pg}}"
+                                                hx-target="#objectUpdateModalTarget">
+                                                {% trans "Edit" %}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% if perms.asset.delete_assetcategory %}
+                                        <li>
+                                            <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                                hx-confirm="{% trans 'Do you want to delete this category?' %}"
+                                                hx-post="{% url 'asset-category-delete' asset_category.id %}?{{pg}}"
+                                                hx-target="#assetCategoryList">
+                                                {% trans "Delete" %}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </span>
+                    <span class="icon text-xl font-bold">+</span>
+                </div>
+            </button>
+            <div class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700"
+                id="assetCategory{{asset_category.id}}" style="max-height: 0px;"></div>
+        </div>
+    {% endfor %}
+    <div class="flex justify-between sticky bottom-0 items-center mt-4 w-full inset-0">
+        <p class="text-xs text-[#666]">
+            {% trans "Page" %} {{asset_categories.number }} {% trans "of" %} {{ asset_categories.paginator.num_pages }}
+        </p>
+        <div class="flex gap-3 text-[#666] items-center">
+            {% if asset_categories.has_previous %}
+                <button class="text-xs hover:text-primary-600 transition duration-300"
+                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.previous_page_number }}"
+                    hx-target="#assetCategoryList">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+            {% endif %}
+            {{asset_categories.number }} / {{ asset_categories.paginator.num_pages }}
+            {% if asset_categories.has_next %}
+                <button class="text-xs hover:text-primary-600 transition duration-300"
+                    hx-get="{% url 'asset-category-view-search-filter' %}?{{pg}}&page={{ asset_categories.next_page_number}}"
+                    hx-target="#assetCategoryList">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% if perms.asset.add_assetlot %}
+<span name="" id="dynamicBatchNoModal" style="display: none" data-toggle="oh-modal-toggle"
+    data-target="#dynamicCreateModal" hx-get="{% url 'asset-batch-number-creation' %}"
+    hx-target="#dynamicCreateModalTarget">
+</span>
+<script>
+    function batchNoChange(selectElement) {
+        var selectedBatchNo = selectElement.val();
+        var parentForm = selectElement.parents().closest("form");
+        var dataId = parentForm.data("id");
+        if (selectedBatchNo == "create") {
+            let dynamicBatchNo = $("#dynamicBatchNoModal");
+            var view = parentForm.serialize()
+            view += `&asset_category_id=${dataId}`;
+            dynamicBatchNo.attr("hx-vals", `{"data":"${view}"}`);
+            dynamicBatchNo.click();
+        }
+    }
+    function isElementVisible(element) {
+        const $targetSelector = $(element).attr("hx-target");
+        const $targetEl = $($targetSelector);
+        const isOpen = $targetEl.css("max-height") && $targetEl.css("max-height") !== "0px";
+
+        return !isOpen;
+    }
+
+</script>
+{% endif %}

@@ -1,0 +1,35 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static i18n %}
+{% load i18n %}
+{% load widget_tweaks %}
+{% load assets_custom_filter %}
+
+
+{% include "generic/components.html" %}
+<div hx-get="{% url 'asset-category-nav' %}" hx-trigger="load"></div>
+<div id="assetCategoryList" class="bg-white p-3 rounded-md shadow-card overflow-hidden overflow-y-auto"></div>
+
+{% if dashboard == 'true' %}
+    <script>
+        $(document).ready(function () {
+            $("[name='asset_list']").find("[name=asset_status]").val("In use")
+            $("[name='asset_list']").find(".filterButton").click()
+        });
+    </script>
+{% endif %}
+<script>
+    function handleFormSubmit() {
+
+        $('#successMessage').show();
+
+        setTimeout(function () {
+            $('#successMessage').hide();
+        }, 3000);
+
+        return false; // Prevent the default form submission
+    }
+</script>
+<script src="{% static '/base/filter.js' %}"></script>
+<script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>
+{% endblock %}

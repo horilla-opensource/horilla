@@ -9,7 +9,7 @@
         </div>
     {% endif %}
     </h5>
-   
+
     <div class="p-4">
         <div class="grid grid-cols-12 gap-4 myform">
             <div class="col-span-12 lg:col-span-6">
@@ -17,7 +17,7 @@
                     <div class="flex space-x-2">
                     <h3 class="text-sm font-medium">{% trans "IP Login Restriction" %}</h3>
                     <span class="oh-info mr-2" title="Enable this feature to restrict attendance marking to specific IP addresses only.">
-                    </span>                
+                    </span>
                 </div>
                     <label class="toggle-label">
                         <input
@@ -30,11 +30,11 @@
                         hx-post = "{% url 'enable-ip-restriction' %}"
                         hx-target = "#objectDetailsModalW25Target"
                         hx-trigger = "change"
-        
+
                     />
                         <div class="toggle-switch"></div>
                     </label>
-                
+
                 </div>
             </div>
 

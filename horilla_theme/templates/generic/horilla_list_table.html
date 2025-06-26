@@ -1,7 +1,6 @@
 {% load static i18n generic_template_filters %}
 
 <div id="{{ view_id|safe }}" class="hlv-container">
-    <div id="{{ view_id|safe }}" class="hlv-container">
         <div
             class="oh-modal"
             id="bulkUpdateModal{{view_id|safe}}"
@@ -33,33 +32,32 @@
 
         {% if queryset|length %}
             {% if bulk_select_option %} {% include "generic/quick_actions.html" %} {% endif %}
-            {% comment %}
-            {% if show_toggle_form %}
-            <div class="oh-sticky-dropdown--header" style="z-index: 13;">
-            <div class="oh-dropdown" x-data="{ open: false }">
-                <button class="oh-sticky-dropdown_btn" @click="open = !open">
-                <ion-icon
-                    name="ellipsis-vertical-sharp"
-                    role="img"
-                    class="md hydrated"
-                    aria-label="ellipsis vertical sharp"
-                ></ion-icon>
-                </button>
-                <div
-                class="oh-dropdown__menu oh-sticky-table_dropdown"
-                x-show="open"
-                @click.outside="
-                    open = false
-                    $($el).closest('.oh-table_sticky--wrapper').parent().find('.reload-record').click();
-                "
-                >
-                {{ toggle_form.as_list }}
-                </div>
-            </div>
-            </div>
-            {% endif %} {% endcomment %}
 
-            <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card">
+            <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative">
+                {% if show_toggle_form %}
+                <div class="oh-sticky-dropdown--header absolute right-[30px] top-[25px]" style="z-index: 13;">
+                    <div class="oh-dropdown" x-data="{ open: false }">
+                        <button class="oh-sticky-dropdown_btn" @click="open = !open">
+                        <ion-icon
+                            name="ellipsis-vertical-sharp"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="ellipsis vertical sharp"
+                        ></ion-icon>
+                        </button>
+                        <div
+                        class="oh-dropdown__menu oh-sticky-table_dropdown"
+                        x-show="open"
+                        @click.outside="
+                            open = false
+                            $($el).closest('#{{ view_id|safe }}').find('.reload-record').click();
+                        "
+                        >
+                        {{ toggle_form.as_list }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
                 <div
                     class="max-h-[calc(100vh_-_240px)] overflow-hidden overflow-y-auto overflow-x-auto"
                 >
@@ -139,7 +137,7 @@
                         </thead>
                         <tbody>
                             {% for instance in queryset %}
-                                <tr class="border-b border-[#f3f3f3]"
+                                <tr class="border-b border-[#f3f3f3]{% if row_attrs %} cursor-pointer {% endif %}"
                                     data-instance-id="{{instance.id}}"
                                     {{row_attrs|format:instance|safe}}
                                 >
@@ -304,7 +302,6 @@
                 {% include custom_empty_template %}
             {% endif %}
         {% endif %}
-    </div>
    <script>
     reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
     reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');

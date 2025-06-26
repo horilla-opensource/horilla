@@ -104,15 +104,15 @@ urlpatterns = [
         views.payslip_details,
         name="dashboard-payslip-details",
     ),
-    # path(
-    #     "dashboard-department-chart",
-    #     views.dashboard_department_chart,
-    #     name="dashboard-department-chart",
-    # ),
     path(
         "dashboard-department-chart",
-        dashboard.DashboardDepartmentPayslip.as_view(),
+        views.dashboard_department_chart,
         name="dashboard-department-chart",
+    ),
+    path(
+        "dashboard-department-chart-list",
+        dashboard.DashboardDepartmentPayslip.as_view(),
+        name="dashboard-department-chart-list",
     ),
     # path(
     #     "dashboard-contract-ending",

@@ -1,0 +1,19 @@
+{% load i18n %}
+<div class="mb-2 flex gap-5 items-center text-xs">
+    <span class="font-medium text-[#565E6C] w-32">
+        {% if instance.calculate_daily_leave_amount %}
+            {% trans "Calculate Leave Amount" %}
+        {% else %}
+            {% trans "Deduction Amount For One Leave" %}
+        {% endif %}
+    </span>
+    <p class="font-semibold flex items-center gap-2">
+        : <span>
+            {% if instance.calculate_daily_leave_amount %}
+                {{ instance.calculate_daily_leave_amount|yesno|capfirst }}
+            {% else %}
+                {{ instance.deduction_for_one_leave_amount }}
+            {% endif %}
+        </span>
+    </p>
+</div>

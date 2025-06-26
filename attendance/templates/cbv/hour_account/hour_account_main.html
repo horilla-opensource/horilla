@@ -1,8 +1,8 @@
-<div id ="ot-table">
-  {% include "generic/horilla_list.html" %}
+<div id="ot-table">
+    {% include "generic/horilla_list_table.html" %}
 </div>
 {% if request.GET.deleted %}
-<script>
-$('#reloadMessagesButton').click();
-</script>
+    <script>
+        $("#reloadMessagesButton").click();
+    </script>
 {% endif %}
