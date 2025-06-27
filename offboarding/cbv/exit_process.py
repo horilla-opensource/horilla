@@ -4,8 +4,10 @@ This page handles the cbv methods for existing process
 
 import re
 from datetime import datetime, timedelta
+from typing import Any
 
 from django import forms
+from django.apps import apps
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
@@ -14,6 +16,7 @@ from django.utils.translation import gettext_lazy as _
 
 from base.context_processors import intial_notice_period
 from base.methods import eval_validate
+from horilla.methods import get_horilla_model_class
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
@@ -619,3 +622,132 @@ class OffboardingEmployeeList(HorillaListView):
                 employee_id__in=instance_ids, task_id=pk
             ).update(status=status)
         return response
+
+
+@method_decorator(login_required, name="dispatch")
+class DashboardTaskListview(HorillaListView):
+    """
+    For dashboard task status table
+    """
+
+    # view_id = "view-container"
+
+    model = OffboardingEmployee
+    filter_class = PipelineEmployeeFilter
+    bulk_select_option = False
+    view_id = "dashboard_task_status"
+
+    def get_queryset(self):
+        """
+        Returns a filtered queryset of records assigned to a specific employee
+        """
+
+        qs = OffboardingEmployee.objects.entire()
+        queryset = super().get_queryset(queryset=qs)
+        return queryset
+
+    columns = [
+        ("Employee", "employee_id", "employee_id__get_avatar"),
+        ("Stage", "stage_id"),
+        ("Task Status", "get_task_status_col"),
+    ]
+
+
+if apps.is_installed("asset"):
+
+    @method_decorator(login_required, name="dispatch")
+    @method_decorator(
+        any_manager_can_enter("offboarding.view_offboarding"), name="dispatch"
+    )
+    class DashboardNotReturndAsssets(HorillaListView):
+        """
+        For dashboard task status table
+        """
+
+        # view_id = "view-container"
+        AssetAssignment = get_horilla_model_class(
+            app_label="asset", model="assetassignment"
+        )
+        model = AssetAssignment
+        bulk_select_option = False
+        view_id = "dashboard_task_status"
+
+        def get_queryset(self):
+            """
+            Returns a filtered queryset of records assigned to a specific employee
+            """
+
+            offboarding_employees = OffboardingEmployee.objects.entire().values_list(
+                "employee_id__id", flat=True
+            )
+            qs = self.model.objects.entire().filter(
+                return_status__isnull=True,
+                assigned_to_employee_id__in=offboarding_employees,
+            )
+            queryset = (
+                super().get_queryset().filter(id__in=qs.values_list("id", flat=True))
+            )
+            return queryset
+
+        columns = [
+            (
+                "Employee",
+                "assigned_to_employee_id__get_full_name",
+                "assigned_to_employee_id__get_avatar",
+            ),
+            ("Asset", "asset_id__asset_name"),
+            ("Reminder", "get_send_mail_employee_link"),
+        ]
+
+        row_attrs = """
+                    onclick="
+                    localStorage.setItem('activeTabAsset','#tab_2');
+                    window.location.href='{get_asset_of_offboarding_employee}'"
+                    """
+
+
+if apps.is_installed("pms"):
+
+    @method_decorator(login_required, name="dispatch")
+    @method_decorator(
+        any_manager_can_enter("offboarding.view_offboarding"), name="dispatch"
+    )
+    class DashboardFeedbackView(HorillaListView):
+        """
+        For dashboard task status table
+        """
+
+        # view_id = "view-container"
+        Feedback = get_horilla_model_class(app_label="pms", model="feedback")
+        model = Feedback
+        bulk_select_option = False
+        view_id = "dashboard_task_status"
+
+        def get_queryset(self):
+            """
+            Returns a filtered queryset of records assigned to a specific employee
+            """
+
+            offboarding_employees = OffboardingEmployee.objects.entire().values_list(
+                "employee_id__id", "notice_period_starts"
+            )
+            if offboarding_employees:
+                id_list, date_list = map(list, zip(*offboarding_employees))
+            else:
+                id_list, date_list = [], []
+
+            qs = (
+                self.model.objects.entire()
+                .filter(employee_id__in=id_list)
+                .exclude(status="Closed")
+            )
+            queryset = (
+                super().get_queryset().filter(id__in=qs.values_list("id", flat=True))
+            )
+            return queryset
+
+        columns = [
+            ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
+            ("Feedback", "review_cycle"),
+            ("Status", "status"),
+        ]

@@ -515,6 +515,31 @@ class AssetAssignment(HorillaModel):
             date_col=date_col,
         )
 
+    def get_asset_of_offboarding_employee(self):
+        url = f"{reverse('asset-request-allocation-view')}?assigned_to_employee_id={self.assigned_to_employee_id.id}"
+        return url
+
+    def get_send_mail_employee_link(self):
+        if not self.assigned_to_employee_id:
+            return ""
+        url = reverse(
+            "send-mail-employee", kwargs={"emp_id": self.assigned_to_employee_id.id}
+        )
+        title = _("Send Mail")
+        html = f"""
+        <a
+            onclick="event.stopPropagation()"
+            hx-get="{url}"
+            data-toggle="oh-modal-toggle"
+            data-target="#sendMailModal"
+            title="{title}"
+            hx-target="#mail-content"
+        >
+            <ion-icon name="mail-outline"></ion-icon>
+        </a>
+        """
+        return format_html(html)
+
 
 class AssetRequest(HorillaModel):
     """

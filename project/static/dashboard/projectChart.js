@@ -34,7 +34,7 @@ $(document).ready(function(){
             backgroundColor: dataset.backgroundColor || defaultColors[index % defaultColors.length],
             borderRadius: 20,
             barPercentage: 0.9,
-            categoryPercentage: 0.9
+            categoryPercentage: 0.6
         }));
 
         const data = {
@@ -59,8 +59,7 @@ $(document).ready(function(){
                 scales: {
                     y: {
                         beginAtZero: true,
-                        max: Math.max(...dataSet.flatMap(set => set.data)) + 20,
-                        ticks: { stepSize: 20 },
+                        ticks: { stepSize: 5 },
                         grid: { drawBorder: false, color: '#e5e7eb' }
                     },
                     x: {
@@ -167,7 +166,7 @@ $(document).ready(function(){
                 backgroundColor: dataset.backgroundColor || defaultColors[index % defaultColors.length],
                 borderRadius: 20,
                 barPercentage: 0.9,
-                categoryPercentage: 0.9
+                categoryPercentage: 0.6
             }));
 
             const data = {
@@ -192,8 +191,7 @@ $(document).ready(function(){
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: Math.max(...dataSet.flatMap(set => set.data)) + 20,
-                            ticks: { stepSize: 20 },
+                            ticks: { stepSize: 5 },
                             grid: { drawBorder: false, color: '#e5e7eb' }
                         },
                         x: {

@@ -256,6 +256,11 @@ urlpatterns = [
         views.dashboard_join_chart,
         name="dashboard-join-chart",
     ),
+    path(
+        "list-dashboard-task-status/",
+        exit_process.DashboardTaskListview.as_view(),
+        name="list-dashboard-task-status",
+    ),
 ]
 
 if apps.is_installed("asset"):
@@ -265,7 +270,13 @@ if apps.is_installed("asset"):
             views.dashboard_asset_table,
             name="dashboard-asset-table",
         ),
+        path(
+            "dashboard-asset-table-cbv",
+            exit_process.DashboardNotReturndAsssets.as_view(),
+            name="dashboard-asset-table-cbv",
+        ),
     ]
+
 
 if apps.is_installed("pms"):
     urlpatterns += [
@@ -273,5 +284,10 @@ if apps.is_installed("pms"):
             "dashboard-feedback-table",
             views.dashboard_feedback_table,
             name="dashboard-feedback-table",
+        ),
+        path(
+            "dashboard-feedback-table-cbv/",
+            exit_process.DashboardFeedbackView.as_view(),
+            name="dashboard-feedback-table-cbv",
         ),
     ]
