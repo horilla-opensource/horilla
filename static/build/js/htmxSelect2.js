@@ -4003,12 +4003,18 @@ $(document).ready(function () {
     $(".oh-select").select2({
         width: '100%'
     });
+    $("select").on("select2:select", function (e) {
+        $(this).closest("select")[0].dispatchEvent(new Event("change"));
+    });
 })
 
 $(document).on("htmx:afterSettle", function (event, data) {
     var response = event.detail.xhr.response;
     target = $(event.target);
     target.find(".oh-select").select2({ width: '100%' });
+    $("select").on("select2:select", function (e) {
+        $(this).closest("select")[0].dispatchEvent(new Event("change"));
+    });
 });
 
 // Helper function to hash data using SHA-256

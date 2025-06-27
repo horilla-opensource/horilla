@@ -337,13 +337,15 @@ function htmxLoadIndicator(e) {
 
     if (table.length) {
         table.addClass("is-loading");
-        table.find("th, td").empty();
+        table.find("th, td").addClass('animate-pulse');
     }
     if (card.length) {
         card.addClass("is-loading");
+        card.addClass("animate-pulse");
     }
     if (kanban.length) {
         kanban.addClass("is-loading");
+        kanban.addClass("animate-pulse");
     }
     if (!table.length && !card.length && !kanban.length) {
         $(target).html(`<div class="animated-background"></div>`);
