@@ -1,4 +1,4 @@
-# Horilla HRMS 🦍
+# Horilla HRMS
 
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -63,7 +63,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Setup environment
-cp .env.example .env
+cp .env.dist .env
 # Edit .env with your configuration
 
 # Initialize database
@@ -97,77 +97,6 @@ Our documentation includes:
 For production deployment guides including Nginx, Apache, and cloud platforms:
 ### 📖 [Deployment Guide → docs.horilla.com/technical/v2.0/doc/deployment/nginx-gunicorn](https://docs.horilla.com/technical/v2.0/doc/deployment/nginx-gunicorn)
 
-<!-- ## 🐳 Docker Setup
-
-### Using Docker Compose (Recommended)
-
-```yaml
-# docker-compose.yml
-version: '3.8'
-
-services:
-  db:
-    image: postgres:14
-    environment:
-      POSTGRES_DB: horilla_db
-      POSTGRES_USER: horilla_user
-      POSTGRES_PASSWORD: secure_password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  web:
-    build: .
-    command: gunicorn horilla.wsgi:application --bind 0.0.0.0:8000
-    volumes:
-      - .:/code
-      - static_volume:/code/staticfiles
-      - media_volume:/code/media
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      - DEBUG=False
-      - DB_HOST=db
-      - DB_NAME=horilla_db
-      - DB_USER=horilla_user
-      - DB_PASSWORD=secure_password
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
-      - static_volume:/staticfiles
-      - media_volume:/media
-    depends_on:
-      - web
-
-volumes:
-  postgres_data:
-  static_volume:
-  media_volume:
-```
-
-```bash
-# Start with Docker Compose
-docker-compose up -d
-
-# Run migrations
-docker-compose exec web python manage.py migrate
-
-# Create superuser
-docker-compose exec web python manage.py createsuperuser
-
-# Collect static files
-docker-compose exec web python manage.py collectstatic --noinput
-```
-
-For detailed Docker setup and advanced configurations:
-### 📖 [Docker Guide → docs.horilla.com/docker](https://docs.horilla.com/docker) -->
 
 ## 🤝 Contributing
 
