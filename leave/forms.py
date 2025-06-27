@@ -52,9 +52,7 @@ class ConditionForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.Select,)):
-                field.widget.attrs["style"] = (
-                    "width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
-                )
+                field.widget.attrs["class"] = "oh-select"
             elif isinstance(widget, (forms.DateInput)):
                 field.widget.attrs.update({"class": "oh-input w-100"})
                 field.initial = date.today()

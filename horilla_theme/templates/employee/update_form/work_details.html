@@ -81,7 +81,7 @@
       <form method="post" action="">
         <input type="hidden" name="form" value="work">
         {% if work_info_history %}
-          {{history_form.as_history_modal}} 
+          {{history_form.as_history_modal}}
         {% endif %}
         {% csrf_token %}
         {{work_form.as_p}}

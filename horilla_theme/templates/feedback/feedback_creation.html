@@ -1,4 +1,4 @@
-{% extends 'index.html' %} 
+{% extends 'index.html' %}
 {% load static i18n widget_tweaks %}
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/pms.css' %}" />
@@ -33,7 +33,7 @@
                     <label class="text-xs font-medium" for="{{feedback_form.employee_id.id_for_label}}">{{feedback_form.employee_id.label}}</label>
                     {{feedback_form.employee_id|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
                     {{feedback_form.employee_id.errors}}
-                    
+
                     <label class="text-xs font-medium" for="{{feedback_form.manager_id.id_for_label}}">{{feedback_form.manager_id.label}}</label>
                     {{feedback_form.manager_id|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
                     {{feedback_form.manager_id.errors}}
@@ -46,7 +46,7 @@
                     </div>
                     {{feedback_form.subordinate_id|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
                     {{feedback_form.subordinate_id.errors}}
-                    
+
                     <div class="flex items-center gap-1 pb-2 overflow-visible relative">
                         <label class="text-xs font-medium" for="{{feedback_form.colleague_id.id_for_label}}">
                             {{ feedback_form.colleague_id.label }}
@@ -80,7 +80,7 @@
                     <label class="text-xs font-medium" for="{{feedback_form.question_template_id.id_for_label}}">{{feedback_form.question_template_id.label}}</label>
                     {{feedback_form.question_template_id|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
                     {{feedback_form.question_template_id.errors}}
-                    
+
                     <label class="text-xs font-medium" for="{{feedback_form.employee_key_results_id.id_for_label}}">{{feedback_form.employee_key_results_id.label}}</label>
                     {{feedback_form.employee_key_results_id|add_class:"mb-3 text-color-600 px-3 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-xs transition duration-300 focus:border-primary-600"}}
                     {{feedback_form.employee_key_results_id.errors}}
@@ -194,7 +194,7 @@
 <script src="{% static 'src/period/period.js' %}"></script>
 {% endblock%}
 
-{% comment %} {% extends 'index.html' %} 
+{% comment %} {% extends 'index.html' %}
 {% load static i18n widget_tweaks %}
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/pms.css' %}" />
@@ -227,7 +227,7 @@
                     <label class="text-xs font-medium" for="{{feedback_form.employee_id.id_for_label}}">{{feedback_form.employee_id.label}}</label>
                         {{feedback_form.employee_id }}
                         {{feedback_form.employee_id.errors }}
-                    
+
                     <label class="text-xs font-medium" for="{{feedback_form.manager_id.id_for_label}}">{{feedback_form.manager_id.label}}</label>
                         {{feedback_form.manager_id}}
                         {{feedback_form.manager_id.errros}}
@@ -240,7 +240,7 @@
                     </div>
                         {{feedback_form.subordinate_id}}
                         {{feedback_form.subordinate_id.errors}}
-                    
+
                     <div class="flex items-center gap-1 pb-2 overflow-visible relative">
                         <label class="text-xs font-medium" for="{{feedback_form.colleague_id.id_for_label}}">
                             {{ feedback_form.colleague_id.label }}
@@ -269,7 +269,7 @@
                     <label class="text-xs font-medium" for="{{feedback_form.question_template_id.id_for_label}}">{{feedback_form.question_template_id.label}}</label>
                         {{feedback_form.question_template_id}}
                         {{feedback_form.question_template_id.errros}}
-                    
+
                     <label class="text-xs font-medium" for="{{feedback_form.employee_key_results_id.id_for_label}}">{{feedback_form.employee_key_results_id.label}}</label>
                         {{feedback_form.employee_key_results_id}}
                         {{feedback_form.employee_key_results_id.errros}}
@@ -289,7 +289,7 @@
                         {{feedback_form.cyclic_feedback_days_count}}
                         {{feedback_form.cyclic_feedback_days_count.errros}}
 
-                   
+
                 </div>
             </div>
         </div>
@@ -337,7 +337,7 @@
             select.siblings("span.select2.select2-container").remove();
             select.select2();
         }, 700);
-    }); 
+    });
     function get_collegues(element) {
         var employee_id = $(element).val();
 
@@ -385,11 +385,9 @@
             console.error("Invalid employee_id");
         }
     }
-    
+
 </script>
 
 <script src="{% static 'src/feedback/feedback_creation.js' %}"></script>
 <script src="{% static 'src/period/period.js' %}"></script>
 {% endblock%}  {% endcomment %}
-
-

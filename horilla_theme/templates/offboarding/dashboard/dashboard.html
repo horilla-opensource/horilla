@@ -88,7 +88,7 @@
         <div id="joinLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
       </div>
     </div>
-   
+
     {% if perms.offboarding.view_offboardingtask %}
     <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
         <div class="flex justify-between items-center mb-2">
@@ -96,7 +96,7 @@
         </div>
         <div class="overflow-hidden overflow-x-auto">
           <div
-          hx-get="{% url 'list-dashboard-task-status' %}" hx-trigger="load" 
+          hx-get="{% url 'list-dashboard-task-status' %}" hx-trigger="load"
           ></div>
         </div>
     </div>
@@ -122,7 +122,7 @@
         </div>
         <div class="overflow-hidden overflow-x-auto">
           <div
-          hx-get="{% url 'dashboard-asset-table-cbv' %}" hx-trigger="load" 
+          hx-get="{% url 'dashboard-asset-table-cbv' %}" hx-trigger="load"
           ></div>
         </div>
     </div>
@@ -134,7 +134,7 @@
       </div>
       <div class="overflow-hidden overflow-x-auto">
         <div
-        hx-get="{% url 'dashboard-feedback-table-cbv' %}" hx-trigger="load" 
+        hx-get="{% url 'dashboard-feedback-table-cbv' %}" hx-trigger="load"
         ></div>
       </div>
   </div>
@@ -143,5 +143,3 @@
 <script src="{% static 'offboarding/dashboard.js' %}"></script>
 
     {% endblock %}
-  
-  
