@@ -75,7 +75,7 @@
           <h3 class="text-md font-semibold">
             {% trans "Asset Chart" %}
           </h3>
-          
+
         </div>
 
 
@@ -96,7 +96,7 @@
           </button> -->
         </div>
         <div class="overflow-hidden overflow-x-auto">
-            <div  id="dashboardAssetRequests" 
+            <div  id="dashboardAssetRequests"
             hx-get="{% url 'dashboard-asset-request-approve' %}" hx-trigger="load">
         </div>
         </div>
@@ -107,7 +107,7 @@
           <h3 class="text-md font-semibold">
             {% trans "Assets In Use" %}
           </h3>
-          
+
         </div>
 
 
@@ -129,13 +129,13 @@
           </button> -->
         </div>
         <div class="overflow-hidden overflow-x-auto">
-            <div  id="dashboardAssetAllocates" 
+            <div  id="dashboardAssetAllocates"
             hx-get="{% url 'dashboard-allocated-asset' %}" hx-trigger="load">
         </div>
         </div>
 
     </div>
-    
+
   </div>
 </div>
 <script src="{% static 'src/asset/dashboard.js' %}"></script>

@@ -12,17 +12,18 @@
                     src="/static/horilla_theme/assets/img/icons/add-user.svg"
                     width="20"
                 />
-                <!-- <i class="fas fa-users text-primary-600"></i> -->
             </div>
-            <div>
-                <p class="text-sm">{% trans "Todays's New Joiners" %}</p>
-                <div class="flex items-center gap-2">
-                    <p class="text-xl font-bold text-secondary-900"
-                        hx-get="{% url 'joining-today-count' %}"
-                        hx-trigger="load"
-                    ></p>
+            <a href="{% url 'candidate-view' %}?joining_date={{current_date}}" style="text-decoration: none;">
+                <div>
+                    <p class="text-sm">{% trans "Todays's New Joiners" %}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xl font-bold text-secondary-900"
+                            hx-get="{% url 'joining-today-count' %}"
+                            hx-trigger="load"
+                        ></p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
     <div class="bg-white p-6 rounded-md shadow-card relative">
@@ -33,12 +34,14 @@
                     width="20"
                 />
             </div>
-            <div>
-                <p class="text-sm">{% trans "Leave on today" %}</p>
-                <div class="flex items-center gap-2">
-                    <p class="text-xl font-bold text-secondary-900">{{leave_today}}</p>
+            <a href="{% url 'request-view' %}?from_date={{current_date}}&to_date={{current_date}}" style="text-decoration: none;">
+                <div>
+                    <p class="text-sm">{% trans "Leave on today" %}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xl font-bold text-secondary-900">{{leave_today}}</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
     <div class="bg-white p-6 rounded-md shadow-card relative">
@@ -49,15 +52,17 @@
                     width="20"
                 />
             </div>
-            <div>
-                <p class="text-sm">{% trans "Joining this week" %}</p>
-                <div class="flex items-center gap-2">
-                    <p class="text-xl font-bold text-secondary-900"
-                        hx-get="{% url 'joining-week-count' %}"
-                        hx-trigger="load"
-                    ></p>
+            <a href="{% url 'candidate-view' %}?scheduled_from={{first_day_of_week}}&scheduled_till={{last_day_of_week}}" style="text-decoration: none">
+                <div>
+                    <p class="text-sm">{% trans "Joining this week" %}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xl font-bold text-secondary-900"
+                            hx-get="{% url 'joining-week-count' %}"
+                            hx-trigger="load"
+                        ></p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
     <div class="bg-white p-6 rounded-md shadow-card relative">
@@ -68,15 +73,17 @@
                     width="20"
                 />
             </div>
-            <div>
-                <p class="text-sm">{% trans "Total Strength" %}</p>
-                <div class="flex items-center gap-2">
-                    <p class="text-xl font-bold text-secondary-900"
-                        hx-get="{% url 'total-employees-count' %}"
-                        hx-trigger="load"
-                    ></p>
+            <a href="{% url 'employee-view' %}" style="text-decoration: none">
+                <div>
+                    <p class="text-sm">{% trans "Total Strength" %}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xl font-bold text-secondary-900"
+                            hx-get="{% url 'total-employees-count' %}"
+                            hx-trigger="load"
+                        ></p>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
     </div>
 </div>

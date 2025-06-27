@@ -162,7 +162,7 @@
                         </div>
                     </div>
 
-    
+
                     {% comment %} <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
                         <form hx-get="{% url 'get-contribution-report' %}" hx-trigger="load, submit"  hx-target="#contributionReportContainer" class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" >
                             <div class="d-flex justify-content-between oh-card-dashboard__header oh-card-dashboard__header--divider" style = "cursor: default;">
@@ -204,13 +204,13 @@
                             <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expiring in " %} <b class="contract-number"></b><span id="contract-count"></span></h6>
                             <hr class="line">
                             <div id="contract_ending" style="height: 200px; overflow-y: auto; list-style: disc;">
-                                <div 
-                                class="oh-wrapper" 
+                                <div
+                                class="oh-wrapper"
                                 hx-get="{% url "dashboard-contract-ending" %}?{{request.GET.urlencode}}" hx-trigger="click"
                                 id="contractEnding">
                                 <div class="animated-background">
                                 </div>
-                                </div> 
+                                </div>
 
                             </div>
                         </div>
@@ -221,11 +221,11 @@
                             <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expired in " %} <b class="contract-expired-number"></b><span id="contract-expired-count"></span></h6>
                             <hr class="line">
                             <div id="contract_expired" style="height: 200px; overflow-y: auto; list-style: disc;">
-                                <div class="oh-wrapper" 
+                                <div class="oh-wrapper"
                                 hx-get="{% url 'dashboard-contract-expired' %}?{{request.GET.urlencode}}" hx-trigger="click" id="contractExpired">
                                 <div class="animated-background">
                                 </div>
-                                </div> 
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -270,7 +270,7 @@
 </script>
 
 <script>
-    
+
    $(document).ready(function() {
         $('#monthYearField').on('change', function() {
             var selectedMonthYear = $(this).val();
@@ -283,7 +283,7 @@
         });
         $('#monthYearField').change();
 
-    }); 
+    });
 </script>
 
 {% endblock content %}

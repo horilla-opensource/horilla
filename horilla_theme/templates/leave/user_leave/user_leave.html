@@ -1,9 +1,9 @@
 {% load static i18n %}
 <div class="grid grid-cols-12 gap-3 mb-2">
     {% for user_leave in user_leaves %}
-        <div class="col-span-2" 
-            id="requestCreateCard" 
-            data-toggle="oh-modal-toggle" 
+        <div class="col-span-2"
+            id="requestCreateCard"
+            data-toggle="oh-modal-toggle"
             data-target="#objectCreateModal"
             hx-get="{% url 'user-request' user_leave.leave_type_id.id %}"
             hx-target="#objectCreateModalTarget"
