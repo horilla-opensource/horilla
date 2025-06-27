@@ -19,7 +19,7 @@
 
         <br>
         <br>
-      
+
         <div class="oh-dashboard row" id="dashboard">
             <form hidden hx-get="{% url 'key-result-view' %}" hx-target="#dashboard" hx-swap="innerHTML" id="dashboardKeyresult">
                 <input type="text" name="status">
@@ -76,7 +76,7 @@
                             </a>
                         </div>
                     </div>
-                 
+
                 </div>
 
                 <div class="oh-dashboard__movable-cards row mt-4">
@@ -161,9 +161,9 @@
                         <span class="oh-card-dashboard__title"> {% trans "Objectives At-Risk" %}</span>
                     </div>
                     <div class="oh-card-dashboard__body">
-                        <div class="oh-wrapper" hx-get="{% url "dashboard-risk-objectives" %}" 
+                        <div class="oh-wrapper" hx-get="{% url "dashboard-risk-objectives" %}"
                                         hx-trigger="load" id="dashboard_objectives">
-                                        <div class="animated-background">   
+                                        <div class="animated-background">
                                         </div>
                                         </div>
                         {% comment %} {% if okr_at_risk %}

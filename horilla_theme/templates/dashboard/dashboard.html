@@ -26,12 +26,12 @@
         <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
       </button> -->
   </div>
-  <div class="bg-white p-6 rounded-md shadow-card relative">
+  <div class="bg-white p-6 rounded-md shadow-card relative" onclick="window.location.href = `/recruitment/recruitment-view`">
     <div class="flex items-center gap-4">
       <div class="bg-[#b71db01f] p-3 rounded-md">
         <img  src="{% static 'horilla_theme/assets/img/icons/ongoing-rec.svg' %}" width="20" />
       </div>
-      <div>
+      <div >
         <p class="text-sm">{% trans "Ongoing Recruitments" %}</p>
         <div class="flex items-center gap-2">
           <p class="text-xl font-bold text-secondary-900">
@@ -45,12 +45,12 @@
         <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
       </button> -->
   </div>
-  <div class="bg-white p-6 rounded-md shadow-card relative">
+  <div class="bg-white p-6 rounded-md shadow-card relative" onclick="window.location.href = `/recruitment/candidate-view?hired=true`">
     <div class="flex items-center gap-4">
       <div class="bg-[#ea7f2f2e] p-3 rounded-md">
         <img src="{% static 'horilla_theme/assets/img/icons/hired-candidates.svg' %}" width="20" />
       </div>
-      <div>
+      <div >
         <p class="text-sm">{% trans "Hired Candidates" %}</p>
         <div class="flex items-center gap-2">
           <p class="text-xl font-bold text-secondary-900">

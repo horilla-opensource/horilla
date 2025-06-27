@@ -1,0 +1,78 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+<div id="view-container" class="oh-wrapper" style="margin: 20px 150px 0px 150px;">
+    <section class="oh-wrapper oh-main__topbar oh-profile-section__topbar" x-data="{searchShow: false}">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <h1 class="oh-main__titlebar-title fw-bold mb-0 text-lg font-semibold mb-3">{% trans "Edit" %} {{form.instance.employee_first_name}}</h1>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--left d-flex align-items-center">
+            <ul class="oh-general__tabs oh-profile-section__tab">
+                <li class="oh-general__tab">
+                    <a href="#" class="oh-general__tab-link oh-general__tab-link--active text-sm font-semibold mb-3" data-action="general-tab" data-target="#personal">{% trans "Personal Info" %}</a>
+                </li>
+                <li class="oh-general__tab">
+                    <a href="#" class="oh-general__tab-link text-sm font-semibold mb-3" data-action="general-tab" data-target="#work">{% trans "Work Info" %}</a>
+                </li>
+                <li class="oh-general__tab">
+        <a href="#" class="oh-general__tab-link text-sm font-semibold mb-3" data-action="general-tab" data-target="#bank">{% trans "Bank Info" %}</a>
+    </li>
+</ul>
+</div>
+</section>
+{% include 'employee/update_form/personal_info.html' %}
+{% include 'employee/update_form/work_details.html' %}
+{% include 'employee/update_form/bank_details.html' %}
+
+</div>
+<script>
+    {% include 'country.js' %}
+    populateCountries("country", "state");
+    $("#id_country").val("{{form.instance.country}}").change()
+    $("#id_state").val("{{form.instance.state}}").change()
+    $("#country").val("{{bank_form.instance.country}}").change()
+    $("#state").val("{{bank_form.instance.state}}").change()
+    $(document).ready(function() {
+      $('#id_profile').change(function (e) {
+
+        const file = this.files[0];
+        const reader = new FileReader();
+
+        reader.addEventListener("load", function() {
+          const imageUrl = reader.result;
+          $(".preview").attr("src", imageUrl);
+        });
+
+        reader.readAsDataURL(file);
+      });
+
+      // Active tab script
+      function activeEmpTab() {
+        var activeTab = localStorage.getItem("activeEmpTab")
+
+        if (!["#personal", "#work", "#bank"].includes(activeTab)) {
+          activeTab = "#personal";
+        }
+
+        if(activeTab != null){
+          $(".oh-general__tab-link--active").removeClass("oh-general__tab-link--active");
+          $(`[data-target='${activeTab}']`).addClass("oh-general__tab-link--active");
+          $(".oh-general__tab-target").addClass("d-none");
+          $(activeTab).removeClass("d-none");
+          if($(`[data-target="${activeTab}"]`).length>0){
+            $(`[data-target="${activeTab}"]`)[0].click();
+          }
+        }
+      }
+      activeEmpTab()
+      $("[data-action=general-tab]").on("click",function (e) {
+        e.preventDefault();
+        const targetId = $(this).attr('data-target');
+        localStorage.setItem("activeEmpTab",targetId)
+        activeEmpTab()
+      });
+
+    });
+  </script>
+
+{% endblock content %}

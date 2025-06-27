@@ -3,35 +3,35 @@
     .rating-radio {
       display: none;
     }
-  
+
     .star-group {
       display: flex;
       flex-direction: row-reverse; /* This flips visual order */
       gap: 2px;
     }
-  
+
     .star-label {
       font-size: 20px;
       color: #dfdfdf;
       cursor: pointer;
       transition: color 0.2s ease-in-out;
     }
-  
+
     .rating-radio:checked ~ label.star-label {
       color: #FFA800;
     }
-  
+
     .star-group input[type="radio"]:checked ~ label.star-label {
       color: #FFA800;
     }
-  
+
     .star-label:hover,
     .star-label:hover ~ .star-label {
       color: #FFA800;
     }
   </style>
-  
- 
+
+
  <div onclick="event.stopPropagation()">
    {% with request.user.employee_get.candidate_rating.all as candidate_ratings %}
    {% if candidate_ratings|has_candidate_rating:instance %}
@@ -104,9 +104,9 @@
 <div onclick="event.stopPropagation()">
   {% with request.user.employee_get.candidate_rating.all as candidate_ratings %}
     {% if candidate_ratings|has_candidate_rating:instance %}
-      <form 
-        hx-post="{% url 'update-candidate-rating' instance.id %}" 
-        method="post" 
+      <form
+        hx-post="{% url 'update-candidate-rating' instance.id %}"
+        method="post"
         hx-swap="none"
         id="rating-form-{{ instance.id }}"
       >
@@ -115,16 +115,16 @@
           <div class="flex gap-2 text-lg ps-4 mb-4 star-wrapper">
             {% for i in "54321" %}
               {% with star_value=forloop.counter|stringformat:"s" %}
-                <input 
-                  type="radio" 
-                  id="star{{ star_value }}-{{ instance.id }}" 
-                  name="rating" 
-                  value="{{ star_value }}" 
+                <input
+                  type="radio"
+                  id="star{{ star_value }}-{{ instance.id }}"
+                  name="rating"
+                  value="{{ star_value }}"
                   class="hidden peer"
                   {% if candidate_ratings|rating:instance == star_value %} checked {% endif %}
                 />
-                <label 
-                  for="star{{ star_value }}-{{ instance.id }}" 
+                <label
+                  for="star{{ star_value }}-{{ instance.id }}"
                   class="cursor-pointer text-[#dfdfdf] peer-checked:text-[#FFA800] hover:text-[#FFA800] transition"
                 >
                   <i class="fa-solid fa-star"></i>
@@ -135,9 +135,9 @@
         </div>
       </form>
     {% else %}
-      <form 
-        hx-post="{% url 'create-candidate-rating' instance.id %}" 
-        method="post" 
+      <form
+        hx-post="{% url 'create-candidate-rating' instance.id %}"
+        method="post"
         hx-swap="none"
         id="rating-form-{{ instance.id }}"
       >
@@ -146,15 +146,15 @@
           <div class="flex gap-2 text-lg ps-4 mb-4 star-wrapper">
             {% for i in "54321" %}
               {% with star_value=forloop.counter|stringformat:"s" %}
-                <input 
-                  type="radio" 
-                  id="star{{ star_value }}-{{ instance.id }}" 
-                  name="rating" 
-                  value="{{ star_value }}" 
+                <input
+                  type="radio"
+                  id="star{{ star_value }}-{{ instance.id }}"
+                  name="rating"
+                  value="{{ star_value }}"
                   class="hidden peer"
                 />
-                <label 
-                  for="star{{ star_value }}-{{ instance.id }}" 
+                <label
+                  for="star{{ star_value }}-{{ instance.id }}"
                   class="cursor-pointer text-[#dfdfdf] peer-checked:text-[#FFA800] hover:text-[#FFA800] transition"
                 >
                   <i class="fa-solid fa-star"></i>

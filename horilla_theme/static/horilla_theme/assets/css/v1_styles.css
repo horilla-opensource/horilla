@@ -2701,3 +2701,223 @@ span.oh-activity-sidebar__a img {
 .justify-content-center {
   justify-content: center !important;
 }
+
+/* ===========================
+*         Employee Forms
+* ============================ */
+.oh-main__org-chart-data {
+    display: none;
+    }
+
+    .oh-profile-section {
+    background-color: hsl(0, 0%, 100%);
+    border: 1px solid hsl(213, 22%, 84%);
+    padding: 1.25rem;
+    }
+
+    .oh-profile-section__sidebar {
+    height: 100%;
+    border-right: 1px solid hsl(213, 22%, 84%);
+    }
+
+    .oh-profile-section__sidebar-items {
+    padding-left: 0px;
+    list-style-type: none;
+    }
+
+    .oh-profile-section__sidebar-item {
+    padding: 0.75rem 0;
+    }
+
+    .oh-profile-section__sidebar-item--active {
+    border-right: 4px solid hsl(8, 77%, 56%);
+    }
+
+    .oh-profile-section__sidebar-link:hover, .oh-profile-section__sidebar-link:focus, .oh-profile-section__sidebar-link:focus-visible {
+    text-decoration: none;
+    }
+
+    .oh-profile-section__edit-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.4s ease-in-out;
+    }
+    .oh-profile-section__edit-photo:hover::after {
+    content: "Edit";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    color: hsl(0, 0%, 100%);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 0.25rem;
+    transition: all 0.4s ease-in-out;
+    }
+
+    .oh-profile-section__avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+
+    @media (max-width: 767.98px) {
+    .oh-profile-section__topbar {
+        flex-direction: row !important;
+    }
+    }
+    @media (max-width: 575.98px) {
+    .oh-profile-section__topbar {
+        padding-bottom: 0.75rem;
+        flex-direction: column !important;
+    }
+    .oh-profile-section__topbar .oh-profile-section__tab {
+        margin-top: 1.5rem;
+    }
+    }
+
+    .oh-profile-section__modal-avatar {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    overflow: hidden;
+    }
+    @media (max-width: 767.98px) {
+    .oh-profile-section__modal-avatar {
+        max-width: 100px;
+        height: 100px;
+    }
+    }
+
+    .oh-profile-section__modal-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+
+    .oh-profile-section__image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    }
+
+
+    .oh-input--filter,
+    .oh-dropdown__filter-body .oh-select--sm + .select2-container .select2-selection--single {
+    font-size: 0.85rem !important;
+    height: 28px !important;
+    }
+
+    .oh-main__topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+    @media (max-width: 767.98px) {
+        .oh-main__topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 1000px) {
+        .oh-main__titlebar .oh-main__titlebar-button-container {
+        display: none;
+        }
+    }
+    .oh-main__titlebar-title {
+        font-size: 1.5rem;
+    }
+
+    /* ==================================
+    *     Employee Form GENERAL TABS
+    * ================================= */
+    .oh-general__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+    align-content: center;
+    }
+
+    .oh-general__tab {
+    margin-right: 1rem;
+    flex-grow: 1;
+    }
+    .oh-general__tab:last-child {
+    margin-right: 0;
+    }
+    @media (max-width: 575.98px) {
+    .oh-general__tab {
+        margin-bottom: 1rem;
+    }
+    }
+
+    .oh-general__tab-link {
+        color: hsl(0, 0%, 11%);
+        border-bottom: 3px solid transparent;
+        padding-bottom: 0.75rem;
+    }
+    .oh-general__tab-link:hover {
+        opacity: 0.7;
+    }
+    .oh-general__tab-link:hover, .oh-general__tab-link:focus, .oh-general__tab-link:focus-visible {
+        text-decoration: none;
+    }
+    @media (max-width: 575.98px) {
+        .oh-general__tab-link {
+        padding: 0.5rem 0.75rem;
+        border-bottom: none;
+        }
+    }
+
+    .oh-general__tab-link--active {
+        border-bottom: 3px solid hsl(8, 77%, 56%);
+    }
+    @media (max-width: 575.98px) {
+        .oh-general__tab-link--active {
+        border-bottom: none;
+        background-color: rgba(229.194, 79.4444, 56.406, 0.1);
+        color: hsl(8, 77%, 56%);
+        border-radius: 0.25rem;
+        }
+        .oh-general__tab-link--active:focus, .oh-general__tab-link--active:focus-visible {
+        color: hsl(8, 77%, 56%);
+        }
+    }
+
+    .oh-modal__dialog--custom .oh-general__tab .oh-general__tab-link {
+        padding: 0;
+        transition: 0s;
+    }
+    .oh-modal__dialog--custom .oh-general__tab .oh-general__tab-link--active {
+        background-color: #e54f38;
+        border: 1px solid #e54f38;
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 23px;
+        transition: none;
+    }
+
+    .oh-select:disabled + .select2-container .select2-selection {
+        background-color: transparent !important;
+        border: none !important;
+      }
+
+      .oh-select:disabled + .select2-container .select2-selection .select2-selection__arrow {
+        display: none !important;
+      }
+
+      .select2-container--open .select2-selection {
+        border-radius: 0rem !important;
+      }
