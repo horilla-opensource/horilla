@@ -1,0 +1,185 @@
+{% load static i18n horillafilters %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+    <div class="bg-primary-300 p-3 rounded-md">
+        <div class="flex justify-between font-semibold p-3 rounded-md bg-primary-600 text-sm text-white mb-2">
+            <p>{% trans "Employee Net Pay" %} </p>
+            <p>{{ net_pay|floatformat:2|currency_symbol_position }}</p>
+        </div>
+        <div class="grid sm:flex text-sm justify-between mb-2 px-2">
+            <p class="text-sm">{% trans "Actual Basic Pay" %}</p>
+            <p class="font-semibold">{{ instance.contract_wage|currency_symbol_position }}</p>
+        </div>
+        <div class="grid sm:flex items-center text-sm justify-between mb-2 px-2">
+            <p class="text-sm">{% trans "Paid Days" %}</p>
+            <p class="font-semibold">{{ paid_days }}</p>
+        </div>
+        <div class="grid sm:flex items-center text-sm justify-between mb-2 px-2">
+            <p class="text-sm">{% trans "LOP Days" %}</p>
+            <p class="font-semibold">{{ unpaid_days }}</p>
+        </div>
+        <div class="grid sm:flex text-sm justify-between mb-2 px-2">
+            <p class="text-sm flex items-center gap-3">
+                <span>{% trans "Updated Basic Pay" %}</span>
+                <button><img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}" alt="{% trans 'Info' %}"
+                        title="{% trans 'The payslip is calculated based on the updated basic pay' %}"></button>
+            </p>
+            <p class="font-semibold text-lg"> {{ basic_pay|floatformat:2|currency_symbol_position }}</p>
+        </div>
+        <div class="grid sm:flex text-sm justify-between px-2">
+            <p class="text-sm flex items-center gap-3">
+                <span>{% trans "Taxable Gross Pay" %}</span>
+                <button><img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}" alt="{% trans 'Info' %}"
+                        title="{% trans 'Taxable amount' %}"></button>
+            </p>
+            <p class="font-semibold">{{ taxable_gross_pay|floatformat:2|currency_symbol_position }}</p>
+        </div>
+
+    </div>
+    <div class="bg-[#0000000a] p-3 rounded-md">
+        <div class="flex justify-between font-semibold p-3 rounded-md bg-[#0000001a] text-sm mb-2">
+            <p>{% trans "Employee Details" %}</p>
+        </div>
+        <div class="grid sm:flex text-sm justify-between mb-2 px-2">
+            <p class="text-sm">{% trans "Badge ID" %}</p>
+            <p class="font-semibold">{{ employee.badge_id }}</p>
+        </div>
+        <div class="grid sm:flex text-sm justify-between mb-2 px-2">
+            <p class="text-sm">{% trans "Employee Name" %}</p>
+            <p class="font-semibold">{{ employee }}</p>
+        </div>
+        <div class="grid sm:flex text-sm justify-between mb-2 px-2">
+            <p class="text-sm">{% trans "Department" %}</p>
+            <p class="font-semibold">{{ employee.employee_work_info.department_id.department }}</p>
+        </div>
+        <div class="grid sm:flex text-sm justify-between px-2">
+            <p class="text-sm">{% trans "Bank Acc." %}</p>
+            <p class="font-semibold"> {{ employee.employee_bank_details.account_number }}</p>
+        </div>
+
+    </div>
+    <div class="bg-[#0000000a] p-3 rounded-md">
+        <div class="flex gap-3 justify-between font-semibold p-3 rounded-md bg-[#0000001a] text-sm mb-2">
+            <p class="w-1/2">{% trans "Allowances" %}</p>
+            <p class="flex-1 flex justify-between">{% trans "Amount" %}
+                {% if perms.payroll.add_allowance and instance.status != "paid" %}
+                <button title="{% trans 'Add Allowance' %}"
+                    hx-get="{% url 'add-bonus' %}?employee_id={{ employee.id }}&payslip_id={{ instance.id }}"
+                    hx-target="#objectCreateModalTarget" data-target="#objectCreateModal"
+                    data-toggle="oh-modal-toggle"><img src="{% static 'horilla_theme/assets/img/icons/more.svg' %}"
+                        alt="{% trans 'Create' %}" width="15">
+                </button>
+                {% endif %}
+            </p>
+        </div>
+        <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+            <p class="w-1/2 text-sm flex">{% trans "Basic Pay" %}
+                <img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}" alt="{% trans 'Info' %}" class="pl-2"
+                    title="{% trans 'Some deductions will update basic pay before payslip calculation starts, eg: LOP is Deduducted from basic pay if `Deduct leave from basic pay` field is enabled on the contract, and also with the update compensation deduction through' %}">
+            </p>
+            <p class="flex-1 font-medium">{{ basic_pay|floatformat:2|currency_symbol_position }}</p>
+        </div>
+
+        {% for allowance in allowances %}
+        <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+            <p class="w-1/2 text-sm">{{ allowance.title }}</p>
+            <p class="flex-1 font-medium">{{ allowance.amount|floatformat:2|currency_symbol_position }}</p>
+        </div>
+        {% endfor %}
+
+        <div class="flex gap-3 text-sm justify-between px-2">
+            <p class="w-1/2 text-sm flex items-center gap-3 font-semibold">
+                <span>{% trans "Total Gross Pay" %}</span>
+                <img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}" alt="{% trans 'Info' %}" class="pl-2"
+                    title="{% trans 'Some Deduction will update the total gross pay using the deductions that are enabled update compensation' %}">
+            </p>
+            <p class="flex-1 font-semibold">{{ gross_pay|floatformat:2|currency_symbol_position}}</p>
+        </div>
+    </div>
+    <div class="bg-[#0000000a] p-3 rounded-md">
+        <div class="flex gap-3 justify-between font-semibold p-3 rounded-md bg-[#0000001a] text-sm mb-2">
+            <p class="w-1/2">{% trans "Deductions" %}</p>
+            <p class="flex-1 flex justify-between">{% trans "Amount" %}
+                {% if perms.payroll.add_deduction and instance.status != "paid" %}
+                    <button title="{% trans 'Add Deduction' %}"
+                        hx-get="{% url 'add-payslip-deduction' %}?employee_id={{employee.id}}&payslip_id={{instance.id}}"
+                        hx-target="#objectCreateModalTarget" data-target="#objectCreateModal" data-toggle="oh-modal-toggle">
+                        <img src="{% static 'horilla_theme/assets/img/icons/more.svg' %}" alt="{% trans 'Create' %}"
+                            width="15">
+                    </button>
+                {% endif %}
+            </p>
+        </div>
+        <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+            <p class="w-1/2 text-sm">{% trans "Loss of Pay" %}</p>
+            <p class="flex-1 font-medium">{{ loss_of_pay|floatformat:2|currency_symbol_position }}</p>
+        </div>
+        {% for deduction in basic_pay_deductions %}
+        <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+            <p class="w-1/2 text-sm flex">
+                {{ deduction.title }}
+                <img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}" alt="{% trans 'Info' %}" class="pl-2"
+                    title="{% trans " Basic Pay Deductions" %}">
+            </p>
+            <p class="flex-1 font-medium">{{ deduction.amount|floatformat:2|currency_symbol_position }}</p>
+        </div>
+        {% endfor %}
+        {% for deduction in gross_pay_deductions %}
+            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+                <p class="w-1/2 text-sm flex">
+                    {{ deduction.title }}
+                    <img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}" alt="{% trans 'Info' %}" class="pl-2"
+                        title="{% trans " Gross Pay Deductions" %}">
+                </p>
+                <p class="flex-1 font-medium">{{ deduction.amount|floatformat:2|currency_symbol_position }}</p>
+            </div>
+        {% endfor %}
+        {% for deduction in pretax_deductions %}
+            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+                <p class="w-1/2 text-sm">
+                    {{ deduction.title }}
+                </p>
+                <p class="flex-1 font-medium">{{ deduction.amount|floatformat:2|currency_symbol_position }}</p>
+            </div>
+        {% endfor %}
+        {% for deduction in post_tax_deductions %}
+            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+                <p class="w-1/2 text-sm">
+                    {{ deduction.title }}
+                </p>
+                <p class="flex-1 font-medium">{{ deduction.amount|floatformat:2|currency_symbol_position }}</p>
+            </div>
+        {% endfor %}
+        <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+            <p class="w-1/2 text-sm">{% trans "Federal Tax" %}</p>
+            <p class="flex-1 font-medium">{{ federal_tax|floatformat:2|currency_symbol_position }}</p>
+        </div>
+        {% for deduction in tax_deductions %}
+            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+                <p class="w-1/2 text-sm">
+                    {{ deduction.title }}
+                </p>
+                <p class="flex-1 font-medium">{{ deduction.amount|floatformat:2|currency_symbol_position }}</p>
+            </div>
+        {% endfor %}
+        {% for deduction in net_deductions %}
+            <div class="flex gap-3 text-sm justify-between mb-2 px-2">
+                <p class="w-1/2 text-sm flex">
+                    {{ deduction.title }}
+                    <img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}" alt="{% trans 'Info' %}" class="pl-2"
+                        title="{% trans " Net Pay Deductions" %}">
+                </p>
+                <p class="flex-1 font-medium">{{ deduction.amount|floatformat:2|currency_symbol_position }}</p>
+            </div>
+        {% endfor %}
+
+        <div class="flex gap-3 text-sm justify-between px-2">
+            <p class="w-1/2 text-sm flex items-center gap-3 font-semibold">
+                <span>{% trans "Total Deductions" %}</span>
+                <button><img src="{% static 'horilla_theme/assets/img/icons/info.svg' %}"
+                        title="{% trans 'Some deductions are not included in the total deductions because they are given as updated compensations. These deductions may be applied before the main calculation begins, such as from the basic pay or gross pay, while others are deducted after calculating the net pay.' %}"
+                        alt="{% trans 'Info' %}"></button>
+            </p>
+            <p class="flex-1 font-semibold">{{ total_deductions|floatformat:2|currency_symbol_position }}</p>
+        </div>
+    </div>
+</div>

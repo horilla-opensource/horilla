@@ -39,7 +39,7 @@
 			</tr>
 		</thead>
         {% for employee, work_records in data %}
-        
+
             <tr>
                 <td class"stickyleft left-[-1px] border border-[#ecf3fb] text-left p-3 text-[#666]">
                     <a
@@ -51,7 +51,7 @@
                         </span>
                     </a>
                 </td>
-                
+
                 {% for work_record in work_records %}
                     {% with day=current_month_dates_list|get_item:forloop.counter0 %}
                         <td class="border border-[#ecf3fb] text-center p-1 text-[#666] {% if work_record and work_record.date in leave_dates or work_record is None and day in leave_dates %}holiday{% endif %}"
@@ -90,10 +90,10 @@
                                 {% endif %}
                                 "
                             >
-                                {% if work_record.work_record_type == 'CONF' %} ! 
-                                {% elif work_record.work_record_type == 'FDP' %} P 
-                                {% elif work_record.work_record_type == 'HDP' %} HP 
-                                {% elif work_record.work_record_type == 'ABS' %} L 
+                                {% if work_record.work_record_type == 'CONF' %} !
+                                {% elif work_record.work_record_type == 'FDP' %} P
+                                {% elif work_record.work_record_type == 'HDP' %} HP
+                                {% elif work_record.work_record_type == 'ABS' %} L
                                 {% elif work_record.work_record_type == 'DFT' and work_record.shift_id and not work_record.date in leave_dates %}
                                     <span class="font-light" style="cursor: default">A</span>
                                 {% endif %}
@@ -145,7 +145,7 @@
                     hx-get="{% url 'work-records-change-month' %}?{{pd}}"
                     hx-target="#workRecordTable"
                     min="1"
-                /> / {{ data.paginator.num_pages }} 
+                /> / {{ data.paginator.num_pages }}
                 </div>
             {% if data.has_next %}
                 <button

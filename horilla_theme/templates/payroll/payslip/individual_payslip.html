@@ -1,0 +1,117 @@
+{% extends 'index.html' %} {% block content %} {% load static i18n horillafilters %}
+<style>
+  .sent-to-employee{
+    background-color: yellowgreen;
+    color: white;
+  }
+  .payslip__netpay__summary{
+    border-radius: 15px;
+    padding: 5px 10px;
+  }
+  .select2-container--default{
+    padding-bottom:0rem;
+  }
+</style>
+<div class="bg-white p-3 rounded-md shadow-card ">
+    <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-2 border-b border-dark-50 pb-3">
+        <div class="flex items-center gap-5">
+            <div class="bg-dark-50 p-2 rounded-md w-14">
+                <img src="{{employee.employee_work_info.company_id.icon.url}}" alt="{% trans 'Company' %}">
+            </div>
+            <div class="flex-1">
+                <p class="mb-1 font-semibold">{{employee.employee_work_info.company_id}}</p>
+                <p class="text-sm flex">
+                    <span class="font-semibold">{% trans "Pay slip" %} : <span class="dateformat_changer">{{ start_date }}</span> {% trans "to" %} <span class="dateformat_changer">{{ end_date }}</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center flex-wrap gap-2">
+                <a hx-confirm="{% trans 'Do you want to send the payslip by mail?' %}"
+                    hx-get="{% url 'send-slip' %}?id={{instance.id}}&view=individual-payslip"
+                    hx-target="#payslips-table"
+                    class="w-8 h-8 justify-center px-1 py-2 bg-[white]  rounded-md text-xs flex items-center gap-2  border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer"
+                    title="{% trans 'Send via mail' %}">
+                    <img src="{% static 'horilla_theme/assets/img/icons/email1.svg' %}" alt="{% trans Mail %}"
+                        width="15" class="mt-[-1px]">
+                </a>
+                <a title="{% trans 'Download' %}" href="{% url 'view-payslip-pdf' instance.id %}" type="button"
+                    class="w-8 h-8 justify-center px-1 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300 {% if payslip.sent_to_employee %}sent-to-employee{% endif %}">
+                    <img src="{% static 'horilla_theme/assets/img/icons/download.svg' %}" alt="{% trans 'Download' %}"
+                        width="18" class="filter brightness-0 invert">
+                </a>
+                {% if perms.payroll.change_payslip %}
+                    <div class="relative dropdown-wrapper" style="width:120px;">
+                        <select name="status" class="oh-select" id="id_status" hx-trigger="change" hx-post="{% url 'payslip-status-update' instance.id %}" hx-target="#payslipBody" >
+                            {% for choice in instance.status_choices %}
+                                <option value="{{choice.0}}" {% if instance.status == choice.0  %} selected{% endif %}>{{choice.1}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="h-[calc(100vh_-_290px)] overflow-hidden overflow-y-auto overflow-x-auto" id="payslipBody">
+        <!--Start of Payslip Summary -->
+        {% include "payroll/payslip/individual_payslip_summery.html" %}
+        <!-- End of Payslip Payable -->
+    </div>
+
+    <div class="grid sm:flex gap-5 sm:gap-0 justify-between items-center mt-2 w-full border-t border-[#d7d7d7] pt-2">
+        <div class="flex items-center gap-5">
+            <div>
+                <p class="mb-1 font-semibold">{% trans "Total Net Payable" %}</p>
+                <p class="text-sm text-[#858585]">{% trans "Gross Earnings - Total Deductions" %}</p>
+            </div>
+        </div>
+        <div>
+            <p class="text-lg font-semibold text-primary-600">{{ net_pay|floatformat:2|currency_symbol_position }}</p>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+{% comment %} <button
+                        class="px-5 py-2 h-full bg-[white] rounded-md text-xs flex items-center gap-2  border border-primary-500 hover:border-primary-600 transition duration-300">
+                        Resolved <i class="fa-solid fa-caret-down ps-1"></i>
+                    </button>
+
+                    <div
+                        class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0">
+                        <ul class="text-sm">
+                            <li>
+                                <button
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
+                                    New
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
+                                    in Progress
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
+                                    On Hold
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
+                                    Resolved
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
+                                    Canceled
+                                </button>
+                            </li>
+                        </ul>
+                    </div> {% endcomment %}

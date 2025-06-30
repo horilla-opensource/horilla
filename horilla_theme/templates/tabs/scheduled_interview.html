@@ -1,4 +1,4 @@
-{% load static %}{% load i18n %} {% load horillafilters %} 
+{% load static %}{% load i18n %} {% load horillafilters %}
 
 <style>
 
@@ -60,7 +60,7 @@
 {% if interviews %}
     <div class="mt-4">
         <span class="text-md font-semibold mb-3"
-            >{{request.user.employee_get.get_full_name}}'s 
+            >{{request.user.employee_get.get_full_name}}'s
             {% trans "Scheduled Interviews" %}</span
         >
     </div>
@@ -163,7 +163,7 @@
                     </div>
                 </div>
             </div>
-        
+
             {% endfor %}
         </ol>
     </div>

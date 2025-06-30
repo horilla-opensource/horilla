@@ -268,23 +268,21 @@ class ReimbursementsDetailView(HorillaDetailedView):
     detail view of reimbursements
     """
 
-    body = [
-        (_("Date"), "created_at"),
-        (_("Amount"), "amount"),
-        (_("Status"), "get_status_display"),
-        (_("Description"), "description"),
-        (_("Attachments"), "attachments_col"),
-    ]
-
-    action_method = "detail_action_col"
-
-    model = Reimbursement
     title = _("Details")
+    model = Reimbursement
     header = {
         "title": "employee_id__get_full_name",
         "subtitle": "title",
         "avatar": "employee_id__get_avatar",
     }
+    body = [
+        "created_at",
+        "amount",
+        "get_status_display",
+        "description",
+        (_("Attachments"), "attachments_col"),
+    ]
+    action_method = "detail_action_col"
 
 
 @method_decorator(login_required, name="dispatch")

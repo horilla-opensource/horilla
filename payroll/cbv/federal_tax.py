@@ -3,22 +3,64 @@ This page handles the cbv methods for federal tax
 """
 
 import math
-from typing import Any
 
-from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
-from base.models import Holidays
 from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import HorillaFormView
+from horilla_views.generic.cbv.views import (
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+)
+from payroll.filters import FilingStatusFilter
 from payroll.forms.tax_forms import FilingStatusForm, TaxBracketForm
 from payroll.models.models import FilingStatus
 from payroll.models.tax_models import TaxBracket
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_filingstatus"), name="dispatch")
+class FilingStatusNav(HorillaNavView):
+    nav_title = _("Filing Status")
+    filter_form_context_name = "form"
+    filter_instance = FilingStatusFilter()
+    search_swap_target = "#accordionWrapper"
+    search_url = reverse_lazy("filing-status-search")
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.create_attrs = f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{reverse('create-filing-status')}"
+                    hx-target="#genericModalBody"
+                    """
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("asset.view_assetlot"), name="dispatch")
+class TaxBracketListView(HorillaListView):
+    """
+    list view for batch number
+    """
+
+    model = TaxBracket
+    columns = ["tax_rate", "min_income", "max_income"]
+    show_filter_tags = False
+    bulk_select_option = False
+    action_method = "action_column"
+
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        return (
+            super()
+            .get_queryset(queryset, filtered, *args, **kwargs)
+            .filter(filing_status_id=self.kwargs["pk"])
+        )
 
 
 @method_decorator(login_required, name="dispatch")

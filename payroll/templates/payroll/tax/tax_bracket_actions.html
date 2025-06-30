@@ -1,0 +1,24 @@
+{% load i18n %}
+{% if perms.payroll.change_taxbracket %}
+    <div class="oh-sticky-table__td">
+        <div class="oh-btn-group">
+            <a class="oh-btn oh-btn--light-bkg w-100" data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                hx-get="{{ instance.get_update_url }}" hx-target="#objectUpdateModalTarget"
+                title="{% trans 'Update' %}">
+                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% if perms.payroll.delete_taxbracket %}
+    <div class="oh-sticky-table__td">
+        <div class="oh-btn-group">
+            <button class="oh-btn oh-btn--danger-outline w-100" title="{% trans 'Delete' %}"
+                hx-confirm="{% trans 'Are you sure to delete this Tax bracket ?' %}"
+                hx-post="{{ instance.get_delete_url }}"
+                hx-target="#accordionPanel{{instance.filing_status_id.id}}">
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+            </button>
+        </div>
+    </div>
+{% endif %}

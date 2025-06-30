@@ -91,7 +91,7 @@
                                         id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
 
                                     >
-                                        <div class="flex gap-3"
+                                        <div class="flex gap-3 {% for sort_map in sortby_mapping %} {% if sort_map.0 == cell.0 %}cursor-pointer {% endif %}{% endfor %}"
                                             style="min-width:150px;"
                                             {{cell_attr|safe}}
                                             {% for sort_map in sortby_mapping %}

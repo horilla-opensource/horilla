@@ -1,5 +1,5 @@
-{% load i18n static%} 
-{% if active_contracts %} 
+{% load i18n static%}
+{% if active_contracts %}
     {% if basic_pay <= 0 %}
         <div
             class="d-flex justify-content-center align-items-center"
@@ -18,8 +18,8 @@
             </script>
             {% endif %} {% include "generic/horilla_list_table.html" %}
         </div>
-    {% endif %} 
-    
+    {% endif %}
+
 {% else %}
     <div class="oh-wrapper h-full" align="center">
         <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">

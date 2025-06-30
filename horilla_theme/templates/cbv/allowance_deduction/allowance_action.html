@@ -1,0 +1,23 @@
+
+{% load i18n %}
+
+{% if perms.payroll.change_allowance %}
+    <a class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+        href="{% url 'update-allowance' instance.id %}" title="{% trans 'Edit' %}">
+        <i class="fa-solid fa-pen-to-square"></i>
+    </a>
+{% endif %}
+
+{% if perms.payroll.delete_allowance %}
+    <a class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+        hx-get="{% url 'generic-delete' %}?model=payroll.Allowance&pk={{instance.id}}" hx-target="#deleteConfirmationBody"
+        data-toggle="oh-modal-toggle" data-target="#deleteConfirmation" title="{% trans 'Delete' %}">
+        <i class="fa-solid fa-trash"></i>
+    </a>
+{% endif %}
+
+{% if request.GET.deleted %}
+    <script>
+        $("#reloadMessagesButton").click()
+    </script>
+{% endif %}

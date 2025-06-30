@@ -1,0 +1,34 @@
+{% load static i18n %}
+{% if perms.payroll.change_reimbursement or request.user == instance.employee_id.employee_user_id %}
+        <!-- Start of Edit Button -->
+        {% if instance.status == 'requested' %}
+            <button hx-get="{% url 'reimbursement-update' instance.id %}" hx-target="#objectCreateModalTarget"
+                data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                class="w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300">
+                <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
+                    class="filter brightness-0 invert">
+                {% trans 'Edit' %}
+            </button>
+        {% else %}
+            <button disabled
+                class="cursor-not-allowed w-24 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                >
+                <img src="{% static 'horilla_theme/assets/img/icons/edit.svg' %}" alt="{% trans 'Edit' %}" width="13"
+                    class="filter brightness-0 invert">
+                {% trans 'Edit' %}
+            </button>
+        {% endif %}
+    <!-- End of Edit Button -->
+{% endif %}
+
+{% if perms.payroll.delete_reimbursement %}
+    <!-- Start of Delete a Tag -->
+    <a data-action="delete" type="submit" href="{% url 'delete-reimbursement' %}?ids={{instance.id}}"
+        onclick="return confirm('Do you want to delete this record?')"
+        class="w-24 px-4 py-2 bg-white rounded-md text-xs flex items-center justify-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+        <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="16"
+            class="mt-[-1px]">
+        {% trans 'Delete' %}
+    </a>
+    <!-- End of Delete a Tag -->
+{% endif %}

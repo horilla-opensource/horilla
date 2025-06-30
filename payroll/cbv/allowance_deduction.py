@@ -211,7 +211,7 @@ class DeductionTab(DeductionListView):
         not in (
             "specific_employees_col",
             "excluded_employees_col",
-            "condition_bsed_col",
+            "condition_based_col",
             "rate",
         )
     ]
@@ -315,9 +315,9 @@ class DeductionDetailView(HorillaDetailedView):
     }
 
     body = [
-        (_("Tax"), "tax_col", True),
+        "is_tax",
         (_("One Time deduction"), "get_one_time_deduction"),
-        (_("Condition Based"), "condition_bsed_col"),
+        (_("Condition Based"), "condition_based_col"),
         (_("Amount"), "amount_col"),
         (_("Has Maximum Limit"), "has_maximum_limit_col"),
         (_("Deduction Eligibility"), "deduction_eligibility"),
@@ -341,7 +341,7 @@ class AllowanceDetailView(HorillaDetailedView):
     }
 
     body = [
-        (_("Taxable"), "get_is_taxable_display"),
+        "is_taxable",
         (_("One Time Allowance"), "one_time_date_display"),
         (_("Condition Based"), "condition_based_display"),
         (_("Amount"), "based_on_amount"),

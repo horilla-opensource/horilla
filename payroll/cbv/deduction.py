@@ -29,6 +29,11 @@ class DeductionNav(HorillaNavView):
     Nav bar
     """
 
+    filter_form_context_name = "form"
+    filter_instance = DeductionFilter()
+    search_swap_target = "#listContainer"
+    filter_body_template = "cbv/deduction/filter.html"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("deduction-view-list")
@@ -53,12 +58,6 @@ class DeductionNav(HorillaNavView):
                             """,
             },
         ]
-
-    nav_title = _("Deductions")
-    filter_body_template = "cbv/deduction/filter.html"
-    filter_instance = DeductionFilter()
-    filter_form_context_name = "form"
-    search_swap_target = "#listContainer"
 
 
 @method_decorator(login_required, name="dispatch")
@@ -141,16 +140,16 @@ class DeductionListView(HorillaListView):
     # row_status_class = "pretax-{is_pretax} fixed-{is_fixed}"
 
     columns = [
-        (_("Deduction"), "title"),
+        "title",
         (_("Specific Employees"), "specific_employees_col"),
         (_("Excluded Employees"), "excluded_employees_col"),
-        (_("Is Pretax"), "get_is_pretax_display"),
-        (_("Is Condition Based"), "get_is_condition_based_display"),
-        (_("Condition"), "condition_bsed_col"),
-        (_("Is Fixed"), "get_is_fixed_display"),
-        (_("Amount"), "amount"),
-        (_("Based On"), "get_based_on_display"),
-        (_("Rate"), "rate"),
+        "is_pretax",
+        "is_condition_based",
+        (_("Condition"), "condition_based_col"),
+        "is_fixed",
+        "amount",
+        "get_based_on_display",
+        "rate",
     ]
 
     header_attrs = {

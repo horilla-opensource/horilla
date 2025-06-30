@@ -54,16 +54,126 @@ class PayslipView(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
+class PayslipNav(HorillaNavView):
+    """
+    navbar
+    """
+
+    filter_form_context_name = "form"
+    filter_instance = PayslipFilter()
+    search_swap_target = "#listContainer"
+    filter_body_template = "cbv/payslip/payslip_filter.html"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("payslip-list")
+        if self.request.user.has_perm("payroll.add_payslip"):
+            self.create_attrs = f"""
+                data-target="#genericModal"
+                data-toggle="oh-modal-toggle"
+                hx-get="{reverse('payroll-create-form-view')}"
+                hx-target="#genericModalBody"
+            """
+
+            self.actions = [
+                {
+                    "action": _("Generate"),
+                    "attrs": """
+                    data-toggle = "oh-modal-toggle"
+                    data-target = "#bulkPayslipModal"
+                    style="cursor: pointer;"
+                """,
+                },
+                {
+                    "action": _("Payslip Report"),
+                    "attrs": f"""
+                            data-toggle = "oh-modal-toggle"
+                            data-target = "#genericModal"
+                            hx-target="#genericModalBody"
+                            hx-get ="{reverse('payslip-detailed-export')}"
+                            style="cursor: pointer;"
+                """,
+                },
+                {
+                    "action": _("Send Via Mail"),
+                    "attrs": """
+                   onclick="bulkSendViaMail()"
+                    style="cursor: pointer;"
+                """,
+                },
+                {
+                    "action": _("Export"),
+                    "attrs": f"""
+                    data-toggle = "oh-modal-toggle"
+                    data-target = "#payslipExport"
+                    hx-target="#payslipExportForm"
+                    hx-get ="{reverse('payslip-bulk-export-data')}"
+                    style="cursor: pointer;"
+                """,
+                },
+                {
+                    "action": _("Delete"),
+                    "attrs": """
+                            onclick="payslipBulkDelete()"
+                            data-action ="delete"
+                            style="cursor: pointer; color:red !important"
+                             """,
+                },
+            ]
+        else:
+            self.create_attrs = None
+            self.actions = None
+
+    group_by_fields = [
+        ("employee_id", _("Employee")),
+        ("group_name", _("Pay Slip Batch")),
+        ("start_date", _("Start date")),
+        ("end_date", _("End Date")),
+        ("basic_pay", _("Basic Pay")),
+        ("gross_pay", _("Gross Pay")),
+        ("net_pay", _("Net Pay")),
+        ("status", _("Status")),
+        ("employee_id__employee_work_info__department_id", _("Department")),
+        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
+        ("employee_id__employee_work_info__job_role_id", _("Job Role")),
+        ("employee_id__employee_work_info__company_id", _("Company")),
+    ]
+
+
+@method_decorator(login_required, name="dispatch")
 class PayslipList(HorillaListView):
     """
     list view
     """
 
+    model = Payslip
+    records_per_page = 5
+    filter_class = PayslipFilter
+    action_method = "custom_actions_col"
     selected_instances_key_id = "selectedInstances"
     bulk_update_fields = [
         "status",
         "start_date",
         "end_date",
+    ]
+    columns = [
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        "start_date",
+        "end_date",
+        "group_name",
+        "gross_pay",
+        "deduction",
+        "net_pay",
+        (_("Status"), "custom_status_col"),
+    ]
+    sortby_mapping = [
+        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
+        ("Start date", "start_date"),
+        ("End Date", "end_date"),
+        ("Gross Pay", "gross_pay_display"),
+        ("Deduction", "deduction_display"),
+        ("Net Pay", "net_pay_display"),
+        ("Status", "custom_status_col"),
     ]
 
     def __init__(self, **kwargs: Any) -> None:
@@ -79,31 +189,6 @@ class PayslipList(HorillaListView):
         if not self.request.user.has_perm("payroll.view_payslip"):
             queryset = queryset.filter(employee_id__employee_user_id=self.request.user)
         return queryset
-
-    model = Payslip
-    filter_class = PayslipFilter
-    columns = [
-        (_("Employee"), "employee_id", "employee_id__get_avatar"),
-        (_("Start date"), "start_date"),
-        (_("End Date"), "end_date"),
-        (_("Batch"), "group_name"),
-        (_("Gross Pay"), "gross_pay_display"),
-        (_("Deduction"), "deduction_display"),
-        (_("Net Pay"), "net_pay_display"),
-        (_("Status"), "custom_status_col"),
-    ]
-
-    sortby_mapping = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-        ("Start date", "start_date"),
-        ("End Date", "end_date"),
-        ("Gross Pay", "gross_pay_display"),
-        ("Deduction", "deduction_display"),
-        ("Net Pay", "net_pay_display"),
-        ("Status", "custom_status_col"),
-    ]
-    records_per_page = 5
-    action_method = "custom_actions_col"
 
     row_status_indications = [
         (
@@ -169,94 +254,6 @@ class PayslipList(HorillaListView):
                 """
 
     row_status_class = "status-{status} sent_to_employee-{sent_to_employee}"
-
-
-@method_decorator(login_required, name="dispatch")
-class PayslipNav(HorillaNavView):
-    """
-    navbar
-    """
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.search_url = reverse("payslip-list")
-        if self.request.user.has_perm("payroll.add_payslip"):
-            self.create_attrs = f"""
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                hx-get="{reverse('payroll-create-form-view')}"
-                hx-target="#genericModalBody"
-            """
-
-            self.actions = [
-                {
-                    "action": _("Generate"),
-                    "attrs": """
-                    data-toggle = "oh-modal-toggle"
-                    data-target = "#bulkPayslipModal"
-                    style="cursor: pointer;"
-                """,
-                },
-                {
-                    "action": _("Payslip Report"),
-                    "attrs": f"""
-                            data-toggle = "oh-modal-toggle"
-                            data-target = "#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get ="{reverse('payslip-detailed-export')}"
-                            style="cursor: pointer;"
-                """,
-                },
-                {
-                    "action": _("Send Via Mail"),
-                    "attrs": """
-                   onclick="bulkSendViaMail()"
-                    style="cursor: pointer;"
-                """,
-                },
-                {
-                    "action": _("Export"),
-                    "attrs": f"""
-                    data-toggle = "oh-modal-toggle"
-                    data-target = "#payslipExport"
-                    hx-target="#payslipExportForm"
-                    hx-get ="{reverse('payslip-bulk-export-data')}"
-                    style="cursor: pointer;"
-                """,
-                },
-                {
-                    "action": _("Delete"),
-                    "attrs": """
-                            onclick="payslipBulkDelete()"
-                            data-action ="delete"
-                            style="cursor: pointer; color:red !important"
-                             """,
-                },
-            ]
-        else:
-            self.create_attrs = None
-            self.actions = None
-
-    nav_title = _("Payslip")
-    filter_body_template = "cbv/payslip/payslip_filter.html"
-    filter_instance = PayslipFilter()
-    filter_form_context_name = "form"
-    search_swap_target = "#listContainer"
-
-    group_by_fields = [
-        ("employee_id", _("Employee")),
-        ("group_name", _("Pay Slip Batch")),
-        ("start_date", _("Start date")),
-        ("end_date", _("End Date")),
-        ("basic_pay", _("Basic Pay")),
-        ("gross_pay", _("Gross Pay")),
-        ("net_pay", _("Net Pay")),
-        ("status", _("Status")),
-        ("employee_id__employee_work_info__department_id", _("Department")),
-        ("employee_id__employee_work_info__job_position_id", _("Job Position")),
-        ("employee_id__employee_work_info__job_role_id", _("Job Role")),
-        ("employee_id__employee_work_info__company_id", _("Company")),
-    ]
 
 
 @method_decorator(login_required, name="dispatch")

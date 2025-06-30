@@ -1,178 +1,4 @@
 {% load i18n payrollfilters %}
-<div class="oh-modal__dialog-header">
-    <h2 class="oh-modal__dialog-title" id="objectDetailsModalLabel">
-        {% trans "Details" %}
-    </h2>
-    <button class="oh-modal__close" aria-label="Close">
-      <ion-icon name="close-outline"></ion-icon>
-    </button>
-  </div>
-<div class="oh-modal__dialog-body oh-modal__dialog-relative">
-    {% if instance_ids %}
-  <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
-    <button
-      hx-get="{{previous_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
-      hx-target="#genericModalBody"
-      class="oh-modal__diaglog-nav oh-modal__nav-prev"
-    >
-      <ion-icon name="chevron-back-outline"></ion-icon>
-    </button>
-
-    <button
-      hx-get="{{next_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
-      hx-target="#genericModalBody"
-      class="oh-modal__diaglog-nav oh-modal__nav-next"
-    >
-      <ion-icon name="chevron-forward-outline"></ion-icon>
-    </button>
-  </div>
-  {% endif %}
-<a
-class="oh-timeoff-modal__profile-content"
-style="text-decoration: none"
-href="{% url 'employee-view-individual' loan.employee_id.id %}"
->
-<div class="oh-profile mb-2">
-    <div class="oh-profile__avatar mr-1">
-        <img
-            src="{{ loan.employee_id.get_avatar }}"
-            class="oh-profile__image me-2"
-            alt="{{loan.employee_id}}"
-        />
-    </div>
-    <div class="oh-timeoff-modal__profile-info">
-        <span class="oh-timeoff-modal__user fw-bold"
-            >{{ loan.employee_id }}</span
-        >
-        <span
-            class="oh-timeoff-modal__user m-0"
-            style="font-size: 18px; color: #4d4a4a"
-            >{{ loan.employee_id.get_department }} /
-            {{ loan.employee_id.get_job_position }}</span
-        >
-    </div>
-</div>
-</a>
-<div class="oh-modal__dialog-header" style="padding-top: 5px">
-<h3 class="oh-faq-card__title">{{loan.title}}</h3>
-
-<div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <b>{% trans "Total Amount" %} :</b> <div>{{loan.loan_amount}} </div>
-        </div>
-        <div class="col-md-4">
-            <b>{% trans "Paid Amount" %} :</b><div> {{installments|paid_amount}}</div>
-        </div>
-        <div class="col-md-4">
-            <b>{% trans "Balance Amount" %} :</b> <div>{{loan.loan_amount|balance_amount:installments}} </div>
-        </div>
-    </div>
-</div>
-
-<div class="oh-sticky-table__table mt-3" id="deductionContainer">
-    {% if messages %}
-        <div class="oh-wrapper">
-            {% for message in messages %}
-            <div class="oh-alert-container">
-                <div class="oh-alert oh-alert--animated {{message.tags}}">
-                {{ message }}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    <div class="oh-sticky-table__thead">
-        <div class="oh-sticky-table__tr">
-            <div
-                class="oh-sticky-table__th"
-                align="center"
-                style="width: 50px"
-            >
-                {% trans "S/N" %}
-            </div>
-            <div
-                class="oh-sticky-table__th"
-                align="center"
-                style="width: 80px"
-            >
-                {% trans "One Time Date" %}
-            </div>
-            <div
-                class="oh-sticky-table__th"
-                align="center"
-                style="width: 80px"
-            >
-                {% trans "Amount" %}
-            </div>
-            <div
-                class="oh-sticky-table__th"
-                align="center"
-                style="width: 60px"
-            >
-                {% trans "Status" %}
-            </div>
-        </div>
-    </div>
-    <div class="oh-sticky-table__tbody">
-        {% for deduction in installments %}
-        <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__td" align="center">
-                {{ forloop.counter }}
-            </div>
-            <div
-                class="oh-sticky-table__td dateformat_changer"
-                align="center"
-            >
-                {{ deduction.one_time_date }}
-            </div>
-            <input
-                name="amount"
-                class="oh-card__title oh-card__title--sm ms-3 w-100 editable-input border-0"
-                hx-post="{% url 'edit-installment-amount' %}?loan_id={{loan.id}}&ded_id={{deduction.id}}"
-                hx-select="#deductionContainer"
-                hx-target="#deductionContainer"
-                hx-trigger="change"
-                hx-swap = "outerHTML"
-                onclick="event.stopPropagation();"
-                align="center"
-                value="{{ deduction.amount|floatformat:2 }}"
-                readonly
-            />
-            <div class="oh-sticky-table__td" align="center">
-                {% if deduction.installment_payslip %}
-                <span title="Installment paid, Click to view">
-                    <a href="{% url "view-created-payslip" deduction.installment_payslip.id %}"> ✅ </a>
-                </span>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %} {% if loan.settled %}
-        <div class="oh-sticky-table__tr">
-            <div class="oh-sticky-table__td" align="center">
-                {{ installments|length|add:1 }}
-            </div>
-            <div
-                class="oh-sticky-table__td dateformat_changer"
-                align="center"
-            >
-                {{loan.settled_date.date}}
-            </div>
-            <div class="oh-sticky-table__td" align="center">
-                {{loan.loan_amount|balance_amount:installments}}
-            </div>
-            <div class="oh-sticky-table__td" align="center">
-                <span title="Loan Settled">
-                    <a href="#"> ✅ </a>
-                </span>
-            </div>
-        </div>
-        {% endif %}
-    </div>
-</div>
-</div>
-</div>
-
 
 
 <script>
@@ -189,17 +15,187 @@ href="{% url 'employee-view-individual' loan.employee_id.id %}"
     });
 </script>
 
-
-<div class="oh-btn-group" style="padding:20px;">
+{% load static i18n %}
+{% load generic_template_filters %}
+{% comment %} <div class="oh-btn-group" style="padding:20px;">
     {% if perms.payroll.change_loanaccount or request.user %}
     <button data-toggle="oh-modal-toggle" data-target="#genericModal" hx-target="#genericModalBody" hx-get="{% url 'loan-edit-form' instance.id %}" type="submit" class="oh-btn oh-btn-group oh-btn--info w-100" title="dit">
         <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
     </button>
-        {% comment %} <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'loan-edit-form' instance.id%}" hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModal" title='{% trans "Edit" %}'>
-            <ion-icon class="text-dark" name="create-outline"></ion-icon></a> {% endcomment %}
+        <a class="oh-btn oh-btn--light-bkg w-100" hx-get="{% url 'loan-edit-form' instance.id%}" hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModal" title='{% trans "Edit" %}'>
+            <ion-icon class="text-dark" name="create-outline"></ion-icon></a>
     {% endif %}
     {% if perms.payroll.delete_loanaccount %}
         <a class="oh-btn oh-btn-group oh-btn--secondary  w-100" href="{% url 'delete-loan' %}?ids={{ instance.id }}" onclick="return confirm('Do you want to delete this record?')" title='{% trans "Delete" %}'>
             <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
     {% endif %}
+</div> {% endcomment %}
+
+
+
+<div
+    class="modal-box mx-5 bg-white w-full max-w-md md:min-w-[700px] rounded-lg shadow-card p-0 transition-all duration-300 opacity-100 scale-100">
+    <div class="p-5" id="detailViewContainer">
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-md font-semibold">{{ title }}</h2>
+            <button class="text-gray-500 hover:text-red-500 text-xl"
+                onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
+                <img src="{% static 'horilla_theme/assets/icons/close.svg' %} " alt="" />
+            </button>
+        </div>
+        <div class="flex items-center gap-5 mb-5">
+            <div>
+                <img src="{{ loan.employee_id.get_avatar }}" alt="{{loan.employee_id}}" class="w-[50px] h-[50px] rounded-full" />
+            </div>
+
+            <div>
+                <a href="{% url 'employee-view-individual' loan.employee_id.id %}" class="mb-1 text-sm font-semibold">
+                    {{ loan.employee_id }}
+                </a>
+                <p class="text-xs text-[#666]">
+                    {{ loan.employee_id.get_department }} / {{ loan.employee_id.get_job_position }}
+                </p>
+            </div>
+        </div>
+        <div class="oh-modal__dialog-header" style="padding-top: 5px">
+            <h3 class="oh-faq-card__title">{{loan.title}}</h3>
+
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4">
+                        <b>{% trans "Total Amount" %} :</b> <div>{{loan.loan_amount}} </div>
+                    </div>
+                    <div class="col-md-4">
+                        <b>{% trans "Paid Amount" %} :</b><div> {{installments|paid_amount}}</div>
+                    </div>
+                    <div class="col-md-4">
+                        <b>{% trans "Balance Amount" %} :</b> <div>{{loan.loan_amount|balance_amount:installments}} </div>
+                    </div>
+                </div>
+            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5 mt-5">
+            <table class="fixed-table w-full">
+                <thead class="sticky top-0 bg-[white] z-10">
+                    <tr class="border-b border-[#ececec]">
+                        <th class="stickyleft text-sm font-medium text-left p-3 w-30">
+                            {% trans "S/N" %}
+                        </th>
+                        <th class="stickyleft text-sm font-medium text-left p-3 w-30"
+                            class="oh-sticky-table__th"
+                            align="center"
+                            style="width: 80px"
+                        >
+                            {% trans "One Time Date" %}
+                        </th>
+                        <th class="stickyleft text-sm font-medium text-left p-3 w-30"
+                            class="oh-sticky-table__th"
+                            align="center"
+                            style="width: 80px"
+                        >
+                            {% trans "Amount" %}
+                        </th>
+                        <th class="stickyleft text-sm font-medium text-left p-3 w-30"
+                            class="oh-sticky-table__th"
+                            align="center"
+                            style="width: 60px"
+                        >
+                            {% trans "Status" %}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% comment %} {% for deduction in installments %}
+                    <tr class="border-b border-[#f3f3f3]">
+                        <td class="stickyleft text-sm text-left p-3 text-[#666]">
+                            {{ forloop.counter }}
+                        </td>
+                        <td class="stickyleft text-sm text-left p-3 text-[#666]">
+                            {{ deduction.one_time_date }}
+                        </td>
+                        <td class="stickyleft text-sm text-left p-3 text-[#666]">
+                            <input
+                                name="amount"
+                                class="oh-card__title oh-card__title--sm ms-3 w-100 editable-input border-0"
+                                hx-post="{% url 'edit-installment-amount' %}?loan_id={{loan.id}}&ded_id={{deduction.id}}"
+                                hx-select="#deductionContainer"
+                                hx-target="#deductionContainer"
+                                hx-trigger="change"
+                                hx-swap = "outerHTML"
+                                onclick="event.stopPropagation();"
+                                align="center"
+                                value="{{ deduction.amount|floatformat:2 }}"
+                                readonly
+                            />
+                        </td>
+                        <td class="stickyleft text-sm text-left p-3 text-[#666]">
+                            {% if deduction.installment_payslip %}
+                                <span title="Installment paid, Click to view">
+                                    <a href="{% url "view-created-payslip" deduction.installment_payslip.id %}"> ✅ </a>
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %} {% endcomment %}
+                    {% if loan.settled %}
+                        <tr class="border-b border-[#f3f3f3]">
+                            <td class="stickyleft text-sm text-left p-3 text-[#666]">
+                                {{ installments|length|add:1 }}
+                            </td>
+                            <td class="stickyleft text-sm text-left p-3 text-[#666]"
+                                class="oh-sticky-table__td dateformat_changer"
+                                align="center"
+                            >
+                                {{loan.settled_date.date}}
+                            </td>
+                            <td class="stickyleft text-sm text-left p-3 text-[#666]">
+                                {{loan.loan_amount|balance_amount:installments}}
+                            </td>
+                            <td class="stickyleft text-sm text-left p-3 text-[#666]">
+                                <span title="Loan Settled">
+                                    <a href="#"> ✅ </a>
+                                </span>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div class="m-3 " id="enlargeattachmentContainer"></div>
+        <div class="flex flex-wrap justify-between gap-2 md:gap-1">
+            {% if actions or action_method %}
+                <div class="flex gap-1">
+                    {% if actions and not action_method %}
+                        {% for action in actions %}
+                            <a {{action.attrs|format:object|safe}}>
+                                {% if action.icon|is_image_file %}
+                                    <img src="{% static 'horilla_theme/assets/img/icons/' %}{{ action.icon }}" width="13" alt="{{ action.action }}" class="filter brightness-0 invert">
+                                {% else %}
+                                    <ion-icon name="{{ action.icon }}"></ion-icon>
+                                {% endif %}
+                                {{action.action}}
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        {{object|getattribute:action_method|safe}}
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if instance_ids %}
+                <div class="flex gap-1 ml-auto">
+                    <button data-action="previous"
+                        hx-get="{{ previous_url }}?{{ ids_key }}={{ instance_id }}&{{ request.GET.urlencode }}"
+                        hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');" hx-target="#genericModalBody"
+                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <button data-action="next"
+                        hx-get="{{ next_url }}?{{ ids_key }}={{ instance_id }}&{{ request.GET.urlencode }}"
+                        hx-target="#genericModalBody" hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');"
+                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 </div>

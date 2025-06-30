@@ -1,0 +1,22 @@
+{% load i18n %}
+{% if perms.payroll.change_taxbracket %}
+    <button
+        class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+        data-toggle="oh-modal-toggle" data-target="#genericModal"
+        hx-get="{{ instance.get_update_url }}"
+        hx-target="#genericModalBody" title="{% trans 'Edit' %}">
+        <i class="fa-solid fa-pen-to-square"></i>
+    </button>
+{% endif %}
+{% if perms.payroll.delete_taxbracket %}
+    <form hx-confirm="{% trans 'Are you sure to delete this Tax bracket ?' %}"
+        hx-post="{{ instance.get_delete_url }}"
+        hx-target="#accordionPanel{{instance.filing_status_id.id}}">
+        {% csrf_token %}
+        <button
+            class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+            title="{% trans 'Delete' %}">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </form>
+{% endif %}

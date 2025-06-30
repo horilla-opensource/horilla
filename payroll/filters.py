@@ -469,6 +469,17 @@ class ReimbursementFilter(HorillaFilterSet):
         ).distinct()
 
 
+class FilingStatusFilter(HorillaFilterSet):
+    search = django_filters.CharFilter(
+        field_name="filing_status",
+        lookup_expr="icontains",
+    )
+
+    class Meta:
+        model = FilingStatus
+        fields = ["filing_status", "based_on"]
+
+
 class ContractReGroup:
     """
     Class to keep the field name for group by option

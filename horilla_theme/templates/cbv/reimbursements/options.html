@@ -1,0 +1,26 @@
+{% load i18n %}
+<div class="flex">
+    {% if perms.payroll.change_reimbursement or request.user == instance.employee_id.employee_user_id %}
+        {% if instance.status == 'requested' %}
+            <button
+                class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+                hx-get="{% url 'reimbursement-update' instance.id %}" hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle" data-target="#genericModal" title="{% trans 'Edit' %}">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+        {% else %}
+            <button disabled
+                class="cursor-not-allowed px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+        {% endif %}
+    {% endif %}
+    {% if perms.payroll.delete_reimbursement %}
+        <a href="{% url 'delete-reimbursement' %}?ids={{instance.id}}"
+            onclick="event.stopPropagation();return confirm('Do you want to delete this record?')"
+            class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+            title="{% trans 'Delete' %}">
+            <i class="fa-solid fa-trash"></i>
+        </a>
+    {% endif %}
+</div>

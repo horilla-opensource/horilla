@@ -1,0 +1,43 @@
+{% load i18n %}
+<ul class="text-xs">
+    {% if instance.add_panel_hx_url and perms.payroll.add_taxbracket %}
+        <li>
+            <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300 asset-create"
+                data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-get="{{ instance.add_panel_hx_url }}?{{ pg }}"
+                hx-target="#objectCreateModalTarget" data-category-id="1">
+                {% trans "Create" %}
+            </a>
+        </li>
+    {% endif %}
+
+    {% if instance.get_duplicate_url and perms.payroll.add_filingstatus %}
+        <li>
+            <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-get="{{ instance.get_duplicate_url }}?{{ pg }}"
+                hx-target="#objectCreateModalTarget">
+                {% trans "Duplicate" %}
+            </a>
+        </li>
+    {% endif %}
+
+    {% if instance.get_update_url and perms.payroll.change_filingstatus %}
+        <li>
+            <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" hx-get="{{ instance.get_update_url }}?{{ pg }}"
+                hx-target="#objectUpdateModalTarget">
+                {% trans "Edit" %}
+            </a>
+        </li>
+    {% endif %}
+
+    {% if instance.get_delete_url and perms.payroll.delete_filingstatus %}
+        <li>
+            <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                hx-confirm="Do you want to delete this filing status?" hx-post="{{ instance.get_delete_url }}"
+                hx-target="#accordionWrapper">
+                {% trans "Delete" %}
+            </a>
+        </li>
+    {% endif %}
+
+</ul>
