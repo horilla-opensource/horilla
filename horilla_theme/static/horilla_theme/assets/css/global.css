@@ -715,24 +715,72 @@
   border-radius: 50%;
 }
 
+/*
+.date-list li:nth-child(1)::before {
+  background-color: #00c490;
+}
+.date-list li:nth-child(2)::before {
+  background-color: #0e79dc;
+}
+.date-list li:nth-child(3)::before {
+  background-color: #ee1b18;
+}
+.date-list li:nth-child(4)::before {
+  background-color: #fe8a3d;
+}
+.date-list li:nth-child(5)::before {
+  background-color: #fec53d;
+}
+.date-list li:nth-child(6)::before {
+  background-color: #ee1b18;
+} */
+
+.datebox {
+  color: white;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  margin: auto;
+}
+
+/* .datebox.box1 {
+  background-color: #00c490;
+}
+.datebox.box2 {
+  background-color: #ee1b18;
+}
+.datebox.box3 {
+  background-color: #0e79dc;
+}
+.datebox.box4 {
+  background-color: #fec53d;
+}
+.datebox.box5 {
+  background-color: #fe8a3d;
+} */
 .date-list li:nth-child(1)::before {
   background-color: #00c490;
 }
 
 .date-list li:nth-child(2)::before {
-  background-color: #0e79dc;
+  background-color: #808080;
 }
 
 .date-list li:nth-child(3)::before {
-  background-color: #ee1b18;
+  background-color: #fec53d;
 }
 
 .date-list li:nth-child(4)::before {
-  background-color: #fe8a3d;
+  background-color: #a8b1ff;
 }
 
 .date-list li:nth-child(5)::before {
-  background-color: #fec53d;
+  background-color: #fe8a3d;
 }
 
 .date-list li:nth-child(6)::before {
@@ -752,24 +800,28 @@
   margin: auto;
 }
 
-.datebox.box1 {
+.datebox.present {
   background-color: #00c490;
 }
 
-.datebox.box2 {
+.datebox.conflict {
   background-color: #ee1b18;
 }
 
-.datebox.box3 {
-  background-color: #0e79dc;
+.datebox.absent {
+  background-color: #a8b1ff;
 }
 
-.datebox.box4 {
+.datebox.half-day {
   background-color: #fec53d;
 }
 
-.datebox.box5 {
+.datebox.leave-present {
   background-color: #fe8a3d;
+}
+
+.datebox.leave {
+  background-color: #808080;
 }
 
 .date-table thead tr th:first-child {
@@ -922,4 +974,14 @@ input[type="checkbox"].custom-checkbox:hover {
 
 .select2-container--default {
   padding-bottom: 0.75rem;
+}
+
+#accordionToggle:focus-visible {
+  outline: none;
+}
+
+.btn-square.disable {
+  background: #ededed;
+  color: #a9a9a9;
+  cursor: no-drop;
 }

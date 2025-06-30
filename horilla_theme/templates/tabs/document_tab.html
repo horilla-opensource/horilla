@@ -1,0 +1,274 @@
+{% load i18n %} {% load static %}
+<style>
+
+</style>
+<div class="oh-btn-group p-3 d-flex" style="justify-content:flex-end;">
+	<div>
+		<button
+			class="oh-btn oh-btn--secondary"
+			data-toggle="oh-modal-toggle"
+			data-target="#genericModal"
+			hx-get="{% url 'document-create' emp_id %}"
+			hx-target="#genericModalBody"
+			onclick="event.preventDefault()"
+
+		>
+			<ion-icon name="add-sharp" class="mr-2"></ion-icon>{% trans "Create" %}
+		</button>
+	</div>
+</div>
+{% if documents %}
+	<div class="mt-2">
+		{% for document in documents %}
+			<div id="document{{document.id}}">
+				<div class="oh-user_permission-list_item accordion exclude-accordion-style"  hx-get='{% url "view-file" document.id %}'
+					 hx-target="#viewFile" data-toggle="oh-modal-toggle" data-target="#viewFileModal" >
+					<div class="oh-user_permission-list_profile  {% if document.status == "approved" %}row-status--yellow {% elif document.status == 'rejected' %}row-status--red {% elif document.status == 'requested' %}row-status--blue{% endif %}">
+						<div class="oh-navbar__user-photo oh-user_permission--profile">
+							{% if document.document %}
+								{% if document.status == "approved" %}
+									<span
+										class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
+										onclick="event.stopPropagation()"
+										title="Approved"
+									>
+									<ion-icon name="checkmark"></ion-icon>
+								{% elif document.status == 'rejected' %}
+									<span
+										class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
+										onclick="event.stopPropagation()"
+										title="Rejected"
+									>
+										<ion-icon name="alert"></ion-icon>
+									</span>
+								{% else %}
+								<span
+										class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
+										onclick="event.stopPropagation()"
+										title="Uploaded"
+									>
+									<ion-icon name="image-outline"></ion-icon>
+								</span>
+								{% endif %}
+							{% else %}
+								<span
+									class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2 file-upload"
+									hx-get="{% url 'file-upload' document.id %}"
+									hx-target="#genericModalBody"
+									data-document-id="{{ document.id }}"
+									data-toggle="oh-modal-toggle"
+									data-target="#genericModal"
+									onclick="event.stopPropagation()"
+									title="Upload File"
+								>
+									<ion-icon
+										class="md hydrated"
+										name="add-outline"
+										role="img"
+										aria-label="add outline"
+									></ion-icon>
+								</span>
+							{% endif %}
+						</div>
+						<div class="oh-feedback-card__name-container ms-1 title_form">
+							<form hx-post = "{% url 'update-document-title' document.id %}" hx-swap="none" hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 300);">
+								<input class="oh-card__title oh-card__title--sm fw-bold me-1 editable-input" onclick="event.stopPropagation();" name="title" value="{{document.title}}" readonly />
+								<span class="error oh-user_permission_list-text text-danger d-none" >{% trans "Title needs to be more than 3 letters" %}</span>
+								<input class="d-none title-submit" type="submit" onclick="event.stopPropagation();" />
+							</form>
+							<span class="oh-text--light" title="{{document.document_request_id.description}}">
+								{{document.document_request_id.description|truncatechars:60}}
+							</span>
+							{% if document.issue_date %}
+								<span class="oh-text--light" title="{{document.document_request_id.description}}">
+									{% trans "Issue Date" %} : {{ document.issue_date }}
+								</span>
+							{% endif %}
+						</div>
+					</div>
+					<div class="oh-btn-group">
+							{% if perms.horilla_document.change_documentrequest %}
+								{% if document.status == "approved" %}
+								<a class="oh-btn oh-btn--success w-100 oh-btn--disabled"  onclick="event.stopPropagation()">
+									<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+								</a>
+								<a
+									type="submit"
+									hx-get="{% url 'document-reject' document.id %}"
+									hx-target="#rejectFileForm"
+									data-toggle="oh-modal-toggle"
+									data-target="#rejectFileModal"
+									title="{% trans 'Reject' %}"
+									class="oh-btn oh-btn--danger w-100"
+									onclick="event.stopPropagation()"
+								>
+									<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+								</a>
+								{% else %}
+								<a
+									type="submit"
+									hx-get="{% url 'document-approve' document.id %}"
+									hx-target="#viewFile"
+									title="{% trans 'Approve' %}"
+									class="oh-btn oh-btn--success w-100"
+									onclick="event.stopPropagation()"
+								>
+									<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+								</a>
+								<a class="oh-btn oh-btn--danger w-100 oh-btn--disabled"  onclick="event.stopPropagation()">
+									<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+								</a>
+								{% endif %}
+							{% endif %}
+						{% if not document.document_request_id or perms.horilla_document.change_documentrequest %}
+							<form hx-confirm="{% trans 'Are you sure you want to delete this Document Request?' %}"
+								hx-post="{% url 'document-delete' document.id %}"
+								hx-target="#document{{document.id}}"
+								hx-swap="outerHTML"
+								hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 300);"
+								onclick="event.stopPropagation()"
+								>
+								{% csrf_token %}
+								<button
+									type="submit"
+									class="oh-btn  oh-btn--secondary"
+									title="{% trans 'Delete' %}"
+								>
+									<ion-icon
+										class="me-1 md hydrated"
+										name="trash-outline"
+										role="img"
+										aria-label="trash outline"
+									></ion-icon
+									>
+								</button>
+							</form>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+{% else %}
+
+	<div class="oh-wrapper h-full" align="center">
+        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+            <div class="flex flex-col items-center justify-center h-full">
+                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                <p class="text-[#666] mb-5">{% trans "No documents have been uploaded yet." %}	</p>
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+
+<div
+	class="oh-modal"
+	id="viewFileModal"
+	role="dialog"
+	aria-labelledby="viewFileModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog custom-dialog">
+		<div class="oh-modal__dialog-header">
+			<span class="oh-modal__dialog-title" id="viewFileModalLabel"
+				>{% trans "View File" %}</span
+			>
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon
+					name="close-outline"
+					role="img"
+					class="md hydrated"
+					aria-label="close outline"
+				></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="viewFile"></div>
+	</div>
+</div>
+
+<div
+	class="oh-modal"
+	id="documentCreateModal"
+	role="dialog"
+	aria-labelledby="documentCreateModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<button class="oh-modal__close" aria-label="Close">
+				<ion-icon
+					name="close-outline"
+					role="img"
+					class="md hydrated"
+					aria-label="close outline"
+				></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="documentCreateForm"></div>
+	</div>
+</div>
+
+
+<div
+	class="oh-modal"
+	id="rejectFileModal"
+	role="dialog"
+	aria-labelledby="rejectFileModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog">
+		<div class="oh-modal__dialog-header">
+			<span class="oh-modal__dialog-title" id="rejectFileModalLabel"
+				>{% trans "Reject" %}</span
+			>
+			<button class="oh-modal__close--custom" aria-label="Close"
+			onclick="event.stopPropagation();event.preventDefault();$('#rejectFileModal').toggleClass('oh-modal--show');">
+				<ion-icon
+					name="close-outline"
+					role="img"
+					class="md hydrated"
+					aria-label="close outline"
+				></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="rejectFileForm"></div>
+	</div>
+</div>
+
+ <script>
+	$(document).ready(function(){
+		editableInput = $(".editable-input")
+		var typingTimer;
+		var doneTypingInterval = 300;
+
+		editableInput.on("focus", function(){
+			$(this).prop("readonly", false)
+		})
+
+		editableInput.on("blur", function(){
+			$(this).prop("readonly", true)
+		})
+
+		editableInput.on("keyup", function(){
+			let error = ""
+			let $this = $(this)
+			clearTimeout(typingTimer);
+			typingTimer = setTimeout(function(){
+				if ($this.val().length <=3){
+					$this.siblings(".error").removeClass("d-none")
+					$this.siblings(".error").addClass("d-block")
+				} else {
+					$this.siblings('.title-submit').click();
+					$this.siblings(".error").removeClass("d-block")
+					$this.siblings(".error").addClass("d-none")
+				}
+			}, doneTypingInterval);
+
+			if (event.keyCode === 13) {
+				$(this).blur();
+			}
+		});
+
+	})
+</script>
