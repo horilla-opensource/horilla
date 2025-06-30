@@ -125,7 +125,7 @@ class LeaveRequestsListView(HorillaListView):
         ),
         (
             "cancelled--dot",
-            _("Canecelled"),
+            _("Cancelled"),
             """
             onclick="
             $('#applyFilter').closest('form').find('[name=status]').val('cancelled');
