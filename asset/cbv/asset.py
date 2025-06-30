@@ -22,6 +22,7 @@ class AssetListView(HorillaListView):
     show_filter_tags = False
     bulk_select_option = False
     action_method = "action_column"
+    header_attrs = {"asset_name": "style='width:200px !important;'"}
 
     def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
         return (
