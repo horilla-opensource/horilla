@@ -2395,9 +2395,11 @@ def delete_comment_file(request):
 def work_records(request):
     today = date.today()
     previous_data = request.GET.urlencode()
+    employee_filter_form = EmployeeFilter(request.GET or None)
     context = {
         "current_date": today,
         "pd": previous_data,
+        "f": employee_filter_form,
     }
     return render(
         request, "attendance/work_record/work_record_view.html", context=context

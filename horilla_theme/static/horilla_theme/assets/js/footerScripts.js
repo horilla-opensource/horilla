@@ -644,3 +644,8 @@ $(".oh-password-input--toggle").on("click", function (e) {
         $hideIcon.addClass("hidden");
     }
 });
+
+$(`.oh-accordion-header`).on("click", function (e) {
+        e.preventDefault();
+        $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");
+    });
