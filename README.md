@@ -225,7 +225,7 @@ git pull horilla master
 2. Edit the `.env` file and set the following values:
    ```env
    DEBUG=True
-   TIME_ZONE=Asia/Kolkata
+   TIME_ZONE=Africa/Cairo
    SECRET_KEY=django-insecure-j8op9)1q8$1&@^s&p*_0%d#pr@w9qj@lo=3#@d=a(^@9@zd@%j
    ALLOWED_HOSTS=www.example.com,example.com,*
    DB_INIT_PASSWORD=d3f6a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d
