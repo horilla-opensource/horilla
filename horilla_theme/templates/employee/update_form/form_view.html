@@ -1,8 +1,8 @@
 {% extends 'index.html' %}
 {% load i18n %}
 {% block content %}
-<div id="view-container" class="oh-wrapper" style="margin: 20px 150px 0px 150px;">
-    <section class="oh-wrapper oh-main__topbar oh-profile-section__topbar" x-data="{searchShow: false}">
+<div id="view-container" class="oh-wrapper" style="margin:0 150px 0px 150px;">
+    <section class="oh-wrapper oh-main__topbar oh-profile-section__topbar pt-0" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
             <h1 class="oh-main__titlebar-title fw-bold mb-0 text-lg font-semibold mb-3">{% trans "Edit" %} {{form.instance.employee_first_name}}</h1>
         </div>

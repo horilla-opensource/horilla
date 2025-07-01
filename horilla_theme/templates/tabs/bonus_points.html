@@ -1,0 +1,112 @@
+{% load static i18n basefilters horillafilters %}
+<button
+	id="bonus-tab-button"
+	onclick = "document.querySelector(`[data-tab='Bonus Points']`).click();"
+	hidden
+></button>
+<div class="bg-white rounded-md shadow-card p-3 pt-12 mb-5 lg:mb-0">
+	<div class="">
+		<div class="grid grid-cols-12 gap-3">
+			<div class="col-span-12 lg:col-span-3">
+				<div class="flex items-center justify-between mb-3">
+					<h5 class="mb-1 font-semibold text-sm">{% trans "Bonus Points" %}</h5>
+					{% if perms.employee.add_bonuspoint or request.user|check_manager:employee %}
+						<div class="flex items-center gap-4">
+							<button
+								class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-sm flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+								data-toggle="oh-modal-toggle"
+								data-target="#objectDetailsModal"
+								{% if "pms"|app_installed %}
+									hx-get="{% url 'create-employee-bonus-point'%}?employee_id={{employee.id}} "
+								{% else %}
+									hx-get="{% url 'add-bonus-points' employee.id %}"
+								{% endif %}
+								hx-target="#objectDetailsModalTarget"
+							>
+								<i class="fa-regular fa-square-plus"></i>
+							</button>
+						</div>
+					{% endif %}
+				</div>
+				<div
+					class="h-[200px] lg:h-[calc(100%_-_45px)] bg-primary-300 rounded-md flex flex-col items-center justify-between text-center py-8"
+				>
+					<div class="mt-5">
+						<h3 class="text-primary-600 font-bold text-3xl mb-5">{{points.points}}</h3>
+						<p class="mb-2 text-sm">{% trans "Balance point(s) to redeem" %}</p>
+					</div>
+					<button
+						hx-get="{% url 'redeem-points' employee.id %}"
+						hx-target="#objectDetailsModalW25Target"
+						data-toggle="oh-modal-toggle"
+						data-target="#objectDetailsModalW25"
+						class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-primary-800 transition duration-300 justify-center w-[80%] h-[50px]"
+					>
+						{% trans "Redeem" %}
+					</button>
+				</div>
+			</div>
+			<div class="col-span-0 lg:col-span-1">
+			</div>
+			<div class="col-span-12 lg:col-span-8">
+				<div class="border border-[#ebebeb] rounded-md overflow-hidden">
+					<h5
+						class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]"
+					>
+						{% trans "Points History" %}
+					</h5>
+					<div class="p-4">
+						<ul
+							class="mylist text-sm mb-2 h-[350px] overflow-hidden overflow-y-auto"
+						>
+							{% for activity in activity_list %}
+								{% if activity.type == 'Bonus point created' %}
+									<li>
+										<div class="flex justify-between">
+											<span>
+												{% trans "Bonus account Created" %}
+											</span>
+											<span class="text-primary-600 dateformat_changer"
+												>{{ activity.date|date:"d N. Y"}}</span
+											>
+										</div>
+									</li>
+								{% elif activity.type == "requested" %}
+									<li>
+										<div class="flex justify-between">
+											<span>
+												{% trans "Redeem request created for" %}
+												<strong>{{activity.points}} </strong> {% trans "points" %}
+											</span>
+											<span class="text-primary-600 dateformat_changer"
+												>{{ activity.date|date:"d N. Y"}}</span
+											>
+										</div>
+									</li>
+								{% else %}
+									<li>
+										<div class="flex justify-between">
+											<span>
+												{% if activity.reason == 'bonus points has been redeemed.' %}
+													<strong>{{activity.points|abs_value}}</strong> {{activity.reason|truncatechars:40}}
+												{% else %}
+													<strong>{{activity.user}}</strong> {% trans "Added " %}
+                            						<strong>{{activity.points}} </strong> {% trans "bonus points for " %} {{activity.reason|truncatechars:40}}
+												{% endif %}
+											</span>
+											<span class="text-primary-600 dateformat_changer"
+												>{{ activity.date|date:"d N. Y"}}</span
+											>
+										</div>
+									</li>
+								{% endif %}
+							{% endfor %}
+
+							
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

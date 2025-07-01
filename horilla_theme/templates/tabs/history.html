@@ -47,7 +47,7 @@
           <ul class="mylist">
             {% for change in history.changes %}
             <li class="text-xs">
-              {{ history.pair.1|fk_history:change }} → {{ history.pair.0|fk_history:change }} 
+              {{ history.pair.1|fk_history:change }} → {{ history.pair.0|fk_history:change }}
               ({{ change.field }})
             </li>
             {% endfor %}
@@ -68,5 +68,3 @@
   </div>
 </div>
 {% endif %}
-
-
