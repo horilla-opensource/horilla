@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="oh-btn-group">
+    <a data-toggle="oh-modal-toggle"
+     data-target="#validateAttendanceRequest"
+     hx-get="{% url 'validate-attendance-request' instance.id %}" hx-trigger="click" hx-target="#validateAttendanceRequestModalBody"
+      class="oh-btn oh-btn--light-bkg w-100"
+      title="{% trans 'View' %}"><ion-icon name="eye-outline" role="img"></ion-icon></a>
+
+    <a
+      type="submit"
+      class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+      title="{% trans 'Cancel / Reject' %}"
+      onclick="event.stopPropagation();return confirm('{% trans "Are you sure want to cancel the request?" %}');"
+      href="{% url 'cancel-validate-attendance-request' instance.id %}"
+    >
+    <ion-icon name="close-circle-outline"></ion-icon>
+    </a>
+  </div>

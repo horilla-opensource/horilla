@@ -1,0 +1,58 @@
+{% load generic_template_filters %}
+<div class="oh-card">
+  <div class="row">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-3">
+      <button class="oh-btn oh-btn--light oh-inner-sidebar-toggle w-100" data-action="toggle" data-target="#mobileMenu" data-class="oh-resp-hidden--lg"><ion-icon class="me-2" name="menu-outline"></ion-icon>All Settings</button>
+      <div class="oh-inner-sidebar oh-resp-hidden--lg">
+        <!-- profile -->
+
+        <div class="oh-card oh-card--no-shadow oh-card__body p-0">
+          <a class="oh-timeoff-modal__profile-content" style="text-decoration: none">
+            <div class="oh-profile">
+              <div class="oh-profile__avatar">
+                <img src="{{instance.get_avatar}}" class="oh-profile__image me-2" />
+              </div>
+              <div class="oh-timeoff-modal__profile-info">
+                <span class="oh-timeoff-modal__user fw-bold">{{instance.get_full_name}}</span>
+                <span class="oh-timeoff-modal__user m-0" style="font-size: 14px; color: #4d4a4a">{{instance.employee_work_info.job_position_id.job_position}}</span>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!--  -->
+
+        <ul class="oh-inner-sidebar__items">
+          {% for menu in menues %}
+          <li class="oh-inner-sidebar__item">
+            {% if menu.accessibility is None or menu.accessibility|accessibility %}
+            <span
+              hx-get="{{menu.url}}?instance_id={{instance.pk}}" class="oh-inner-sidebar__link"
+              {% comment %} oh-inner-sidebar__link--active {% endcomment %}
+              onclick="
+              $('.oh-card .oh-inner-sidebar__item span.oh-inner-sidebar__link--active').removeClass('oh-inner-sidebar__link--active');
+              $(this).addClass('oh-inner-sidebar__link--active');
+              "
+              hx-target="#allocationContent"
+              >{{menu.menu}}
+            </span>
+            {% endif %}
+          </li>
+          {% endfor %}
+
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-12 col-md-12 col-lg-9" id="allocationContent">
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+
+    setTimeout(() => {
+      $(".oh-inner-sidebar__item:first span").click();
+    }, 100);
+  });
+</script>

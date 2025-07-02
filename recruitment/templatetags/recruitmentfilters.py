@@ -35,6 +35,19 @@ def is_stagemanager(user):
         return False
 
 
+@register.filter(name="is_any_manager")
+def is_any_manager(request):
+    """
+    This method is used to check the employee is stage or recruitment manager
+    """
+    return (
+        request.user.employee_get.stage_set.exists()
+        or request.user.employee_get.recruitment_set.exists()
+        or request.user.employee_get.onboardingstage_set.exists()
+        or request.user.employee_get.onboarding_task.exists()
+    )
+
+
 @register.filter(name="is_recruitmentmanager")
 def is_recruitmentmangers(user):
     """

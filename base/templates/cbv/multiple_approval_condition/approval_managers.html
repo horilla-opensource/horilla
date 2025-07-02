@@ -1,0 +1,6 @@
+{% load basefilters %}
+<div>
+    {% for manager in instance.approval_managers %}
+   <div class="p-1"> {{ forloop.counter}}. {{ manager|readable }} <br /></div>
+{% endfor %}
+  </div>

@@ -1,0 +1,286 @@
+
+
+{% extends "index.html" %}
+{% load i18n %}{% load static  %}
+
+
+{% block content %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+.online--dot{
+  background-color:yellowgreen;
+}
+.offline--dot{
+  background-color:rgba(128, 128, 128, 0.482);
+}
+
+.hired-True{
+  border-left: 3.4px solid yellowgreen !important;
+  border-radius: 4px 0 0 4px;
+
+}
+
+
+  .profile-picture {
+    transition: transform 0.3s;
+    z-index:9999
+    ;
+  }
+
+  .profile-picture:hover {
+      transform: scale(2.4);
+  }
+
+  .custom-swal-container .swal2-styled {
+    display:block;
+    width:70%;
+  }
+
+</style>
+
+
+
+ <div hx-get="{% url "employees-nav" %}" hx-trigger="load">
+</div>
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+
+
+{% include "generic/components.html" %}
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+
+<div id="relatedModel"></div>
+
+<div
+  class="oh-modal"
+  id="workInfoImport"
+  role="dialog"
+  aria-labelledby="workInfoImport"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="workInfoImportLavel">
+        {% trans "Import Employee" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div class="oh-modal__dialog-body p-0 pt-2" id="workInfoImportModalBody">
+        <form
+          action="#"
+          id="workInfoImportForm"
+          enctype="multipart/form-data">
+          <div
+            class="oh-modal__dialog-body mr-5"
+            id="uploading"
+            style="display: none"
+          >
+            <div class="loader-container">
+              <div class="loader"></div>
+              <div class="loader-text">{% trans "Uploading..." %}</div>
+            </div>
+          </div>
+          <div id="error-container" style="color: red"></div>
+          <div class="modal-body">
+            {% csrf_token %}
+            <div class="oh-dropdown__import-form">
+              <label class="oh-dropdown__import-label" for="workInfoImportFile">
+                <ion-icon
+                  name="cloud-upload"
+                  class="oh-dropdown__import-form-icon md hydrated"
+                  role="img"
+                  aria-label="cloud upload"
+                ></ion-icon>
+                <span class="oh-dropdown__import-form-title"
+                  >{% trans "Upload a File" %}</span
+                >
+                <span class="oh-dropdown__import-form-text"
+                  >{% trans "Drag and drop files here" %}</span
+                >
+              </label>
+              <input type="file" name="file" id="workInfoImportFile" />
+            </div>
+          </div>
+          <div class="modal-footer d-flex flex-row-reverse">
+            <input
+            onclick="
+              validateFile($(this),'workInfoImportFile',true);
+              "
+              type="submit"
+              class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3"
+              value="{% trans 'Upload' %}"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="oh-modal"
+  id="employeeExport"
+  role="dialog"
+  aria-labelledby="employeeExport"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog" style="max-width: 750px">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
+        {% trans "Export Employees" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div class="oh-modal__dialog-body p-0 pt-2" id="employeeExportModalBody">
+        <form
+          action="{%url 'work-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="employeeExportForm"
+        >
+          {% csrf_token %} {% include 'cbv/employees_view/employee_export.html' %}
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="sendMailModalLabel"><h5>{% trans 'Send Mail' %}</h5></span>
+      <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body" id="mail-content"></div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="bulkUpdateModal"
+  role="dialog"
+  aria-labelledby="bulkUpdateModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog" style="max-width: 750px">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="bulkUpdateModalLavel">
+        {% trans "Bulk Update Employees" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div class="oh-modal__dialog-body p-0 pt-2" id="bulkUpdateModalBody">
+        <form
+          action="{%url 'employee-bulk-update' %}"
+          method="post"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="bulkUpdateModalForm"
+        >
+          {% csrf_token %} {{update_fields_form.update_fields.label}}
+          {{update_fields_form.update_fields}}
+          {{update_fields_form.bulk_employee_ids}}
+          <div class="oh-dropdown__filter-footer">
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Update" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="oh-modal" id="dataExport" role="dialog" aria-labelledby="dataExport" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="dataExport"><h5>{% trans 'Export Data' %}</h5></span>
+      <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body" id="export-content"></div>
+  </div>
+</div>
+
+
+
+{% comment %} <script src="{% static 'employee/importExport.js' %}"></script> {% endcomment %}
+<script src="{% static '/cbv/employee_view/actions.js' %}"></script>
+<script>
+  function getCSRFToken() {
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+  }
+
+  function deleteEmployee(url) {
+    Swal.fire({
+        text: "All non-active contracts of the employee will also be deleted. Do you want to continue ?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "green",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.setAttribute('action', url);
+            form.setAttribute('method', 'post');
+
+            const csrfTokenInput = document.createElement('input');
+            csrfTokenInput.setAttribute('type', 'hidden');
+            csrfTokenInput.setAttribute('name', 'csrfmiddlewaretoken');
+            csrfTokenInput.value = getCSRFToken();
+            form.appendChild(csrfTokenInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}
+
+</script>
+{% if request.GET.error_message %}
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const errorMessage = '{{ request.session.error_message|escapejs }}';
+          const formattedErrorMessage = errorMessage.replace(/,\s*/g, '<br>');
+          const finalErrorMessage = formattedErrorMessage.replace(/-\s*/g, '<span class="material-symbols-outlined me-2" style="font-size: 14px;"">adjust</span>');
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              html: `
+              <div style='text-align:left;'>
+                  <h5 class='mb-2 fw-bold ms-2'>This employee is already related in,</h5>
+                  <p class='ms-2'>${finalErrorMessage}</p>
+              </div>
+              `,
+
+          });
+        });
+
+
+      </script>
+    {% endif %}
+{% endblock content %}

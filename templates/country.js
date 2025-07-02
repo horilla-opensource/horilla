@@ -691,10 +691,15 @@ function populateStates(countryElementId, stateElementId) {
         document.getElementById(countryElementId).selectedIndex;
 
     var stateElement = document.getElementById(stateElementId);
+    if (!stateElement) {
+        console.error(`Element with ID '${stateElementId}' not found.`);
+        return; // Exit if the state element doesn't exist
+    }
 
     stateElement.length = 0;
     stateElement.options[0] = new Option("Select State", "");
     stateElement.selectedIndex = 0;
+
     if (s_a[selectedCountryIndex]) {
         state_arr = s_a[selectedCountryIndex].split("|");
         for (var i = 0; i < state_arr.length; i++) {
@@ -708,7 +713,8 @@ function populateStates(countryElementId, stateElementId) {
 }
 
 function populateCountries(countryElementId, stateElementId) {
-    // given the id of the <select> tag as function argument, it inserts <option> tags
+
+    // Get the country select element by its ID
     var countryElement = document.getElementById(countryElementId);
     var value = countryElement?.value;
     if (value != undefined) {
@@ -731,5 +737,5 @@ function populateCountries(countryElementId, stateElementId) {
     }
 }
 
+{% comment %} populateCountries("country", "id_state"); {% endcomment %}
 populateCountries("id_country", "id_state");
-populateCountries("country", "state");

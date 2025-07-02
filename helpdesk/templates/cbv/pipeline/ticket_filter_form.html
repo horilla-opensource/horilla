@@ -1,0 +1,71 @@
+{% load static i18n %}
+    <input type="hidden" name="view" id="filterView" value="{{request.GET.view}}">
+    <div class="oh-dropdown__filter-body">
+        <div class="oh-accordion">
+            <div
+                class="oh-accordion-header"
+            >
+                {% trans "Tickets" %}
+            </div>
+            <div class="oh-accordion-body">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{form.ticket_type.id_for_label}}">{% trans "Ticket Type" %}</label>
+                            {{form.ticket_type}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{form.employee_id.id_for_label}}">{% trans "Owner" %}</label>
+                            {{form.employee_id}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{form.assigned_to.id_for_label}}">{% trans "Assigned to" %}</label>
+                            {{form.assigned_to}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{form.to_date.id_for_label}}"
+                                >{% trans "Till date" %}</label
+                            >
+                            {{form.to_date}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{form.priority.id_for_label}}"
+                                >{% trans "Priority" %}</label
+                            >
+                            {{form.priority}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{form.tags.id_for_label}}"
+                                >{% trans "Tags" %}</label
+                            >
+                            {{form.tags}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{form.is_active.id_for_label}}"
+                                >{% trans "Is Active" %}</label
+                            >
+                            {{form.is_active}}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12">
+                        <div class="oh-input-group">
+                            <label class="oh-label" for="{{form.status.id_for_label}}">{% trans "Status" %}</label>
+                            {{form.status}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

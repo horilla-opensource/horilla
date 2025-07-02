@@ -1,0 +1,46 @@
+{% load i18n %}
+{% load basefilters %}
+
+<div class="oh-btn-group" onclick="event.stopPropagation()">
+    {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
+        <a hx-get="{% url 'rotating-work-type-assign-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
+            hx-target="#genericModalBody" data-target="#genericModal" data-toggle="oh-modal-toggle" type="button"
+            class="oh-btn oh-btn--light-bkg small-button w-100" title="{% trans 'Update' %}">
+            <ion-icon name="create-outline"></ion-icon>
+        </a>
+    {% endif %}
+    {% if perms.base.add_rotatingworktypeassign or request.user|is_reportingmanager %}
+        <a hx-get="{% url 'rotating-work-type-assign-duplicate' instance.id %}" hx-target="#genericModalBody"
+            data-target="#genericModal" data-toggle="oh-modal-toggle" type="button"
+            class="oh-btn oh-btn--light-bkg small-button w-100" title="{% trans 'Duplicate' %}">
+            <ion-icon name="copy-outline"></ion-icon>
+        </a>
+    {% endif %}
+    {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
+        {% if instance.is_active %}
+        <a title="{% trans 'Archive' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100"
+            hx-confirm="{% trans 'Do you want to archive this rotating work type assign?' %}"
+            hx-get="{% url 'rotating-work-type-assign-archive' instance.id %}" hx-target="#rotating-work-container">
+
+            <ion-icon name="archive"></ion-icon>
+        </a>
+        {% else %}
+        <a title="{% trans 'Un-Archive' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100"
+            hx-confirm="{% trans 'Do you want to un-archive this rotating work type assign?' %}"
+            hx-get="{% url 'rotating-work-type-assign-archive' instance.id %}" hx-target="#rotating-work-container">
+
+            <ion-icon name="archive"></ion-icon>
+
+        </a>
+        {% endif %}
+    {% endif %}
+    {% if perms.base.delete_rotatingworktypeassign or request.user|is_reportingmanager %}
+        <a title="{% trans 'Remove' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100" hx-confirm="{% trans 'Are you sure you want to delete this rotating work type assign?' %}"
+            hx-post="{% url 'rotating-work-type-assign-delete' instance.id %}?{{pd}}" hx-target="#rotating-work-container">
+
+
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
+        </a>
+    {% endif %}
+</div>

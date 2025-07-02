@@ -1,0 +1,127 @@
+{% extends 'settings.html' %} {% block settings %}{% load i18n %} {% load horillafilters %}
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans "General" %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+           {% if perms.base.change_announcementexpire %}
+                {% include "announcement/expiry_day.html" %}
+            {% endif %}
+            {% if perms.base.view_dynamicpagination %}
+                {% include "base/dynamic_pagination/pagination_settings.html" %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+        {% trans 'Employee Account Restrictions' %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+
+                {% if perms.horilla_audit.view_accountblockunblock %}
+                    {% include "base/audit_tag/employee_account_block_unblock.html" %}
+                {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans 'Resignation Request' %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+        {% if "offboarding"|app_installed and perms.offboarding.change_offboardinggeneralsetting %}
+            {% include "offboarding/settings/settings.html" %}
+        {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans 'Time Runner' %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+
+        {% if "attendance"|app_installed and perms.attendance.change_attendancegeneralsetting %}
+         {% include "attendance/settings/settings.html" %}
+        {% endif %}
+
+        </div>
+    </div>
+</div>
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans 'Notice Period' %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+            {% if "payroll"|app_installed and perms.payroll.change_payrollgeneralsetting %}
+            {% include "payroll/settings/settings.html" %}
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans 'Badge Prefix' %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+
+            {% if perms.employee.change_employeegeneralsetting %}
+            {% include "settings/settings.html" %}
+            {% endif %}
+
+
+        </div>
+    </div>
+</div>
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans 'Encashment Redeem Condition' %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+
+        {% if "payroll"|app_installed %}
+            {% if perms.payroll.change_encashmentgeneralsetting %}
+                {% include "settings/encashment_settings.html" %}
+            {% endif %}
+        {% endif %}
+
+
+        </div>
+    </div>
+</div>
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]"> {% trans "Employee History Tracking" %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+
+        {% if perms.base.view_historytrackingfields %}
+            {% include "base/audit_tag/history_tracking_fields.html" %}
+        {% endif %}
+
+
+        </div>
+    </div>
+</div>
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans "Currency" %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+
+        {% if "payroll"|app_installed and perms.payroll.view_payrollsettings %}
+            {% include "payroll/settings/payroll_settings.html" %}
+        {% endif %}
+
+
+
+        </div>
+    </div>
+</div>
+{% endblock settings %}

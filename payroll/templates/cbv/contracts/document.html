@@ -1,0 +1,5 @@
+{% load i18n %}
+{% if instance.contract_document %}
+<span class="oh-timeoff-modal__stat-title">{% trans "Document" %}</span>
+    <a href="{{ instance.contract_document.url }}" target="_blank">{{ instance.contract_document.name }}</a>
+{% endif %}

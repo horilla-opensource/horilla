@@ -1,0 +1,24 @@
+{% load i18n %}
+<div data-cell-index="5">
+    {% if instance.completed %}
+        <div class="d-flex" style="color:green;">
+            <i id="fabIcon" style="font-size:18px;" class="material-icons ms-3 mt-2">check_circle</i>
+            <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Completed" %}</span>
+        </div>
+    {% elif instance.interview_date|date:"Y-m-d" < now|date:"Y-m-d" %}
+        <div class="d-flex" style="color:red;">
+            <i id="fabIcon" style="font-size:18px" class="material-icons ms-3 mt-2">dangerous</i>
+            <span class="oh-activity-sidebar__q mt-2">{% trans "Expired Interview" %}</span>
+        </div>
+    {% elif instance.interview_date|date:"Y-m-d" > now|date:"Y-m-d" %}
+        <div class="d-flex" style="color:orange;">
+            <i id="fabIcon" title="{{instance.interview_date|timeuntil}}" style="font-size:18px;" class="material-icons ms-3 mt-2">schedule</i>
+            <span class="oh-activity-sidebar__q mt-2">{% trans "Upcoming Interview" %}</span>
+        </div>
+    {% elif instance.interview_date|date:"Y-m-d" == now|date:"Y-m-d" and not instance.completed %}
+        <div class="d-flex" style="color:blue;">
+            <i id="fabIcon" style="font-size:18px;" class="material-symbols-outlined ms-3 mt-2">today</i>
+            <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Today" %}</span>
+        </div>
+    {% endif %}
+</div>

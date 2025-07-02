@@ -1,0 +1,37 @@
+{% load i18n %}
+<style>
+    .count-span{
+      width: 100%;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      padding: 0.5rem 0rem;
+      font-style: italic;
+      color: hsl(0deg,0%,37%);
+      width: 100%;
+    }
+  </style>
+
+<div>
+    {% for manager in instance.recruitment_managers.all %}
+    <span class="oh-user-panel oh-collapse-panel" data-type="user">
+      <div class="oh-profile oh-profile--md">
+        <div class="oh-profile__avatar mr-1">
+          <img
+          src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
+          class="oh-profile__image"
+          alt="Baby C."
+          />
+        </div>
+        <span class="oh-profile__name oh-text--dark" title="{{manager}}"
+        >{{manager.employee_first_name|truncatechars:4}}</span
+        >
+      </div>
+      <a  hx-confirm="{% trans 'Are you sure you want to remove this recruitment manager?' %}" hx-post="{% url 'remove-recruitment-manager' manager.id instance.id %}?{{pd}}&page={{data.number}}"  title="{% trans "Remove" %}"
+      hx-target="#listContainer" hx-swap="outerHTML" class="oh-user-panel__remove" onclick="event.stopPropagation()">
+        <ion-icon name="close-outline"></ion-icon>
+      </a>
+    </span>
+    {% endfor %}
+    <span class="count-span">{{instance.recruitment_managers.all|length}} {% trans "Managers" %}</span>
+  </div>

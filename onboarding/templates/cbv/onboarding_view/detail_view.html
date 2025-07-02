@@ -1,0 +1,6 @@
+<div id="onboardingContainer">
+    <span  id="taskUpdate" hidden
+    hx-get="{% url 'candidate-single-view' instance.id %}" hx-target="#genericModalBody .row.ms-2" hx-select=".row.ms-2" hx-swap="outerHTML" hx-trigger="click"
+    >New</span>
+    {% include "generic/horilla_detailed_view.html" %}
+</div>

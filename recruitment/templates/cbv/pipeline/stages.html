@@ -1,0 +1,64 @@
+{% load i18n recruitmentfilters %}
+<div id="{{view_id}}">
+  {% for stage in stages %}
+  <div id="selectedCandidateRecords{{ stage.id }}" data-ids="[]"></div>
+  <div class="oh-tabs__movable-area mb-2">
+    <div class="oh-tabs__movable">
+      <div class="oh-tabs__movable-header"  onclick="$(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
+        <input class="oh-tabs__movable-title oh-table__editable-input" value="{{stage.stage}}" readonly />
+
+        <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
+          <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open" @click.outside="open = false" title=" Actions">
+              <ion-icon name="ellipsis-vertical" role="img" class="md hydrated" aria-label="ellipsis vertical"></ion-icon>
+            </button>
+            <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
+              <ul class="oh-dropdown__items">
+                {% if perms.recruitment.add_candidate or request.user.employee_get in stage.stage_managers.all or request.user.employee_get in rec.recruitment_managers.all %}
+                <li class="oh-dropdown__item" style="cursor: pointer;">
+                  <a hx-target="#genericModalBody" hx-get="{% url 'add-candidate-to-stage'%}?stage_id={{ stage.id }}" data-toggle="oh-modal-toggle" data-target="#genericModal" class="oh-dropdown__link">Add Candidate</a>
+                </li>
+                {% endif %}
+                {% if perms.recruitment.change_stage or request.user|recruitment_manages:rec or request.user.employee_get in stage.stage_managers.all %}
+                  <li class="oh-dropdown__item" style="cursor: pointer;">
+                    <a hx-target="#genericModalBody" hx-get="{% url 'stage-update-pipeline' stage.id %}" data-toggle="oh-modal-toggle" data-target="#genericModal" class="oh-dropdown__link">Edit</a>
+                  </li>
+                  <li class="oh-dropdown__item" style="cursor: pointer;">
+                    <a hx-target="#objectCreateModalTarget" hx-get="{% url 'send-mail' %}?stage_id={{stage.id}}" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"  class="oh-dropdown__link">
+                      {% trans "Bulk mail" %}
+                    </a>
+                  </li>
+                  {% endif %}
+                  {% if perms.recruitment.delete_stage %}
+                  <li class="oh-dropdown__item oh-dropdown__link--danger">
+
+                    <a data-toggle="oh-modal-toggle"
+                    data-target="#deleteConfirmation"
+                    hx-get="{% url 'generic-delete' %}?model=recruitment.Stage&pk={{stage.pk}}"
+                    hx-target="#deleteConfirmationBody"> Delete </a>
+                  </li>
+                  {% endif %}
+
+
+                </ul>
+              </div>
+        </div>
+      </div>
+      <div
+      class="oh-tabs__movable-body position-relative"
+      hx-get="{% url "candidate-lists-cbv" stage.pk stage.recruitment_id.pk %}?{{request.GET.urlencode}}"
+      hx-trigger="load"
+
+      ></div>
+    </div>
+  </div>
+  {% endfor %}
+  <script>
+    var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
+    var badge = $(`#badge-${tabId}`);
+    var count = "{{stages|length}}";
+    var label = badge.attr("data-badge-label") || "";
+    var title = count + " " + label;
+    badge.html(count);
+    badge.attr("title", title);
+  </script>
+</div>

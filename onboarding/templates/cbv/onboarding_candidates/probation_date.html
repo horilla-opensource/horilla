@@ -1,0 +1,5 @@
+
+<a  onclick="event.stopPropagation();" style="color: inherit; text-decoration: none" >
+    <input type="date" class="oh-input" style="width: 150px;" value="{{instance.probation_end|date:'Y-m-d'}}"
+      name="probation_end" onchange="probotionEnd($(this))" data-candidate-id="{{instance.id}}">
+  </a>

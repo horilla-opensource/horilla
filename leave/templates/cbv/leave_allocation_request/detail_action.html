@@ -1,0 +1,48 @@
+{% load i18n %}
+
+    <div class="oh-btn-group" style="width: 100%;">
+
+            {% if instance.status ==  'requested' %}
+                <button
+                    class="oh-btn oh-btn--info w-100 "
+                    title="{% trans 'Edit' %}"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'leave-allocation-request-update' instance.id %}"
+                    hx-target="#genericModalBody">
+                    <ion-icon name="create-outline" role="img"
+                    class="md hydrated" aria-label="create outline">
+                    </ion-icon>{% trans "Edit" %}
+                </button>
+            {% else %}
+                <button
+                    class="oh-btn oh-btn--info  w-100" disabled>
+                    <ion-icon name="create-outline" ></ion-icon>
+                </button></td>
+            {% endif %}
+            {% if instance.status  ==  'requested' %}
+
+                <button class="oh-btn oh-btn--danger w-100" id="delete-link"
+                hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+                hx-post="{% url 'leave-allocation-request-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
+                hx-target="#genericModalBody"
+                title="{% trans 'Delete' %}">
+                <ion-icon name="trash-outline" role="img"
+                class="md hydrated"
+                aria-label="create outline"></ion-icon>
+                {% trans "Delete" %}
+        </button>
+            {% else %}
+                <button class="oh-btn oh-btn--danger  w-100" disabled>
+                    <ion-icon name="trash-outline"></ion-icon>
+                </button></td>
+            {% endif %}
+
+            </div>
+{% if request.GET.deleted %}
+    <script>
+        console.log($(".reload-record"))
+    $(".reload-record").click()
+    $("#reloadMessagesButton").click()
+    </script>
+{% endif %}

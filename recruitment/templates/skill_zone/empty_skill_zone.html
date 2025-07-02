@@ -3,7 +3,9 @@
 {% load i18n %}{% load static %}{% load basefilters %}
 
 <div class="oh-wrapper">
+
     {% include 'skill_zone/skill_zone_nav.html' %}
+
     <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
         <div id="skill_zone_container">
             <div class="oh-empty">
@@ -14,7 +16,7 @@
         </div>
     </main>
 </div>
-
+{% include "generic/components.html" %}
 <div class="oh-modal" id="editCandModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">

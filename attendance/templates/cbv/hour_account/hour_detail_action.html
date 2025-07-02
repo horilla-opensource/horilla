@@ -1,0 +1,70 @@
+
+{% load i18n %}
+   {% load basefilters %}
+   {% with dates=instance.month_days %}
+   {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
+<a class="oh-btn oh-btn-group oh-btn--warning" style="width: 50%;" onclick="validateHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}');">
+    <button
+      style="
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+      "
+      >
+   {{ instance.not_validated_hrs }}  {% trans "Hours to validate" %}</button>
+  </a>
+
+  {% else %}
+  <a class="oh-btn oh-btn-group oh-btn--warning" style="width: 50%;" href="{% url 'view-my-attendance' %}?attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}" >
+    <button
+      style="
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+      "
+      >
+      {{ instance.not_validated_hrs }}  {% trans "Hours to validate" %}</button>
+  </a>
+  {% endif %}
+
+  {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
+<a class="oh-btn oh-btn-group oh-btn--success" style="width: 50%;" onclick="validateOTHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}');" >
+              <button
+                style="
+                  background: none;
+                  color: inherit;
+                  border: none;
+                  padding: 0;
+                  font: inherit;
+                  cursor: pointer;
+                  outline: inherit;
+                "
+                >
+                {{ instance.not_approved_ot_hrs }} hrs {% trans "OT to Approve" %}</button>
+            </a>
+            {% else %}
+            <a class="oh-btn oh-btn-group oh-btn--success" style="width: 50%;" href="{% url 'view-my-attendance' %}?attendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}">
+                <button
+                  style="
+                    background: none;
+                    color: inherit;
+                    border: none;
+                    padding: 0;
+                    font: inherit;
+                    cursor: pointer;
+                    outline: inherit;
+                  "
+                  >
+                  {{ instance.not_approved_ot_hrs }} hrs {% trans "OT to Approve" %}</button>
+              </a>
+
+              {% endif %}
+              {% endwith %}

@@ -1,0 +1,20 @@
+{% load static %}
+{% load i18n %}
+{% load basefilters %}
+    {% if instance.based_on == 'after' %}
+    {% trans "Rotate after" %} {{instance.rotate_after_day}} {% trans "days" %}
+    {% elif instance.based_on == "weekly" %}
+    {% trans "Weekly every" %} {{instance.rotate_every_weekend}}
+    {% elif instance.based_on == "monthly" %}
+    {% if instance.rotate_every == "1" %}
+    {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "st day of month" %}
+    {% elif instance.rotate_every == "2" %}
+    {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "nd day of month" %}
+    {% elif instance.rotate_every == "3" %}
+    {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "rd day of month" %}
+    {% elif instance.rotate_every == "last" %}
+    {% trans "Rotate every last day of month" %}
+    {% else %}
+    {% trans "Rotate every" %} {{instance.rotate_every}}{% trans "th day of month" %}
+    {% endif %}
+    {% endif %}

@@ -1,0 +1,60 @@
+{% load static %} {% load i18n %}
+
+<input type="hidden" name="view" id="filterView" value="">
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Deduction" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Pretax" %}</label>
+              {{ form.is_pretax }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Condition Based" %}</label>
+              {{ form.is_condition_based }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Fixed" %}</label>
+              {{ form.is_fixed }}
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Based" %}</label>
+              {{ form.based_on }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+  $("#filterForm").submit(function (e) {
+    var formData = $(this).serialize();
+    count = 0;
+    formData.split("&").forEach(function (field) {
+      parts = field.split("=");
+      value = parts[1];
+      if (parts[0] !== "view"){
+        if (value && value !== "unknown") {
+          count++;
+        }
+      }
+    });
+    $("#filterCount").empty();
+    if (count > 0) {
+      $("#filterCount").text("(" + count + ")");
+    }
+    // $('#field').attr('hx-vals',`{'data':${formData}}` );
+  });
+</script>

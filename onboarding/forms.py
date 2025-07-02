@@ -38,7 +38,12 @@ from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeBankDetails
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
-from onboarding.models import CandidateTask, OnboardingStage, OnboardingTask
+from onboarding.models import (
+    CandidateStage,
+    CandidateTask,
+    OnboardingStage,
+    OnboardingTask,
+)
 from recruitment.models import Candidate
 
 
@@ -203,13 +208,6 @@ class OnboardingViewTaskForm(ModelForm):
             label=_("Task Managers"),
         )
         reload_queryset(self.fields)
-        stage = self.initial.get("stage_id")
-        if stage:
-            # Adjust the queryset based on the 'stage'
-            candidate_ids = stage.candidate.all().values_list("candidate_id", flat=True)
-            cand_queryset = Candidate.objects.filter(id__in=candidate_ids)
-            self.fields["candidates"].queryset = cand_queryset
-            self.fields["candidates"].initial = cand_queryset
 
 
 class OnboardingTaskForm(ModelForm):
@@ -224,7 +222,7 @@ class OnboardingTaskForm(ModelForm):
 
         model = OnboardingTask
         fields = "__all__"
-        exclude = ["stage_id", "is_active"]
+        exclude = ["is_active"]
         widgets = {
             "candidates": forms.SelectMultiple(
                 attrs={"class": "oh-select oh-select-2 w-100 select2-hidden-accessible"}
@@ -276,7 +274,11 @@ class OnboardingViewStageForm(ModelForm):
         """
 
         model = OnboardingStage
-        fields = ["stage_title", "employee_id", "is_final_stage"]
+        fields = ["stage_title", "employee_id", "is_final_stage", "recruitment_id"]
+        labels = {
+            "stage_title": _("Stage Title"),
+            "is_final_stage": _("Is Final Stage"),
+        }
 
     def __init__(self, *args, **kwargs):
         """
@@ -402,3 +404,19 @@ class BankDetailsCreationForm(ModelForm):
         model = EmployeeBankDetails
         fields = "__all__"
         exclude = ["employee_id", "additional_info", "is_active"]
+
+
+class StageChangeForm(forms.ModelForm):
+    """
+    StageChangeForm
+    """
+
+    class Meta:
+        """
+        Meta class for additional options
+        """
+
+        model = CandidateStage
+        fields = [
+            "onboarding_stage_id",
+        ]

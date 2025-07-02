@@ -1,0 +1,31 @@
+{% load i18n %}
+<div class="oh-btn-group" onclick="event.stopPropagation()">
+    <a href="#" class="oh-btn oh-btn--light-bkg w-100" onclick="copyLink(window.location.origin+'/recruitment/application-form?recruitmentId={{instance.id}}')" title="{% trans "Share Link" %}">
+      <ion-icon name="share-social-outline"></ion-icon>
+    </a>
+    {% if perms.recruitment.change_recruitment %}
+    <a  hx-get="{% url 'recruitment-update' instance.id %}?instance_ids={{instance.ordered_ids}}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline"></ion-icon></a>
+    {% endif %}
+    <a hx-get="{% url 'recruitment-duplicate' instance.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Duplicate' %}"><ion-icon name="copy-outline"></ion-icon></a>
+    {% if perms.recruitment.delete_recruitment %}
+      {% if instance.is_active %}
+        <a onclick="return confirm('{% trans "Are you sure you want to archive this recruitment?" %}');" href="{% url 'recruitment-archive' instance.id %}" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Archive' %}"><ion-icon name="archive"></ion-icon></a>
+        {% else %}
+        <a onclick="return confirm('{% trans "Are you sure you want to unarchive this recruitment?" %}');" href="{% url 'recruitment-archive' instance.id %}" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Unarchive' %}"><ion-icon name="archive"></ion-icon></a>
+      {% endif %}
+    {% endif %}
+    {% if perms.recruitment.delete_recruitment %}
+    <span>
+      <a
+        hx-get="{% url 'generic-delete' %}?model=recruitment.Recruitment&pk={{instance.id}}"
+        hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+        data-target="#deleteConfirmation"
+        style="display: contents"
+      >
+      <button class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
+        <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+      </button>
+    </a>
+    </span>
+    {% endif %}
+  </div>

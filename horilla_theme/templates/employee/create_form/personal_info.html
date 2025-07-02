@@ -1,0 +1,106 @@
+{% load i18n %}
+<div class="oh-modal" id="badgeModal" role="dialog" aria-hidden="true">
+  <div class="oh-modal__dialog" style="max-width: 550px">
+    <div class="oh-modal__dialog-header">
+      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+
+    <div class="oh-modal__dialog-body" id="badgeModalBody"></div>
+  </div>
+</div>
+<div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
+
+  <div class="oh-general__tab-target oh-profile-section mb-4 p-10" id="personal" data-select2-id="select2-data-personal" style="border:none;">
+    <div class="oh-profile-section__card p-10" data-select2-id="select2-data-48-0df8" style="border:1px solid #cdd5df; border-radius:10px;">
+        <form data-select2-id="select2-data-47-5jxy" method='post' action='{% url "employee-create-personal-info" %}' enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="row">
+              <div
+                class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center"
+              >
+              <div
+                class="oh-profile-section__edit-photo me-4 mb-3"
+                data-toggle="oh-modal-toggle"
+                data-target="#uploadPhotoModal"
+
+              >
+                  <img
+                  src="https://ui-avatars.com/api/?name=N+P&background=random"
+                    class="oh-profile-section__avatar preview "
+                    alt=""
+                  />
+                </div>
+              </div>
+            </div>
+            {{form.employee_profile.errors}}
+            <div
+                  class="oh-modal"
+                  id="uploadPhotoModal"
+                  role="dialog"
+                  aria-labelledby="uploadPhotoModal"
+                  aria-hidden="true"
+            >
+            <div class="oh-modal__dialog">
+              <div class="oh-modal__dialog-header">
+                <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel"
+                  >{% trans "Upload Photo" %}</span
+                >
+                <button class="oh-modal__close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show'); event.preventDefault()" aria-label="Close">
+                  <ion-icon name="close-outline"></ion-icon>
+                </button>
+              </div>
+              <div class="oh-modal__dialog-body">
+                <div class="oh-profile-section__image-container">
+                    {% csrf_token %}
+                    <div class="oh-profile-section__modal-avatar">
+                      <img
+                      src="https://ui-avatars.com/api/?name=N+P&background=random"
+                      class="oh-profile-section__modal-image preview"
+                      alt="Username"
+                      />
+                    </div>
+                    {{form.employee_profile}}
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+                  <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <label class="oh-label" for="firstname">{% trans "Badge Id" %}
+                      <div hx-get="{% url 'get-first-last-badge-id' %}" hx-target="#badgeModalBody" data-target="#badgeModal" data-toggle="oh-modal-toggle" class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer">
+                        {% trans "Show" %}
+                      </div>
+                    </label>
+                    {{form.badge_id}}
+                    {{form.badge_id.errors}}
+                  </div>
+              </div>
+              {{form.as_p}}
+              <hr class="mt-5 mb-3 d-flex flex-row-reverse" style="color:#cdd5df;">
+              <div class="col-lg-12 d-flex" style="justify-content: flex-end;">
+                <button type="submit" class="oh-btn oh-btn--secondary">
+                    {% trans "Save Changes" %}
+                </button>
+            </div>
+        </form>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    $('#id_employee_profile').change(function (e) {
+
+      const file = this.files[0];
+      const reader = new FileReader();
+
+      reader.addEventListener("load", function() {
+        const imageUrl = reader.result;
+        $(".preview").attr("src", imageUrl);
+      });
+
+      reader.readAsDataURL(file);
+    });
+  });
+</script>

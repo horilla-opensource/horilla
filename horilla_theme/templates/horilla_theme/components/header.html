@@ -1,0 +1,113 @@
+{% load static i18n horillafilters %}
+<div
+    class="flex justify-between items-center bg-[#fff] py-3 px-5 border-b border-b-dark-50 fixed w-[calc(100%-76px)] z-40"
+>
+    {% if breadcrumbs %}
+        {% include "base/navbar_components/breadcrumbs_view.html" %}
+    {% endif %}
+
+    <div id="reloadMessages">
+        {% include "generic/messages.html" %}
+    </div>
+    <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hx-swap="afterend" hidden hx-target="#reloadMessages"></button>
+
+    {% if messages %}
+        <div class="oh-alert-container">
+            {% for message in messages %}
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Right side - Search and Actions -->
+
+    <div class="flex items-center gap-8">
+
+        <!-- Action Icons -->
+        <div class="flex items-center gap-2">
+            {% if "attendance"|app_installed %}
+                {% if enabled_timerunner %}
+                    <div id="attendance-activity-container">
+                        {% include "attendance/components/in_out_component.html" %}
+                    </div>
+                    <script src="{% static 'horilla_theme/assets/js/timeRunner.js' %}"></script>
+                {% endif %}
+            {% endif %}
+            <button
+                class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
+            >
+                <a href="{% url 'general-settings' %}">
+                    <i
+                        class="fas fa-cog transition duration-300 group-hover:text-white"
+                    ></i>
+                </a>
+            </button>
+
+            <div class="relative dropdown-wrapper">
+                <button
+                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 relative before:content[''] before:absolute before:bg-[#1dd75b] before:w-3 before:h-3 before:top-0 before:-right-0 before:rounded-full"
+                    hx-get="{% url 'notifications' %}"
+                    hx-target="#notificationContainer"
+                    hx-trigger="load"
+                >
+                    <i
+                        class="fas fa-bell transition duration-300 group-hover:text-white"
+                    ></i>
+                </button>
+                {% include "notification/notification.html" %}
+            </div>
+
+            <div class="relative dropdown-wrapper">
+                <button
+                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300"
+                >
+                    <i
+                        class="fas fa-globe transition duration-300 group-hover:text-white"
+                    ></i>
+                </button>
+                {% include "base/navbar_components/language_settings.html" %}
+            </div>
+
+            <div class="relative dropdown-wrapper">
+                <button
+                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300"
+                >
+                    <i
+                        class="fa-solid fa-building transition duration-300 group-hover:text-white"
+                    ></i>
+                </button>
+                {% include "base/navbar_components/company_selection.html" %}
+            </div>
+        </div>
+
+        <div class="relative dropdown-wrapper">
+            {% include "base/navbar_components/profile_section.html" %}
+        </div>
+    </div>
+</div>
+
+<!-- All Notification -->
+<div class="sidebarModal overflow-hidden overflow-y-auto" id="sidebarModal3">
+    <!-- <button class="closebtn closeSidemenu absolute top-3 right-3" data-sidebar="sidebarModal3"><i
+      class="fa-solid fa-xmark"></i></button> -->
+
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="font-semibold flex items-center gap-2">
+            <button
+                class="closebtn closeSidemenu cursor-pointer text-xs group text-primary-600 w-6 h-6 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
+                data-sidebar="sidebarModal3"
+            >
+                <i class="fa-solid fa-angle-right"></i></button
+            >{% trans "All Notifications" %}
+        </h3>
+        <button
+            class="text-primary-600 text-xs flex justify-center font-semibold hover:text-[#ac3b2a] transition duration-300"
+        >
+            {% trans "Clear All" %}
+        </button>
+    </div>
+    <div class="" id="sidebarModalBody"></div>
+    <!--sidecont-->
+</div>

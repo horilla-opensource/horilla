@@ -1,0 +1,16 @@
+
+<div>
+    {% include "generic/horilla_tabs.html" %}
+</div>
+
+<script>
+    $(document).on("htmx:afterSettle", function () {
+      $("[data-toggle-count]").off("click").on("click", function (e) {
+        e.stopPropagation();
+        let recViewContainer = $(this).closest('tr');
+        span = recViewContainer.find(".count-span").toggle();
+        var row = $(this).closest("tr");
+        row.toggleClass("oh-permission-table--collapsed");
+      });
+    });
+  </script>

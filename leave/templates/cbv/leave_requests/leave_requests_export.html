@@ -1,0 +1,159 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <h2 class="oh-modal__dialog-title" id="leaveRequestsExportLavel">
+      {% trans "Export Leave Requests" %}
+    </h2>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+<div class="oh-modal__dialog-body p-0 pt-2"
+    id="leaveRequestsExportModalBody">
+    <form
+        action="{%url 'leave-requests-info-export' %}"
+        method="get"
+        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+        id="leaveRequestsExportForm">
+        {% csrf_token %}
+        <div class="oh-dropdown__filter-body" id="export_attendance_form">
+            <div class="oh-accordion">
+              <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+              <div class="oh-accordion-body">
+                <div class="row">
+                  <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                      <label class="oh-label">
+                        <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  {% for field in export_form.selected_fields %}
+                  <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                      <label class="oh-label"> {{ field }} </label>
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+
+  <div class="oh-accordion">
+    <div
+      class="oh-accordion-header"
+      onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+    >
+      {% trans "Leave Request" %}
+    </div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.leave_type_id.id_for_label }}">{% trans "Leave Type" %}</label>
+            {{export_filter.form.leave_type_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.start_date.id_for_label }}">{% trans "Start Date" %}</label>
+            {{export_filter.form.start_date}}
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.end_date.id_for_label }}">{% trans "End Date" %}</label>
+            {{export_filter.form.end_date}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.status.id_for_label }}">{% trans "Status" %}</label>
+            {{export_filter.form.status}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div
+      class="oh-accordion-header"
+      onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+    >
+      {% trans "Work Info" %}
+    </div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.employee_id__employee_work_info__company_id.id_for_label }}">{% trans "Company" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__company_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.employee_id__employee_work_info__reporting_manager_id.id_for_label }}">{% trans "Reporting Manager" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__reporting_manager_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.employee_id__employee_work_info__department_id.id_for_label }}">{% trans "Department" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__department_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.employee_id__employee_work_info__job_position_id.id_for_label }}">{% trans "Job Position" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__job_position_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.employee_id__employee_work_info__shift_id.id_for_label }}">{% trans "Shift" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__shift_id}}
+          </div>
+        </div>
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.employee_id__employee_work_info__work_type_id.id_for_label }}">{% trans "Work Type" %}</label>
+            {{export_filter.form.employee_id__employee_work_info__work_type_id}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="oh-accordion">
+    <div
+      class="oh-accordion-header"
+      onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+    >
+      {% trans "Advanced" %}
+    </div>
+    <div class="oh-accordion-body">
+      <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.from_date.id_for_label }}">{% trans "From Date" %}</label>
+            {{export_filter.form.from_date}}
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group">
+            <label class="oh-label" for="{{ export_filter.form.to_date.id_for_label }}">{% trans "To Date" %}</label>
+            {{export_filter.form.to_date}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="oh-modal__dialog-footer p-0 pt-4">
+    <button class="oh-btn oh-btn--secondary  w-100">
+      {% trans "Export" %}
+    </button>
+  </div>
+</form>
+</div>

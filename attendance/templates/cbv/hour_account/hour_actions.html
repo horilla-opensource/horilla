@@ -1,0 +1,19 @@
+{% load i18n %}{% load basefilters%}
+
+{% if perms.attendance.change_attendanceovertime or perms.attendance.delete_attendanceovertime  %}
+	<div onclick="event.stopPropagation()">
+		<div class="oh-btn-group">
+			{% if perms.attendance.change_attendanceovertime or request.user|is_reportingmanager %}
+				<a hx-get="{% url 'attendance-overtime-update' instance.id %}?instance_ids={{instance.ordered_ids}}" hx-target='#objectUpdateModalTarget' data-toggle='oh-modal-toggle' data-target='#objectUpdateModal'  class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+			{% endif %}
+			{% if perms.attendance.delete_attendanceovertime or request.user|is_reportingmanager %}
+				<form hx-confirm="{% trans 'Are you sure want to delete this hour account?' %}"
+					hx-post="{% url 'attendance-overtime-delete' instance.id  %}?field=month&year={% now 'Y' %}"
+					hx-target="#ot-table" class='w-50'>
+					{% csrf_token %}
+					<button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"   title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+				</form>
+			{% endif %}
+		</div>
+	</div>
+{% endif %}

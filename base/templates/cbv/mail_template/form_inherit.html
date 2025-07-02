@@ -1,0 +1,15 @@
+{% load i18n %}
+<div>
+    {% include 'generic/horilla_form.html'%}
+
+</div>
+<script>
+    $(document).ready(function() {
+        var hintHtml = `
+            <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
+                {% trans "Hint: Type '{' to get sender or receiver data" %}
+            </div>`;
+
+        $("#dynamic_field_body").after(hintHtml);
+    });
+</script>

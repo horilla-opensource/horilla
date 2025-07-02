@@ -1,0 +1,84 @@
+{% load static i18n generic_template_filters %}
+<style>
+  .userbox {
+    border: 1px solid #eaeaea;
+  }
+
+  .userbox.active {
+    background-color: rgb(255 245 241 / var(--tw-bg-opacity, 1)) !important;
+  }
+
+  .userbox.active button:not(.text-xs button) {
+    background-color: rgb(249 83 58) !important;
+  }
+</style>
+<div class="userbox p-4 rounded-md mb-2 active">
+  <div class="flex flex-col gap-3 relative">
+    {% if actions %}
+      <div class="absolute inline-block dropdown-wrapper right-0 -top-1">
+        <a class="cursor-pointer dropdown-toggle"><i class="fa-solid fa-ellipsis-vertical text-black"></i></a>
+        <!-- Dropdown Content -->
+        <div class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200">
+          <ul class="text-xs" style="width:200px;">
+            {% for action in actions %}
+              {% if action.accessibility|accessibility:instance %}
+                <li>
+                  <a class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300 oh-profile-dropdown-link" {{ action.attrs|format:instance|safe }}>
+                    <button style="border: none; background: transparent">{{ action.title }}</button>
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+    <div class="flex items-center gap-3">
+      <img style="border-radius :30px ;overflow :hidden;" src="{{ object.get_avatar }}" alt="" width="35" />
+      <h5 class="mb-1 font-medium text-sm">{{ instance.get_full_name }}</h5>
+    </div>
+  </div>
+</div>
+{% for object in instances|slice:'0:9' %}
+  {% if not object.pk == instance.pk %}
+    <div class="userbox p-4 rounded-md mb-2">
+      <div class="flex flex-col gap-3 relative">
+        <div class="absolute inline-block dropdown-wrapper right-0 -top-1">
+          <a class="cursor-pointer dropdown-toggle"><i class="fa-solid fa-ellipsis-vertical text-black"></i></a>
+          <!-- Dropdown Content -->
+          <div class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200">
+          <ul class="text-xs" style="width:200px;">
+            {% for action in actions %}
+              {% if action.accessibility|accessibility:object %}
+                <li>
+                  <a class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300 oh-profile-dropdown-link" {{ action.attrs|format:object|safe }}>
+                    <button style="border: none; background: transparent">{{ action.title }}</button>
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+        </div>
+        <div style="cursor: pointer;" class="flex items-center gap-3"  hx-get="{{ object.get_profile_url }}" hx-target="#{{ view_id|safe }}" hx-swap="outerHTML">
+          <img style="border-radius :30px ;overflow :hidden;" src="{{ object.get_avatar }}" alt="" width="35" />
+          <h5 class="mb-1 font-medium text-sm">{{ object.get_full_name }}</h5>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}
+<script>
+    $(".dropdown-toggle").on("click", function () {
+        const dropdownMenu = $(this).next(".dropdown-menu");
+        const isOpen = dropdownMenu.is(":visible");
+
+        $(".dropdown-menu").not(dropdownMenu).hide();
+
+        if (isOpen) {
+            dropdownMenu.hide();
+        } else {
+            dropdownMenu.show();
+        }
+    });
+</script>

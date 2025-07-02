@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load basefilters %}
+{% if request.user.employee_get != instance.employee_id and request.user|is_reportingmanager or perms.attendance.change_attendance or request.user|is_self_reporting_manager %}
+<a href='{% url "validate-this-attendance" instance.id %}'
+hx-target="#updateAttendanceBody" data-req="/attendance/request-attendance-view/?id={{instance.id}}"
+onclick="event.stopPropagation(); {% if instance.is_validate_request %}  event.preventDefault(); showApproveAlert($(this).data('req')); {% endif %}"
+class="oh-btn oh-btn--info">
+{% trans "Validate" %}</a>
+{% else %}
+<a
+class="oh-btn oh-btn--info oh-btn--disabled"
+disabled
+onclick="event.preventDefault();event.stopPropagation()">
+{% trans "Validate" %}
+
+</a>
+{% endif %}

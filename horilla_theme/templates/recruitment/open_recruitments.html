@@ -1,0 +1,197 @@
+{% load i18n %}
+{% load static %}
+{% load recruitmentfilters %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/static/horilla_theme/assets/js/tailwind.config.js"></script>
+    <title>{{white_label_company_name}}{% trans " - Open Recruitments" %}</title>
+    <link
+        rel="apple-touch-icon"
+        sizes="180x180"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
+    />
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="32x32"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}"
+    />
+    <link
+        rel="icon"
+        type="image/png"
+        sizes="16x16"
+        href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
+    />
+    <link
+        rel="stylesheet"
+        href="/static/horilla_theme/assets/css/global.css"
+    />
+    <link
+        rel="stylesheet"
+        href="/static/horilla_theme/assets/css/v1_styles.css"
+    />
+</head>
+
+<body class="bg-secondary-50 font-[Inter,_sans-serif]">
+
+    {% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+    <div class="p-5 flex justify-center items-center h-screen flex-col">
+        <div class="w-full max-w-5xl pl-5 flex justify-start mb-2">
+            {% if request.user.is_authenticated %}
+            <div class="oh-wrapper">
+                <div class="oh-wrapper">
+                    <div class="oh-wrapper" style="font-size: xx-large; cursor: pointer;">
+                        {% if request.path not in request.META.HTTP_REFERER %}
+                        <a href="{{ request.META.HTTP_REFERER }}">
+                            <ion-icon name="arrow-back-outline"></ion-icon>
+                        </a>
+                        {% else %}
+                        <a href="/">
+                            <ion-icon name="arrow-back-outline"></ion-icon>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <h3 class="text-3xl font-bold mb-2">{% trans "Open Job Listings" %}</h3>
+        <p class="text-sm mb-4 text-center">
+            {% trans "We're hiring! Join our team and be part of a vibrant workplace where your talents make a difference. Here are the open Recruitments...." %}
+        </p>
+        <div class="relative mb-5">
+            <input type="text" placeholder="Search for Jobs..."
+                class="text-color-600 ps-10 p-2 placeholder:text-sm w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600">
+            <i class="fas fa-search absolute left-3 top-0 bottom-0 m-auto flex items-center opacity-50 text-sm"></i>
+        </div>
+        <div class="h-[80vh] overflow-hidden overflow-y-auto p-5 bg-[#00000005] rounded-md">
+            {% for recruitment in recruitments %}
+                <div class="shadow-card p-3 rounded-md mb-3 bg-white min-w-80">
+                    <div class="gap-5 flex flex-col lg:grid grid-cols-4  xl:gap-20 lg:items-center">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 rounded-md overflow-hidden">
+                                <img src="{{recruitment.company_id.icon.url}}" alt="">
+                            </div>
+                            <div>
+                                <h5 class="text-md font-bold">{{recruitment.company_id}}</h5>
+                                <p class="text-xs text-dark-200 font-medium">{{recruitment.created_at|timesince}}</p>
+                            </div>
+                        </div>
+                        <div>
+                            {% for job_position in recruitment.open_positions.all %}
+                                <h5 class="bg-primary-300  text-primary-600 text-xs px-2 py-1 rounded-full font-medium w-max mb-2">{{job_position.job_position}}</h5>
+                            {% endfor %}
+                            <p class="text-sm ps-2 font-medium">{{recruitment.title}}</p>
+                        </div>
+                        {% if perms.recruitment.view_recruitment %}
+                            <div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                                    <div class="bg-primary-600 h-1.5 rounded-full" style="width: {{recruitment.candidate.all|length|percentage:recruitment.vacancy}}%"></div>
+                                </div>
+                                <div class="text-xs text-dark-200 font-medium">
+                                    {{recruitment.candidate.all|length}} {% trans "Applied" %} {% trans "of" %} {{recruitment.vacancy}} {% trans "Capacity" %}
+                                </div>
+                            </div>
+                            {% else %}
+                                <div style="color: gray;">
+                                    {{recruitment.start_date}} - {{recruitment.end_date}} <br>
+                                    {% if recruitment.vacancy %}
+                                    {% trans "Total vacancies" %} {{recruitment.vacancy}}
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                        <div>
+                            <div class="flex gap-1 lg:justify-end">
+                                <button
+                                    class="toggleSidemenu w-20 justify-center px-4 py-2 border border-primary-600 text-primary-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-primary-800 transition duration-300"
+                                    data-sidebar="sidebarModal" hx-get='{% url "recruitment-details" recruitment.id %}' hx-target="#sidebarModal">{% trans "View" %}
+                                </button>
+                                <a href="{% url 'application-form' %}?recruitmentId={{ recruitment.id }}"
+                                class="w-20 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                                    {% trans "Apply" %}
+                                <i class="fa-solid fa-arrow-right transform -rotate-45"></i>
+                              </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Job Details1 -->
+    <div class="sidebarModal overflow-hidden overflow-y-auto" id="sidebarModal">
+        <div class="pt-7">
+        </div><!--sidecont-->
+    </div>
+
+
+    <script type="module"  src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
+    <script>
+        document.querySelector('.oh-password-input--toggle').addEventListener('click', function (e) {
+            e.preventDefault();
+            const passwordInput = document.querySelector('.oh-input--password');
+            const showIcon = document.querySelector('.oh-password-input__show-icon');
+            const hideIcon = document.querySelector('.oh-password-input__hide-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                showIcon.classList.add('hidden');
+                hideIcon.classList.remove('hidden');
+            } else {
+                passwordInput.type = 'password';
+                showIcon.classList.remove('hidden');
+                hideIcon.classList.add('hidden');
+            }
+        });
+    </script>
+  <script src="{% static 'htmx/htmx.min.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+            document.body.addEventListener('htmx:configRequest', (event) => {
+            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+            })
+        </script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    // Toggle any sidebar based on data-sidebar attribute
+    document.querySelectorAll(".toggleSidemenu").forEach((button) => {
+        button.addEventListener("click", () => {
+        const sidebarId = button.getAttribute("data-sidebar");
+        const sidebar = document.getElementById(sidebarId);
+        if (sidebar) {
+            sidebar.classList.toggle("active");
+            document.body.classList.toggle("overflow-hidden");
+        }
+        });
+    });
+    });
+
+
+</script>
+</body>
+
+</html>

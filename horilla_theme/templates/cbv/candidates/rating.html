@@ -1,0 +1,27 @@
+{% load basefilters %}
+{% load i18n %}
+{% load recruitmentfilters %}
+{% with instance.request.user.employee_get.candidate_rating.all as candidate_ratings %}
+  {% with avg=instance.candidate_rating.all|avg_rating:instance %}
+    {% with avg_int=avg|floatformat:"0" %}
+    <div class="d-block mb-0">
+      {# Hidden checked input to extract value #}
+      {% for i in "54321" %}
+        {% if instance.candidate_rating.all|avg_rating:instance == i %}
+          <input type="hidden" id="final-rating" value="{{ i }}">
+        {% endif %}
+      {% endfor %}
+
+      <ul class="flex gap-2 text-lg ps-4 mb-4">
+        {% for i in "12345" %}
+          {% if i <= avg_int %}
+            <li><i class="fa-solid fa-star text-[#FFA800]"></i></li>
+          {% else %}
+            <li><i class="fa-solid fa-star text-[#dfdfdf]"></i></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endwith %}
+  {% endwith %}
+{% endwith %}

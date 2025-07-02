@@ -1,0 +1,31 @@
+
+{% load i18n %}
+<div class=" {% if instance.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
+    {% if instance.status == 'requested'%}
+        <div class="oh-btn-group" >
+            <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
+                data-target="#genericModal" hx-get="{% url 'user-request-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
+                hx-target="#genericModalBody">
+                <ion-icon name="create-outline"></ion-icon>
+            </button>
+            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                title="{% trans 'Delete' %}" id="delete-link"
+                hx-confirm="{% trans 'Are you sure you want to delete this leave request?' %}"
+                hx-post="{% url 'user-request-delete' instance.id %}"
+                hx-target="#deleteleavedata"
+                >
+                <ion-icon name="trash-outline"></ion-icon>
+            </a>
+        </div>
+    {% else %}
+        <div class="oh-btn-group" >
+            <button
+                class="oh-btn oh-btn--light-bkg w-50" disabled>
+                <ion-icon name="create-outline" ></ion-icon>
+            </button>
+            <button class="oh-btn oh-btn--light-bkg w-50" disabled>
+                <ion-icon name="trash-outline"></ion-icon>
+            </button>
+        </div>
+    {% endif %}
+</div>

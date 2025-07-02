@@ -1,0 +1,289 @@
+{% extends 'index.html' %}
+{% block content %}
+{% load static i18n %}
+{% load i18n %}
+
+<!-- End of Navigation -->
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <div class="oh-wrapper">
+        <div class="oh-dashboard row" id="dashboard">
+            <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12">
+                  <!-- Stats Cards -->
+                <div class="grid grid-cols-1 xl:grid-cols-4 md:grid-cols-2 gap-4 mb-4">
+                    <div class="bg-white p-6 rounded-md shadow-card relative" id="paidPayslip">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-[#1cba5121] p-3 rounded-md">
+                                <img src="/static/horilla_theme/assets/img/icons/paid.svg" width="20" />
+                            </div>
+                            <div>
+                                <p class="text-sm">{% trans "Paid" %}</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-xl font-bold text-secondary-900">{{paid|length}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-md shadow-card relative" id="confirmedPayslip">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-[#b71db01f] p-3 rounded-md">
+                                <img src="/static/horilla_theme/assets/img/icons/confirmed.svg" width="20" />
+                            </div>
+                            <div>
+                                <p class="text-sm">{% trans "Confirmed" %}</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-xl font-bold text-secondary-900">{{posted|length}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-md shadow-card relative" id="reviewPayslip">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-[#d821491c] p-3 rounded-md">
+                                <img src="/static/horilla_theme/assets/img/icons/review.svg" width="20" />
+                            </div>
+                            <div>
+                                <p class="text-sm">{% trans "Review Ongoing" %}</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-xl font-bold text-secondary-900">{{review_ongoing|length}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-md shadow-card relative" id="draftPayslip">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-[#d821491c] p-3 rounded-md">
+                                <img src="/static/horilla_theme/assets/img/icons/draft.svg" width="20" />
+                            </div>
+                            <div>
+                                <p class="text-sm">{% trans "Draft" %}</p>
+                                <div class="flex items-center gap-2">
+                                    <p class="text-xl font-bold text-secondary-900">{{draft|length}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex ms-2 mt-3 justify-between align-center">
+                    <div class="flex items-center" style = "cursor: pointer;">
+                        <label for="monthYearField" class="text-danger text-xs fw-bold" style = "cursor: pointer;width:300px;">{% trans "Select Month and Year:" %}</label>
+                        <input class="oh-select p-2 m-1" type="month" id="monthYearField" name="monthYearField" style = "cursor: pointer;">
+                    </div>
+
+
+                        <div class="oh-dropdown" x-data="{open: false}">
+                          <button class="oh-btn oh-btn--secondary oh-btn--shadow ml-2" @click="open = !open">
+                            <ion-icon name="download-outline" class="mr-1"></ion-icon>{% trans "Export" %}
+                          </button>
+                          <div
+                          class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+                          x-show="open"
+                          @click.outside="open = false"
+                          style="display: none;"
+                          >
+                            <form method = "post" action="{% url 'dashboard-export' %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label d-block">{% trans "Start Date" %}</label>
+                                            {{export_form.start_date}}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6">
+                                        <div class="oh-input-group" >
+                                            <label class="oh-label d-block">{% trans "End Date" %}</label>
+                                            {{export_form.end_date}}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6 ">
+                                        <div class="oh-input-group">
+                                        <label class="oh-label">{% trans "Employee" %}</label>
+                                            {{export_form.employees}}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-6 ">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label d-block">{% trans "Status" %}</label>
+                                            {{export_form.status}}
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-12 mb-3">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label d-block">{% trans "Contributions" %}</label>
+                                            {{export_form.contributions}}
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-row-reverse" >
+                                        <button
+                                        class="oh-btn oh-btn--secondary oh-btn--shadow" type="submit" id="export"
+                                        >
+                                            <ion-icon
+                                                class="me-2 md hydrated"
+                                                name="download-outline"
+                                                role="img"
+                                                aria-label="download-outline"
+                                            ></ion-icon
+                                            >{% trans "Export" %}</button
+                                        >
+                                    </div>
+                                </div>
+                            </form>
+                          </div>
+                        </div>
+                </div>
+
+
+                <div class="oh-dashboard__movable-cards row mt-4">
+                  <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
+                    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card" >
+                        <div class="flex justify-between items-center mb-5">
+                            <span class="oh-card-dashboard__title" id="employee-previous" style = "cursor: pointer;"><ion-icon name="caret-back-outline"></ion-icon></span>
+                            <h3 class="text-md font-semibold">{% trans "Employee Payslips" %}</h3>
+                            <span class="oh-card-dashboard__title float-end" id="payroll-employee-next" style = "cursor: pointer;"><ion-icon name="caret-forward"></ion-icon></span>
+                        </div>
+                        <div id="employee_canvas_body">
+                            <canvas id="employeeChart" class="w-40 h-72"></canvas>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4" >
+                        <div class="xl:col-span-8 md:col-span-12 col-span-12 bg-white p-2" style="width:500px;">
+                            <h6 class="ms-4 m-2 font-bold">{% trans "Total Payslips Genarated :" %}<span class="payslip-number"></span></h6>
+                                {% if position == "prefix" %}
+                                    <h6 class="ms-4 m-2 font-bold">{% trans "Total Amount :" %} {{currency}} <span class="payslip-amount"></span></h6>
+                                {% else %}
+                                    <h6 class="ms-4 m-2 font-bold">{% trans "Total Amount :" %} <span class="payslip-amount"></span> {{currency}}</h6>
+                                {% endif %}
+                                <h5 class="ms-4 m-2 font-bold" style="color:#9C4000">{% trans "Department Total Amount" %}</h5>
+                                <div class="px-3" hx-get='{% url "dashboard-department-chart-list" %}?{{request.GET.urlencode}}'
+                                    hx-trigger="click" id="dashboard_department">
+                                </div>
+                        </div>
+                    </div>
+
+
+                    {% comment %} <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
+                        <form hx-get="{% url 'get-contribution-report' %}" hx-trigger="load, submit"  hx-target="#contributionReportContainer" class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" >
+                            <div class="d-flex justify-content-between oh-card-dashboard__header oh-card-dashboard__header--divider" style = "cursor: default;">
+                                <span class="oh-card-dashboard__title">{% trans "Employer Contributions" %}</span>
+                                <div>
+                                    <span class="oh-card-dashboard__title">
+                                        <select name="employee_id" class="oh-select" onchange="$(this).closest('form').find('[type=submit]').click()" id="deduction">
+                                            {% for employee in get_active_employees %}
+                                                {% if request.user == employee.employee_user_id %}
+                                                    <option value="{{employee.id}}" selected>{{employee.get_full_name}}</option>
+                                                {% else %}
+                                                    <option value="{{employee.id}}">{{employee.get_full_name}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </span> {% endcomment %}
+
+                                    {% comment %} <span class="oh-card-dashboard__title">
+                                        <select name="deduction_id" class="oh-select" onchange="$(this).closest('form').find('[type=submit]').click()" id="deduction">
+                                            <option value="">{% trans "All" %}</option>
+                                            {% for deduction in get_deductions %}
+                                            <option value="{{deduction.id}}">{{deduction.title}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </span> {% endcomment %}
+                                {% comment %} </div> {% endcomment %}
+                                {% comment %} <span class="oh-card-dashboard__title float-end" id="payroll-employee-next" style = "cursor: pointer;"><ion-icon name="caret-forward"></ion-icon></span> {% endcomment %}
+
+                            {% comment %} </div>
+                            <div class="oh-card-dashboard__body" id="contributionReportContainer" >
+                            </div>
+                            <button type="submit" hidden>
+                        </form>
+                    </div> {% endcomment %}
+
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
+                            <h4 class="ms-4 m-2 fw-bold text-danger">{% trans "Contracts Ending " %}  <b><span class=""></span></b></h4>
+                            <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expiring in " %} <b class="contract-number"></b><span id="contract-count"></span></h6>
+                            <hr class="line">
+                            <div id="contract_ending" style="height: 200px; overflow-y: auto; list-style: disc;">
+                                <div
+                                class="oh-wrapper"
+                                hx-get="{% url "dashboard-contract-ending" %}?{{request.GET.urlencode}}" hx-trigger="click"
+                                id="contractEnding">
+                                <div class="animated-background">
+                                </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
+                            <h4 class="ms-4 m-2 fw-bold text-danger">{% trans "Contracts Expired" %}  <b><span class=""></span></b></h4>
+                            <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expired in " %} <b class="contract-expired-number"></b><span id="contract-expired-count"></span></h6>
+                            <hr class="line">
+                            <div id="contract_expired" style="height: 200px; overflow-y: auto; list-style: disc;">
+                                <div class="oh-wrapper"
+                                hx-get="{% url 'dashboard-contract-expired' %}?{{request.GET.urlencode}}" hx-trigger="click" id="contractExpired">
+                                <div class="animated-background">
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
+                            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                                <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
+                            </div>
+                            <div class="oh-card-dashboard__body" id="department_canvas_body" style="width: 50%; margin: 0 auto;" >
+                                <canvas id="departmentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="oh-modal" id="ContractModal" role="dialog" aria-labelledby="ContractModal" aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 550px" id="contract_target"></div>
+    </div>
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'payroll/dashboard.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        $("#paidPayslip").on("click", function(){
+            window.location.href='{% url "view-payslip" %}?status=paid'
+        })
+        $("#confirmedPayslip").on("click", function(){
+            window.location.href='{% url "view-payslip" %}?status=confirmed'
+        })
+        $("#reviewPayslip").on("click", function(){
+            window.location.href='{% url "view-payslip" %}?status=review_ongoing'
+        })
+        $("#draftPayslip").on("click", function(){
+            window.location.href='{% url "view-payslip" %}?status=draft'
+        })
+    })
+
+</script>
+
+<script>
+
+   $(document).ready(function() {
+        $('#monthYearField').on('change', function() {
+            var selectedMonthYear = $(this).val();
+            $('#dashboard_department').attr('hx-vals', JSON.stringify({'monthYearField': selectedMonthYear}));
+            $('#dashboard_department').click();
+            $('#contractEnding').attr('hx-vals', JSON.stringify({'monthYearField': selectedMonthYear}));
+            $('#contractEnding').click();
+            $('#contractExpired').attr('hx-vals', JSON.stringify({'monthYearField': selectedMonthYear}));
+            $('#contractExpired').click();
+        });
+        $('#monthYearField').change();
+
+    });
+</script>
+
+{% endblock content %}

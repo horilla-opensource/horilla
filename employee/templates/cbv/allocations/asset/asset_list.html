@@ -1,0 +1,29 @@
+{% load i18n %}
+<div id="{{ view_id }}">
+  <div class="oh-layout_horizontal">
+    {% for asset in assigned_assets %}
+      <div class="oh-kanban-card">
+        <div class="d-flex flex-column gap-2">
+          <div class="oh-kanban-card__avatar">
+            <div class="oh-kanban-card__profile-container">
+              <img src="{{ asset.allocation_asset_get_avatar }}" class="oh-kanban-card__profile-image" />
+            </div>
+          </div>
+          <div class="oh-kanban-card__details">
+            <span class="oh-kanban-card__title">{{ asset.asset_name }}</span>
+            <span class="oh-kanban-card__subtitle">{% trans 'Category' %}: {{ asset.asset_category_id }}</span>
+            <br />
+            <span class="oh-kanban-card__subtitle">{% trans 'Tracking' %}: {{ asset.asset_tracking_id }}</span>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if not request.GET.card_only %}
+    {% include 'generic/horilla_list_table.html' %}
+  {% elif not queryset.exists %}
+    <div class="oh-checkpoint-badge text-success quick-bulk-action" onclick="$(`[hx-get='{% url "allocation-assets" %}?instance_id={{request.GET.instance_id}}']`).click();" style="cursor: pointer;">
+      <span class="label">+ Allocate</span>
+    </div>
+  {% endif %}
+</div>

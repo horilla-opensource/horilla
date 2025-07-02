@@ -1,0 +1,20 @@
+{% load i18n %}
+
+<div class="col-span-12 lg:col-span-6">
+    <form  hx-post="{% url 'pagination-settings-view' %}"   hx-swap="none"
+    hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 100);">
+        {% csrf_token %}
+    <div class="flex space-x-2 pb-2">
+    <label>{% trans "Default Records Per Page" %}</label>
+    <span class="oh-info mr-2" title='{% trans "Default pagination for all views." %}'>
+    </span>
+</div>
+    <div class="flex gap-2">
+        <input type="number" name="pagination" placeholder="{% trans 'Pagination' %}"  value="{{pagination_form.instance.pagination}}"  required=""id="id_pagination">
+
+        <button class="btn" type="submit">Save
+            Changes</button>
+
+    </div>
+</form>
+</div>

@@ -1,0 +1,391 @@
+{% load i18n %} {% load basefilters %}
+{% load horillafilters %}
+<div id="leave-tab">
+
+    {% comment %} {% include "leave/user_leave/user_leave.html" %} {% endcomment %}
+
+<br>
+<style>
+
+
+  .cancelled--dot{
+    background-color:grey;
+  }
+  .approved--dot{
+    background-color:green;
+  }
+  .rejected--dot{
+    background-color:red;
+  }
+  .requested--dot{
+    background-color:orange;
+  }
+
+  .status-rejected{
+    border-left: 4px solid red !important;
+    border-radius: 5px 0 0 4px;
+
+  }
+ .status-cancelled {
+    border-left: 4px solid grey !important;
+    border-radius: 5px 0 0 4px;
+
+  }
+  .status-requested{
+    border-left: 4px solid orange !important;
+    border-radius: 5px 0 0 4px;
+
+  }
+ .status-approved {
+    border-left: 4px solid yellowgreen !important;
+    border-radius: 5px 0 0 4px;
+
+  }
+
+
+
+  .oh-sticky-table-container {
+    max-width: 2000px;
+    max-height: 170px;
+  }
+  .oh-sticky-table-request {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+  .row-status--orange {
+    border-left: 4px solid orange;
+    border-radius: 5px;
+  }
+  .row-status--gray {
+    border-left: 4px solid gray;
+    border-radius: 5px;
+  }
+  .row-status--yellow {
+    border-left: 4px solid yellowgreen;
+    border-radius: 5px;
+  }
+
+  .kanban-card-container {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    overflow-x: scroll;
+  }
+  .oh-kanban-card {
+    min-width: 350px;
+    border-radius:10px;
+    flex-basis: calc(17% - 15px);
+  }
+  .oh-sticky-table-container + .oh-sticky-table-request {
+    margin-top: 20px;
+  }
+
+  .tooltip {
+    position: relative;
+    display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: auto; /* Allow the tooltip width to adjust based on content */
+    max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
+    background-color: hsl(8,77%,56%);
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(5%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    white-space: nowrap; /* Prevents the text from wrapping */
+    overflow: hidden; /* Hides any overflowed content */
+    font-size:15px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.delete{
+  color = hsl(1, 100%, 61%) !important;
+}
+  .diff-cell {
+      background: rgba(255, 166, 0, 0.158);
+  }
+</style>
+{% if user_leaves %}
+<!-- Profile leave type card -->
+<div class="oh-sticky-table-container">
+  <div class="oh-sticky-table">
+    <div class="kanban-card-container">
+      <!-- Container for Kanban cards -->
+      {% for user_leave in user_leaves %}
+        {% comment %} {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == user_leave.employee_id.employee_user_id %} {% endcomment %}
+          <div
+            class="oh-kanban-card"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'user-request' user_leave.leave_type_id.id %}?instances_ids={{user_request_ids}}"
+            hx-target="#objectCreateModalTarget"
+           >
+            <div class="oh-kanban-card__avatar">
+              <div class="oh-kanban-card__profile-container">
+                {% if user_leave.leave_type_id.icon %}
+                <img
+                  src="{{user_leave.leave_type_id.icon.url }}"
+                  class="oh-kanban-card__profile-image"
+                  alt="Leave Icon"
+                />
+                {% else %}
+                <img
+                  src="https://ui-avatars.com/api/?name={{user_leave.leave_type_id}}&background=random"
+                  class="oh-kanban-card__profile-image"
+                  alt="Leave Icon"
+                />
+                {% endif %}
+              </div>
+            </div>
+            <div class="oh-kanban-card__details">
+              <span class="oh-kanban-card__title"
+                >{{user_leave.leave_type_id}}</span
+              >
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Available Leave Days" %} :
+                {{user_leave.available_days}}</span
+              ><br />
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Carryforward Leave Days" %} :
+                {{user_leave.carryforward_days}}</span
+              ><br />
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Total Leave Days" %} :
+                {{user_leave.total_leave_days}}</span
+              >
+            </div>
+          </div>
+        {% comment %} {% endif %} {% endcomment %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% elif employee_leaves %}
+<!-- Employe leave type card -->
+<div class="oh-sticky-table-container">
+  <div class="oh-sticky-table">
+    <div class="kanban-card-container">
+      <!-- Container for Kanban cards -->
+      {% for employee_leave in employee_leaves %}
+
+        {% comment %} {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == employee_leave.employee_id.employee_user_id %} {% endcomment %}
+          <div
+            class="oh-kanban-card"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'leave-request-creation' employee_leave.leave_type_id.id employee_leave.employee_id.id%}"
+            hx-target="#objectCreateModalTarget"
+           >
+            <div class="oh-kanban-card__avatar">
+              <div class="oh-kanban-card__profile-container">
+                {% if employee_leave.leave_type_id.icon %}
+                <img
+                  src="{{employee_leave.leave_type_id.icon.url }}"
+                  class="oh-kanban-card__profile-image"
+                  alt="Leave Icon"
+                />
+                {% else %}
+                <img
+                  src="https://ui-avatars.com/api/?name={{employee_leave.leave_type_id}}&background=random"
+                  class="oh-kanban-card__profile-image"
+                  alt="Leave Icon"
+                />
+                {% endif %}
+              </div>
+            </div>
+            <div class="oh-kanban-card__details">
+              <span class="oh-kanban-card__title"
+                >{{employee_leave.leave_type_id}}</span
+              >
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Available Leave Days" %} :
+                {{employee_leave.available_days}}</span
+              ><br />
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Carryforward Leave Days" %} :
+                {{employee_leave.carryforward_days}}</span
+              ><br />
+              <span class="oh-kanban-card__subtitle"
+                >{% trans "Total Leave Days" %} :
+                {{employee_leave.total_leave_days}}</span
+              >
+            </div>
+          </div>
+        {% comment %} {% endif %} {% endcomment %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+{% include "generic/horilla_list.html" %}
+</div>
+<script>
+    $('#penaltyModalBody').submit(function(e) {
+        $(".reload-record").click()
+        });
+
+    $("#LeaveForm [type=submit]").hide();
+    var button = `
+    <div class="oh-modal__dialog-footer p-0 mt-3">
+      <button id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        Save
+      </button>
+    </div>
+    `;
+    $("#LeaveForm .row").after(button);
+
+{% if "recruitment"|app_installed %}
+    $(document).ready(function () {
+        $("#buttonID").on("click", function () {
+            event.preventDefault();
+            event.stopPropagation();
+            var startDate = $("#LeaveForm [name = start_date]").val();
+            var endDate = $("#LeaveForm [name = end_date]").val();
+            var employee = $("#LeaveForm [name = employee_id]").val();
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'check-interview-conflicts' %}",
+                data: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    employee_id: employee,
+                },
+                success: function (response) {
+                    var interviews = response.interviews;
+
+                    title = "Leave Request Alert.";
+                    var content = `<div>
+            <p>${employee} has interview in the requested date.</p>
+            <ol style="margin-left:5%">`;
+                    interviews.forEach(function (interview, index) {
+                        content += `<li style="text-align:left; font-size:14px">${interview}</li>`;
+                    });
+                    content += `</ol>
+            <p style="font-weight:700">Are you sure you want to proceed with the request?</p>
+          </div>`;
+
+                    if (interviews.length != 0) {
+                        Swal.fire({
+                            title: title,
+                            icon: "info",
+                            html: content,
+                            showCancelButton: true,
+                            confirmButtonColor: "#008000",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Confirm",
+                        }).then(function (result) {
+                            if (result.isConfirmed) {
+                                $("#LeaveForm [type=submit]").click();
+                            }
+                        });
+                    } else {
+                        $("#LeaveForm [type=submit]").click();
+                    }
+                },
+            });
+        });
+    });
+{% endif %}
+
+    function leaveRequestConfirm(message,event) {
+      // Define the select box options
+        event.preventDefault()
+        var question = '<p> Would you like to proceed?</p>'
+        html = '<p>' + message + '</p>'
+        html = html + "<div align='center'>" +question + "</div>"
+        Swal.fire({
+          html: html,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#008000',
+          cancelButtonColor: '#d33',
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Close"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if (event.target.tagName.toLowerCase() === "form") {
+              event.target.submit();
+            } else if (event.target.tagName.toLowerCase() === "a") {
+              window.location.href = event.target.href;
+            }
+            else{
+              console.log(target)
+              console.log(event.target.href)
+            }
+          } else {
+          }
+        });
+
+    }
+  </script>
+{% comment %} function typeChange(selectElement) {
+        var selectedLeavetype =selectElement.val()
+        let parentForm = selectElement.parents().closest("form")
+        var employeeId = parentForm.find('[name = employee_id]').val()
+        $.ajax({
+          type: "post",
+          url: "{% url 'employee-leave-details' %}",
+          data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+        "leave_type":selectedLeavetype,
+        "employee_id":employeeId,
+      },
+      success: function (response) {
+
+        // Assuming parentForm is a reference to the form containing the element to update
+          var messageDiv = parentForm.find(".leave-message");
+
+          // Check if the messageDiv already exists, if not create it
+          if (!messageDiv.length) {
+            messageDiv = $("<div class='leave-message'></div>");
+            parentForm.find(".oh-modal__dialog-body").prepend(messageDiv);
+          }
+          // Checking leave type is selected in the form or not
+          if (response.leave_count === ''){
+            messageDiv.hide()
+          }
+          else if (response.leave_count === 0.0){
+            messageDiv.show()
+            messageDiv.text("Available Leaves :  " + response.leave_count);
+            messageDiv.css({
+              'background-color': 'rgb(229 79 56 / 17%)',
+              'border': '2px solid hsl(8,77%,56%)',
+              'border-radius': '18px',
+              'padding': '10px',
+              'font-weight': 'bold',
+              'margin-bottom': '15px',
+              'width': '35%'
+            });
+          }
+          else{
+            messageDiv.show()
+            // Set the message content and apply styling
+            messageDiv.text("Available Leaves :  " + response.leave_count);
+            messageDiv.css({
+              'background-color': '#dff0d8',
+              'border': '2px solid #3c763d',
+              'border-radius': '18px',
+              'padding': '10px',
+              'font-weight': 'bold',
+              'margin-bottom': '15px',
+              'width': '35%'
+            });
+          }
+
+        }
+      });
+    } {% endcomment %}

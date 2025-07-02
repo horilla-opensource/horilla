@@ -1,0 +1,65 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<div hx-get="{% url "loan-navbar-view" %}" hx-trigger="load">
+</div>
+
+{% include "generic/components.html" %}
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+<div class="oh-wrapper"  id="listContainer">
+    <div class="animated-background"></div>
+</div>
+
+
+<div class="oh-modal" id="loanModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="loanModalBody"></div>
+    </div>
+  </div>
+
+<script>
+    $(document).ready(function () {
+        $("#genericModalBody").on("htmx:afterSwap", function () {
+            $("[name='installment_amount']").on("change", function () {
+                var loanAmount = $("#id_loan_amount").val()
+                //var loanAmount = $("[name='loan_amount']").val();
+                console.log(loanAmount)
+
+                var installmentAmount = $(this).val();
+
+
+                var installments = loanAmount / installmentAmount;
+                console.log(installments)
+                $("[name='installments']").val(installments);
+                if (Math.round(installments) !== installments) {
+                    installments = Math.round(installments);
+                    $("[name='installments']").val(installments);
+                    $("[name='installments']").trigger("change");
+                }
+            });
+
+            $("[name='installments']").on("change keyup", function () {
+                var loanAmount = $("[name='loan_amount']").val();
+                var installments = $(this).val();
+
+                var installmentAmount = loanAmount / installments;
+
+                $("[name='installment_amount']").val(installmentAmount);
+            });
+        });
+    });
+
+
+</script>
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+
+{% endblock content %}

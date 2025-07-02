@@ -1,0 +1,5 @@
+
+<a onclick="event.stopPropagation();"style="color: inherit; text-decoration: none" >
+    <input type="date" class="oh-input joining-date" style="width: 150px;" value={{instance.joining_date|date:"Y-m-d"}}
+      name="joining_date" data-candidate-id="{{instance.id}}" onchange="dateJoining($(this))">
+  </a>

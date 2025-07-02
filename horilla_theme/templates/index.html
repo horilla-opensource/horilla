@@ -1,0 +1,80 @@
+{% load static %}
+{% load i18n %}
+{% load horillafilters %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title class="time-runner stop-runner">{{white_label_company_name}}</title>
+        <link rel="stylesheet" href="{% static 'build/css/summernote-lite.min.css' %}" />
+
+        {% include "horilla_theme/components/header_scripts.html" %}
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+            rel="stylesheet"
+        />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+        <script src="/static/horilla_theme/assets/js/global.js"></script>
+        <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
+        <!-- Load global.css after Select2 to ensure custom styles override Select2 defaults -->
+        <link
+            rel="stylesheet"
+            href="/static/horilla_theme/assets/css/global.css"
+        />
+        <link
+            rel="stylesheet"
+            href="/static/horilla_theme/assets/css/v1_styles.css"
+        />
+    </head>
+
+    <body class="bg-secondary-50 font-[Inter,_sans-serif]">
+        {% get_current_language_bidi as LANGUAGE_BIDI %}
+        {% get_current_language as LANGUAGE_CODE %}
+        <div hidden id="statiUrl" data-url='{% static "" %}'></div>
+        <span hidden id="whiteLabelCompany" data-company = '{{ white_label_company_name }}'></span>
+        <!-- Include Sidebar -->
+        <div id="sidebar">
+            {% include "horilla_theme/components/sidebar.html" %}
+        </div>
+
+        <!-- Main Content -->
+        <div class="ml-[4.7rem] h-screen">
+            <div class="bg-[#F6F6F6]">
+                <!-- Include Header -->
+                <div id="header">
+                    {% include "horilla_theme/components/header.html" %}
+                </div>
+
+                <div class="p-6 pt-24">
+                    {% block content %}
+                        {% include "horilla_theme/components/dashboard.html" %}
+                    {% endblock %}
+                    <div class="oh-modal" style="z-index: 100;" id="objectDetailsModal" role="dialog"
+                        aria-labelledby="objectDetailsModalLabel" aria-hidden="true">
+                        <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 550px" id="objectDetailsModalTarget"> </div>
+                    </div>
+                    <div class="oh-modal" style="z-index: 100;" id="objectDetailsModalW25" role="dialog"
+                        aria-labelledby="objectDetailsModalW25Label" aria-hidden="true">
+                        <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 410px" id="objectDetailsModalW25Target"> </div>
+                    </div>
+                    <div class="oh-modal" id="objectCreateModal" role="dialog" aria-labelledby="objectCreateModalLabel" aria-hidden="true">
+                        <div class="oh-modal__dialog" id="objectCreateModalTarget"></div>
+                    </div>
+                    <div class="oh-modal" id="objectUpdateModal" role="dialog" aria-labelledby="objectUpdateModalLabel" aria-hidden="true">
+                        <div class="oh-modal__dialog" id="objectUpdateModalTarget"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include "generic/components.html" %}
+        {% include "horilla_theme/components/footer_scripts.html" %}
+    </body>
+</html>

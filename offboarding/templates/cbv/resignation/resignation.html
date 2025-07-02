@@ -1,0 +1,148 @@
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+<style>
+    .rejected--dot{
+        background-color:red;
+      }
+      .approved--dot{
+        background-color:yellowgreen;
+      }
+      .requested--dot{
+        background-color: rgba(128, 128, 128, 0.482);
+      }
+      .status-requested{
+        border-left: 3.4px solid rgba(128, 128, 128, 0.482) !important;
+        border-radius: 4px 0 0 4px;
+      }
+      .status-rejected{
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+      }
+      .status-approved{
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+      }
+
+    </style>
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+<div hx-get="{% url "nav-resignation-request" %}" hx-trigger="load">
+</div>
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  hx-get="{% url "list-resignation-request"  %}?{{request.GET.urlencode}}&status=requested" hx-trigger="load"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+<div class="oh-modal" id="resignationModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+      <div class="oh-modal__dialog-body" id="resignationModalBody"></div>
+    </div>
+  </div>
+
+
+  <script>
+    // toggle columns //
+    toggleColumns("resignation-column-table", "resignationCells");
+    localStorageresignationCells = localStorage.getItem(
+        "resignation_column_tab"
+    );
+    if (!localStorageresignationCells) {
+        $("#resignationCells").find("[type=checkbox]").prop("checked", true);
+    }
+    $("[type=checkbox]").change();
+
+    function resignLetterConfirmation(params, target, approve = false) {
+      // Define the select box options
+      var selectOptions = ``;
+    var dateFields = '<label style="display:block;" for="notice_period_starts">Start Date:</label>' +
+      `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_starts" name="notice_period_starts">` +
+      '<label style="display:block;" for="notice_period_ends">End Date:</label>' +
+      `<input style="display:block;" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value)" class="oh-input" type="date" id="notice_period_ends" name="notice_period_ends">`;
+
+    html = '<p>' + params + '</p>'
+    if (approve) { html = html + "<div >" + selectOptions + `
+      <div class='row' style='overflow-x:hidden;'>
+        <div class="col-12">
+          <div class="oh-label__info" for="offboardingSelect">
+            <label class="oh-label" for="offboardingSelect">Add to</label>
+          </div>
+            <select id="offboardingSelect" class="oh-select oh-select2 w-100" name="reason" title="{% trans "Add to offboarding" %}">
+              // {% for offboarding in offboardings %}
+                <option value="{{offboarding.id}}">{{offboarding.title}}</option>
+              // {% endfor %}
+          </select>
+        </div>
+        <div class="col-6 col-md-6">
+          <div class="oh-label__info" for="notice_period_starts">
+            <label class="oh-label" for="notice_period_starts">Planned to leave on</label>
+          </div>
+            <input type="date" onchange="$('#${target.siblings("input[name=notice_period_starts]").first().attr("id")}').val(this.value);" name="notice_period_starts" value="{% now "Y-m-d" %}"  class="oh-input w-100 form-control" required id="notice_period_starts">
+        </div>
+        <div class="col-6 col-md-6">
+          <div class="oh-label__info" for="notice_period_ends">
+            <label class="oh-label" for="notice_period_ends">Notice period end</label>
+          </div>
+            <input type="date" onchange="$('#${target.siblings("input[name=notice_period_ends]").first().attr("id")}').val(this.value);" name="notice_period_ends"  class="oh-input w-100 form-control" required id="notice_period_ends">
+        </div>
+      </div>
+      ` + "</div>" }
+    Swal.fire({
+      html: html,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#008000',
+      cancelButtonColor: '#d33',
+      confirmButtonText: "Confirm",
+      cancelButtonText: "Close"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Access the selected value from the select box
+        if (approve) {
+          var selectedOffboarding = document.getElementById('offboardingSelect').value;
+          target.siblings("input[name=offboarding_id]").val(selectedOffboarding)
+        }
+        target.click();
+
+        if (event.target.tagName.toLowerCase() === 'form') {
+          event.target.submit();
+        } else if (event.target.tagName.toLowerCase() === 'a') {
+          window.location.href = event.target.href;
+        }
+      } else {
+        // Handle cancel
+      }
+    });
+  }
+  </script>
+
+{% endblock %}

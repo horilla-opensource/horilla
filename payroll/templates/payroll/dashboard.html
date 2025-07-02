@@ -144,7 +144,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6" >
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4" >
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
                             <h6 class="ms-4 m-2 fw-bold">{% trans "Total Payslips Genarated :" %}  <b><span class="payslip-number"></span></b></h6>
                             {% if position == "prefix" %}
@@ -154,9 +154,16 @@
                             {% endif %}
                             <h5 class="ms-4 m-2 fw-bold" style="color:#9C4000">{% trans "Department Total Amount" %}</h5>
                             <hr class="line">
-                            <ul id="department_total" style="height: 286px; overflow-y: auto; list-style: disc;"></ul>
-                            <ul id="department_total_empty" style="height: 232px; overflow-y: auto; list-style: disc;"></ul>
+                            <div id="department_total">
+                            <div class="oh-wrapper" hx-get="{% url "dashboard-department-chart" %}?{{request.GET.urlencode}}"
+                            hx-trigger="click" id="dashboard_department">
+                            <div class="animated-background">
+                            </div>
+                            </div>
                         </div>
+                        </div>
+                            {% comment %} <ul id="department_total" style="height: 286px; overflow-y: auto; list-style: disc;"></ul>
+                            <ul id="department_total_empty" style="height: 232px; overflow-y: auto; list-style: disc;"></ul> {% endcomment %}
                     </div>
 
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 mb-4">
@@ -193,17 +200,38 @@
                             <button type="submit" hidden>
                         </form>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
-                            <h4 class="ms-4 m-2 fw-bold text-danger">{% trans "Contracts ending " %}  <b><span class=""></span></b></h4>
-                            <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expiring in " %} <b class="contract-number"></b></h6>
+                            <h4 class="ms-4 m-2 fw-bold text-danger">{% trans "Contracts Ending " %}  <b><span class=""></span></b></h4>
+                            <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expiring in " %} <b class="contract-number"></b><span id="contract-count"></span></h6>
                             <hr class="line">
-                            <ul id="contract_ending" style="height: 200px; overflow-y: auto; list-style: disc;">
+                            <div id="contract_ending" style="height: 200px; overflow-y: auto; list-style: disc;">
+                                <div
+                                class="oh-wrapper"
+                                hx-get="{% url "dashboard-contract-ending" %}?{{request.GET.urlencode}}" hx-trigger="click"
+                                id="contractEnding">
+                                <div class="animated-background">
+                                </div>
+                                </div>
 
-                            </ul>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
+                        <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent" style = "cursor: default;">
+                            <h4 class="ms-4 m-2 fw-bold text-danger">{% trans "Contracts Expired" %}  <b><span class=""></span></b></h4>
+                            <h6 class="ms-4 fw-bold" >{% trans "Number of contracts expired in " %} <b class="contract-expired-number"></b><span id="contract-expired-count"></span></h6>
+                            <hr class="line">
+                            <div id="contract_expired" style="height: 200px; overflow-y: auto; list-style: disc;">
+                                <div class="oh-wrapper"
+                                hx-get="{% url 'dashboard-contract-expired' %}?{{request.GET.urlencode}}" hx-trigger="click" id="contractExpired">
+                                <div class="animated-background">
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 oh-card-dashboard--moveable mb-4">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                                 <span class="oh-card-dashboard__title">{% trans "Department Chart" %}</span>
@@ -242,4 +270,22 @@
     })
 
 </script>
+
+<script>
+
+   $(document).ready(function() {
+        $('#monthYearField').on('change', function() {
+            var selectedMonthYear = $(this).val();
+            $('#dashboard_department').attr('hx-vals', JSON.stringify({'monthYearField': selectedMonthYear}));
+            $('#dashboard_department').click();
+            $('#contractEnding').attr('hx-vals', JSON.stringify({'monthYearField': selectedMonthYear}));
+            $('#contractEnding').click();
+            $('#contractExpired').attr('hx-vals', JSON.stringify({'monthYearField': selectedMonthYear}));
+            $('#contractExpired').click();
+        });
+        $('#monthYearField').change();
+
+    });
+</script>
+
 {% endblock content %}

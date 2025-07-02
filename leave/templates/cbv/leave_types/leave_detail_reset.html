@@ -1,0 +1,41 @@
+{% load i18n %}
+{% load static %}
+{% load horillafilters %}
+<div class="mb-2 flex gap-5 items-center">
+    <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset" %}</span>
+    <p class="text-xs font-semibold flex items-center gap-5">
+        : <span>{{instance.reset|yes_no}}</span>
+    </p>
+</div>
+{% if instance.reset_based %}
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset Based" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.get_reset_based_display}}</span>
+        </p>
+    </div>
+{% endif %}
+{% if instance.reset_month %}
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset Month" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.get_reset_month_display}}</span>
+        </p>
+    </div>
+{% endif %}
+{% if instance.reset_day %}
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset Day" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.reset_day}}</span>
+        </p>
+    </div>
+{% endif %}
+{% if instance.reset_weekend %}
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Reset weekend" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.get_reset_weekend_display}}</span>
+        </p>
+    </div>
+{% endif %}

@@ -1,0 +1,161 @@
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+{% comment %} <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ {% endcomment %}
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+.draft--dot{
+  background-color:grey;
+}
+.review_ongoing--dot{
+  background-color:orange;
+}
+.confirmed--dot{
+  background-color: rgb(103, 171, 238)
+}
+.paid--dot{
+  background-color:green;
+}
+
+.status-draft {
+
+  border-left: 3.4px solid grey !important;
+  border-radius: 4px 0 0 4px;
+}
+.status-review_ongoing {
+
+  border-left: 3.4px solid orange !important;
+  border-radius: 4px 0 0 4px;
+}
+.status-confirmed {
+
+  border-left: 3.4px solid rgb(103, 171, 238) !important;
+  border-radius: 4px 0 0 4px;
+}
+.status-paid {
+
+  border-left: 3.4px solid green !important;
+  border-radius: 4px 0 0 4px;
+}
+
+.sent-to-employee {
+  background-color: yellowgreen;
+  color: white;
+}
+
+</style>
+
+<div hx-get="{% url "payslip-navbar" %}" hx-trigger="load">
+</div>
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+
+
+{% include "generic/components.html" %}
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="individualPayslipModal"
+  role="dialog"
+  aria-labelledby="individualPayslipModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header pb-0">
+      <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Create Payslip" %}
+      </h1>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="individualPayslipModal">
+      {% include "payroll/payslip/create_payslip.html" %}
+    </div>
+  </div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="bulkPayslipModal"
+  role="dialog"
+  aria-labelledby="bulkPayslipModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header pb-0">
+      <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Bulk Payslip" %}
+      </h1>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="bulkPayslipModal">
+      {% include "payroll/payslip/bulk_create_payslip.html" %}
+    </div>
+  </div>
+</div>
+
+
+
+<div
+  class="oh-modal"
+  id="payslipExport"
+  role="dialog"
+  aria-labelledby="payslipExport"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="employeeExportLavel">
+        {% trans "Export Payslips" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div class="oh-modal__dialog-body p-0 pt-2" id="payslipExportModalBody">
+        <form
+          action="{%url 'payslip-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="payslipExportForm"
+        >
+        {% csrf_token %}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'cbv/payslip.js' %}"></script>
+
+{% endblock content %}

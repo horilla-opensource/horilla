@@ -1,0 +1,46 @@
+{% load i18n %}
+    <span class="oh-permission-count">
+        {{instance.jobrole_set.all|length}}
+        {% trans "Job Roles" %}
+    </span>
+    {% for role in instance.jobrole_set.all %}
+        <div id="jobRoleDiv{{role.id}}">
+            <span class="oh-user-panel oh-collapse-panel">
+                <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                        <img src="https://ui-avatars.com/api/?name={{role}}&background=random"
+                            class="oh-profile__image" alt="Baby C." />
+                    </div>
+                    <span class="oh-profile__name oh-text--dark">{{role|capfirst}}</span>
+                </div>
+                <div>
+                    <div class="d-flex">
+                        {% if perms.base.change_jobrole %}
+                            <div>
+                                <a hx-get="{% url 'update-job-role' role.id %}" class="oh-btn"
+                                    hx-target="#genericModalBody" data-toggle="oh-modal-toggle"
+                                    data-target="#genericModal" class="mr-3 float-left"
+                                    title="{% trans 'Edit' %}">
+                                    <ion-icon name="pencil-outline"></ion-icon>
+                                </a>
+                            </div>
+                        {% endif %}
+                        {% if perms.base.delete_jobrole %}
+                            <div>
+                                <button
+                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                    title="{% trans 'Remove' %}"
+                                    hx-get="{% url 'generic-delete' %}?model=base.jobrole&pk={{role.pk}}"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#deleteConfirmation"
+                                    hx-target="#deleteConfirmationBody"
+                                >
+                                    <ion-icon name="close" class="text-danger"></ion-icon>
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </span>
+        </div>
+    {% endfor %}

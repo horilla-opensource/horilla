@@ -1,0 +1,272 @@
+<style>
+  .oh-info {
+    top: 2px !important;
+  }
+</style>
+{% extends 'index.html' %} {% block content %} {% load static i18n horillafilters mathfilters recruitmentfilters %}
+<div class="grid grid-cols-1 xl:grid-cols-5 md:grid-cols-2 gap-4 mb-4">
+  <div class="bg-white p-6 rounded-md shadow-card relative">
+    <div class="flex items-center gap-4">
+      <div class="bg-[#1cba5121] p-3 rounded-md">
+        <img
+          src="{% static 'horilla_theme/assets/img/icons/total-vacancy.svg' %}"
+          width="20"
+        />
+        <!-- <i class="fas fa-users text-primary-600"></i> -->
+      </div>
+      <div>
+        <p class="text-sm">{% trans "Total Vacancies" %}</p>
+        <div class="flex items-center gap-2">
+          <p class="text-xl font-bold text-secondary-900">{{total_vacancy}}</p>
+          <!-- <p class="text-success text-sm">+23%</p> -->
+        </div>
+      </div>
+    </div>
+    <!-- <button class="w-3 h-3 absolute right-6 top-6">
+        <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+      </button> -->
+  </div>
+  <div class="bg-white p-6 rounded-md shadow-card relative" onclick="window.location.href = `/recruitment/recruitment-view`">
+    <div class="flex items-center gap-4">
+      <div class="bg-[#b71db01f] p-3 rounded-md">
+        <img  src="{% static 'horilla_theme/assets/img/icons/ongoing-rec.svg' %}" width="20" />
+      </div>
+      <div >
+        <p class="text-sm">{% trans "Ongoing Recruitments" %}</p>
+        <div class="flex items-center gap-2">
+          <p class="text-xl font-bold text-secondary-900">
+            {{ongoing_recruitments}}
+          </p>
+          <!-- <p class="text-success text-sm">+23%</p> -->
+        </div>
+      </div>
+    </div>
+    <!-- <button class="w-3 h-3 absolute right-6 top-6">
+        <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+      </button> -->
+  </div>
+  <div class="bg-white p-6 rounded-md shadow-card relative" onclick="window.location.href = `/recruitment/candidate-view?hired=true`">
+    <div class="flex items-center gap-4">
+      <div class="bg-[#ea7f2f2e] p-3 rounded-md">
+        <img src="{% static 'horilla_theme/assets/img/icons/hired-candidates.svg' %}" width="20" />
+      </div>
+      <div >
+        <p class="text-sm">{% trans "Hired Candidates" %}</p>
+        <div class="flex items-center gap-2">
+          <p class="text-xl font-bold text-secondary-900">
+            {{total_hired_candidates}}
+          </p>
+          <!-- <p class="text-red-600 text-sm">-25%</p> -->
+        </div>
+      </div>
+    </div>
+    <!-- <button class="w-3 h-3 absolute right-6 top-6">
+        <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+      </button> -->
+  </div>
+  <div class="bg-white p-6 rounded-md shadow-card relative">
+    <div class="flex items-center gap-4">
+      <div class="bg-[#d821491c] p-3 rounded-md">
+
+        <img src="{% static 'horilla_theme/assets/img/icons/conversion-rate.svg' %}" width="20" />
+      </div>
+      <div>
+        <div class="flex gap-1">
+          <p class="text-sm">{% trans "Conversion Rate" %}</p>
+          <span
+            class="oh-info"
+            title="Conversion Rate = ( Total Hired Candidates / Total Candidates ) * 100"
+          ></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <p class="text-xl font-bold text-secondary-900">
+            {{conversion_ratio}}
+          </p>
+          <!-- <p class="text-success text-sm">+23%</p> -->
+        </div>
+      </div>
+    </div>
+    <!-- <button class="w-3 h-3 absolute right-6 top-6">
+        <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+      </button> -->
+  </div>
+  {% if "onboarding"|app_installed %}
+  <div class="bg-white p-6 rounded-md shadow-card relative">
+    <div class="flex items-center gap-4">
+      <div class="bg-[#E6E6FA] p-3 rounded-md">
+        <img src="{% static 'horilla_theme/assets/img/icons/offer-acceptance.svg' %}" width="20" />
+      </div>
+      <div>
+        <div class="flex gap-1">
+          <p class="text-sm">{% trans "Offer Acceptance Rate" %}</p>
+          <span
+            class="oh-info"
+            title="Offer Acceptance Rate = ( Onboarding candidates / Total Hired Candidates ) * 100"
+          ></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <p class="text-xl font-bold text-secondary-900">
+            {{acceptance_ratio}}%
+          </p>
+          <!-- <p class="text-success text-sm">+23%</p> -->
+        </div>
+      </div>
+    </div>
+    <!-- <button class="w-3 h-3 absolute right-6 top-6">
+          <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+        </button> -->
+  </div>
+  {% endif %}
+</div>
+
+<div class="grid grid-cols-12 gap-4 mb-4">
+  <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-md font-semibold">{% trans "Skill Zone Status" %}</h3>
+    </div>
+    <div class="overflow-hidden overflow-x-auto">
+      <div
+        hx-get='{% url "skill-zone-status-dashboard" %}'
+        hx-trigger="load"
+      ></div>
+    </div>
+  </div>
+  <div
+    class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+  >
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-md font-semibold">
+        {% trans "Candidate Offer Letter Status" %}
+      </h3>
+      <!-- <button class="w-3 h-3">
+            <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+          </button> -->
+    </div>
+
+    <div class="w-full max-w-xs mx-auto">
+      <div class="relative">
+        <canvas id="candidateChart"></canvas>
+      </div>
+    </div>
+  </div>
+  {% if "onboarding"|app_installed %}
+  <div
+    class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+  >
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-md font-semibold">{% trans "Candidate on Onboard" %}</h3>
+      {% if onboarding_count %}
+      <a class="w-4 h-4" href="{% url 'candidate-view' %}?start_onboard=true">
+        <i class="fa-solid fa-eye"></i>
+      </a>
+      {% endif %}
+    </div>
+    <div class="overflow-hidden overflow-x-auto">
+      <div
+        hx-get='{% url "candidate-on-onboard-dashboard" %}'
+        hx-trigger="load"
+      ></div>
+    </div>
+  </div>
+  {% endif %}
+  <div
+    class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+    style="height: 425px"
+  >
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-md font-semibold">{% trans "Joinings Per Month" %}</h3>
+      <select class="" id="year"></select>
+    </div>
+
+    <div>
+      <canvas id="hiringChart" class="w-40 h-64"></canvas>
+    </div>
+
+    <div
+      id="recruitmentLegend"
+      class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+    ></div>
+  </div>
+  <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card" style="height: 425px">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-md font-semibold">
+        {% trans "Current Hiring Pipeline" %}
+      </h3>
+    </div>
+    <div class="overflow-hidden overflow-x-auto">
+      <div
+        hx-get='{% url "current-hiring-pipeline-dashboard" %}'
+        hx-trigger="load"
+        class=""
+        style="max-height: 360px"
+      ></div>
+    </div>
+  </div>
+
+  <div
+    class="xl:col-span-7 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card"
+  >
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-md font-semibold">{% trans "Candidates Per Stage" %}</h3>
+      <!-- <button class="w-3 h-3">
+                <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+              </button> -->
+    </div>
+
+    <div>
+      {% if stage_chart_count %}
+      <canvas id="recruitmentChart1" class="w-full h-96"></canvas>
+      {% endif %}
+    </div>
+  </div>
+  {% if ongoing_recruitments %}
+  <div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+    <div class="flex justify-between items-center mb-2">
+        <h3 class="text-md font-semibold">{% trans "Ongoing Recruitments & Hiring Managers" %}</h3>
+    </div>
+    <div class="overflow-hidden overflow-x-auto">
+        <div hx-get='{% url "ongoing-recruitment-dashboard" %}'
+             hx-trigger="load"
+             class=""
+             style="max-height: 360px;">
+        </div>
+    </div>
+</div>
+{% endif %}
+{% if "onboarding"|app_installed %}
+{% if request.user|is_in_task_managers %}
+<div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card" style="height: 425px">
+    <div class="flex justify-between items-center mb-2">
+      <h3 class="text-md font-semibold">
+        {% trans "My Onboarding Tasks" %}
+      </h3>
+    </div>
+    <div class="overflow-hidden overflow-x-auto">
+        <div id="taskStatus" hx-get="{% url "task-report-onboarding" %}" hx-trigger="load">
+	</div>
+    </div>
+  </div>
+  {% endif %}
+  {% endif %}
+
+  <script src="{% static 'dashboard/candidateChart.js' %}"></script>
+  <script src="{% static 'dashboard/joiningChart.js' %}"></script>
+  <script src="{% static 'dashboard/recruitmentChart.js' %}"></script>
+  <script>
+    var selectyear = document.getElementById("year");
+    var currentYear = new Date().getFullYear();
+
+    // Populate the dropdown with years from 2000 to the current year
+    for (var year = 2000; year <= currentYear; year++) {
+      var option = document.createElement("option");
+      option.value = year;
+      option.text = year;
+      // Set the default value to the current year
+      if (year === currentYear) {
+        option.selected = true;
+      }
+      selectyear.appendChild(option);
+    }
+  </script>
+</div>
+  {% endblock %}

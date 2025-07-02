@@ -1,0 +1,13 @@
+{% load i18n %}
+                {% if instance.attachment %}
+                  <div>
+                    <div class="oh-helpdesk_attached--content">
+                      <div class="oh-helpdesk__attachment-icon">
+                        <a href="{{ instance.attachment.url }}" target="_blank"><span class="oh-file-icon oh-file-icon--pdf"></span></a>
+                      </div>
+                      <a href="{{ instance.attachment.url }}" target="_blank"><span class="oh-helpdesk__filename">{% trans "View File" %}</span></a>
+                    </div>
+                  </div>
+                {% else %}
+                  <div>{% trans "No file has been uploaded." %}</div>
+                {% endif %}

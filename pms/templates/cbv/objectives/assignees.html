@@ -1,0 +1,30 @@
+{% load i18n %}
+<div >
+    {% for emp_objective in instance.employee_objective.all %}
+        <div id="assigneesContainer{{emp_objective.id}}">
+            <span class="oh-user-panel oh-collapse-panel" data-type="user" >
+                <div class="oh-profile oh-profile--md">
+                    <div class="oh-profile__avatar mr-1">
+                        <img
+                        src="https://ui-avatars.com/api/?name={{emp_objective.employee_id.get_full_name}}&background=random"
+                        class="oh-profile__image"
+                        alt="Baby C."
+                        />
+                    </div>
+                    <span class="oh-profile__name oh-text--dark" title="{{emp_objective.employee_id}}"
+                    >{{emp_objective.employee_id|truncatechars:15}}</span
+                    >
+                </div>
+                <a
+                    hx-confirm="{% trans 'Are you sure want to remove this assignee?' %}"
+                    hx-post="{% url 'assignees-remove' instance.id emp_objective.employee_id.id %}"
+                    title="{% trans "Remove" %}" hx-swap="innerHTML" hx-target="#assigneesContainer{{emp_objective.id}}"
+                    onclick="event.stopPropagation()" class="oh-user-panel__remove"
+                >
+                    <ion-icon name="close-outline"></ion-icon>
+                </a>
+            </span>
+        </div>
+    {% endfor %}
+    <span class="count-span">{{ instance.employee_objective.all|length}} {% trans "Assignees" %}</span>
+</div>

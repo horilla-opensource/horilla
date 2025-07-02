@@ -1,0 +1,155 @@
+ {% load i18n %} {% load basefilters %}
+
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">
+        {% trans "Work Info" %}
+      </div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Employee" %}</label
+              >
+              {{form.employee_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Job Position" %}</label
+              >
+              {{form.employee_id__employee_work_info__job_position_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Shift" %}</label>
+              {{form.employee_id__employee_work_info__shift_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Company" %}</label
+              >
+              {{form.employee_id__employee_work_info__company_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Is Active" %}?</label
+              >
+              {{form.employee_id__is_active}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Department" %}</label
+              >
+              {{form.employee_id__employee_work_info__department_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Job Role" %}</label
+              >
+              {{form.employee_id__employee_work_info__job_role_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Work Type" %}</label
+              >
+              {{form.employee_id__employee_work_info__work_type_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Reporting Manager" %}</label
+              >
+              {{form.employee_id__employee_work_info__reporting_manager_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Gender" %}</label>
+              {{form.employee_id__gender}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">
+        {% trans "Shift Request" %}
+      </div>
+      <div class="oh-accordion-body">
+        <!-- First Row: Requested Shift and Previous Shift -->
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Requested Shift" %}</label>
+              {{ form.shift_id }}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Previous Shift" %}</label>
+              {{ form.previous_shift_id }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Second Row: Requested Date and Approved -->
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Requested Date" %}</label>
+              {{ form.requested_date }}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Approved" %}?</label>
+              {{ form.approved }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Third Row: Canceled and Requested -->
+        <div class="row">
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Canceled" %}?</label>
+              {{ form.canceled }}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Requested?" %}</label>
+              {{ form.requested }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">
+        {% trans "Advanced" %}
+      </div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Requested Date From" %}</label
+              >
+              {{form.requested_date__gte}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Requested Date Till" %}</label
+              >
+              {{form.requested_date__lte}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

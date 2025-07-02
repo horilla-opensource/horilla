@@ -1,0 +1,133 @@
+
+{% load i18n %}
+<div class="accordion-wrapper space-y-2">
+    {% for question, answers in feedback_overview.items %}
+      <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+
+        <!-- Accordion Button -->
+        <button
+          class="accordion-btn w-full flex justify-between items-center px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
+          <div class="flex items-center gap-2">
+            {{ question }}
+          </div>
+          <div class="flex items-center gap-5">
+            <span class="icon text-xl font-bold">+</span>
+          </div>
+        </button>
+
+        <!-- Accordion Panel -->
+        <div class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+          <div class="py-3">
+            {% if answers %}
+              <table class="w-full">
+                <thead class="bg-white">
+                  <tr class="border-b border-[#ececec]">
+                    <th class="text-sm font-medium text-left p-3">{% trans "Employee" %}</th>
+                    <th class="text-sm font-medium text-left p-3">{% trans "Answer" %}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for answer in answers %}
+                    {% for employee, value in answer.items %}
+                      <tr class="border-b border-[#ebebeb]">
+                        <td class="text-sm text-left p-3 text-[#666]">
+                          <div class="flex gap-3 items-center font-normal text-sm">
+                            <img src="{{ employee.get_avatar }}" class="rounded-full" alt="" width="30" />
+                            <span>{{ employee }}</span>
+                          </div>
+                        </td>
+                        <td class="text-sm text-left p-3 text-[#666]">
+                          {% if value.1.type == '1' %}
+                            <span class="oh-activity-sidebar__a">{{ value.0.answer }}</span>
+                          {% elif value.1.type == '2' %}
+                            <ul class="flex gap-2 text-lg ps-4 mb-4">
+                                {% for i in "12345" %}
+                                  <li>
+                                    <i class="fa-solid fa-star {% if i <= value.0.answer %}text-[#FFA800]{% else %}text-[#dfdfdf]{% endif %}"></i>
+                                  </li>
+                                {% endfor %}
+                              </ul>
+
+                          {% elif value.1.type == '3' %}
+                            <div class="oh-input__group">
+                              <div class="oh-input-picker-group">
+                                <div class="oh-input-picker oh-input-picker--selected boolean-colour">
+                                  {{ value.0.answer }}
+                                  <input type="radio" selected />
+                                </div>
+                              </div>
+                            </div>
+                          {% elif value.1.type == '4' %}
+                            <div class="d-block">
+                              <label class="oh-label" for="answer1">{{ value.0.answer }}</label>
+                            </div>
+                          {% elif value.1.type == '5' %}
+                            <div class="d-block mt-2">
+                              <div class="oh-input-picker-group oh-input-picker-group--resp">
+                                <div class="oh-input-picker oh-input-picker--likert likert-colour oh-input-picker--selected">
+                                  {{ value.0.answer }}
+                                </div>
+                              </div>
+                            </div>
+                          {% elif value.1.type == '6' %}
+                            <div class="mt-2">
+                              <div class="oh-input-picker-group oh-input-picker-group--resp">
+                                <div class="oh-input-picker oh-input-picker--likert oh-input-picker--selected
+                                  {% if value.0.answer == 'Bad' %} oh-input-picker--1
+                                  {% elif value.0.answer == 'Average' %} oh-input-picker--2
+                                  {% elif value.0.answer == 'Good' %} oh-input-picker--3
+                                  {% elif value.0.answer == 'Perfect' %} oh-input-picker--4
+                                  {% endif %}
+                                ">
+                                  {{ value.0.answer }}
+                                </div>
+                              </div>
+                            </div>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+              <p class="py-2 text-gray-500 text-sm">{% trans "No answers yet." %}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+
+    <!-- ACCORDION -->
+    <script>
+        document.querySelectorAll('.accordion-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const panel = btn.nextElementSibling;
+                const icon = btn.querySelector('.icon');
+                const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+
+                // Collapse all others (optional — comment this block if you want multiple open)
+                document.querySelectorAll('.accordion-panel').forEach(p => {
+                    p.style.maxHeight = null;
+                    p.previousElementSibling.querySelector('.icon').textContent = '+';
+                    p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
+                    p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                });
+
+                // Toggle current
+                if (!isOpen) {
+                    panel.style.maxHeight = panel.scrollHeight + 'px';
+                    icon.textContent = '−';
+                    btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
+                    btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                } else {
+                    panel.style.maxHeight = null;
+                    icon.textContent = '+';
+                    btn.classList.remove("bg-[#e54f38]", "text-white");
+                    btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                }
+            });
+        });
+    </script>

@@ -1,0 +1,36 @@
+{% extends 'settings.html' %} {% block settings %}{% load i18n %} {% load horillafilters %}{% load widget_tweaks %}
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans "Restrict Past Leave" %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+            <div class="col-span-12 lg:col-span-6">
+                <form action = "" method="post" class="d-flex">
+                    {% csrf_token %}
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex space-x-2">
+                    <h3 class="text-sm font-medium">{% trans "Restricts Past Date Leave Request Creation" %}</h3>
+                    <span class="oh-info mr-2" title="{% trans "By enabling this only admins and managers can create leave requests for the past dates" %}"> </span>
+                </div>
+                    <label class="toggle-label">
+                        <input
+                            type="checkbox"
+                            class="toggle-input"
+                            id = "enabled"
+                            name="enabled"
+                            style = "cursor:pointer"
+                            onchange="$(this).closest('form').submit();"
+                            {% if enabled_restriction.enabled %} checked {% endif %}
+                        />
+                        <div class="toggle-switch"></div>
+                    </label>
+
+                </div>
+            </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    {% endblock settings %}

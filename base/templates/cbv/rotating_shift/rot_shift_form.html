@@ -1,0 +1,64 @@
+{% load i18n %}
+{% load static %}
+
+<div id="formContainer">
+    {% include "generic/horilla_form.html" %}
+
+
+    <button
+    hidden
+    hx-target="#moreShiftContainer_{{form.shift_counts|add:2}}"
+    hx-swap="outerHTML"
+    hx-post="{% url 'add-remove-shift-fields' %}"
+    role="button"
+    id = "addshiftButton"
+    style="color: green">{% trans "Add more shifts.." %}</button>
+
+
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        var shiftCount = {{ form.shift_counts }} - 1;
+        var shiftCounts = {{ form.shift_counts }}
+
+        for (var i = 1; i < shiftCounts; i++) {
+            var parentDivId = "id_shift"+ i +"_parent_div";
+            var parentDiv = document.getElementById(parentDivId);
+            $(parentDiv).removeClass("col-md-6");
+            if (i > 2) {
+                $(parentDiv).find('.oh-label__info').remove();
+            }
+        }
+
+        var divElement = document.createElement('div');
+        var shifCount = {{form.shift_counts|add:2}}
+        divElement.id = 'moreShiftContainer_'+ shifCount;
+        divElement.className = 'pt-2';
+        divElement.style.textAlign = 'end';
+        var anchorElement = document.createElement('a');
+        anchorElement.setAttribute('role', 'button');
+        anchorElement.setAttribute('id', 'addshift');
+        anchorElement.style.color = 'green';
+        anchorElement.innerText = 'Add more shift..';
+
+        divElement.appendChild(anchorElement);
+        var parentDiv = document.getElementById(parentDivId);
+        if (!document.getElementById('addshift')) {
+        if (parentDiv) {
+
+            parentDiv.insertAdjacentElement('afterend', divElement);
+        } else {
+            var parentDiv = document.getElementById('id_shift2_parent_div');
+            parentDiv.insertAdjacentElement('afterend', divElement);
+           }
+        }
+
+           $(document).off('click', '#addshift').on('click', '#addshift', function(event) {
+            $('#addshiftButton').click();
+        });
+
+    });
+
+</script>

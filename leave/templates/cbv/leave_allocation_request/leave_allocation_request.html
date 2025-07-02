@@ -1,0 +1,127 @@
+
+
+
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+
+    .oh-modal_close--custom {
+		border: none;
+		background: none;
+		font-size: 1.5rem;
+		opacity: 0.7;
+		position: absolute;
+		top: 25px;
+		right: 15px;
+	}
+
+.approved--dot{
+  background-color:yellowgreen;
+}
+.rejected--dot{
+  background-color:red;
+}
+.requested--dot{
+    background-color: rgb(103, 171, 238);
+}
+
+.status-approved{
+  border-left: 3.4px solid yellowgreen !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.status-rejected {
+
+  border-left: 3.4px solid red !important;
+  border-radius: 4px 0 0 4px;
+
+
+}
+.status-requested {
+
+  border-left: 3.4px solid rgb(103, 171, 238) !important;
+  border-radius: 4px 0 0 4px;
+
+}
+
+.diff-cell {
+    background: rgba(255, 166, 0, 0.158);
+}
+
+
+
+
+
+</style>
+
+<div hx-get="{% url "nav-leave-allocation-request" %}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  hx-get="{% url "leave-allocation-request-filter"  %}?{{request.GET.urlencode}}"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+<div class="oh-activity-sidebar" id="allocationactivitySidebar" style="z-index:1000;">
+	<div class="oh-activity-sidebar__body" id="commentContainer">
+	</div>
+</div>
+
+
+
+<div
+	class="oh-modal"
+	id="rejectModal"
+	role="dialog"
+	aria-labelledby="rejectDialogModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog" id="rejectTarget"></div>
+</div>
+
+
+<script src="{% static 'cbv/shift_request/shift_request_bulk_actions.js' %}"></script>
+<script>
+    $(document).ready(function () {
+		$(".oh-modal_close--custom").click(function () {
+			$(this).closest(".oh-modal").removeClass("oh-modal--show");
+		});
+		$("#id_field").on("change", function () {
+			$(".filterButton")[0].click();
+		});
+	});
+</script>
+
+
+{% endblock content %}

@@ -1,0 +1,29 @@
+{% load i18n %} {% load basefilters %}
+
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="shiftRequestsExportLavel">
+        {% trans "Export Shift Requests" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div
+        class="oh-modal__dialog-body p-0 pt-2"
+        id="shiftRequestsExportModalBody"
+      >
+        <form
+          action="{%url 'shift-request-info-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="shiftRequestsExportForm"
+        >
+          {% csrf_token %} {% include "shift_request/shift_request_export.html" %}
+          <div class="oh-dropdown__filter-footer">
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Export" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>

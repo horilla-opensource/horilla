@@ -1,0 +1,40 @@
+{% load i18n static %}
+{% if notifications %}
+    <ul class="mylist text-sm h-60 overflow-hidden overflow-y-auto">
+        {% for notification in notifications %}
+        <li>
+            {% if LANGUAGE_CODE == 'ar' %}
+                <p>{{ notification.data.verb_ar }}</p>
+            {% elif LANGUAGE_CODE == 'de' %}
+                <p>{{ notification.data.verb_de }}</p>
+            {% elif LANGUAGE_CODE == 'fr' %}
+                <p>{{ notification.data.verb_fr }}</p>
+            {% elif LANGUAGE_CODE == 'es' %}
+                <p>{{ notification.data.verb_es }}</p>
+            {% else %}
+                <p>{{ notification.verb }}</p>
+            {% endif %}
+            <br />
+            <p class="text-xs text-[#777777] mt-1">
+                {{ notification.timesince }} ago by
+                {% if notification.actor.employee_first_name %}
+                    {{ notification.actor.get_full_name }}
+                {% else %}
+                    {% if notification.data.label %}
+                        {{notification.data.label}}
+                    {% else %}
+                        {% trans "Anonymous"%}
+                    {% endif %}
+                {% endif %}
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+
+{% else %}
+    <div class="opacity-30">
+        <img src="{% static "/horilla_theme/assets/img/icons/notification.svg" %}" alt="" width="40" class="mx-auto mb-3">
+        <h5 class="text-center font-semibold mb-1">{% trans "All Caught Up!" %}</h5>
+        <p class="text-center text-sm">{% trans "You have no new notifications at the moment" %}</p>
+    </div>
+{% endif %}

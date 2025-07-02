@@ -1,0 +1,103 @@
+{% load static %}
+<div class="fixed inset-y-0 left-0 w-auto bg-white border-r border-r-dark-50 z-50">
+  <div class="p-4">
+    <div class="flex items-center justify-center gap-2 mb-6">
+      <img src="/static/horilla_theme/assets/img/horilla-logo.png" alt="Logo" class="w-10 h-10" />
+    </div>
+
+    <nav class="space-y-2 overflow-hidden overflow-y-auto h-[calc(100vh_-_95px)] sidebar-scroll">
+      {% include "horilla_theme/components/sidebar/top_menu.html" %}
+      {% for menues in sidebar %}
+        <button class="sideboxmain group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300" title="{{ menues.menu }}">
+          <img src="{% static menues.img_src %}" alt="" style="filter: brightness(0) invert(0);" class="w-4.5 h-4.5 transition duration-300 group-hover:filter group-hover:brightness-0 group-hover:invert" />
+          <div class="sidebox absolute shadow-card mb-3 bg-white min-w-56 left-[75px]">
+            <h5 class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]">{{ menues.menu }}</h5>
+            <ul class="p-3">
+              {% for submenu in menues.submenu %}
+                <li>
+                  <a href="{{ submenu.redirect }}">{{ submenu.menu }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </button>
+      {% endfor %}
+      {% include "horilla_theme/components/sidebar/bottom_menu.html" %}
+    </nav>
+  </div>
+</div>
+<script>
+    // script to activate the active menu
+  $(".sidebox ul li").hover(function () {
+      // over
+      $(this).addClass("hovered-menu");
+
+
+    }, function () {
+      $(this).removeClass("hovered-menu");
+      // out
+    }
+  );
+
+function highlightRow(checkbox) {
+    checkbox.closest(".oh-sticky-table__tr").removeClass("highlight-selected");
+    checkbox.closest("tr").removeClass("highlight-selected");
+    if (checkbox.is(":checked")) {
+      checkbox.closest(".oh-sticky-table__tr").addClass("highlight-selected");
+      checkbox.closest("tr").addClass("highlight-selected");
+    }
+  }
+
+  function toggleHighlight(ids) {
+    $.each(ids, function (indexInArray, id) {
+      setTimeout(() => {
+        $(`#${id}`)
+          .closest(".oh-sticky-table__tr")
+          .removeClass("highlight-selected");
+        if ($(`#${id}`).is(":checked")) {
+          $(`#${id}`)
+            .closest(".oh-sticky-table__tr")
+            .addClass("highlight-selected");
+        }
+      }, 1);
+    });
+  }
+
+function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
+    var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length;
+    id = targetElement.attr("id");
+    if (id) {
+        id = id.split("count_")[1];
+    }
+    if (count) {
+        targetElement.html(count);
+        targetElement.parent().removeClass("d-none");
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass(
+            "d-none"
+        );
+    } else {
+        targetElement.parent().addClass("d-none");
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass(
+            "d-none"
+        );
+    }
+}
+
+function removeHighlight() {
+    setTimeout(function () {
+        $(".toggle-highlight").removeClass("toggle-highlight");
+    }, 200);
+}
+
+function removeId(element, storeKey = "selectedInstances") {
+    id = element.val();
+    viewId = element.attr("data-view-id");
+    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
+    let elementToRemove = 5;
+    if (ids[ids.length - 1] === id) {
+        ids.pop();
+    }
+    ids = JSON.stringify(ids);
+    $(`#${storeKey}`).attr("data-ids", ids);
+}
+</script>

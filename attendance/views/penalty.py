@@ -50,7 +50,6 @@ def cut_available_leave(request, instance_id):
             penalty.employee_id = instance.employee_id
             penalty.late_early_id = instance
             penalty.penalty_amount = penalty_instance.penalty_amount
-
             if apps.is_installed("leave"):
                 penalty.leave_type_id = penalty_instance.leave_type_id
                 penalty.minus_leaves = penalty_instance.minus_leaves

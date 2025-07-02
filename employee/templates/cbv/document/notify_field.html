@@ -1,0 +1,15 @@
+{% load i18n %}
+<label
+  class="oh-label"
+  for="id_{{ form.notify_before.title }}"
+  title="{{ form.notify_before.help_text|safe }}"
+  >{% trans form.notify_before.label %}</label
+>
+{{form.notify_before}}
+{% comment %} <script>
+  $(document).ready(function () {
+      $("select").on("select2:select", function (e) {
+          $(this).closest("select")[0].dispatchEvent(new Event("change"));
+      });
+  });
+</script> {% endcomment %}

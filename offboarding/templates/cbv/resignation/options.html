@@ -1,0 +1,26 @@
+{% load i18n %}
+<div  onclick="event.stopPropagation()">
+    <div class="oh-btn-group">
+        {% if perms.offboarding.change_resignationletter %}
+        <button type="button" hx-get="{% url 'send-mail-employee' instance.employee_id.id %}"
+          title="{% trans " Send Mail" %}" hx-target="#resignationModalBody" class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle"
+          data-target="#resignationModal" style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"
+          onclick="event.stopPropagation()"><ion-icon name="mail-open-outline" role="img" class="md hydrated"
+            aria-label="mail open outline"></ion-icon>
+        </button>
+        {% endif %}
+
+        <a hx-get="{% url 'resignation-request-update' instance.id %}" title = {% trans "Edit" %}
+          class="oh-btn oh-btn--light" data-toggle="oh-modal-toggle" hx-target="#genericModalBody"
+          data-target="#genericModal" style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"><ion-icon
+            class="text-dark md hydrated" name="create-outline" role="img" aria-label="create outline"></ion-icon></a>
+        {% if perms.offboarding.delete_resignationletter %}
+        <a href="{% url 'delete-resignation-request' %}?letter_ids={{instance.id}}" class="oh-btn oh-btn--light"
+          title = {%trans "Delete" %} style="flex: 1 0 auto; width: 40px; height: 40.68px; padding: 0"
+          onclick="return confirm('{% trans 'Do you want to delete this record' %}?')"><ion-icon
+            class="text-danger md hydrated" name="trash-outline" role="img" aria-label="trash outline"></ion-icon>
+        </a>
+        {% endif %}
+
+      </div>
+</div>

@@ -1,0 +1,61 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+.paid--dot{
+  background-color:yellowgreen;
+}
+.unpaid--dot{
+  background-color:orange;
+}
+
+.payment-paid{
+  border-left: 3.4px solid yellowgreen !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.payment-unpaid{
+  border-left: 3.4px solid orange !important;
+  border-radius: 4px 0 0 4px;
+
+}
+</style>
+
+
+<div hx-get="{% url "leave-type-navbar" %}" hx-trigger="load">
+</div>
+
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  hx-get="{% url "leave-type-list"  %}?{{request.GET.urlencode}}" hx-trigger="load"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+<script src="{% static '/candidate/bulk.js' %}"></script>
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+
+{% endblock content %}

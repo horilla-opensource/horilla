@@ -1,0 +1,26 @@
+<div>
+    {% include "generic/horilla_form.html" %}
+</div>
+<script>
+$(document).ready(function(){
+    $('[id="id_start_date"]').parent().parent().hide();
+    $('#id_assignees').closest('div.col-12').hide();
+    addAssignees()
+  })
+  $('#id_add_assignees').change(function(){
+    addAssignees()
+  })
+
+  function addAssignees(){
+    if ($('#id_add_assignees').is(":checked")){
+      $('[id="id_start_date"]').parent().parent().show();
+      $('#id_assignees').closest('div.col-12').show();
+
+    }
+    else{
+      $('[id="id_start_date"]').parent().parent().hide();
+      $('#id_assignees').closest('div.col-12').hide();
+
+    }
+  }
+</script>

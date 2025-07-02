@@ -1,0 +1,75 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+<style>
+    .taxable--dot{
+    background-color:red;
+  }
+  .non-taxable--dot{
+    background-color:gray;
+  }
+
+  .fixed--dot{
+    background-color:orange;
+
+  }
+  .not-fixed--dot{
+    background-color:yellowgreen;
+
+  }
+
+  .taxable-True {
+    border-left: 3.4px solid red !important;
+    border-radius: 4px 0 0 4px;
+  }
+  .taxable-False {
+    border-left: 3.4px solid gray !important;
+    border-radius: 4px 0 0 4px;
+  }
+  .fixed-True{
+    border-left: 3.4px solid orange !important;
+    border-radius: 4px 0 0 4px;
+  }
+  .fixed-False{
+    border-left: 3.4px solid yellowgreen !important;
+    border-radius: 4px 0 0 4px;
+  }
+</style>
+<div hx-get="{% url "allowances-nav-view" %}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
+</div>
+
+
+<div class="oh-wrapper"
+   id="listContainer">
+  <div class="animated-background">
+</div>
+</div>
+
+<script>
+    $("#filterForm").submit(function (e) {
+      var formData = $(this).serialize();
+      count = 0;
+      formData.split("&").forEach(function (field) {
+        parts = field.split("=");
+        value = parts[1];
+        if (parts[0] !== "view"){
+          if (value && value !== "unknown") {
+            count++;
+          }
+        }
+      });
+      $("#filterCount").empty();
+      if (count > 0) {
+        $("#filterCount").text("(" + count + ")");
+      }
+      // $('#field').attr('hx-vals',`{'data':${formData}}` );
+    });
+  </script>
+{% endblock content %}

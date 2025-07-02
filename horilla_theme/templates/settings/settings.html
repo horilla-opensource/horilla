@@ -1,0 +1,37 @@
+{% load i18n %}
+<style>
+.prefix input {
+    margin-bottom:0px;
+}
+.oh-info {
+    top :0px !important;
+}
+</style>
+<div class="col-span-12">
+    <form  action="{% url 'initial-prefix' %}" method="post">
+        {% csrf_token %}
+
+                <div class="flex space-x-2 pb-2">
+                    <label> {% trans "Prefix" %}</label>
+                    <span class="oh-info" title="{% trans 'Set initial badge-id' %}">
+                    </span>
+                </div>
+                <div class="prefix flex gap-2">
+                    {{ prefix_form.badge_id_prefix }}
+                    {% if prefix_form.badge_id_prefix.errors %}
+                    <div class="text-danger">
+                      {{ prefix_form.badge_id_prefix.errors|join:", " }}
+                    </div>
+                  {% endif %}
+                    <select name="company_id" id="id_company_id">
+                        {% for company in companies %}
+                            <option value="{{ company.id }}" {% if company.id == selected_company_id %}selected{% endif %}>
+                                {{ company.company }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <button class="btn" type="submit">Save
+                        Changes</button>
+                </div>
+    </form>
+</div>

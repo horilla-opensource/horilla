@@ -1,0 +1,24 @@
+{% load onboardingfilters %}
+{% if request.user|stage_manages:instance.onboarding_stage.onboarding_stage_id or perms.onboarding.change_candidatestage %}
+<select id="" class="w-100" style="
+    border: 1px solid hsl(213deg,22%,84%);
+    padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+    border-radius: 0rem;" name="stage"
+    hx-post="{% url 'candidate-stage-update' instance.id instance.recruitment_id.id %}"
+    hx-trigger="change" hx-target="#onboardingTable{{instance.recruitment_id.id}}">
+    {% for stage in instance.recruitment_id.onboarding_stage.all %}
+    {% if instance.onboarding_stage.onboarding_stage_id == stage %}
+    <option value="{{stage.id}}" selected>{{stage}}</option>
+    {% else %}
+    <option value="{{stage.id}}">{{stage}}</option>
+    {% endif %}
+    {% endfor %}
+</select>
+{% else %}
+{% for stage in instance.recruitment_id.onboarding_stage.all %}
+    {% if instance.onboarding_stage_id == stage %}
+    {{stage}}
+    {% endif %}
+{% endfor %}
+
+{% endif %}

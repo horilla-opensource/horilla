@@ -1,0 +1,205 @@
+
+
+
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+
+
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+.portal--dot{
+  background-color:yellowgreen;
+}
+.not-portal--dot{
+  background-color:rgba(128, 128, 128, 0.482);
+}
+.joining--dot{
+  background-color:yellow;
+}
+.not-joining--dot{
+  background-color:burlywood;
+}
+
+
+
+</style>
+
+ <div hx-get="{% url "onboarding-candidates-nav" %}" hx-trigger="load">
+</div>
+
+
+
+
+{% include "generic/components.html" %}
+<div id="ohMessages"></div>
+<div id="messages"> </div>
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none">
+  </div>
+
+
+  <div
+  class="oh-wrapper"
+  hx-get="{% url 'onboarding-candidates-list' %}?{{request.GET.urlencode}}"
+  hx-trigger="load"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+  </div>
+
+  <div class="oh-modal" id="rejectReasonModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+      </div>
+
+      <div class="oh-modal__dialog-body" id="rejectReasonModalBody"></div>
+    </div>
+  </div>
+
+  <div class="oh-modal" id="addAttachments" role="dialog" aria-labelledby="addAttachments" aria-hidden="true">
+    <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+        <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Attachments" %} <span
+            style="color: #80808080;font-size: 14px;">({% trans "Optional" %})</span></span>
+        <button class="oh-modal__close" aria-label="Close">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <form hx-post="{% url 'email-send' %}"
+      hx-target="#addAttachmentsBody"
+      hx-encoding="multipart/form-data">
+        <div class="oh-modal__dialog-body" id="addAttachmentsBody">
+          <section>
+            <div id="keyResultsContainer">
+              <div class="my-3" id="keyResultCard">
+                <div class="oh-card oh-card--no-shadow oh-card__body">
+
+                  <div class="oh-input__group">
+                    <select name="ids" id="hired_candidates" multiple class="w-100" hidden >
+                      {% for candidate in hired_candidates %}
+                      <option value="{{candidate.id}}">{{candidate.name}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="oh-input__group">
+                    <label class="oh-input__label mt-0" for="keyTitle">{% trans "Template as Attachments" %}</label>
+                    <select name="template_attachment_ids" id="template_attachment_ids" multiple
+                      class="oh-select oh-select-2 w-100">
+                      {% for template in mail_templates %}
+                      <option value="{{template.id}}">{{template.title}}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="oh-input__group">
+                    <label class="oh-input__label" for="keyDesc">{% trans "Other Attachments" %}</label>
+                    <input type="file" multiple name="other_attachments" id="other_attachments">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div class="oh-modal__dialog-footer">
+          <button onclick="$('.oh-modal#addAttachments').removeClass('oh-modal--show');$(`#messages`).html(
+            $(`<div class ='oh-alert-container'>
+            <div class='oh-alert oh-alert--animated oh-alert--info'>
+              Processing...
+            </div>
+          </div>
+            `)
+          )"
+            class="oh-btn oh-btn--secondary oh-btn--shadow" id="trigger-onboarding" title="Send portal link / Trigger Onboarding">
+            {% trans "Send Portal Link" %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <script>
+
+    $(document).on("click", "#send-port", function () {
+      ids = [];
+      ids.push($("#selectedInstances").attr("data-ids"));
+      ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+      $("#hired_candidates[name=ids]").val(ids);
+      $("select[name=ids]").change();
+  });
+
+    function dateJoining($element){
+        var candId = $element.attr("data-candidate-id");
+        console.log(candId);
+        var dateVal = $element.val();
+        $.ajax({
+          type: "POST",
+          url: "{% url 'update-joining' %}",
+          data: {
+            "candId": candId,
+            "date": dateVal,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          success: function (response) {
+            $("#reloadMessagesButton").click()
+          }
+        });
+      }
+
+      function probotionEnd($element){
+        candId = $element.attr("data-candidate-id");
+        dateVal = $element.val()
+        $.ajax({
+          type: "POST",
+          url: "{% url 'update-probation-end' %}",
+          data: {
+            "candidate_id":candId,
+            "probation_end":dateVal,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+          success: function (response) {
+            $("#reloadMessagesButton").click()
+          }
+        });
+      }
+
+      function offerLetter(url){
+        $.ajax({
+          type: "get",
+          url: url,
+          success: function (response) {
+            $("#reloadMessagesButton").click()
+          }
+        });
+      }
+
+
+
+
+
+</script>
+
+
+<script src="{% static 'cbv/attendance/hour_account.js' %}"></script>
+
+{% endblock content %}

@@ -87,9 +87,9 @@
             {% if perms.recruitment.add_candidate or request.user|is_stagemanager %}
             <div class="oh-dropdown" x-data="{open: false}">
               <a class="" hx-get="{% url 'add-candidate-to-stage' %}?stage_id={{stage.grouper.id}}"
-              hx-target="#createTarget"
+              hx-target="#genericModalBody"
               data-toggle="oh-modal-toggle"
-              data-target="#createModal" @click="open = !open" title="Add Candidates">
+              data-target="#genericModal" @click="open = !open" title="Add Candidates">
                 <ion-icon name="add-sharp" role="img" class="md hydrated mt-1" aria-label="add sharp"></ion-icon>
               </a>
             </div>

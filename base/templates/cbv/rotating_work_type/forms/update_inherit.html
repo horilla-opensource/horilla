@@ -1,0 +1,67 @@
+{% load i18n %}
+<div>
+    {% include "generic/horilla_form.html" %}
+</div>
+
+<div id="moreWorkTypeContainer_{{form.work_type_counts|add:2}}" class="pt-2" style="text-align: end; display:none;">
+    <button
+      id="hidden"
+      hx-target="#moreWorkTypeContainer_{{form.work_type_counts|add:2}}"
+      hx-swap="outerHTML"
+      hx-post="{% url 'add-remove-work-type-fields' %}"
+      role="button"
+      style="color: green"
+    >
+      {% trans "Add more work types.." %}
+    </button>
+    <script>
+
+
+       $(document).ready(function () {
+               var divElement = document.createElement('div');
+               var test = {{ form.work_type_counts }} - 1
+               divElement.id = 'moreWorkTypeContainer_{{form.work_type_counts|add:2}}';
+               divElement.className = 'pt-2';
+               divElement.style.textAlign = 'end';
+
+               var anchorElement = document.createElement('a');
+               anchorElement.setAttribute('role', 'button');
+               anchorElement.setAttribute('id', 'link');
+               anchorElement.style.color = 'green';
+               anchorElement.innerText = 'Add more Work Types..';
+
+               divElement.appendChild(anchorElement);
+               var parentDivId = "id_work_type" + test + "_parent_div"
+               var parentDiv = document.getElementById(parentDivId);
+               if (parentDiv) {
+                   parentDiv.insertAdjacentElement('afterend', divElement);
+               } else {
+                var parentDiv = document.getElementById('id_work_type2_parent_div');
+                parentDiv.insertAdjacentElement('afterend', divElement);
+               }
+
+            });
+
+
+           $('.oh-modal__close--custom').on('click', function() {
+            console.log('Close button clicked');
+            //location.reload();
+
+            // Function to reload the record
+
+        });
+           $(document).off('click', '#link').on('click', '#link', function(e) {
+            e.preventDefault
+               $('#hidden').click();
+           });
+
+            $('.col-12.col-md-6').each(function() {
+                $(this).removeClass('col-md-6').addClass('col-md-12');
+            });
+
+            $(document).on('click', '#delete-link', function(e) {
+                e.preventDefault();
+                $(this).parents().eq(3).remove();
+            });
+</script>
+</div>

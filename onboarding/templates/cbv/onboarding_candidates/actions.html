@@ -1,0 +1,73 @@
+{% load i18n %}
+<div onclick="event.stopPropagation();" class="oh-btn-group">
+    <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+      href="{% url 'rec-candidate-update' instance.id %}?onboarding=True"><ion-icon
+        name="create-outline"></ion-icon></a>
+    {% if perms.recruitment.change_candidate %}
+    <button type="button" hx-get="{% url 'send-mail' instance.id %}" title="{% trans "Send Mail" %}" hx-target="#objectDetailsModalTarget" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" >
+      <ion-icon name="mail-open-outline" role="img" class="md hydrated" aria-label="mail open outline"></ion-icon>
+    </button>
+    {% endif %}
+    {% if perms.recruitment.change_candidate %}
+    <button {% if instance.is_offer_rejected %} style="background: #ff4500a3;
+    color: white;" {% endif %} type="button" hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{instance.id}}" {% if instance.is_offer_rejected %} title="{% trans "Added In Rejected Candidates" %}" {% else %} title="{% trans "Add To Rejected Candidates" %}" {% endif %} hx-target="#genericModalBody" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#genericModal" >
+      <ion-icon name="thumbs-down-outline"></ion-icon></button>
+    {% endif %}
+    {% if not instance.onboarding_stage %}
+    <form hx-post="{% url 'email-send' %}?&no_portal=True" hx-target="#reloadMessages">
+    <a class="oh-btn oh-btn--light-bkg w-100"
+      onclick="
+      event.preventDefault()
+      Swal.fire({
+          title: 'Are you sure?',
+          text: '{% trans "Do you want to add this candidate to onboarding stage?" %}',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: '{% trans "Yes" %}',
+          cancelButtonText: '{% trans "Cancel" %}'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              this.nextElementSibling.nextElementSibling.click();
+          }
+      })"
+    {% comment %} style="background-color: yellowgreen;color: white;" {% endcomment %}
+      title="{% trans 'Start Onboarding' %}"
+      >
+      <ion-icon name="add-outline"></ion-icon>
+    </a>
+    <input type="text" hidden name="ids" value="{{instance.pk}}">
+    <input type="submit" hidden>
+    </form>
+    {% else %}
+    <a class="oh-btn w-100"
+      disabled
+      onclick="
+      event.preventDefault();
+      Swal.fire({
+          icon: 'warning',
+          title: '{% trans "Already Added!" %}',
+          text: '{% trans "Candidate already added to onboarding" %}.',
+          confirmButtonText: 'OK'
+      });
+      "
+      style="background-color: #1dbfca;color: white;"
+      title="{% trans 'Added to Onobarding' %}"
+      >
+      <ion-icon name="add-outline"></ion-icon>
+      </a>
+    {% endif %}
+    {% if instance.onboarding_portal %}
+    <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
+      title="{% trans 'Send Portal / Start Onboarding' %}" onclick="$('select[name=ids]').val('{{instance.id}}');"
+      data-target="#addAttachments" data-toggle="oh-modal-toggle"
+      href="{% url 'email-send' %}?ids={{instance.id}}"><ion-icon name="link-outline"></ion-icon></a>
+    {% else %}
+    <a href="#" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Send Portal  / Start onboarding' %}"
+      onclick="$('select[name=ids]').val('{{instance.id}}');" data-target="#addAttachments"
+      data-toggle="oh-modal-toggle" href="{% url 'email-send' %}?ids={{instance.id}}"><ion-icon
+        name="link-outline"></ion-icon></a>
+    {% endif %}
+    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" onclick="return confirm('{% trans "Do you want to delete this record" %}?')"  id="delete-link"
+      href="{% url 'candidate-delete' instance.id %}" title="{% trans 'Delete' %}"><ion-icon
+        name="trash-outline"></ion-icon></a>
+  </div>

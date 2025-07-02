@@ -1,0 +1,36 @@
+{% load i18n recruitmentfilters horillafilters %}
+<div onclick="event.stopPropagation()">
+    {% with request.user.employee_get.candidate_rating.all as candidate_ratings %}
+    {% if candidate_ratings|has_candidate_rating:instance %}
+    <form hx-swap="none" hx-post='{% url "update-candidate-rating" instance.id %}' method="post">
+        {% csrf_token %}
+        <div class="d-block mb-0" style="width: max-content;">
+            <div class="oh-rate" onclick="$(this).parents().closest('form').find('button').click()">
+                {% for i in "54321" %}
+                <input type="radio" id="star{{i}}{{instance.id}}" name="rating" class="rating-radio"
+                    value="{{i}}" {% if candidate_ratings|rating:instance == i %} checked {% endif %} />
+                <label for="star{{i}}{{instance.id}}" title="{{i}} Stars"></label>
+                {% endfor %}
+            </div>
+            <button type="submit" hidden="true"></button>
+            <span id="rating-radio-error"></span>
+        </div>
+    </form>
+    {% else %}
+    <form hx-swap="none" hx-post='{% url "create-candidate-rating" instance.id %}' method="post">
+        {% csrf_token %}
+        <div class="d-block mb-0">
+            <div class="oh-rate" onclick="$(this).parents().closest('form').find('button').click()">
+                {% for i in "54321" %}
+                <input type="radio" id="star{{i}}{{instance.id}}" name="rating" class="rating-radio"
+                    value="{{i}}" />
+                <label for="star{{i}}{{instance.id}}" title="{{i}} Stars"></label>
+                {% endfor %}
+            </div>
+            <button type="submit" hidden="true"></button>
+            <span id="rating-radio-error"></span>
+        </div>
+    </form>
+    {% endif %}
+    {% endwith %}
+</div>

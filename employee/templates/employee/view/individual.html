@@ -1,63 +1,233 @@
-{% extends 'index.html' %}{% load static %} {% block content %}
+{% extends "index.html" %}
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
 {% load horillafilters %}
 
-<script>
-	var showSearch = false
-</script>
+{% block content %}
+    {% include "generic/components.html" %}
 
+    <div class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none">
+    </div>
+    <div class="oh-checkpoint-badge mb-2"
+    id="shiftselectedInstancesIndividual"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none">
+    </div>
+    <div class="oh-wrapper"
+        hx-get="/employee/profile{{ request.path }}?{{ request.GET.urlencode }}&instance_ids={{ request.GET.instance_ids }}"
+        hx-trigger="load">
+    </div>
+    <div
+    class="oh-modal"
+    id="groupAssign"
+    role="dialog"
+    aria-labelledby="groupAssign"
+    aria-hidden="true"
+  >
+    <div class="oh-modal__dialog" >
+      <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+          {% trans "Employee Group Assign" %}
+        </h2>
+        <button class="oh-modal__close" aria-label="Close">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id="groupAssignBody">
+
+      </div>
+    </div>
+  </div>
+
+    <script>
+        $(document).ready(function () {
+            var exists = $("#view-container").find(".oh-general__tab-link--active").length;
+            if (!exists) {
+                $("#view-container").find(".oh-general__tab-link")[0].click();
+            }
+        });
+
+        toggleColumns("employee-tab", "fieldContainerTable");
+
+        if (!localStorage.getItem("employee_tab")) {
+            $("#fieldContainerTable").find("[type=checkbox]").prop("checked", true).change();
+        }
+
+        function handleFormSubmit() {
+            $('#successMessage').show();
+            setTimeout(function () {
+                $('#successMessage').hide();
+            }, 3000);
+            return false; // Prevent the default form submission
+        }
+
+        function submitForm(elem) {
+            $(elem).siblings('.add_more_submit').click();
+        }
+
+        function enlargeDoc(src, $element) {
+            var enlargeDocContainer = $element.parents().closest("li").find("#enlargeDocContainer");
+            enlargeDocContainer.empty();
+            var style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white';
+            var enlargedImage = $('<iframe>').attr({ src: src, style: style });
+            var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '));
+            enlargeDocContainer.append(enlargedImage);
+            enlargeDocContainer.append(name);
+            setTimeout(function () {
+                enlargeDocContainer.show();
+                const iframe = document.querySelector('iframe').contentWindow;
+                var iframe_document = iframe.document;
+                var iframe_image = iframe_document.getElementsByTagName('img')[0];
+                $(iframe_image).attr('style', 'width:100%; height:100%;');
+            }, 100);
+        }
+
+        function checkSelected(names, target, initial = false) {
+            names = JSON.parse(`${names}`);
+            $.each(names, function (indexInArray, valueOfElement) {
+                if (!initial) {
+                    $(target).find(`[value=${valueOfElement}]`).prop("checked", true).change();
+                } else {
+                    $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
+                }
+            });
+        }
+
+        function updateBadge(element = false) {
+            var panels = $(".panel");
+            $.each(panels, function (indexInArray, valueOfElement) {
+                var check = $(valueOfElement).find("[name=permissions]:checked").length;
+                $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+                $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title", check + " Permissions");
+            });
+
+            var permissionLine = $(".oh-sticky-table__tr");
+            $.each(permissionLine, function (index, value) {
+                var check = $(value).find("[name=permissions]:checked").length;
+                if (check === 4) {
+                    $(value).find(".row-permission").prop("checked", true);
+                }
+            });
+
+            var permissionApps = $(".oh-sticky-table__tbody");
+            $.each(permissionApps, function (index, value) {
+                var total_permission_count = $(value).find("[name=permissions]").length;
+                var checked_permission_count = $(value).find("[name=permissions]:checked").length;
+                if (checked_permission_count === total_permission_count) {
+                    $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", true);
+                } else {
+                    $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", false);
+                }
+            });
+        }
+
+        function hideEnlargeDoc() {
+            var enlargeDocContainer = $('.enlargeDocContainer');
+            enlargeDocContainer.empty();
+        }
+
+        $(document).on('click', function (event) {
+            if (!$(event.target).closest('#enlargeDocContainer').length) {
+                hideEnlargeDoc();
+            }
+        });
+        {% if "attendance"|app_installed %}
+        function validateHours(url) {
+            $.ajax({
+                url: "{% url 'active-tab' %}",
+                method: "GET",
+                data: {
+                    path: "{% url 'attendances-tab-view' %}",
+                    target: `li[data-target="#attendances-tab1"]`
+                },
+                success: function(response) {
+                    window.location.href = url;
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+
+        function validateOTHours(url) {
+            $.ajax({
+                url: "{% url 'active-tab' %}",
+                method: "GET",
+                data: {
+                    path: "{% url 'attendances-tab-view' %}",
+                    target: `li[data-target="#attendances-tab2"]`
+                },
+                success: function(response) {
+                    window.location.href = url;
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                }
+            });
+        }
+        {% endif %}
+
+        {% if request.GET.deleted %}
+        $('#reloadMessagesButton').click();
+        {% endif %}
+    </script>
+
+
+
+<!-- Inline styles -->
 <style>
-	.oh-general__tab {
+    .oh-general__tab {
 		margin-bottom: 15px;
-	}
-
-	.file-upload {
+	 }
+	 .resign-status {
+		background: #73bbe12b;
+		font-size: 0.8rem;
+		padding: 4px 8px;
+		border-radius: 10px;
+		margin-bottom: 6px;
+		font-weight: 600;
+		color: #357579;
+		}
+    .file-upload {
 		margin-top: 6px !important;
 		width: 34px !important;
 		height: 34px !important;
 		font-size: 1.75rem !important;
-	}
-	.enlarge-image-container {
+	 }
+    .enlarge-image-container {
 		display: none;
 		position: fixed;
 		top: 40%;
 		left: 40%;
 		transform: translate(-50%, -50%);
 		width: 30%;
-		height: 50%;
-		z-index: 9999;
+		height: 50%; z-index: 9999;
 	}
-
-	.enlarge-image-container img {
+    .enlarge-image-container img {
 		max-width: 100%;
 		height: auto;
-		border-radius: 5%;
-	}
-
-	.oh-sticky-table {
+		border-radius: 5%; }
+    .oh-sticky-table {
 		max-height: 65vh;
 	}
 
-	.oh-sticky-table__sd {
+    .oh-sticky-table__sd {
 		z-index: 11 !important;
-
 	}
-
-	.oh-sticky-table__right {
-		position: sticky;
-		right: 0;
+    .oh-sticky-table__right {
+		position: sticky; right: 0;
 		background-color: #fff;
-		;
 	}
-
-	.oh-sticky-table__top {
+    .oh-sticky-table__top {
 		z-index: 12 !important;
-		top: 0;
-	}
-
-	.oh-modal_close--custom {
+		top: 0; }
+    .oh-modal_close--custom {
 		border: none;
 		background: none;
 		font-size: 1.5rem;
@@ -66,463 +236,178 @@
 		top: 25px;
 		right: 15px;
 	}
-
-	.oh-tabs__tablist .oh-tabs__tab--active:nth-last-child(2) {
+    .oh-tabs__tablist .oh-tabs__tab--active:nth-last-child(2) {
 		border-right: 1px solid hsl(213deg, 22%, 84%);
+	}
+    .custom-dialog {
+		max-width: 1000px;
+		max-height: 800px;
+	}
+    .file-validation {
+		color: #4f5bd9;
+		background-color: #d8e7f0;
+		border-color: #d6e9c6;
+		padding: 15px; border: 1px solid
+		transparent; border-radius: 4px; }
+    .oh-not-found {
+		display: flex; justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		height: 50vh; opacity: 0.5;
 	}
 
 	.custom-dialog {
 		max-width: 1000px;
 		max-height: 800px;
 	}
-
-	.file-validation {
-		color: #4f5bd9;
-		background-color: #d8e7f0;
-		border-color: #d6e9c6;
-		padding: 15px;
-		border: 1px solid transparent;
-		border-radius: 4px;
-
-	}
-
-	.oh-not-found {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-direction: column;
-		height: 50vh;
-		opacity: 0.5;
-	}
-
-	.editable-input:read-only {
-		color: hsl(0, 0%, 11%);
-		background-color: transparent;
-		border: none;
-		height: 100%;
-		border: 1px solid transparent;
-	}
-
-	.editable-input:read-only:hover {
-		border: 1px solid hsl(213, 22%, 84%);
-	}
-
-	body {
+    body {
 		background-color: #f9f9f9 !important;
 	}
+    .draft--dot {
+		background-color: grey;
+	}
+    .review_ongoing--dot {
+		background-color: orange;
+	}
+    .confirmed--dot {
+		background-color: rgb(103, 171, 238);
+	}
+    .paid--dot {
+		background-color: green;
+	}
+    .status-draft {
+		border-left: 3.4px solid grey !important; border-radius: 4px 0 0 4px;
+	}
+    .status-review_ongoing {
+		border-left: 3.4px solid orange !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-confirmed {
+		border-left: 3.4px solid rgb(103, 171, 238) !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-paid {
+		border-left: 3.4px solid green !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .sent-to-employee {
+		background-color: yellowgreen;
+		color: white;
+	}
+    .at_risk--dot {
+		background-color: red;
+	}
+    .not_started--dot {
+		background-color: grey;
+	}
+    .behind--dot {
+		background-color: orange;
+	}
+    .closed--dot {
+		background-color: rgb(103, 171, 238);
+	}
+    .on_track--dot {
+		background-color: yellowgreen;
+	}
+    .status-At.Risk {
+		border-left: 3.4px solid red !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-Not.Started {
+		border-left: 3.4px solid grey !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-Behind {
+		border-left: 3.4px solid orange !important;
+		border-radius: 4px 0 0 4px; }
+    .status-Closed {
+		border-left: 3.4px solid rgb(103, 171, 238) !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-On.Track {
+		border-left: 3.4px solid yellowgreen !important;
+		border-radius: 4px 0 0 4px;
+	}
+    .status-rejected {
+		border-left: 4px solid red !important;
+		border-radius: 5px 0 0 4px;
+	}
+    .status-cancelled {
+		border-left: 4px solid grey !important;
+		border-radius: 5px 0 0 4px;
+	}
+    .status-requested {
+		border-left: 4px solid orange !important;
+		border-radius: 5px 0 0 4px;
+	}
+    .status-approved {
+		border-left: 4px solid yellowgreen !important;
+		border-radius: 5px 0 0 4px;
+	}
+    .approved--dot{
+        background-color:yellowgreen;
+      }
+      .canceled--dot{
+        background-color:red;
+      }
+      .requested--dot{
+        background-color:orange;
+      }
+      .approved-True{
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+      .canceled-True {
+
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+      .requested-False-False {
+
+        border-left: 3.4px solid orange !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+      .validated--dot{
+        background-color:yellowgreen;
+      }
+      .not-validated--dot{
+        background-color:rgba(128, 128, 128, 0.482);
+      }
+
+      .validated-True{
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+      .validated-False {
+
+        border-left: 3.4px solid rgba(128, 128, 128, 0.482) !important;
+        border-radius: 4px 0 0 4px;
+
+
+      }
+      .bulk-request--dot {
+
+        background-color:rgb(31 122 220 / 48%);
+      }
+    .diff-cell{
+      background: rgba(255, 166, 0, 0.158);
+    }
+    .validated--dot{
+        background-color:yellowgreen;
+      }
+      .not-validated--dot{
+        background-color:rgba(128, 128, 128, 0.482);
+      }
+
+
 </style>
 
 <div id="enlargeImageContainer"></div>
 
-<div class="d-flex" style="flex-direction: row-reverse;">
-	<div id="successMessage" style="display:none;" class="oh-alert oh-alert--animated oh-alert--success w-25">
-		{% trans "Report added successfully." %}
-	</div>
-</div>
-
-<div class="oh-wrapper" id="view-container">
-	<div class="oh-card mt-4 mb-5">
-		<div class="d-flex flex-row-reverse align-items-center">
-			<div class="oh-dropdown" x-data="{open: false}">
-				<button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" style="margin-bottom:5px"
-					@click="open = !open" @click.outside="open = false">
-					<ion-icon name="settings-outline" class="oh-navbar__icon md hydrated" role="img"
-						aria-label="settings outline"></ion-icon>
-				</button>
-				<div class="oh-dropdown__menu oh-dropdown__menu--right" style="min-width:250px" x-show="open">
-					<ul class="oh-dropdown__items">
-						{% if perms.employee.change_employee or employee.employee_work_info.reporting_manager_id == request.user.employee_get %}
-							<li class="oh-dropdown__item">
-								<a href="{% url 'employee-view-update' employee.id %}" class="">
-									<img src="{% static 'images/ui/edit_btn.png' %}" style="width: 20px; height: auto"
-										title="{% trans 'Edit' %}" />
-									<button style="border: none; background: transparent;">{% trans "Edit" %}</button>
-								</a>
-							</li>
-						{% endif %}
-
-						{% if enabled_block_unblock and perms.employee.change_employee %}
-							{% if employee.employee_user_id.is_active %}
-								{% if not employee.employee_user_id.is_superuser %}
-									<li class="oh-dropdown__item">
-										<form action="{% url 'employee-account-block-unblock' employee.id %}"
-											onsubmit="return confirm('{% trans "Do you really want to prevent this employee from
-											accessing and logging into this webpage?" %}');">
-											{% csrf_token %}
-											<img src="{% static 'images/ui/block-user.png' %}" style="width: 20px; height: 20px; ">
-											<button type="submit" style=" border: none; background: transparent;">
-												{% trans "Block Account" %}
-											</button>
-										</form>
-									</li>
-								{% endif %}
-							{% else %}
-								{% if not employee.employee_user_id.is_superuser %}
-									<li class="oh-dropdown__item">
-										<form action="{% url 'employee-account-block-unblock' employee.id %}"
-											onsubmit="return confirm('{% trans " Do you really want to allow this employee to access and log into this webpage?" %}');">
-											{% csrf_token %}
-											<img src="{% static 'images/ui/unlock.png' %}" style="width: 30px; height: 27px;">
-											<button type="submit" style="  border: none; background: transparent;">
-												{% trans "Un-Block Account" %}
-											</button>
-										</form>
-									</li>
-								{% endif %}
-							{% endif %}
-						{% endif %}
-
-						{% if perms.employee.add_employee or employee.employee_work_info.reporting_manager_id == request.user.employee_get %}
-							<li class="oh-dropdown__item">
-								<form action="{% url 'employee-reset-password' %}" method="post" role="button"
-									style="display: flex;">
-									<ion-icon name="key-outline" style="width: 20px; height: 20px; "></ion-icon>
-									{% csrf_token %}
-									<input name="email" hidden value="{{employee.employee_user_id.username}}" />
-									<button type="submit" style="border: none; background: transparent;">{% trans "Send password reset link" %} </button>
-								</form>
-							</li>
-						{% endif %}
-					</ul>
-				</div>
-			</div>
-
-			{% if next != None %}
-				<a href="{% url 'employee-view-individual' next %}" title="{% trans "Next Employee" %}"
-					data-action="next"
-					style="color:hsl(8, 77%, 56%);" class="ms-1 fw-bold">
-					<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
-			{% else %}
-				<a href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 fw-bold oh-btn--disabled">
-					<ion-icon name="arrow-forward-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
-			{% endif %}
-
-			{% if previous != None %}
-				<a href="{% url 'employee-view-individual' previous %}" title="{% trans "Previous Employee" %}"
-					data-action="previous" style="color:hsl(8, 77%, 56%);" class="ms-1 me-2 fw-bold">
-					<ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
-			{% else %}
-				<a href="#" style="color:hsl(8 50% 83% / 1);" class="ms-1 me-2 fw-bold oh-btn--disabled">
-					<ion-icon name="arrow-back-circle-outline" style="font-size:35px;"></ion-icon>
-				</a>
-			{% endif %}
-		</div>
-
-		<div class="row">
-			<div class="col-12 col-sm-12 col-md-12 col-lg-4">
-				<div class="d-flex align-items-center">
-					<div class="oh-profile oh-profile--lg me-3">
-						<div class="oh-profile__avatar">
-							<img src="{{employee.get_avatar}}" class="oh-profile-section__avatar"
-								style="border-radius: 10%;" alt="Username" {% if employee.employee_profile %}
-								onmouseover="enlargeImager(this)
-								$('#enlargeImageContainer').addClass('enlarge-image-container');" onmouseout="hideEnlargeImager()
-								$('#enlargeImageContainer').removeClass('enlarge-image-container');" {% endif %} />
-						</div>
-						{% if "attendance"|app_installed %}
-							{% if employee.check_online %}
-								<span class="oh-profile__active-badge oh-profile__active-badge--secondary"
-									style="background-color: yellowgreen;" title="{% trans 'Online' %}">
-								</span>
-							{% else %}
-								<span class="oh-profile__active-badge oh-profile__active-badge--secondary"
-									style="background-color: rgba(128, 128, 128, 0.482);" title="{% trans 'Offline' %}">
-								</span>
-							{% endif %}
-						{% endif %}
-					</div>
-
-					<div class="oh-profile__info-container">
-						<h1 class="oh-profile__info-name">{{employee}}</h1>
-						<p class="oh-profile__info-designation">
-							{{employee.job_position_id}}
-						</p>
-					</div>
-				</div>
-			</div>
-
-			<div class="col-12 col-sm-12 col-md-12 col-lg-8 d-flex align-items-center">
-				<ul class="oh-profile__info-list">
-					<li class="oh-profile__info-list-item">
-						<span class="oh-profile__info-label">
-							<ion-icon name="mail-outline"></ion-icon>
-							<span>{% trans "Work Email" %}:</span>
-						</span>
-						<span class="oh-profile__info-value">{{employee.employee_work_info.email}}</span>
-					</li>
-
-					<li class="oh-profile__info-list-item">
-						<span class="oh-profile__info-label">
-							<ion-icon name="mail-outline"></ion-icon>
-							<span>{% trans "Email" %}:</span>
-						</span>
-						<span class="oh-profile__info-value">
-							{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
-							{{employee.email}}
-							{% else %}
-							**********
-							{% endif %}
-						</span>
-					</li>
-
-					<li class="oh-profile__info-list-item">
-						<span class="oh-profile__info-label">
-							<ion-icon name="call-outline"></ion-icon>
-							<span>{% trans "Work Phone" %}:</span>
-						</span>
-						<span class="oh-profile__info-value">{{employee.employee_work_info.mobile}}</span>
-					</li>
-
-					<li class="oh-profile__info-list-item">
-						<span class="oh-profile__info-label">
-							<ion-icon name="call-outline"></ion-icon>
-							<span>{% trans "Phone" %}:</span>
-						</span>
-						<span class="oh-profile__info-value">{% if perms.employee.view_employee or request.user == employee.employee_user_id %}
-							{{employee.phone}}
-							{% else %}
-							**********
-							{% endif %}
-						</span>
-					</li>
-				</ul>
-			</div>
-		</div>
-
-		<div class="oh-table_sticky--wrapper">
-			{% if request.user.is_superuser or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-				<div class="oh-sticky-dropdown--header" style="border:none;">
-					<div class="oh-dropdown" x-data="{open: false}">
-						<button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon
-								name="ellipsis-vertical-sharp" role="img" class="md hydrated"
-								aria-label="ellipsis vertical sharp"></ion-icon></button>
-						<div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-							<ul class="oh-dropdown__items" id="fieldContainerTable">
-							</ul>
-						</div>
-					</div>
-				</div>
-			{% endif %}
-			<div id="employee-tab" data-table-name="employee_tab">
-				<div class="row">
-					<div class="col-sm-12 col-md-12 col lg-12">
-						<ul class="oh-general__tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-5">
-
-							<li class="oh-general__tab">
-								<a hx-get={% url 'about-tab' employee.id %} hx-target="#personal_target"
-									class="oh-general__tab-link" data-action="general-tab" role="button"
-									data-target="#personal_target">{% trans "About" %}</a>
-							</li>
-
-							{% if request.user == employee.employee_user_id or request.user|check_manager:employee or perms.attendance.view_worktyperequest or perms.attendance.view_shiftrequest %}
-								<li data-cell-index="10" data-cell-title="{% trans 'Work Type & Shift' %}"
-									class="oh-general__tab">
-									<a hx-get={% url 'shift-tab' employee.id %} hx-target="#shift_target"
-										data-action="general-tab" data-target="#shift_target"
-										class="oh-general__tab-link pointer" role="button">
-										{% trans "Work Type & Shift"%}
-									</a>
-								</li>
-							{% endif %}
-
-							{% if "attendance"|app_installed %}
-								{% if perms.attendance.view_attendance or request.user|check_manager:employee %}
-								<li data-cell-index="11" data-cell-title="{% trans 'Attendance' %}" class="oh-general__tab">
-									<a hx-get="{% url 'attendance-tab' employee.id %}" hx-target="#attendance_target"
-										data-action="general-tab" data-target="#attendance_target"
-										class="oh-general__tab-link" role="button">{% trans "Attendance" %}</a>
-								</li>
-								{% endif %}
-							{% endif %}
-
-							{% if "leave"|app_installed %}
-								{% if perms.leave.view_leaverequest or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-									<li data-cell-index="12" data-cell-title="{% trans 'Leave' %}" class="oh-general__tab">
-										<a hx-get="{% url 'leave-tab' employee.id %}" hx-target="#leave"
-											class="oh-general__tab-link" data-action="general-tab" data-target="#leave"
-											role="button">{% trans "Leave" %}</a>
-									</li>
-								{% endif %}
-							{% endif %}
-
-							{% if "payroll"|app_installed %}
-								{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
-									<li data-cell-index="13" data-cell-title="{% trans 'Payroll' %}" class="oh-general__tab">
-										<a href="#" class="oh-general__tab-link" data-action="general-tab"
-											data-target="#payroll">{% trans "Payroll" %}</a>
-									</li>
-								{% endif %}
-
-								{% if perms.payroll.view_payslip or request.user == employee.employee_user_id %}
-									<li data-cell-index="14" data-cell-title="{% trans 'Allowance & Deduction' %}"
-										class="oh-general__tab">
-										<a hx-get="{% url 'allowances-deductions-tab' employee.id %}"
-											hx-target="#allowance_deduction" data-action="general-tab"
-											data-target="#allowance_deduction" class="oh-general__tab-link" role="button">
-											{% trans "Allowance & Deduction" %}
-										</a>
-									</li>
-								{% endif %}
-							{% endif %}
-
-							{% if "attendance"|app_installed or "leave"|app_installed %}
-								{% if perms.attendance.view_penaltyaccount or request.user == employee.employee_user_id %}
-									<li data-cell-index="23" data-cell-title="{% trans " Penalty Account" %}" class="oh-general__tab">
-										<a data-action="general-tab" data-target="#penaltyTarget" id="penalty" class="oh-general__tab-link" role="button">{% trans "Penalty Account" %}</a>
-									</li>
-								{% endif %}
-							{% endif %}
-
-							{% if perms.employee.view_historicalemployeeworkinformation or request.user|check_manager:employee %}
-								<li data-cell-index="15" data-cell-title="{% trans 'History' %}" class="oh-general__tab">
-									<a href="#" class="oh-general__tab-link" data-action="general-tab"
-										data-target="#history">{% trans "History" %}</a>
-								</li>
-							{% endif %}
-
-							{% if "asset"|app_installed %}
-								{% if perms.asset.view_asset or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-									<li data-cell-index="16" data-cell-title="{% trans 'Assets' %}" class="oh-general__tab">
-										<a hx-get={% url 'asset-tab' employee.id %} hx-target="#asset_target"
-											data-action="general-tab" data-target="#asset_target"
-											class="oh-general__tab-link pointer" role="button">{% trans "Assets" %}
-										</a>
-									</li>
-								{% endif %}
-							{% endif %}
-
-							{% if "pms"|app_installed %}
-								{% if perms.pms.view_feedback or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-									<li data-cell-index="17" data-cell-title="{% trans 'Performance' %}" class="oh-general__tab">
-										<a hx-get={% url 'performance-tab' employee.id %} hx-target="#performance_target"
-											data-action="general-tab" data-target="#performance_target"
-											class="oh-general__tab-link" role="button">{% trans "Performance" %}
-										</a>
-									</li>
-								{% endif %}
-							{% endif %}
-
-							{% if perms.auth.view_permission or perms.auth.view_group %}
-							<li data-cell-index="18" data-cell-title="{% trans 'Groups & Permissions' %}"
-								class="oh-general__tab">
-								<a data-action="general-tab" data-target="#permission_tab_content"
-									hx-get="{% url 'employee-permission-assign' %}?profile_tab=true&employee_id={{employee.id}}"
-									hx-target="#permission_tab_content" class="oh-general__tab-link" role="button">
-									{% trans "Groups & Permissions" %}
-								</a>
-							</li>
-							{% endif %}
-
-							{% if perms.employee.view_employeenote or request.user|check_manager:employee %}
-								<li data-cell-index="19" data-cell-title="{% trans 'Note' %}" class="oh-general__tab">
-									<a hx-get={% url 'note-tab' employee.id %} hx-target="#note_target"
-										data-action="general-tab" data-target="#note_target" class="oh-general__tab-link"
-										role="button">{% trans "Note" %}
-									</a>
-								</li>
-							{% endif %}
-
-							{% if perms.horilla_documents.view_document or request.user == employee.employee_user_id %}
-								<li data-cell-index="20" data-cell-title="{% trans 'Documents' %}" class="oh-general__tab">
-									<a hx-get="{% url 'document-tab' employee.id %}?employee_view=true"
-										hx-target="#document_target" data-action="general-tab"
-										data-target="#document_target" class="oh-general__tab-link" role="button">
-										{% trans "Documents" %}
-									</a>
-								</li>
-							{% endif %}
-
-							{% if perms.employee.view_employee %}
-							<li class="oh-general__tab" data-cell-index="22" data-cell-title="{% trans 'Mail Log' %}">
-								<a hx-get="{% url 'employee-get-mail-log' %}?emp_id={{employee.id}}"
-									hx-target="#maillog" class="oh-general__tab-link" data-action="general-tab"
-									data-target="#maillog" role="button">{% trans "Mail Log" %}</a>
-							</li>
-							{% endif %}
-
-							{% if "payroll"|app_installed %}
-								{% if perms.employee.view_bonuspoint or request.user|check_manager:employee or request.user == employee.employee_user_id %}
-									<li data-cell-index="21" data-cell-title="{% trans 'Bonus' %}" class="oh-general__tab">
-										<a hx-get={% url 'bonus-points-tab' employee.id %} hx-target="#bonus_points_target"
-											data-action="general-tab" data-target="#bonus_points_target"
-											class="oh-general__tab-link" role="button">{% trans "Bonus Points" %}</a>
-									</li>
-								{% endif %}
-							{% endif %}
-						</ul>
-						<button
-							hx-get={% url 'bonus-points-tab' employee.id %} hx-target="#bonus_points_target" id="bonus-tab-button" hidden>
-						</button>
-
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="personal_target"> </div>
-
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="shift_target"></div>
-
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="bonus_points_target">
-							{% include "tabs/bonus_points.html" %}
-						</div>
-
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="note_target">
-							{% include "tabs/note_tab.html" %}
-						</div>
-
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="maillog"></div>
-
-						{% if "payroll"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="allowance_deduction"> </div>
-						{% endif %}
-
-						{% if "attendance"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="attendance_target"> </div>
-						{% endif %}
-
-						{% if "attendance"|app_installed or "leave"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="penaltyTarget">
-								{% include 'tabs/penalty_account.html' %}
-							</div>
-						{% endif %}
-
-						{% if "pms"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="performance_target"> </div>
-						{% endif %}
-
-						{% if "asset"|app_installed %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="asset_target"> </div>
-						{% endif %}
-
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="document_target"> </div>
-
-						{% if perms.auth.view_permission or perms.auth.view_group or request.user|is_reportingmanager or request.user == employee.employee_user_id %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4" id="permission_tab_content"></div>
-						{% endif %}
-
-						{% if request.user|check_manager:employee or request.user == employee.employee_user_id or perms.employee.view_historicalemployeeworkinformation %}
-							<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="history">
-								{% include "tabs/history.html" %}
-							</div>
-						{% endif %}
-
-						{% if "payroll"|app_installed %}
-							{% if perms.view_payslip or request.user == employee.employee_user_id %}
-								<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="payroll">
-									{% include "tabs/payroll-tab.html" %}
-								</div>
-							{% endif %}
-						{% endif %}
-
-						{% if "leave"|app_installed %}
-						<div class="oh-general__tab-target oh-profile__info-tab mb-4 d-none" id="leave"></div>
-						{% endif %}
-					</div>
-				</div>
-			</div>
-		</div>
-
-	</div>
-</div>
 <script src="{% static 'employee/search.js' %}"></script>
 <script src="{% static 'basedOn.js' %}"></script>
 <script>

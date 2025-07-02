@@ -1,0 +1,26 @@
+{% load i18n %}
+<div>
+    {% include 'generic/horilla_card.html' %}
+</div>
+<div class="d-block oh-kanban-card__biometric-actions"
+{% if device.machine_type == "anviz" or device.machine_type == "cosec" %} style='margin-top:53px;' {% endif %}>
+    <a href="#" hx-get="{% url 'biometric-device-test' device.id %}" data-toggle="oh-modal-toggle"
+        data-target="#BiometricDeviceTestModal" hx-target="#BiometricDeviceTestFormTarget"
+        class="oh-checkpoint-badge text-success">{% trans "Test" %}
+    </a>
+{% if device.is_scheduler %}
+    <a hx-confirm="{% trans 'Do you want to unschedule the device attendance fetching?' %}"
+        hx-post="{% url 'biometric-device-unschedule' device.id %}?{{pd}}&page={{devices.number}}&view=card"
+        hx-target="#biometricDeviceList" class="oh-checkpoint-badge text-info">{% trans "Unschedule" %}
+    </a>
+{% else %}
+    <a href="#" class="oh-checkpoint-badge text-info" hx-get="{% url 'biometric-device-schedule' device.id %}"
+        data-toggle="oh-modal-toggle" data-target="#BiometricDeviceModal"
+        hx-target="#BiometricDeviceFormTarget">{% trans "Schedule" %}</a>
+{% endif %}
+{% if device.machine_type == "zk" or device.machine_type == "cosec" %}
+    <a href="{% url 'biometric-device-employees' device.id %}"
+        class="oh-checkpoint-badge text-secondary bio-user-list">{% trans "Employee" %}</a>
+{% endif %}
+</div>
+</div>

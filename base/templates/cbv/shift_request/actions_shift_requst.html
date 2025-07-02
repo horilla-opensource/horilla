@@ -1,0 +1,38 @@
+{% load basefilters %}
+{% load static %}
+{% load i18n %}
+
+
+{% load i18n %}
+
+{% if request.user.employee_get == instance.employee_id or perms.base.change_shiftrequest or perms.base.add_shiftrequest or perms.base.delete_shiftrequest or request.user|is_reportingmanager %}
+<div class="oh-btn-group" onclick="event.stopPropagation();">
+    {% if request.user.employee_get == instance.employee_id or perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+        {% if instance.approved == False and not instance.canceled %}
+            <a hx-get="{% url 'shift-request-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
+                hx-target='#genericModalBody' data-toggle="oh-modal-toggle" data-target='#genericModal'
+                class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"><ion-icon
+                    name="create-outline"></ion-icon></a>
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg w-100" disabled><ion-icon name="create-outline"></ion-icon></button>
+        {% endif %}
+    {% endif %}
+    {% if request.user.employee_get == instance.employee_id or perms.base.add_shiftrequest or request.user|is_reportingmanager %}
+        <a class="oh-btn oh-btn--light-bkg w-100" data-toggle="oh-modal-toggle" data-target="#genericModal"
+            hx-get="{% url 'shift-request-duplicate' instance.id %}?{{pg}}" title="{% trans 'Duplicate' %}"
+            hx-target="#genericModalBody" style="cursor: pointer;">
+            <ion-icon name="copy-outline"></ion-icon>
+        </a>
+    {% endif %}
+    {% if request.user.employee_get == instance.employee_id or perms.base.delete_shiftrequest or request.user|is_reportingmanager %}
+        {% if instance.approved == False and instance.canceled == False %}
+            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" hx-confirm="{% trans 'Are you sure you want to delete this shift request?' %}"
+                hx-post="{% url 'shift-request-delete' instance.id %}" hx-target="#shift-container" title="{% trans 'Remove' %}">
+                <ion-icon name="trash-outline"></ion-icon>
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" disabled><ion-icon name="trash-outline"></ion-icon></button>
+        {% endif %}
+    {% endif %}
+</div>
+{% endif %}

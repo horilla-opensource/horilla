@@ -6,7 +6,7 @@
       title="{% trans 'Edit' %}"
       data-toggle="oh-modal-toggle"
       data-target="#genericModal"
-      hx-get="{% url 'update-bonus-point-setting' instance.id %}?{{pd}}"
+      hx-get="{% url 'update-bonus-point-setting' instance.id %}?{{pd}}&instance_ids={{instance.ordered_ids}}"
       hx-target="#genericModalBody"
     >
       <ion-icon name="create-outline"></ion-icon>

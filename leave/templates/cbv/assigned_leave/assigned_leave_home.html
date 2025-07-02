@@ -1,0 +1,80 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+<div hx-get="{% url 'assigned-leave-nav' %}" hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
+</div>
+
+
+<div class="oh-wrapper" hx-get="{% url "assign-filter" %}?{{request.GET.urlencode}}" hx-trigger="load"
+ id="listContainer">
+  <div class="animated-background">
+</div>
+</div>
+
+<div class="oh-modal" id="objectUpdateModal" role="dialog" aria-labelledby="objectUpdateModalLabel" aria-hidden="true">
+    <div class="oh-modal__dialog" id="objectUpdateModalTarget"></div>
+</div>
+
+<!-- start of import assigned leaves form !-->
+<div class="oh-modal" id="assignLeaveTypeImport" role="dialog" aria-labelledby="assignLeaveTypeImport"
+    aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="assignLeaveTypeImportLavel">
+                {% trans "Import Assigned Leaves" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div class="oh-modal__dialog-body p-0 pt-2" id="assignLeaveTypeImportModalBody">
+                <form hx-post="{% url 'assign-leave-type-info-import' %}" hx-encoding="multipart/form-data"
+                    hx-target="#assignLeaveTypeImport" id="assignLeaveTypeImportForm">
+                    {% csrf_token %}
+                    <div class="oh-modal__dialog-body mr-5" id="uploading" style="display: none">
+                        <div class="loader-container">
+                            <div class="loader"></div>
+                            <div class="loader-text">{% trans "Uploading..." %}</div>
+                        </div>
+                    </div>
+                    <div id="uploadContainer">
+                        <label class="oh-dropdown__import-label" for="uploadFile">
+                            <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+                            <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                            <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+                        </label>
+                        <input type="file" name="assign_leave_type_import" id="assignedLeaveFile" required />
+                        <div class="d-inline float-end">
+                            <a href="#" style="text-decoration:none; display: inline-block;"
+                                onclick="importAssignedLeave();" class="oh-dropdown__link assign-leave-type-info-import"
+                                data-toggle="oh-modal-toggle" data-target="#assignLeaveTypeImport">
+                                <ion-icon name="cloud-download-outline"
+                                    style="font-size:20px; vertical-align: middle;"></ion-icon>
+                                <span>{% trans "Download Template" %}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="oh-modal__dialog-footer p-0 pb-2">
+                        <button onclick="validateFile($(this),'assignedLeaveFile');" type="submit"
+                            class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">
+                            {% trans "Upload" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of import assigned leaves form !-->
+
+<script src="{% static 'cbv/assigned_leave/assigned_leave.js' %}"></script>
+<script>
+    $(document).on('submit', '#deletebtn', function () {
+        $('.oh-modal--show').removeClass('oh-modal--show');
+    });
+</script>
+{% endblock content %}

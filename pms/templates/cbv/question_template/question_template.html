@@ -1,0 +1,68 @@
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+ <div hx-get="{% url "nav-question-template" %}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+
+    <script>
+      var errorElement = $('#id_question_template_error')
+      $(errorElement).hide()
+
+      $('form').on('submit', function (event) {
+        event.preventDefault();
+
+        var fieldValue = $('#id_question_template').val();
+
+        if (fieldValue.trim() === '') {
+          $(errorElement).show()
+          errorElement.text('This field is required.');
+          errorElement.insertAfter($('#id_question_template'));
+        } else if (fieldValue.length > 100) {
+          $(errorElement).show()
+          errorElement.text('The field cannot contain more than 100 characters.');
+          errorElement.insertAfter($('#id_question_template'));
+        } else {
+          errorElement.text('');
+          errorElement.remove();
+          // Submit the form
+          this.submit();
+        }
+      });
+
+    </script>
+{% endblock %}

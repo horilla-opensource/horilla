@@ -1,0 +1,93 @@
+{% extends "index.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+
+
+<style>
+    .canceled--dot{
+        background-color:red;
+      }
+      .approved--dot{
+        background-color:green;
+      }
+      .approved-True{
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+      .canceled-True {
+
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+    </style>
+<div hx-get="{% url "holiday-navbar" %}" hx-trigger="load">
+</div>
+
+{% include "generic/components.html" %}
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+<div class="oh-wrapper"
+   id="listContainer">
+  <div class="animated-background">
+</div>
+</div>
+
+<div class="oh-modal" id="holidayImport" role="dialog" aria-labelledby="holidayImport" aria-hidden="true">
+  <div class="oh-modal__dialog">
+      <div class="oh-modal__dialog-header">
+          <h2 class="oh-modal__dialog-title" id="holidayImportLavel">
+              {% trans "Import Holidays" %}
+          </h2>
+          <button class="oh-modal__close" aria-label="Close">
+              <ion-icon name="close-outline"></ion-icon>
+          </button>
+          <div class="oh-modal__dialog-body p-0 pt-2" id="holidayImportModalBody">
+              <form hx-post="{%url 'holidays-info-import' %}" hx-encoding="multipart/form-data" hx-target="#holidayImport" id="holidaysImportForm">
+                  {% csrf_token %}
+                  <div class="oh-modal__dialog-body mr-5" id="uploading" style="display: none">
+                      <div class="loader-container">
+                          <div class="loader"></div>
+                          <div class="loader-text">{% trans "Uploading..." %}</div>
+                      </div>
+                  </div>
+                  <div id="uploadContainer">
+                      <label class="oh-dropdown__import-label" for="importHoliday">
+                          <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+                          <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+                          <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+                      </label>
+                      <input type="file" name="holidays_import" id="importHoliday" required />
+                      <div class="d-inline float-end">
+                          <a href="#" style="text-decoration:none; display: inline-block;"
+                              class="oh-dropdown__link holidaysInfoImport" data-toggle="oh-modal-toggle"
+                              data-target="#holidayImport"  onclick="importHolidays();">                              <ion-icon name="cloud-download-outline"
+                                  style="font-size:20px; vertical-align: middle;"></ion-icon>
+                              <span>{% trans "Download Template" %}</span>
+                          </a>
+                      </div>
+                  </div>
+                  <button onclick="
+            validateFile($(this),'importHoliday');
+          " type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3">
+                      {% trans "Upload" %}
+                  </button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script src="{% static 'cbv/holidays/holiday_action.js' %}"></script>
+<script>
+  $(".reload-record").click()
+</script>
+{% endblock content %}

@@ -1,0 +1,28 @@
+{% load basefilters %}{% load i18n %}
+{% if perms.employee.change_disciplinaryaction or perms.employee.delete_disciplinaryaction or perms.employee.add_disciplinaryaction %}
+<div onclick="event.stopPropagation();">
+    <div class="oh-btn-group">
+        {% if perms.employee.change_disciplinaryaction %}
+            <a hx-get="{% url 'update-actions' instance.id %}?instance_ids={{instance.ordered_ids}}"
+                hx-target='#genericModalBody' data-toggle='oh-modal-toggle' data-target="#genericModal"
+                class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}">
+                <ion-icon name="create-outline"></ion-icon></a>
+        {% endif %}
+        {% if perms.employee.add_disciplinaryaction %}
+            <a class="oh-btn oh-btn--light-bkg w-100" data-toggle="oh-modal-toggle" data-target="#genericModal"
+                hx-get="{% url 'duplicate-disciplinary-actions' instance.id %}?{{pg}}" title="{% trans 'Duplicate' %}"
+                hx-target="#genericModalBody" style="cursor: pointer;">
+                <ion-icon name="copy-outline"></ion-icon>
+            </a>
+        {% endif %}
+        {% if perms.employee.delete_disciplinaryaction %}
+            <form hx-confirm="{% trans " Are you sure you want to delete this disciplinary action?" %}"
+                hx-post="{% url 'delete-actions' instance.id %}" hx-target="#dis-container" class="w-100">
+                {% csrf_token %}
+                <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                    title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

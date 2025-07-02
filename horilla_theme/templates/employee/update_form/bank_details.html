@@ -1,0 +1,21 @@
+{% load i18n %}
+<div class="oh-wrapper">
+    <div class="oh-general__tab-target oh-profile-section mb-4 p-5 d-none" id="bank" style="border:none;">
+        <div class="oh-profile-section__card p-10" style="border:1px solid #cdd5df; border-radius:10px;">
+            <form method='post' action=""  >
+                <div id="bankMessage">
+                </div>
+                {% csrf_token %}
+                <input type="hidden" name="form" value="bank">
+                {{bank_form.as_p}}
+            <hr class="mt-5 mb-3" style="color:#cdd5df;">
+            <div class="w-100 d-flex" style="justify-content: flex-end;">
+                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
+                {% trans "Save" %}
+                </button>
+            </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>

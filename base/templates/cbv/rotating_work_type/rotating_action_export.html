@@ -1,0 +1,31 @@
+{% load i18n %}
+{% load basefilters%}
+<div class="oh-modal__dialog" id="exampleModal">
+    <div class="oh-modal__dialog-header">
+
+    <h2 class="oh-modal__dialog-title" id="rotatingWorkTypeAssignExportLavel">
+        {% trans "Export Rotating Work Type Assigns" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <div
+        class="oh-modal__dialog-body p-0 pt-2"
+        id="rotatingWorkTypeAssignExportModalBody"
+      >
+   <form
+          action="{%url 'rotating-work-type-assign-export' %}"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+          id="rotatingWorkTypeAssignExportForm"
+        >
+        {% csrf_token %} {% include "base/rotating_work_type/rotating_work_type_assign_export.html" %}
+          <div class="oh-dropdown__filter-footer">
+            <button class="oh-btn oh-btn--secondary oh-btn--small w-100">
+              {% trans "Export" %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

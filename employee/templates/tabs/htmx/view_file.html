@@ -1,4 +1,5 @@
 {% load i18n %} {% load horillafilters %} {% load static %}
+{% include 'generic/components.html' %}
 <div class="d-flex justify-content-end">
 	<div class="oh-btn-group mb-4">
 		<a
@@ -36,8 +37,8 @@
 				<a
 					type="submit"
 					hx-get="{% url 'document-reject' document.id %}"
-					hx-target="#rejectFileForm"
-					data-target="#rejectFileModal"
+					hx-target="#objectCreateModalTarget"
+					data-target="#objectCreateModal"
 					data-toggle="oh-modal-toggle"
 					title="{% trans 'Reject' %}"
 					class="oh-btn oh-btn--danger w-100"

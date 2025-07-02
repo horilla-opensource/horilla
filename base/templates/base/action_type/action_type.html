@@ -1,33 +1,39 @@
 {% extends 'settings.html' %}
 {% load i18n %}
 {% block settings %}{% load static %}
+{% include "generic/components.html" %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+
 <div class="oh-inner-sidebar-content">
-	<div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-		<h2 class="oh-inner-sidebar-content__title">{% trans "Action Type" %}</h2>
-		{% if perms.employee.add_actiontype %}
-		<button class="oh-btn oh-btn--secondary oh-btn--shadow"
-			data-toggle="oh-modal-toggle"
-			data-target="#objectCreateModal"
-			hx-get="{% url 'action-type-create' %}"
-			hx-target="#objectCreateModalTarget"
-			>
-			<ion-icon name="add-outline" class="me-1"></ion-icon>
-			{% trans "Create" %}
-		</button>
-		{% endif %}
+	<div hx-get="{% url 'action-type-nav' %}" hx-trigger="load"></div>
+	<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+	<div class="oh-wrapper"  id="listContainer">
+		<div class="animated-background"> </div>
 	</div>
-	{% if action_types %}
-		<div id="actionTypes">
-			{% include 'base/action_type/action_type_view.html' %}
+	{% comment %}
+		<div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+			<h2 class="oh-inner-sidebar-content__title">{% trans "Action Type" %}</h2>
+			{% if perms.employee.add_actiontype %}
+			<button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+				data-target="#objectCreateModal" hx-get="{% url 'action-type-create' %}"
+				hx-target="#objectCreateModalTarget">
+				<ion-icon name="add-outline" class="me-1"></ion-icon>
+				{% trans "Create" %}
+			</button>
+			{% endif %}
 		</div>
-	{% else %}
+		{% if action_types %}
+		{% include 'base/action_type/action_type_view.html' %}
+		{% else %}
 		<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-			<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/legal.png' %}" class="" alt="Page not found. 404." />
+			<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);"
+				src="{% static 'images/ui/legal.png' %}" class="" alt="Page not found. 404." />
 			<h5 class="oh-404__subtitle">{% trans "There is no disciplinary action type at this moment." %}</h5>
 		</div>
-	{% endif %}
+		{% endif %}
+	{% endcomment %}
 </div>
-
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
 <script>
 	function actionChange(selectElement) {
 		var selectedActiontype = selectElement.val();
@@ -43,15 +49,50 @@
 
 				// Check if the response.action_type is "warning"
 				if (response.action_type === "warning") {
-					// Hide the 'block_option' field
-					parentForm.find('[id=id_block_option]').parent().hide();
-				} else {
-					// Show the 'block_option' field
-					parentForm.find('[id=id_block_option]').parent().show();
-				}
 
+					// Hide the 'block_option' field
+					//parentForm.find('[id=id_block_option]').parent().hide();
+					parentForm.find('[id=id_block_option_parent_div]').hide();
+				} else {
+					var hiddenInput = document.querySelector('input[type="hidden"][name="block_option"]');
+					if (hiddenInput) {
+						var parentDiv = document.createElement('div');
+						parentDiv.className = 'col-12 col-md-6';
+						parentDiv.id = 'id_block_option_parent_div';
+						parentDiv.style.paddingRight = '0';
+						var labelInfoDiv = document.createElement('div');
+						labelInfoDiv.className = 'oh-label__info';
+						var label = document.createElement('label');
+						label.className = 'oh-label';
+						label.htmlFor = 'id_block_option';
+						label.textContent = 'Enable login block :';
+						var infoSpan = document.createElement('span');
+						infoSpan.className = 'oh-info mr-2';
+						infoSpan.title = 'If is enabled, employees log in will be blocked based on period of suspension or dismissal.';
+						labelInfoDiv.appendChild(label);
+						labelInfoDiv.appendChild(infoSpan);
+						var switchDiv = document.createElement('div');
+						switchDiv.className = 'oh-switch';
+						switchDiv.style.width = '30px';
+						var checkbox = document.createElement('input');
+						checkbox.type = 'checkbox';
+						checkbox.name = 'block_option';
+						checkbox.className = 'oh-switch__checkbox oh-switch__checkbox';
+						checkbox.id = 'id_block_option';
+						checkbox.checked = hiddenInput.value === 'True';
+						switchDiv.appendChild(checkbox);
+						parentDiv.appendChild(labelInfoDiv);
+						parentDiv.appendChild(switchDiv);
+						hiddenInput.parentNode.replaceChild(parentDiv, hiddenInput);
+					}
+					parentForm.find('[id=id_block_option_parent_div]').show();
+					// Show the 'block_option' field
+					//parentForm.find('[id=id_block_option]').parent().show();
+				}
 			},
 		});
-	  }
+	}
+
+
 </script>
 {% endblock settings %}

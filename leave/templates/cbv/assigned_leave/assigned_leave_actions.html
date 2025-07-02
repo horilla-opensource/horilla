@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load basefilters %}
+<div class="oh-btn-group" onclick="event.stopPropagation();">
+    {% if request.user|is_reportingmanager or perms.leave.change_availableleave %}
+        <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
+            data-target="#objectUpdateModal" hx-get="{% url 'available-leave-update' instance.id %}"
+            hx-target="#objectUpdateModalTarget"><ion-icon name="create-outline"></ion-icon></button>
+    {% endif %}
+    {% if request.user|is_reportingmanager or perms.leave.delete_availableleave %}
+
+    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+        id="delete-link"
+        hx-get="{% url 'generic-delete' %}?model=leave.AvailableLeave&pk={{instance.id}}"
+        hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+        data-target="#deleteConfirmation"
+    >
+        <ion-icon name="trash-outline"></ion-icon></a>
+    {% endif %}
+</div>

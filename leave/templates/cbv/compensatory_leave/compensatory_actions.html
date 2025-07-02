@@ -1,0 +1,34 @@
+{% load i18n %}
+<div class="" onclick="event.stopPropagation()">
+    <div class="oh-btn-group">
+        {% if instance.status ==  'requested' %}
+            <button
+                class="oh-btn oh-btn--light-bkg w-50"
+                title="{% trans 'Edit' %}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{% url 'update-compensatory-leave' instance.id %}?instance_ids={{instance.ordered_ids}}"
+                hx-target="#genericModalBody">
+                <ion-icon name="create-outline"></ion-icon>
+            </button>
+        {% else %}
+            <button
+                class="oh-btn oh-btn--light-bkg w-50" disabled>
+                <ion-icon name="create-outline" ></ion-icon>
+            </button></td>
+        {% endif %}
+        {% if instance.status !=  'approved' %}
+            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-50" id="delete-link"
+                hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+                hx-post="{% url 'delete-compensatory-leave' instance.id %}"
+                hx-target="#listContainer"
+                title="{% trans 'Delete' %}">
+                <ion-icon name="trash-outline"></ion-icon>
+            </a>
+        {% else %}
+            <button class="oh-btn oh-btn--light-bkg w-50" disabled>
+                <ion-icon name="trash-outline"></ion-icon>
+            </button></td>
+        {% endif %}
+    </div>
+</div>

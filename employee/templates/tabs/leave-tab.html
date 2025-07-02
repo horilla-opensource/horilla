@@ -133,7 +133,7 @@
       <!-- Container for Kanban cards -->
       {% for employee_leave in employee_leaves %}
         {% if perms.leave.view_leavetype or perms.leave.view_leaverequest or request.user|check_manager:employee_leave or request.user == employee_leave.employee_id.employee_user_id %}
-          <div
+         <div
             class="oh-kanban-card"
             data-toggle="oh-modal-toggle"
             data-target="#objectCreateModal"

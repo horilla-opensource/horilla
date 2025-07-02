@@ -1,0 +1,20 @@
+<div id="formContainer">
+    {% include "generic/horilla_form.html" %}
+</div>
+<script>
+    function toggleFunctionShiftRequestForm(element){
+      if (element.is(":checked")){
+        $("[id=id_requested_till_parent_div]").hide();
+      } else {
+        $("[id=id_requested_till_parent_div]").show();
+      }id_requested_till
+    }
+
+      $(document).ready(function(){
+          $("[type=checkbox]").change(function (e) {
+          e.preventDefault();
+          toggleFunctionShiftRequestForm($(this));
+          });
+      })
+      toggleFunctionShiftRequestForm($("#genericModalBody #id_is_permanent_shift"));
+  </script>

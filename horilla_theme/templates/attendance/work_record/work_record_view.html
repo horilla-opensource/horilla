@@ -1,0 +1,68 @@
+{% extends 'index.html' %} {% block content %} {% load i18n static %}
+
+<div class="">
+    <div class="bg-white p-3 rounded-md shadow-card">
+        <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-2 border-b border-dark-50 pb-3">
+            <h3 class="text-md font-semibold">
+                {% trans "Work Records" %}
+            </h3>
+
+            <div class="flex flex-wrap items-center gap-2">
+
+                <div class="">
+                    <input
+                        class="text-color-600 w-full border border-primary-500 rounded-md p-2 focus-visible:outline-0 placeholder:text-[#00000041] placeholder:font-medium text-xs [transition:.3s] focus:border-primary-600"
+                        type="month"
+                        id="monthYearField"
+                        value="{{ current_date|date:"Y-m" }}"
+                        name="month"
+                        hx-get="{% url 'work-records-change-month' %}"
+                        hx-target="#workRecordTable"
+                        hx-trigger="change delay:0.5s"/>
+                </div>
+
+                <div class="relative dropdown-wrapper">
+                    <button
+                        class="px-5 py-2 h-full bg-[white]  rounded-md text-xs flex items-center gap-2  border border-primary-500 hover:border-primary-600 transition duration-300">
+                        <img src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}" alt="" width="17"
+                            class="mt-[-2px]"
+                        >
+                        {% trans "Filter" %}
+                    </button>
+                    <div class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0">
+                        <div class="accordion-wrapper space-y-2">
+                            <form
+                                hx-get="{% url 'work-records-change-month' %}?{{pd}}"
+                                hx-target="#workRecordTable"
+                            >
+                                {% include 'employee_filters.html' %}
+                                <div class="oh-dropdown__filter-footer">
+                                    <button
+                                        class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                                        id="#employeeFilter"
+                                    >
+                                        {% trans "Filter" %}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <button
+                    onclick="$('#workrecordExport').click();"
+                    class="px-5 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                    <img src="{% static 'horilla_theme/assets/img/icons/export.svg' %}" alt="" width="17"
+                        class="filter brightness-0 invert"
+                    >
+                    {% trans "Export" %}
+                </button>
+            </div>
+        </div>
+        <div id="workRecordTable" hx-get="{% url 'work-records-change-month' %}?month={{pd}}&{{ current_date|date:"Y-m" }}" hx-trigger="load">
+            <div class="animated-background"></div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

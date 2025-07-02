@@ -70,3 +70,15 @@ def update_rec_template_grp(upt_template_ids, template_groups, rec_id):
             )
             for survey in rec_surveys_templates:
                 survey.recruitment_ids.add(recruitment_obj)
+
+
+def in_all_managers(request):
+    """
+    Check the user in any recruitment/onboarding related managers
+    """
+    return (
+        request.user.employee_get.stage_set.exists()
+        or request.user.employee_get.recruitment_set.exists()
+        or request.user.employee_get.onboardingstage_set.exists()
+        or request.user.employee_get.onboarding_task.exists()
+    )

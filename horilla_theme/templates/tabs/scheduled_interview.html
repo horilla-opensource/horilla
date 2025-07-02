@@ -1,0 +1,180 @@
+{% load static %}{% load i18n %} {% load horillafilters %}
+
+<style>
+
+    .interview-item {
+        border-bottom: 1px solid #e9ecef;
+        padding: 1rem 0;
+    }
+
+    .interview-item:last-child {
+        border-bottom: none;
+    }
+
+    .interview-date,
+    .interview-time,
+    .interview-interviewer {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .interview-description {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.5rem;
+        padding-left: 0.75rem;
+        border-left: 3px solid #e9ecef;
+    }
+
+    .interviewer-chip {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        background-color: #e9ecef;
+        border-radius: 12px;
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
+    }
+
+    .status-completed {
+        color: #28a745;
+    }
+
+    .status-expired {
+        color: #dc3545;
+    }
+
+    .status-upcoming {
+        color: #ffc107;
+    }
+
+    .status-today {
+        color: #007bff;
+    }
+</style>
+
+{% now "Y-m-d" as now %}
+
+{% if interviews %}
+    <div class="mt-4">
+        <span class="text-md font-semibold mb-3"
+            >{{request.user.employee_get.get_full_name}}'s
+            {% trans "Scheduled Interviews" %}</span
+        >
+    </div>
+{% endif %}
+
+<div class="tracking-card">
+    <div class="interview-list">
+        <ol class="oh-activity-sidebar__qa-list" role="list">
+            {% for interview in interviews %}
+                <li class="oh-activity-sidebar__qa-item">
+                    <span
+                        class="float-end"
+                        title="{% trans 'delete' %}"
+                        hx-get="{% url 'delete-interview' interview.id %}?view=false"
+                        data-target="#activitySidebar"
+                        hx-swap="innerHTML"
+                        hx-target="#interview"
+                    >
+                        <ion-icon
+                            name="close-outline"
+                            style="font-size: 24px"
+                            role="img"
+                            class="md hydrated"
+                            aria-label="close outline"
+                        ></ion-icon>
+                    </span>
+                    {% if perms.recruitment.add_interview or request.user|is_stagemanager %}
+                        <span
+                            class="float-end"
+                            title="{% trans 'edit' %}"
+                            hx-get="{% url 'edit-interview' interview.id %}?view=false"
+                            data-target="#createModal"
+                            hx-swap="innerHTML"
+                            hx-target="#createTarget"
+                            data-toggle="oh-modal-toggle"
+                        >
+                            <ion-icon
+                                name="create-outline"
+                                style="font-size: 19px"
+                                role="img"
+                                class="md hydrated"
+                                aria-label="create outline"
+                            ></ion-icon>
+                        </span>
+                    {% endif %}
+                    <div class="interview-item row">
+                        <div class="interview-date">
+                            {% trans "Date" %}: {{ interview.interview_date }}
+                        </div>
+                        <div class="interview-time">
+                            {% trans "Time" %}: {{ interview.interview_time }}
+                        </div>
+                        <div class="interview-interviewer">
+                            {% trans "Interviewer" %}:
+                            <div class="mt-1">
+                                {% for interviewer in interview.employee_id.all %}
+                                <span class="interviewer-chip">
+                                    <ion-icon name="person-outline"></ion-icon>
+                                    {{ interviewer }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="interview-description">
+                            {{ interview.description }}
+                        </div>
+                        {% if interview.completed %}
+                        <div
+                            class="d-flex align-items-center mt-2 status-completed"
+                        >
+                            <ion-icon name="checkmark-outline"></ion-icon>
+                            {% trans "Interview Completed" %}
+                        </div>
+                        {% elif interview.interview_date|date:"Y-m-d" < now %}
+                        <div
+                            class="d-flex align-items-center mt-2 status-completed text-danger"
+                        >
+                            <ion-icon name="close-outline"></ion-icon>
+                            {% trans "Expired Interview" %}
+                        </div>
+                        {% elif interview.interview_date|date:"Y-m-d" > now %}
+                        <div class="d-flex align-items-center mt-2 status-upcoming">
+                            <ion-icon name="time-outline"></ion-icon>
+                            {% trans "Upcoming Interview" %}
+                        </div>
+                        {% elif interview.interview_date|date:"Y-m-d" == now and not interview.completed %}
+                        <div class="d-flex align-items-center mt-2 status-today">
+                            <ion-icon name="calendar-outline"></ion-icon>
+                            {% trans "Interview Today" %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+            {% empty %}
+            <div class="oh-wrapper h-full" align="center">
+                <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+                    <div class="flex flex-col items-center justify-center h-full">
+                        <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                        <p class="text-[#666] mb-5">{% trans "No interviews are scheduled for this candidate" %}</p>
+                    </div>
+                </div>
+            </div>
+
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+
+<div class="oh-modal" id="createModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog-header">
+        <button onclick="$(this).closest('#createModal').removeClass('oh-modal--show');" type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+
+        <div class="oh-modal__dialog-body" id="createTarget"></div>
+    </div>
+  </div>

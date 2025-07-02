@@ -1,0 +1,140 @@
+<div class="oh-inner-sidebar-content p-0">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+      <div class="d-flex align-items-center flex-column oh-profile_info-card">
+        <div class="oh-profile oh-profile--lg">
+          <div class="oh-profile__avatar">
+            <img src="{{ instance.get_avatar }}" class="oh-profile__image oh-table-image" />
+          </div>
+          <span class="oh-profile__active-badge oh-profile__active-badge--secondary"
+          {% if instance.employee_user_id.is_active %}
+          title="Active"
+          style="background-color: yellowgreen;"
+          {% else %}
+          title="In-active"
+          {% endif %}
+           ></span>
+        </div>
+        <div class="oh-profile__info-container">
+          <h1 class="oh-profile__info-name">{{instance.get_full_name}}</h1>
+          <p class="oh-profile__info-designation">{{instance.get_job_position}}</p>
+        </div>
+      </div>
+    </div>
+    <p class="oh-profile__info-designation mt-2">Dashboard Access :
+      <form hx-post="{% url "toggle-user-dashboard-access" %}?instance_id={{instance.pk}}"
+      hx-target="#responseContainer"
+      >
+        <div class="oh-switch">
+          <input type="checkbox" name="permissions" class="oh-switch__checkbox mt-2" onchange="
+          $(this).closest('form').find('[type=submit]').click()
+          "
+          {% if instance.employee_user_id.is_active %}
+          checked
+          {% endif %}
+           >
+          </div>
+          <input type="submit" hidden>
+        </form>
+        <div id="responseContainer"></div>
+    </p>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col lg-12">
+      <div class="oh-general__tab-target oh-profile__info-tab mb-4" id="personal">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="oh-card mt-3">
+              <div class="oh-card__header">
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Employee</span>
+              </div>
+              <div class="oh-card__body mt-4">
+                <div class="row">
+                  <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="oh-profile__card-info-list">
+                      <li class="oh-profile__card-info-item">
+                        <span class="oh-profile__info-value">Personal Info</span>
+                        <div class="oh-progress-container">
+                          <div class="oh-progress" role="progressbar">
+                            <div class="oh-progress__bar oh-progress__bar--secondary" style="width: {{personal_percentage}}%"></div>
+                          </div>
+                          <span class="oh-progress-container__percentage">{{personal_percentage|floatformat:2}}%</span>
+                        </div>
+                      </li>
+                      <li class="oh-profile__card-info-item">
+                        <span class="oh-profile__info-value">Work Info</span>
+                        <div class="oh-progress-container">
+                          <div class="oh-progress" role="progressbar">
+                            <div class="oh-progress__bar oh-progress__bar--secondary" style="width: {{work_percentage}}%"></div>
+                          </div>
+                          <span class="oh-progress-container__percentage">{{work_percentage|floatformat:2}}%</span>
+                        </div>
+                      </li>
+                      <li class="oh-profile__card-info-item">
+                        <span class="oh-profile__info-value">Bank Info</span>
+                        <div class="oh-progress-container">
+                          <div class="oh-progress" role="progressbar">
+                            <div class="oh-progress__bar oh-progress__bar--secondary" style="width: {{bank_percentage}}%"></div>
+                          </div>
+                          <span class="oh-progress-container__percentage">{{bank_percentage|floatformat:2}}%</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="oh-card mt-3">
+              <div class="oh-card__header">
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Leave Policy</span>
+              </div>
+              <div class="oh-card__body">
+                <div class="row">
+                  <div class="col-12 col-sm-12" hx-get="{% url "allocation-leave-type-list" %}?instance_id={{instance.pk}}&card_only=true" hx-trigger="load">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="oh-card mt-3">
+              <div class="oh-card__header">
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Assets</span>
+              </div>
+              <div class="oh-card__body">
+                <div class="row">
+                  <div class="col-12 col-sm-12" hx-get="{% url "allocation-asset-list" %}?instance_id={{instance.pk}}&card_only=true" hx-trigger="load">
+                 </div>
+                </div>
+              </div>
+            </div>
+            <div class="oh-card mt-3">
+              <div class="oh-card__header">
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Allowance</span>
+              </div>
+              <div class="oh-card__body">
+                <div class="row">
+                  <div class="col-12 col-sm-12" hx-get="{% url "allocation-allowance-list" %}?instance_id={{instance.pk}}&card_only=true" hx-trigger="load">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="oh-card mt-3">
+              <div class="oh-card__header">
+                <span class="oh-card__title oh-card__title--sm fw-bold me-2">Deductions</span>
+              </div>
+              <div class="oh-card__body">
+                <div class="row">
+                  <div class="col-12 col-sm-12" hx-get="{% url "allocation-deduction-list" %}?instance_id={{instance.pk}}&card_only=true" hx-trigger="load">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="oh-modal__dialog-footer p-0">
+    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">Next</button>
+  </div>
+</div>

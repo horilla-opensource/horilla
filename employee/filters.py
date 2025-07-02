@@ -13,9 +13,15 @@ from django_filters import CharFilter
 
 # from attendance.models import Attendance
 from accessibility.methods import check_is_accessible
-from accessibility.models import DefaultAccessibility
 from base.methods import filtersubordinatesemployeemodel
-from employee.models import DisciplinaryAction, Employee, Policy
+from employee.models import (
+    Actiontype,
+    DisciplinaryAction,
+    Employee,
+    EmployeeTag,
+    EmployeeWorkInformation,
+    Policy,
+)
 from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
 from horilla.horilla_middlewares import _thread_locals
 from horilla_documents.models import Document
@@ -93,6 +99,9 @@ class EmployeeFilter(HorillaFilterSet):
         lookup_expr="lte",
         widget=forms.DateInput(attrs={"type": "date"}),
     )
+    # working_today = django_filters.BooleanFilter(
+    #     label="Working", method="get_working_today"
+    # )
 
     not_in_yet = django_filters.DateFilter(
         method="not_in_yet_func",
@@ -131,6 +140,16 @@ class EmployeeFilter(HorillaFilterSet):
             "employee_user_id__groups",
             "employee_user_id__user_permissions",
         ]
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     custom_field = django_filters.BooleanFilter(
+    #         label="Working", method=get_working_today
+    #     )
+    #     self.filters["working_today"] = custom_field
+    #     self.form.fields["working_today"] = custom_field.field
+    #     self.form.fields["working_today"].label = "Working"
+    #     self.Meta.fields.append("working_today")
 
     def not_in_yet_func(self, queryset, _, value):
         """
@@ -172,7 +191,6 @@ class EmployeeFilter(HorillaFilterSet):
         from django.db.models import Q
 
         # Handle default accessibility and filter based on reporting manager
-
         request = getattr(_thread_locals, "request", None)
         if request:
             employee = getattr(request.user, "employee_get", None)
@@ -306,3 +324,44 @@ class DisciplinaryActionFilter(FilterSet):
             "employee_id__employee_work_info__company_id",
             "employee_id__employee_work_info__shift_id",
         ]
+
+
+class ActionTypeFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = Actiontype
+        fields = ["title", "action_type"]
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search
+        """
+
+        return (
+            (queryset.filter(title__icontains=value))
+            | queryset.filter(action_type__icontains=value)
+        ).distinct()
+
+
+class EmployeeTagFilter(FilterSet):
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+
+    class Meta:
+        model = EmployeeTag
+        fields = [
+            "title",
+        ]
+
+
+class EmployeeWorkInformationFilter(HorillaFilterSet):
+
+    search = django_filters.CharFilter(
+        field_name="employee_id__employee_first_name", lookup_expr="icontains"
+    )
+
+    class Meta:
+        model = EmployeeWorkInformation
+        fields = ["employee_id"]

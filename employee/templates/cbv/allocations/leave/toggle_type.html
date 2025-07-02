@@ -1,0 +1,13 @@
+{% if not available_leave %}
+  <a style="font-size: 15px;color: darkseagreen;" title="Assign Leave Type" onclick="
+  $(this).closest('tr').find('td:first [type=checkbox]').prop('checked',!$(this).find('td:first [type=checkbox]').is(':checked')).change();
+  $('#addTypesButton').click();
+  " class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" ><ion-icon name="checkmark-done-circle-outline"></ion-icon></a>
+{% else %}
+  <a style="font-size: 15px;"
+    hx-get="{% url "generic-delete" %}?model=leave.AvailableLeave&pk={{available_leave.pk}}"
+    hx-target="#deleteConfirmationBody"
+    data-toggle="oh-modal-toggle"
+    data-target="#deleteConfirmation"
+    title="Delete Assigned Leave Type" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" ><ion-icon name="close-circle-outline" ></ion-icon></a>
+{% endif %}

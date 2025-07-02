@@ -1,0 +1,8 @@
+{% load i18n %}
+{% if instance.attachment %}
+            <a href="{{instance.attachment.url}}" target="_blank" class="oh-timeoff-modal__download-link justify-content-center" >
+                <ion-icon class="me-1" name="download-outline" ></ion-icon>
+                <span class="oh-timeoff-modal__download-link-text " ></span>
+                {% trans "View attachment" %}
+            </a>
+{% endif %}

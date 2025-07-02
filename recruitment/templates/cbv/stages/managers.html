@@ -1,0 +1,29 @@
+{% load i18n %}
+    {% for manager in instance.stage_managers.all %}
+    <span
+      class="oh-user-panel oh-collapse-panel"
+      data-type="user">
+      <div class="oh-profile oh-profile--md">
+        <div class="oh-profile__avatar mr-1">
+          <img
+            src="https://ui-avatars.com/api/?name={{manager.get_full_name}}&background=random"
+            class="oh-profile__image"
+            alt="Baby C."
+          />
+        </div>
+        <span class="oh-profile__name oh-text--dark" title="{{manager}}">
+          {{manager.employee_first_name|truncatechars:6}}.
+        </span>
+      </div>
+      <button hx-post="{% url 'rec-remove-stage-manager' manager.id instance.id %}?{{pd}}&page={{data.number}}"
+              hx-target='#listContainer' class="oh-user-panel__remove"
+              hx-confirm='{% trans "Are sure want to remove this manager?" %}'
+              onclick = "event.stopPropagation();"
+              title='{% trans "Remove" %}'>
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </span>
+    {% endfor %}
+    <span class="count-span">
+      {{instance.stage_managers.all|length}} {% trans "Managers"%}
+    </span>

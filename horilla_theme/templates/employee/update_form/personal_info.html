@@ -1,0 +1,86 @@
+{% load static %} {% load i18n %}
+<div class="oh-wrapper" data-select2-id="select2-data-40-yu7x">
+    <div class="oh-general__tab-target oh-profile-section mb-4 p-5" id="personal" data-select2-id="select2-data-personal" style="border:none;">
+        <div class="oh-profile-section__card p-10" data-select2-id="select2-data-48-0df8" style="border:1px solid #cdd5df; border-radius:10px;">
+
+            <form action="" method="post" enctype="multipart/form-data">
+                <div id="personalMessage"></div>
+                <input type="hidden" name="form" value="personal">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 d-flex align-items-center">
+                        <div class="oh-profile-section__edit-photo me-4 mb-3" data-toggle="oh-modal-toggle"
+                            data-target="#uploadPhotoModal">
+                            <img src="{{form.instance.get_avatar}}" class="oh-profile-section__avatar preview"
+                                alt="Username" />
+                        </div>
+                    </div>
+                    {{form.employee_profile.errors}}
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6">
+                        <label class="oh-label" for="{{form.badge_id.id_for_label}}">{% trans "Badge Id" %}</label>
+                        {{form.badge_id}} {{form.badge_id.errors}}
+                    </div>
+                </div>
+                {{form.as_p}}
+                <hr class="mt-5 mb-3" style="color:#cdd5df;">
+                <div class="w-100 d-flex" style="justify-content: flex-end;">
+                    <button type="submit" class="oh-btn oh-btn--secondary oh-btn--w-100-resp">
+                        {% trans "Save" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="oh-modal" id="uploadPhotoModal" role="dialog" aria-labelledby="uploadPhotoModal" aria-hidden="true">
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <span class="oh-modal__dialog-title" id="uploadPhotoModalLabel">{% trans "Upload Photo" %}</span>
+                <button class="oh-modal__close" aria-label="Close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="uploadPhotoModalBody">
+                <div class="oh-profile-section__image-container">
+                    <form hx-post="{% url 'update-profile-image' obj_id %}" hx-target="#uploadPhotoModalBody"
+                        hx-encoding="multipart/form-data" id="file-form">
+                        <div class="oh-profile-section__modal-avatar ">
+                            <img src="{{form.instance.get_avatar}}" class="oh-profile-section__modal-image preview"
+                                alt="Username" />
+                        </div>
+                        <input type="file" name="employee_profile" id="id_employee_profile"
+                            class="oh-input oh-input--file oh-input--file-sm mt-4" />
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between w-100 align-items-center mt-4">
+                            <button class="oh-btn oh-btn--light-danger mr-1"
+                                hx-delete="{% url 'remove-profile-image' obj_id %}"
+                                hx-target="#personalMessage">
+                                <ion-icon class="me-1" name="trash-outline"></ion-icon>
+                                {% trans "Delete Image" %}
+                            </button>
+                            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                                {% trans "Update Image" %}
+                            </button>
+                        </div>
+                        <script>
+                            $(document).ready(function () {
+                                $("#id_employee_profile").change(function (e) {
+                                    const file = this.files[0];
+                                    const reader = new FileReader();
+
+                                    reader.addEventListener("load", function () {
+                                        const imageUrl = reader.result;
+                                        $(".preview").attr("src", imageUrl);
+                                    });
+
+                                    reader.readAsDataURL(file);
+                                });
+                            });
+                        </script>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

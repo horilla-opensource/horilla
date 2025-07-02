@@ -1,0 +1,14 @@
+{% load i18n %} {% load basefilters %}
+{% if instance.action.action_type == 'suspension' %}
+                    <div >{{ instance.action }}
+                      <p class="fw-bold mt-2">{% trans "Suspended for" %}
+                        {% if instance.unit_in == "days" %}
+                         {{ instance.days }} {% trans "days" %}.
+                         {% else %}
+                         {{ instance.hours }} {% trans "hours" %}.
+                        {% endif %}
+                      </p>
+                    </div>
+                {% else %}
+                    <div >{{ instance.action }}</div>
+                {% endif %}

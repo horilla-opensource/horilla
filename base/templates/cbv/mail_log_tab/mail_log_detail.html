@@ -1,0 +1,12 @@
+{% load i18n %}
+{% load basefilters %}
+<div class="oh-modal__dialog-header">
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+  {% if not log.body|has_content %}
+  <div class="oh-modal__dialog-title" style="padding:25px;">{{ log.subject }}</div>
+  {% else %}
+  <div class="oh-modal__dialog-body">{{ log.body|safe }}</div>
+{% endif %}

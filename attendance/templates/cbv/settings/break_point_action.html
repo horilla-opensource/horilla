@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load static %}
+{% if perms.attendance.change_attendancevalidationcondition %}
+         <a hx-get="{% url 'break-point-update-form' instance.id %}?instance_ids={{instance.ordered_ids}}"
+          hx-target="#genericModalBody" type="button" class="oh-btn oh-btn--info"
+           data-toggle="oh-modal-toggle" data-target="#genericModal">{% trans 'Edit' %}
+        </a>
+{% endif %}

@@ -1,0 +1,27 @@
+{% load i18n %}
+{% if perms.payroll.change_allowance or perms.payroll.delete_allowance %}
+    <div class="oh-sticky-table__right">
+        <div class="oh-btn-group">
+        <a onclick="event.stopPropagation();" class="oh-btn oh-btn--light-bkg w-100"
+         href="{% url 'update-allowance' instance.id %}" title='{% trans "Update" %}'>
+          <ion-icon name="create-outline" role="img" class="md hydrated" style="color: blue"
+           aria-label="create outline"></ion-icon>
+            </a>
+            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                onclick = "event.preventDefault();event.stopPropagation();"
+                hx-get="{% url 'generic-delete' %}?model=payroll.Allowance&pk={{instance.id}}"
+                hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+                data-target="#deleteConfirmation"
+                itle="{% trans 'Delete' %}">
+                <ion-icon name="trash-outline" role="img" class="md hydrated"
+                    aria-label="trash outline" >
+                </ion-icon>
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% if request.GET.deleted %}
+    <script>
+    $("#reloadMessagesButton").click()
+    </script>
+{% endif %}

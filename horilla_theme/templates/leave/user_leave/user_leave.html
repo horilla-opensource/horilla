@@ -1,0 +1,42 @@
+{% load static i18n %}
+<div class="grid grid-cols-12 gap-3 mb-2">
+    {% for user_leave in user_leaves %}
+        <div class="col-span-2"
+            id="requestCreateCard"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'user-request' user_leave.leave_type_id.id %}"
+            hx-target="#objectCreateModalTarget"
+            role="button"
+        >
+            <div class="p-5 bg-white  rounded-md shadow-card h-full">
+                <div class="oh-profile oh-profile--md">
+                    <div class="mr-1">
+                        <img src="{{user_leave.leave_type_id.get_avatar }}" width="60" class="oh-profile__image" alt="Leave Type Icon">
+                    </div>
+                </div>
+                <div class="ps-1">
+                    <h5 class="font-semibold mb-2 text-sm">{{user_leave.leave_type_id}}</h5>
+                    <div class="flex justify-between mb-1 text-xs text-dark-200">
+                        <p>{% trans "Available Leave Days" %}</p>
+                        <p class="text-sm font-bold">{% if user_leave.leave_type_id.limit_leave %}{{user_leave.available_days}} {% else %}{% trans "No Limit" %}{% endif %}</p>
+                    </div>
+                    <div class="flex justify-between mb-1 text-xs text-dark-200">
+                        <p>{% trans "Carryforwrad Leave Days" %}</p>
+                        <p class="text-sm font-bold"> {{user_leave.carryforward_days}}</p>
+                    </div>
+                    <div class="flex justify-between mb-1 text-xs text-dark-200">
+                        <p>{% trans "Total Leave Days" %}</p>
+                        <p class="text-sm font-bold">{% if user_leave.leave_type_id.limit_leave %}{{user_leave.total_leave_days}}{% else %}{% trans "No Limit" %}{% endif %}</p>
+                    </div>
+                    <div class="flex justify-between mb-1 text-xs text-dark-200">
+                        <p>{% trans "Total Leave Taken" %}</p>
+                        <p class="text-sm font-bold">{{user_leave.leave_taken}}</p>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    {% endfor %}
+</div>

@@ -509,7 +509,10 @@ def objective_delete(request, obj_id):
             )
     except EmployeeObjective.DoesNotExist:
         messages.error(request, _("Objective not found."))
-    return redirect(objective_list_view)
+    # return redirect(reverse("objective-list-view"))
+    return HttpResponse(
+        "<script> $('.reload-record').click(); $('#reloadMessagesButton').click();</script>"
+    )
 
 
 @login_required
@@ -528,7 +531,10 @@ def objective_manager_remove(request, obj_id, manager_id):
     """
     objective = get_object_or_404(Objective, id=obj_id)
     objective.managers.remove(manager_id)
-    return HttpResponse("")
+    messages.success(request, _("Manger removed successfully."))
+    return HttpResponse(
+        "<script> $('.reload-record').click(); $('#reloadMessagesButton').click();</script>"
+    )
 
 
 @login_required
@@ -547,7 +553,10 @@ def key_result_remove(request, obj_id, kr_id):
     """
     objective = get_object_or_404(Objective, id=obj_id)
     objective.key_result_id.remove(kr_id)
-    return HttpResponse("")
+    messages.success(request, _("Key result removed successfully."))
+    return HttpResponse(
+        "<script> $('.reload-record').click(); $('#reloadMessagesButton').click();</script>"
+    )
 
 
 @login_required
@@ -569,8 +578,10 @@ def assignees_remove(request, obj_id, emp_id):
         EmployeeObjective, employee_id=emp_id, objective_id=obj_id
     ).delete()
     objective.assignees.remove(emp_id)
-
-    return HttpResponse()
+    messages.success(request, _("Assignee removed successfully."))
+    return HttpResponse(
+        "<script>$('.reload-record').click();$('#reloadMessagesButton').click();</script>"
+    )
 
 
 def objective_filter_pagination(request, objective_own):
@@ -856,7 +867,7 @@ def emp_objective_search(request, obj_id):
     search_val = request.GET.get("search")
     if search_val is None:
         search_val = ""
-    emp_objectives = EmployeeObjectiveFilter(request.GET, emp_objectives).qs
+    emp_objectives = EmployeeObjectiveFilter(request.GET, emp_objectives).qs.distinct()
     if not request.GET.get("archive") == "true":
         emp_objectives = emp_objectives.filter(archive=False)
     previous_data = request.GET.urlencode()
@@ -892,11 +903,11 @@ def kr_table_view(request, emp_objective_id):
     """
     emp_objective = EmployeeObjective.objects.get(id=emp_objective_id)
     krs = emp_objective.employee_key_result.all()
+    krs = KeyResultFilter(request.GET, queryset=krs).qs.distinct()
     krs = Paginator(krs, get_pagination())
     krs_page = request.GET.get("krs_page")
     krs = krs.get_page(krs_page)
     previous_data = request.GET.urlencode()
-
     context = {
         "krs": krs,
         "key_result_status": EmployeeKeyResult.STATUS_CHOICES,
@@ -1029,7 +1040,9 @@ def objective_archive(request, id):
         objective.archive = True
         objective.save()
         messages.info(request, _("Objective archived successfully!."))
-    return redirect(f"/pms/objective-list-view?{request.environ['QUERY_STRING']}")
+    return HttpResponse(
+        "<script> $('.reload-record').click(); $('#reloadMessagesButton').click();</script>"
+    )
 
 
 @login_required
@@ -1165,6 +1178,10 @@ def archive_employee_objective(request, emp_obj_id):
         emp_objective.archive = True
         emp_objective.save()
         messages.success(request, _("Objective archived successfully!."))
+    if request.GET.get("detail_view"):
+        return HttpResponse(
+            "<script> $('.reload-record').click(); $('#reloadMessagesButton').click();</script>"
+        )
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -1208,6 +1225,19 @@ def change_employee_objective_status(request):
     """
     emp_obj = request.GET.get("empObjId")
     emp_objective = EmployeeObjective.objects.filter(id=emp_obj).first()
+    if not (
+        request.user.has_perm("pms.change_objective")
+        or request.user.has_perm("pms.change_employeeobjective")
+        or request.user.has_perm("pms.change_employeekeyresult")
+        or request.user.employee_get in emp_objective.objective_id.managers.all()
+        or (
+            emp_objective.objective_id.self_employee_progress_update
+            and (emp_objective.employee_id == request.user.employee_get)
+        )
+    ):
+        messages.info(request, "You dont have permission")
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
     status = request.GET.get("status")
     if not (
         request.user.has_perm("pms.change_objective")
@@ -1473,11 +1503,13 @@ def feedback_creation(request):
         it will return feedback creation html.
     """
     form = FeedbackForm()
+    form.fields["manager_id"].required = False
     context = {
         "feedback_form": form,
     }
     if request.method == "POST":
         form = FeedbackForm(request.POST)
+        form.fields["manager_id"].required = False
         if form.is_valid():
             employees = form.data.getlist("subordinate_id")
             if key_result_ids := request.POST.getlist("employee_key_results_id"):
@@ -1492,7 +1524,7 @@ def feedback_creation(request):
 
             messages.success(request, _("Feedback created successfully."))
             send_feedback_notifications(request, feedback=instance)
-            return redirect(feedback_list_view)
+            return redirect(reverse("feedback-view"))
         else:
             context["feedback_form"] = form
     return render(request, "feedback/feedback_creation.html", context)
@@ -1853,12 +1885,12 @@ def feedback_answer_get(request, id, **kwargs):
     # check if the feedback start_date is not started yet
     if feedback.start_date > datetime.date.today():
         messages.info(request, _("Feedback not started yet"))
-        return redirect(feedback_list_view)
+        return redirect(reverse("feedback-view"))
 
     # check if the feedback end_date is not over
     if feedback.end_date and feedback.end_date < datetime.date.today():
-        messages.info(request, _("Feedback is due"))
-        return redirect(feedback_list_view)
+        messages.info(request, _("Feedback is due/closed"))
+        return redirect(reverse("feedback-view"))
     user = request.user
     employee = Employee.objects.filter(employee_user_id=user).first()
     answer = Answer.objects.filter(feedback_id=feedback, employee_id=employee)
@@ -1874,7 +1906,7 @@ def feedback_answer_get(request, id, **kwargs):
     )
     if not employee in feedback_employees:
         messages.info(request, _("You are not allowed to answer"))
-        return redirect(feedback_list_view)
+        return redirect(reverse("feedback-view"))
 
     # Employee does not have an answer object
     for employee in feedback_employees:
@@ -1888,7 +1920,7 @@ def feedback_answer_get(request, id, **kwargs):
     # Check if the feedback has already been answered
     if answer:
         messages.info(request, _("Feedback already answered"))
-        return redirect(feedback_list_view)
+        return redirect(reverse("feedback-view"))
 
     context = {
         "questions": questions,
@@ -1941,7 +1973,7 @@ def feedback_answer_post(request, id):
             _("Feedback %(review_cycle)s has been answered successfully!.")
             % {"review_cycle": feedback.review_cycle},
         )
-        return redirect(feedback_list_view)
+        return redirect(reverse("feedback-view"))
 
 
 @login_required
@@ -1964,7 +1996,7 @@ def feedback_answer_view(request, id, **kwargs):
 
     if not answers:
         messages.info(request, _("Feedback is not answered yet"))
-        return redirect(feedback_list_view)
+        return redirect(reverse("feedback-view"))
 
     context = {
         "answers": answers,
@@ -2005,13 +2037,13 @@ def feedback_delete(request, id):
                 _("You can't delete feedback %(review_cycle)s with status %(status)s")
                 % {"review_cycle": feedback.review_cycle, "status": feedback.status},
             )
-            return redirect(feedback_list_view)
+            return redirect(reverse("feedback-view"))
 
     except Feedback.DoesNotExist:
         messages.error(request, _("Feedback not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
-    return redirect(feedback_list_view)
+    return redirect(reverse("feedback-view"))
 
 
 @login_required
@@ -2099,6 +2131,7 @@ def feedback_archive(request, id):
     """
 
     feedback = Feedback.objects.get(id=id)
+
     if feedback.archive:
         feedback.archive = False
         feedback.save()
@@ -2107,7 +2140,7 @@ def feedback_archive(request, id):
         feedback.archive = True
         feedback.save()
         messages.info(request, _("Feedback archived successfully!."))
-    return redirect(feedback_list_view)
+    return redirect(reverse("feedback-view"))
 
 
 @login_required
@@ -2585,6 +2618,7 @@ def period_delete(request, period_id):
     Returns:
         it will redirect to period_view.
     """
+    target = request.META.get("HTTP_HX_TARGET")
     try:
         obj_period = Period.objects.get(id=period_id)
         obj_period.delete()
@@ -2593,6 +2627,8 @@ def period_delete(request, period_id):
         messages.error(request, _("Period not found."))
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
+    if target == "listContainer":
+        return HttpResponse("<script>window.location.reload();</script>")
     return redirect("period-hx-view")
 
 
@@ -2840,6 +2876,7 @@ def feedback_bulk_archive(request):
     """
     This method is used to archive/un-archive bulk feedbacks
     """
+
     ids = request.POST["ids"]
     announy_ids = request.POST["announy_ids"]
     ids = json.loads(ids)
@@ -2879,6 +2916,8 @@ def feedback_bulk_delete(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    announy_ids = request.POST["announy_ids"]
+    announy_ids = json.loads(announy_ids)
     for feedback_id in ids:
         try:
             feedback = Feedback.objects.get(id=feedback_id)
@@ -2903,6 +2942,17 @@ def feedback_bulk_delete(request):
 
         except Feedback.DoesNotExist:
             messages.error(request, _("Feedback not found."))
+    for feedback_id in announy_ids:
+        feedback_id = AnonymousFeedback.objects.get(id=feedback_id)
+        message = _("Deleted")
+        # feedback_id.archive = is_active
+        feedback_id.delete()
+        messages.success(
+            request,
+            _("{feedback} is {message}").format(
+                feedback=feedback_id.feedback_subject, message=message
+            ),
+        )
     return JsonResponse({"message": "Success"})
 
 
@@ -3119,7 +3169,7 @@ def delete_anonymous_feedback(request, obj_id):
     except ProtectedError:
         messages.error(request, _("Related entries exists"))
 
-    return redirect(feedback_list_view)
+    return redirect(reverse("feedback-view"))
 
 
 @login_required
@@ -3271,7 +3321,7 @@ def delete_employee_keyresult(request, kr_id):
     # objective.assignees.remove(employee)
     messages.success(request, _("Objective deleted successfully!."))
     if request.GET.get("dashboard"):
-        return redirect(f"/pms/dashboard-view")
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
     return redirect(f"/pms/objective-detailed-view/{objective.id}")
 
 
@@ -3285,13 +3335,27 @@ def employee_keyresult_update_status(request, kr_id):
             redirect to detailed of employee objective
     """
     emp_kr = EmployeeKeyResult.objects.get(id=kr_id)
-    status = request.POST.get("key_result_status")
-    emp_kr.status = status
-    emp_kr.save()
-    messages.success(request, _("Key result sattus changed to {}.").format(status))
-    return redirect(
-        f"/pms/kr-table-view/{emp_kr.employee_objective_id.id}?&objective_id={emp_kr.employee_objective_id.objective_id.id}"
-    )
+    if (
+        request.user.has_perm("pms.change_objective")
+        or request.user.has_perm("pms.change_employeeobjective")
+        or request.user.has_perm("pms.change_employeekeyresult")
+        or request.user.employee_get
+        in emp_kr.employee_objective_id.objective_id.managers.all()
+        or (
+            emp_kr.employee_objective_id.objective_id.self_employee_progress_update
+            and (emp_kr.employee_id == request.user.employee_get)
+        )
+    ):
+        status = request.POST.get("key_result_status")
+        emp_kr.status = status
+        emp_kr.save()
+        messages.success(request, _("Key result sattus changed to {}.").format(status))
+        return redirect(
+            f"/pms/kr-table-view/{emp_kr.employee_objective_id.id}?&objective_id={emp_kr.employee_objective_id.objective_id.id}"
+        )
+
+    messages.info(request, "You dont have permission")
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -3317,13 +3381,25 @@ def key_result_current_value_update(request):
                 )
             )
         ):
+            current_value = max(0, current_value)
             emp_kr.current_value = current_value
             emp_kr.save()
             emp_kr.employee_objective_id.update_objective_progress()
-            return JsonResponse({"type": "sucess"})
+            messages.success(request, "Value updated")
         else:
-            messages.info(request, "You dont have permission")
-    except:
+            messages.info(
+                request, "You dont have permission to update the current value"
+            )
+        return JsonResponse(
+            {
+                "type": "sucess",
+                "progress": emp_kr.employee_objective_id.progress_percentage,
+                "kr_progress": emp_kr.progress_percentage,
+                "pk": emp_kr.employee_objective_id.pk,
+            }
+        )
+    except Exception as e:
+        print(e)
         return JsonResponse({"type": "error"})
 
 
@@ -3546,7 +3622,7 @@ def meeting_employee_remove(request, meet_id, employee_id):
     messages.success(
         request, _("Employee has been successfully removed from the meeting.")
     )
-    return HttpResponse("")
+    return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
 
 
 @login_required
@@ -3679,7 +3755,7 @@ def meeting_answer_post(request, id):
             _("Questions for meeting %(meeting)s has been answered successfully!.")
             % {"meeting": meeting.title},
         )
-        return redirect(view_meetings)
+        return redirect(reverse("view-meetings"))
 
 
 @login_required
@@ -3746,7 +3822,7 @@ def meeting_single_view(request, id):
 @login_required
 @hx_request_required
 @owner_can_enter("pms.view_feedback", Employee)
-def performance_tab(request, emp_id):
+def performance_tab(request, pk):
     """
     This function is used to view performance tab of an employee in employee individual
     & profile view.
@@ -3758,7 +3834,7 @@ def performance_tab(request, emp_id):
     Returns: return performance-tab template
 
     """
-    feedback_own = Feedback.objects.filter(employee_id=emp_id, archive=False)
+    feedback_own = Feedback.objects.filter(employee_id=pk, archive=False)
 
     today = datetime.datetime.today()
     context = {

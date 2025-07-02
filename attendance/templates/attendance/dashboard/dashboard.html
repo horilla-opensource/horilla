@@ -1,5 +1,6 @@
 {% extends 'index.html' %} {% load i18n %} {% block content %} {% load static %}
 {% load attendancefilters %}
+{% include 'generic/components.html' %}
 <style>
     .oh-sticky-table__right {
         position: sticky;
@@ -7,6 +8,24 @@
         background-color: #fff;
     }
 </style>
+
+<!-- activity view modal for attendance activity col -->
+
+<div class="oh-modal" id="activityViewModal" role="dialog" aria-hidden="true" style="z-index:1100;">
+    <div class="oh-modal__dialog" style="max-width: 900px;">
+      <div class="oh-modal__dialog-header">
+        <h3 class="oh-main__titlebar-title fw-bold ">{% trans " Activities" %}</h3>
+        <button class="oh-modal__close--custom" aria-label="Close"
+        onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show');">
+        <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id="activityViewModalBody" style="overflow-x:auto;"></div>
+    </div>
+  </div>
+
+  <!-- end of modal -->
+
 <div class="oh-wrapper">
     <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-12 pb-5">
         <div class="oh-dashboard row">
@@ -104,9 +123,11 @@
                                 <span class="oh-card-dashboard__title">{% trans 'Offline Employees' %}
                                 </span>
                             </div>
-                            <div class="oh-card-dashboard__body" hx-get="{% url 'not-in-yet' %}" hx-trigger="load"
-                                id="notInYetIdCardBody" style="height: 310px;">
-                                <div class="animated-background"></div>
+                            <div class="oh-card-dashboard__body"
+                                 style="height: 310px;">
+                                <div id="notInYetIdCardBody" class="oh-sticky-table h-100" hx-get="{% url 'not-in-yet' %}" hx-trigger="load" style="border: none;">
+                                    <div class="animated-background"></div>
+                                </div>
                             </div>
                         </div>
                     </div>

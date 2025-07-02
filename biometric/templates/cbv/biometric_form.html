@@ -1,0 +1,79 @@
+<div>
+    {% include "generic/horilla_form.html" %}
+</div>
+
+<style>
+    #id_machine_ip_parent_div,
+    #id_port_parent_div,
+    #id_cosec_username_parent_div,
+    #id_anviz_request_id_parent_div,
+    #id_api_url_parent_div,
+    #id_api_key_parent_div,
+    #id_api_secret_parent_div,
+    #id_api_token_parent_div,
+    #id_api_expires_parent_div,
+    #id_is_live_parent_div,
+    #id_last_fetch_date_parent_div,
+    #id_last_fetch_time_parent_div,
+    #id_cosec_password_parent_div {
+      display: none;
+    }
+  </style>
+<script>
+    $('#id_machine_type_parent_div').on('change', function() {
+        var selectedOption = $(this).find('option:selected').text();
+        if (selectedOption === 'ZKTeco Biometric') {
+          $("#id_machine_ip_parent_div, #id_port_parent_div").show();
+        }
+        else {
+            $("#id_machine_ip_parent_div, #id_port_parent_div").hide();
+        }
+        if (selectedOption === 'Anviz Biometric'){
+            $("#id_anviz_request_id_parent_div, #id_api_url_parent_div, #id_api_key_parent_div, #id_api_secret_parent_div").show();
+        }
+        else {
+            $("#id_anviz_request_id_parent_div, #id_api_url_parent_div, #id_api_key_parent_div, #id_api_secret_parent_div").hide();
+        }
+        if (selectedOption === 'Matrix COSEC Biometric'){
+            $("#id_machine_ip_parent_div,#id_port_parent_div, #id_cosec_username_parent_div,#id_cosec_password_parent_div").show();
+        }
+        else {
+            $("#id_cosec_username_parent_div,#id_cosec_password_parent_div").hide();
+        }
+      });
+
+    $(document).ready(function (e) {
+        $('select[name="machine_type"]').change();
+
+        var passwordField = $('input[type="password"]');
+        passwordField.wrap('<div class="password-wrapper" style="position: relative;"></div>');
+
+        var button = $(
+          '<button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">' +
+            '<ion-icon class="oh-passowrd-input__show-icon" title="Show Password" name="eye-outline"></ion-icon>' +
+            '<ion-icon class="oh-passowrd-input__hide-icon d-none" title="Hide Password" name="eye-off-outline"></ion-icon>' +
+          '</button>'
+        );
+
+        passwordField.after(button);
+        passwordField.css({
+          'padding-right': '30px'
+        });
+
+
+        $(".oh-password-input--toggle").click(function () {
+            var passwordInput = $(this).prev('input[name="cosec_password"]');
+            var showIcon = $(this).find(".oh-passowrd-input__show-icon");
+            var hideIcon = $(this).find(".oh-passowrd-input__hide-icon");
+            if (passwordInput.attr("type") === "password") {
+                passwordInput.attr("type", "text");
+                showIcon.addClass("d-none");
+                hideIcon.removeClass("d-none");
+            } else {
+                passwordInput.attr("type", "password");
+                showIcon.removeClass("d-none");
+                hideIcon.addClass("d-none");
+            }
+        });
+    });
+</script>

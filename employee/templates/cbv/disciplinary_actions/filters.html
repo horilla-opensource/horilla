@@ -1,0 +1,67 @@
+{% load i18n %}{% load basefilters %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Disciplinary Action" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-12">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+              {{form.employee_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for ="{{form.action.id_for_label}}"
+                >{% trans "Action Taken" %}</label
+              >
+              {{form.action}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{form.start_date.id_for_label}}">{% trans "Date" %}</label>
+              {{form.start_date}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Work Information" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{form.employee_id__employee_work_info__company_id.id_for_label}}">{% trans "Company" %}</label>
+              {{form.employee_id__employee_work_info__company_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for ="{{form.employee_id__employee_work_info__department_id.id_for_label}}"
+                >{% trans "Department" %}</label
+              >
+              {{form.employee_id__employee_work_info__department_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
+              {{form.employee_id__employee_work_info__shift_id}}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for ="{{form.employee_id__employee_work_info__reporting_manager_id.id_for_label}}"
+                >{% trans "Reporting Manager" %}</label
+              >
+              {{form.employee_id__employee_work_info__reporting_manager_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
+              {{form.employee_id__employee_work_info__job_position_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>
+              {{form.employee_id__employee_work_info__work_type_id}}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>

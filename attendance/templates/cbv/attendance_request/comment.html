@@ -1,0 +1,7 @@
+{% load basefilters %}{% load i18n %}
+<div  onclick="event.stopPropagation();" @click="open = !open">
+    <button type="button" hx-get="{% url 'attendance-request-view-comment' instance.id %}?{{pd}}" hx-target="#commentContainer"
+      data-target = '#activitySidebar' title='{% trans "Add / View Comment" %}'  class="oh-btn oh-btn--light oh-activity-sidebar__open w-100" style="flex: 1 0 auto; width:20px;height: 40.68px; padding: 0;" onclick="event.stopPropagation()">
+      <ion-icon name="newspaper-outline" role="img" class="md hydrated" aria-label="newspaper outline"></ion-icon>
+    </button>
+  </div>

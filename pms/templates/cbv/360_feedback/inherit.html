@@ -1,0 +1,30 @@
+<div>
+    {% include "generic/horilla_form.html" %}
+</div>
+<script>
+    $(document).ready(function () {
+      var fields = [
+        "#id_employee_id_parent_div",
+        "#id_department_id_parent_div",
+        "#id_job_position_id_parent_div",
+      ];
+
+      function updateFieldsVisibility() {
+        var based_on = $("#id_based_on").val();
+
+        fields.forEach(function (field) {
+          if (field.includes(based_on)) {
+            $(field).show();
+          } else {
+            $(field).hide();
+          }
+        });
+      }
+
+      updateFieldsVisibility();
+
+      $("#id_based_on").change(function () {
+        updateFieldsVisibility();
+      });
+    });
+  </script>

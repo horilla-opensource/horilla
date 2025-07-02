@@ -1,0 +1,7 @@
+{% if instance.job_position.all %}
+    {% for i in instance.job_position.all %}
+        <span>{{ forloop.counter }}. {{ i }}</span></br>
+    {% endfor %}
+{% else %}
+    All
+{% endif %}

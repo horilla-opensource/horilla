@@ -31,6 +31,14 @@ $(document).ready(function () {
   function employee_chart(dataSet, labels) {
     $("#employee_canvas_body").html('<canvas id="employeeChart"></canvas>');
 
+    $.each(dataSet, (index, item) => {
+      dataSet[index] = $.extend({}, item, {
+        borderRadius: 20,
+        barPercentage: 0.8,
+        categoryPercentage: 0.8,
+      });
+    });
+
     const employeeChart = document
       .getElementById("employeeChart")
       .getContext("2d");
@@ -77,6 +85,35 @@ $(document).ready(function () {
                   },
                 },
               },
+            },
+            plugins:{
+              legend: {
+                position: 'bottom',
+                labels: {
+                  usePointStyle: true,
+                  pointStyle: 'circle',
+                  font: {
+                    size: 12
+                  },
+                  color: '#374151',
+                  padding: 15
+                },
+                onClick: (e, legendItem, legend) => {
+                  const index = legendItem.datasetIndex;
+                  const chart = legend.chart;
+                  if (chart.isDatasetVisible(index)) {
+                    chart.hide(index);
+                    legendItem.hidden = true;
+                  } else {
+                    chart.show(index);
+                    legendItem.hidden = false;
+                  }
+                  chart.update();
+                }
+              },
+              tooltip: {
+                enabled: true
+              }
             },
           },
         });
@@ -209,9 +246,35 @@ $(document).ready(function () {
       const departmentChart = document.getElementById("departmentChart");
 
       // chart constructor
-      var departmentPayrollChart = new Chart(departmentChart, {
+      const departmentPayrollChart = new Chart(departmentChart, {
         type: "pie",
         data: departmentChartData,
+
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: {
+                usePointStyle: true,
+                pointStyle: "circle",
+                font: { size: 12 },
+                color: "#374151",
+                padding: 15
+              },
+              onClick: (e, legendItem, legend) => {
+                const index = legendItem.index;
+                const chart = legend.chart;
+                const meta = chart.getDatasetMeta(0);
+                meta.data[index].hidden = !meta.data[index].hidden;
+                chart.update();
+              }
+            },
+            tooltip: {
+              enabled: true
+            }
+          }
+        }
       });
 
       $("#departmentChart").on("click", function (event) {
@@ -294,95 +357,224 @@ $(document).ready(function () {
       },
     });
   }
+  //   $.ajax({
+  //     url: "/payroll/dashboard-department-chart",
+  //     type: "GET",
+  //     dataType: "json",
+  //     headers: {
+  //       "X-Requested-With": "XMLHttpRequest",
+  //     },
+  //     data: {
+  //       period: period,
+  //     },
+  //     success: (response) => {
+  //       dataSet = response.dataset;
+  //       labels = response.labels;
+  //       department_total = response.department_total;
+  //       if (department_total.length != 0) {
+  //         $("#department_total").html("");
+  //         $("#department_total").show();
+  //         $("#department_total_empty").hide();
+  //         $.each(department_total, function (key, value) {
+  //           $("#department_total").append(
+  //             `<li class='m-3 department' style = 'cursor: pointer;''><span class='department_item'>${value["department"]}</span>: <span> ${value["amount"]}</span></li>`
+  //           );
+  //         });
+  //       } else {
+  //         $("#department_total").hide();
+  //         $("#department_total_empty").show();
+  //         $("#department_total_empty").html(
+  //           `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
+  //                       <div style="" class="">
+  //                       <img style="display: block;width: 70px;margin: 10px auto ;" src="${
+  //                         staticUrl + "images/ui/money.png"
+  //                       }" class="" alt=""/>
+  //                       <h3 style="font-size:16px" class="oh-404__subtitle">${
+  //                         response.message
+  //                       }</h3>
+  //                       </div>
+  //                   </div>`
+  //         );
+  //       }
 
-  function contract_ending(initialLoad) {
+  //       if (isChartEmpty(dataSet)) {
+  //         $("#department_canvas_body").html(
+  //           `<div style="height: 310px; display:flex;align-items: center;justify-content: center;" class="">
+  //                       <div style="" class="">
+  //                       <img style="display: block;width: 70px;margin: 10px auto ;" src="${
+  //                         staticUrl + "images/ui/no-money.png"
+  //                       }" class="" alt=""/>
+  //                       <h3 style="font-size:16px" class="oh-404__subtitle">${
+  //                         response.message
+  //                       }</h3>
+  //                       </div>
+  //                   </div>`
+  //         );
+  //       } else {
+  //         department_chart(dataSet, labels);
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.log("Error", error);
+  //     },
+  //   });
+
+
+
+
+  // function contract_ending(initialLoad) {
+  //   var period = $("#monthYearField").val();
+  //   var date = period.split("-");
+  //   var year = date[0];
+  //   var month = parseInt(date[1]);
+
+  //   var monthNames = [
+  //     "January",
+  //     "February",
+  //     "March",
+  //     "April",
+  //     "May",
+  //     "June",
+  //     "July",
+  //     "August",
+  //     "September",
+  //     "October",
+  //     "November",
+  //     "December",
+  //   ];
+  //   if (initialLoad) {
+  //     let date = new Date();
+  //     let year = date.getFullYear();
+  //     let month = date.getMonth();
+  //     var formattedDate = `${monthNames[month]} ${year}`;
+  //   } else {
+  //     var formattedDate = `${monthNames[month - 1]} ${year}`;
+  //   }
+
+  //   $.ajax({
+  //     url: "/payroll/dashboard-contract-ending",
+  //     type: "GET",
+  //     dataType: "json",
+  //     headers: {
+  //       "X-Requested-With": "XMLHttpRequest",
+  //     },
+  //     data: {
+  //       period: period,
+  //       initialLoad: initialLoad,
+  //     },
+  //     success: (response) => {
+  //       var contract_end = response.contract_end;
+  //       if (contract_end.length != 0) {
+  //         $("#contract_ending").html("");
+  //         $.each(contract_end, function (key, value) {
+  //           id = value.contract_id;
+  //           elem = `<li class='m-3 contract_id' style = "cursor: pointer;" data-id=${id}> ${value.contract_name} </li>`;
+
+  //           $("#contract_ending").append(elem);
+  //         });
+  //         $(".contract-number").html(
+  //           `${formattedDate} : ${contract_end.length}`
+  //         );
+  //       } else {
+  //         $(".contract-number").html(
+  //           `${formattedDate} : ${contract_end.length}`
+  //         );
+  //         $("#contract_ending").html(
+  //           `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
+  //             <div style="" class="">
+  //               <img style="display: block;width: 70px;margin: 10px auto ;" src="${
+  //                 staticUrl + "images/ui/contract.png"
+  //               }" class="" alt=""/>
+  //               <h3 style="font-size:16px" class="oh-404__subtitle">${
+  //                 response.message
+  //               }</h3>
+  //             </div>
+  //           </div>`
+  //         );
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.log("Error", error);
+  //     },
+  //   });
+  // }
+
+  function contract_ending(){
+
     var period = $("#monthYearField").val();
-    var date = period.split("-");
-    var year = date[0];
-    var month = parseInt(date[1]);
+      var date = period.split("-");
+      var year = date[0];
+      var month = parseInt(date[1]);
 
-    var monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    if (initialLoad) {
-      let date = new Date();
-      let year = date.getFullYear();
-      let month = date.getMonth();
-      var formattedDate = `${monthNames[month]} ${year}`;
-    } else {
-      var formattedDate = `${monthNames[month - 1]} ${year}`;
+
+      var currentDate = new Date();
+      var currentYear = currentDate.getFullYear();
+      var currentMonth = currentDate.getMonth() + 1;
+      var inputMonthYear = year * 100 + month;
+      var currentMonthYear = currentYear * 100 + currentMonth
+
+      if (inputMonthYear < currentMonthYear) {
+        month = currentMonth;
+        year = currentYear;
     }
+    var monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+  ];
+    var formattedDate = `${monthNames[month - 1]} ${year}`;
 
-    $.ajax({
-      url: "/payroll/dashboard-contract-ending",
-      type: "GET",
-      dataType: "json",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      data: {
-        period: period,
-        initialLoad: initialLoad,
-      },
-      success: (response) => {
-        var contract_end = response.contract_end;
-        if (contract_end.length != 0) {
-          $("#contract_ending").html("");
-          $.each(contract_end, function (key, value) {
-            id = value.contract_id;
-            elem = `<li class='m-3 contract_id' style = "cursor: pointer;" data-id=${id}> ${value.contract_name} </li>`;
+    $(".contract-number").html(
+        `${formattedDate} : `
+              );
 
-            $("#contract_ending").append(elem);
-          });
-          $(".contract-number").html(
-            `${formattedDate} : ${contract_end.length}`
-          );
+  }
+
+  function contract_expired(){
+
+    var period = $("#monthYearField").val();
+      var date = period.split("-");
+      var year = date[0];
+      var month = parseInt(date[1]);
+
+
+      var currentDate = new Date();
+      var currentYear = currentDate.getFullYear();
+      var currentMonth = currentDate.getMonth() + 1;
+      var inputMonthYear = year * 100 + month;
+      var currentMonthYear = currentYear * 100 + currentMonth
+
+      if (inputMonthYear >= currentMonthYear) {
+        if (currentMonth === 1) {
+            month = 12;
+            year = currentYear - 1;
         } else {
-          $(".contract-number").html(
-            `${formattedDate} : ${contract_end.length}`
-          );
-          $("#contract_ending").html(
-            `<div style="display:flex;align-items: center;justify-content: center; padding-top:50px" class="">
-              <div style="" class="">
-                <img style="display: block;width: 70px;margin: 10px auto ;" src="${
-                  staticUrl + "images/ui/contract.png"
-                }" class="" alt=""/>
-                <h3 style="font-size:16px" class="oh-404__subtitle">${
-                  response.message
-                }</h3>
-              </div>
-            </div>`
-          );
+            month = currentMonth - 1;
+            year = currentYear;
         }
-      },
-      error: (error) => {
-        console.log("Error", error);
-      },
-    });
+    }
+    var monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+  ];
+    var formattedDate = `${monthNames[month - 1]} ${year}`;
+
+    $(".contract-expired-number").html(
+        `${formattedDate} : `
+              );
+
   }
 
   employee_chart_view();
   payslip_details();
   department_chart_view();
-  contract_ending(initialLoad);
-
+  contract_ending();
+  contract_expired();
   $("#monthYearField").on("change", function () {
-    initialLoad = false;
     employee_chart_view();
     payslip_details();
     department_chart_view();
-    contract_ending(initialLoad);
+    contract_ending();
+    contract_expired();
   });
 
   $("#payroll-employee-next").on("click", function () {

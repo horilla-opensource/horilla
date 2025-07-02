@@ -1,0 +1,43 @@
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+ <div hx-get="{% url "asset-batch-nav" %}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+
+
+{% endblock %}

@@ -1,7 +1,11 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %} {% load static %}
+{% include "generic/components.html" %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+
 <div class="oh-inner-sidebar-content">
     {% if perms.base.view_department %}
-        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+        <div hx-get="{% url 'department-nav' %}" hx-trigger="load"></div>
+        {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
             <h2 class="oh-inner-sidebar-content__title">{% trans "Department" %}</h2>
             {% if perms.base.add_department %}
                 <button class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
@@ -11,8 +15,12 @@
                     {% trans "Create" %}
                 </button>
             {% endif %}
+        </div> {% endcomment %}
+        <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+        <div class="oh-wrapper" id="listContainer">
+            <div class="animated-background"></div>
         </div>
-        {% if departments %}
+        {% comment %} {% if departments %}
             {% include 'base/department/department_view.html' %}
         {% else %}
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
@@ -20,7 +28,7 @@
                     src="{% static 'images/ui/connection.png' %}" class="" alt="Page not found. 404." />
                 <h5 class="oh-404__subtitle">{% trans "There is no department at this moment." %}</h5>
             </div>
-        {% endif %}
+        {% endif %} {% endcomment %}
     {% endif %}
 </div>
 {% endblock settings %}

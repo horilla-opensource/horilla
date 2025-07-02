@@ -1,0 +1,21 @@
+
+{% load i18n %}
+<div class="col-span-12 lg:col-span-6">
+    <form hx-get="{% url 'enable-resignation-request' %}" hx-trigger="change from:#enableResignationRequest"  hx-swap="afterend"
+    hx-on-htmx-after-request="reloadMessage(this);">
+    {% csrf_token %}
+    <div class="flex items-center justify-between mb-4">
+        <div class="flex space-x-2">
+        <h3 class="text-sm font-medium"> {% trans "Resignation Request" %}</h3>
+        <span class="oh-info mr-2" title="{% trans 'By enabling this normal users can request for their resignation progress' %}"></span>
+        </div>
+        <label class="toggle-label">
+            <input type="checkbox" class="toggle-input" name="resignation_request" id="enableResignationRequest"
+                data-target="#limitFields"  {% if enabled_resignation_request %} checked {% endif %}>
+            <div class="toggle-switch"></div>
+
+        </label>
+
+    </div>
+    </form>
+    </div>

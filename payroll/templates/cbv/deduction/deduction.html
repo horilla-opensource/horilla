@@ -1,0 +1,51 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+
+<style>
+  .pretax--dot{
+    background-color:red;
+  }
+  .not-fixed--dot{
+    background-color:yellowgreen;
+  }
+  .fixed--dot{
+    background-color:orange;
+  }
+  {% comment %} .fixed-True{
+    border-left: 3.4px solid orange !important;
+    border-radius: 4px 0 0 4px;
+
+  }
+  .fixed-False {
+
+    border-left: 3.4px solid yellowgreen !important;
+    border-radius: 4px 0 0 4px;
+
+
+  }
+  .pretax-True {
+
+    border-left: 3.4px solid red !important;
+    border-radius: 4px 0 0 4px;
+
+  } {% endcomment %}
+</style>
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+<div hx-get="{% url "deduction-view-nav" %}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
+</div>
+
+
+<div class="oh-wrapper"
+   id="listContainer">
+  <div class="animated-background">
+</div>
+</div>
+{% endblock %}

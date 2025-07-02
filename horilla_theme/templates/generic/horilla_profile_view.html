@@ -1,0 +1,131 @@
+{% load static i18n generic_template_filters %}
+<div class="h-[calc(100vh_-_120px)]" id="{{view_id|safe}}">
+  <div class="grid grid-cols-12 gap-4 h-full">
+    <!-- Left Column: 6/12 -->
+    <div class="col-span-12 lg:col-span-3">
+      <div class="bg-white rounded-md shadow-card h-full">
+        <h5 class="flex items-center gap-3 text-sm font-semibold bg-primary-100 text-primary-600 px-4 py-4 rounded-tr-md rounded-tl-md mb-1">
+          {% trans "Detailed View" %}
+          <ul class="userlist">
+            {% comment %} {% for object in instances|slice:"6" %}
+            <li>
+              <span hx-get="{{object.get_profile_url}}?{{request.GET.urlencode}}"
+                    {% if push_url %}
+                    hx-push-url = "{{object.get_push_url}}"
+                    {% endif %}
+                    hx-target="#{{view_id|safe}}"
+                    hx-swap="outerHTML"
+                />
+                    <img
+                        style="border-radius :50px ;overflow :hidden;"
+                        src="{{object.get_avatar}}"
+                        width="28px"
+                    />
+              </span>
+            </li>
+            {% endfor %} {% endcomment %}
+            {% if display_count %}
+            <li>
+              <span>{{display_count}}</span>
+            </li>
+            {% endif %}
+            <div class="flex gap-1 ml-auto">
+                    <button data-action="previous"
+                        hx-get="{{previous_url}}?instance_ids={{instance_ids}}"
+                        {% if push_url %}
+                        hx-push-url = "{{object.get_push_url}}"
+                        {% endif %}
+                        hx-target="#{{view_id|safe}}"
+                        hx-swap="outerHTML"
+                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <button data-action="next"
+                        hx-get="{{next_url}}?instance_ids={{instance_ids}}"
+                        {% if push_url %}
+                        hx-push-url = "{{object.get_push_url}}"
+                        {% endif %}
+                        hx-target="#{{view_id|safe}}"
+                        hx-swap="outerHTML"class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                </div>
+          </ul>
+        </h5>
+        <div class="p-3">
+          <div class="relative mb-5">
+            <input
+              hx-get="{% url "search-in-instance-ids" %}?instance_ids={{instance_ids}}"
+              hx-target="#{{view_id|safe}}FilterResult"
+              hx-trigger="keyup"
+              type="text"
+              name="search"
+              placeholder="Search here..."
+              class="text-color-600 ps-10 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:[text-dark-100] text-sm [transition:.3s] focus:border-primary-600" />
+            <i class="fas fa-search absolute left-3 top-0 bottom-0 m-auto flex items-center opacity-50 text-sm"></i>
+          </div>
+
+          <div class="h-[calc(100vh_-_270px)] overflow-hidden overflow-y-auto" id="{{view_id|safe}}FilterResult">
+            {% include "generic/filter_result.html" %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: 6/12 -->
+    <div class="col-span-12 lg:col-span-9">
+      <div class="bg-white rounded-md shadow-card p-3 mb-5">
+        <ul class="usertablist">
+          {% for tab in visible_tabs %} {% if not tab.accessibility or tab.accessibility|accessibility:instance %}
+          <li>
+            <button
+              onclick=" $('#{{view_id}} li button.active').removeClass('active'); $(this).addClass('active');"
+              data-url="{{tab.url|format:instance}}"
+              hx-get="{{tab.url|format:instance}}"
+              hx-target="#{{view_id}}profileTab"
+              data-tab="{{tab.title}}"
+              class="{% if forloop.counter == 1 and not active_target %} active {% endif %}">{{tab.title}}</button>
+              <span
+              hx-get="{{tab.url|format:instance}}"
+              hx-target="#{{view_id}}profileTab">
+              </span>
+          </li>
+          {% endif %} {% endfor %}
+        </ul>
+      </div>
+
+      <div class="bg-white rounded-md shadow-card p-3 mb-5 lg:mb-0">
+        <div class="h-[calc(100vh_-_260px)] overflow-hidden overflow-y-auto" id="{{view_id}}profileTab">
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    $("#{{view_id}} ul.usertablist li button").click(function (e) {
+      var target = `[data-url="${$(this).attr('data-url')}"]`
+      e.preventDefault();
+      $.ajax({
+        type: "get",
+        url: "{% url 'active-tab' %}",
+        data: {
+          "path":"{{request.path}}",
+          "target":target,
+        },
+        success: function (response) {
+
+        }
+      });
+    });
+    {% if active_target %}
+    $("#{{view_id|safe}}").find(`{{active_target|safe}}`).click();
+    setTimeout(() => {
+    $("#{{view_id|safe}}").find(`{{active_target|safe}}`).parent().find('span').click()
+    }, 100);
+    {% else %}
+    setTimeout(() => {
+    $("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).click()
+    $("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).parent().find('span').click()
+    }, 100);
+    {% endif %}
+  </script>
+</div>

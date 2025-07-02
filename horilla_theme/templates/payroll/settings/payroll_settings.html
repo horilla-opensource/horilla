@@ -1,0 +1,36 @@
+{% load i18n %}
+<style>
+
+.oh-info {
+    top :0px !important;
+}
+
+</style>
+<div class="col-span-12">
+    <form  action="{% url 'payroll-settings' %}" method="post">
+        {% csrf_token %}
+
+                <div class="flex align-center gap-2 ">
+                    <div class="w-full">
+                        <label>{% trans "Currency Symbol" %}</label>
+                        <input type="text" name="currency_symbol" value="{{currency_form.instance.currency_symbol}}" maxlength="5"  placeholder="Currency Symbol" required="" id="id_currency_symbol">
+                    </div>
+                    <div class="w-full">
+                            <label> {% trans "Position" %}</label>
+                           {{ currency_form.position }}
+                    </div>
+                    <div class="w-full">
+                    <label >{% trans "Company" %}</label>
+                    <select name="company_id" id="id_company_id" >
+                        {% for company in companies %}
+                            <option value="{{ company.id }}" {% if company.id == selected_company_id %}selected{% endif %}>
+                                {{ company.company }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                    <button class="btn mt-[23px] mb-[10px]" type="submit">
+                        {% trans 'Save Changes' %}</button>
+                </div>
+    </form>
+</div>

@@ -1,0 +1,260 @@
+{% load static i18n %}
+{% load i18n %}
+{% load widget_tweaks %} {% load basefilters %} {% load pmsfilters %}
+{% include "filter_tags.html" %}
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+        <div class="oh-alert oh-alert--animated {{message.tags}}">
+              {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div class="accordion-wrapper space-y-2">
+    {% for emp_objective in emp_objectives.object_list %}
+      {% if perms.pms.view_employeeobjective or emp_objective|is_manager_or_owner:request.user %}
+      <div class="accordion-item border border-primary-300 rounded-md">
+        <button
+            class="accordion-btn w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all"
+            hx-get="{% url 'kr-table-view' emp_objective.id %}?{{request.GET.urlencode}}&employee_objective_id={{emp_objective.id}}"
+            hx-target="#krData{{emp_objective.id}}"
+            hx-trigger="click"
+            onclick="
+                $(this).toggleClass('accordion-btn--show');
+                $('#krBody{{emp_objective.id}}').toggleClass('max-h-0').toggleClass('py-3');
+            "
+            >
+
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">
+              {{ forloop.counter|stringformat:"02d" }}
+            </span>
+            {{ emp_objective.employee_id }}
+          </div>
+
+          <div class="flex items-center flex-wrap gap-2 md:gap-8">
+            {% if emp_objective.employee_key_result.first %}
+            <!-- Progress -->
+            <div class="dropdown-toggle flex items-center gap-2">
+              <div class="w-48 bg-gray-200 rounded-full h-1.5">
+                <div class="bg-primary-600 h-1.5 rounded-full" style="width: {{ emp_objective.progress_percentage|default:0 }}%"></div>
+
+              </div>
+              <div class="text-xs text-dark-200 font-medium">{{ emp_objective.progress_percentage }}%</div>
+            </div>
+            {% endif %}
+
+            <!-- Status -->
+            <div id="employeeStatusWrapper-{{ emp_objective.id }}" class="inline-block dropdown-wrapper relative text-lg" onclick="event.stopPropagation()">
+              <a class="w-28 flex dropdown-toggle cursor-pointer px-2.5 py-1 bg-[#00c49025] text-[#00C490] rounded-sm text-xs justify-between"
+                 onclick="this.nextElementSibling.classList.toggle('hidden')">
+                <span class="status-display">{{ emp_objective.get_status_display }}</span>
+                <i class="fa-solid fa-caret-down ps-2"></i>
+              </a>
+              {% if perms.pms.change_employeeobjective or emp_objective|is_manager_or_owner:request.user %}
+                <div class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200 hidden">
+                  <ul class="text-xs">
+                    {% for status in emp_objective.STATUS_CHOICES %}
+                      {% if status.0 != emp_objective.status %}
+                        <li>
+                          <a
+                            class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 cursor-pointer"
+                            onclick="changeObjectiveStatusFromDropdown('{{ status.0 }}', {{ emp_objective.id }})"
+                          >
+                            {{ status.1 }}
+                          </a>
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+            </div>
+
+
+            <!-- Actions -->
+            <div class="flex gap-1">
+              <a class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition"
+                  hx-get='{% url "view-employee-objective" emp_objective.id %}'
+                  hx-target="#genericModalBody"
+                  data-toggle="oh-modal-toggle"
+                  data-target="#genericModal"
+                  type="button" title="{% trans 'View' %}"
+                  onclick="event.stopPropagation()"
+                >
+                <i class="fa-solid fa-eye"></i>
+              </a>
+
+
+              {% if request.user.employee_get in emp_objective.objective_id.managers.all or emp_objective.employee_id == request.user.employee_get or perms.pms.view_employeekeyresult %}
+                <a class="oh-activity-sidebar__open cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition"
+                    hx-get='{% url "objective-detailed-view-activity" emp_objective.id %}'
+                    hx-target="#sidebarModalBody4"
+                    data-target="#sidebarModal4"
+                    type="button" title="{% trans 'Activites' %}"
+                    onclick="event.stopPropagation()"
+                  >
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                </a>
+              {% endif %}
+
+              {% if request.user.employee_get in emp_objective.objective_id.managers.all or perms.pms.add_employeekeyresult %}
+                <a class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition"
+                  hx-get='{% url "employee-key-result-creation" emp_objective.id %}'
+                    hx-target="#genericModalBody"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    title="Add Key Result"
+                    onclick="event.stopPropagation()">
+                  <i class="fa-solid fa-plus"></i>
+                </a>
+              {% endif %}
+
+              {% if request.user.employee_get in emp_objective.objective_id.managers.all or perms.pms.add_employeeobjective %}
+              <div class="relative inline-block dropdown-wrapper text-md" onclick="event.stopPropagation()">
+                <a onclick="toggleDropdown(this)"
+                   class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                </a>
+                <div class="dropdown-menu-action absolute right-0 min-w-[120px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition">
+                  <ul class="text-xs">
+                    <li>
+                      <a  class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600"
+                          data-toggle="oh-modal-toggle"
+                          data-target="#objectDetailsModal"
+                          hx-get='{% url "update-employee-objective" emp_objective.id %}'
+                          hx-target="#objectDetailsModalTarget">{% trans "Edit" %}</a>
+                    </li>
+                    {% if emp_objective.archive %}
+                        <li class="oh-dropdown__item">
+                            <a
+                            class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600"
+                            onclick="return confirm(`{% trans 'Do you want to un-archive this employee objective?' %}`)"
+                            href='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
+                            hx-target="#emp_objective_card"
+                            >{% trans "Unarchive" %}</a>
+                        </li>
+                    {% else %}
+                        <li class="oh-dropdown__item">
+                            <a
+                            class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600"
+                            onclick="return confirm(`{% trans 'Do you want to archive this employee objective?' %}`)"
+                            href='{% url "archive-employee-objective" emp_objective.id %}?single_view=False'
+                            hx-target="#emp_objective_card"
+                            >{% trans "Archive" %}</a>
+                        </li>
+                    {% endif %}
+                    <li>
+                      <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#objectDetailsModal"
+                      hx-confirm="{% trans 'Do you want to delete this employee objective?' %}"
+                      hx-get='{% url "delete-employee-objective" emp_objective.id %}?single_view="False'
+                      hx-target="#objectDetailsModalTarget"
+                      >{% trans "Delete" %}</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              {% endif %}
+
+            </div>
+
+            <span class="icon text-xl font-bold">+</span>
+          </div>
+        </button>
+
+        <!-- Accordion Panel -->
+        <div id="krBody{{emp_objective.id}}" class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+          <div id="krData{{emp_objective.id}}"></div>
+        </div>
+      </div>
+      {% endif %}
+    {% endfor %}
+    </div>
+
+
+<!-- Activity Sidebar -->
+
+<div class="oh-activity-sidebar" id="sidebarModal4" style="z-index:1000">
+  <div class="oh-activity-sidebar__body">
+    <ol class="oh-activity-sidebar__qa-list" role="list" id="sidebarModalBody4">
+    </ol>
+  </div>
+</div>
+
+
+
+  <!-- pagination start -->
+  {% if emp_objectives.paginator.count %}
+  <div class="flex justify-between items-center mt-4 w-full inset-0">
+    <p class="text-[#666]">
+      {% trans "Page" %} {{ emp_objectives.number }} {% trans "of" %} {{ emp_objectives.paginator.num_pages }}
+    </p>
+    <div class="flex gap-3 text-[#666] items-center">
+      {% if emp_objectives.has_previous %}
+        <button
+          class="text-xs hover:text-primary-600 transition duration-300"
+          hx-target="#emp_objective_card"
+          hx-get="{% url 'emp-objective-search' objective.id %}?{{pg}}&page={{ emp_objectives.previous_page_number }}"
+        >
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+      {% endif %}
+      {{ emp_objectives.number }} / {{ emp_objectives.paginator.num_pages }}
+      {% if emp_objectives.has_next %}
+        <button
+          class="text-xs hover:text-primary-600 transition duration-300"
+          hx-target="#emp_objective_card"
+          hx-get="{% url 'emp-objective-search' objective.id %}?{{pg}}&page={{ emp_objectives.next_page_number }}"
+        >
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+  <!-- end of pagination -->
+
+
+  <script>
+    function changeObjectiveStatusFromDropdown(newStatus, empId) {
+      const select = document.createElement('select');
+      select.name = 'status';
+      select.dataset.empObj = empId;
+
+      const option = document.createElement('option');
+      option.value = newStatus;
+      option.selected = true;
+      option.textContent = newStatus;  // For display update
+      select.appendChild(option);
+
+      // update visible label immediately (optional)
+      const label = document.querySelector(`#employeeStatusWrapper-${empId} .status-display`);
+      if (label) {
+        label.textContent = newStatus;
+      }
+
+      // trigger existing logic
+      changeObjectiveStatus(select);
+    }
+
+  </script>
+
+  <script>
+    function toggleDropdown(trigger) {
+      const menu = trigger.nextElementSibling;
+      // Close any open dropdowns
+      document.querySelectorAll('.dropdown-menu-action').forEach(el => {
+        if (el !== menu) el.classList.add('hidden');
+      });
+      // Toggle current
+      menu.classList.toggle('hidden');
+    }
+
+    document.addEventListener('click', function () {
+      document.querySelectorAll('.dropdown-menu-action').forEach(el => el.classList.add('hidden'));
+    });
+  </script>

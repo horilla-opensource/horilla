@@ -1,0 +1,15 @@
+<style>
+    .descriptionContainer {
+        max-height: 200px; /* Set the desired height */
+        overflow-y: auto;  /* Enable vertical scrolling */
+        padding: 10px;     /* Optional: Add padding for better readability */
+        border: none; /* Optional: Add a border */
+    }
+</style>
+<div class = "descriptionContainer">
+    {{ instance.description|safe }}
+</div>
+
+<script>
+    $('.descriptionContainer').parent().parent().parent().removeClass('col-6');
+</script>

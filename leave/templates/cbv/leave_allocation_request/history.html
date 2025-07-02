@@ -1,0 +1,20 @@
+{% load i18n %}
+{% if instance.allocate_tracking and instance.status == 'approved' %}
+
+        <div class="oh-timeoff-modal__stats w-100 mt-3 mb-3">
+            <div class="oh-timeoff-modal__stat">
+                <span class="oh-timeoff-modal__stat-title">{% trans "History" %}</span>
+                <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary">
+                    <div class="oh-timeoff-modal__stat-count">
+                        <span style="color: #665d5d;">{% trans "Requested days" %} : {{instance.allocate_tracking.old}}</span>
+                        <br >
+                        <img src="/static/images/ui/arrow-right-line.svg" style="width: 100px; height: 20px;" class="oh-progress_arrow">
+                        <br >
+                        <span style="color: #35b835;"> {% trans "Allocated days" %} : {{instance.allocate_tracking.new}}</span>
+                    </div>
+                    <div class="oh-timeoff-modal__stat-count"></div>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}

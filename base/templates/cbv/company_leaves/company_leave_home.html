@@ -1,0 +1,49 @@
+{% extends "index.html" %}
+{% load i18n %}
+{% load static %}
+{% block content %}
+
+
+<style>
+    .canceled--dot{
+        background-color:red;
+      }
+      .approved--dot{
+        background-color:green;
+      }
+      .approved-True{
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+      .canceled-True {
+
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+    </style>
+<div hx-get="{% url "company-leave-navbar" %}" hx-trigger="load">
+</div>
+
+{% include "generic/components.html" %}
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+<div class="oh-wrapper"
+   id="listContainer">
+  <div class="animated-background">
+</div>
+</div>
+
+
+{% endblock content %}
+
+<script>
+        $(".reload-record").click()
+</script>

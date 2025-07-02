@@ -1,0 +1,231 @@
+{% load i18n %}
+<div class="oh-wrapper">
+  <div
+    class="oh-general__tab-target oh-profile-section mb-4 p-5 d-none"
+    id="work"
+    data-select2-id="select2-data-work"
+    style="border:none;"
+  >
+    <div
+      class="oh-modal"
+      id="dynamicCreateModal"
+      role="dialog"
+      aria-hidden="true"
+    >
+      <div
+        class="oh-modal__dialog"
+        style="max-width: 550px"
+        id="dynamicCreateModalBody"
+      ></div>
+    </div>
+    <span
+      name=""
+      id="dynamicDept"
+      style="display: none"
+      data-toggle="oh-modal-toggle"
+      data-target="#dynamicCreateModal"
+      hx-get="{% url 'department-creation' %}?dynamic=true"
+      hx-target="#dynamicCreateModalBody"
+    ></span>
+    <span
+      name=""
+      id="dynamicJobPosition"
+      style="display: none"
+      data-toggle="oh-modal-toggle"
+      data-target="#dynamicCreateModal"
+      hx-get="{% url 'job-position-creation' %}?dynamic=true"
+      hx-target="#dynamicCreateModalBody"
+    ></span>
+    <span
+      name=""
+      id="dynamicJobRole"
+      style="display: none"
+      data-toggle="oh-modal-toggle"
+      data-target="#dynamicCreateModal"
+      hx-get="{% url 'job-role-create' %}?dynamic=true"
+      hx-target="#dynamicCreateModalBody"
+    ></span>
+    <span
+      name=""
+      id="dynamicWorkType"
+      style="display: none"
+      data-toggle="oh-modal-toggle"
+      data-target="#dynamicCreateModal"
+      hx-get="{% url 'work-type-create' %}?dynamic=true"
+      hx-target="#dynamicCreateModalBody"
+    ></span>
+    <span
+      name=""
+      id="dynamicEmployeeType"
+      style="display: none"
+      data-toggle="oh-modal-toggle"
+      data-target="#dynamicCreateModal"
+      hx-get="{% url 'employee-type-create' %}?dynamic=true"
+      hx-target="#dynamicCreateModalBody"
+    ></span>
+    <span
+      name=""
+      id="dynamicShift"
+      style="display: none"
+      data-toggle="oh-modal-toggle"
+      data-target="#dynamicCreateModal"
+      hx-get="{% url 'employee-shift-create' %}?dynamic=true"
+      hx-target="#dynamicCreateModalBody"
+    ></span>
+    <div
+      class="oh-profile-section__card p-10"
+      data-select2-id="select2-data-29-vht3"
+      style="border:1px solid #cdd5df; border-radius:10px;"
+    >
+      <div id="workMessage"></div>
+      <form method="post" action="">
+        <input type="hidden" name="form" value="work">
+        {% if work_info_history %}
+          {{history_form.as_history_modal}}
+        {% endif %}
+        {% csrf_token %}
+        {{work_form.as_p}}
+        <hr class="mt-5 mb-3" style="color:#cdd5df;">
+        <div class="w-100 d-flex" style="justify-content: flex-end;">
+          <button
+            type="submit"
+            class="oh-btn oh-btn--secondary oh-btn--w-100-resp"
+          >
+            {% trans "Save" %}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  function onDynamicCreate(value, id) {
+    if (value === "create") {
+      $(id)[0].click();
+      return;
+    }
+
+    let url, dropdownId, createText, emptyText;
+    const data =
+      id === "#dynamicDept" ? { department_id: value } : { job_id: value };
+
+    if (id === "#dynamicDept") {
+      url = '{% url "get-job-positions" %}';
+      dropdownId = "#id_job_position_id";
+      createText = "Create New Job Position";
+      emptyText = "---Choose Job Position---";
+      $("#id_job_role_id").html(
+        '<option value="">---Choose Job Role---</option>'
+      );
+    } else if (id === "#dynamicJobPosition") {
+      url = '{% url "get-job-roles" %}';
+      dropdownId = "#id_job_role_id";
+      createText = "Create New Job Role";
+      emptyText = "---Choose Job Role---";
+    }
+
+    if (value) {
+      $.ajax({
+        url: url,
+        method: "GET",
+        data: data,
+        success: function (data) {
+          const dropdown = $(dropdownId);
+          const options = [`<option value="">${emptyText}</option>`];
+
+          $.each(data.job_positions || data.job_roles, function (key, value) {
+            options.push(`<option value="${key}">${value}</option>`);
+          });
+
+          options.push(`<option value="create">${createText}</option>`);
+          dropdown.html(options.join(""));
+        },
+      });
+    } else {
+      const resetOptions = `<option value="">${emptyText}</option><option value="create">${createText}</option>`;
+      $(dropdownId).html(resetOptions);
+
+      if (id === "#dynamicDept") {
+        $("#id_job_role_id").append(
+          $("<option>", {
+            value: "create",
+            text: "Create New Job Role",
+          })
+        );
+      }
+    }
+  }
+</script>
+
+<script>
+  $(document).ready(function () {
+    // Get the selected department ID and the initial selected job position
+    var departmentId = $("#id_department_id").val();
+    var selectedJobPosition = $("#id_job_position_id").val();
+    var selectedJobRole = $("#id_job_role_id").val();
+
+    // Make AJAX request to fetch available job positions for the selected department
+    $.ajax({
+      url: '{% url "get-job-positions" %}',
+      method: "GET",
+      data: {
+        department_id: departmentId,
+      },
+      success: function (data) {
+        // Clear existing options in the Job Position dropdown
+        $("#id_job_position_id").empty();
+        $("#id_job_position_id").append(
+          $("<option>", {
+            value: "",
+            text: "---Choose Job Position---",
+          })
+        );
+        // Append new options based on the response
+        $.each(data.job_positions, function (key, value) {
+          $("#id_job_position_id").append(
+            $("<option>", {
+              value: key,
+              text: value,
+            })
+          );
+        });
+        $("#id_job_position_id").append(
+          $("<option>", {
+            value: "create",
+            text: "Create New Job Position",
+          })
+        );
+        // Set the selected job position back to the dropdown
+        if (selectedJobPosition) {
+          $("#id_job_position_id").val(selectedJobPosition);
+        }
+      },
+    });
+
+    if (selectedJobPosition) {
+      $.ajax({
+        url: '{% url "get-job-roles" %}',
+        method: "GET",
+        data: {
+          job_id: selectedJobPosition,
+        },
+        success: function (data) {
+          $("#id_job_role_id").empty();
+
+          $.each(data.job_roles, function (key, value) {
+            $("#id_job_role_id").append(
+              $("<option>", {
+                value: key,
+                text: value,
+              })
+            );
+          });
+          // Set the selected job position back to the dropdown
+          if (selectedJobRole) {
+            $("#id_job_role_id").val(selectedJobRole);
+          }
+        },
+      });
+    }
+  });
+</script>

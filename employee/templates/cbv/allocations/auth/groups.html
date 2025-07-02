@@ -1,0 +1,403 @@
+{% load i18n static %}
+
+{% if perms.auth.view_permission or perms.auth.view_group %}
+
+<div class="oh-tabs__contents">
+    <div class="" id="tab_1_permission">
+        {% load i18n %}
+        <div id="messages" class="oh-alert-container"></div>
+
+        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Employee Permissions" %}</h2>
+        </div>
+        <div id="permissionContainer">
+            {% load basefilters i18n %}
+            {% for employee in employees %}
+            <div class="oh-user_permission-list_item perm-accordion exclude-accordion-style" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');$(this).next().find('.oh-general__tab-target').removeClass('d-none');">
+                <div class="oh-user_permission-list_profile">
+                <div class="oh-navbar__user-photo oh-user_permission--profile">
+                    <img src="{{ employee.get_avatar }}" class="oh-navbar__user-image" loading="lazy" />
+                </div>
+                <div class="oh-feedback-card__name-container ms-1">
+                    <span class="oh-card__title oh-card__title--sm fw-bold me-1">{{ employee }}</span>
+                    <span class="oh-user_permission_list-text oh-text--light">{{ employee.employee_work_info.job_role_id.job_role }} | {{ employee.employee_work_info.job_position_id }} | {{ employee.employee_work_info.department_id }}</span>
+                </div>
+                </div>
+                <button class="oh-accordion-meta__btn oh-user_permssion-dropdownbtn"><ion-icon class="ms-2 oh-accordion-meta__btn-icon md hydrated" name="caret-down-outline" role="img" aria-label="caret down outline"></ion-icon></button>
+            </div>
+            <div class="panel view-employees" id="panel{{ employee.id }}" data-user-id="{{ employee.id }}">
+                <div class="oh-general__tab-target oh-profile-section">
+                <script>
+                    $(document).ready(function () {
+                    checkSelected(`{{employee.employee_user_id.user_permissions.all|user_perms|safe}}`, '#panel{{employee.id}}', true)
+                    })
+                </script>
+                {% if perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}
+                    {% load i18n %}
+                    {% for perm in permissions %}
+                    <span type="button" class="perm-accordion w-100 p-2 oh-user_permission-list_item app-permissions" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');">
+                        <div class="d-flex flex-row bd-highlight">
+                            <div class="p-2 bd-highlight">{{perm.app}}</div>
+                            <div class="p-2 bd-highlight">
+                                <span class="oh-tabs__input-badge-container">
+                                    <span
+                                    class="oh-badge permission-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
+                                    align="center"
+                                    >
+                                    0
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </span>
+                    <div class="panel">
+                        <div class="oh-sticky-table">
+                            <div class="oh-sticky-table__table oh-table--sortable">
+                                <!-- Table Head -->
+                                <div class="oh-sticky-table__thead">
+                                    <div class="oh-sticky-table__tr">
+                                        <div class="oh-sticky-table__th" style="width: 50px;" align="center">
+                                            <input type="checkbox" class="row-permission__select-all" id="id{{perm.app}}Permissions" onchange="selectAllPermissions(this)">
+                                        </div>
+                                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                                        <div class="oh-sticky-table__th" style="width: 80px;">
+                                            <div class="d-flex justify-content-center" title="{% trans "Can create" %}">
+                                                <ion-icon name="add-circle-outline"></ion-icon>
+                                            </div>
+                                        </div>
+                                        <div class="oh-sticky-table__th" style="width: 80px;">
+                                            <div class="d-flex justify-content-center" title="{% trans "Can view" %}">
+                                                <ion-icon name="eye-outline"></ion-icon>
+                                            </div>
+                                        </div>
+                                        <div class="oh-sticky-table__th" style="width: 80px;">
+                                            <div class="d-flex justify-content-center" title="{% trans "Can edit" %}">
+                                                <ion-icon name="create-outline"></ion-icon>
+                                            </div>
+                                        </div>
+                                        <div class="oh-sticky-table__th" style="width: 80px;">
+                                            <div class="d-flex justify-content-center" title="{% trans "Can delete" %}">
+                                                <ion-icon name="trash-outline"></ion-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Table Body -->
+                                <div class="oh-sticky-table__tbody">
+                                    {% for model in perm.app_models %}
+                                        {% if model.model_name not in no_permission_models %}
+                                            <div class="oh-sticky-table__tr" draggable="true">
+                                                <!-- Checkbox -->
+                                                <div class="oh-sticky-table__sd" align="center">
+                                                    <input type="checkbox" id="id_{{perm.app}}{{model.model_name}}" class="row-permission" onchange="
+                                                        $(this).closest('.oh-sticky-table__tr').find('[type=checkbox][name=permissions]').prop('checked',$(this).is(':checked')).change();
+                                                    ">
+                                                </div>
+                                                <!-- Model Info -->
+                                                <div class="oh-sticky-table__td">
+                                                    <div class="oh-profile oh-profile--md">
+                                                        <div class="oh-profile__avatar mr-1">
+                                                            <img
+                                                                src="https://ui-avatars.com/api/?name={{model.verbose_name}}&background=random"
+                                                                class="oh-profile__image oh-table-img"
+                                                            />
+                                                        </div>
+                                                        <span class="oh-profile__name oh-text--dark">
+                                                            {{model.verbose_name}}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <!-- Can Create -->
+                                                <div class="oh-sticky-table__td" style="width: 80px;">
+                                                    <div class="d-flex justify-content-center">
+                                                        <div class="oh-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="permissions"
+                                                                value="add_{{model.model_name}}"
+                                                                class="oh-switch__checkbox"
+                                                                onchange="
+                                                                    if (!$(this).is(':checked')) {
+                                                                        $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                                                                    }
+                                                                "
+                                                                data-group-id="{{group.id}}"
+                                                                data-group-name="{{group.name}}"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Can View -->
+                                                <div class="oh-sticky-table__td" style="width: 80px;">
+                                                    <div class="d-flex justify-content-center">
+                                                        <div class="oh-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="permissions"
+                                                                value="view_{{model.model_name}}"
+                                                                class="oh-switch__checkbox view-permission"
+                                                                onchange="
+                                                                    if (!$(this).is(':checked')) {
+                                                                        $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                                                                    }
+                                                                "
+                                                                data-group-id="{{group.id}}"
+                                                                data-group-name="{{group.name}}"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Can Edit -->
+                                                <div class="oh-sticky-table__td" style="width: 80px;">
+                                                    <div class="d-flex justify-content-center">
+                                                        <div class="oh-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="permissions"
+                                                                value="change_{{model.model_name}}"
+                                                                class="oh-switch__checkbox"
+                                                                onchange="
+                                                                    if (!$(this).is(':checked')) {
+                                                                        $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                                                                    }
+                                                                "
+                                                                data-group-id="{{group.id}}"
+                                                                data-group-name="{{group.name}}"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Can Delete -->
+                                                <div class="oh-sticky-table__td" style="width: 80px;">
+                                                    <div class="d-flex justify-content-center">
+                                                        <div class="oh-switch">
+                                                            <input
+                                                                type="checkbox"
+                                                                name="permissions"
+                                                                value="delete_{{model.model_name}}"
+                                                                class="oh-switch__checkbox"
+                                                                onchange="
+                                                                    if (!$(this).is(':checked')) {
+                                                                        $(this).closest('.oh-sticky-table__tr').find('.row-permission').prop('checked',false)
+                                                                    }
+                                                                "
+                                                                data-group-id="{{group.id}}"
+                                                                data-group-name="{{group.name}}"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            {% if employees.has_previous or employees.has_next %}
+            <div class="oh-wrapper w-100">
+            <div class="oh-pagination">
+                <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">{% trans 'Page' %} {{ employees.number }} {% trans 'of' %} {{ employees.paginator.num_pages }}.</span>
+
+                <nav class="oh-pagination__nav">
+                <div class="oh-pagination__input-container me-3">
+                    <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
+
+                    <input type="number" name="page" class="oh-pagination__input" value="{{ employees.number }}" hx-get="{% url 'permission-search' %}?{{ pd }}" hx-target="#permissionContainer" min="1" />
+                    <span class="oh-pagination__label">{% trans 'of' %} {{ employees.paginator.num_pages }}</span>
+                </div>
+
+                <ul class="oh-pagination__items">
+                    {% if employees.has_previous %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page=1" class="oh-pagination__link">{% trans 'First' %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a>
+                    </li>
+                    {% endif %}
+                    {% if employees.has_next %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                </nav>
+            </div>
+            </div>
+            {% endif %}
+
+            <script>
+            function selectAllPermissions(elem) {
+                $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.row-permission').prop('checked',$(elem).is(':checked')).change()
+            }
+                $(document).ready(function () {
+                    updateBadge();
+                    $("[type=checkbox]").change(function (e) {
+                        e.preventDefault();
+                    });
+                });
+                var timeout
+
+                function updatePermissions(elem){
+                    var permissions = [];
+                    var panelId =
+                    "#" +
+                    $(elem).closest(".panel.view-employees").closest(".panel").attr("id");
+                    var userId = $(panelId).attr("data-user-id");
+
+                    $(panelId + " [name=permissions]").each(function () {
+                        if ($(this).is(":checked")) {
+                            var permissionValue = $(this).val();
+                            permissions.push(permissionValue);
+                        }
+                    });
+
+                    $.ajax({
+                        type: "post",
+                        url: '{% url "update-user-permission" %}',
+                        traditional: true,
+                        data: {
+                            csrfmiddlewaretoken: getCookie("csrftoken"),
+                            permissions: permissions,
+                            employee: userId,
+                        },
+                        success: function (response) {
+                            $("#messages").html(
+                                $(`
+                                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                                        ${response.message}.
+                                    </div>
+                                `)
+                            );
+                        },
+                        error: function (response) {
+                            $("#messages").html(
+                                $(`
+                                    <div class="oh-alert oh-alert--animated oh-alert--danger">
+                                        Sever error.
+                                    </div>
+                                `)
+                            );
+                        },
+                    });
+                }
+
+                $(".view-employees [name=permissions]").on("change",function (e) {
+                    e.preventDefault();
+                    clearTimeout(timeout);
+                    timeout = setTimeout(function() {
+                updateBadge($(this));
+                        updatePermissions(e.target);
+                    }, 100);
+                });
+
+            </script>
+        </div>
+        <div class="oh-modal" id="Permissions" role="dialog" aria-labelledby="Permissions" aria-hidden="true">
+            <div class="oh-modal__dialog" style="max-width: 880px">
+                <div class="oh-modal__dialog-header">
+                    <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+                        {% trans "Permissions" %}
+                    </h2>
+                    <button class="oh-modal__close" aria-label="Close">
+                        <ion-icon name="close-outline"></ion-icon>
+                    </button>
+                </div>
+                <div class="oh-modal__dialog-body">
+                    <form hx-post="{% url 'permission-table' %}" class="oh-profile-section perm-form" id="permissionForm">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script>
+            function updateBadge() {
+                var panels = $(".panel");
+                $.each(panels, function (indexInArray, valueOfElement) {
+                    var check = $(valueOfElement).find("[name=permissions]:checked").length;
+                    $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+                    $(valueOfElement).prev().find(".oh-badge.permission-badge").attr("title", check + " Permissions");
+                });
+
+                var permissionLine = $(".oh-sticky-table__tr");
+                $.each(permissionLine, function (index, value) {
+                    var check = $(value).find("[name=permissions]:checked").length;
+                    if (check === 4) {
+                        $(value).find(".row-permission").prop("checked", true);
+                    }
+                })
+
+                var permissionApps = $(".oh-sticky-table__tbody")
+                $.each(permissionApps, function (index, value) {
+                    var total_permission_count = $(value).find("[name=permissions]").length;
+                    var checked_permission_count = $(value).find("[name=permissions]:checked").length
+                    if (checked_permission_count === total_permission_count) {
+                        $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", true);
+                    } else {
+                        $(this).siblings(".oh-sticky-table__thead").find(".row-permission__select-all").prop("checked", false)
+                    }
+                })
+            }
+        </script>
+    </div>
+    <br>
+    <div class="oh-tabs__contents" style="display: none" id="tab_2_permission">
+        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+            <h2 class="oh-inner-sidebar-content__title">
+                {% trans "Groups" %}
+            </h2>
+            {% if perms.auth.change_group %}
+          <button class="oh-btn oh-btn--danger" hx-get="{% url "allocation-assign-group-user" %}" hx-vals='{"employee":"{{employee.id}}"}' hx-target="#groupAssignBody" data-toggle="oh-modal-toggle" data-target="#groupAssign" onclick="event.stopPropagation()" title="Assign user groups">
+            <ion-icon name="person-add-outline" class="text-light">Add</ion-icon>
+          </button>
+        {% endif %}
+        </div>
+        {% if employee.employee_user_id.groups.all.first %}
+        {% for gp in employee.employee_user_id.groups.all %}
+        <div class="oh-user_permission-list_item exclude-accordion-style" onclick="event.stopPropagation()">
+            <div class="oh-user_permission-list_profile">
+                <div class="oh-navbar__user-photo oh-user_permission--profile">
+                    <img src="https://ui-avatars.com/api/?name={{gp}}&amp;background=random"
+                        class="oh-navbar__user-image" loading="lazy" />
+                </div>
+                <div class="oh-feedback-card__name-container ms-1">
+                    <span class="oh-card__title oh-card__title--sm fw-bold me-1">{{gp}}</span>
+                    <span class="oh-user_permission_list-text oh-text--light">{% trans "Total" %}
+                        {{gp.user_set.all|length}}
+                        {% trans "users in this group" %}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+          <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
+            <div align="center">
+              <img src="{% static  'images/ui/employee_group.png' %}" class="oh-404__image" alt="Page not found. 404.">
+              <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "This employee is not assigned to any groups." %}</h5>
+            </div>
+          </div>
+          {% endif %}
+    </div>
+    {% comment %} {% endif %} {% endcomment %}
+</div>
+<script>
+    var showSearch = true
+    $(document).ready(function () {
+        setTimeout(() => {
+            $("#tab_2_permission").show();
+        }, 150);
+    });
+    function selectAllPermissions(elem) {
+        $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.row-permission').prop('checked', $(elem).is(':checked')).change()
+    }
+</script>
+{% endif %}

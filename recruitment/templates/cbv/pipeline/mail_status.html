@@ -1,0 +1,15 @@
+<span title="{{instance.email}}">
+    {{instance.email|truncatechars:10}}
+</span>
+{% if instance.get_last_sent_mail %}
+  <span title="{{ instance.get_last_sent_mail.subject }} | {{ instance.get_last_sent_mail.get_status_display }}"
+    class="oh-dot oh-dot--small me-1"
+    style="background-color:{% if instance.get_last_sent_mail.status == 'sent' %}
+      yellowgreen
+
+    {% else %}
+      red
+    {% endif %}">
+
+  </span>
+{% endif %}

@@ -1,0 +1,139 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+<style>
+    .canceled--dot{
+        background-color:red;
+      }
+      .approved--dot{
+        background-color:green;
+      }
+      .approved-True{
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+      .canceled-True {
+
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+    </style>
+<div hx-get="{% url "attendance-nav-view" %}" hx-trigger="load">
+</div>
+
+{% include "generic/components.html" %}
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+<div class="oh-wrapper"
+ id="listContainer">
+  <div class="animated-background">
+</div>
+</div>
+
+<div id="delete-table-data">
+</div>
+
+
+
+<div class="oh-activity-sidebar" id="worktypeactivitySidebar" style="z-index:1000;">
+
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+</div>
+
+<div
+class="oh-modal__dialog-body"
+id="workTypeRequestUpdateModalBody"
+></div>
+
+{% comment %} <div class="oh-modal__dialog-header pb-0">
+  <h2 class="oh-modal__dialog-title" id="activityImportLabel">
+      {% trans "Import Attendance Activities" %}
+  </h2>
+
+  <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+  </button>
+</div>
+
+<div class="oh-modal__dialog-body" id="activityImportModalBody">
+  <form hx-post="{% url 'attendance-activity-import' %}" hx-encoding="multipart/form-data"
+      hx-target="#objectCreateModalTarget" hx-swap="outerHTML" class="oh-profile-section" id="activityImportForm">
+      {% csrf_token %}
+      <div id="uploading" class="oh-modal__dialog-body mr-5" style="display: none;">
+          <div class="loader-container" style="margin: auto;">
+              <div class="loader"></div>
+              <div class="loader-text">{% trans "Uploading..." %}</div>
+              <div class="text-center" style="-webkit-text-stroke: medium;">
+                  {% trans "Don't refresh the page" %}
+              </div>
+          </div>
+      </div>
+
+      <div id="uploadContainer">
+          <label for="uploadFile" class="oh-dropdown__import-label">
+              <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+              <span class="oh-dropdown__import-form-title">{% trans "Upload a File" %}</span>
+              <span class="oh-dropdown__import-form-text">{% trans "Drag and drop files here" %}</span>
+          </label>
+          <input type="file" name="activity_import" required />
+          <div class="d-flex flex-row-reverse">
+              <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary mt-3">
+                  {% trans "Upload" %}
+              </button>
+          </div>
+      </div>
+  </form>
+</div> {% endcomment %}
+
+<script src="{% static 'cbv/attendance_activity.js' %}"></script>
+{% comment %} <script>
+    $(document).ready(function () {
+        Swal.fire({
+            text: "{% trans 'Do you want to download the template?' %}",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "{% trans 'Confirm' %}"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'attendance-activity-import-excel' %}",
+                    xhrFields: { responseType: "blob" },
+                    success: function (response) {
+                        const url = URL.createObjectURL(new Blob([response], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.download = "activity_excel.xlsx";
+                        document.body.appendChild(link);
+                        link.click();
+                        URL.revokeObjectURL(url);
+                    },
+                    error: function () {
+                        console.error("{% trans 'Error downloading file' %}");
+                    }
+                });
+            }
+        });
+
+        $('#activityImportForm').on('submit', function () {
+            $('#uploadContainer').hide();
+            $('#uploading').show();
+        });
+    });
+</script> {% endcomment %}
+
+
+{% endblock content %}

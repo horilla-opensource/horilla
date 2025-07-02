@@ -1,0 +1,27 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<div hx-get="{% url "key-result-navbar" %}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
+</div>
+
+
+<div class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+</div>
+</div>
+
+
+
+
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+
+{% endblock content %}

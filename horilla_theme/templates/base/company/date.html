@@ -1,0 +1,173 @@
+
+{% extends 'settings.html' %} {% block settings %}{% load i18n %} {% load horillafilters %}{% load widget_tweaks static %}
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans "Date Format" %}
+    </h5>
+    {% if perms.base.change_company %}
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+            <div class="col-span-12">
+                <label>{% trans "Select Date Format:" %}</label>
+                <div class="flex gap-2 pb-5 pt-2">
+                    <select id="dateFormat" class="bg-white">
+                        <option value="">--------------</option>
+                        <option value="DD-MM-YYYY">{% trans "Day, Month, Year (e.g., 30-12-2023)" %}</option>
+                        <option value="DD.MM.YYYY">{% trans "Day, Month, Year (e.g., 30.12.2023)" %}</option>
+                        <option value="DD/MM/YYYY">{% trans "Day, Month, Year (e.g., 30/12/2023)" %}</option>
+                        <option value="MM/DD/YYYY">{% trans "Month, Day, Year (e.g., 12/30/2023)" %}</option>
+                        <option value="YYYY-MM-DD">{% trans "Year, Month, Day (e.g., 2023-12-30)" %}</option>
+                        <option value="YYYY/MM/DD">{% trans "Year, Month, Day (e.g., 2023/12/30)" %}</option>
+                        <option value="MMMM D, YYYY">{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}</option>
+                        <option value="DD MMMM, YYYY">{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}</option>
+                        <option value="MMM. D, YYYY">{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}</option>
+                        <option value="D MMM. YYYY">{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}</option>
+                        <option value="dddd, MMMM D, YYYY">{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}</option>
+                    </select>
+                    <button onclick="saveDateFormat()"
+                    class="btn"
+                    >{% trans "Save Date Format" %}</button>
+                </div>
+                <hr class="pt-5 border-[#ebebeb]">
+                <div style="color: hsl(8,77%,56%);">
+                    <b>{% trans "Current Date Format"%} &nbsp :</b> &nbsp
+                    <span id="dateDisplay" style="color: black;" class=''></span>
+                </div>
+
+            </div>
+
+            {% comment %} <div class="col-span-12 lg:col-span-6">
+                <label>{% trans "Select Time Format:" %}</label>
+                <div class="flex gap-2">
+                    <select id="timeFormat" class="">
+                        <option value="">--------------</option>
+                        <option value="hh:mm A">{% trans "12 Hr. (e.g., 06:00 AM or 06:00 PM)" %}</option>
+                        <option value="HH:mm">{% trans "24 Hr. (e.g., 06:00 or 18:00)" %}</option>
+                    </select>
+                    <button onclick="saveTimeFormat()"
+                        class="btn"
+                    >{% trans "Save Time Format" %}</button>
+                </div>
+                <div style="color: hsl(8,77%,56%);">
+                    <b>{% trans "Current Time Format" %} &nbsp :</b> &nbsp
+                    <span id="timeDisplay" style="color: black;" class=''></span>
+                </div>
+
+            </div> {% endcomment %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">{% trans "Time Format" %}
+    </h5>
+    {% if perms.base.change_company %}
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+            {% comment %} <div class="col-span-12 lg:col-span-6">
+                <label>{% trans "Select Date Format:" %}</label>
+                <div class="flex gap-2">
+                    <select id="dateFormat" class="">
+                        <option value="">--------------</option>
+                        <option value="DD-MM-YYYY">{% trans "Day, Month, Year (e.g., 30-12-2023)" %}</option>
+                        <option value="DD.MM.YYYY">{% trans "Day, Month, Year (e.g., 30.12.2023)" %}</option>
+                        <option value="DD/MM/YYYY">{% trans "Day, Month, Year (e.g., 30/12/2023)" %}</option>
+                        <option value="MM/DD/YYYY">{% trans "Month, Day, Year (e.g., 12/30/2023)" %}</option>
+                        <option value="YYYY-MM-DD">{% trans "Year, Month, Day (e.g., 2023-12-30)" %}</option>
+                        <option value="YYYY/MM/DD">{% trans "Year, Month, Day (e.g., 2023/12/30)" %}</option>
+                        <option value="MMMM D, YYYY">{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}</option>
+                        <option value="DD MMMM, YYYY">{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}</option>
+                        <option value="MMM. D, YYYY">{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}</option>
+                        <option value="D MMM. YYYY">{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}</option>
+                        <option value="dddd, MMMM D, YYYY">{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}</option>
+                    </select>
+                    <button onclick="saveDateFormat()"
+                    class="btn"
+                    >{% trans "Save Date Format" %}</button>
+                </div>
+                <div style="color: hsl(8,77%,56%);">
+                    <b>{% trans "Current Date Format"%} &nbsp :</b> &nbsp
+                    <span id="dateDisplay" style="color: black;" class=''></span>
+                </div>
+
+            </div> {% endcomment %}
+
+            <div class="col-span-12">
+                <label >{% trans "Select Time Format:" %}</label>
+                <div class="flex gap-2 pb-5 pt-2">
+                    <select id="timeFormat" class="bg-white">
+                        <option value="">--------------</option>
+                        <option value="hh:mm A">{% trans "12 Hr. (e.g., 06:00 AM or 06:00 PM)" %}</option>
+                        <option value="HH:mm">{% trans "24 Hr. (e.g., 06:00 or 18:00)" %}</option>
+                    </select>
+                    <button onclick="saveTimeFormat()"
+                        class="btn"
+                    >{% trans "Save Time Format" %}</button>
+                </div>
+                <hr class="pt-5 border-[#ebebeb]">
+                <div style="color: hsl(8,77%,56%);">
+                    <b>{% trans "Current Time Format" %} &nbsp :</b> &nbsp
+                    <span id="timeDisplay" style="color: black;" class=''></span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<script>
+    $("#dateFormat").val("{{request.user.employee_get.employee_work_info.company_id.date_format}}").change();
+    $("#timeFormat").val("{{request.user.employee_get.employee_work_info.company_id.time_format}}").change();
+</script>
+<script src="{% static '/build/js/moment.js' %}"></script>
+<script src="{% static 'base/date_formatting.js' %}"></script>
+<script src="{% static 'base/date_settings.js' %}"></script>
+<script src="{% static 'base/time_formatting.js' %}"></script>
+<script src="{% static 'base/time_settings.js' %}"></script>
+
+<script>
+
+    // To display the selected date format
+    const formatMapping = {
+        'DD-MM-YYYY': '{% trans "Day, Month, Year (e.g., 30-12-2023)" %}',
+        'DD.MM.YYYY': '{% trans "Day, Month, Year (e.g., 30.12.2023)" %}',
+        'DD/MM/YYYY': '{% trans "Day, Month, Year (e.g., 30/12/2023)" %}',
+        'MM/DD/YYYY': '{% trans "Month, Day, Year (e.g., 12/30/2023)" %}',
+        'YYYY-MM-DD': '{% trans "Year, Month, Day (e.g., 2023-12-30)" %}',
+        'YYYY/MM/DD': '{% trans "Year, Month, Day (e.g., 2023/12/30)" %}',
+        'MMMM D, YYYY': '{% trans "Full Month Name, Day, Year (e.g., January 1, 2023)" %}',
+        'DD MMMM, YYYY': '{% trans "Day, Full Month Name, Year (e.g., 1 January, 2023)" %}',
+        'MMM. D, YYYY': '{% trans "Abbreviated Month Name, Day, Year (e.g., Jan. 1, 2023)" %}',
+        'D MMM. YYYY': '{% trans "Day, Abbreviated Month Name, Year (e.g., 1 Jan. 2023)" %}',
+        'dddd, MMMM D, YYYY': '{% trans "Full Day Name, Full Month Name, Day, Year (e.g., Monday, January 1, 2023)" %}',
+    };
+
+    // Get the current date
+    var currentDate = new Date();
+
+    // Format the current date according to the storedDateFormat
+    var formattedDate = moment(currentDate).format(storedDateFormat);
+
+    var selectedFormatDescription = formatMapping[storedDateFormat];
+
+    document.getElementById('dateDisplay').textContent = `${selectedFormatDescription}`;
+
+    // To display the selected time format
+    const timeFormatMapping = {
+        'hh:mm A': '{% trans "12 Hr. (e.g., 06:00 AM or 06:00 PM)" %}',
+        'HH:mm': '{% trans "24 Hr. (e.g., 06:00 or 18:00)" %}',
+    };
+
+    // Get the current date and time
+    var currentDateTime = new Date();
+
+    // Format the current time according to the storedTimeFormat
+    var formattedTime = moment(currentDateTime).format(storedTimeFormat);
+    var selectedTimeFormatDescription = timeFormatMapping[storedTimeFormat];
+
+    document.getElementById('timeDisplay').textContent = `${selectedTimeFormatDescription}`;
+
+</script>
+
+
+    {% endblock settings %}

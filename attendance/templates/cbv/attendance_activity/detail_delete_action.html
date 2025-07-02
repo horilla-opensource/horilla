@@ -1,0 +1,20 @@
+{% load static i18n %}
+{% if perms.attendance.delete_attendanceactivity %}
+    <!-- Start of delete button  -->
+    <button data-action="delete" hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
+        hx-post="{% url 'attendance-activity-delete' instance.id %}?instances_ids={{request.GET.instance_ids}}"
+        hx-target="#genericModalBody"
+        class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300">
+        <img src="{% static 'horilla_theme/assets/img/icons/trash.svg' %}" alt="{% trans 'Delete' %}" width="16"
+            class="mt-[-1px]" />
+            {% trans "Delete" %}
+    </button>
+    <!-- End of delete button  -->
+{% endif %}
+
+{% if request.GET.deleted %}
+    <script>
+        $("#reloadMessagesButton").click();
+        $(".reload-record").click();
+    </script>
+{% endif %}

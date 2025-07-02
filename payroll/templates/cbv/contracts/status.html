@@ -1,0 +1,7 @@
+<div onclick="event.stopPropagation();">
+    <select name="status" hx-trigger="change" hx-post="{% url 'update-contract-status' instance.id %}?{{pd}}" hx-target="#listContainer" hx-vals='{"view":"table"}' class="oh-table__editable-input w-100" >
+      {% for option in instance.CONTRACT_STATUS_CHOICES %}
+      <option value="{{option.0}}"{% if option.0 == instance.contract_status %}selected{% endif %}>{{option.1}}</option>
+      {% endfor %}
+    </select>
+  </div>

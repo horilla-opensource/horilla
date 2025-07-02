@@ -1,0 +1,166 @@
+
+
+
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+
+
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+.validated--dot{
+  background-color:yellowgreen;
+}
+.not-validated--dot{
+  background-color:red;
+}
+.requested--dot{
+  background-color:orange;
+}
+.approved-request--dot{
+  background-color:blue;
+}
+.validated-True{
+  border-left: 3.4px solid yellowgreen !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.not-validated-False {
+
+  border-left: 3.4px solid red !important;
+  border-radius: 4px 0 0 4px;
+
+
+}
+.requested-True {
+
+  border-left: 3.4px solid orange !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.approved-request-True {
+
+  border-left: 3.4px solid blue !important;
+  border-radius: 4px 0 0 4px;
+
+}
+
+
+
+
+
+</style>
+
+ <div hx-get="{% url "hour-account-nav" %}" hx-trigger="load">
+</div>
+
+
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none">
+  </div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+  </div>
+
+  <div
+  class="oh-modal"
+  id="hourAccountExport"
+  role="dialog"
+  aria-labelledby="hourAccountExport"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="hourAccountExportLavel">
+        {% trans "Export Hour Accounts" %}
+      </h2>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <divattendance_date__gte={{ dates.0|date:"Y-m-d" }}&attendance_date__lte={{ dates.1|date:"Y-m-d" }}
+        class="oh-modal__dialog-body p-0 pt-2"
+
+      >
+          <form
+          action="{%url 'attendance-account-info-export' %}"
+          id="hourAccountExportModalBody"
+          method="get"
+          onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+
+        >
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{% static 'cbv/attendance/hour_account.js' %}"></script>
+<script>
+  function validateHours(url) {
+
+    $.ajax({
+        url: "{% url 'active-tab' %}",
+        method: "GET",
+        data: {
+            path: "{% url 'attendances-tab-view' %}",
+            target: `li[data-target="#attendances-tab1"]`
+        },
+        success: function(response) {
+            window.location.href = url
+        },hx-get="{% url "attendances-tab-view" %}?{{request.GET.urlencode}}"
+        error: function(xhr, status, error) {
+            console.error(error);
+        }
+    });
+}
+
+function validateOTHours(url) {
+  $.ajax({
+      url: "{% url 'active-tab' %}",
+      method: "GET",
+      data: {
+          path: "{% url 'attendances-tab-view' %}",
+          target: `li[data-target="#attendances-tab2"]`
+      },
+      success: function(response) {
+
+          window.location.href = url
+      },
+      error: function(xhr, status, error) {
+
+          console.error(error);
+      }
+  });
+}
+
+</script>
+
+{% endblock content %}

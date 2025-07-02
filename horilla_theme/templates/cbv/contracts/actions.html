@@ -1,0 +1,18 @@
+{% load i18n %}
+{% if perms.payroll.change_contract %}
+    <a class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+        href="{% url 'update-contract' instance.id %}" title="{% trans 'Edit' %}">
+        <i class="fa-solid fa-pen-to-square"></i>
+    </a>
+{% endif %}
+{% if perms.payroll.delete_contract %}
+    <form hx-confirm="{% trans 'Do you want to delete this Contract?' %}"
+        hx-post="{% url 'delete-contract' instance.id %}?{{pd}}" hx-target="#contract-container" hx-swap="innerHTML">
+        {% csrf_token %}
+        <button
+            class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+            title="{% trans 'Delete' %}">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </form>
+{% endif %}

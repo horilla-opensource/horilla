@@ -1,0 +1,69 @@
+{% load static i18n %}
+<button>
+    <div class="flex gap-3">
+        <div class="relative flex items-center cursor-pointer w-max">
+            <img
+                src="{{request.user.employee_get.get_avatar}}"
+                alt="user"
+                class="w-11 h-11 rounded-full"
+                loading="lazy"
+            />
+            <span
+                class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white
+                    {% if user.employee_get.check_online %} bg-[#1dd75b] {% else %} bg-[red] {% endif %}
+                "
+            ></span>
+        </div>
+        <div class="hidden md:block">
+            <div class="flex flex-col justify-center items-start h-full">
+                <h5 class="font-semibold text-sm">{{user.employee_get.get_full_name|title}}</h5>
+                <p class="text-xs text-dark-200">{% if user.employee_get.check_online %} {% trans "Online" %} {% else %} {% trans "Offline" %} {% endif %} </p>
+            </div>
+        </div>
+        <div class="hidden md:block pt-2.5">
+            <img
+                src="/static/horilla_theme/assets/img/icons/downarrow.svg"
+                alt=""
+            />
+        </div>
+    </div>
+</button>
+
+<div
+    class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[170px] py-2 px-4 right-0"
+>
+    <ul class="text-sm">
+        {% if request.session.selected_company == "all" or request.user.employee_get.employee_work_info.company_id.id == request.session.selected_company|default:"-1"|add:"0" %}
+            <li>
+                <button
+                    class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
+                >
+                    <a href="{% url 'employee-profile' %}">{% trans "My Profile" %}</a>
+                </button>
+            </li>
+            <li>
+                <button
+                    class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
+                >
+                    <a href="{% url 'change-username' %}">{% trans "Change Username" %}</a>
+                </button>
+            </li>
+            <li>
+                <button
+                    class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
+                >
+                    <a href="{% url 'change-password' %}"> {% trans "Change Password" %} </a>
+                </button>
+            </li>
+        {% endif %}
+
+        <hr class="text-[#1c1c1c] my-2" />
+        <li>
+            <button
+                class="py-1.5 hover:text-primary-600 transition duration-300 text-sm gap-4 items-center flex w-full"
+            >
+                <a href="{% url 'logout' %}"> {% trans "Logout" %} </a>
+            </button>
+        </li>
+    </ul>
+</div>

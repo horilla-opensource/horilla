@@ -142,7 +142,7 @@
             </div>
             <div class="oh-sticky-table__td">
               {{feedback.end_date}}
-              <span title = 'due {% if feedback.end_date == current_date %} {{current_date}} {% else %}in {{feedback.end_date|sub:current_date}}{% endif %}'>
+              <span title = 'due  {% if feedback.end_date == current_date %} current_date {% else %}in {{feedback.end_date|sub:current_date}}{% endif %}'>
                   <ion-icon
                       class="text-{% if feedback.end_date < current_date %}danger {% elif feedback.end_date == current_date %}warning {% else %}success{% endif %}"
                       name="time-sharp"
@@ -302,7 +302,7 @@
             </div>
             <div class="oh-sticky-table__td">
               {{feedback.end_date}}
-              <span title = 'due {% if feedback.end_date == current_date %} {{current_date}} {% else %}in {{feedback.end_date|sub:current_date}}{% endif %}'>
+              <span title = 'due  {% if feedback.end_date == current_date %} current_date {% else %}in {{feedback.end_date|sub:current_date}}{% endif %}'>
                   <ion-icon
                       class="text-{% if feedback.end_date < current_date %}danger {% elif feedback.end_date == current_date %}warning {% else %}success{% endif %}"
                       name="time-sharp"
@@ -441,7 +441,7 @@
             </div>
             <div class="oh-sticky-table__td">
               {{feedback.end_date}}
-              <span title = 'due {% if feedback.end_date == current_date %} {{current_date}} {% else %} in {{feedback.end_date|sub:current_date}}{% endif %}'>
+              <span title = 'due  {% if feedback.end_date == current_date %} current_date {% else %}in {{feedback.end_date|sub:current_date}}{% endif %}'>
                   <ion-icon
                       class="text-{% if feedback.end_date < current_date %}danger {% elif feedback.end_date == current_date %}warning {% else %}success{% endif %}"
                       name="time-sharp"

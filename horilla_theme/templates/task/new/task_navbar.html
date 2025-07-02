@@ -1,0 +1,59 @@
+{% load i18n taskfilters %}
+<div class="flex flex-wrap justify-between items-center mb-3">
+
+    <h3 class="text-lg font-semibold">
+        Project
+    </h3>
+    <div class="flex items-center flex-wrap gap-1">
+
+
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="bg-primary-600 px-4 py-1.5 rounded-2xl text-white text-xs me-1">Filters </span>
+            :
+            <ul class="usertablist ms-1 me-3 gap-1">
+                <li class="border text-xs rounded-2xl border-[#d1d1d1] px-4 py-1.5">
+                    <div>
+                        <span> Department : Sales Department</span>
+                        <a href="" class="ms-2"><i class="fa-solid fa-xmark"></i></a>
+                    </div>
+                </li>
+                <li class="border text-xs rounded-2xl border-[#d1d1d1] px-4 py-1.5">
+                    <div>
+                        <span> Department : Sales Department</span>
+                        <a href="" class="ms-2"><i class="fa-solid fa-xmark"></i></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="relative">
+            <input type="text" placeholder="Search by Employee Name..."
+                class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600">
+            <i
+                class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+        </div>
+
+
+
+
+
+        <button id="listBtn"
+            class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 text-primary-600">
+            <img src="./assets/img/icons/kanban.svg" alt="List" width="17">
+        </button>
+        <button id="gridBtn"
+            class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 text-primary-600">
+            <img src="./assets/img/icons/list-line.svg" alt="Grid" width="15">
+        </button>
+
+
+        <button
+            class="px-4 py-2 bg-[white]  rounded-md text-xs flex items-center gap-2  border border-primary-500 hover:border-primary-600 transition duration-300">
+            <img src="./assets/img/icons/sort.svg" alt="" width="16" class="mt-[-1px]">Filter</button>
+        <button data-modal-open="deletemodal"
+            class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+            <img src="./assets/img/icons/more.svg" alt="" width="13" class="filter brightness-0 invert">
+            Create</button>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+{% load i18n %}
+<script>
+  function checkSelected(names, target,initial=false) {
+    names = JSON.parse(`${names}`);
+    $.each(names, function (indexInArray, valueOfElement) {
+      if (!initial) {
+        $(target).find(`[value=${valueOfElement}]`).prop("checked", true).change();
+      }else{
+        $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
+      }
+    });
+  }
+</script>
+<div class="oh-modal" id="groupAssign" role="dialog" aria-labelledby="groupAssign" aria-hidden="true">
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">{% trans 'Group Assign' %}</h2>
+      <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body" id="groupAssignBody"></div>
+  </div>
+</div>
+<div class="oh-inner-sidebar-content p-0">
+  <div class="oh-inner-sidebar-content__body">
+    <div class="oh-general__tab-target mb-4" id="types">
+      <div id="selectedInstances" data-ids="[]" hidden></div>
+      <form hx-post="{% url 'allocation-leave-type-list' %}" hx-target="#responseContainer" id="idsForm">
+        <input type="text" name="ids" value="[]" hidden />
+        <input type="text" name="instance_id" value="{{ request.GET.instance_id }}" hidden />
+        <input type="submit" hidden />
+      </form>
+      <div class="oh-profile-section__card" id="typesContainer" hx-get="{% url 'allocation-user-groups' %}?instance_id={{ request.GET.instance_id }}" hx-trigger="load"></div>
+    </div>
+    <div class="oh-modal__dialog-footer p-0">
+    </div>
+  </div>
+</div>
+
+<div id="responseContainer" hidden></div>

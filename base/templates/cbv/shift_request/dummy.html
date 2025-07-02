@@ -1,0 +1,26 @@
+{% load basefilters %}
+{% load i18n %}
+{% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+                      <div class="" onclick="event.stopPropagation();">
+                        <div class="oh-btn-group" >
+                          {% if instance.approved == False and not instance.canceled   %}
+                            <a hx-get="{% url 'shift-allocation-request-update' instance.id %}" hx-target='#genericModalBody' data-toggle="oh-modal-toggle" data-target='#genericModal' class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
+                          {% else %}
+                            <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="create-outline" ></ion-icon></button></td>
+                          {% endif %}
+                          {% if instance.approved == False and instance.canceled == False %}
+                            <form action="{% url 'shift-request-delete' instance.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" method='post' class="w-50">
+                              {% csrf_token %}
+                              <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                            </form>
+                          {% elif perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+                            <form action="{% url 'shift-request-delete' instance.id  %}" onsubmit="return confirm('{% trans "Are you sure you want to delete this shift request?" %}');" method='post' class="w-50">
+                              {% csrf_token %}
+                              <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}"><ion-icon name="trash-outline"></ion-icon></button>
+                            </form>
+                          {% else %}
+                            <button class="oh-btn oh-btn--light-bkg w-50" disabled><ion-icon name="trash-outline"></ion-icon></button></td>
+                          {% endif %}
+                        </div>
+                      </div>
+                    {% endif %}

@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load basefilters %}
+{% if leave_requests_with_interview %}
+    <div class="oh-profile oh-profile--md">
+        <div class="oh-profile__avatar mr-1">
+            <img src="{{instance.employee_id.get_avatar}}" class="oh-profile__image"
+                alt="" />
+        </div>
+    <span class="oh-profile__name oh-text--dark">{{instance.employee_id}}</span>
+        <span class="tooltip">
+            <span class="material-symbols-outlined" style="flex-direction: row-reverse;color:#ff9146;">
+                warning
+            </span>
+            <span class="tooltiptext fw-bold">
+              {{instance.employee_id}}&nbsp {% trans "has an interview in this requested date range." %}
+            </span>
+        </span>
+      </div>
+    {% else %}
+    <div class="oh-profile oh-profile--md">
+        <div class="oh-profile__avatar mr-1">
+            <img src="{{instance.employee_id.get_avatar}}" class="oh-profile__image"
+                alt="" />
+        </div>
+        <span class="oh-profile__name oh-text--dark">{{instance.employee_id}}</span>
+    </div>
+    {% endif %}

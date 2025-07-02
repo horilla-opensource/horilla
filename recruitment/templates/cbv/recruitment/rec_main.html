@@ -1,0 +1,15 @@
+
+<div class="rec-view-container">
+    {% include "generic/horilla_list_table.html" %}
+</div>
+<script>
+  $(document).on("htmx:afterSwap", function () {
+    $("[data-toggle-count]").off("click").on("click", function (e) {
+      e.stopPropagation();
+      let recViewContainer = $(this).closest('tr');
+      span = recViewContainer.find(".count-span").toggle();
+      var row = $(this).closest(".oh-permission-table--toggle").parent().parent();
+      row.toggleClass("oh-permission-table--collapsed");
+    });
+  });
+</script>

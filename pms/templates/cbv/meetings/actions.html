@@ -1,0 +1,99 @@
+{% load i18n %}
+<style>
+    .oh-btn-group button {
+        border-right: 1px solid hsl(213, 22%, 93%);
+    }
+</style>
+<div>
+    <div class="oh-btn-group" onclick="event.stopPropagation()">
+
+        {% if perms.pms.add_meetings or request.user.employee_get in instance.manager.all or request.user.employee_get in instance.answer_employees.all  %}
+
+        <a
+        onclick="event.preventDefault(); event.stopPropagation();"
+        hx-get="{% url 'add-response' instance.id %}"
+        hx-target="#genericModalBody"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        class="oh-btn oh-btn--light-bkg w-100"
+        title="Add MoM"
+     >
+       <ion-icon name="add-outline"></ion-icon>
+     </a>
+        {% endif %}
+        {% if request.user.employee_get in instance.answer_employees.all or request.user.employee_get in instance.manager.all %}
+        {% if instance.question_template %}
+        <a
+            hx-get="{% url 'meeting-question-template-view' instance.id %}"
+            hx-target="#answerContainer"
+            data-target="#activitySidebar"
+            class="oh-btn oh-btn--light-bkg oh-activity-sidebar__open w-100 text-decoration-none"
+            title="Answer"
+        >
+            <i class="material-symbols-outlined fw-light" data-target="#activitySidebar" style="font-size:14px;">
+                edit_document
+            </i>
+        </a>
+        {% else %}
+        <a
+            class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none"
+        >
+            <i class="material-symbols-outlined fw-light" style="font-size:14px;">
+                edit_document
+            </i>
+        </a>
+        {% endif %}
+        {% else %}
+        <a
+            class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none"
+        >
+            <i class="material-symbols-outlined fw-light" style="font-size:14px;">
+                edit_document
+            </i>
+        </a>
+        {% endif %}
+        {% if perms.pms.change_meetings or request.user.employee_get in instance.manager.all %}
+            <a
+                onclick="event.preventDefault();event.stopPropagation()"
+                hx-get="{% url 'update-meeting' instance.id %}?instance_ids={{instance.ordered_ids}}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--light-bkg w-100" title="Edit"
+            ><ion-icon name="create-outline"></ion-icon></a>
+        {% endif %}
+        {% if perms.pms.delete_meetings %}
+            {% if not instance.is_active %}
+                    <form
+                        action='{% url "archive-meeting" instance.id %}'
+                        onsubmit="return confirm('{% trans "Do you want to unarchive this meeting?" %}')"
+                        method="post"
+                        style="display: contents;width:100%">
+                        {% csrf_token %}
+                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Unarchive' %}">
+                            <ion-icon name="archive"></ion-icon>
+                        </button>
+                    </form>
+            {% else %}
+                    <form
+                        action="{% url 'archive-meeting' instance.id %}"
+                        onsubmit="return confirm('{% trans "Do you want to archive this meeting?" %}')"
+                        method="post"
+                        style="display: contents;width:100%">
+                        {% csrf_token %}
+                        <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
+                            <ion-icon name="archive"></ion-icon>
+                        </button>
+                    </form>
+            {% endif %}
+        {% endif %}
+        {% if perms.pms.delete_meetings %}
+            <form
+                action="{% url 'meetings-delete' instance.id %}"
+                onsubmit="return confirm('{% trans "Are you sure to delete this meeting?" %}')"
+                method="post"
+                style="display: contents;width:100%">
+                {% csrf_token %}
+                <button onclick="event.stopPropagation()" class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
+                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>

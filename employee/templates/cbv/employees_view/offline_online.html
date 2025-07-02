@@ -1,0 +1,6 @@
+            {% load i18n %}
+            {% if instance.check_online %}
+              <span class="oh-dot oh-dot--small me-1" style="background-color:yellowgreen"></span> {% trans "Online" %}
+              {% else %}
+              <span class="oh-dot oh-dot--small me-1" style="background-color:rgba(128, 128, 128, 0.482)"></span> {% trans "Offline" %}
+              {% endif %}

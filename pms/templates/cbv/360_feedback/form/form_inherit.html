@@ -1,0 +1,43 @@
+
+   {% load i18n %}
+   <div>
+    {% include 'generic/horilla_form.html' %}
+
+</div>
+
+
+
+
+
+<button id="colleguesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_colleague_id" hidden > </button>
+<button id="managerButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_manager_id" hidden > </button>
+<button id="subordinatesButton" hx-get="{% url 'get-collegues' %}" hx-target="#id_subordinate_id" hidden > </button>
+<button id="keyresultButtton" hx-get="{% url 'get-collegues' %}" hx-target="#id_employee_key_results_id" hidden > </button>
+
+
+<script>
+  $('#id_period_parent_div').hide();
+
+   $(document).ready(function () {
+    if (!$('#id_cyclic_feedback').is(':checked')) {
+        $("#id_cyclic_feedback_days_count_parent_div").hide();
+        $("#id_cyclic_feedback_period_parent_div").hide();
+    }
+    $("#id_cyclic_feedback").on("change", function () {
+        if (this.checked) {
+            $("#id_cyclic_feedback_days_count_parent_div").show();
+            $("#id_cyclic_feedback_period_parent_div").show();
+            $("#id_cyclic_feedback_days_count").prop("required", true);
+            $("#id_cyclic_feedback_period").prop("required", true);
+        } else {
+            $("#id_cyclic_feedback_days_count_parent_div").hide();
+            $("#id_cyclic_feedback_period_parent_div").hide();
+            $("#id_cyclic_feedback_days_count").prop("required", false);
+            $("#id_cyclic_feedback_period").prop("required", false);
+        }
+    });
+});
+
+
+
+</script>

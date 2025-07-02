@@ -1,4 +1,5 @@
 {% load i18n static recruitmentfilters horillafilters %}
+{% include "generic/components.html" %}
 {% for cand in candidates %}
     <div
         class="oh-kanban__card candidate change-cand"
@@ -104,11 +105,11 @@
                             <a
                             class="oh-dropdown__link oh-dropdown__link--secondary"
                             hx-get='{% url "interview-schedule" cand.id %}'
-                            hx-target="#createTarget"
+                            hx-target="#genericModalBody"
                             hx-swap='innerHTML'
                             style="cursor: pointer;"
                             data-toggle='oh-modal-toggle'
-                            data-target="#createModal"
+                            data-target="#genericModal"
                             >{% trans "Schedule Interview" %}</a>
                         </li>
                     {% endif %}
@@ -131,9 +132,9 @@
                             <a
                             class="oh-dropdown__link oh-dropdown__link--secondary"
                             data-toggle="oh-modal-toggle"
-                            data-target="#createModal"
+                            data-target="#genericModal"
                             hx-get="{% url 'to-skill-zone' cand.id %}"
-                            hx-target="#createTarget"
+                            hx-target="#genericModalBody"
                             >{% trans "Add to Skill Zone" %}</a
                             >
                         </li>

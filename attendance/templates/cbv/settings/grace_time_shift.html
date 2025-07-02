@@ -1,0 +1,8 @@
+{% load i18n %}
+{% if instance.employee_shift.all %}
+{% for shift in instance.employee_shift.all %}
+    {{shift}}<br/>
+{% endfor %}
+{% else %}
+{% trans "Nil" %}
+{% endif %}

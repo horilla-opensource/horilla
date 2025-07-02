@@ -1,0 +1,11 @@
+{% load i18n %}
+{% if instance.request_type == "create_request" %}
+  <span class="oh-dot oh-dot--small me-1" style="background-color: orange;"></span>
+  <span style="color: orange;">{% trans "Created Request" %}</span>
+{% elif instance.request_type == "update_request" %}
+  <span class="oh-dot oh-dot--small me-1" style="background-color: blue;"></span>
+  <span style="color: blue;">{% trans "Update Request" %}</span>
+{% elif instance.request_type == "revalidate_request" %}
+  <span class="oh-dot oh-dot--small me-1" style="background-color: yellow;"></span>
+  <span style="color: yellow;">{% trans "Re-validate Request" %}</span>
+{% endif %}

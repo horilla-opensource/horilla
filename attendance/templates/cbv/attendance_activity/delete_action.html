@@ -1,0 +1,10 @@
+{% load i18n %}
+
+<form hx-confirm="{% trans 'Are you sure want to delete this attendance?' %}"
+      hx-post="{% url 'attendance-activity-delete' instance.id  %}?instances_ids={{ request.GET.instance_ids }}"
+      onclick="event.stopPropagation()" hx-target="#deleteview">
+      {% csrf_token %}
+      <button type='submit' class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Remove' %}">
+        <ion-icon name="trash-outline"></ion-icon>
+      </button>
+    </form>

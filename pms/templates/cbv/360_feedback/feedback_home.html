@@ -1,0 +1,103 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+<style>
+
+    .at_risk--dot{
+        background-color:red;
+      }
+      .not_started--dot{
+        background-color:grey;
+      }
+      .behind--dot{
+        background-color: orange;
+      }
+      .closed--dot{
+        background-color:rgb(103, 171, 238)
+      }
+      .on_track--dot{
+        background-color:yellowgreen;
+      }
+      .status-At.Risk {
+
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+      }
+
+      .status-Not.Started {
+
+        border-left: 3.4px solid grey !important;
+        border-radius: 4px 0 0 4px;
+      }
+      .status-Behind {
+
+        border-left: 3.4px solid orange !important;
+        border-radius: 4px 0 0 4px;
+      }
+      .status-Closed {
+
+        border-left: 3.4px solid rgb(103, 171, 238) !important;
+        border-radius: 4px 0 0 4px;
+      }
+      .status-On.Track {
+
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+      }
+    </style>
+<div hx-get="{% url "feedback-nav-view" %}?{{request.GET.urlencode}}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+<div class="oh-checkpoint-badge mb-2" id="anounyselectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+
+{% comment %} <div class="oh-checkpoint-badge mb-2" id="selectedAnonymous" data-ids="[]" data-clicked=""  data-anounymous = "true" style="display: none">
+</div> {% endcomment %}
+{% comment %} archive=false {% endcomment %}
+<div class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+</div>
+</div>
+
+
+
+
+<div class="oh-modal" id="objectUpdateModal"
+role="dialog" aria-labelledby="objectUpdateModalLabel"
+aria-hidden="true">
+<div class="oh-modal__dialog" id="objectUpdateModalTarget"></div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="FeedbackModal"
+  role="dialog"
+  aria-labelledby="FeedbackModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-body" id="OneFeedbackTarget"></div>
+  </div>
+</div>
+<script src="{% static 'cbv/360_feedback.js' %}"></script>
+{% comment %} <script>
+  $(document).on('submit', '#deletebtn', function() {
+          $('.oh-modal--show').removeClass('oh-modal--show');
+  });
+</script> {% endcomment %}
+
+<script>
+  function updateHiddenInput(value) {
+      var hiddenInput = document.querySelector('input[name="created_at_date_range"]');
+      hiddenInput.value = '';
+      hiddenInput.value = value;
+      $("#applyFilter").click();
+  }
+</script>
+{% endblock content %}

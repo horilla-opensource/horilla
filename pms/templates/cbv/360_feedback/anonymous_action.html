@@ -1,0 +1,28 @@
+{% load i18n %}
+
+{% if request.user.id|stringformat:"d" == instance.anonymous_feedback_id  or request.user.is_superuser %}
+<div class="oh-btn-group" onclick="event.stopPropagation();">
+    <a class="oh-btn w-100" data-toggle="oh-modal-toggle"
+     data-target="#genericModal"
+    hx-get="{% url 'edit-anonymous-feedback' instance.id %}?instance_ids={{instance.ordered_ids}}"
+     title="{% trans 'Edit' %}"
+     hx-target="#genericModalBody">
+     <ion-icon name="create-outline"></ion-icon></a>
+    <form action="{% url 'archive-anonymous-feedback' obj_id=instance.id %}" method="post" onsubmit="return confirm('{% if instance.archive %}{% trans "Are you sure you want to Un-archive this feedback?" %}{% else %}{% trans "Are you sure you want to archive this feedback?" %}{% endif %}')" style="display: contents">
+      {% if instance.archive == True %}
+        <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Un-archive' %}" >
+      {% else %}
+        <button class="oh-btn oh-btn--danger-outline  w-100 "  title="{% trans 'Archive' %}" >
+      {% endif %}
+       {% csrf_token %}
+      <ion-icon name="archive-sharp" type="submit"></ion-icon>
+    </button>
+    </form>
+      <form action="{% url 'delete-anonymous-feedback' obj_id=instance.id %}" method="post" onsubmit="return confirm('{% trans "Do you want Delete this Feedback ?" %}')" style="display: contents">
+        {% csrf_token %}
+        <button  class="oh-btn oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}" >
+            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+        </button>
+      </form>
+    </div>
+    {% endif %}

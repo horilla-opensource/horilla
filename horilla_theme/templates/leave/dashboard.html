@@ -1,0 +1,240 @@
+{% extends 'index.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+{% include 'generic/components.html' %}
+{% load tz %}
+{% now "Y-m-d" as current_date %}
+<style>
+    .oh-dashboard__right {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .oh-card-dashboard {
+        flex: 1;
+        height: 100%;
+        cursor: default;
+    }
+
+    .pointer {
+        cursor: pointer;
+    }
+
+    .dash-card {
+        padding-bottom: 30px;
+    }
+
+    .tooltip {
+        position: absolute;
+        background-color: #000;
+        color: #fff;
+        padding: 5px;
+        border-radius: 5px;
+        display: block;
+        margin-top: 80px;
+    }
+</style>
+<div class="oh-wrapper mb-4">
+    <div class="d-none mt-5" id="back_button" style="width:10%">
+        <a href="" class="oh-btn oh-btn--secondary oh-btn--shadow ms-3">
+            <ion-icon class="me-2 md hydrated" name="arrow-back-outline" role="img" aria-label="arrow-back-outline"></ion-icon>{% trans "Back" %}
+        </a>
+    </div>
+    <div class="oh-dashboard row" id="dashboard">
+        <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-white p-6 rounded-md shadow-card relative" id="requestedLeaves">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-[#1cba5121] p-3 rounded-md">
+                            <img src="/static/horilla_theme/assets/img/icons/request-to-approve.svg" width="20" />
+                        </div>
+                        <div>
+                            <p class="text-sm">{% trans "Requests to Approve" %}</p>
+                            <div class="flex items-center gap-2">
+                                <p class="text-xl font-bold text-secondary-900">{{requested|length}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-md shadow-card relative" id="approvedLeaves">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-[#b71db01f] p-3 rounded-md">
+                            <img src="/static/horilla_theme/assets/img/icons/approved.svg" width="20" />
+                        </div>
+                        <div>
+                            <p class="text-sm">{% trans "Approved Leaves In This Month" %}</p>
+                            <div class="flex items-center gap-2">
+                                <p class="text-xl font-bold text-secondary-900">{{approved|length}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-md shadow-card relative" id="rejectedLeaves">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-[#d821491c] p-3 rounded-md">
+                            <img src="/static/horilla_theme/assets/img/icons/rejected.svg" width="20" />
+                        </div>
+                        <div>
+                            <p class="text-sm">{% trans "Rejected Leaves In This Month" %}</p>
+                            <div class="flex items-center gap-2">
+                                <p class="text-xl font-bold text-secondary-900">{{rejected|length}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-4 mb-4">
+                <!-- Employee Leaves Chart -->
+                <div class="xl:col-span-8 md:col-span-8 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Employee Leaves" %}</h3>
+                        <input type="month" class="mb-2 float-end pointer oh-select"
+                            id="dash_month"
+                            style="width: 150px; padding: 5px; color: #5e5c5c; border-radius: 4px; border: 1px solid #d1d5db;" />
+                    </div>
+                    <div class="w-full max-w-xs mx-auto">
+                        <div class="relative">
+                            <canvas id="employeeLeave" style="height: 300px"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- On Leave Card -->
+                <div class="xl:col-span-4 md:col-span-4 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "On Leave" %}</h3>
+                    </div>
+                    <div class="flex-col items-center justify-center" hx-get="{% url 'employee-leave' %}" hx-trigger="load">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
+            <div class="oh-dashboard__events pb-3">
+                <div class="w-100">
+                    <div class="w-100 mb-1 pb-1" id="back_button" style="width: 120%;">
+                        <a href="{% url 'leave-employee-dashboard' %}?dashboard=true"
+                            class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "View Personal Dashboard" %}
+                            <ion-icon class="me-2 md hydrated" name="arrow-forward-outline" role="img" aria-label="arrow-back-outline"></ion-icon>
+                        </a>
+                    </div>
+
+                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2" style="padding-bottom: 0.75rem; width: 120%;">
+                        <div class="oh-dasboard__event-photo" style="background-color: white">
+                            <img src="{% static '/images/ui/sunbed.png' %}" class="oh-dashboard__event-userphoto" />
+                        </div>
+                        <div class="oh-dasboard__event-details">
+                            <span class="oh-dashboard__event-title">{% trans "Next Holiday" %}</span>
+                            <span class="oh-dashboard__event-main">{{next_holiday.name}}</span>
+                            <span class="dateformat_changer oh-dashboard__event-date">{{next_holiday.start_date}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 pt-5 rounded-md shadow-card h-[65%]">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex items-center">
+                        <span class="oh-card-dashboard__title">{% trans "Upcoming holidays" %}</span>
+                        <div onmouseover="helptextView(event, 'Upcoming holidays in this year.')" class="d-inline position-relative ml-2">
+                            <ion-icon name="help-circle-outline"></ion-icon>
+                            <div id="tooltip" class="tooltip-text d-none"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="oh-card-dashboard__body" hx-get="{% url 'get-upcoming-holidays' %}" hx-trigger="load" id="upcomingHolidaysList">
+                    <div class="animated-background"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-4 mt-3">
+            <!-- Department Leaves Chart -->
+            <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Department Leaves" %}</h3>
+                </div>
+                <div class="w-full max-w-xs mx-auto">
+                    <div class="relative">
+                        <canvas id="departmentLeave"></canvas>
+                    </div>
+                </div>
+                <div id="departmentPieLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
+            </div>
+
+            <!-- Leave Type - Count of leaves -->
+            <div class="xl:col-span-8 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card w-[50%]">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Leave Type - Count of leaves" %}</h3>
+                    <input type="month" class="mb-2 float-end pointer oh-select"
+                        id="dash_leave_type_month"
+                        style="width: 150px; padding: 5px; color: #5e5c5c; border-radius: 4px; border: 1px solid #d1d5db;" />
+                </div>
+                <div class="w-full max-w-xs mx-auto" style="min-height: 300px;">
+                    <div class="relative h-full" id="leave_type_canvas">
+                        <canvas id="leaveType" class="pointer"></canvas>
+                    </div>
+                    <div id="leaveTypeLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
+                </div>
+            </div>
+
+
+
+        <!-- Weekly Leave Analytics -->
+        <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+            <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
+                <span class="oh-card-dashboard__title">{% trans "Weekly Leave Analytics" %}</span>
+            </div>
+            <div class="oh-card-dashboard__body">
+                <canvas id="leavePeriod" class="pointer"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="oh-modal" id="tableTimeOff" role="dialog" aria-labelledby="tableTimeOffModal" aria-hidden="true">
+        <div class="oh-modal__dialog oh-modal__dialog--timeoff oh-timeoff-modal">
+            <div class="oh-modal__dialog-header">
+                <button class="oh-modal__close" aria-label="Close">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div id="requestView">
+            </div>
+        </div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'dashboard/dashboard.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        $("#requestedLeaves").on("click", function () {
+            window.location.href = '{% url "request-view" %}?status=requested&from_date={{today}}';
+        });
+        $("#approvedLeaves").on("click", function () {
+            window.location.href = '{% url "request-view" %}?status=approved&from_date={{first_day}}&to_date={{last_day}}';
+        });
+        $("#rejectedLeaves").on("click", function () {
+            window.location.href = '{% url "request-view" %}?status=rejected&from_date={{first_day}}&to_date={{last_day}}';
+        });
+    });
+
+    function helptextView(event, text) {
+        event = event || window.event;
+        const icon = event.target || event.srcElement;
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = text;
+
+        const rect = icon.getBoundingClientRect();
+        tooltip.style.top = rect.top + icon.offsetHeight + 'px';
+        tooltip.style.left = rect.left + 'px';
+
+        document.body.appendChild(tooltip);
+
+        icon.addEventListener('mouseout', function () {
+            document.body.removeChild(tooltip);
+        });
+    }
+</script>
+{% endblock %}

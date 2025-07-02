@@ -1,0 +1,118 @@
+{% extends "index.html" %}
+
+{% load i18n %}{% load static recruitmentfilters %}
+
+
+{% block content %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+<style>
+    .count-span{
+      width: 100%;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      padding: 0.5rem 0rem;
+      font-style: italic;
+      color: hsl(0deg,0%,37%);
+      width: 100%;
+    }
+
+    .open--dot{
+      background-color:yellowgreen;
+    }
+    .closed--dot{
+      background-color:red;
+    }
+
+    .closed-True{
+      border-left: 3.4px solid red !important;
+      border-radius: 4px 0 0 4px;
+
+    }
+    .closed-False {
+
+      border-left: 3.4px solid yellowgreen !important;
+      border-radius: 4px 0 0 4px;
+
+    }
+.oh-permission-table--collapsed .oh-permission-panel,
+.oh-permission-table--collapsed .oh-user-panel {
+  display: none !important ;
+}
+.oh-permission-table--collapsed
+  .oh-permission-table__collapse
+  .oh-permission-table__collapse-up {
+  display: none  !important;
+}
+.oh-permission-table--collapsed
+  .oh-permission-table__collapse
+  .oh-permission-table__collapse-down {
+  display: block  !important;
+}
+.oh-permission-table__collapse .oh-permission-table__collapse-up {
+  display: block  !important;
+}
+.oh-permission-table__collapse .oh-permission-table__collapse-down {
+  display: none  !important;
+}
+
+  </style>
+
+<script>
+    function copyLink(link){
+        var $temp = $("<input>");
+        var $url = $(location).attr('href');
+        $("body").append($temp);
+        $temp.val(link).select();
+        document.execCommand("copy");
+        $temp.remove();
+        Swal.fire({
+          text: "Link copied",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 3000, // Set the timer to 3000 milliseconds (3 seconds)
+          timerProgressBar: true, // Show a progress bar as the timer counts down
+        });
+      }
+
+      function toggleLinkedIn() {
+        const linkedInInput = $("[name='linkedin_account_id']");
+        const inputContainer = linkedInInput.closest('div');
+        inputContainer.toggleClass('d-none')
+        inputContainer.parent().find('label').parent().toggleClass('d-none');
+      }
+</script>
+
+
+
+ <div hx-get="{% url 'nav-recruitment' %}" hx-trigger="load">
+</div>
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+
+
+
+{% endblock %}

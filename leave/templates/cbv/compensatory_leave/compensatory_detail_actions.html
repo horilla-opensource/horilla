@@ -1,0 +1,51 @@
+{% load i18n %}
+{% load basefilters %}
+
+
+    <div class="oh-btn-group" style="width: 100%;">
+       {% if perms.leave.change_compensatoryleaverequest or request.user|is_reportingmanager %}
+                    {% if instance.status == 'requested' %}
+                    <a type="submit"
+                        hx-confirm="{% trans 'Are you sure you want to approve ?' %}"
+                        hx-post="{% url 'approve-compensatory-leave' instance.id %}?instances_ids={{request.GET.instance_ids}}"
+                        hx-target="#genericModalBody"
+                        title="{% trans 'Approve' %}"
+                        class="oh-btn oh-btn-group oh-btn--success" style="width: 100%;">
+                        <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                        Approve
+                </a>
+                    {% else %}
+                    <a type="submit" href="#" title="{% trans 'Approve' %}"
+                    class="oh-btn oh-btn-group oh-btn--success oh-btn--disabled" style="width: 100%;">
+                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                    Approve
+                </a>
+                    {% endif %}
+        {% if instance.status == 'requested' or instance.status == 'approved' %}
+            <a type="submit" data-toggle="oh-modal-toggle"
+                data-target="#rejectModal"
+                hx-get="{% url 'reject-compensatory-leave' instance.id %}"
+                hx-target="#rejectTarget"
+                title="{% trans 'Reject' %}"
+                class="oh-btn oh-btn-group oh-btn--danger w-100">
+                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                Reject
+            </a>
+        {% else %}
+            <a type="submit" href="#" title="{% trans 'Reject' %}"
+                class="oh-btn oh-btn-group oh-btn--danger oh-btn--disabled
+                w-100" >
+                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                Reject
+            </a>
+        {% endif %}
+        {% endif %}
+        </div>
+
+
+{% if request.GET.deleted %}
+    <script>
+        $(".reload-record").click()
+        $("#reloadMessagesButton").click()
+    </script>
+    {% endif %}

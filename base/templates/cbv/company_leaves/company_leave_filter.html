@@ -1,0 +1,22 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header">{% trans "Company Leave" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Based On week" %}</label>
+                        {{form.based_on_week}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Based On Weekday" %}</label>
+                        {{form.based_on_week_day}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

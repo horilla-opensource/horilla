@@ -133,8 +133,8 @@
             <div class="oh-modal__button-container text-center mt-3">
                 <div class="oh-btn-group">
                     {% if perms.asset.change_asset %}
-                        <a hx-get="{% url 'asset-update' asset_id=asset.id %}?{{pg}}&requests_ids={{requests_ids}}"
-                            data-toggle="oh-modal-toggle" data-target="#objectUpdateModal" hx-target="#objectUpdateModalTarget"
+                        <a hx-get="{% url 'asset-update' pk=asset.id %}?{{pg}}&requests_ids={{requests_ids}}"
+                            data-toggle="oh-modal-toggle" data-target="#genericModal" hx-target="#genericModalBody"
                             class="oh-btn oh-btn--info w-100">
                             <ion-icon name="create-outline" role="img" class="md hydrated"
                                 aria-label="create outline"></ion-icon>{% trans "Edit" %}

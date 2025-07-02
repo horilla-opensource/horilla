@@ -1,0 +1,40 @@
+{% load i18n %}
+
+{% if perms.attendance.change_gracetime%}
+    <div class="oh-btn-group">
+        {% if perms.base.change_employeeshift %}
+            <a hx-get="{% url "assign-shift" instance.id %}"
+                hx-target="#objectUpdateModalTarget" type="button" data-toggle="oh-modal-toggle"
+                data-target="#objectUpdateModal" data-toggle="oh-modal-toggle" type="button"
+                class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Assign shift' %}">
+                <ion-icon name="alarm-outline"></ion-icon>
+            </a>
+        {% endif %}
+        {% if perms.base.change_gracetime %}
+            <a hx-get="{% url 'grace-time-update' instance.id %}?instance_ids={{instance.ordered_ids}}&default={% if instance.is_default %}True{% else %}False{% endif %}"
+                hx-target="#genericModalBody" type="button" data-toggle="oh-modal-toggle"
+                data-target="#genericModal" data-toggle="oh-modal-toggle" type="button"
+                class="oh-btn oh-btn--light-bkg w-50" title="{% trans 'Edit' %}">
+                <ion-icon name="create-outline"></ion-icon>
+            </a>
+        {% endif %}
+        {% if perms.base.delete_gracetime %}
+            <button
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                title="{% trans 'Remove' %}"
+                hx-get="{% url 'generic-delete' %}?model=attendance.gracetime&pk={{instance.pk}}"
+                data-toggle="oh-modal-toggle"
+                data-target="#deleteConfirmation"
+                hx-target="#deleteConfirmationBody"
+            >
+                <ion-icon name="trash-outline" class="text-danger"></ion-icon>
+            </button>
+        {% else %}
+            <button type="submit"
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg oh-btn-disabled w-100"
+                title="{% trans 'Delete' %}">
+                <ion-icon name="trash-outline "></ion-icon>
+            </button>
+        {% endif %}
+    </div>
+{% endif %}

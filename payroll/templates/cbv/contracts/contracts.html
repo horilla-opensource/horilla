@@ -1,0 +1,126 @@
+
+
+
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+.terminated--dot{
+  background-color:black;
+}
+.expired--dot{
+  background-color:red;
+}
+.draft--dot{
+  background-color: rgba(128, 128, 128, 0.482);
+}
+.active--dot{
+  background-color:yellowgreen;
+}
+.status-terminated{
+  border-left: 3.4px solid black !important;
+  border-radius: 4px 0 0 4px;
+
+}
+
+.status-expired{
+  border-left: 3.4px solid red !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.status-draft{
+  border-left: 3.4px solid rgba(128, 128, 128, 0.482) !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.status-active{
+  border-left: 3.4px solid yellowgreen !important;
+  border-radius: 4px 0 0 4px;
+
+}
+
+
+
+
+
+
+
+</style>
+
+<div hx-get="{% url "contracts-nav" %}" hx-trigger="load">
+</div>
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+<div
+    class="oh-modal"
+    id="hxContractExport"
+    role="dialog"
+    aria-labelledby="hxContractExport"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="hxContractExportLavel">
+                {% trans "Export Contracts" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div
+                class="oh-modal__dialog-body p-0 pt-2"
+                id="hxContractExportModalBody"
+            >
+                <form
+                    action="{%url 'contract-export' %}"
+                    method="get"
+                    onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+                    id="hxContractExportForm"
+                >
+                    {% csrf_token %}
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'cbv/actions.js' %}"></script>
+
+
+
+{% endblock content %}

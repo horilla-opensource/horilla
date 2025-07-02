@@ -1,0 +1,49 @@
+<div class="oh-inner-sidebar-content">
+  <div class="oh-inner-sidebar-content__header">
+    <ul
+      class="oh-general__tabs oh-general__custom-tabs oh-general__tabs--border oh-general__tabs--profile oh-general__tabs--no-grow oh-profile-section__tab mt-2 justify-content-end">
+      <li class="oh-general__tab">
+        <span hx-get="{% url 'personal-form' %}?{{request.GET.urlencode}}" hx-target="#personalInfo" data-url="{% url 'personal-form' %}" class="oh-general__tab-link"
+          onclick="$(this).closest('.oh-general__tabs').find('.oh-general__tab-link--active').removeClass('oh-general__tab-link--active');$(this).addClass('oh-general__tab-link--active');
+          target = $(this).attr('data-target');
+          $(this).closest('.oh-inner-sidebar-content').find('.oh-general__tab-target').addClass('d-none');
+          $(target).removeClass('d-none');
+          "
+          data-action="general-tab" data-target="#personalInfo">Personal Info</span>
+      </li>
+      <li class="oh-general__tab">
+        <span hx-get="{% url 'work-form' %}?{{request.GET.urlencode}}" hx-target="#workInfo" data-url="{% url 'work-form' %}" class="oh-general__tab-link"
+          onclick="$(this).closest('.oh-general__tabs').find('.oh-general__tab-link--active').removeClass('oh-general__tab-link--active');$(this).addClass('oh-general__tab-link--active');
+          target = $(this).attr('data-target');
+          $(this).closest('.oh-inner-sidebar-content').find('.oh-general__tab-target').addClass('d-none');
+          $(target).removeClass('d-none');
+          "
+          data-action="general-tab" data-target="#workInfo">Work Info</span>
+      </li>
+      <li class="oh-general__tab">
+        <span hx-get="{% url 'bank-form' %}?{{request.GET.urlencode}}" hx-target="#bankInfo" data-url="{% url 'bank-form' %}" class="oh-general__tab-link"
+          onclick="$(this).closest('.oh-general__tabs').find('.oh-general__tab-link--active').removeClass('oh-general__tab-link--active');$(this).addClass('oh-general__tab-link--active');
+          target = $(this).attr('data-target');
+          $(this).closest('.oh-inner-sidebar-content').find('.oh-general__tab-target').addClass('d-none');
+          $(target).removeClass('d-none');
+          "
+          data-action="general-tab" data-target="#bankInfo">Bank Info</span>
+      </li>
+    </ul>
+  </div>
+  <div class="oh-inner-sidebar-content__body">
+    <div class="oh-general__tab-target oh-profile-section mb-4 d-none" id="personalInfo"></div>
+    <div class="oh-general__tab-target oh-profile-section mb-4 d-none" id="workInfo"></div>
+    <div class="oh-general__tab-target oh-profile-section mb-4 d-none" id="bankInfo"></div>
+    <div class="oh-modal__dialog-footer p-0">
+      <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow" onclick="$('.oh-general__tab-target.oh-profile-section').not('.d-none').find('form').find('input[type=submit]').click()">Save</button>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    setTimeout(() => {
+      $(".oh-inner-sidebar-content__header:visible .oh-general__tab:first span").click();
+    }, 100);
+  });
+</script>

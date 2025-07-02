@@ -1,0 +1,316 @@
+{% load static i18n generic_template_filters %}
+<div id="{{view_id|safe}}" class="bg-white p-4 rounded-md shadow-card">
+    {% include "generic/export_fields_modal.html" %}
+    <script>
+        if (!$(".HTV").length) {
+            $("#reloadMessagesButton").click();
+        }
+    </script>
+    {% if bulk_select_option and queryset|length %}
+        {% include "generic/quick_actions.html" %}
+    {% endif %}
+    <button
+        class="reload-record"
+        id="{{view_id|safe}}Reload"
+        hidden
+        hx-get="{{request.path}}?{{request.GET.urlencode}}"
+        hx-target="#{{view_id|safe}}"
+        hx-swap="outerHTML"
+        hx-on:click="htmxLoadIndicator(this);"
+    ></button>
+    {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
+
+    <div class="accordion-wrapper space-y-2">
+        {% for group in groups %}
+            <div
+                class="oh-accordion accordion-item border border-primary-300 rounded-md overflow-hidden"
+            >
+                <button
+                    class="oh-accordion-header no-after accordion-btn w-full flex justify-between items-center px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all"
+                    data-field="{{saved_filters.field}}"
+                    data-path="{{request.path}}"
+                    data-group="{{forloop.counter}}"
+                >
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
+                            title="{{group.list.paginator.count}} {% trans "Records" %}"
+                        >{{group.list.paginator.count}}</span
+                    >{{group.grouper|capfirst}}
+                    </div>
+                    <span class="icon text-xl font-bold">+</span>
+                </button>
+
+                <div
+                    class="oh-accordion-body transition-all duration-300 bg-white px-4 text-sm text-gray-700"
+                >
+                    <div class="py-3">
+                        <div class="overflow-auto h-[400px] overflow-x-auto">
+                            <table class="fixed-table w-full">
+                                <thead class="sticky top-0 bg-[white] text-left z-10">
+                                    <tr class="border-b border-[#ececec]">
+                                        {% if bulk_select_option %}
+                                            <th
+                                                class="stickyleft text-sm font-medium text-left p-3 w-30"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    value=""
+                                                    class="bulk-list-table-row w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+                                                    title="Select All"
+                                                    onchange="
+                                                        $(this).closest('.fixed-table').find('.list-table-row').prop('checked',$(this).is(':checked')).change();
+                                                        $(document).ready(function () {
+                                                        reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                                                        reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                                                        });
+                                                    "
+                                                />
+                                            </th>
+                                        {% endif %}
+
+                                        {% for cell in columns %}
+                                            {% with cell_attr=header_attrs|get_item:cell.1 %}
+                                            <th
+                                                class="{% if forloop.first %}stickyleft-second{% endif %} text-sm font-medium text-left p-3"
+                                                id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
+
+
+                                            >
+                                                <div class="flex gap-3"
+                                                    style="min-width:150px;"
+                                                    {{cell_attr|safe}}
+                                                    {% for sort_map in sortby_mapping %}
+                                                        {% if sort_map.0 == cell.0 %}
+                                                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
+                                                            hx-target="#{{view_id}}"
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                >
+
+                                                    {% for sort_map in sortby_mapping %}
+                                                        {% if sort_map.0 == cell.0 %}
+                                                            <span
+                                                                class="text-xs flex items-center text-primary-600"
+                                                            >
+                                                                {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                                {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                                {% else %}
+                                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                                {% endif %}
+                                                            </span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    <span class="flex w-max"> {{cell.0|safe}} </span>
+                                                </div>
+                                            </th>
+                                            {% endwith %}
+                                        {% endfor %}
+                                        {% if options or option_method%}
+                                            <th class="text-sm font-medium p-3" {{header_attrs.option|safe}}>
+                                                {% trans "Options" %}
+                                            </th>
+                                        {% endif %}
+                                        {% if actions or action_method %}
+                                            <th class="stickyright text-sm font-medium p-3" {{header_attrs.action|safe}}>
+                                                {% trans "Actions" %}
+                                            </th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for instance in group.list %}
+                                        <tr class="border-b border-[#f3f3f3]"
+                                            data-instance-id="{{instance.id}}"
+                                            {{row_attrs|format:instance|safe}}
+                                        >
+                                            {% if bulk_select_option %}
+                                                <td class="stickyleft text-sm text-left p-3 text-[#666]">
+                                                    <input
+                                                        type="checkbox"
+                                                        class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer list-table-row"
+                                                        data-view-id="{{view_id|safe}}"
+                                                        title="{% trans "Select Row" %}"
+                                                        value = "{{instance.pk}}"
+                                                        onclick="
+                                                            event.stopPropagation();
+                                                        "
+                                                        onchange="
+                                                            element = $(this)
+                                                            highlightRow(element);
+                                                            $(document).ready(function () {
+                                                                if (!element.is(':checked')) {
+                                                                removeId(element)
+                                                                }
+                                                                reloadSelectedCount($('#count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                                                                reloadSelectedCount($('.count_{{view_id|safe}}'),'{{selected_instances_key_id}}');
+                                                            });
+                                                        "
+                                                    />
+                                                </td>
+                                            {% endif %}
+                                            {% for cell in columns %}
+                                                {% with attribute=cell.1 index=forloop.counter %}
+                                                    <td class="{% if forloop.first %}stickyleft-second{% endif %} text-sm text-left p-3 text-[#666]">
+                                                        {% if not cell.2 %}
+                                                            {{instance|getattribute:attribute|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
+                                                        {% else %}
+                                                            <div class="oh-profile oh-profile--md">
+                                                                <div class="oh-profile__avatar mr-1">
+                                                                    <img
+                                                                        src="{{instance|getattribute:cell.2}}"
+                                                                        alt=""
+                                                                        class="oh-profile__image oh-table-img"
+                                                                        width="30"
+                                                                    />
+                                                                </div>
+                                                                <span>{{instance|getattribute:attribute|safe}}</span>
+                                                            </div>
+                                                        {% endif %}
+                                                    </td>
+                                                {% endwith %}
+                                            {% endfor %}
+
+                                            {% if options or option_method %}
+                                                <td class="text-sm text-center p-3 text-[#666]"
+                                                    onclick="event.stopPropagation()"
+                                                >
+                                                    {% if not option_method %}
+                                                        <div class="flex justify-center gap-1">
+                                                            {% for option in options %}
+                                                                {% if option.accessibility|accessibility:instance %}
+                                                                    <a
+                                                                        href="#"
+                                                                        title="{{option.option|safe}}"
+                                                                        {{option.attrs|format:instance|safe}}
+                                                                    >
+                                                                        <ion-icon name="{{option.icon}}"></ion-icon>
+                                                                    </a>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            {% comment %} <button
+                                                                class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center ">
+                                                                <i class="fa-solid fa-check"></i>
+                                                            </button>
+                                                            <button
+                                                                class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center ">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button> {% endcomment %}
+                                                        </div>
+                                                    {% else %}
+                                                        {{instance|getattribute:option_method|safe}}
+                                                    {% endif %}
+
+                                                </td>
+                                            {% endif %}
+
+                                            {% if actions or action_method %}
+                                                <td class="stickyright text-sm text-center p-3 text-[#666]"
+                                                    onclick="event.stopPropagation()"
+                                                >
+                                                    {% if not action_method %}
+                                                        <div class="flex justify-center gap-1">
+                                                            {% for action in actions %}
+                                                                {% if action.accessibility|accessibility:instance %}
+                                                                    <a
+                                                                        href="#"
+                                                                        title="{{action.action|safe}}"
+                                                                        {{action.attrs|format:instance|safe}}
+                                                                    >
+                                                                        <ion-icon name="{{action.icon}}"></ion-icon>
+                                                                    </a>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            {% comment %} <button
+                                                                class="cursor-pointer px-2 py-1 text-xs bg-[#07bd072e] text-[#00c700] rounded-sm w-6 h-6 flex items-center justify-center ">
+                                                                <i class="fa-solid fa-check"></i>
+                                                            </button>
+                                                            <button
+                                                                class="cursor-pointer px-2 py-1 text-xs bg-[#ff000024] text-[red] rounded-sm w-6 h-6 flex items-center justify-center ">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button> {% endcomment %}
+                                                        </div>
+                                                    {% else %}
+                                                        {{instance|getattribute:action_method|safe}}
+                                                    {% endif %}
+
+                                                </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div
+                            class="flex justify-between sticky bottom-0 items-center mt-4 w-full inset-0"
+                        >
+                            <p class="text-xs text-[#666]">{% trans "Page" %} {{ group.list.number }} {% trans "of" %} {{ group.list.paginator.num_pages }}</p>
+                            <div class="flex gap-3 text-[#666] items-center">
+                                {% if group.list.has_previous %}
+                                    <button
+                                        class="text-xs hover:text-primary-600 transition duration-300"
+                                        hx-target="#{{view_id}}"
+                                        hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.previous_page_number }}"
+                                    >
+                                        <i class="fa-solid fa-arrow-left"></i>
+                                    </button>
+                                {% endif %}
+                                {{ group.list.number }} / {{ group.list.paginator.num_pages }}
+                                {% if group.list.has_next %}
+                                    <button
+                                        class="text-xs hover:text-primary-600 transition duration-300"
+                                        hx-target="#{{view_id}}"
+                                        hx-get="{{search_url}}?{{request.GET.urlencode}}&{{group.dynamic_name}}={{ group.list.next_page_number }}"
+                                    >
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    {% if groups.paginator.count %}
+        <div
+            class="flex justify-between items-center mt-4 w-full inset-0"
+        >
+            <p class="text-xs text-[#666]">{% trans "Page" %} {{ groups.number }} {% trans "of" %} {{ groups.paginator.num_pages }}</p>
+            <div class="flex gap-3 text-[#666] items-center">
+                {% if groups.has_previous %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#{{view_id}}"
+                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ groups.previous_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                {% endif %}
+                {{ groups.number }} / {{ groups.paginator.num_pages }}
+                {% if groups.has_next %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#{{view_id}}"
+                        hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ groups.next_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $(document).on('htmx:afterSettle', function (e) {
+            $(".shadow-card .oh-accordion-header").first().click();
+        });
+    });
+</script>

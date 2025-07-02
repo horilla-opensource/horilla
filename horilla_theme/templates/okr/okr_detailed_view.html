@@ -1,0 +1,251 @@
+{% extends 'index.html' %}
+{% load static i18n widget_tweaks basefilters %}
+
+{% block content %}
+
+
+
+<!-- Sidebar & Header Loaders -->
+<div id="sidebar"></div>
+  <div class="bg-[#F6F6F6]">
+    <div id="header"></div>
+
+    <!-- Main Content -->
+
+      <!-- Top Card (Objective Details) -->
+      <div class="bg-white p-3 rounded-md shadow-card mb-5">
+        <div class="flex gap-2 justify-between items-end mb-5 border-b border-dark-50 pb-3">
+          <h3 class="text-md font-semibold">{{ objective }}</h3>
+          <div class="flex items-center flex-wrap gap-1">
+            {% if perms.pms.change_objective %}
+            <button
+              hx-get="{% url 'objective-update' objective.id %}"
+              hx-target="#objectCreateModalTarget"
+              data-toggle="oh-modal-toggle"
+              data-target="#objectCreateModal"
+              class="w-24 justify-center px-4 py-2 bg-[white] rounded-md text-xs flex items-center gap-2  border border-primary-500 hover:border-primary-600 transition duration-300">
+              <ion-icon name="create-outline"></ion-icon>
+              Edit
+            </button>
+            {% endif %}
+            {% if perms.pms.add_employeeobjective or request.user.employee_get in objective.managers.all %}
+            <button
+              hx-get="{% url 'add-assignees' objective.id %}"
+              hx-target="#objectDetailsModalTarget"
+              data-toggle="oh-modal-toggle"
+              data-target="#objectDetailsModal"
+              class="w-24 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+              <img src="/static/horilla_theme/assets/img/create.svg" alt="" width="13"
+                    class="filter brightness-0 invert">
+                Create
+            </button>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div class="flex items-center gap-5">
+            <span class="font-medium text-sm text-[#565E6C] w-20">{% trans "Managers" %}</span>
+            <p class="text-sm font-semibold">:
+            <ul class="userlist flex gap-1">
+              {% for manager in objective.managers.all %}
+              <li><img src="{{ manager.get_avatar }}" class="w-8 h-8 rounded-full" title="{{ manager }}"></li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="flex items-center gap-5">
+            <span class="font-medium text-sm text-[#565E6C] w-20">{% trans "Duration" %}</span>
+            <p class="text-sm font-semibold flex items-center gap-5">: <span>{{ objective.duration }} {{ objective.get_duration_unit_display }}</span></p>
+          </div>
+          <div class="flex items-center gap-5">
+            <span class="font-medium text-sm text-[#565E6C] w-20">{% trans "Description" %}</span>
+            <p class="text-sm font-semibold flex items-center gap-5">: <span>{{ objective.description }}</span></p>
+          </div>
+        </div>
+      </div>
+
+        <!-- Content (HTMX) -->
+        {% if objective.employee_objective.all %}
+        <div class="bg-white p-3 rounded-md shadow-card h-[calc(100vh_-_270px)] overflow-y-auto"
+            id="emp_objective_card"
+            hx-get="{% url 'emp-objective-search' objective.id %}?{{request.GET.urlencode}}"
+            hx-trigger="load">
+        </div>
+        {% else %}
+        <div class="flex flex-col items-center justify-center h-[calc(100vh_-_270px)] bg-white p-5 rounded-md shadow-card">
+            <img src="{% static 'static/images/ui/target.png' %}" class="w-24 opacity-50" />
+            <h5 class="text-sm text-gray-600 mt-2">{% trans "There are no assignees for this objective at the moment." %}</h5>
+        </div>
+        {% endif %}
+
+  </div>
+
+<!-- Modals -->
+
+<div
+    class="oh-modal"
+    id="OKRactivitySidebar"
+    role="dialog"
+    aria-labelledby="OKRactivitySidebar"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog" id="activityContainer"></div>
+</div>
+
+<div
+    class="oh-modal"
+    id="objectCreateModal"
+    role="dialog"
+    aria-labelledby="objectCreateModal"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog" id="objectCreateModalTarget"></div>
+</div>
+
+<div
+    class="oh-modal"
+    id="objectDetailsModal"
+    role="dialog"
+    aria-labelledby="objectDetailsModal"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog" id="objectDetailsModalTarget"></div>
+</div>
+
+<button id="keyresultDataButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=target_value" hx-target="#empKeyrsultForm #id_target_value" hx-swap="outerHTML" hidden></button>
+<button id="endDateChangeButton" hx-include="#empKeyrsultForm" hx-get="{% url "get-keyresult-data" %}?data-update=end_date" hx-target="#empKeyrsultForm #id_end_date" hx-swap="outerHTML" hidden></button>
+<button id="changeObjStatusButton" hx-get="{% url 'change-employee-objective-status' %}" hx-target="" hidden></button>
+
+
+
+
+<script>
+  $(document).ready(function () {
+    $(".oh-accordion-meta__header").click(function () {
+      var target = $(this).find(".oh-accordion-meta__body");
+      $(this).toggleClass("oh-accordion-meta__header--show");
+      $(target).toggleClass("d-none");
+    });
+  });
+
+  function enlargeImage(src) {
+    var enlargeImageContainer = $("#enlargeImageContainer");
+    enlargeImageContainer.empty();
+    style =
+      "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white";
+    var enlargedImage = $("<iframe>").attr({ src: src, style: style });
+    var name = $("<span>").text(src.split("/").pop().replace(/_/g, " "));
+    enlargeImageContainer.append(enlargedImage);
+    enlargeImageContainer.append(name);
+    setTimeout(function () {
+      enlargeImageContainer.show();
+
+      const iframe = document.querySelector("iframe").contentWindow;
+      var iframe_document = iframe.document;
+      iframe_image = iframe_document.getElementsByTagName("img")[0];
+      $(iframe_image).attr("style", "width:100%; height:100%;");
+    }, 100);
+  }
+
+  function hideEnlargeImage() {
+    var enlargeImageContainer = $("#enlargeImageContainer");
+    enlargeImageContainer.empty();
+  }
+  //create key result dynamically
+  function keyResultChange(element) {
+    var selectedValue = $(element).val();
+    if (selectedValue !== null && selectedValue !== '') {
+      if (selectedValue.includes("create_new_key_result")) {
+        var parentForm = $(element).closest("form");
+        var view = parentForm.serialize();
+        // Get the value of the 'data-url' attribute correctly
+        var dataUrl = $('#empKeyrsultForm').attr('data-url');
+        // Corrected attribute assignment with proper JSON format
+        $('#dynamicKeyResult').attr("hx-vals", `{"data":"${view}", "dataUrl":"${dataUrl}"}`);
+        dynamicKeyResult.click();
+        $(element).val('').change();
+      } else {
+        // selectedValue is not null or empty, this will work
+        $('#keyresultDataButton').click();
+        $('#endDateChangeButton').click()
+      }
+    }
+  }
+  function startDateChange(){
+    var keyResultId = $('#id_key_result_id').val()
+    if (keyResultId !== null && keyResultId !== '' ){
+      $('#endDateChangeButton').click()
+    }
+  }
+
+
+  //change employee objective status
+  function changeObjectiveStatus(element){
+    var status = $(element).val();
+    {% comment %} var empObjId = $(element).attr('data-empObj'); {% endcomment %}
+    var empObjId = $(element).data('empObj');
+    $('#changeObjStatusButton').attr("hx-vals", `{"empObjId":"${empObjId}", "status":"${status}"}`).click();
+  }
+  function progress(element) {
+    var currentValue = $(element).val();
+    var keyResultRow = $(element).closest(".oh-employee-okr-row");
+    var empKeyResultId = keyResultRow.data("kr-id");
+    var progressCol = keyResultRow.find(".progressPercentage")
+
+    if (currentValue < 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Current Value Cannot be -ve",
+        timer: 3000,
+        timerProgressBar: true,
+        showConfirmButton: false,
+      });
+    } else {
+      $.ajax({
+        type: "post",
+        url: "{% url 'key-result-current-value-update' %}",
+        data: {
+          csrfmiddlewaretoken: getCookie("csrftoken"),
+          current_value: currentValue,
+          emp_key_result_id: empKeyResultId,
+        },
+        success: function (response) {
+          if (response.type != "error") {
+            $(`#kr${response.pk}`).attr("style",`width:${response.progress}% !important;`)
+            $(`#kr${response.pk}Html`).html(`${response.progress}%`)
+            $(progressCol).html(`${response.kr_progress}%`)
+            $("#reloadMessagesButton").click()
+          }
+        },
+      });
+    }
+  }
+  var timer;
+  function delayedProgress(element) {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      progress(element);
+    }, 300);
+  }
+  $(document).on("click", function (event) {
+    if (!$(event.target).closest("#enlargeImageContainer").length) {
+      hideEnlargeImage();
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    document.querySelectorAll('.dropdown-wrapper').forEach(function(wrapper) {
+      const toggleBtn = wrapper.querySelector('.dropdown-toggle');
+      const dropdownMenu = wrapper.querySelector('.dropdown-menu, div:not(.dropdown-toggle)');
+
+      if (dropdownMenu && !wrapper.contains(e.target)) {
+        dropdownMenu.classList.add('hidden');
+      }
+    });
+  });
+</script>
+
+
+{% endblock %}

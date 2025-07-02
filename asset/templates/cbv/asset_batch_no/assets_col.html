@@ -1,0 +1,5 @@
+{% load i18n %}
+<a onclick="event.stopPropagation();" href="{% url "asset-category-view" %}?asset_lot_number_id={{instance.id}}" style="cursor: pointer;" class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1">
+    {{instance.asset_set.count}}
+    {% trans "Assets" %}
+   </a>

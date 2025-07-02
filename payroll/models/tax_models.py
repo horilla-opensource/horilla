@@ -8,12 +8,14 @@ import math
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse_lazy
 from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
 from horilla.models import HorillaModel
+from horilla_views.cbv_methods import render_template
 from payroll.models.models import FilingStatus
 
 
@@ -51,6 +53,7 @@ class TaxBracket(HorillaModel):
     filing_status_id = models.ForeignKey(
         FilingStatus,
         on_delete=models.CASCADE,
+        related_name="tax_brackets",
         verbose_name=_("Filing status"),
     )
     min_income = models.FloatField(
@@ -83,6 +86,19 @@ class TaxBracket(HorillaModel):
         if self.max_income != math.inf:
             return self.max_income
         return None
+
+    def get_update_url(self):
+        url = reverse_lazy("tax-bracket-update", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        url = reverse_lazy("tax-bracket-delete", kwargs={"pk": self.pk})
+        return url
+
+    def action_column(self):
+        return render_template(
+            "payroll/tax/tax_bracket_actions.html", {"instance": self}
+        )
 
     def clean(self):
         super().clean()

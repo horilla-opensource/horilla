@@ -1,0 +1,20 @@
+{% load static %}
+{% block content %}
+
+<div>
+	{% include "leave/user_leave/user_leave.html" %}
+</div>
+
+{% include "generic/components.html" %}
+
+<div
+	class="oh-checkpoint-badge mb-2"
+	id="selectedInstances"
+	data-ids="[]"
+	data-clicked=""
+	style="display: none"
+></div>
+
+{% include "generic/horilla_list_table.html" %}
+
+{% endblock content %}

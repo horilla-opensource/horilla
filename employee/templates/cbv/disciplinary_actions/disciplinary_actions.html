@@ -1,0 +1,94 @@
+{% extends "index.html" %}
+{% block content %}
+{% load i18n %}{% load static %}
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+<div hx-get="{% url 'disciplinary-actions-nav' %}" hx-trigger="load"></div>
+
+{% include "generic/components.html" %}
+
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+
+<div class="oh-wrapper"  id="listContainer">
+    <div class="animated-background"></div>
+</div>
+
+<div class="oh-modal" id="dynamicCreateModal" role="dialog" aria-hidden="true" style="z-index: 1022;">
+    <div class="oh-modal__dialog" style="max-width: 550px;" id="dynamicCreateModalBody"></div>
+</div>
+
+<script>
+    function actionTypeChange(selectElement) {
+        var selectedActiontype = selectElement.val();
+        var parentForm = selectElement.parents().closest("form");
+        if (selectedActiontype !== "create" && selectedActiontype) {
+            $.ajax({
+                type: "post",
+                url: "{% url 'action-type-details' %}",
+                data: {
+                    csrfmiddlewaretoken: getCookie("csrftoken"),
+                    action_type: selectedActiontype,
+                },
+                success: function (response) {
+                    // Check if the response.action_type is "suspension"
+                    $("[id=id_unit_in]").change(function (e) {
+                        e.preventDefault();
+                        if (this.value == "days") {
+                            parentForm.find("[id=id_days]").parent().parent().show();
+                            parentForm.find("[id=id_hours]").parent().parent().hide();
+                            parentForm.find("[name=days]").prop("required", true);
+                        } else {
+                            parentForm.find("[id=id_hours]").parent().parent().show();
+                            parentForm.find("[id=id_days]").parent().parent().hide();
+                            parentForm.find("[name=days]").prop("required", false);
+                        }
+                    });
+                    if (response.action_type === "suspension") {
+                        // Show the 'days' field
+                        parentForm.find("[id=id_unit_in]").parent().parent().show();
+                        parentForm.find("[id=id_hours]").parent().parent().show();
+                        $("[id=id_unit_in]").change();
+                    } else {
+                        // Hide the 'days' field
+                        $("[id=id_unit_in]").change();
+                        parentForm.find("[id=id_days]").parent().parent().hide();
+                        parentForm.find("[id=id_unit_in]").parent().parent().hide();
+                        parentForm.find("[id=id_hours]").parent().parent().hide();
+                        parentForm.find("[name=days]").prop("required", false);
+                    }
+                },
+            });
+        }
+    }
+
+    function actionChange(selectElement) {
+        var selectedActiontype = selectElement.val();
+        var parentForm = selectElement.parents().closest("form");
+        $.ajax({
+            type: "post",
+            url: "{% url 'action-type-name' %}",
+            data: {
+                csrfmiddlewaretoken: getCookie("csrftoken"),
+                "action_type": selectedActiontype,
+            },
+            success: function (response) {
+
+                // Check if the response.action_type is "warning"
+                if (response.action_type === "warning") {
+                    // Hide the 'block_option' field
+                    parentForm.find('[id=id_block_option_parent_div]').hide();
+                } else {
+                    // Show the 'block_option' field
+                    parentForm.find('[id=id_block_option_parent_div]').show();
+                }
+
+            },
+        });
+    }
+
+</script>
+
+{% endblock content %}

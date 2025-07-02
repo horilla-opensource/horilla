@@ -1,0 +1,97 @@
+{% extends "index.html" %}
+
+{% load i18n %}{% load static recruitmentfilters %}
+
+
+{% block content %}
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+<style>
+    .count-span{
+      width: 100%;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      padding: 0.5rem 0rem;
+      font-style: italic;
+      color: hsl(0deg,0%,37%);
+      width: 100%;
+    }
+
+    .hired--dot{
+      background-color:yellowgreen;
+    }
+    .cancelled--dot{
+      background-color:red;
+    }
+    .interview--dot{
+        background-color:orange;
+      }
+    .test--dot{
+        background-color:blue;
+      }
+    .initial--dot{
+        background-color:cyan;
+      }
+
+
+
+    .stage-type-initial{
+      border-left: 3.4px solid cyan !important;
+      border-radius: 4px 0 0 4px;
+
+    }
+    .stage-type-test{
+        border-left: 3.4px solid blue !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+    .stage-type-interview{
+        border-left: 3.4px solid orange !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+    .stage-type-cancelled{
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+    .stage-type-hired{
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+      }
+
+  </style>
+
+
+
+
+
+ <div hx-get="{% url 'nav-stage' %}" hx-trigger="load">
+</div>
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,157 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <style>
+      .filter-pill {
+        border-radius: 999px;
+        padding: 2px 8px;
+        background-color: #f0f0f0;
+        display: inline-block;
+        margin: 4px 1px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+      .filter-pill.active {
+        background-color: #007bff;
+        color: white;
+      }
+    </style>
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Feedback" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+              {{feedback_filter_form.employee_id}}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.manager_id.id_for_label}}">{% trans "Manager" %}</label>
+              {{feedback_filter_form.manager_id}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.subordinate_id.id_for_label}}">{% trans "Subordinate" %}</label>
+              {{feedback_filter_form.subordinate_id}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.colleague_id.id_for_label}}">{% trans "Colleague" %}</label>
+              {{feedback_filter_form.colleague_id}}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.start_date.id_for_label}}">{% trans "Start Date" %}</label>
+              {{feedback_filter_form.start_date}}
+            </div>
+          </div>
+
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.end_date.id_for_label}}">{% trans "End Date" %}</label>
+              {{feedback_filter_form.end_date}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-4">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.status.id_for_label}}">{% trans "Status" %}</label>
+              {{feedback_filter_form.status}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-4">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.offboarding_employees.id_for_label}}">{% trans "In Offboarding?" %}</label>
+              {{feedback_filter_form.offboarding_employees}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-4">
+            <div class="oh-input-group">
+              <label class="oh-label" for="{{feedback_filter_form.archive.id_for_label}}">{% trans "Archive" %}</label>
+              {{feedback_filter_form.archive}}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="row">
+            <!-- Start Date Range -->
+            <div class="col-md-6 col-lg-12">
+              <label class="oh-label">{% trans "Start Date Range" %}</label>
+              <div class="d-flex gap-2">
+                {{ feedback_filter_form.start_date_range.0 }}
+                {{ feedback_filter_form.start_date_range.1 }}
+              </div>
+            </div>
+
+            <!-- End Date Range -->
+            <div class="col-md-6 col-lg-12">
+              <label class="oh-label">{% trans "End Date Range" %}</label>
+              <div class="d-flex gap-2">
+                {{ feedback_filter_form.end_date_range.0 }}
+                {{ feedback_filter_form.end_date_range.1 }}
+              </div>
+            </div>
+
+            <!-- Created At Range (if needed) -->
+            <div class="col-md-6 col-lg-12">
+              <label class="oh-label">{% trans "Created At Range" %}</label>
+              <div class="d-flex gap-2">
+                {{ feedback_filter_form.created_at_date_range.0 }}
+                {{ feedback_filter_form.created_at_date_range.1 }}
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-12">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Quick Filters" %}</label>
+              <div>
+                <input type="text" name="due_date_quick_filter" hidden >
+                {% for value, label in feedback_filter_form.due_date_quick_filter.field.choices %}
+                  {% if value %}
+                    <button type="button" onclick="$(this).closest('form').find('[name=due_date_quick_filter]').val('{{value}}');$(this).closest('form').find('[type=submit]').click();"
+                            class="filter-pill {% if request.GET.due_date_quick_filter == value %}active{% endif %}">
+                      {{ label }}
+                    </button>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              </div>
+          </div>
+          {% comment %} <div class="col-sm-12 col-md-12 col-lg-6">
+          <div class="oh-input-group fil">
+              <a id="filtertoday" class="oh-btn oh-btn--secondary oh-btn--small w-100" onclick="updateHiddenInput('today')">{% trans "Today" %} </a>
+              <input type="hidden" name="created_at_date_range">
+            </div>
+
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group fil">
+              <a id="filteryesterday" class="oh-btn oh-btn--secondary oh-btn--small w-100" onclick="updateHiddenInput('yesterday')">{% trans "Yesterday" %}</a>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group fil">
+              <a id="filterweek" class="oh-btn oh-btn--secondary oh-btn--small w-100" onclick="updateHiddenInput('week')">{% trans "This Week" %}</a>
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group fil">
+              <a id="filtermonth" class="oh-btn oh-btn--secondary oh-btn--small w-100" onclick="updateHiddenInput('month')">{% trans "This Month" %}</a>
+            </div>
+          </div> {% endcomment %}
+        </div>
+      </div>
+    </div>
+  </div>

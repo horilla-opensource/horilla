@@ -1,0 +1,43 @@
+{% extends "index.html" %}
+{% load static %}
+{% load i18n %}
+{% block content %}
+<meta name="csrf-token" content="{{ csrf_token }}">
+<div hx-get="{% url "interview-nav-view" %}" hx-trigger="load">
+</div>
+
+
+{% include "generic/components.html" %}
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none">
+</div>
+
+
+<div class="oh-wrapper"
+   id="listContainer">
+  <div class="animated-background">
+</div>
+</div>
+
+
+<div class="oh-activity-sidebar" id="leaveactivitySidebar" style="z-index:1000;">
+    <div class="oh-activity-sidebar__body" id="commentContainer">
+    </div>
+  </div>
+
+
+<script src="{% static 'cbv/leave_requests/leave_requests.js' %}"></script>
+
+<script>
+    $(document).on("htmx:afterSwap", function () {
+          $("[data-toggle-count]").off("click").on("click", function (e) {
+            e.stopPropagation();
+            let recViewContainer = $(this).closest('tr');
+            span = recViewContainer.find(".count-span").toggle();
+            var row = $(this).closest(".oh-permission-table--toggle").parent().parent();
+            row.toggleClass("oh-permission-table--collapsed");
+
+          });
+        });
+
+</script>
+{% endblock content %}

@@ -1,0 +1,145 @@
+<style>
+    .oh-info {
+      top: 2px !important;
+    }
+  </style>
+  {% extends 'index.html' %} {% block content %} {% load static i18n horillafilters mathfilters  %}
+  <div class="grid grid-cols-1 xl:grid-cols-3 md:grid-cols-2 gap-4 mb-4"  onclick="window.location.href = `{% url 'offboarding-pipeline' %}`">
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+      <div class="flex items-center gap-4">
+        <div class="bg-[#1cba5121] p-3 rounded-md">
+          <img
+            src="{% static 'horilla_theme/assets/img/icons/exit-ratio.svg' %}"
+            width="20"
+          />
+          <!-- <i class="fas fa-users text-primary-600"></i> -->
+        </div>
+        <div>
+          <div class="flex gap-1">
+             <p class="text-sm">{% trans "Exit Ratio" %}</p>
+             <span style="font-size: 18px" title="{% trans 'Archived Employees / Total Employees' %}">
+                <ion-icon name="help-circle-outline"></ion-icon>
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <p class="text-xl font-bold text-secondary-900">{{exit_ratio}}</p>
+            <!-- <p class="text-success text-sm">+23%</p> -->
+          </div>
+        </div>
+      </div>
+      <!-- <button class="w-3 h-3 absolute right-6 top-6">
+          <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+        </button> -->
+    </div>
+    <div class="bg-white p-6 rounded-md shadow-card relative" onclick="window.location.href = `{% url 'project-view' %}?{{request.GET.urlencode}}&status=new`">
+      <div class="flex items-center gap-4">
+        <div class="bg-[#b71db01f] p-3 rounded-md">
+          <img  src="{% static 'horilla_theme/assets/img/icons/joining-ratio.svg' %}" width="20" />
+        </div>
+        <div >
+          <div class="flex gap-1">
+                <p class="text-sm">{% trans "Exiting to Joining Ratio" %}</p>
+                <span style="font-size: 18px" title="{% trans 'Exiting Employees : Joining Employees' %}">
+                   <ion-icon name="help-circle-outline"></ion-icon>
+               </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <p class="text-xl font-bold text-secondary-900">
+                {{resigning_employees.count}} : {{onboarding_employees}}
+            </p>
+            <!-- <p class="text-success text-sm">+23%</p> -->
+          </div>
+        </div>
+      </div>
+      <!-- <button class="w-3 h-3 absolute right-6 top-6">
+          <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+        </button> -->
+    </div>
+    <div class="bg-white p-6 rounded-md shadow-card relative" onclick="window.location.href = `{% url 'employee-view' %}?is_active=False`">
+      <div class="flex items-center gap-4">
+        <div class="bg-[#ea7f2f2e] p-3 rounded-md">
+          <img src="{% static 'horilla_theme/assets/img/icons/archived.svg' %}" width="20" />
+        </div>
+        <div >
+          <p class="text-sm">{% trans "Archived Employees" %}</p>
+          <div class="flex items-center gap-2">
+            <p class="text-xl font-bold text-secondary-900">
+                {{archived_employees.count}}
+            </p>
+            <!-- <p class="text-red-600 text-sm">-25%</p> -->
+          </div>
+        </div>
+      </div>
+      <!-- <button class="w-3 h-3 absolute right-6 top-6">
+          <img src="/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+        </button> -->
+    </div>
+  </div>
+  <div class="grid grid-cols-12 gap-4 mb-4">
+    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-md font-semibold">{% trans "Joining and Offboarding Chart" %}</h3>
+        <span class="oh-card-dashboard__title float-end" id="joinChartChange"><ion-icon name="caret-forward"></ion-icon></span>
+      </div>
+      <div class="w-full p-3">
+        <div class="relative" >
+          <canvas id="joinChart" class="w-40 h-64" ></canvas>
+        </div>
+        <div id="joinLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
+      </div>
+    </div>
+
+    {% if perms.offboarding.view_offboardingtask %}
+    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-md font-semibold">{% trans "Task Status" %}</h3>
+        </div>
+        <div class="overflow-hidden overflow-x-auto">
+          <div
+          hx-get="{% url 'list-dashboard-task-status' %}" hx-trigger="load"
+          ></div>
+        </div>
+    </div>
+    {% endif %}
+    {% if perms.offboarding.view_offboarding %}
+    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-md font-semibold">{% trans "Department - JobPosition Offboarding" %}</h3>
+        </div>
+        <div class="w-full p-3">
+          <div class="relative" >
+            <canvas id="departmentChart" class="w-40 h-64" ></canvas>
+          </div>
+          <div id="departmentLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"></div>
+        </div>
+    </div>
+    {% endif %}
+    {% if "asset"|app_installed %}
+    {% if perms.offboarding.view_offboarding %}
+    <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-md font-semibold">{% trans "Not Returned Assets" %}</h3>
+        </div>
+        <div class="overflow-hidden overflow-x-auto">
+          <div
+          hx-get="{% url 'dashboard-asset-table-cbv' %}" hx-trigger="load"
+          ></div>
+        </div>
+    </div>
+    {% endif%}
+    {% endif%}
+    <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="text-md font-semibold">{% trans "Offboarding Employees Feedbacks" %}</h3>
+      </div>
+      <div class="overflow-hidden overflow-x-auto">
+        <div
+        hx-get="{% url 'dashboard-feedback-table-cbv' %}" hx-trigger="load"
+        ></div>
+      </div>
+  </div>
+</div>
+
+<script src="{% static 'offboarding/dashboard.js' %}"></script>
+
+    {% endblock %}

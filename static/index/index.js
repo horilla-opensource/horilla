@@ -158,123 +158,86 @@ function switchGeneralTab(e) {
 
 function toggleReimbursmentType(element) {
     if (element.val() == "reimbursement") {
-        $("#objectCreateModalTarget [name=attachment]").parent().show();
-        $("#objectCreateModalTarget [name=attachment]").attr("required", true);
-        $("#objectCreateModalTarget [name=leave_type_id]")
-            .parent()
+        $("#genericModalBody [name=attachment]").parent().show();
+        $("#genericModalBody [name=attachment]").attr("required", true);
+        $("#genericModalBody [name=leave_type_id]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=cfd_to_encash]")
-            .parent()
+        $("#genericModalBody [name=cfd_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=ad_to_encash]")
-            .parent()
+        $("#genericModalBody [name=ad_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=amount]")
-            .parent()
+        $("#genericModalBody [name=amount]")
+            .parent().parent()
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget #availableTable")
+        $("#genericModalBody #availableTable")
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=bonus_to_encash]")
-            .parent()
+        $("#genericModalBody [name=bonus_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
     } else if (element.val() == "leave_encashment") {
-        $("#objectCreateModalTarget [name=attachment]").parent().hide();
-        $("#objectCreateModalTarget [name=attachment]").attr("required", false);
-        $("#objectCreateModalTarget [name=leave_type_id]")
-            .parent()
+        $("#genericModalBody [name=attachment]").parent().hide();
+        $("#genericModalBody [name=attachment]").attr("required", false);
+        $("#genericModalBody [name=leave_type_id]")
+            .parent().parent()
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget [name=cfd_to_encash]")
-            .parent()
+        $("#genericModalBody [name=cfd_to_encash]")
+            .parent().parent()
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget [name=ad_to_encash]")
-            .parent()
+        $("#genericModalBody [name=ad_to_encash]")
+            .parent().parent()
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget [name=amount]")
-            .parent()
+        $("#genericModalBody [name=amount]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget #availableTable")
+        $("#genericModalBody #availableTable")
             .show()
             .attr("required", true);
-        $("#objectCreateModalTarget [name=bonus_to_encash]")
-            .parent()
+        $("#genericModalBody [name=bonus_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
     } else if (element.val() == "bonus_encashment") {
-        $("#objectCreateModalTarget [name=attachment]").parent().hide();
-        $("#objectCreateModalTarget [name=attachment]").attr("required", false);
-        $("#objectCreateModalTarget [name=leave_type_id]")
-            .parent()
+        $("#genericModalBody [name=attachment]").parent().hide();
+        $("#genericModalBody [name=attachment]").attr("required", false);
+        $("#genericModalBody [name=leave_type_id]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=cfd_to_encash]")
-            .parent()
+        $("#genericModalBody [name=cfd_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=ad_to_encash]")
-            .parent()
+        $("#genericModalBody [name=ad_to_encash]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=amount]")
-            .parent()
+        $("#genericModalBody [name=amount]")
+            .parent().parent()
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget #availableTable")
+        $("#genericModalBody #availableTable")
             .hide()
             .attr("required", false);
-        $("#objectCreateModalTarget [name=bonus_to_encash]")
-            .parent()
+        $("#genericModalBody [name=bonus_to_encash]")
+            .parent().parent()
             .show()
             .attr("required", true);
     }
 }
 
-function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
-    var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length;
-    id = targetElement.attr("id");
-    if (id) {
-        id = id.split("count_")[1];
-    }
-    if (count) {
-        targetElement.html(count);
-        targetElement.parent().removeClass("d-none");
-        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass(
-            "d-none"
-        );
-    } else {
-        targetElement.parent().addClass("d-none");
-        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass(
-            "d-none"
-        );
-    }
-}
-
-function removeHighlight() {
-    setTimeout(function () {
-        $(".toggle-highlight").removeClass("toggle-highlight");
-    }, 200);
-}
-
-function removeId(element, storeKey = "selectedInstances") {
-    id = element.val();
-    viewId = element.attr("data-view-id");
-    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
-    let elementToRemove = 5;
-    if (ids[ids.length - 1] === id) {
-        ids.pop();
-    }
-    ids = JSON.stringify(ids);
-    $(`#${storeKey}`).attr("data-ids", ids);
-}
 function bulkStageUpdate(canIds, stageId, preStageId) {
     $.ajax({
         type: "POST",
@@ -374,13 +337,15 @@ function htmxLoadIndicator(e) {
 
     if (table.length) {
         table.addClass("is-loading");
-        table.find("th, td").empty();
+        table.find("th, td").addClass('animate-pulse');
     }
     if (card.length) {
         card.addClass("is-loading");
+        card.addClass("animate-pulse");
     }
     if (kanban.length) {
         kanban.addClass("is-loading");
+        kanban.addClass("animate-pulse");
     }
     if (!table.length && !card.length && !kanban.length) {
         $(target).html(`<div class="animated-background"></div>`);
@@ -784,3 +749,7 @@ $(document).on("htmx:afterSwap", function () {
         });
     }
 });
+function offboardingUpdateStage($element) {
+    submitButton = $element.closest("form").find("input[type=submit]")
+    submitButton.click()
+}

@@ -1,0 +1,8 @@
+<div id="rotating-shift-container">
+    {% include "generic/horilla_list_table.html" %}
+</div>
+{% if request.GET.deleted %}
+<script>
+  $("#reloadMessagesButton").click();
+</script>
+{% endif %}

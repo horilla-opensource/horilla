@@ -1,0 +1,25 @@
+{% load i18n %}
+<div class="oh-btn-group" onclick="event.stopPropagation()">
+
+    {% if perms.recruitment.change_interviewschedule or request.user.employee_get in instance.employee_id.all %}
+        <a
+        title="{% trans "Edit" %}" hx-get="{% url 'edit-interview' instance.id %}?view=true&instance_ids={{instance.ordered_ids}}"
+        data-target="#genericModal" hx-swap="innerHTML" hx-target="#genericModalBody"
+        data-toggle="oh-modal-toggle"  class="oh-btn oh-btn--light-bkg w-100"
+        ><ion-icon name="create-outline"></ion-icon></a>
+    {% endif %}
+
+    {% if perms.recruitment.delete_interviewschedule %}
+        <form
+            hx-post="{% url 'delete-interview' instance.id %}?view=true"
+            hx-target = "#interviewdelete"
+            hx-confirm="{% trans "Are you sure you want to delete this interview?" %}"
+            method="post"
+            style="display: contents;width:100%">
+            {% csrf_token %}
+            <button onclick="event.stopPropagation()" type="submit" class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
+            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+            </button>
+        </form>
+    {% endif %}
+</div>

@@ -1,0 +1,144 @@
+{% load i18n %}
+
+{% load widget_tweaks %}
+<div class="oh-dropdown__filter-body">
+                <div class="oh-accordion">
+                  <div class="oh-accordion-header">{% trans "Asset" %}</div>
+                  <div class="oh-accordion-body">
+                    <div class="row">
+                      <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{assets_filter_form.asset_id__asset_name.id_for_label}}"
+                            >{% trans "Asset Name" %}</label
+                          >
+                          {{assets_filter_form.asset_id__asset_name}}
+                        </div>
+                      </div>
+                      <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{assets_filter_form.asset_id__asset_status.id_for_label}}"
+                            >{% trans "Status" %}</label
+                          >
+                          {{assets_filter_form.asset_id__asset_status}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="oh-accordion">
+                  <div class="oh-accordion-header">
+                    {% trans "Asset Request" %}
+                  </div>
+                  <div class="oh-accordion-body">
+                    <div class="row">
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_request_filter_form.requested_employee_id.id_for_label}}"
+                            >{% trans "Requested Employee" %}</label
+                          >
+                          {{asset_request_filter_form.requested_employee_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_request_filter_form.asset_category_id.id_for_label}}"
+                            >{% trans "Asset Category" %}</label
+                          >
+                          {{asset_request_filter_form.asset_category_id}}
+                        </div>
+                      </div>
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_request_filter_form.asset_request_date.id_for_label}}"
+                            >{% trans "Asset Request Date" %}</label
+                          >
+                            {{asset_request_filter_form.asset_request_date|attr:"type:date"}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_request_filter_form.asset_request_status.id_for_label}}"
+                            >{% trans "Status" %}</label
+                          >
+                          {{asset_request_filter_form.asset_request_status}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% if perms.asset.view_assetassignment %}
+                <div class="oh-accordion">
+                  <div class="oh-accordion-header">
+                    {% trans "Asset Allocation" %}
+                  </div>
+                  <div class="oh-accordion-body">
+                    <div class="row">
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_allocation_filter_form.assigned_to_employee_id.id_for_label}}"
+                            >{% trans "Allocated User" %}</label
+                          >
+                          {{asset_allocation_filter_form.assigned_to_employee_id}}
+                        </div>
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_allocation_filter_form.asset_id.id_for_label}}"
+                            >{% trans "Asset" %}</label
+                          >
+                          {{asset_allocation_filter_form.asset_id}}
+                        </div>
+                      </div>
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_allocation_filter_form.assigned_date.id_for_label}}"
+                            >{% trans "Asset Allocated Date" %}</label
+                          >
+                          {{ asset_allocation_filter_form.assigned_date |attr:"type:date" }}
+                        </div>
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_allocation_filter_form.return_status.id_for_label}}"
+                            >{% trans "Status" %}</label
+                          >
+                          {{asset_allocation_filter_form.return_status}}
+                        </div>
+                      </div>
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_allocation_filter_form.return_date.id_for_label}}"
+                            >{% trans "Return Date" %}</label
+                          >
+                          {{ asset_allocation_filter_form.return_date|attr:"type:date" }}
+                        </div>
+                      </div>
+                      <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                          <label
+                            class="oh-label"
+                            for="{{asset_allocation_filter_form.assigned_by_employee_id.id_for_label}}"
+                            >{% trans "Allocated By" %}</label
+                          >
+                          {{asset_allocation_filter_form.assigned_by_employee_id}}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endif %}
+              </div>

@@ -1,0 +1,18 @@
+<div>
+    {% include 'generic/horilla_form.html'%}
+
+</div>
+<script>
+    $(document).ready(function() {
+        var contractStartDateHtml = `
+        <div class="row">
+            <div class="col-12">
+                <div id="contractStartDateDiv" class="mt-2">
+                </div>
+            </div>
+        </div>`;
+            $('#id_start_date_parent_div').before(contractStartDateHtml);
+    });
+
+
+</script>

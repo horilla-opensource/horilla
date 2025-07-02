@@ -1,0 +1,31 @@
+{% load i18n %} {% load static %}{% include "filter_tags.html" %}
+{% comment %} <style>
+    .oh-recuritment__progress-bar {
+        width: 50%;
+        height: 5px;
+        border-radius: 15px;
+        margin: 0.75rem 0;
+        background-color: hsl(213, 22%, 93%);
+        position: relative;
+    }
+
+    .oh-progress-bar__state {
+        background-color: hsl(8, 77%, 56%);
+        position: absolute;
+        left: 0px;
+        height: 5px;
+        width: 20%;
+        border-radius: 15px;
+    }
+</style> {% endcomment %}
+
+
+
+<div class="oh-recuritment__progress-bar">
+    <div class="oh-progress-bar__state"
+         role="progressbar"
+         aria-valuemax="100"
+         style="width:{{ instance.installment_ratio }}%;"
+         title="{{ installment_paid }}  ({% trans 'Installment paid' %}) / {{ total_installments }}  ({% trans 'Total installments' %})">
+    </div>
+</div>

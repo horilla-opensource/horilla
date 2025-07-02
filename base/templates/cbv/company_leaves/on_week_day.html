@@ -1,0 +1,7 @@
+{%load i18n %}
+
+    {% for week_day in week_days %}
+        {% if week_day.0 == instance.based_on_week_day %}
+            {{week_day.1}}
+        {% endif %}
+    {% endfor %}

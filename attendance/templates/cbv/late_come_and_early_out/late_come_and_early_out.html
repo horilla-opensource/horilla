@@ -1,0 +1,150 @@
+
+
+
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+
+
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+.validated--dot{
+  background-color:yellowgreen;
+}
+.not-validated--dot{
+  background-color:red;
+}
+.requested--dot{
+  background-color:orange;
+}
+.approved-request--dot{
+  background-color:blue;
+}
+.validated-True{
+  border-left: 3.4px solid yellowgreen !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.not-validated-False {
+
+  border-left: 3.4px solid red !important;
+  border-radius: 4px 0 0 4px;
+
+
+}
+.requested-True {
+
+  border-left: 3.4px solid orange !important;
+  border-radius: 4px 0 0 4px;
+
+}
+.approved-request-True {
+
+  border-left: 3.4px solid blue !important;
+  border-radius: 4px 0 0 4px;
+
+}
+
+
+
+
+
+</style>
+
+ <div hx-get="{% url "late-come-and-early-out-nav" %}" hx-trigger="load">
+</div>
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+
+
+{% include "generic/components.html" %}
+
+
+<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+
+
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+  </div>
+
+  <div class="oh-modal" id="penaltyViewModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 1050px">
+      <div class="oh-modal__dialog-header">
+        <button type="button" class="oh-modal__close--custom"
+                aria-label="Close"  onclick="$('#penaltyViewModal').removeClass('oh-modal--show')">
+          <ion-icon name="close-outline"></ion-icon>
+        </button>
+      </div>
+      <div class="oh-modal__dialog-body" id="penaltyViewModalBody"></div>
+    </div>
+  </div>
+
+  <div class="oh-modal" id="penaltyModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" id="penaltyModalBody" style="max-width: 550px"></div>
+  </div>
+
+  <div
+      class="oh-modal"
+      id="attendanceExport"
+      role="dialog"
+      aria-labelledby="attendanceExport"
+      aria-hidden="true"
+    >
+      <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+          <h2 class="oh-modal__dialog-title" id="attendanceExportLavel">
+            {% trans "Export Late Come Early Out" %}
+          </h2>
+          <button class="oh-modal__close" aria-label="Close">
+            <ion-icon name="close-outline"></ion-icon>
+          </button>
+          <div
+            class="oh-modal__dialog-body p-0 pt-2"
+            id="attendanceExportModalBody"
+          >
+            <form
+              action="{% url 'late-come-early-out-info-export' %}"
+              method="get"
+              onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
+              id="attendanceExportForm"
+            >
+              {% csrf_token %}
+              <div class="oh-dropdown__filter-footer">
+                <button class="oh-btn oh-btn--secondary oh-btn--small w-100 mb-4">
+                  {% trans "Export" %}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+<script src="{% static 'cbv/attendance/hour_account.js' %}"></script>
+
+
+{% endblock content %}

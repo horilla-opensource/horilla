@@ -1,0 +1,31 @@
+{% load i18n %}
+<div class="mb-2 flex gap-5 items-center">
+    <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Carryforward Type" %}</span>
+    <p class="text-xs font-semibold flex items-center gap-5">
+        : <span>{{instance.get_carryforward_type_display}}</span>
+    </p>
+</div>
+{% if instance.carryforward_max %}
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Maximum Carryforward" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.carryforward_max}}</span>
+        </p>
+    </div>
+{% endif %}
+{% if instance.carryforward_expire_in %}
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Carryforward Expire in" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.carryforward_expire_in}}</span>
+        </p>
+    </div>
+{% endif %}
+{% if instance.carryforward_expire_period %}
+    <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-xs text-[#565E6C] w-32">{% trans "Carryforward Expire period" %}</span>
+        <p class="text-xs font-semibold flex items-center gap-5">
+            : <span>{{instance.carryforward_expire_period}}</span>
+        </p>
+    </div>
+{% endif %}

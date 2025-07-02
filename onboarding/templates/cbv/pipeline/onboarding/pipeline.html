@@ -1,0 +1,94 @@
+{% extends "index.html" %}
+{% load i18n %}
+{% block content %}
+<style>
+  .note-modal-backdrop {
+      z-index: 998 !important;
+  }
+
+  .tooltip {
+      position: relative;
+      display: inline-block; /* Ensures that the tooltip container doesn't stretch to the full width */
+  }
+
+  .tooltip .tooltiptext {
+      visibility: hidden;
+      width: auto; /* Allow the tooltip width to adjust based on content */
+      max-width: auto; /* Limit the maximum width of the tooltip to prevent it from overflowing */
+      background-color: green;
+      color: white;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(5%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      white-space: nowrap; /* Prevents the text from wrapping */
+      overflow: hidden; /* Hides any overflowed content */
+      font-size: 15px;
+  }
+
+  .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+
+
+
+  }
+</style>
+{% include "generic/components.html" %}
+
+<div hx-get="{% url "cbv-pipeline-nav-onboarding" %}" hx-trigger="load"></div>
+
+<div
+  class="oh-wrapper"
+  id="pipelineContainer"
+  hx-get="{% url "cbv-pipeline-tab-onboarding" %}?is_active=true"
+  hx-trigger="load"
+>
+</div>
+
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000">
+    <div class="oh-activity-sidebar__body" id="noteContainer">
+      <div class="oh-activity-sidebar__header">
+        <a event.stopPropagation
+        style="cursor: pointer;"
+        onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+        <ion-icon
+        name="chevron-forward-outline"
+        class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+        data-target="#activitySidebar">
+        </ion-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="oh-modal"
+    id="bulkResumeUpload"
+    role="dialog"
+    aria-labelledby="bulkResumeUpload"
+    aria-hidden="true"
+>
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="bulkResumeUploadLabel">
+                {% trans "Upload Resumes" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div
+                class="oh-modal__dialog-body mb-4 p-0 pt-2"
+                id="bulkResumeUploadBody"
+            >
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

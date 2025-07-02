@@ -1,0 +1,65 @@
+
+<div class="description-container">
+    <div class="description-text">
+        {{ instance.description|safe|truncatechars_html:30 }}
+    </div>
+    <div class="full-description">
+        {{ instance.description|safe }}
+    </div>
+</div>
+
+<style>
+    .description-container {
+        position: relative;
+        width: 100%; /* Adjust as needed */
+    }
+
+    .description-text {
+        display: inline;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: pointer;
+    }
+   .full-description {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 10;
+        max-height: 150px;
+        overflow-y: auto; /* Enable vertical scrolling */
+        overflow-x: hidden; /* Hide horizontal scrolling */
+    }
+    {% comment %} .full-description {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        z-index: 10;
+        max-height: 150px; /* Adjust height as needed */
+        overflow-y: scroll; /* Enable vertical scrolling */
+        overflow-x: hidden; /* Hide horizontal scrolling */
+    }
+
+    /* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+    .full-description::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for Firefox */
+    .full-description {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+     {% endcomment %}
+    .description-container:hover .full-description {
+        display: block;
+    }
+</style>

@@ -1,0 +1,43 @@
+{% load static i18n %}
+{% if notifications %}
+    {% for notification in notifications %}
+        <div class="border border-dark-50 p-3 rounded-md mb-2 relative">
+            <button class="closebtn closeSidemenu absolute top-2 right-2 text-xs"
+                hx-post="{% url 'delete-notifications' notification.id %}"
+                hx-swap="delete"
+                hx-target="closest div"
+                hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h5 class="text-sm font-semibold mb-2">
+                {{forloop.counter}}.
+                {% if notification.unread %}
+                    <span style="width: 10px;height: 10px;border-radius: 100%; background-color: hsl(8deg,77%,56%);display: inline-block;right: 5px;"></span>
+                {% endif %}
+                {% if LANGUAGE_CODE == 'ar' %}
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_ar }}</p>
+                {% elif LANGUAGE_CODE == 'de' %}
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_de }}</p>
+                {% elif LANGUAGE_CODE == 'fr' %}
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_fr }}</p>
+                {% elif LANGUAGE_CODE == 'es' %}
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.data.verb_es }}</p>
+                {% else %}
+                    <p class="oh-navbar__notification-text" class="oh-navbar__notification-text--unread">{{ notification.verb }}</p>
+                {% endif %}
+            </h5>
+            <p class="text-xs text-[#777777] mt-1 flex">{{ notification.timesince }} {% trans "ago by " %}
+                <b>
+                {{notification.actor.get_full_name}}</b>
+            </p>
+        </div>
+    {% endfor %}
+
+{% else %}
+    <div class="opacity-30">
+        <img src="{% static "/horilla_theme/assets/img/icons/notification.svg" %}" alt="" width="40" class="mx-auto mb-3">
+        <h5 class="text-center font-semibold mb-1">{% trans "All Caught Up!" %}</h5>
+        <p class="text-center text-sm">{% trans "You have no new notifications at the moment" %}</p>
+    </div>
+{% endif %}

@@ -1,0 +1,23 @@
+{% load i18n %}
+<div class="oh-table-config__td"
+                    style="text-decoration: none;width: 150px !important;">
+{% for interview_schedule in instance.candidate_interview.all %}
+                        {% if interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" %}
+                            <div class="d-flex" style="flex-direction: row-reverse; margin-bottom:-30px;">
+                                <span class="tooltip">
+                                    <span class="material-symbols-outlined" style="flex-direction: row-reverse;color:green;">
+                                        alarm_on
+                                    </span>
+                                    <span class="tooltiptext fw-bold">
+                                        {% trans "INTERVIEW : Today at" %} {{interview_schedule.interview_time}} {% trans "with" %}
+                                        {% for emp in interview_schedule.employee_id.all %} {{emp}}, {% endfor %}
+                                    </span>
+                                </span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+
+                        <span title="{{instance}}">{{instance|truncatechars:15}} </span>
+
+    </div>

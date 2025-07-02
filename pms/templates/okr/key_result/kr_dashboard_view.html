@@ -131,9 +131,9 @@
                                                             class="oh-btn oh-btn--light-bkg w-50"
                                                             title="{% trans 'Edit' %}"
                                                             data-toggle="oh-modal-toggle"
-                                                            data-target="#objectDetailsModal"
+                                                            data-target="#genericModal"
                                                             hx-get='{% url "employee-key-result-update" kr.id %}'
-                                                            hx-target="#objectDetailsModalTarget"
+                                                            hx-target="#genericModalBody"
                                                         >
                                                             <ion-icon name="create-outline"></ion-icon>
                                                         </button>
@@ -245,12 +245,11 @@
         var numericValue = parseFloat(targetValue.replace(/[^\d.]/g, ''));
         var prgressPercentage = parseInt( currentValue*100/numericValue )
         // Ensure totalProgress doesn't exceed 100
-        if (prgressPercentage > 100) {
-            prgressPercentage = 100;
+        if (prgressPercentage < 0) {
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: 'Current Value cannot exceed target value!',
+                text: 'Current Value Cannot be -ve',
                 timer: 3000, // Display the alert for 3 seconds
                 timerProgressBar: true, // Show the progress bar
                 showConfirmButton: false // Hide the "OK" button

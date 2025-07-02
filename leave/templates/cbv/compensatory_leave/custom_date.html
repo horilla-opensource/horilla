@@ -1,0 +1,6 @@
+{% load i18n %}
+<div class="">
+    {% for attendance in instance.attendance_id.all %}
+        {{ attendance.attendance_date }}<br/>
+    {% endfor %}
+</div>

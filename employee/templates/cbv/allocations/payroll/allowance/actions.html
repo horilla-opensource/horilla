@@ -1,0 +1,8 @@
+{% if not instance.include_active_employees or employee in instance.exclude_employees.all %}
+  <a style="font-size: 15px;color: darkseagreen;" title="Allocate Allowance" onclick="
+  $(this).closest('tr').find('td:first [type=checkbox]').prop('checked',!$(this).find('td:first [type=checkbox]').is(':checked')).change();
+  $('#addAllowanceButton').click();
+  " class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"><ion-icon name="checkmark-done-circle-outline"></ion-icon></a>
+{% else %}
+  <a style="font-size: 15px;" title="Remove from allowance" hx-post="{% url "allocation-allowance-list"%}?exclude=True" hx-vals='{"instance_id":"{{request.GET.instance_id}}","allowance_id":"{{instance.pk}}"}'  class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"><ion-icon name="close-circle-outline"></ion-icon></a>
+{% endif %}

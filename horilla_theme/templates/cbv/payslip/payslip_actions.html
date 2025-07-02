@@ -1,0 +1,28 @@
+{% load i18n %}
+<form action="{% url 'payslip-pdf' instance.id %}" method='post' class="w-100">
+    {% csrf_token %}
+    <button type="submit"
+        class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+        title="{% trans 'Download' %}">
+        <i class="fa-solid fa-download"></i>
+    </button>
+</form>
+
+<button
+    class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300 {% if instance.sent_to_employee %}sent-to-employee{% endif %}"
+    hx-confirm="{% trans 'Do you want to sent the payslip by mail?' %}"
+    hx-get="{% url 'send-slip' %}?id={{instance.id}}" hx-target="#listContainer" title="{% trans 'Send via mail' %}">
+    <i class="fa-solid fa-paper-plane"></i>
+</button>
+
+{% if perms.payroll.delete_payslip %}
+<form hx-confirm="{% trans 'Are you sure you want to delete this payslip?' %}"
+    hx-post="{% url 'delete-payslip' instance.id %}" hx-target="#listContainer">
+    {% csrf_token %}
+    <button
+        class="cursor-pointer px-2 py-1 text-sm bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"
+        title="{% trans 'Delete' %}">
+        <i class="fa-solid fa-trash"></i>
+    </button>
+</form>
+{% endif %}

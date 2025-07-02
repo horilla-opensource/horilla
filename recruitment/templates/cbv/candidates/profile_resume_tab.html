@@ -1,0 +1,16 @@
+{% load i18n %}
+{% load static %}
+{% if candidate.resume %}
+    <iframe id="iframe_pdf"
+    src="{{candidate.resume.url}}" style="width: 100%; height: 500px"
+    frameborder="0">
+    </iframe>
+{% else %}
+
+<div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
+    <div align="center">
+      <img src="{% static "images/ui/curriculum-vitae.png" %}" class="oh-404__image" alt="Page not found. 404.">
+      <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "This candidate does not have a resume on file." %}</h5>
+    </div>
+  </div>
+  {% endif %}

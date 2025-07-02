@@ -1,6 +1,6 @@
 {% load basefilters i18n %}
 {% for employee in employees %}
-  <div class="oh-user_permission-list_item perm-accordion exclude-accordion-style" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');">
+  <div class="oh-user_permission-list_item perm-accordion exclude-accordion-style" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');$(this).next().find('.oh-general__tab-target').removeClass('d-none');">
     <div class="oh-user_permission-list_profile">
       <div class="oh-navbar__user-photo oh-user_permission--profile">
         <img src="{{ employee.get_avatar }}" class="oh-navbar__user-image" loading="lazy" />

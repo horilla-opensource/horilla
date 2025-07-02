@@ -1,0 +1,158 @@
+{% load static %} {% load i18n %}
+  <div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Work Info" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Employee" %}</label>
+              {{form.employee_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Department" %}</label>
+              {{form.employee_id__employee_work_info__department_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Shift" %}</label>
+              {{form.shift_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Reporting Manager" %}</label>
+              {{form.employee_id__employee_work_info__reporting_manager_id}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Company" %}</label>
+              {{form.employee_id__employee_work_info__company_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Job Position" %}</label>
+              {{form.employee_id__employee_work_info__job_position_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Work Type" %}</label>
+              {{form.work_type_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Work Location" %}</label>
+              {{form.employee_id__employee_work_info__location}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% comment %} {{form.}} {% endcomment %}
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Attendance" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Attendance Date" %}</label>
+              {{form.attendance_date}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "In Time" %}</label>
+              {{form.attendance_clock_in}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Validated?" %}</label>
+              {{form.attendance_validated}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Min Hour" %}</label>
+              {{form.minimum_hour}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Out Time" %}</label>
+              {{form.attendance_clock_out}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "OT Approved?" %}</label>
+              {{form.attendance_overtime_approve}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Advanced" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Attendance From" %}</label>
+              {{form.attendance_date__gte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "In From" %}</label>
+              {{form.attendance_clock_in__gte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Out From" %}</label>
+              {{form.attendance_clock_out__gte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "At Work Greater or Equal" %}</label
+              >
+              {{form.at_work_second__gte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Pending Hour Greater or Equal" %}</label
+              >
+              {{form.pending_hour__gte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "OT Greater or Equal" %}</label>
+              {{form.overtime_second__gte}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Attendance Till" %}</label>
+              {{form.attendance_date__lte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "In Till" %}</label>
+              {{form.attendance_clock_in__lte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Out Till" %}</label>
+              {{form.attendance_clock_out__lte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "At Work Less Than or Equal" %}</label
+              >
+              {{form.at_work_second__lte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "Pending Hour Less Than or Equal" %}</label
+              >
+              {{form.pending_hour__lte}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label"
+                >{% trans "OT Less Than or Equal" %}</label
+              >
+              {{form.overtime_second__lte}}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div hidden class="oh-input-group">
+    <label class="oh-label"
+      >{% trans "Bulk Request" %}</label
+    >
+    {{form.is_bulk_request}}
+  </div>

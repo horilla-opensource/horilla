@@ -1,0 +1,45 @@
+{% load i18n %}
+{% if perms.asset.change_assetlot or perms.asset.delete_assetlot %}
+              <div>
+                <div class="oh-btn-group">
+                  {% if perms.asset.change_assetlot %}
+                    <a
+                      class="oh-btn oh-btn--light-bkg w-100"
+                      title="{% trans 'Update' %}"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#genericModal"
+                      hx-put="{% url 'asset-batch-update' instance.id %}"
+                      hx-target="#genericModalBody"
+                      >
+                      <ion-icon
+                        name="create-outline"
+                        role="img"
+                        class="md hydrated"
+                        aria-label="create outline"
+                      ></ion-icon>
+                    </a>
+                  {% endif %}
+                  {% if perms.asset.delete_assetlot %}
+                    <form
+                      hx-confirm="{% trans 'Do you want to delete this batch number ?' %}"
+                      hx-post="{% url 'asset-batch-number-delete' batch_id=instance.id %}?{{pg}}"
+                      hx-target="#AssetBatchList"
+                      style="display: contents"
+                    >
+                      {% csrf_token %}
+                      <button
+                        class="oh-btn oh-btn--danger-outline w-100"
+                        title="{% trans 'Delete' %}"
+                      >
+                        <ion-icon
+                          name="trash-outline"
+                          role="img"
+                          class="md hydrated"
+                          aria-label="trash outline"
+                        ></ion-icon>
+                      </button>
+                    </form>
+                  {% endif %}
+                </div>
+            </div>
+                  {% endif%}

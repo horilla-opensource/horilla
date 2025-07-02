@@ -1,0 +1,32 @@
+{% load i18n %}
+
+
+<div class="oh-sticky-table__tr oh-permission-table--toggle"  onclick="event.stopPropagation();" data-toggle-count>
+    <div class="d-flex align-items-center">
+        <button class="oh-permission-table__collapse me-2">
+            <span class="oh-reveal" title="{% trans "Reveal" %}">
+                <ion-icon class="oh-permission-table__collapse-down md hydrated" name="chevron-down-outline" ></ion-icon>
+            </span>
+
+                <span class="oh-test" title="{% trans "Collapse" %}">
+                <ion-icon class="oh-permission-table__collapse-up md hydrated" name="chevron-up-outline"></ion-icon>
+                </span>
+
+        </button>
+        <span class="oh-permission-table__user">{{instance}}</span>
+     </div>
+    </div>
+
+        <script>
+            $(document).on("htmx:afterSwap", function () {
+                  $("[data-toggle-count]").off("click").on("click", function (e) {
+                    e.stopPropagation();
+                    let recViewContainer = $(this).closest('tr');
+                    span = recViewContainer.find(".count-span").toggle();
+                    var row = $(this).closest(".oh-permission-table--toggle").parent().parent();
+                    row.toggleClass("oh-permission-table--collapsed");
+
+                  });
+                });
+
+        </script>

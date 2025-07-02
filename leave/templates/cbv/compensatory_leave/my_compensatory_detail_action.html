@@ -1,0 +1,44 @@
+{% load i18n %}
+
+
+
+    <div class="oh-btn-group" style="width:100%;">
+        {% if instance.status ==  'requested' %}
+
+                <button
+                    class="oh-btn oh-btn-group oh-btn--info" style="width:50%;"
+                    title="{% trans 'Edit' %}"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#genericModal"
+                    hx-get="{% url 'update-compensatory-leave' instance.id %}"
+                    hx-target="#genericModalBody">
+                    <ion-icon name="create-outline"></ion-icon>
+                </button>
+            {% else %}
+                <button style="width:50%;"
+                    class="oh-btn oh-btn-group oh-btn--info" disabled>
+                    <ion-icon name="create-outline" ></ion-icon>
+                </button>
+                {% endif %}
+                {% if instance.status !=  'approved' %}
+                <button class="oh-btn oh-btn-group oh-btn--secondary"
+                    hx-confirm="{% trans 'Are you sure you want to delete ?' %}" id="delete-link"
+                    hx-post="{% url 'delete-compensatory-leave' instance.id %}?instances_ids={{request.GET.instance_ids}}"
+                    hx-target="#genericModalBody" style="width:50%;"
+                    title="{% trans 'Delete' %}"
+                    data-toggle="oh-modal-toggle">
+                <ion-icon class="me-1" name="trash-outline"></ion-icon>
+            </button>
+                {% else %}
+                    <button class="oh-btn oh-btn-group oh-btn--secondary" style="width:50%;" disabled>
+                        <ion-icon name="trash-outline"></ion-icon>
+                    </button></td>
+                {% endif %}
+            </div>
+
+{% if request.GET.deleted %}
+<script>
+    $(".reload-record").click()
+    $("#reloadMessagesButton").click()
+</script>
+{% endif %}

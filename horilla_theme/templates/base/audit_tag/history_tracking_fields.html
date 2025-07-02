@@ -1,0 +1,36 @@
+
+{% load i18n %}
+
+<div class="col-span-12 lg:col-span-6">
+    <form  action="{% url 'history-field-settings' %}" method ="post">
+        {% csrf_token %}
+    <div class="flex space-x-2 pb-2">
+    <label>{% trans "Tracking Fields" %}</label>
+    <span class="oh-info mr-2" title="{% trans 'Employee history will be stored during updation of the fields that selected here.' %}"></span>
+</div>
+    <div class="flex gap-2 h-[30px]">
+        {{ history_fields_form.tracking_fields }}
+        {% if perms.payroll.change_payrollsettings %}
+        <button class="btn" type="submit">
+            {% trans "Save Changes" %}</button>
+        {% endif %}
+    </div>
+</form>
+</div>
+<div class="col-span-12 lg:col-span-6">
+    <form action="{% url 'history-field-settings' %}" method="post">
+        {% csrf_token %}
+    <div class="flex items-center justify-between mb-4 mt-[30px]">
+        <div class="flex space-x-2">
+        <h3 class="text-sm font-medium">{% trans "Work Information Tracking" %}</h3>
+        <span class="oh-info mr-2" title="{% trans "By enabling this feature, you can save the history of employee work information during updates." %}">
+        </span>        </div>
+        <label class="toggle-label">
+            <input type="checkbox" class="toggle-input" name="work_info_track"
+                data-target="#limitFields"onchange="$(this).closest('form').find('input[type=submit]').click()" {% if history_tracking_instance.work_info_track %} checked {% endif %}>
+            <div class="toggle-switch"></div>
+        </label>
+        <input type="submit" hidden />
+    </div>
+    </form>
+    </div>

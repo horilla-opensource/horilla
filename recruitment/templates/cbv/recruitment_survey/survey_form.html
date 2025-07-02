@@ -1,0 +1,82 @@
+{% load i18n %}
+<div id ="formContainer">
+    {% include "generic/horilla_form.html" %}
+    <button hidden
+                    hx-target="#moreOptionContainer_{{form.option_count}}"
+                    hx-swap="outerHTML"
+                    hx-post="{% url 'add-remove-options-field' %}"
+                    role="button"
+                    style="color: green"
+                    id="addMoreOptions"
+                  >
+                    {% trans "Add more options.." %}
+</button>
+</div>
+
+<script>
+    function toggleOpt() {
+        if ($("#genericModalBody form [name=type]").first().val() == "options" || $("#genericModalBody form [name=type]").first().val() == "multiple") {
+            $("#id_options_parent_div").show();
+            $('[id^="moreOptionContainer_"]').remove();
+            var optionCount = {{ form.option_count }}
+
+            for (var i = 1; i < optionCount; i++) {
+                var parentDivId = "id_options"+ i +"_parent_div";
+                var parentDiv = document.getElementById(parentDivId);
+                $(parentDiv).removeClass("col-md-6");
+                if (i >= 1) {
+                    $(parentDiv).find('.oh-label__info').remove();
+                }
+            }
+
+            // Check if "Add more options" button already exists
+            var test = document.getElementById('addOptions')
+            if (!document.getElementById('addOptions')) {
+                var divElement = document.createElement('div');
+                divElement.id = 'moreOptionContainer_' + optionCount;
+                divElement.className = 'pt-2';
+                divElement.style.textAlign = 'end';
+
+                var anchorElement = document.createElement('a');
+                anchorElement.setAttribute('role', 'button');
+                anchorElement.setAttribute('id', 'addOptions');
+                anchorElement.style.color = 'green';
+                anchorElement.innerText = 'Add more options..';
+
+                divElement.appendChild(anchorElement);
+
+                //var parentDiv = document.getElementById('id_options_parent_div');
+                if (parentDiv) {
+                    parentDiv.insertAdjacentElement('afterend', divElement);
+
+                }
+                else {
+                    var parentDivMain = document.getElementById('id_options_parent_div');
+                    parentDivMain.insertAdjacentElement('afterend', divElement);
+                    var nextDiv = parentDivMain.nextElementSibling;
+                    nextDiv.id = 'moreOptionContainer_1';
+                }
+
+            }
+            else{
+                $("#addOptions").show();
+            }
+
+        } else {
+            $("#id_options_parent_div").hide();
+            $("#addOptions").hide();
+            $('[id^="moreOptionContainer_"]').remove();
+        }
+    }
+    $(document).off('click', '#addOptions').on('click', '#addOptions', function(event) {
+        $('#addMoreOptions').click();
+    });
+
+  $(document).on('change', '#genericModalBody form [name=type]', function (e) {
+    toggleOpt();
+});
+
+  $(document).ready(function() {
+      toggleOpt();
+  });
+  </script>

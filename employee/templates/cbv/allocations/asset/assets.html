@@ -1,0 +1,47 @@
+<div class="oh-inner-sidebar-content p-0">
+    <div class="oh-inner-sidebar-content__header">
+      <div class="oh-main__titlebar oh-main__titlebar--right justify-content-between align-items-center">
+        <div class="oh-input-group oh-input__search-group" style="margin-left: -15px;" :class="searchShow ? 'oh-input__search-group--show' : ''">
+          <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
+          <input
+            type="text"
+            hx-get="{% url "allocation-asset-list" %}?instance_id={{request.GET.instance_id}}"
+            hx-trigger="keyup changed delay:.100s"
+            hx-target="#typesContainer"
+            autocomplete="false"
+            name="search"
+            class="oh-input oh-input__icon"
+            aria-label="Search Input"
+            placeholder="Search" />
+        </div>
+      </div>
+    </div>
+    <div class="oh-inner-sidebar-content__body">
+      <div class="oh-general__tab-target mb-4" id="types">
+        <div id="selectedInstances" data-ids="[]" hidden></div>
+        <form hx-post="{% url "allocation-asset-list" %}?instance_id={{request.GET.instance_id}}" hx-target="#responseContainer" id="idsForm">
+          <input type="text" name="ids" value="[]" hidden>
+          <input type="text" name="instance_id" value="{{request.GET.instance_id}}" hidden>
+          <input type="submit" hidden>
+        </form>
+        <div class="oh-profile-section__card"
+        id="typesContainer"
+        hx-get="{% url "allocation-asset-list" %}?instance_id={{request.GET.instance_id}}" hx-trigger="load"
+        >
+        </div>
+      </div>
+      <div class="oh-modal__dialog-footer p-0">
+        <button type="submit"
+        onclick="
+         ids = $('#selectedInstances').attr('data-ids')
+         $('.oh-inner-sidebar-content [name=ids]').val(ids);
+         $('#idsForm [type=submit]').click();
+        "
+        class="oh-btn oh-btn--secondary oh-btn--shadow" id="addTypesButton">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="responseContainer" hidden>
+
+  </div>

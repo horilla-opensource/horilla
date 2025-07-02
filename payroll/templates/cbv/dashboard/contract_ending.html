@@ -1,0 +1,11 @@
+
+<div id="contractContainer">
+    {% include "generic/horilla_list_table.html" %}
+</div>
+<script>
+    $(document).ready(function() {
+        var count = {{ queryset.paginator.count }};
+        $('#contract-count').text(count);
+
+    });
+</script>

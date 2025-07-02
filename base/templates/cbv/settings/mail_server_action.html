@@ -1,0 +1,10 @@
+{% load i18n %}
+<div class="oh-btn-group">
+  {% if perms.base.change_dynamicemailconfiguration %}
+    <a hx-get="{% url 'update-mail-server' instance.id %}?instance_ids={{instance.ordered_ids}}" onclick="event.stopPropagation()" hx-target="#genericModalBody" data-toggle="oh-modal-toggle" data-target="#genericModal" class="oh-btn oh-btn--light-bkg w-100" title="Edit"><ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon></a>
+  {% endif %}
+    <a hx-get="{% url 'mail-server-test-email' %}?instance_id={{ instance.id }}" onclick="event.stopPropagation()" hx-target="#mailServerModalBody" data-toggle="oh-modal-toggle" data-target="#mailServerModal" class="oh-btn oh-btn--light-bkg w-100" title="Test email"><ion-icon name="mail-unread-outline" role="img" class="md hydrated" aria-label="at-circle-outline"></ion-icon></a>
+  {% if perms.base.delete_dynamicemailconfiguration %}
+    <a onclick="event.stopPropagation()" hx-confirm="{% trans 'Do you want to delete this mail server configuration?' %}" hx-post="{% url 'mail-server-delete' %}?ids={{ instance.id }}" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" hx-target="#objectDetailsModalTarget" type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="Remove"><ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon></a>
+  {% endif %}
+  </div>

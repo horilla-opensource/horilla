@@ -37,9 +37,9 @@
         <div
           class="oh-sticky-table__tr"
           data-toggle="oh-modal-toggle"
-          data-target="#objectDetailsModal"
-          hx-get="{% url 'asset-information' asset_id=asset.id %}?{{pd}}&requests_ids={{requests_ids}}"
-          hx-target="#objectDetailsModalTarget"
+          data-target="#genericModal"
+          hx-get="{% url 'asset-information' pk=asset.id %}?{{pd}}&instance_ids={{requests_ids}}"
+          hx-target="#genericModalBody"
           id="assetDelete{{asset.id}}"
           draggable="true"
           >
@@ -68,10 +68,10 @@
                     <a
                       class="oh-btn oh-btn--light-bkg w-100"
                       data-toggle="oh-modal-toggle"
-                      data-target="#objectUpdateModal"
-                      hx-get="{% url 'asset-update'  asset_id=asset.id %}?asset_under=asset_filter&{{request.GET.urlencode}}"
+                      data-target="#genericModal"
+                      hx-get="{% url 'asset-update'  pk=asset.id %}?asset_under=asset_filter&{{pg}}"
                       title="{% trans 'Update' %}"
-                      hx-target="#objectUpdateModalTarget"
+                      hx-target="#genericModalBody"
                       onclick="event.stopPropagation()"
                       id="oh-btn-asset-update-modal"
                     >
@@ -86,10 +86,10 @@
                     <a
                       class="oh-btn oh-btn--light-bkg w-100"
                       data-toggle="oh-modal-toggle"
-                      data-target="#objectUpdateModal"
-                      hx-get="{% url 'asset-update'  asset_id=asset.id %}?{{request.GET.urlencode}}"
+                      data-target="#genericModal"
+                      hx-get="{% url 'asset-update'  pk=asset.id %}?{{pg}}"
                       title="{% trans 'Update' %}"
-                      hx-target="#objectUpdateModalTarget"
+                      hx-target="#genericModalBody"
                       onclick="event.stopPropagation()"
                       id="oh-btn-asset-update-modal"
                     >
@@ -106,9 +106,9 @@
                   <a
                     class="oh-btn oh-btn--light-bkg w-100"
                     data-toggle="oh-modal-toggle"
-                    data-target="#objectCreateModal"
-                    hx-get="{% url 'duplicate-asset' asset.id %}?{{request.GET.urlencode}}"
-                    hx-target="#objectCreateModalTarget"
+                    data-target="#genericModal"
+                    hx-get="{% url 'duplicate-asset' asset.id %}?{{pg}}"
+                    hx-target="#genericModalBody"
                     title="{% trans 'Duplicate' %}"
                     onclick="event.stopPropagation()"
                     style="cursor: pointer"

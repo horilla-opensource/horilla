@@ -1,0 +1,51 @@
+{% load i18n %}
+{% load static %}
+<span class="oh-permission-count">
+        {{instance.job_position.all|length}}
+        {% trans "Job Positions" %}
+    </span>
+    {% for job in instance.job_position.all %}
+		<div id="jobPositionDiv{{job.id}}">
+			<span class="oh-user-panel oh-collapse-panel">
+				<div class="oh-profile oh-profile--md">
+					<div class="oh-profile__avatar mr-1">
+						<img src="https://ui-avatars.com/api/?name={{job}}&background=random"
+							class="oh-profile__image" alt="" />
+					</div>
+					<span class="oh-profile__name oh-text--dark">{{job|capfirst}}</span>
+				</div>
+				<div>
+					<div class="d-flex">
+						{% if perms.base.change_jobposition %}
+							<div>
+								<a
+									class="oh-btn"
+									hx-get="{% url 'job-position-update-form' job.pk %}"
+									hx-target="#genericModalBody"
+									data-toggle="oh-modal-toggle"
+									data-target="#genericModal"
+									title="{% trans 'Edit' %}"
+								>
+									<ion-icon name="pencil"></ion-icon>
+								</a>
+							</div>
+						{% endif %}
+						{% if perms.base.delete_jobposition %}
+						<div>
+							<button
+								class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+								title="{% trans 'Remove' %}"
+								hx-get="{% url 'generic-delete' %}?model=base.jobposition&pk={{job.pk}}"
+								data-toggle="oh-modal-toggle"
+								data-target="#deleteConfirmation"
+								hx-target="#deleteConfirmationBody"
+							>
+								<ion-icon name="close" class="text-danger"></ion-icon>
+							</button>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</span>
+		</div>
+{% endfor %}

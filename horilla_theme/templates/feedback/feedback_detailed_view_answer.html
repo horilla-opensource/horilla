@@ -1,0 +1,132 @@
+{% load i18n %}
+{% for answer in answers %}
+<li class="oh-activity-sidebar__qa-item">
+    <span class="oh-activity-sidebar__q"> {{forloop.counter}}. {{answer.question_id.question}}?</span>
+
+    {% if answer.question_id.question_type == '1' %}
+      <span class="oh-activity-sidebar__a">{{ answer.answer.answer}}.</span>
+    {% endif %}
+
+    {% if answer.question_id.question_type == '2' %}
+      <ul class="flex gap-2 text-lg ps-4 mb-4">
+        {% for i in "12345" %}
+          <li>
+            <i class="fa-solid fa-star {% if i <= answer.answer.answer %}text-[#FFA800]{% else %}text-[#dfdfdf]{% endif %}"></i>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if answer.question_id.question_type == '3' %}
+      <div class="oh-input__group">
+        <div class="oh-input-picker-group">
+          <div class="oh-input-picker   oh-input-picker--selected boolean-colour ">
+            {{answer.answer.answer}}
+            <input type="radio" selected />
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if answer.question_id.question_type == '4' %}
+      <div class="d-block">
+        <ul class="oh-questions mt-2">
+          <li class="oh-questions__answer">
+            <div class="oh-radio">
+              <input type="radio" class="oh-radio  " id="answer1" name="answer{{q.id}}" value="{{option.option_a}}"
+                checked />
+              <span class="oh-radio__checkmark"></span>
+              <label class="oh-label" for="answer1"> {{answer.answer.answer}}</label>
+            </div>
+          </li>
+        </ul>
+      </div>
+    {% endif %}
+
+    {% if answer.question_id.question_type == '5' %}
+      <div class="d-block">
+        <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
+          <div class="oh-input-picker oh-input-picker--likert likert-colour oh-input-picker--selected ">
+            {{answer.answer.answer}}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </li>
+
+{% endfor %}
+{% if kr_feedbacks %}
+<hr/>
+  <span class="oh-activity-sidebar__q" style="font-size: medium;">{% trans "Key results" %}</span>
+  {% for kr_feedback in kr_feedbacks %}
+  <li class="oh-activity-sidebar__qa-item">
+    <span class="oh-activity-sidebar__q"> {{forloop.counter}}. {{kr_feedback.key_result_id.key_result_id}}</span>
+    <div class="d-block">
+      <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
+        <div class="oh-input-picker oh-input-picker--likert oh-input-picker--selected
+          {% if kr_feedback.answer.answer == "Bad" %}
+            oh-input-picker--1
+          {% elif kr_feedback.answer.answer == "Average" %}
+            oh-input-picker--2
+          {% elif kr_feedback.answer.answer == "Good" %}
+            oh-input-picker--3
+          {% elif kr_feedback.answer.answer == "Perfect" %}
+            oh-input-picker--4
+          {% endif %}
+        "
+        >
+          {{ kr_feedback.answer.answer }}
+        </div>
+      </div>
+    </div>
+  </li>
+  {% endfor %}
+{% endif %}
+
+<script>
+
+  $(document).ready(function () {
+      // answer color for likert
+      var booleanText = $('.boolean-colour').text().trim()
+      var booleanEl = $('.boolean-colour')
+      var red = "oh-input-picker--1"
+      var orange = "oh-input-picker--2"
+      var yellow = "oh-input-picker--3"
+      var light_green = "oh-input-picker--4"
+      var green = "oh-input-picker--5"
+
+      $('.likert-colour').each(function() {
+        var likertText = $(this).text().trim()
+
+        if (likertText === 'Strongly Agree'){
+          $(this).addClass(green)
+        }
+        else if (likertText === 'Agree'){
+          $(this).addClass(light_green)
+        }
+        else if (likertText === 'Neutral'){
+          $(this).addClass(yellow)
+        }
+        else if (likertText === 'Disagree'){
+          $(this).addClass(orange)
+        }
+        else if (likertText === 'Strongly Disagree'){
+          $(this).addClass(red)
+        }
+      });
+
+      // boolean text colour adding
+      $('.boolean-colour').each(function() {
+        var booleanText = $(this).text().trim()
+
+        if (booleanText === 'yes'){
+          $(this).addClass(green)
+        }
+        else if (booleanText === 'no'){
+          $(this).addClass(red)
+        }
+    })
+
+
+    });
+  </script>

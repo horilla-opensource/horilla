@@ -1,0 +1,78 @@
+{% load horillafilters %}
+<div>
+    {% include "generic/horilla_form.html" %}
+</div>
+<script>
+        $("#createTitle").on("htmx:beforeSwap",function(e){
+            $('.available-leave-count').remove();
+        });
+</script>
+
+<script>
+    var test = $("#createTitle").closest("form")
+    test.find("button[type=submit]").hide();
+    var button = `
+    <div class="oh-modal__dialog-footer p-0 mt-3">
+      <button id="buttonID" class="oh-btn oh-btn--secondary oh-btn--shadow">
+        Save
+      </button>
+    </div>
+    `;
+    test.find(".d-flex").after(button);
+
+{% if "recruitment"|app_installed %}
+    $(document).ready(function () {
+        $("#buttonID").on("click", function () {
+            event.preventDefault();
+            event.stopPropagation();
+            var startDate = test.find("[name = start_date]").val();
+            var endDate = test.find("[name = end_date]").val();
+            var employee = "{{request.user.employee_get.id}}";
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'check-interview-conflicts' %}",
+                data: {
+                    start_date: startDate,
+                    end_date: endDate,
+                    employee_id: employee,
+                },
+                success: function (response) {
+                    var interviews = response.interviews;
+
+                    title = "Leave Request Alert.";
+                    var content = `<div>
+                        <p>{{request.user.employee_get}} has interview in the requested date.</p>
+                        <ol style="margin-left:5%">`;
+                            interviews.forEach(function (interview, index) {
+                                content += `<li style="text-align:left; font-size:14px">${interview}</li>`;
+                            });
+                            content += `</ol>
+                            <p style="font-weight:700">Are you sure you want to proceed with the request?</p>
+                        </div>`;
+
+                        if (interviews.length != 0) {
+                            Swal.fire({
+                                title: title,
+                                icon: "info",
+                                html: content,
+                                showCancelButton: true,
+                                confirmButtonColor: "#008000",
+                                cancelButtonColor: "#d33",
+                                confirmButtonText: "Confirm",
+                            }).then(function (result) {
+                                if (result.isConfirmed) {
+                                    test.find("[type=submit]").show();
+                                    $("#buttonID").hide();
+                                test.find("[type=submit]").click();
+                            }
+                        });
+                    } else {
+                        test.find("[type=submit]").click();
+                    }
+                },
+            });
+        });
+    });
+    {% endif %}
+</script>

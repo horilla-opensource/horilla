@@ -1,0 +1,33 @@
+{% load i18n %}
+<div >
+    {% for employee in instance.employee_id.all %}
+    <div id="employeeContainer{{employee.id}}-{{instance.id}}">
+        <span class="oh-user-panel oh-collapse-panel" data-type="user" >
+            <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                    <img
+                    src="https://ui-avatars.com/api/?name={{employee.get_full_name}}&background=random"
+                    class="oh-profile__image"
+                    alt="Baby C."
+                    />
+                </div>
+                <span class="oh-profile__name oh-text--dark" title="{{employee.get_full_name}}"
+                >{{employee.get_full_name|truncatechars:15}}</span>
+            </div>
+            {% if perms.pms.change_meetings or request.user.employee_get in instance.manager.all %}
+            <a
+                hx-confirm="{% trans 'Are you sure to remove this employee?' %}"
+                hx-post="{% url 'meeting-employee-remove' instance.id employee.id %}"
+                title="{% trans "Remove" %}" hx-swap="outerHTML"
+                hx-target="#employeeContainer{{employee.id}}-{{instance.id}}" class="oh-user-panel__remove"
+                onclick="event.stopPropagation()"
+            >
+                <ion-icon name="close-outline"></ion-icon>
+            </a>
+            {% endif %}
+        </span>
+    </div>
+    {% endfor %}
+    <span class="count-span">{{instance.employee_id.all|length}} {% trans "Employees" %}</span>
+
+</div>

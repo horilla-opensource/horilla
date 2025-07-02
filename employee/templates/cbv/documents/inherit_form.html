@@ -1,0 +1,38 @@
+{% load i18n %}
+<div>
+    {% include 'generic/horilla_form.html' %}
+</div>
+<style>
+  .file-validation {
+    color: #4f5bd9;
+    background-color: #d8e7f0;
+    border-color: #d6e9c6;
+    border: 1px solid transparent;
+    border-radius: 4px;
+
+  }</style>
+<script>
+  $(document).ready(function () {
+      $("#id_notify_before_parent_div").addClass("d-none");
+      $("#id_expiry_date").on("change", function () {
+        if ($(this).val()) {
+          $("#id_notify_before_parent_div").removeClass("d-none");
+      } else {
+          $("#id_notify_before_parent_div").addClass("d-none");
+      }
+    });
+
+    var infoBox = `
+          <div class="file-validation" style="margin-left:10px;">
+            <ul style="list-style-type: disc;">
+                <li>Upload PDF file</li>
+                <li>Max size of the file: 5 MB</li>
+            </ul>
+      </div>
+      `;
+
+      // Append the info box before the Save button
+      $("#id_expiry_date_parent_div").before(infoBox);
+
+    });
+  </script>

@@ -1,0 +1,50 @@
+{% load i18n static %}
+<div>
+    {% include "generic/horilla_profile_view.html" %}
+</div>
+
+<form  hidden action="{% url 'employee-reset-password' %}" method="post" role="button"
+style="display: flex;">
+<ion-icon name="key-outline" style="width: 20px; height: 20px; "></ion-icon>
+{% csrf_token %}
+<input name="email" hidden value="{{instance.employee_user_id.username}}" />
+<button  id="reset-button" type="submit" style="border: none; background: transparent;">{% trans "Send password reset link" %} </button>
+</form>
+
+
+<form hidden action="{% url 'employee-account-block-unblock' instance.id %}" id="block-form">
+{% csrf_token %}
+<img src="{% static 'images/ui/block-user.png' %}" style="width: 20px; height: 20px; ">
+<button  id="block-button" type="submit" style=" border: none; background: transparent;">
+        {% trans "Block Account" %}
+</button>
+</form>
+
+
+{% comment %} <script>
+    document.getElementById('block-button').onclick = function() {
+        var message = '{% if instance.employee_user_id.is_active %}{% trans "Do you really want to prevent this employee from accessing and logging into this webpage?" %}{% else %}{% trans "Do you really want to allow this employee to access and log into this webpage?" %}{% endif %}';
+        return confirm(message);
+    };
+</script> {% endcomment %}
+
+<script>
+    $('#block-account').click(function() {
+    var message = '{% if instance.employee_user_id.is_active %}{% trans "Do you really want to prevent this employee from accessing and logging into this webpage?" %}{% else %}{% trans "Do you really want to allow this employee to access and log into this webpage?" %}{% endif %}';
+
+        Swal.fire({
+            text: message,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "green",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirm",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Redirect to the URL
+                document.getElementById('block-form').submit();
+            }
+        });
+    });
+</script>

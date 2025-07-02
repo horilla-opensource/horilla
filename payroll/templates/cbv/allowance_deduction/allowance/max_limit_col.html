@@ -1,0 +1,6 @@
+{% load i18n %}
+{% if instance.has_max_limit %}
+<span class="oh-timeoff-modal__stat-count">{{instance.maximum_amount}} {{currency}} {% if instance.based_on == "basic_pay" %}{% trans "For working days on a month" %}{% endif %}</span>
+{% else %}
+<span class="oh-timeoff-modal__stat-count">{% trans "No" %}</span>
+{% endif %}

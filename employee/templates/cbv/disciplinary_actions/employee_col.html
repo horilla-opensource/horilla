@@ -1,0 +1,40 @@
+{% load i18n %} {% load basefilters %}
+    <div class="oh-permission-table--toggle" data-toggle-count onclick="event.stopPropagation()">
+      <div class="d-flex align-items-center">
+
+        <button class="oh-permission-table__collapse me-2">
+          <span  title="{% trans "Reveal" %}" class="reveal-span"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
+          <span  title="{% trans "Collapse" %}" class="collapse-span"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
+        </button>
+        <span class="count-span" style="font-style:italic;color:hsl(0deg,0%,37%);">{{instance.employee_id.all|length}}
+          {% if instance.employee_id.all|length > 1 %}
+            {% trans "Employees" %}
+          {% else %}
+            {% trans "Employee" %}
+          {% endif %}
+        </span>
+      </div>
+      {% for emp in instance.employee_id.all %}
+        <span class="oh-user-panel oh-collapse-panel" data-type="user">
+          <div class="oh-profile oh-profile--md">
+            <div class="oh-profile__avatar mr-1">
+              <img
+              src="https://ui-avatars.com/api/?name={{emp.get_full_name}}&background=random"
+              class="oh-profile__image"
+              alt="Baby C."
+              />
+            </div>
+            <span class="oh-profile__name oh-text--dark" title="{{emp}}"
+            >{{emp.get_full_name}}</span>
+          </div>
+          {% if perms.payroll.change_disciplinaryaction or perms.payroll.delete_disciplinaryaction %}
+          <a title="{% trans "Remove" %}" hx-post="{% url 'remove-employee-disciplinary-action' instance.id emp.id %}" hx-target="#listContainer" class="oh-user-panel__remove"
+            hx-confirm="{% trans 'Are you sure want to remove this employee from this action?' %}">
+            <ion-icon name="close-outline"></ion-icon>
+          </a>
+          {% else %}
+          <a class="oh-user-panel__remove"> </a>
+          {% endif%}
+        </span>
+      {% endfor %}
+    </div>

@@ -10,7 +10,7 @@
     </div>
     <div class="oh-modal__dialog-body">
         <div class="oh-general__tab-target oh-profile-section" id="personal">
-            <form hx-post="{% url 'request-new-attendance' %}?bulk={{bulk}}" hx-target="#objectCreateModalTarget" id="attendanceRequestForm">
+            <form hx-post="{% url 'request-new-attendance' %}"  id="attendanceRequestForm" hx-encoding="multipart/form-data">
                 {% csrf_token %}
                 <div class="oh-profile-section__card">
                     <div class="row">
@@ -53,7 +53,7 @@
 
                     <div class="d-flex flex-row-reverse">
                         <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
-                            {% trans "Request" %}
+                          {% trans "Save" %}
                         </button>
                     </div>
                 </div>

@@ -1,0 +1,34 @@
+{% load i18n %}
+<style>
+
+.oh-info {
+    top :0px !important;
+}
+
+</style>
+<div class="col-span-12">
+    <form  action="{% url 'encashment-condition-create' %}" method="post">
+        {% csrf_token %}
+
+                <div class="flex align-center gap-2 ">
+                    <div class="w-full">
+                        <div class="flex space-x-2 pb-2">
+                            <label> {% trans "Bonus Unit" %}</label>
+                            <span class="oh-info" title="{% trans "Set the amount for one bonus points encashment (unit)" %}">
+                            </span>
+                        </div>
+                        {{ encashment_form.bonus_amount }}
+                    </div>
+                    <div class="w-full">
+                        <div class="flex space-x-2 pb-2">
+                            <label> {% trans "Leave Unit" %}</label>
+                            <span class="oh-info" title="{% trans "Set the amout for one leave encashment" %}">
+                            </span>
+                        </div>
+                        {{ encashment_form.leave_amount }}
+                    </div>
+                    <button class="btn mt-[23px] mb-[12px]" type="submit">
+                        {% trans 'Save Changes' %}</button>
+                </div>
+    </form>
+</div>

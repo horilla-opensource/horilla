@@ -1,0 +1,11 @@
+<div>
+    {% include 'generic/horilla_nav.html' %}
+</div>
+
+<script>
+    var currentYear = new Date().getFullYear();
+    $('#applyFilter').closest('form').find('[name=year]').val(currentYear);
+    $('#applyFilter').closest('form').find('[name=field]').val('month');
+    $('#applyFilter').click();
+
+</script>

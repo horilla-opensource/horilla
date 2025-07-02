@@ -1,0 +1,104 @@
+{% load i18n %}
+{% load static %}
+{% include "generic/components.html" %}
+{% comment %} {% include "generic/components.html" %} {% endcomment %}
+<div id="interview">
+{% if candidate.candidate_interview.exists %}
+<div class="mt-4 d-flex">
+  <span class="oh-activity-sidebar__title fw-bold">{{candidate}}'s {% trans "Scheduled Interviews" %}</span>
+</div>
+<div class="d-flex" style="flex-direction: row-reverse;">
+  <button type="button" hx-get='{% url "interview-schedule" candidate.id %}' title="{% trans "Schedule Interview" %}"
+        hx-target="#genericModalBody"
+        hx-swap="innerHTML"
+        data-target="#genericModal"
+        class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+        data-toggle="oh-modal-toggle">
+        <ion-icon name="add" class="mr-1 md hydrated" role="img" aria-label="add"></ion-icon>
+        {% trans "Add" %}
+  </button>
+</div>
+
+  <ol class="oh-activity-sidebar__qa-list" role="list">
+    {% for interview_schedule in candidate.candidate_interview.all %}
+      <li class="oh-activity-sidebar__qa-item">
+        <span class="oh-activity-sidebar__q" style="font-size:16px;">
+          <span class="float-end" title="{% trans "Delete" %}" hx-get="{% url 'delete-interview' interview_schedule.id %}?view=false"
+                data-target="#activitySidebar"
+                hx-swap="innerHTML" hx-target="#interview">
+            <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated"
+                aria-label="close outline"></ion-icon>
+          </span>
+          <span class="float-end" title="{% trans "Edit" %}" hx-get="{% url 'edit-interview' interview_schedule.id %}?view=false"
+                data-target="#genericModal" hx-swap="innerHTML" hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle">
+            <ion-icon name="create-outline" style="font-size: 19px" role="img" class="md hydrated"
+                aria-label="create outline"></ion-icon>
+          </span>
+          {{forloop.counter}}.<span class="ms-1 mb-2"> {% trans "Date" %} :</span> <span class="ms-2 dateformat_changer">{{ interview_schedule.interview_date }}</span>
+          <span class="d-flex ms-3 mb-2 mt-2">{% trans "Time" %} : <span class=" ms-2 timeformat_changer">{{ interview_schedule.interview_time }}</span></span>
+          <span class="ms-3">{% trans "Interviewer" %} :</span>
+            {% for interviewer in  interview_schedule.employee_id.all %}
+              &nbsp<i id="fabIcon" style="font-size:12px;" class="material-icons">radio_button_checked</i> {{ interviewer }}
+            {% endfor %}
+            <br>
+            {% if interview_schedule.description %}
+              <span class="d-flex ms-3 mb-2 mt-2">{% trans "Description" %} : <span class=" ms-2">{{ interview_schedule.description }}</span>
+            {% endif %}
+        </span>
+        {% if interview_schedule.completed %}
+            <div class="d-flex" style="color:green;">
+                <i id="fabIcon" style="font-size:18px;" class="material-icons ms-3 mt-2">check_circle</i>
+                <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Completed" %}</span>
+            </div>
+        {% elif interview_schedule.interview_date|date:"Y-m-d" < now|date:"Y-m-d" %}
+            <div class="d-flex" style="color:red;">
+                <i id="fabIcon" style="font-size:18px" class="material-icons ms-3 mt-2">dangerous</i>
+                <span class="oh-activity-sidebar__q mt-2">{% trans "Expired Interview" %}</span>
+            </div>
+        {% elif interview_schedule.interview_date|date:"Y-m-d" > now|date:"Y-m-d" %}
+            <div class="d-flex" style="color:orange;">
+                <i id="fabIcon" title="{{interview_schedule.interview_date|timeuntil}}" style="font-size:18px;" class="material-icons ms-3 mt-2">schedule</i>
+                <span class="oh-activity-sidebar__q mt-2">{% trans "Upcoming Interview" %}</span>
+            </div>
+        {% elif interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" and not interview_schedule.completed %}
+            <div class="d-flex" style="color:blue;">
+                <i id="fabIcon" style="font-size:18px;" class="material-symbols-outlined ms-3 mt-2">today</i>
+                <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Today" %}</span>
+            </div>
+        {% endif %}
+
+      </li>
+
+    {% endfor %}
+  </ol>
+{% else %}
+  <div class="mt-4 d-flex">
+    <span class="oh-activity-sidebar__title fw-bold">{{candidate}}'s {% trans "Scheduled Interviews" %}</span>
+  </div>
+  <div class="d-flex" style="flex-direction: row-reverse;">
+    <button type="button" hx-get='{% url "interview-schedule" candidate.id %}' title="{% trans "Schedule Interview" %}"
+          hx-target="#genericModalBody"
+          hx-swap="innerHTML"
+          data-target="#genericModal"
+          class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+          data-toggle="oh-modal-toggle">
+          <ion-icon name="add" class="mr-1 md hydrated" role="img" aria-label="add"></ion-icon>
+          {% trans "Add" %}
+    </button>
+  </div>
+
+
+  <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
+    <div align="center">
+      <img src="{% static "images/ui/interview.png" %}" class="oh-404__image" alt="Page not found. 404.">
+      <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "No interviews are scheduled for this candidate." %}</h5>
+    </div>
+  </div>
+
+    {% comment %} <div class='d-flex mt-5' style='margin-left:30%;'>
+      <img style="width: 80px;height: 90px;" src="{% static 'images/ui/interview.png' %}"/>
+      <h5 class="oh-404__subtitle mt-4 ml-2">{% trans "No interviews are scheduled for this candidate" %}</h5>
+    </div> {% endcomment %}
+{% endif %}
+</div>

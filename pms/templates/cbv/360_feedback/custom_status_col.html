@@ -1,0 +1,22 @@
+{% load i18n %}
+<style>
+    .oh-dot--colorOn {
+        background-color: yellowgreen
+    }
+    .oh-dot--colorBehind {
+        background-color: hsl(40deg, 91%, 60%)
+    }
+
+    .oh-dot--colorAt {
+        background-color: hsl(1deg, 100%, 61%)
+    }
+    .oh-dot--colorClosed {
+        background-color: hsl(204deg, 70%, 53%)
+    }
+
+    .oh-dot--colorNot {
+        background-color: hsla(270, 5%, 48%, 0.709)
+    }
+</style>
+<span class="oh-dot oh-dot--small  me-1 oh-dot--color{{ instance.status }}"></span>
+              <span>{% trans instance.status %}</span>

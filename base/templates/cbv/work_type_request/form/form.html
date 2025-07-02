@@ -1,0 +1,27 @@
+<div>
+    {% include "generic/horilla_form.html" %}
+<div>
+<script>
+
+    {% comment %} var textarea = document.querySelector('#dynamic_field_description textarea[name="description"]')
+    if (textarea) {
+        var currentValue = textarea.value;
+        textarea.value = currentValue + '(copy)';
+    } {% endcomment %}
+
+function toggleFunctionWorkTypeRequestForm(){
+    if ($("#id_is_permanent_work_type").is(":checked")) {
+        $("[id=id_requested_till_parent_div]").hide();
+      } else {
+        $("[id=id_requested_till_parent_div]").show();
+      }
+    }
+        $(document).ready(function(){
+          $("[type=checkbox]").change(function (e) {
+          e.preventDefault();
+          toggleFunctionWorkTypeRequestForm();
+          });
+        })
+        toggleFunctionWorkTypeRequestForm();
+
+</script>

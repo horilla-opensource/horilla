@@ -1,382 +1,178 @@
-# **Horilla 🦍** [![LGPL License](https://img.shields.io/badge/license-LGPL-green.svg)](https://www.gnu.org/licenses/lgpl-3.0)  [![Docker](https://img.shields.io/badge/Docker-Horilla-blue?logo=docker)](https://hub.docker.com/r/horilla/horilla)
+# Horilla HRMS
 
-**Horilla** is a Free and Open Source HRMS (Human Resource Management System) Software designed to streamline HR processes and enhance organizational efficiency.
+[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![Django](https://img.shields.io/badge/django-5.0+-green.svg)](https://www.djangoproject.com/)
+[![Stars](https://img.shields.io/github/stars/horilla-opensource/horilla)](https://github.com/horilla-opensource/horilla/stargazers)
+[![Forks](https://img.shields.io/github/forks/horilla-opensource/horilla)](https://github.com/horilla-opensource/horilla/network/members)
 
-![Horilla Screenshot](https://github.com/horilla-opensource/horilla/assets/131998600/1317bd0a-03a8-40be-8fb2-ecb655bb5c13)
+> **A comprehensive, free, and open-source Human Resource Management System (HRMS) designed to streamline HR operations and enhance organizational efficiency.**
 
----
+## 🚀 Features
 
-## **Installation**
-
-Horilla can be installed on your system by following the steps below. Ensure you have **Python**, **Django**, and a **database** (preferably PostgreSQL) installed as prerequisites.
-
----
-
-## **Prerequisites**
-
-### **1. Python Installation**
-
-#### **Ubuntu**
-1. Open the terminal and install Python:
-   ```bash
-   sudo apt-get install python3
-   ```
-2. Verify the installation:
-   ```bash
-   python3 --version
-   ```
-
-#### **Windows**
-1. Download Python from the [official website](https://www.python.org/downloads/windows/).
-2. During installation, ensure you select **"Add Python to PATH"**.
-3. Verify the installation:
-   ```bash
-   python3 --version
-   ```
-
-#### **macOS**
-1. Install Homebrew (if not already installed):
-   ```bash
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   ```
-2. Install Python:
-   ```bash
-   brew install python
-   ```
-3. Verify the installation:
-   ```bash
-   python3 --version
-   ```
-
----
+### Core HR Modules
+- 👥 **Employee Management** - Centralized workforce data with LDAP integration
+- 🎯 **Recruitment** - End-to-end hiring process from job posting to onboarding
+- 📋 **Onboarding & Offboarding** - Structured workflows for employee lifecycle
+- ⏰ **Attendance & Time Tracking** - Biometric integration and automated check-in/out
+- 🏖️ **Leave Management** - Policy enforcement, approvals, and balance tracking
+- 💰 **Payroll** - Automated salary processing, tax calculations, and compliance
+- 📊 **Performance Management** - Goal setting, reviews, and continuous feedback
+- 🏢 **Asset Management** - Track and manage company resources
+- 🎫 **Helpdesk** - Centralized HR support and ticketing system
 
 
-### **2. PostgreSQL Installation**
+## 📋 Table of Contents
 
-#### **Ubuntu**
-1. **Update System Packages**:
-   ```bash
-   sudo apt update && sudo apt upgrade -y
-   ```
+- [Quick Start](#-quick-start)
+- [Installation](#-installation)
+- [Deployment](#-deployment)
+- [Contributing](#-contributing)
+- [Security](#-security)
+- [Support](#-support)
+- [License](#-license)
 
-2. **Install PostgreSQL**:
-   ```bash
-   sudo apt install postgresql postgresql-contrib -y
-   ```
+## ⚡ Quick Start
 
-3. **Start and Enable PostgreSQL**:
-   ```bash
-   sudo systemctl start postgresql
-   sudo systemctl enable postgresql
-   ```
+### Using Docker (Recommended)
 
-4. **Verify Installation**:
-   ```bash
-   psql --version
-   ```
-
-5. **Configure PostgreSQL Database and User**:
-   - Switch to the `postgres` user:
-     ```bash
-     sudo su postgres
-     psql
-     ```
-   - Create a new role and database:
-     ```sql
-     CREATE ROLE horilla LOGIN PASSWORD 'horilla';
-     CREATE DATABASE horilla_main OWNER horilla;
-     \q
-     ```
-   - Exit the `postgres` user:
-     ```bash
-     exit
-     ```
-
----
-
-#### **Windows**
-1. **Download PostgreSQL**:
-   - Download the installer from the [PostgreSQL Official Site](https://www.postgresql.org/download/windows/).
-
-2. **Install PostgreSQL**:
-   - Follow the setup wizard and set a password for the PostgreSQL superuser.
-
-3. **Verify Installation**:
-   ```powershell
-   psql -U postgres
-   ```
-
-4. **Configure PostgreSQL Database and User**:
-   - Access PostgreSQL:
-     ```powershell
-     psql -U postgres
-     ```
-   - Create a new role and database:
-     ```sql
-     CREATE ROLE horilla LOGIN PASSWORD 'horilla';
-     CREATE DATABASE horilla_main OWNER horilla;
-     \q
-     ```
-
----
-
-#### **macOS**
-1. **Install PostgreSQL via Homebrew**:
-   ```bash
-   brew install postgresql
-   ```
-
-2. **Start PostgreSQL**:
-   ```bash
-   brew services start postgresql
-   ```
-
-3. **Verify Installation**:
-   ```bash
-   psql --version
-   ```
-
-4. **Configure PostgreSQL Database and User**:
-   - Create a database and user:
-     ```bash
-     createdb horilla_main
-     createuser horilla
-     psql -c "ALTER USER horilla WITH PASSWORD 'horilla';"
-     ```
-
----
-
-## **Install Horilla**
-
-Follow the steps below to install **Horilla** on your system. Horilla is compatible with **Ubuntu**, **Windows**, and **macOS**.
-
----
-
-### **1. Clone the Repository**
-
-#### **Ubuntu**
 ```bash
-sudo git init
-sudo git remote add horilla https://horilla-opensource@github.com/horilla-opensource/horilla.git
-sudo git pull horilla master
+# Clone the repository
+git clone https://github.com/horilla-opensource/horilla.git
+cd horilla
+
+# Start with Docker Compose
+docker-compose up -d
+
+# Access the application
+open http://localhost:8000
 ```
 
-#### **Windows**
-```powershell
-git init
-git remote add horilla https://horilla-opensource@github.com/horilla-opensource/horilla.git
-git pull horilla master
-```
+### Manual Installation
 
-#### **macOS**
 ```bash
-git init
-git remote add horilla https://horilla-opensource@github.com/horilla-opensource/horilla.git
-git pull horilla master
-```
+# Clone and setup
+git clone https://github.com/horilla-opensource/horilla.git
+cd horilla
 
-### **2. Set Up Python Virtual Environment**
+# Create virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-#### **Ubuntu**
-1. Install `python3-venv`:
-   ```bash
-   sudo apt-get install python3-venv
-   ```
-2. Create and activate the virtual environment:
-   ```bash
-   python3 -m venv horillavenv
-   source horillavenv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+# Install dependencies
+pip install -r requirements.txt
 
-#### **Windows**
-1. Create and activate the virtual environment:
-   ```powershell
-   python -m venv horillavenv
-   .\horillavenv\Scripts\activate
-   ```
-2. Install dependencies:
-   ```powershell
-   pip install -r requirements.txt
-   ```
+# Setup environment
+cp .env.dist .env
+# Edit .env with your configuration
 
-#### **macOS**
-1. Create and activate the virtual environment:
-   ```bash
-   python3 -m venv horillavenv
-   source horillavenv/bin/activate
-   ```
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-
-### **3. Configure Environment Variables**
-
-1. Rename the environment file:
-   ```bash
-   mv .env.dist .env
-   ```
-
-2. Edit the `.env` file and set the following values:
-   ```env
-   DEBUG=True
-   TIME_ZONE=Asia/Kolkata
-   SECRET_KEY=django-insecure-j8op9)1q8$1&@^s&p*_0%d#pr@w9qj@lo=3#@d=a(^@9@zd@%j
-   ALLOWED_HOSTS=www.example.com,example.com,*
-   DB_INIT_PASSWORD=d3f6a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d
-   DB_ENGINE=django.db.backends.postgresql
-   DB_NAME=horilla_main
-   DB_USER=horilla
-   DB_PASSWORD=horilla
-   DB_HOST=localhost
-   DB_PORT=5432
-   ```
-
----
-
-### **4. Run Django Migrations**
-
-Follow these steps to run migrations and set up the database.
-
-#### **Ubuntu/macOS**
-1. Apply migrations:
-   ```bash
-   python3 manage.py makemigrations
-   python3 manage.py migrate
-   ```
-
-#### **Windows**
-1. Apply migrations:
-   ```powershell
-   python manage.py makemigrations
-   python manage.py migrate
-   ```
----
-
-### **5. Enable Translation**
-
-To enable translations and breadcrumbs text, compile the translations using the following commands.
-
-#### **Ubuntu/macOS**
-```bash
-python3 manage.py compilemessages
-```
-
-#### **Windows**
-```powershell
+# Initialize database
+python manage.py migrate
 python manage.py compilemessages
-```
+python manage.py collectstatic
 
----
-
-### **6. Run the Project**
-
-To run the project locally, execute the following commands.
-
-#### **Ubuntu/macOS**
-```bash
-python3 manage.py runserver
-```
-
-#### **Windows**
-```powershell
+# Run development server
 python manage.py runserver
 ```
 
----
 
-### **Accessing Horilla**
+## 🛠 Installation
 
-If everything is configured correctly, you should be able to access your Horilla app at **http://localhost:8000**.
-![Initialize Database in Horilla HRMS](https://www.horilla.com/wp-content/uploads/2024/12/how-to-initialize-the-database-in-horilla-hrms-step-by-step-1-1024x576.png)
+For detailed installation instructions, configuration guides, and platform-specific setup instructions, please visit our comprehensive documentation:
+
+### 📖 [Complete Installation Guide → docs.horilla.com/technical/v2.0/ ](https://docs.horilla.com/technical/v2.0/)
+
+Our documentation includes:
+- **Step-by-step installation** for all supported platforms
+- **Database configuration** guides
+- **Environment setup** instructions
+- **Production deployment** best practices
+- **Troubleshooting** common issues
+- **Advanced configuration** options
+
+<!-- Need help? Check out the [Installation FAQ](https://docs.horilla.com) or reach out to our [community support](#-support). -->
+
+## 🚀 Deployment
+
+For production deployment guides including Nginx, Apache, and cloud platforms:
+### 📖 [Deployment Guide → docs.horilla.com/technical/v2.0/doc/deployment/nginx-gunicorn](https://docs.horilla.com/technical/v2.0/doc/deployment/nginx-gunicorn)
 
 
-#### **Initial Setup**
-From the login page, you will have two options:
-1. **Initialize Database**: Use this option to initialize the Horilla database by creating a super admin, headquarter company, department, and job position. Authenticate using the `DB_INIT_PASSWORD` specified in the `.env` file.
-2. **Load Demo Data**: Use this option if you want to work with demo data. Authenticate using the `DB_INIT_PASSWORD` specified in the `.env` file.
+## 🤝 Contributing
 
-#### **Running on a Custom Port**
-If you wish to run the Horilla application on a different port, specify the port number after the `runserver` command. For example:
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Setup
+
 ```bash
-python3 manage.py runserver 8080  # For Ubuntu/macOS
-python manage.py runserver 8080   # For Windows
+# Fork and clone your fork
+git clone https://github.com/YOUR_USERNAME/horilla.git
+cd horilla
+
+# Add upstream remote
+git remote add upstream https://github.com/horilla-opensource/horilla.git
+
+# Create feature branch
+git checkout -b feature/your-feature-name
+
+# Install development dependencies
+pip install -r requirements.txt
+
+# Submit pull request
 ```
 
+### Code Standards
 
-## **Features**
+- Follow [PEP 8](https://pep8.org/) for Python code
+- Use [Black](https://black.readthedocs.io/) for code formatting
+- Write tests for new features
+- Update documentation for user-facing changes
 
-- **Recruitment**
-- **Onboarding**
-- **Employee Management**
-- **Attendance Tracking**
-- **Leave Management**
-- **Asset Management**
-- **Payroll**
-- **Performance Management System**
-- **Offboarding**
-- **Helpdesk**
+## 🔒 Security
 
----
+### Security Features
 
-## **Roadmap**
+- 🔐 **Authentication & Authorization** - Role-based access control
+- 🛡️ **Data Protection** - Encrypted sensitive data storage
+- 🔍 **Audit Trails** - Comprehensive activity logging
+- 🚫 **Input Validation** - XSS and injection protection
+- 🔒 **Session Security** - Secure session management
 
-- **Calendar App** - Development Under Process
-- **Project Management** - Development Under Process
-- **Chat App** - Development Under Process
-- **More to come...**
+### Reporting Security Issues
 
----
+Please report security vulnerabilities to **support@horilla.com**. Do not create public GitHub issues for security vulnerabilities.
 
-## **Languages and Tools Used**
+### Security Best Practices
 
-<p align="left">
-  <a href="https://getbootstrap.com" target="_blank" rel="noreferrer">
-    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-plain-wordmark.svg" alt="bootstrap" width="40" height="40"/>
-  </a>
-  <a href="https://www.chartjs.org" target="_blank" rel="noreferrer">
-    <img src="https://www.chartjs.org/media/logo-title.svg" alt="chartjs" width="40" height="40"/>
-  </a>
-  <a href="https://www.w3schools.com/css/" target="_blank" rel="noreferrer">
-    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="css3" width="40" height="40"/>
-  </a>
-  <a href="https://www.djangoproject.com/" target="_blank" rel="noreferrer">
-    <img src="https://cdn.worldvectorlogo.com/logos/django.svg" alt="django" width="40" height="40"/>
-  </a>
-  <a href="https://git-scm.com/" target="_blank" rel="noreferrer">
-    <img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="40" height="40"/>
-  </a>
-  <a href="https://www.w3.org/html/" target="_blank" rel="noreferrer">
-    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="html5" width="40" height="40"/>
-  </a>
-  <a href="https://www.linux.org/" target="_blank" rel="noreferrer">
-    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" alt="linux" width="40" height="40"/>
-  </a>
-  <a href="https://www.postgresql.org" target="_blank" rel="noreferrer">
-    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/postgresql/postgresql-original-wordmark.svg" alt="postgresql" width="40" height="40"/>
-  </a>
-  <a href="https://www.python.org" target="_blank" rel="noreferrer">
-    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
-  </a>
-</p>
+- Always use HTTPS in production
+- Regularly update dependencies
+- Use strong passwords and enable 2FA
+- Monitor logs for suspicious activities
 
----
+## 📞 Support
 
-## **Authors**
+### Community Support
 
-[Cybrosys Technologies](https://www.cybrosys.com/)
+- 📖 **Documentation**: [docs.horilla.com](https://docs.horilla.com)
+- 💬 **GitHub Discussions**: [GitHub Discussions](https://github.com/horilla-opensource/horilla/discussions)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/horilla-opensource/horilla/issues)
+- ✨ **Feature Requests**: [GitHub Issues](https://github.com/horilla-opensource/horilla/issues)
 
----
+### Professional Support
 
-## **About**
+For enterprise support, custom development, and consulting services:
+- 📧 **Email**: support@horilla.com
+- 🌐 **Website**: [www.horilla.com](https://www.horilla.com)
 
-[Horilla](https://www.horilla.com/) is an open-source HRMS solution designed to simplify HR operations and improve organizational efficiency.
 
----
+## 📄 License
 
-This README provides a comprehensive guide to installing and setting up Horilla on various platforms. If you encounter any issues, feel free to reach out to the Horilla community for support. Happy coding! 🚀
+This project is licensed under the [LGPL-2.1 License](LICENSE) - see the LICENSE file for details.
+
+<div align="center">
+
+**Made with ❤️ by the Horilla Team**
+
+[⭐ Star us on GitHub](https://github.com/horilla-opensource/horilla) | [🐛 Report Bug](https://github.com/horilla-opensource/horilla/issues) | [💡 Request Feature](https://github.com/horilla-opensource/horilla/issues)
+
+</div>

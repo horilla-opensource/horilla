@@ -12,10 +12,10 @@
             class="oh-sticky-table__tr oh-multiple-table-sort__movable"
             data-employee="{{employee.employee_id.get_full_name}}"
             data-employee-id="{{ employee.id }}"
-            hx-get='{% url "offboarding-individual-view" employee.id %}?requests_ids={{offboarding.employee_ids}}'
-            hx-target='#objectDetailsModalTarget'
+            hx-get='{% url "offboarding-individual-view" employee.id %}?instance_ids={{offboarding.employee_ids}}'
+            hx-target='#genericModalBody'
             data-toggle = 'oh-modal-toggle'
-            data-target="#objectDetailsModal"
+            data-target="#genericModal"
         >
             <div class="oh-sticky-table__sd">
                 <div class="oh-profile oh-profile--md">
@@ -101,7 +101,7 @@
                         {% else %}
                         <a
                             type="button"
-                            hx-get="{% url "add-employee" %}?instance_id={{employee.id}}&stage_id={{stage.grouper.id}}"
+                            hx-get="{% url "add-employee" employee.id %}?stage_id={{stage.grouper.id}}"
                             hx-target="#objectDetailsModalTarget"
                             data-toggle="oh-modal-toggle"
                             data-target="#objectDetailsModal"

@@ -1,17 +1,5 @@
 {% load static %} {% load i18n %}
-<div class="oh-modal__dialog-header pb-0">
-    <h2 class="oh-modal__dialog-title" id="attendanceExportLavel">
-        {% trans "Export Attendance Activities" %}
-    </h2>
-    <button class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-    </button>
-</div>
-<div class="oh-modal__dialog-body" id="attendanceExportModalBody">
-    <form action="{%url 'attendance-activity-info-export' %}" method="get"
-        onsubmit="event.stopPropagation();$(this).parents().find('.oh-modal--show').last().toggleClass('oh-modal--show');"
-        id="attendanceExportForm" class="oh-profile-section">
-        {% csrf_token %}
+
         <div class="oh-dropdown__filter-body" id="export_attendance_form">
             <div class="oh-accordion">
                 <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
@@ -144,8 +132,3 @@
                 </div>
             </div>
         </div>
-        <div class="oh-modal__dialog-footer p-0 pt-3">
-            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans 'Export' %}</button>
-        </div>
-    </form>
-</div>

@@ -1,0 +1,38 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Resignation" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Employee" %}</label>
+              {{form.employee_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Status" %}</label>
+              {{form.status}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Reporting manager" %}</label>
+              {{form.employee_id__employee_work_info__reporting_manager_id}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Department" %}</label>
+              {{form.employee_id__employee_work_info__department_id}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Planned to resign" %}</label>
+              {{form.planned_to_leave_on}}
+            </div>
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Job position" %}</label>
+              {{form.employee_id__employee_work_info__job_position_id}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

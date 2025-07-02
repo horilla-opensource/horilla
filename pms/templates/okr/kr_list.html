@@ -38,6 +38,7 @@
             </div>
             <div class="oh-sticky-table__tbody">
                 {% for kr in krs.object_list %}
+
                     <div class="oh-sticky-table__tr" data-kr-id="{{kr.id}}"
                         {% comment %} onclick="window.location.href = `{% url 'ticket-detail' ticket.id %}`" {% endcomment %}
                     >
@@ -73,8 +74,9 @@
                         <div class="oh-sticky-table__td">
                             <input
                                 id = {{kr.id}}
-                                type="number" class="oh-input p-1"  min="0"
-                                max="{{kr.target_value}}"
+                                type="number" class="oh-input p-1"
+                                style="width: 100px;"
+                                min="0"
                                 value="{{kr.current_value}}"
                                 {% comment %} hx-post="{%url 'employee-keyresult-update-current_value' kr.id %}"
                                 hx-trigger="change"
@@ -109,9 +111,9 @@
                                         class="oh-btn oh-btn--light-bkg w-50"
                                         title="{% trans 'Edit' %}"
                                         data-toggle="oh-modal-toggle"
-                                        data-target="#objectCreateModal"
+                                        data-target="#genericModal"
                                         hx-get='{% url "employee-key-result-update" kr.id %}'
-                                        hx-target="#objectCreateModalTarget"
+                                        hx-target="#genericModalBody"
                                     >
                                         <ion-icon name="create-outline"></ion-icon>
                                     </button>

@@ -14,7 +14,7 @@
             <span class="oh-profile__name oh-text--dark">{{ task.candidate_id.name }}</span>
           </div>
           <span class="oh-recuritment_tag  {% if task.status == 'done' %} done-task {% elif task.status == 'scheduled' %} scheduled-task{% elif task.status == 'ongoing' %} ongoing-task{% elif task.status == 'stuck' %} dd stuck-task {% elif task.status == 'todo' %} todo-task{% endif %}">
-            <select hx-swap="none" onchange="
+            <select  onchange="
             if ($(this).val() == 'done') {
                 $(this).parent().addClass('done-task')
             }else{
@@ -40,7 +40,7 @@
             }else{
                 $(this).parent().removeClass('todo-task')
             }
-            " hx-get="{% url 'change-task-status' %}?task_id={{task.id}}"
+            " hx-get="{% url 'change-task-status' %}?task_id={{task.id}}" hx-swap="afterend"
             name="status"
             class=""
             style="width: 150px;"

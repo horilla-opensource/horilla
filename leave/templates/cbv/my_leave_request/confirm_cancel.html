@@ -1,0 +1,17 @@
+{% load i18n%}
+<div class="{% if instance.status == 'rejected' %} diff-cell{% endif %}" onclick="event.stopPropagation()">
+    {% if instance.status == 'approved' and instance.end_date >= current_date %}
+        <a type="submit" data-toggle="oh-modal-toggle"
+            data-target="#cancelModal"
+            hx-get="{% url 'user-request-cancel' instance.id %}"
+            hx-target="#cancelForm"
+            title="{% trans 'Cancel' %}"
+            class="oh-btn oh-btn--primary w-100"> {% trans "Cancel" %}
+        </a>
+    {% else %}
+        <button class="oh-btn oh-btn--primary w-100" disabled>
+            {% trans "Cancel" %}
+        </button>
+    {% endif %}
+
+</div>

@@ -1,0 +1,19 @@
+{% load onboardingfilters %}
+ <div class="row ms-2">
+    {% for task in instance.candidate_task.all %}
+        <div class="col-6 ps-0 pb-1">
+            <div class="oh-timeoff-modal__stat-title mb-1"><span  class="oh-dot oh-dot--small  me-1 oh-dot--color-{{task.status}}"></span>{{task.onboarding_task_id}}, {{task.stage_id}} </div>
+            <div class="" id="task{{task.id}}{{instance.id}}">
+                {% if request.user|task_manager:task or perms.onboarding.change_candidatetask %}
+                    {% include 'onboarding/candidate_task.html' %}
+                {% else %}
+                {% for choice in choices %}
+                {% if choice.0 == task.status %}
+                {{choice.1}}
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>

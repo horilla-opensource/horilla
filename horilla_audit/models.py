@@ -6,6 +6,7 @@ from collections.abc import Iterable
 
 from django.db import models
 from django.dispatch import receiver
+from django.urls import reverse_lazy
 from simple_history.models import (
     HistoricalRecords,
     _default_get_user,
@@ -41,6 +42,33 @@ class AuditTag(models.Model):
         """
 
         app_label = "horilla_audit"
+
+    def custom_highlight_col(self):
+        """
+        return yes or no based on highlight true or false
+        """
+        return "Yes" if self.highlight else "No"
+
+    def get_update_url(self):
+        """
+        This method to get update url
+        """
+        url = reverse_lazy("settings-audit-tag-update", kwargs={"pk": self.pk})
+        return url
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        url = reverse_lazy("audit-tag-delete", kwargs={"obj_id": self.pk})
+        return url
+
+    def get_delete_instance(self):
+        """
+        to get instance for delete
+        """
+
+        return self.pk
 
 
 class HorillaAuditInfo(models.Model):

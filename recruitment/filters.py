@@ -12,12 +12,15 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from base.filters import FilterSet
+from horilla.filters import HorillaFilterSet, filter_by_name
 from recruitment.models import (
     Candidate,
     InterviewSchedule,
     LinkedInAccount,
     Recruitment,
     RecruitmentSurvey,
+    RejectReason,
+    Skill,
     SkillZone,
     SkillZoneCandidate,
     Stage,
@@ -27,7 +30,7 @@ from recruitment.models import (
 # from django.forms.widgets import Boo
 
 
-class CandidateFilter(FilterSet):
+class CandidateFilter(HorillaFilterSet):
     """
     Filter set class for Candidate model
 
@@ -36,6 +39,8 @@ class CandidateFilter(FilterSet):
     """
 
     name = django_filters.CharFilter(field_name="name", lookup_expr="icontains")
+    search = django_filters.CharFilter(method="search_by_name", lookup_expr="icontains")
+
     start_onboard = django_filters.CharFilter(
         method="start_onboard_method", lookup_expr="icontains"
     )
@@ -118,12 +123,16 @@ class CandidateFilter(FilterSet):
         ).distinct()
         return queryset
 
-    def start_onboard_method(self, queryset, _, value):
+    def search_by_name(self, queryset, _, value):
         """
-        This method will include the candidates whether they are on the onboarding pipline stage
+        search by name method
         """
-
-        return queryset.filter(onboarding_stage__isnull=False)
+        queryset = (
+            queryset.filter(name__icontains=value)
+            | queryset.filter(stage_id__stage__icontains=value)
+            | queryset.filter(stage_id__recruitment_id__title__icontains=value)
+        )
+        return queryset.distinct()
 
     class Meta:
         """
@@ -236,7 +245,7 @@ BOOLEAN_CHOICES = (
 )
 
 
-class RecruitmentFilter(FilterSet):
+class RecruitmentFilter(HorillaFilterSet):
     """
     Filter set class for Recruitment model
 
@@ -311,9 +320,12 @@ class RecruitmentFilter(FilterSet):
         first_name = parts[0]
         last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
 
-        job_queryset = queryset.filter(
-            open_positions__job_position__icontains=value
-        ) | queryset.filter(title__icontains=value)
+        job_queryset = (
+            queryset.filter(open_positions__job_position__icontains=value)
+            | queryset.filter(title__icontains=value)
+            | queryset.filter(stage_set__stage__icontains=value)
+            | queryset.filter(stage_set__candidate__name__icontains=value)
+        )
         if first_name and last_name:
             queryset = queryset.filter(
                 recruitment_managers__employee_first_name__icontains=first_name,
@@ -356,7 +368,29 @@ class RecruitmentFilter(FilterSet):
         return queryset.distinct()
 
 
-class StageFilter(FilterSet):
+class SkillsFilter(FilterSet):
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+
+    class Meta:
+        model = Skill
+        fields = [
+            "title",
+        ]
+
+
+class RejectReasonFilter(FilterSet):
+
+    search = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
+
+    class Meta:
+        model = RejectReason
+        fields = [
+            "title",
+        ]
+
+
+class StageFilter(HorillaFilterSet):
     """
     Filter set class for Stage model
 
@@ -391,7 +425,13 @@ class StageFilter(FilterSet):
         parts = value.split()
         first_name = parts[0]
         last_name = " ".join(parts[1:]) if len(parts) > 1 else ""
-        recruitment_query = queryset.filter(recruitment_id__title__icontains=value)
+        recruitment_query = (
+            queryset.filter(recruitment_id__title__icontains=value)
+            | queryset.filter(candidate__name__icontains=value)
+            | queryset.filter(
+                recruitment_id__stage_set__candidate__name__icontains=value
+            )
+        )
         # Filter the queryset by first name and last name
         stage_queryset = queryset.filter(stage__icontains=value)
         if first_name and last_name:
@@ -409,7 +449,7 @@ class StageFilter(FilterSet):
             )
 
         queryset = queryset | stage_queryset | recruitment_query
-        return queryset
+        return queryset.distinct()
 
     def pipeline_search(self, queryset, _, value):
         """
@@ -423,7 +463,7 @@ class StageFilter(FilterSet):
         return queryset.distinct()
 
 
-class SurveyFilter(FilterSet):
+class SurveyFilter(HorillaFilterSet):
     """
     SurveyFIlter
     """
@@ -628,7 +668,7 @@ class SkillZoneCandFilter(FilterSet):
         ).distinct()
 
 
-class InterviewFilter(FilterSet):
+class InterviewFilter(HorillaFilterSet):
     """
     Filter set class for Candidate model
 

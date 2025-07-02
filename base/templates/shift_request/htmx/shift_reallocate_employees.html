@@ -1,8 +1,18 @@
 {% load i18n %}
 <label
-  class="oh-label"
-  for="id_{{ form.reallocate_to.name }}"
+  class="oh-label required-star"
+  for="id_{{ form.reallocate_to.title }}"
   title="{{ form.reallocate_to.help_text|safe }}"
   >{% trans form.reallocate_to.label %}</label
 >
+<div id ="dynamic_field_task_id">
 {{form.reallocate_to}}
+</div>
+<script>
+  $(document).ready(function () {
+
+      $("select").on("select2:select", function (e) {
+          $(this).closest("select")[0].dispatchEvent(new Event("change"));
+      });
+  });
+</script>

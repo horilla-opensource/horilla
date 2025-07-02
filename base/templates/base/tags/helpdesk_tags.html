@@ -3,10 +3,15 @@
 {% block settings %}{% load static %}
 
 <!-- ******************* HELPDESK TAGS ******************* -->
+{% include "generic/components.html" %}
+<meta name="csrf-token" content="{{ csrf_token }}">
 
 <div class="oh-inner-sidebar-content">
     {% if perms.base.view_tags %}
-        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+
+	<div hx-get="{% url "helpdesk-tag-nav" %}" hx-trigger="load" >
+	</div>
+        {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
             <h2 class="oh-inner-sidebar-content__title">{% trans "Helpdesk Tags" %}</h2>
 			{% if perms.base.add_tags %}
 				<button
@@ -20,15 +25,32 @@
 					{% trans "Create" %}
 				</button>
 			{% endif %}
-        </div>
-		{% if tags %}
+        </div> {% endcomment %}
+
+
+		<div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
+  </div>
+</div>
+		{% comment %} {% if tags %}
         	{% include 'base/tags/tags_view.html' %}
 		{% else %}
 			<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
 				<img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/price-tag.png' %}" class="" alt="Page not found. 404." />
 				<h5 class="oh-404__subtitle">{% trans "There is no helpdesk tags at this moment." %}</h5>
 			</div>
-		{% endif %}
+		{% endif %} {% endcomment %}
     {% endif %}
 
 </div>
@@ -77,6 +99,6 @@
 </div>
 <!-- end of edit modal -->
 
-
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
 
 {% endblock settings %}

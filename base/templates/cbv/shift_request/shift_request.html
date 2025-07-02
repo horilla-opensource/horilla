@@ -1,0 +1,74 @@
+{% extends "index.html" %}
+{% load i18n %}{% load static %}
+
+
+{% block content %}
+
+
+
+<meta name="csrf-token" content="{{ csrf_token }}">
+
+
+
+<style>
+    .approved--dot {
+        background-color: yellowgreen;
+    }
+
+    .canceled--dot {
+        background-color: red;
+    }
+
+    .requested--dot {
+        background-color: orange;
+    }
+
+    .approved-True {
+        border-left: 3.4px solid yellowgreen !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .canceled-True {
+
+        border-left: 3.4px solid red !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .requested-False-False {
+
+        border-left: 3.4px solid orange !important;
+        border-radius: 4px 0 0 4px;
+
+    }
+
+    .employee {
+        background-color: yellowgreen;
+    }
+</style>
+
+<div hx-get="{% url 'shift-request-nav' %}" hx-trigger="load"></div>
+{% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
+
+{% include "generic/components.html" %}
+
+
+<div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+
+<div class="oh-checkpoint-badge mb-2" id="shiftselectedInstances" data-ids="[]" data-clicked="" style="display: none">
+</div>
+<div class="oh-checkpoint-badge mb-2" id="allocatedselectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+
+
+<div class="oh-wrapper"  id="listContainer">
+    <div class="animated-background"></div>
+</div>
+
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+</div>
+<script src="{% static 'cbv/shift_request/shift_request_bulk_actions.js' %}"></script>
+
+
+{% endblock content %}

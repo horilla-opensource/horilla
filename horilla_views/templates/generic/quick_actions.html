@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n generic_template_filters %}
 {% if request.actual_ids and request.session.prev_path == request.path %}
 <script>
   var ids =  {{request.session.hlv_selected_ids|safe}}
@@ -105,6 +105,7 @@
       </button>
     </form>
     {% endif %}
+    {% include "generic/import_block.html" %}
     {% if filter_selected %}
     <div
       id="filter_selected_{{view_id}}"

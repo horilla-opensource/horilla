@@ -1,0 +1,80 @@
+{% load i18n%}{% load basefilters %}
+{% load horillafilters %}
+
+
+
+<div class="oh-btn-group" onclick="event.stopPropagation()">
+
+  {% if "leave"|app_installed or "payroll"|app_installed or "attendance"|app_installed %}
+  <button
+    type="button"
+    hx-get="{% url 'export-data-employee' instance.id %}"
+    title="{% trans "Export Individual Data" %}"
+    hx-target="#export-content"
+    hx-swap="innerHTML"
+    class="oh-btn oh-btn--light-bkg w-100"
+    data-toggle="oh-modal-toggle"
+    data-target="#dataExport"
+  >
+    <ion-icon name="download-outline"></ion-icon>
+  </button>
+{% endif %}
+
+    <button
+      type="button"
+      hx-get="{% url 'send-mail-employee' instance.id %}"
+      title="{% trans "Send Mail" %}"
+      hx-target="#mail-content"
+      hx-swap="innerHTML"
+      class="oh-btn oh-btn--light-bkg w-100"
+      data-toggle="oh-modal-toggle"
+      data-target="#sendMailModal"
+    >
+      <ion-icon name="mail-open-outline"></ion-icon>
+    </button>
+    {% if perms.employee.change_employee or request.user|check_manager:instance %}
+    <a
+      href="{% url 'employee-view-update' instance.id %}"
+      class="oh-btn oh-btn--light-bkg w-100"
+      title="{% trans 'Edit' %}"
+      ><ion-icon name="create-outline"></ion-icon
+    ></a>
+    {% endif %}
+    {% if perms.employee.delete_employee %}
+      {% if instance.is_active %}
+        <button hx-confirm="{% trans 'Do you want to archive this employee?' %}" hx-post="{% url 'employee-archive' instance.id %}?{{pd}}"
+                hx-target="#relatedModel" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Archive' %}">
+          <ion-icon name="archive"></ion-icon>
+        </button>
+      {% else %}
+        <form hx-confirm="return confirm('{% trans "Do you want to un-archive this employee?" %}')"
+              hx-post="{% url 'employee-archive' instance.id %}"
+              hx-target="#relatedModel"
+              style = "width:100%"
+            >
+          {% csrf_token %}
+          <button
+            type="submit"
+            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+            title="{% trans 'Un-Archive' %}"
+            >
+            <ion-icon name="archive"></ion-icon>
+          </button>
+        </form>
+      {% endif %}
+    {% endif %}
+    {% if perms.employee.delete_employee %}
+      <a
+        hx-get="{% url 'generic-delete' %}?model=employee.Employee&pk={{instance.id}}"
+        hx-target="#deleteConfirmationBody" data-toggle="oh-modal-toggle"
+        data-target="#deleteConfirmation" style = "width:100%">
+          <button
+            type="submit"
+            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+            title="{% trans 'Remove' %}"
+          >
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+      </a>
+    {% endif %}
+  </div>

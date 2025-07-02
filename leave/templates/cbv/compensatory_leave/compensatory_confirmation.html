@@ -1,0 +1,38 @@
+{% load i18n %}
+{% load basefilters %}
+<div class="oh-btn-group" onclick="event.stopPropagation();">
+
+    {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
+        {% if instance.status == 'requested' %}
+            <a type="submit"
+                hx-confirm="{% trans 'Are you sure you want to approve ?' %}"
+                hx-post="{% url 'approve-compensatory-leave' instance.id %}"
+                hx-target="#listContainer"
+                title="{% trans 'Approve' %}"
+                class="oh-btn oh-btn--success w-100">
+                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+            </a>
+        {% else %}
+            <a type="submit" href="#" title="{% trans 'Approve' %}"
+                class="oh-btn oh-btn--success oh-btn--disabled w-100">
+                <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+            </a>
+        {% endif %}
+        {% if instance.status == 'approved' or instance.status == 'requested' %}
+            <a type="submit" data-toggle="oh-modal-toggle"
+                data-target="#rejectModal"
+                hx-get="{% url 'reject-compensatory-leave' instance.id %}"
+                hx-target="#rejectTarget"
+                title="{% trans 'Reject' %}"
+                class="oh-btn oh-btn--danger w-100">
+                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+            </a>
+        {% else %}
+            <a type="submit" href="#" title="{% trans 'Reject' %}"
+                class="oh-btn oh-btn--danger oh-btn--disabled
+                w-100" >
+                <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+            </a>
+        {% endif %}
+    {% endif %}
+</div>

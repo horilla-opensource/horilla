@@ -1,0 +1,18 @@
+{% load i18n %}
+<style>
+    .diff-cell{
+        background: rgba(255, 166, 0, 0.158);
+    }
+
+</style>
+
+    {% if instance.reject_reason %}
+    {% if instance.status == "cancelled" %}
+    <div class="oh-timeoff-modal__stats w-100 mt-3 p-2 row-status--gray diff-cell">
+        <div class="oh-timeoff-modal__stat">
+            <span class="oh-timeoff-modal__stat-title">{% trans "Reason for Cancellation" %}</span>
+            <div class="oh-timeoff-modal__stat-description">{{instance.reject_reason}}</div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}

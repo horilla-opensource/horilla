@@ -1,0 +1,21 @@
+<div id="formContainer">
+    {% include "generic/horilla_form.html" %}
+</div>
+
+<script>
+    $(document).ready(function () {
+		$("#id_employee_id").closest(".col-md-6").removeClass("col-md-6")
+        $("#id_employee_id").on("change", function () {
+            var employees = $(this).find("option:selected");
+            values = $("#id_answer_employees").val();
+            $("#id_answer_employees").empty();
+            employees.each(function () {
+                var value = $(this).val();
+                var text = $(this).text();
+                var option = `<option value="${value}"> ${text}</option>`;
+                $("#id_answer_employees").append(option);
+            });
+            $("#id_answer_employees").val(values).change();
+        });
+    });
+</script>

@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load basefilters %}
+{% load recruitmentfilters %}
+{% if perms.recruitment.change_recruitment or request.user.employee_get in instance.recruitment_id.recruitment_managers.all or request.user.employee_get in instance.stage_id.stage_managers.all  %}
+<div data-cell-index="3" onclick="event.stopPropagation();">
+  <select hx-post="{% url "cbv-change-stage" instance.pk %}" name="stage_id"
+          class="row-dropdown"
+          style="width: 90%;color: hsl(0,0%,11%); background-color: transparent; height: 100%; border: 1px solid transparent;"
+          >
+    {% for stage in stages %}
+    <option value="{{stage.pk}}"{% if stage.pk == instance.stage_id.pk %}selected{% endif %}>{{stage}}</option>
+    {% endfor %}
+  </select>
+</div>
+{% else %}
+  {{instance.stage_id}}
+{% endif %}

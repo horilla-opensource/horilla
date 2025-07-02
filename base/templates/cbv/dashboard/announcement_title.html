@@ -1,0 +1,23 @@
+{% load i18n %}
+{%load static %}
+
+<div class="announcement_title">
+    <a class="oh-profile oh-profile--md" data-toggle="oh-modal-toggle"
+        style="text-decoration:none;" data-target="#objectDetailsModal"
+        hx-get="{% url 'announcement-single-view' instance.id %}"
+        hx-target="#objectDetailsModalTarget" onclick="closeNew(this)">
+        <div class="oh-profile__avatar mr-1">
+            <img src="https://ui-avatars.com/api/?name={{instance.title}}&background=random"
+                class="oh-profile__image" />
+        </div>
+        <span class="oh-profile__name oh-text--dark fw-bold">
+            {{instance.title}}
+        </span>
+        {% if instance.created_at|date:"Y-m-d" == current_date and request.user not in instance.viewed_by %}
+        <span class="oh-profile__info-value ms-2" id="newTab"
+            style="background-color: hsl(8,77%,56%); color:white;
+            font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width:auto;">{% trans "NEW" %}
+        </span>
+        {% endif %}
+    </a>
+</div>

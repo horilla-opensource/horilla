@@ -1,0 +1,70 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+      <div class="oh-accordion-header">{% trans "Candidate Filter" %}</div>
+      <div class="oh-accordion-body">
+        <div class="row">
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Recruitment" %}</label>
+              {{form.recruitment_id}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Job Position" %}</label>
+              {{form.job_position_id}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Joining From" %}</label>
+              {{form.scheduled_from}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Joining Till" %}</label>
+              {{form.scheduled_till}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Probation From" %}</label>
+              {{form.probation_end_from}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Probation Till" %}</label>
+              {{form.probation_end_till}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Portal Sent" %}</label>
+              {{form.portal_sent}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Joining Set" %}</label>
+              {{form.joining_set}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Reject Reason" %}</label>
+              {{form.rejected_candidate__reject_reason_id}}
+            </div>
+          </div>
+          <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
+            <div class="oh-input-group">
+              <label class="oh-label">{% trans "Offer Status" %}</label>
+              {{form.offer_letter_status}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

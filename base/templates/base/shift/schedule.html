@@ -1,31 +1,42 @@
 {% extends 'settings.html' %}
 {% load i18n %}
 {% block settings %}{% load static %}
+{% include "generic/components.html" %}
+<style>
+    .select2-selection--single {
+        height: 45px !important;
+    }
+
+    .select2-selection--single>.select2-selection__rendered {
+        line-height: 45px !important;
+    }
+</style>
 <div class="oh-inner-sidebar-content">
     {% if perms.base.view_employeeshiftschedule %}
-        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
-            <h2 class="oh-inner-sidebar-content__title">{% trans "Shift Schedule" %}</h2>
-            {% if perms.base.add_employeeshiftschedule %}
-                <button
-                    class="oh-btn oh-btn--secondary oh-btn--shadow"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#objectCreateModal"
-                    hx-get="{% url 'employee-shift-schedule-create' %}"
-                    hx-target="#objectCreateModalTarget"
-                >
-                    <ion-icon name="add-outline" class="me-1"></ion-icon>
-                    {% trans "Create" %}
-                </button>
-            {% endif %}
+        <div hx-get="{% url 'employee-shift-shedule-navbar' %}?field=shift_id" hx-trigger="load"></div>
+        <div class="oh-checkpoint-badge mb-2" id="selectedInstances" data-ids="[]" data-clicked="" style="display: none"></div>
+        {% comment %} &field=shift_id {% endcomment %}
+        <div class="oh-wrapper"  id="listContainer">
+            <div class="animated-background"></div>
         </div>
-        {% if shift_schedule %}
+        {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+            <h2 class="oh-inner-sidebar-content__title">{% trans "Shift Schedule" %}</h2><button
+                class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal" hx-get="{% url 'employee-shift-schedule-create' %}"
+                hx-target="#objectCreateModalTarget">
+                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                {% trans "Create" %}
+            </button>
+            {% if shift_schedule %}
             {% include 'base/shift/schedule_view.html' %}
-        {% else %}
+            {% else %}
             <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-                <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/shift_schedule.png' %}" class="" alt="Page not found. 404." />
+                <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);"
+                    src="{% static 'images/ui/shift_schedule.png' %}" class="" alt="Page not found. 404." />
                 <h5 class="oh-404__subtitle">{% trans "There is no shift schedule at this moment." %}</h5>
             </div>
-        {% endif %}
+            {% endif %}
+        {% endcomment %}
     {% endif %}
 </div>
 <script>
@@ -34,6 +45,7 @@
         if (isChecked) {
             $(element).closest('form').find('#id_auto_punch_out_time_parent_div', '#id_auto_punch_out_time').show();
         } else {
+            $('#id_auto_punch_out_time').val('');
             $(element).closest('form').find('#id_auto_punch_out_time_parent_div', '#id_auto_punch_out_time').hide();
         }
     }

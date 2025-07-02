@@ -1,0 +1,510 @@
+{% load static basefilters horillafilters employee_filter i18n %}
+{% load tz %}
+{% now "Y-m-d" as current_date %}
+{% load accessibility_filters %}
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 xl:grid-cols-4 md:grid-cols-2 gap-4 mb-4">
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+        <div class="flex items-center gap-4">
+            <div class="bg-[#1cba5121] p-3 rounded-md">
+                <img
+                    src="/static/horilla_theme/assets/img/icons/add-user.svg"
+                    width="20"
+                />
+            </div>
+            <a href="{% url 'candidate-view' %}?joining_date={{current_date}}" style="text-decoration: none;">
+                <div>
+                    <p class="text-sm">{% trans "Todays's New Joiners" %}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xl font-bold text-secondary-900"
+                            hx-get="{% url 'joining-today-count' %}"
+                            hx-trigger="load"
+                        ></p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+        <div class="flex items-center gap-4">
+            <div class="bg-[#b71db01f] p-3 rounded-md">
+                <img
+                    src="/static/horilla_theme/assets/img/icons/absent.svg"
+                    width="20"
+                />
+            </div>
+            <a href="{% url 'request-view' %}?from_date={{current_date}}&to_date={{current_date}}" style="text-decoration: none;">
+                <div>
+                    <p class="text-sm">{% trans "Leave on today" %}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xl font-bold text-secondary-900">{{leave_today}}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+        <div class="flex items-center gap-4">
+            <div class="bg-[#ea7f2f2e] p-3 rounded-md">
+                <img
+                    src="/static/horilla_theme/assets/img/icons/joining.svg"
+                    width="20"
+                />
+            </div>
+            <a href="{% url 'candidate-view' %}?scheduled_from={{first_day_of_week}}&scheduled_till={{last_day_of_week}}" style="text-decoration: none">
+                <div>
+                    <p class="text-sm">{% trans "Joining this week" %}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xl font-bold text-secondary-900"
+                            hx-get="{% url 'joining-week-count' %}"
+                            hx-trigger="load"
+                        ></p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="bg-white p-6 rounded-md shadow-card relative">
+        <div class="flex items-center gap-4">
+            <div class="bg-[#d821491c] p-3 rounded-md">
+                <img
+                    src="/static/horilla_theme/assets/img/icons/strenth.svg"
+                    width="20"
+                />
+            </div>
+            <a href="{% url 'employee-view' %}" style="text-decoration: none">
+                <div>
+                    <p class="text-sm">{% trans "Total Strength" %}</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xl font-bold text-secondary-900"
+                            hx-get="{% url 'total-employees-count' %}"
+                            hx-trigger="load"
+                        ></p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-12 gap-4 mb-4">
+    <div class="xl:col-span-6 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">{% trans "Shift Requests to Approve" %}</h3>
+        </div>
+        <div class="w-full overflow-x-auto overflow-y-auto" id="shiftRequestApprove" hx-get="{% url 'dashboard-shift-request' %}" hx-trigger="load">
+        </div>
+    </div>
+    {% if not 'gender_chart' in charts  %}
+        {% if  'gender_chart'|feature_is_accessible:request or perms.employee.view_employee or request.user|is_reportingmanager %}
+            <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Gender Chart" %}</h3>
+                </div>
+                <div class="w-full max-w-xs mx-auto">
+                    <div class="relative">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-md font-semibold">{% trans "Announcements" %}</h3>
+            {% if perms.base.add_announcement %}
+                <button class="w-4 h-4" id="addAnnouncement"
+                    hx-get="{% url 'create-announcement' %}" hx-target="#objectCreateModalTarget"
+                    hx-swap="innerHTML" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                    title="{% trans 'Create Announcement' %}">
+                    <img src="/static/horilla_theme/assets/img/icons/more.svg" alt="" />
+                </button>
+            {% endif %}
+        </div>
+        <ul>
+            <li>
+                <div class="flex gap-3 items-center text-sm font-medium py-1" hx-get="{% url 'announcement-list' %}" hx-trigger="load">
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Recent Activities -->
+    {% if perms.employee.view_employeeworkinformation or request.user|is_reportingmanager %}
+        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-md font-semibold">{% trans "Employee Work Information" %}</h3>
+            </div>
+            <div class="flex items-center gap-2 w-full mb-3 flex-wrap sm:flex-nowrap">
+                <div class="relative w-full">
+                    <input
+                        type="text" hx-get="{% url 'emp-workinfo-complete' %}" hx-target="#pending"
+                        hx-trigger="keyup changed delay:0.3s" id="employeeSearch" name="search"
+                        placeholder="Search Employee"
+                        class="text-color-600 ps-10 p-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                    />
+                    <i class="fas fa-search absolute left-3 top-0 bottom-0 m-auto flex items-center opacity-50 text-sm"></i>
+                </div>
+            </div>
+            <div class="overflow-hidden overflow-x-auto" hx-get="{% url 'emp-workinfo-complete' %}" hx-trigger="load">
+            </div>
+        </div>
+    {% endif %}
+
+    {% if "recruitment"|app_installed and not 'recruitment_analytics' in charts %}
+        {% if request.user|is_stagemanager or perms.recruitment.view_recruitment %}
+            <div class="xl:col-span-7 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Recruitment Analytics" %}</h3>
+                    <!-- <button class="w-3 h-3">
+                        <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+                    </button> -->
+                </div>
+                <div>
+                    <canvas id="recruitmentChart1" class="w-full h-96"></canvas>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">Department Chart</h3>
+            <!-- <button class="w-3 h-3">
+                <img src="/static/horilla_theme/assets/icons/right-arrow.svg" alt="" class="rotate-45">
+            </button> -->
+        </div>
+        <div class="flex items-center justify-between flex-col">
+            <!-- Chart container -->
+            <div class="md:w-60 w-full max-w-xs mx-auto">
+                <canvas id="departmentChart"></canvas>
+            </div>
+            <!-- Custom legend -->
+            <div id="chartLegend" class="text-xs flex gap-3 flex-wrap justify-center">
+                {% comment %}
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#facc15]"></span>
+                    Sales Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#f87171]"></span> IT Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#ddd6fe]"></span> DM Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#a5b4fc]"></span> SEO Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#93c5fd]"></span> Odoo Dept
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full bg-[#d1d5db]"></span> Horilla Dept
+                </div>
+                {% endcomment %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    {% if "pms"|app_installed and not 'key_result_status' in charts %}
+        {% if perms.pms.view_employeekeyresult or request.user|is_reportingmanager %}
+            <div class="xl:col-span-3 md:col-span-5 col-span-12 bg-white p-6 rounded-md shadow-card" style="width:98%;">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Key Result Status" %}</h3>
+                </div>
+                <div class="oh-card-dashboard__body">
+                    <canvas id="keyResultChart" style="cursor: pointer"></canvas>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    <div class="xl:col-span-5 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">{% trans "Attendance To Validate" %}</h3>
+        </div>
+        <div class="overflow-hidden overflow-x-auto" hx-get="{% url 'dashboard-attendance-validate' %}" hx-trigger="load">
+
+        </div>
+    </div>
+
+    {% if "recruitment"|app_installed and perms.recruitment.view_candidate or request.user|is_stagemanager %}
+        {% if "onboarding"|app_installed and not 'onboarding_candidates' in charts %}
+            <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card" >
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Candidates Started Onboarding" %}</h3>
+                </div>
+                <div>
+                    <canvas id="onboardCandidate" class="w-40 h-64"></canvas>
+                </div>
+                <div id="onboardCandidateLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+                ></div>
+            </div>
+        {% endif %}
+
+        {% if not 'hired_candidates' in charts %}
+            <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card" >
+                <div class="flex justify-between items-center mb-5">
+                    <h3 class="text-md font-semibold">{% trans "Hired Candidates" %}</h3>
+                </div>
+                <div>
+                    <canvas id="hiredCandidate" class="w-40 h-72"></canvas>
+                </div>
+                <div id="hiredLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs">
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {% if "leave"|app_installed %}
+        {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
+            <div class="xl:col-span-3 md:col-span-4 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "On Leave" %}</h3>
+                </div>
+                <div class="flex-col items-center justify-center" hx-get="{% url 'employee-leave' %}" hx-trigger="load">
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+
+
+
+
+    {% if "asset"|app_installed and not 'asset_request_approve' in charts %}
+        {% if perms.asset.change_assetrequest or request.user|is_reportingmanager %}
+            <div class="xl:col-span-7 md:col-span-8 col-span-12 bg-white p-6 rounded-md shadow-card" >
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Asset Requests To Approve" %}</h3>
+                </div>
+                <div class="flex flex-col items-center justify-center" hx-get='{% url "dashboard-asset-request-approve" %}' hx-trigger="load">
+                    {% comment %} <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4" />
+                    <p class="text-[#666]">No records available at the moment</p> {% endcomment %}
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+
+    {% if "attendance"|app_installed %}
+        {% if perms.employee.view_employee or request.user|is_reportingmanager %}
+            {% if not 'online_employees' in charts %}
+                <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Online Employees" %}</h3>
+                    </div>
+                    <div class="flex-col items-center justify-center h-[400px]" hx-get="{% url 'not-out-yet' %}" hx-trigger="load">
+                    </div>
+                </div>
+            {% endif %}
+            {% if not 'offline_employees' in charts %}
+                <div class="xl:col-span-5 md:col-span-7 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Offline Employees" %}</h3>
+                    </div>
+                    <div class="flex-col items-center justify-center" hx-get="{% url 'not-in-yet' %}" hx-trigger="load">
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if not 'overtime_approve' in charts %}
+                <div class="xl:col-span-5 md:col-span-7 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Overtime To Approve" %}</h3>
+                    </div>
+                    <div class="flex-col items-center justify-center" hx-get="{% url 'dashboard-overtime-approve' %}" hx-trigger="load">
+                    </div>
+                </div>
+            {% endif %}
+    {% endif %}
+
+
+
+    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-md font-semibold">
+                {% trans "Attendance Analytic" %}
+            </h3>
+        </div>
+        <div class="flex gap-2 justify-between items-center mb-4">
+            <select id="type" class="oh-select" name="type" onchange="changeView(this)" style="
+                width: 150px;
+                padding: 5px;
+                color: #5e5c5c;
+                border-radius: 4px;
+                border: 1px solid #d1d5db;
+            ">
+                <option value="day">{% trans "Day" %}</option>
+                <option value="weekly">{% trans "Weekly" %}</option>
+                <option value="monthly">{% trans "Monthly" %}</option>
+                <option value="date_range">{% trans "Date range" %}</option>
+            </select>
+            <input type="date" id="attendance_month" onchange="changeMonth()" class="oh-select" style="
+                width: 150px;
+                padding: 5px;
+                color: #5e5c5c;
+                border-radius: 4px;
+                border: 1px solid #d1d5db;
+            " />
+        </div>
+        <div class="w-full max-w-xs mx-auto">
+            <div class="relative">
+                <canvas id="dailyAnalytic"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">{% trans "Hours Chart" %}</h3>
+            <input type="month" class="mb-2 float-end pointer oh-select"
+            id="hourAccountMonth" onchange="dynamicMonth($(this))"
+            style="
+            width: 150px;
+            padding: 5px;
+            color: #5e5c5c;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+        " />
+          </div>
+        <div class="w-full max-w-xs mx-auto">
+            <div class="relative">
+                <canvas id="pendingHoursCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {% if "leave"|app_installed and not 'overall_leave_chart' in charts %}
+        {% if perms.leave.view_leaverequest %}
+            <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Overall Leave" %}</h3>
+                        <select class="oh-select oh-select--sm float-end w-[110px]" name="" id="overAllLeaveSelect" >
+                            <option value="today" selected>{% trans "Today" %}</option>
+                            <option value="week">{% trans "This Week" %}</option>
+                            <option value="month">{% trans "This Month" %}</option>
+                            <option value="year">{% trans "This Year" %}</option>
+                        </select>
+                    </div>
+                    <div class="w-full max-w-xs mx-auto">
+                        <div class="relative">
+                            <canvas id="overAllLeave"></canvas>
+                        </div>
+                    </div>
+                </div>
+        {% endif %}
+    {% endif %}
+
+    {% if "leave"|app_installed %}
+        {% if not 'leave_request_approve' in charts %}
+            {% if perms.leave.change_leaverequest or request.user|is_reportingmanager %}
+                <div class="xl:col-span-5 md:col-span-7 col-span-12 bg-white p-6 rounded-md shadow-card">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-md font-semibold">{% trans "Leave Requests To Approve" %}</h3>
+                        </div>
+                        <div class="flex-col items-center justify-center" hx-get="{% url 'leave-request-and-approve' %}" hx-trigger="load">
+                        </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if not 'leave_allocation_approve' in charts %}
+            {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
+                <div class="xl:col-span-6 md:col-span-8 col-span-12 bg-white p-6 rounded-md shadow-card">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-md font-semibold">{% trans "Leave Allocation Request To Approve" %}</h3>
+                        </div>
+                        <div class="flex-col items-center justify-center" hx-get="{% url 'leave-allocation-approve' %}" hx-trigger="load">
+                        </div>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endif%}
+
+    <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-md font-semibold">{% trans "Employees Chart" %}</h3>
+        </div>
+        <div class="w-full max-w-xs mx-auto">
+            <div class="relative">
+                <canvas id="totalEmployees"></canvas>
+            </div>
+            <div id="employeeChartLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+            ></div>
+        </div>
+    </div>
+
+    {% if "pms"|app_installed %}
+        {% if not 'feedback_answer' in charts %}
+            <div class="xl:col-span-6 md:col-span-8 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Feedback To Answers" %}</h3>
+                </div>
+                <div class="flex-col items-center justify-center" hx-get="{% url 'dashboard-feedback-answer' %}" hx-trigger="load">
+                </div>
+            </div>
+        {% endif %}
+        {% if not 'feedback_status' in charts %}
+            {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
+                <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-md font-semibold">{% trans "Feedback Status" %}</h3>
+                    </div>
+                    <div class="w-full max-w-xs mx-auto">
+                        <div class="relative">
+                            <canvas id="feedbackChart"></canvas>
+                        </div>
+                        <div id="feedbackChartLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+                        ></div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if not 'objective_status' in charts %}
+            <div class="xl:col-span-3 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-md font-semibold">{% trans "Objective Status" %}</h3>
+                </div>
+                <div class="w-full max-w-xs mx-auto">
+                    <div class="relative">
+                        <canvas id="objectiveChart"></canvas>
+                    </div>
+                    <div id="feedbackChartLegend" class="mt-4 flex justify-center flex-wrap gap-3 text-xs"
+                    ></div>
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+</div>
+
+<script src="{% static 'dashboard/employeeChart.js' %}"></script>
+{% if "recruitment"|app_installed %}
+    {% if perms.recruitment.view_recruitment or request.user|is_stagemanager %}
+        <script src="{% static 'dashboard/recruitmentChart.js' %}"></script>
+    {% endif %}
+{% endif %}
+
+{% if "pms"|app_installed %}
+    <!-- PMS chart -->
+    <script src="{% static 'src/dashboard/pmsChart.js' %}"></script>
+{% endif %}
+
+{% if "onboarding"|app_installed %}
+    <!-- onboarding dashboard -->
+    <script src="{% static 'dashboard/onboardChart.js' %}"></script>
+{% endif %}
+
+{% if "attendance"|app_installed %}
+    {% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
+        <script src="{% static 'dashboard/attendanceChart.js' %}"></script>
+    {% endif %}
+{% endif %}
+
+{% if "leave"|app_installed %}
+    <script src="{% static 'dashboard/onLeave.js' %}"></script>
+    <script src="{% static 'dashboard/leaveChart.js' %}"></script>
+{% endif %}

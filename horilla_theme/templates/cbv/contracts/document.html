@@ -1,0 +1,9 @@
+{% load i18n %}
+{% if instance.contract_document %}
+    <div class="mb-2 flex gap-5 items-center text-xs">
+        <span class="font-medium text-[#565E6C] w-32"> {% trans "Document" %} </span>
+        <p class="font-semibold flex items-center gap-2">
+            : <span> <a href="{{ instance.contract_document.url }}" target="_blank">{{ instance.contract_document.name }}</a> </span>
+        </p>
+    </div>
+{% endif %}

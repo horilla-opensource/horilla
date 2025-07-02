@@ -1,0 +1,35 @@
+{% load i18n %}
+{% load static %}
+{% load basefilters %}
+
+<div class="oh-btn-group">
+    {% if perms.instance.change_attendance or request.user|is_reportingmanager %}
+    <a
+        hx-get="{% url 'attendance-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
+        onclick="event.stopPropagation()"
+        hx-target="#genericModalBody"
+        hx-swap="innerHTML"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        class="oh-btn oh-btn--light-bkg w-50"
+        title="{% trans 'Edit' %}"
+    >
+        <ion-icon name="create-outline"></ion-icon>
+    </a>
+    {% endif %}
+    {% if perms.instance.delete_attendance or request.user|is_reportingmanager %}
+    <form action="{% url 'attendance-delete' instance.id %}"
+          onclick="event.stopPropagation()"
+          onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
+          hx-target="#tab_contents" method='post' class='w-50'>
+        {% csrf_token %}
+        <button
+            type="submit"
+            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+            title="{% trans 'Remove' %}"
+        >
+            <ion-icon name="trash-outline"></ion-icon>
+        </button>
+    </form>
+    {% endif %}
+</div>

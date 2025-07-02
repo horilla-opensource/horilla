@@ -1,0 +1,57 @@
+<div class="oh-modal__dialog-header">
+    <button class="oh-modal__close" aria-label="Close">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
+  <div
+  class="oh-modal__dialog-body oh-modal__dialog-relative"
+  style="padding-top: 25px"
+>
+  {% if instance_ids %}
+  <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+    <button
+      hx-get="{{previous_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
+      hx-target="#genericModalBody"
+      class="oh-modal__diaglog-nav oh-modal__nav-prev"
+    >
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+
+    <button
+      hx-get="{{next_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
+      hx-target="#genericModalBody"
+      class="oh-modal__diaglog-nav oh-modal__nav-next"
+    >
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+  </div>
+  {% endif %}
+<iframe id="myIframe"  height="500" width="600" src="about:blank" marginwidth="50" ></iframe>
+
+
+
+<script>
+    // Get the iframe element
+    var iframe = document.getElementById('myIframe');
+
+    // Access the iframe's document
+    var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+    var logSubject = "{{ log.subject|escapejs }}";
+    var logBody = "{{ log.body|escapejs }}";
+    var trimmedBody = logBody.trim();
+    var hasContent = trimmedBody.length > 0;
+    console.log(hasContent)
+
+
+    if (hasContent) {
+      content = '<div class="oh-modal__dialog-body">' + logBody + '</div>';
+    } else {
+      content = '<div class="oh-modal__dialog-title" style="padding:25px;">' + logSubject + '</div>';
+    }
+
+    // Write the content into the iframe
+    iframeDoc.open();
+    iframeDoc.write(content);
+    iframeDoc.close();
+  </script>

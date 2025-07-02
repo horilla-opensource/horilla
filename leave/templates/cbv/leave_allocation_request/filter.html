@@ -1,0 +1,56 @@
+{% load i18n %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div
+            class="oh-accordion-header"
+            onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');"
+        >
+            {% trans "Leave Allocation Request" %}
+        </div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Leave Type" %}</label>
+                        {{form.leave_type_id}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Employee" %}</label>
+                        {{form.employee_id}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Created By" %}</label>
+                        {{form.created_by}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            >{% trans "Requested days Up To" %}</label
+                        >
+                        {{form.number_of_days_up_to}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label"
+                            >{% trans "Requested days More Than " %}</label
+                        >
+                        {{form.number_of_days_more_than}}
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-12">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Status" %}</label>
+                        {{form.status}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

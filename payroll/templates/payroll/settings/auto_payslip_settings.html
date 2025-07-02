@@ -1,8 +1,13 @@
 {% extends 'settings.html' %} {% load i18n %} {% block settings %} {% load static %}
+{% include "generic/components.html" %}
+<meta name="csrf-token" content="{{ csrf_token }}">
 <div id="ohMessages"></div>
 <div class="oh-inner-sidebar-content">
   {% if perms.payroll.view_PayslipAutoGenerate %}
-  <div
+
+  <div hx-get="{% url "pay-slip-automation-nav" %}" hx-trigger="load" >
+	</div>
+  {% comment %} <div
     class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
   >
     <h2 class="oh-inner-sidebar-content__title">{% trans "Payslip Automation" %}</h2>
@@ -18,15 +23,53 @@
         {% trans "Create" %}
     </button>
     {% endif %}
+  </div> {% endcomment %}
+  <div
+    class="oh-checkpoint-badge mb-2"
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
+    style="display: none"
+  ></div>
+
+
+  <div
+  class="oh-wrapper"
+  id="listContainer">
+  <div class="animated-background">
   </div>
-    {% if payslip_auto_generate %}
+</div>
+    {% comment %} {% if payslip_auto_generate %}
       {% include 'payroll/settings/payslip_auto_generate_table.html' %}
     {% else %}
       <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
         <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/payment.png' %}" class="" alt="Page not found. 404." />
         <h5 class="oh-404__subtitle">{% trans "There is no auto payslip generation at this moment." %}</h5>
       </div>
-    {% endif %}
+    {% endif %} {% endcomment %}
   {% endif %}
 </div>
+<script src="{% static 'cbv/deleteFunc.js' %}"></script>
+<script>
+  function updateAutoPayslipIsActivate(checkbox) {
+      // Using jQuery to check if the checkbox is checked
+      var isChecked = $(checkbox).prop('checked');
+      var autoId = $(checkbox).data('id');
+      $.ajax({
+        type: "POST",
+        url: "{% url 'activate-auto-payslip-generate' %}",
+        data: { 'isChecked': isChecked, 'autoId':autoId,'csrfmiddlewaretoken': getCookie('csrftoken') },
+        dataType: "json",
+        success: function (response) {
+          $("#ohMessages").append(`
+                  <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                      ${response.message}
+                    </div>
+                  </div>`);
+                  duration = 1500;
+        }
+      });
+    }
+  </script>
 {% endblock settings %}

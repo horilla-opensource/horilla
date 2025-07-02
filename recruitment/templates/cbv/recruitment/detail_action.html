@@ -1,0 +1,69 @@
+{% load i18n %}
+<div class="oh-btn-group" style="width: 100%;">
+
+    {% if perms.recruitment.change_recruitment %}
+    <a hx-get="{% url 'recruitment-update' instance.id %}" hx-target='#genericModalBody' hx-swap='innerHTML' data-toggle='oh-modal-toggle' data-target='#genericModal'  class="oh-btn oh-btn--info w-50 " title="Edit">
+        <button style="
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;"
+         title="{% trans 'Edit' %}">
+        <ion-icon name="create-outline" ></ion-icon>
+      Edit</button></a>
+    {% endif %}
+    {% if perms.recruitment.delete_recruitment %}
+      {% if instance.is_active %}
+        <a onclick="return confirm('{% trans "Are you sure you want to archive this recruitment?" %}');" href="{% url 'recruitment-archive' instance.id %}" class="oh-btn  oh-btn--primary w-50 " title="{% trans 'Archive' %}">
+            <button style="
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;"
+             title="{% trans 'Archive' %}">
+            <ion-icon name="archive" ></ion-icon>
+          Archive</button></a>
+        {% else %}
+        <a onclick="return confirm('{% trans "Are you sure you want to unarchive this recruitment?" %}');" href="{% url 'recruitment-archive' instance.id %}" class="oh-btn  oh-btn--primary w-50" title="{% trans 'Unarchive' %}">
+            <button style="
+            background: none;
+            color: inherit;
+            border: none;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+            outline: inherit;"
+             title="{% trans 'Unarchive' %}">
+            <ion-icon name="archive" ></ion-icon> Un-archive
+          </button></a>
+      {% endif %}
+    {% endif %}
+    {% if perms.recruitment.delete_recruitment %}
+
+      <form class="oh-btn  oh-btn--secondary w-50" title="{% trans 'Delete' %}"
+      action="{% url 'recruitment-delete' instance.id  %}"
+      onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')"
+      method="post"
+     >
+      {% csrf_token %}
+      <button style="
+        background: none;
+        color: inherit;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;"
+         title="{% trans 'Delete' %}">
+        <ion-icon name="trash-outline" ></ion-icon>
+      Delete</button>
+    </form>
+
+    {% endif %}
+  </div>

@@ -1,0 +1,575 @@
+{% load i18n recruitmentfilters %}
+{% load generic_template_filters %}
+<div id="{{ view_id }}">
+  <div class="kanban-board">
+    {% for group in groups %}
+      <div class="kanban-column" data-stage="todo">
+        <div class="column-header">
+          <div class="column-title">
+            <h3 title="{{group}}">{{ group|stringformat:"s"|truncatechars:22 }}</h3>
+          </div>
+          <div div class="d-flex" style="width: 50px;">
+            <span class="task-count">2</span><div class="dropdown">
+              {% if actions %}
+              <div>
+                <button class="dropbtn">⋮</button>
+                <div class="dropdown-content">
+                {% for action in actions %}
+                  {% if action.accessibility|accessibility:group %}
+                  <a {{action.attrs|format:group|safe}}>{{action.action}}</a>
+                  {% endif %}
+                {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="cards-container">
+          <div class="kanban-card" draggable="true" data-id="1">
+            <div class="card-title">Design Homepage</div>
+            <div class="card-description">Create wireframes and mockups for the new homepage design.</div>
+            <div class="card-meta">
+              <span class="card-priority priority-high">High Priority</span>
+              <div class="meta-content">
+                <span>May 16</span>
+                <div class="profile-container">
+                  <div class="avatar-placeholder" title="Unassigned">+</div>
+                  <div class="assignee-dropdown">
+                    <div class="assignee-option" data-initials="JD">
+                      <div class="avatar" style="background-color: #4f46e5;">JD</div>
+                      <span>John Doe</span>
+                    </div>
+                    <div class="assignee-option" data-initials="AS">
+                      <div class="avatar" style="background-color: #10b981;">AS</div>
+                      <span>Alice Smith</span>
+                    </div>
+                    <div class="assignee-option" data-initials="RJ">
+                      <div class="avatar" style="background-color: #f43f5e;">RJ</div>
+                      <span>Robert Johnson</span>
+                    </div>
+                    <div class="assignee-option" data-initials="UN">
+                      <div class="avatar-placeholder">+</div>
+                      <span>Unassigned</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="kanban-card" draggable="true" data-id="2">
+            <div class="card-title">Update Documentation</div>
+            <div class="card-description">Review and update the API documentation for v2.0 release.</div>
+            <div class="card-meta">
+              <span class="card-priority priority-medium">Medium Priority</span>
+              <div class="meta-content">
+                <span>May 20</span>
+                <div class="profile-container">
+                  <div class="avatar" style="background-color: #10b981;" title="Alice Smith">AS</div>
+                  <div class="assignee-dropdown">
+                    <div class="assignee-option" data-initials="JD">
+                      <div class="avatar" style="background-color: #4f46e5;">JD</div>
+                      <span>John Doe</span>
+                    </div>
+                    <div class="assignee-option" data-initials="AS">
+                      <div class="avatar" style="background-color: #10b981;">AS</div>
+                      <span>Alice Smith</span>
+                    </div>
+                    <div class="assignee-option" data-initials="RJ">
+                      <div class="avatar" style="background-color: #f43f5e;">RJ</div>
+                      <span>Robert Johnson</span>
+                    </div>
+                    <div class="assignee-option" data-initials="UN">
+                      <div class="avatar-placeholder">+</div>
+                      <span>Unassigned</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="add-task">+ Add new task</div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    // Define the viewId
+    var viewId = '#{{view_id}}'
+
+    let draggedCard = null
+
+    // Initialize drag events for cards
+    function initDragAndDrop() {
+      // Drag start
+      $(viewId + ' .kanban-card').on('dragstart', function () {
+        draggedCard = $(this)
+        setTimeout(function () {
+          draggedCard.addClass('dragging')
+        }, 0)
+      })
+
+      // Drag end
+      $(viewId + ' .kanban-card').on('dragend', function () {
+        $(this).removeClass('dragging')
+        draggedCard = null
+        updateTaskCounts()
+      })
+
+      // Handle dragover to allow drops
+      $(viewId + ' .cards-container').on('dragover', function (e) {
+        e.preventDefault()
+        $(this).addClass('drop-zone')
+      })
+
+      // Remove drop zone highlighting
+      $(viewId + ' .cards-container').on('dragleave', function () {
+        $(this).removeClass('drop-zone')
+      })
+
+      // Handle drops
+      $(viewId + ' .cards-container').on('drop', function (e) {
+        e.preventDefault()
+        $(this).removeClass('drop-zone')
+
+        if (draggedCard) {
+          // Find the "Add task" button and insert before it
+          const addTaskButton = $(this).find('.add-task')
+          draggedCard.insertBefore(addTaskButton)
+
+          const itemId = draggedCard.data('id')
+          const column = $(this).closest('.kanban-column')
+          const newStage = column.data('stage')
+
+          console.log(`Item ${itemId} moved to ${newStage}`)
+
+          // Update card styling based on new column
+          updateCardStyling(draggedCard, newStage)
+
+          // 🔁 Replace with AJAX to update backend
+          /*
+                  $.ajax({
+                    url: '/api/kanban/update-stage/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: {
+                      'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    data: JSON.stringify({
+                      item_id: itemId,
+                      new_stage: newStage
+                    })
+                  });
+                  */
+        }
+      })
+    }
+
+    // Initialize profile dropdowns for cards
+    function initProfileDropdowns() {
+      // Avatar click to show dropdown
+      $(viewId).on('click', '.avatar, .avatar-placeholder', function (e) {
+        e.stopPropagation()
+        const dropdown = $(this).siblings('.assignee-dropdown')
+
+        // Close all other dropdowns first
+        $(viewId + ' .assignee-dropdown.active')
+          .not(dropdown)
+          .removeClass('active')
+
+        // Toggle this dropdown
+        dropdown.toggleClass('active')
+      })
+
+      // Assignee selection
+      $(viewId).on('click', '.assignee-option', function () {
+        const profileContainer = $(this).closest('.profile-container')
+        const initials = $(this).data('initials')
+
+        if (initials === 'UN') {
+          // Unassign
+          profileContainer.find('.avatar, .avatar-placeholder').replaceWith($('<div class="avatar-placeholder" title="Unassigned">+</div>'))
+        } else {
+          // Assign to selected person
+          const personName = $(this).find('span').text()
+          const avatar = $(this).find('.avatar').clone()
+          avatar.attr('title', personName)
+
+          profileContainer.find('.avatar, .avatar-placeholder').replaceWith(avatar)
+        }
+
+        // Close dropdown
+        profileContainer.find('.assignee-dropdown').removeClass('active')
+      })
+
+      // Close dropdowns when clicking elsewhere
+      $(document).on('click', function () {
+        $(viewId + ' .assignee-dropdown.active').removeClass('active')
+      })
+    }
+
+    // Initialize column collapse/expand functionality
+    function initColumnCollapse() {
+      $(viewId + ' .column-header').on('click', function () {
+        $(this).closest('.kanban-column').toggleClass('collapsed')
+      })
+    }
+
+    // Handle adding new tasks
+    function initAddTask() {
+      $(viewId + ' .add-task').on('click', function () {
+        const column = $(this).closest('.kanban-column')
+        const stage = column.data('stage')
+
+        // Create a new card
+        const newCard = createNewTaskCard(stage)
+
+        // Add it before the add button
+        $(this).before(newCard)
+
+        // Initialize drag events for the new card
+        newCard
+          .on('dragstart', function () {
+            draggedCard = $(this)
+            setTimeout(function () {
+              draggedCard.addClass('dragging')
+            }, 0)
+          })
+          .on('dragend', function () {
+            $(this).removeClass('dragging')
+            draggedCard = null
+            updateTaskCounts()
+          })
+
+        // Update counts
+        updateTaskCounts()
+
+        console.log(`New task created in ${stage}`)
+      })
+    }
+
+    // Create a new task card
+    function createNewTaskCard(stage) {
+      // Create unique ID for the card
+      const newId = Date.now()
+
+      // Create the card with proper structure
+      const newCard = $('<div class="kanban-card" draggable="true"></div>').attr('data-id', newId).append(`
+                  <div class="card-title">New Task</div>
+                  <div class="card-description">Click to edit this task description.</div>
+                  <div class="card-meta">
+                    <span class="card-priority priority-medium">Medium Priority</span>
+                    <div class="meta-content">
+                      <span>Today</span>
+                      <div class="profile-container">
+                        <div class="avatar-placeholder" title="Unassigned">+</div>
+                        <div class="assignee-dropdown">
+                          <div class="assignee-option" data-initials="JD">
+                            <div class="avatar" style="background-color: #4f46e5;">JD</div>
+                            <span>John Doe</span>
+                          </div>
+                          <div class="assignee-option" data-initials="AS">
+                            <div class="avatar" style="background-color: #10b981;">AS</div>
+                            <span>Alice Smith</span>
+                          </div>
+                          <div class="assignee-option" data-initials="RJ">
+                            <div class="avatar" style="background-color: #f43f5e;">RJ</div>
+                            <span>Robert Johnson</span>
+                          </div>
+                          <div class="assignee-option" data-initials="UN">
+                            <div class="avatar-placeholder">+</div>
+                            <span>Unassigned</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                `)
+
+      // Apply styling based on column
+      updateCardStyling(newCard, stage)
+
+      return newCard
+    }
+
+    // Update card styling based on column
+    function updateCardStyling(card, stage) {
+      if (stage === 'todo') {
+        card.css({
+          'border-left-color': '#f43f5e',
+          background: '#fff1f2'
+        })
+      } else if (stage === 'inprogress') {
+        card.css({
+          'border-left-color': '#f59e0b',
+          background: '#fffbeb'
+        })
+      } else if (stage === 'done') {
+        card.css({
+          'border-left-color': '#10b981',
+          background: '#ecfdf5'
+        })
+      }
+    }
+
+    // Update task counts for each column
+    function updateTaskCounts() {
+      $(viewId + ' .kanban-column').each(function () {
+        const cardCount = $(this).find('.kanban-card').length
+        $(this).find('.task-count').text(cardCount)
+      })
+    }
+
+    // Initialize everything
+    function init() {
+      initDragAndDrop()
+      initProfileDropdowns()
+      initColumnCollapse()
+      initAddTask()
+      updateTaskCounts()
+    }
+
+    // Run initialization
+    init()
+  })
+</script>
+
+<script>
+  const cards = document.querySelectorAll('.kanban-card')
+  const columns = document.querySelectorAll('.kanban-column')
+  const cardsContainers = document.querySelectorAll('.cards-container')
+  const addTaskButtons = document.querySelectorAll('.add-task')
+
+  let draggedCard = null
+
+  // Initialize card dragging
+  cards.forEach((card) => {
+    card.addEventListener('dragstart', () => {
+      draggedCard = card
+      setTimeout(() => {
+        card.classList.add('dragging')
+      }, 0)
+    })
+
+    card.addEventListener('dragend', () => {
+      draggedCard = null
+      card.classList.remove('dragging')
+      updateTaskCounts()
+    })
+
+    // Set up profile dropdown functionality
+    const profileContainer = card.querySelector('.profile-container')
+    if (profileContainer) {
+      const avatar = profileContainer.querySelector('.avatar, .avatar-placeholder')
+      const dropdown = profileContainer.querySelector('.assignee-dropdown')
+
+      avatar.addEventListener('click', (e) => {
+        e.stopPropagation()
+        // Close all other dropdowns first
+        document.querySelectorAll('.assignee-dropdown.active').forEach((el) => {
+          if (el !== dropdown) {
+            el.classList.remove('active')
+          }
+        })
+        dropdown.classList.toggle('active')
+      })
+
+      // Handle assignee selection
+      const assigneeOptions = dropdown.querySelectorAll('.assignee-option')
+      assigneeOptions.forEach((option) => {
+        option.addEventListener('click', () => {
+          const initials = option.getAttribute('data-initials')
+          const currentAvatar = profileContainer.querySelector('.avatar, .avatar-placeholder')
+
+          if (initials === 'UN') {
+            // Unassign
+            profileContainer.innerHTML = `
+                      <div class="avatar-placeholder" title="Unassigned">+</div>
+                      <div class="assignee-dropdown">
+                        ${dropdown.innerHTML}
+                      </div>
+                    `
+          } else {
+            // Assign to selected person
+            const newAvatar = option.querySelector('.avatar').cloneNode(true)
+            newAvatar.title = option.querySelector('span').textContent
+            profileContainer.innerHTML = `
+                      ${newAvatar.outerHTML}
+                      <div class="assignee-dropdown">
+                        ${dropdown.innerHTML}
+                      </div>
+                    `
+          }
+
+          // Reset event listeners for the new elements
+          const newDropdown = profileContainer.querySelector('.assignee-dropdown')
+          const newAvatar = profileContainer.querySelector('.avatar, .avatar-placeholder')
+
+          newAvatar.addEventListener('click', (e) => {
+            e.stopPropagation()
+            newDropdown.classList.toggle('active')
+          })
+
+          // Reset assignee option event listeners
+          const newOptions = newDropdown.querySelectorAll('.assignee-option')
+          newOptions.forEach((newOpt) => {
+            newOpt.addEventListener('click', function () {
+              const newInitials = this.getAttribute('data-initials')
+              // Recursive call to handle this selection
+              this.click() // This is a simplified approach
+            })
+          })
+
+          dropdown.classList.remove('active')
+        })
+      })
+    }
+  })
+
+  // Handle column collapse
+  document.querySelectorAll('.column-header').forEach((header) => {
+    header.addEventListener('click', () => {
+      const column = header.closest('.kanban-column')
+      column.classList.toggle('collapsed')
+    })
+  })
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.assignee-dropdown.active').forEach((dropdown) => {
+      dropdown.classList.remove('active')
+    })
+  })
+
+  // Handle drag and drop for columns
+  cardsContainers.forEach((container) => {
+    container.addEventListener('dragover', (e) => {
+      e.preventDefault()
+      container.classList.add('drop-zone')
+    })
+
+    container.addEventListener('dragleave', () => {
+      container.classList.remove('drop-zone')
+    })
+
+    container.addEventListener('drop', (e) => {
+      e.preventDefault()
+      container.classList.remove('drop-zone')
+
+      if (draggedCard) {
+        // Find the "Add task" button and insert before it
+        const addTaskButton = container.querySelector('.add-task')
+        container.insertBefore(draggedCard, addTaskButton)
+
+        const itemId = draggedCard.getAttribute('data-id')
+        const column = container.closest('.kanban-column')
+        const newStage = column.getAttribute('data-stage')
+
+        console.log(`Item ${itemId} moved to ${newStage}`)
+
+        // Update card styling based on new column
+        updateCardStyling(draggedCard, newStage)
+
+        // 🔁 Replace with AJAX to update backend
+        /*
+                fetch('/api/kanban/update-stage/', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                  },
+                  body: JSON.stringify({
+                    item_id: itemId,
+                    new_stage: newStage
+                  })
+                });
+                */
+      }
+    })
+  })
+
+  // Handle add task button clicks
+  addTaskButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const column = button.closest('.kanban-column')
+      const stage = column.getAttribute('data-stage')
+      const container = column.querySelector('.cards-container')
+
+      // Create a new card with a unique ID (this is just for demo purposes)
+      const newId = Date.now()
+      const newCard = document.createElement('div')
+      newCard.className = 'kanban-card'
+      newCard.setAttribute('draggable', 'true')
+      newCard.setAttribute('data-id', newId)
+
+      // Set the default content for the new card
+      newCard.innerHTML = `
+                <div class="card-title">New Task</div>
+                <div class="card-description">Click to edit this task description.</div>
+                <div class="card-meta">
+                  <span class="card-priority priority-medium">Medium Priority</span>
+                  <span>Today</span>
+                </div>
+              `
+
+      // Apply styling based on the column
+      updateCardStyling(newCard, stage)
+
+      // Add the new card before the add task button
+      container.insertBefore(newCard, button)
+
+      // Set up drag events for the new card
+      newCard.addEventListener('dragstart', () => {
+        draggedCard = newCard
+        setTimeout(() => {
+          newCard.classList.add('dragging')
+        }, 0)
+      })
+
+      newCard.addEventListener('dragend', () => {
+        draggedCard = null
+        newCard.classList.remove('dragging')
+        updateTaskCounts()
+      })
+
+      // Update counts
+      updateTaskCounts()
+
+      console.log(`New task created in ${stage}`)
+    })
+  })
+
+  // Function to update card styling based on column
+  function updateCardStyling(card, stage) {
+    // Remove all potential styling classes first
+    card.style.borderLeftColor = ''
+    card.style.background = ''
+
+    // Apply styling based on stage
+    if (stage === 'todo') {
+      card.style.borderLeftColor = '#f43f5e'
+      card.style.background = '#fff1f2'
+    } else if (stage === 'inprogress') {
+      card.style.borderLeftColor = '#f59e0b'
+      card.style.background = '#fffbeb'
+    } else if (stage === 'done') {
+      card.style.borderLeftColor = '#10b981'
+      card.style.background = '#ecfdf5'
+    }
+  }
+
+  // Function to update task counts
+  function updateTaskCounts() {
+    columns.forEach((column) => {
+      const cards = column.querySelectorAll('.kanban-card').length
+      const countSpan = column.querySelector('.task-count')
+      countSpan.textContent = cards
+    })
+  }
+
+  // Initial count update
+  updateTaskCounts()
+</script>

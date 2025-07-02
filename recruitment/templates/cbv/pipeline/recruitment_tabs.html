@@ -1,0 +1,119 @@
+{% load i18n generic_template_filters %}
+<div id="{{view_id}}">
+  {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
+  <div class="oh-tabs HTV">
+    <script>
+        $("#reloadMessagesButton").click()
+    </script>
+    <div class="HTV"></div>
+    <ul class="oh-tabs__tablist">
+      {% for tab in tabs %}
+      <li
+        class="oh-tabs__tab d-flex {% if forloop.counter == 1 and not active_target %} oh-tabs__tab--active {% endif %}"
+        data-target="#{{view_id}}{{forloop.counter}}"
+        hx-get="{{tab.url}}?{{request.GET.urlencode}}"
+        hx-target="#{{view_id}}{{forloop.counter}}"
+        hx-trigger="load"
+        onclick="switchTab(event)"
+      >
+        {{tab.title}}
+        <div class="d-flex">
+          <div class="oh-tabs__input-badge-container" onclick="event.stopPropagation()">
+            <span
+              class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2"
+              id="badge-{{view_id}}{{forloop.counter}}"
+              {% if tab.badge_label %}
+              data-badge-label="{{tab.badge_label}}"
+              title="0 {{tab.badge_label}}"
+              {% else %}
+              title="0 {% trans "Records" %}"
+              {% endif %}
+              onclick="event.stopPropagation()"
+            >
+              0
+            </span>
+          </div>
+          {% if tab.actions %}
+          <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
+              @click="open = !open"
+              @click.outside="open = false"
+              title="Actions"
+            >
+              <ion-icon
+                name="ellipsis-vertical"
+                role="img"
+                class="md hydrated"
+                aria-label="ellipsis vertical"
+              ></ion-icon>
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right"
+              x-show="open"
+              style="display: none"
+            >
+              <ul class="oh-dropdown__items">
+                {% for action in tab.actions %}
+                {% if instance %}
+                {% if action.accessibility|accessibility:instance %}
+                <li class="oh-dropdown__item">
+                  <a {{action.attrs|safe}}>{{action.action}}</a>
+                </li>
+                {% endif %}
+                {% else %}
+                <li class="oh-dropdown__item">
+                  <a {{action.attrs|safe}}>{{action.action}}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="oh-tabs__contents">
+      {% for tab in tabs %}
+      <div
+        class="oh-tabs__content {% if forloop.counter == 1 and not active_target %} oh-tabs__content--active {% endif %}"
+        id="{{view_id}}{{forloop.counter}}"
+      >
+    <div class="animated-background"></div>
+    </div>
+      {% endfor %}
+    </div>
+  </div>
+
+
+
+  <script>
+    $("li.oh-tabs__tab").click(function (e) {
+      var target = `li[data-target="${$(this).attr("data-target")}"]`
+      e.preventDefault();
+      $.ajax({
+        type: "get",
+        url: "{% url 'active-tab' %}",
+        data: {
+          "path":"{{request.path}}",
+          "target":target,
+        },
+        success: function (response) {
+
+        }
+      });
+    });
+    {% if active_target %}
+    $("div.oh-tabs").find(`{{active_target|safe}}`).click();
+    if (!$(".oh-tabs__tab--active").length) {
+      $("#{{view_id}}").find(".oh-tabs__tab").first().click()
+    }else{
+      setTimeout(() => {
+        $(".oh-tabs__tab--active").click();
+      }, 100);
+    }
+    {% endif %}
+  </script>
+</div>

@@ -1,0 +1,89 @@
+{% load i18n %}
+<div class="col-span-12 lg:col-span-6">
+<form hx-post="{% url 'enable-account-block-unblock' %}" hx-swap="none"
+hx-trigger="change from:#enableBlockUnblock" hx-on-htmx-after-request="setTimeout(reloadMessage, 70);">
+{% csrf_token %}
+<div class="flex items-center justify-between mb-4">
+    <div class="flex space-x-2">
+    <h3 class="text-sm font-medium"> {% trans "Restrict Login Account" %}</h3>
+    <span class="oh-info mr-2" title="{% trans 'By enabling this feature, you can block or unblock an employee account.' %}"></span>
+    </div>
+    <label class="toggle-label">
+        <input type="checkbox" class="toggle-input" name="enable_block_account" id="enableBlockUnblock"
+            data-target="#limitFields"  {% if enabled_block_unblock %} checked {% endif %}>
+        <div class="toggle-switch"></div>
+    </label>
+
+</div>
+</form>
+</div>
+<div class="col-span-12 lg:col-span-6">
+<form id="enableProfileEditForm" hx-post="{% url 'enable-profile-edit-feature' %}" hx-swap="none"
+            hx-include="#enableProfileEditUnblock" hx-on-htmx-after-request="setTimeout(reloadMessage, 70);">
+            {% csrf_token %}
+<div class="flex items-center justify-between mb-4">
+    <div class="flex space-x-2">
+    <h3 class="text-sm font-medium">   {% trans "Restrict Profile Edit" %}</h3>
+    <span class="oh-info mr-2" title="{% trans 'By enabling this feature, you can restrict an employee from editing their profile.' %}"></span>
+    </div>
+    <label class="toggle-label">
+        <input type="checkbox" class="toggle-input" name="enable_profile_edit" id="enableProfileEditUnblock"
+            data-target="#limitFields"  {% if enabled_profile_edit %} checked {% endif %}>
+        <div class="toggle-switch"></div>
+    </label>
+
+</div>
+</form>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#enableProfileEditUnblock').on('change', function (e) {
+            const $checkbox = $(this);
+            const $form = $('#enableProfileEditForm');
+
+            const message = $checkbox.is(':checked')
+                ? "{{ _('Are you sure you want to restrict all employees from editing their profiles?') }}"
+                : "{{ _('Are you sure you want to allow all employees to edit their profiles?') }}";
+
+
+            Swal.fire({
+                title: "{{ _('Please Confirm') }}",
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: "{{ _('Confirm') }}",
+                cancelButtonText: "{{ _('Cancel') }}",
+                confirmButtonColor: 'rgb(0, 128, 0)',
+                cancelButtonColor: 'rgb(221, 51, 51)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData($form[0]);
+                    formData.append('csrfmiddlewaretoken', $('[name="csrfmiddlewaretoken"]').val());
+
+                    $.ajax({
+                        url: "{% url 'enable-profile-edit-feature' %}",
+                        type: 'POST',
+                        headers: {
+                            'HX-Request': 'true',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function () {
+                            reloadMessage();
+                        },
+                        error: function () {
+                            Swal.fire("{{ _('Error') }}", "{{ _('Something went wrong while updating.') }}", "error");
+                        }
+                    });
+                } else {
+                    $checkbox.prop('checked', !$checkbox.is(':checked'));
+                }
+            });
+        });
+    });
+</script>

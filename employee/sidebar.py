@@ -9,9 +9,12 @@ from django.utils.translation import gettext_lazy as trans
 
 from accessibility.methods import check_is_accessible
 from base.templatetags.basefilters import is_reportingmanager
+from horilla.horilla_middlewares import _thread_locals
 
+request = getattr(_thread_locals, "request", None)
 MENU = trans("Employee")
 IMG_SRC = "images/ui/employees.svg"
+
 
 SUBMENUS = [
     {
@@ -70,6 +73,12 @@ def profile_accessibility(request, submenu, user_perms, *args, **kwargs):
         ) == str(request.session["selected_company"])
     finally:
         return accessible
+        # try:
+        #     if accessible:
+        #         submenu["redirect"] = reverse("employee-profile", kwargs={"obj_id": request.user.employee_get.id})
+        # except Exception:
+        #     # If an exception occurs, do nothing
+        #     pass
 
 
 def document_accessibility(request, submenu, user_perms, *args, **kwargs):

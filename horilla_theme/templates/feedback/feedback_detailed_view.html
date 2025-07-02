@@ -1,0 +1,656 @@
+{% extends 'index.html' %}
+{% block content %}
+{% include 'generic/components.html' %}
+{% load static i18n %}
+{% load i18n %}
+{% load basefilters %}
+{% load mathfilters %}
+
+<style>
+  .oh-profile__avatar-limit-height {
+    height: 30px !important;
+  }
+  .oh-profile_name_custom {
+    font-size: 13px;
+    padding-left: 4px;
+  }
+  .oh-profile__image_custm {
+    width: 26px;
+    height: 26px;
+  }
+  .avatars {
+    display: flex;
+    padding: 8px 10px 8px 10px;
+  }
+
+  .avatars__item {
+    background-color: #596376;
+    border: 2px solid white;
+    border-radius: 100%;
+    color: #ffffff;
+    display: block;
+    font-family: sans-serif;
+    font-size: 12px;
+    font-weight: 100;
+    height: 26px;
+    width: 26px;
+    line-height: 17px;
+    text-align: center;
+    transition: margin 0.1s ease-in-out;
+    overflow: hidden;
+    margin-left: -10px;
+  }
+
+  .avatars__item:first-child {
+    z-index: 5;
+  }
+
+  .avatars__item:nth-child(2) {
+    z-index: 4;
+  }
+
+  .avatars__item:nth-child(3) {
+    z-index: 3;
+  }
+
+  .avatars__item:nth-child(4) {
+    z-index: 2;
+  }
+
+  .avatars__item:nth-child(5) {
+    z-index: 1;
+  }
+
+  .avatars__item:last-child {
+    z-index: 0;
+  }
+
+  .avatars__item img {
+    width: 100%;
+  }
+
+  .avatars:hover .avatars__item {
+    margin-right: 10px;
+  }
+</style>
+<div id="message"></div>
+<main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+
+  <div class="bg-white p-3 rounded-md shadow-card mb-5">
+
+    <!-- Top Bar -->
+    <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-5 border-b border-dark-50 pb-3">
+      <h3 class="text-md font-semibold">Feedback: {{ feedback }}</h3>
+
+      <div class="flex items-center flex-wrap gap-1">
+        {% if perms.pms.change_feedback or request.user|is_reportingmanager %}
+          <div class="relative dropdown-wrapper">
+            <select id="status" name="feedback_status"
+                class="px-5 py-2 h-full bg-white rounded-md text-xs border border-primary-500 hover:border-primary-600 transition duration-300"
+                hx-post="{% url 'feedback-detailed-view-status' id=feedback.id %}"
+                hx-trigger="change" hx-swap="afterend">
+                <option value="{{feedback.status}}" selected>{% trans feedback.get_status_display %}</option>
+                {% for value,label in feedback_status %}
+                  {% if feedback.status != label %}
+                    <option value="{{label}}">{% trans label %}</option>
+                  {% endif %}
+                {% endfor %}
+            </select>
+          </div>
+        {% else %}
+          <label class="px-5 py-2 bg-white rounded-md text-xs border border-primary-500">{{ feedback.get_status_display }}</label>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        {% if perms.pms.change_feedback or perms.pms.delete_feedback or request.user.employee_get == feedback.created_by %}
+          {% if not feedback_started and perms.pms.change_feedback or request.user.employee_get == feedback.created_by %}
+            <button data-toggle="oh-modal-toggle"
+                class="w-8 h-8 flex justify-center items-center bg-white border border-primary-500 hover:border-primary-600 rounded-md"
+                data-target="#genericModal"
+                hx-get="{% url 'feedback-update' feedback.id %}"
+                hx-target="#genericModalBody"
+                title="{% trans 'Edit' %}">
+                <img src="/static/horilla_theme/assets/img/icons/edit.svg" width="16" alt="edit">
+            </button>
+          {% endif %}
+          {% if perms.pms.delete_feedback %}
+            <form action="{% url 'feedback-archive' id=feedback.id %}" method="post"
+                onsubmit="return confirm('{% trans 'Do you want archive this Feedback ?' %}')">
+                {% csrf_token %}
+                <button class="w-8 h-8 flex justify-center items-center bg-white border border-primary-500 hover:border-primary-600 rounded-md"
+                    title="{% trans 'Archive' %}">
+                    <ion-icon name="archive" role="img" class="md hydrated"></ion-icon>
+                </button>
+            </form>
+            {% if not feedback.feedback_answer.all %}
+              <form action="{% url 'feedback-delete' id=feedback.id %}" method="post"
+                  onsubmit="return confirm('{% trans 'Do you want Delete this Feedback ?' %}')">
+                  {% csrf_token %}
+                  <button class="w-8 h-8 flex justify-center items-center bg-white border border-primary-500 hover:border-primary-600 rounded-md"
+                      title="{% trans 'Delete' %}">
+                      <img src="/static/horilla_theme/assets/img/icons/trash.svg" width="16" alt="delete">
+                  </button>
+              </form>
+            {% endif %}
+          {% endif %}
+          {% if request.user.employee_get == feedback.employee_id or perms.pms.change_feedback %}
+            <a hx-get="{% url 'share-feedback' feedback.id %}"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+                hx-target="#objectCreateModalTarget"
+                class="w-8 h-8 justify-center px-1 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+                title="{% trans 'Request feedback' %}">
+                <img src="/static/horilla_theme/assets/img/create.svg" width="18" alt="request" class="filter brightness-0 invert">
+            </a>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Feedback Info Section -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-sm text-[#565E6C] w-28">{% trans "Owner" %}</span>
+        <p class="text-sm font-semibold flex items-center gap-5">:
+          <img src="{{ feedback.employee_id.get_avatar }}" alt="owner" class="w-6 h-6 rounded-full inline-block">
+          <span>{{ feedback.employee_id }}</span>
+        </p>
+      </div>
+
+      <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-sm text-[#565E6C] w-28">{% trans "Start Date" %}</span>
+        <p class="text-sm font-semibold flex items-center gap-5">: <span>{{ feedback.start_date }}</span></p>
+      </div>
+
+      <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-sm text-[#565E6C] w-28">{% trans "End Date" %}</span>
+        <p class="text-sm font-semibold flex items-center gap-5">:
+          <span>  {{ feedback.end_date }}</span>
+          <span title="Due {% if feedback.end_date == today %} today {% else %}in {{ feedback.end_date|sub:today }}{% endif %}">
+            <ion-icon
+              class="text-{% if feedback.end_date < today %}danger{% elif feedback.end_date == today %}warning{% else %}success{% endif %}"
+              name="time-sharp"></ion-icon>
+          </span>
+        </p>
+      </div>
+
+      <div class="mb-2 flex gap-5 items-center ">
+        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Answered Employees" %}</span>
+        <p class="text-sm font-semibold flex items-center gap-5">:
+        <ul class="flex items-center gap-1">
+          {% for employee in employee_statics.yes %}
+            {% if employee %}
+              <li><a href="{% url 'employee-view-individual' employee.id %}"><img src="{{ employee.get_avatar }}" class="w-6 h-6 rounded-full" alt=""></a></li>
+            {% endif %}
+          {% endfor %}
+        </ul></p>
+      </div>
+
+      <div class="mb-2 flex gap-5 items-center">
+        <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Employees not answered yet" %}</span>
+        <p class="text-sm font-semibold flex items-center gap-5">:
+        <ul class="flex items-center gap-1">
+          {% for employee in employee_statics.no %}
+            {% if employee %}
+              <li><a href="{% url 'employee-view-individual' employee.id %}"><img src="{{ employee.get_avatar }}" class="w-6 h-6 rounded-full" alt=""></a></li>
+            {% endif %}
+          {% endfor %}
+        </ul></p>
+      </div>
+
+      {% if perms.pms.view_feedback and feedback.cyclic_feedback %}
+        <div class="mb-2 flex gap-5 items-center">
+          <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Cyclic feedback period" %}</span>
+          <p class="text-sm font-semibold">: {{ feedback.cyclic_feedback_days_count }} {{ feedback.get_cyclic_feedback_period_display }}</p>
+        </div>
+        <div class="mb-2 flex gap-5 items-center">
+          <span class="font-medium text-sm text-[#565E6C] w-48">{% trans "Next feedback on" %}</span>
+          <p class="text-sm font-semibold">: {{ feedback.cyclic_next_start_date }} - {{ feedback.cyclic_next_end_date }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+
+
+  <div class="bg-white p-3 rounded-md shadow-card ">
+
+    <div class="h-[calc(100vh_-_335px)] overflow-hidden overflow-y-auto">
+
+      <!-- Tab Buttons -->
+      <div class="mytab flex sticky top-0 bg-white" role="tablist">
+          <button
+            class="tab-button px-4 py-2 text-sm font-medium text-blue-600 w-1/2 active"
+            onclick="switchTab(event);"
+            data-target="#feedback-answers"
+            data-tab="feedback-answers">
+            {% trans 'Feedback Answers' %}
+          </button>
+          <button
+            class="tab-button px-4 py-2 text-sm font-medium w-1/2"
+            onclick="switchTab(event); $('#feedback-overview-button').click()"
+            data-target="#feedback-overview"
+            data-tab='feedback-overview'>
+            {% trans 'Feedback Overview' %}
+          </button>
+
+      </div>
+
+      <div class="tab-content mt-4">
+        <div class="tab-pane" id="feedback-answers">
+          <!-- Employee -->
+          <div class="overflow-hidden overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-white">
+                <tr class="border-b border-[#ececec]">
+                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Employee" %}</th>
+                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-[#ebebeb]">
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <div class="flex gap-3 items-center font-normal text-sm">
+                      <img src="{{feedback.employee_id.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <span>{{feedback.employee_id}}</span>
+                    </div>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.employee_id.id}}"></span>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300 oh-activity-sidebar__open"
+                      data-target="#answerViewAccordion"
+                      hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.employee_id.id %}"
+                      hx-target="#answerView">
+                      {% trans "Answer View" %}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Manager -->
+          {% if feedback.manager_id %}
+          <div class="overflow-hidden overflow-x-auto mb-6">
+            <table class="w-full">
+              <thead class="bg-white">
+                <tr class="border-b border-[#ececec]">
+                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Manager" %}</th>
+                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-[#ebebeb]">
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <div class="flex gap-3 items-center font-normal text-sm">
+                      <img src="{{feedback.manager_id.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <span>{{feedback.manager_id}}</span>
+                    </div>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{feedback.manager_id.id}}"></span>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300 oh-activity-sidebar__open"
+                      data-target="#answerViewAccordion"
+                      hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=feedback.manager_id.id %}"
+                      hx-target="#answerView">
+                      {% trans "Answer View" %}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+
+          <!-- Subordinates -->
+          {% if feedback.subordinate_id.all %}
+          <div class="overflow-hidden overflow-x-auto mb-6">
+            <table class="w-full">
+              <thead class="bg-white">
+                <tr class="border-b border-[#ececec]">
+                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Subordinates" %}</th>
+                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for employee in feedback.subordinate_id.all %}
+                <tr class="border-b border-[#ebebeb]">
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <div class="flex gap-3 items-center font-normal text-sm">
+                      <img src="{{employee.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <span>{{employee}}</span>
+                    </div>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300 oh-activity-sidebar__open"
+                      data-target="#answerViewAccordion"
+                      hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}"
+                      hx-target="#answerView">
+                      {% trans "Answer View" %}
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+
+          <!-- Colleague -->
+          {% if feedback.colleague_id.all %}
+          <div class="overflow-hidden overflow-x-auto mb-6">
+            <table class="w-full">
+              <thead class="bg-white">
+                <tr class="border-b border-[#ececec]">
+                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Colleague" %}</th>
+                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for employee in feedback.colleague_id.all %}
+                <tr class="border-b border-[#ebebeb]">
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <div class="flex gap-3 items-center font-normal text-sm">
+                      <img src="{{employee.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <span>{{employee}}</span>
+                    </div>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300 oh-activity-sidebar__open"
+                      data-target="#answerViewAccordion"
+                      hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}"
+                      hx-target="#answerView">
+                      {% trans "Answer View" %}
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+
+          <!-- Others -->
+          {% if feedback.others_id.all %}
+          <div class="overflow-hidden overflow-x-auto mb-6">
+            <table class="w-full">
+              <thead class="bg-white">
+                <tr class="border-b border-[#ececec]">
+                  <th class="text-sm font-medium text-left p-3" style="width:40%;">{% trans "Other Employees" %}</th>
+                  <th class="text-sm font-medium text-left p-3" style="width:28%;">{% trans "Status" %}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for employee in feedback.others_id.all %}
+                <tr class="border-b border-[#ebebeb]">
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <div class="flex gap-3 items-center font-normal text-sm">
+                      <img src="{{employee.get_avatar}}" class="rounded-full" alt="" width="30" />
+                      <span>{{employee}}</span>
+                    </div>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <span class="feedback-status" x-data-feedback-id="{{feedback.id}}" x-data-employee-id="{{employee.id}}"></span>
+                  </td>
+                  <td class="text-sm text-left p-3 text-[#666]">
+                    <button class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300 oh-activity-sidebar__open"
+                      data-target="#answerViewAccordion"
+                      hx-post="{%url 'feedback-detailed-view-answer' id=feedback.id emp_id=employee.id %}"
+                      hx-target="#answerView">
+                      {% trans "Answer View" %}
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+        </div>
+        <div class="tab-pane hidden" id="feedback-overview">
+          <div id="feedback_overview_div"></div>
+        </div>
+    </div>
+  </div>
+</div>
+
+
+
+<button
+  hx-get="{% url 'get-feedback-overview' feedback.id %}"
+  hx-target="#feedback-overview" id="feedback-overview-button" hidden>
+</button>
+</main>
+
+
+<!-- modals -->
+<div
+  class="oh-modal"
+  id="objectCreateModal"
+  role="dialog"
+  aria-labelledby="objectCreateModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog" id="objectCreateModalTarget"></div>
+</div>
+
+
+
+  <!-- answer off canvas -->
+  <div class="oh-activity-sidebar" id="answerViewAccordion" style="z-index:1000">
+    <div class="oh-activity-sidebar__header">
+      <span id="closanswer" style="cursor: pointer;" title="{% trans 'Close' %}">
+        <ion-icon
+          name="chevron-back-outline"
+          class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+          id="close"
+          data-target="#activitySidebar"
+          style="font-size: 24px;"
+        ></ion-icon>
+      <span class="oh-activity-sidebar__title"> {% trans "Answers" %}</span>
+    </div>
+    <div class="oh-activity-sidebar__body">
+      <ol class="oh-activity-sidebar__qa-list" role="list" id="answerView">
+      </ol>
+    </div>
+  </div>
+
+
+
+<script src="{% static 'src/feedback/feedback_answer.js' %}"></script>
+<script src="{% static 'src/feedback/feedback_detailed_view.js' %}"></script>
+
+<script>
+  $(document).ready(function () {
+    $("#close").attr(
+      "class",
+      "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
+    );
+  });
+  $("#closanswer").click(function (e) {
+    $("#answerViewAccordion").removeClass("oh-activity-sidebar--show");
+  });
+
+  $(` .oh-activity-sidebar__open`).on("click", function () {
+      let sideBarId = $(this).attr("data-target");
+      $(`${sideBarId}`).addClass("oh-activity-sidebar--show");
+  });
+
+  $(` .oh-activity-sidebar__open`).on("click", function () {
+      $(".oh-modal--show").removeClass("oh-activity-sidebar__close");
+  });
+
+  function get_collegues(element) {
+
+        if (typeof element === 'object')
+        {
+            var employee_id = $(element).val();
+        }
+        else {
+          var employee_id = element
+        }
+
+
+      // Check if the employee_id is valid
+      if (employee_id) {
+          // Dynamically set the hx-vals attribute for the manager button
+          $('#managerButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'manager' })).click();
+          // Dynamically set the hx-vals attribute for the colleagues button
+          $('#colleguesButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'colleagues' })).click();
+          // Dynamically set the hx-vals attribute for the subordinates button
+          $('#subordinatesButton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'subordinates' })).click();
+          // Dynamically set the hx-vals attribute for the keyresult button
+          $('#keyresultButtton').attr('hx-vals', JSON.stringify({ employee_id: employee_id, data: 'keyresults' })).click();
+      } else {
+          console.error('Invalid employee_id');
+      }
+  }
+  function changeCyclicFeedback(element) {
+    if (element.checked) {
+        $("#cyclic_feedback_period").show();
+        $("#id_cyclic_feedback_days_count").attr("required", true);
+        $("#id_cyclic_feedback_period").attr("required", true);
+    } else {
+        $("#cyclic_feedback_period").hide();
+        $("#id_cyclic_feedback_days_count").attr("required", false);
+        $("#id_cyclic_feedback_period").attr("required", false);
+    }
+  }
+  function copyLink(link){
+    var $temp = $("<input>");
+    var $url = $(location).attr('href');
+    $("body").append($temp);
+    $temp.val(link).select();
+    document.execCommand("copy");
+    $temp.remove();
+    Swal.fire({
+      text: `Link copied ${link}`,
+      icon: "success",
+      showConfirmButton: false,
+      timer: 3000, // Set the timer to 3000 milliseconds (3 seconds)
+      timerProgressBar: true, // Show a progress bar as the timer counts down
+    });
+  }
+</script>
+
+    <!-- Script to load components and all notifications -->
+    <script>
+      async function loadComponent(elementId, path, callback) {
+          try {
+              const response = await fetch(path);
+              const html = await response.text();
+              document.getElementById(elementId).innerHTML = html;
+
+              if (typeof callback === "function") {
+                  callback(); // Run script after component loads
+              }
+          } catch (error) {
+              console.error("Error loading component:", error);
+          }
+      }
+
+      function initSidebarToggle() {
+          // Reusable Sidebar Toggle
+          document.querySelectorAll(".toggleSidemenu").forEach((button) => {
+              button.addEventListener("click", () => {
+                  const sidebarId = button.getAttribute("data-sidebar");
+                  const sidebar = document.getElementById(sidebarId);
+                  if (sidebar) {
+                      sidebar.classList.toggle("active");
+                      document.body.classList.toggle("overflow-hidden");
+                  }
+              });
+          });
+
+          document.querySelectorAll(".closeSidemenu").forEach((button) => {
+              button.addEventListener("click", () => {
+                  const sidebarId = button.getAttribute("data-sidebar");
+                  const sidebar = document.getElementById(sidebarId);
+                  if (sidebar) {
+                      sidebar.classList.remove("active");
+                      document.body.classList.remove("overflow-hidden");
+                  }
+              });
+          });
+      }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+
+
+
+  <!--  TAB DESIGN  -->
+  <script>
+      const tabButtons = document.querySelectorAll(".tab-button");
+      const tabPanes = document.querySelectorAll(".tab-pane");
+
+      tabButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+              // Remove active class and hide all panes
+              tabButtons.forEach((b) => b.classList.remove("active", "text-blue-600", "border-blue-500"));
+              tabPanes.forEach((pane) => pane.classList.add("hidden"));
+
+              // Add active class to clicked button
+              btn.classList.add("active", "text-blue-600", "border-blue-500");
+
+              // Show the selected tab
+              const target = btn.getAttribute("data-tab");
+              document.getElementById(target).classList.remove("hidden");
+          });
+      });
+
+      // Trigger default active
+      tabButtons[0].click();
+  </script>
+
+  <!-- ACCORDION -->
+  <script>
+      document.querySelectorAll('.accordion-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+              const panel = btn.nextElementSibling;
+              const icon = btn.querySelector('.icon');
+              const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+
+              // Collapse all others (optional — comment this block if you want multiple open)
+              document.querySelectorAll('.accordion-panel').forEach(p => {
+                  p.style.maxHeight = null;
+                  p.previousElementSibling.querySelector('.icon').textContent = '+';
+                  p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
+                  p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+              });
+
+              // Toggle current
+              if (!isOpen) {
+                  panel.style.maxHeight = panel.scrollHeight + 'px';
+                  icon.textContent = '−';
+                  btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
+                  btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+              } else {
+                  panel.style.maxHeight = null;
+                  icon.textContent = '+';
+                  btn.classList.remove("bg-[#e54f38]", "text-white");
+                  btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+              }
+          });
+      });
+  </script>
+
+
+
+
+{% endblock %}

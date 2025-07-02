@@ -1,0 +1,47 @@
+{% extends 'settings.html' %} {% block settings %}{% load i18n %} {% load horillafilters %}{% load widget_tweaks %}
+<div class="border border-[#ebebeb] rounded-md  overflow-hidden mb-5">
+    <h5 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]"> {% trans "Biometric Attendance" %}
+    </h5>
+    <div class="p-4">
+        <div class="grid grid-cols-12 gap-4 myform">
+            <div class="col-span-12 lg:col-span-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex space-x-2">
+                    <h3 class="text-sm font-medium">{% trans "Activate Biometric Attendance" %}</h3>
+                    <span class="oh-info" title="{% trans 'Once you enable this option, a new submenu called Biometric Devices will be added under the Attendance menu.' %}"></span>
+                </div>
+                    <label class="toggle-label">
+                        <input type="checkbox" name="is_installed" data-widget="style-widget" class="toggle-input"
+                        {% if biometric.is_installed %} checked title="{% trans 'Activated' %}" {% else %} title="{% trans 'Activate' %}" {% endif %}
+                        id="is_installed">
+                        <div class="toggle-switch"></div>
+                    </label>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('#is_installed').on('change',function(){
+          var boolean = $(this).is(":checked")
+          $.ajax({
+            type: "GET",
+            url: "/settings/activate-biometric-attendance",
+            data: {
+              is_installed: boolean,
+            },
+            success: function (response, textStatus, jqXHR) {
+              if (jqXHR.status === 200) {
+                location.reload();
+              } else {
+              }
+            },
+          });
+        });
+      });
+</script>
+
+    {% endblock settings %}
