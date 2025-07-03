@@ -1398,7 +1398,7 @@ class HorillaListView(ListView):
                 f'attachment; filename="{self.export_file_name}.pdf"'
             )
             return response
-        return export_xlsx(json_data, columns)
+        return export_xlsx(json_data, columns, file_name=self.export_file_name)
 
 
 class HorillaSectionView(TemplateView):
