@@ -2091,7 +2091,10 @@ class HorillaNavView(TemplateView):
 
         model_instance = model_class_ref()
         self.nav_title = self.nav_title or model_instance._meta.verbose_name_plural
-        self.filter_instance = self.filter_instance.__class__()
+        try:
+            self.filter_instance = self.filter_instance.__class__()
+        except:
+            pass
 
         if not self.group_by_fields:
             return
