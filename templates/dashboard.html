@@ -731,8 +731,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
+            <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
             {% if 'birthday_view'|feature_is_accessible:request or perms.employee.view_employee %}
                 <div class="oh-dashboard__events" hx-get="{% url 'get-birthday' %}" hx-trigger="load"> </div>
             {% endif %}
@@ -769,51 +768,30 @@
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                                 <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
                             </div>
-                            <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load" style="height:300px;overflow-x: auto;">
+                            <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load"
+                                style="height:300px;overflow-x: auto;">
                                 <div class="animated-background"></div>
                             </div>
-                            {% comment %} <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load"></div> {% endcomment %}
                         </div>
                     {% endif %}
                 {% endif %}
-                </div>
-
-                <hr>
-
-                <div class="oh-card-dashboard__body" hx-get="{% url 'announcement-list' %}" hx-trigger="load"
-                    id="announcementListCard">
-                    <div class="animated-background"></div>
-                </div>
-            </div>
-            {% if "leave"|app_installed %}
-                {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
-                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
+                {% if perms.employee.view_employeeworkinformation or request.user|is_reportingmanager %}
+                    <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
+                            <span class="oh-card-dashboard__title">{% trans "Employee Work Information" %}</span>
                         </div>
-                        <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load"
-                            style="height:300px;overflow-x: auto;">
+                        <!-- Search bar -->
+                        <div class="oh-search-bar mb-3">
+                            <input type="text" hx-get="{% url 'emp-workinfo-complete' %}" hx-target="#pending"
+                                hx-trigger="keyup  changed delay:0.3s" id="employeeSearch" name="search"
+                                placeholder="Search Employee">
+                        </div>
+                        <div class="oh-card-dashboard__body" hx-get="{% url 'emp-workinfo-complete' %}" hx-trigger="load">
                             <div class="animated-background"></div>
                         </div>
                     </div>
                 {% endif %}
-            {% endif %}
-            {% if perms.employee.view_employeeworkinformation or request.user|is_reportingmanager %}
-                <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
-                    <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                        <span class="oh-card-dashboard__title">{% trans "Employee Work Information" %}</span>
-                    </div>
-                    <!-- Search bar -->
-                    <div class="oh-search-bar mb-3">
-                        <input type="text" hx-get="{% url 'emp-workinfo-complete' %}" hx-target="#pending"
-                            hx-trigger="keyup  changed delay:0.3s" id="employeeSearch" name="search"
-                            placeholder="Search Employee">
-                    </div>
-                    <div class="oh-card-dashboard__body" hx-get="{% url 'emp-workinfo-complete' %}" hx-trigger="load">
-                        <div class="animated-background"></div>
-                    </div>
-                </div>
-            {% endif %}
+            </div>
         </div>
     </div>
 </div>
