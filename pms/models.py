@@ -552,7 +552,7 @@ class EmployeeObjective(HorillaModel):
 class Comment(models.Model):
     """comments for objectives"""
 
-    comment = models.CharField(max_length=150)
+    comment = models.TextField()
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.DO_NOTHING,
@@ -572,6 +572,9 @@ class Comment(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+    xss_exempt_fields = [
+        "comment",
+    ]
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.comment} "
