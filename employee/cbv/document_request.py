@@ -8,11 +8,12 @@ from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import choosesubordinates
+from base.methods import choosesubordinates, is_reportingmanager
+from employee.filters import DocumentRequestFilter
 from employee.models import Employee
 from horilla.decorators import manager_can_enter
 from horilla_documents.forms import (
@@ -23,7 +24,7 @@ from horilla_documents.forms import (
 )
 from horilla_documents.models import Document, DocumentRequest
 from horilla_views.cbv_methods import login_required
-from horilla_views.generic.cbv.views import HorillaFormView
+from horilla_views.generic.cbv.views import HorillaFormView, HorillaNavView
 from notifications.signals import notify
 
 
@@ -137,7 +138,7 @@ class DocumentRejectCbvForm(HorillaFormView):
                     messages.error(self.request, _("Document request rejected"))
             else:
                 messages.error(self.request, _("No document uploaded"))
-            # form.save()
+            form.save()
             return HttpResponse("<script>window.location.reload();</script>")
         return super().form_valid(form)
 
@@ -188,3 +189,60 @@ class DocumentUploadForm(HorillaFormView):
             form.save()
             return HttpResponse("<script>window.location.reload();</script>")
         return super().form_valid(form)
+
+
+class DocumentRequestNav(HorillaNavView):
+    """
+    For nav bar
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("document-request-filter-view")
+        self.create_attrs = f"""
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-target="#genericModalBody"
+                            hx-get="{reverse_lazy('document-request-create')}"
+                            """
+
+        if self.request.user.has_perm(
+            "employee.change_employee"
+        ) or is_reportingmanager(self.request):
+            if self.request.user.has_perm(
+                "horilla_documents.change_documentrequest"
+            ) or is_reportingmanager(self.request):
+                self.actions = [
+                    {
+                        "action": _("Bulk Approve Requests"),
+                        "attrs": f"""
+                        id="bulkApproveDocument"
+                        hx-post="{reverse('document-bulk-approve')}"
+                        hx-confirm='Do you really want to approve all the selected requests?'
+                        style="cursor: pointer;"
+                        hx-on:click="validateDocsIds(event, 'approved');"
+                        data-action="approved"
+                        """,
+                    },
+                    {
+                        "action": _("Bulk Reject Requests"),
+                        "attrs": f"""
+                        hx-get={reverse('document-bulk-reject')}
+                        data-target="#objectCreateModal"
+                        data-toggle="oh-modal-toggle"
+                        hx-on:click="validateDocsIds(event, 'rejected');"
+                        data-action="rejected"
+                        hx-target="#objectCreateModalTarget"
+                        id="bulkRejectDocument"
+                        style="cursor: pointer;"
+                        """,
+                    },
+                ]
+        else:
+            self.actions = None
+
+    nav_title = _("Document Requests")
+    filter_body_template = "cbv/documents/document_filter.html"
+    filter_instance = DocumentRequestFilter()
+    filter_form_context_name = "form"
+    search_swap_target = "#view-container"

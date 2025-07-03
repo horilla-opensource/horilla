@@ -440,6 +440,11 @@ urlpatterns = [
         document_request.DocumentRequestCreateForm.as_view(),
         name="document-request-create",
     ),
+    path(
+        "document-request-nav-cbv/",
+        document_request.DocumentRequestNav.as_view(),
+        name="document-request-nav-cbv",
+    ),
     # path(
     #     "document-request-create",
     #     views.document_request_create,

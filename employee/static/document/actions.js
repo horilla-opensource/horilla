@@ -32,12 +32,101 @@ var alreadyActionMessages = {
     },
 };
 
-function validateDocsIds(event) {
+// function validateDocsIds(event) {
+//     getCurrentLanguageCode(function (lang) {
+//         const ids = [];
+//         const checkedRows = $("[type=checkbox]:checked");
+//         const takeAction = $(event.currentTarget).data("action");
+//         let alreadyTakeAction = false;
+
+//         checkedRows.each(function () {
+//             const id = $(this).attr("id");
+//             const status = $(this).data("status");
+
+//             if (id) {
+//                 if (status === takeAction) alreadyTakeAction = true;
+//                 ids.push(id);
+//             }
+//         });
+
+//         if (ids.length === 0) {
+//             var norowMessages = {
+//                 ar: "لم يتم تحديد أي صفوف.",
+//                 de: "Es wurden keine Zeilen ausgewählt.",
+//                 es: "No se han seleccionado filas.",
+//                 en: "No rows have been selected.",
+//                 fr: "Aucune ligne n'a été sélectionnée.",
+//             };
+//             event.preventDefault();
+//             Swal.fire({
+//                 text: norowMessages[lang] || norowMessages.en,
+//                 icon: "warning",
+//                 confirmButtonText: "Close",
+//             });
+//         } else if (alreadyTakeAction) {
+//             event.preventDefault();
+//             Swal.fire({
+//                 text:
+//                     alreadyActionMessages[takeAction][lang] ||
+//                     alreadyActionMessages[takeAction].en,
+//                 icon: "warning",
+//                 confirmButtonText: "Close",
+//             });
+//         } else {
+//             // Directly trigger action without confirmation
+//             const triggerId =
+//                 takeAction === "approved"
+//                     ? "#bulkApproveDocument"
+//                     : "#bulkRejectDocument";
+//             $(triggerId).attr("hx-vals", JSON.stringify({ ids })).click();
+//         }
+//     });
+// }
+
+
+function validateDocsIds(event, action = null) {
     getCurrentLanguageCode(function (lang) {
         const ids = [];
         const checkedRows = $("[type=checkbox]:checked");
-        const takeAction = $(event.currentTarget).data("action");
+
+        // Use passed action parameter or try to get from element
+        let takeAction = action;
+        let currentElement = null;
+
+        // Handle case where event might be undefined or not have currentTarget
+        if (event && event.currentTarget) {
+            currentElement = event.currentTarget;
+        } else if (event && event.target) {
+            currentElement = event.target;
+        }
+
+        if (!takeAction && currentElement) {
+            // Try multiple ways to get the action attribute
+            takeAction = $(currentElement).data("action");
+
+            // If data() doesn't work, try attr()
+            if (!takeAction) {
+                takeAction = $(currentElement).attr("data-action");
+            }
+
+            // If still undefined, try getting from the element directly
+            if (!takeAction) {
+                takeAction = currentElement.getAttribute("data-action");
+            }
+        }
+
+
         let alreadyTakeAction = false;
+
+        // Add validation to ensure takeAction is valid
+        if (!takeAction || (takeAction !== "approved" && takeAction !== "rejected")) {
+            if (currentElement && currentElement.attributes) {
+            }
+            if (event && event.preventDefault) {
+                event.preventDefault();
+            }
+            return;
+        }
 
         checkedRows.each(function () {
             const id = $(this).attr("id");
@@ -84,6 +173,8 @@ function validateDocsIds(event) {
 }
 
 
+
+
 function highlightRow(checkbox) {
     checkbox.closest(".oh-user_permission-list_item").removeClass("highlight-selected");
     if (checkbox.is(":checked")) {
@@ -91,17 +182,31 @@ function highlightRow(checkbox) {
     }
 }
 
+// function selectAllDocuments(event) {
+//     event.stopPropagation();
+//     const checkbox = event.currentTarget;
+//     const isChecked = checkbox.checked;
+
+//     const accordionBody = checkbox
+//         .closest(".oh-accordion-meta__header")
+//         .nextElementSibling;
+
+//     if (accordionBody) {
+//         const checkboxes = accordionBody.querySelectorAll('[type="checkbox"]');
+//         checkboxes.forEach(cb => cb.checked = isChecked);
+//     }
+// }
+
 function selectAllDocuments(event) {
     event.stopPropagation();
     const checkbox = event.currentTarget;
     const isChecked = checkbox.checked;
 
-    const accordionBody = checkbox
-        .closest(".oh-accordion-meta__header")
-        .nextElementSibling;
+    const button = checkbox.closest('button');
+    const accordionPanel = button ? button.nextElementSibling : null;
 
-    if (accordionBody) {
-        const checkboxes = accordionBody.querySelectorAll('[type="checkbox"]');
+    if (accordionPanel && accordionPanel.classList.contains('accordion-panel')) {
+        const checkboxes = accordionPanel.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(cb => cb.checked = isChecked);
     }
 }
