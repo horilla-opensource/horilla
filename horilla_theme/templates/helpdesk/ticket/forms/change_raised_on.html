@@ -1,0 +1,106 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+	<span class="oh-modal__dialog-title" id="shiftRequestDetailModalLabel">
+		{% trans "Responsibility" %}
+	</span>
+	<button class="oh-modal__close" aria-label="Close">
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
+	<form
+		hx-post="{% url 'ticket-change-raised-on' ticket_id %}"
+		hx-target="#objectDetailsModalW25Target"
+		hx-encoding="multipart/form-data"
+		class="oh-profile-section"
+	>
+		<div hidden id="cur_raised_on" value="{{form.instance.raised_on}}">
+			{{form.instance.raised_on}}
+		</div>
+		{% csrf_token %}
+		<div class="oh-input-group">
+			{{form.non_field_errors}}
+			<label
+				class="oh-input__label"
+				for="{{form.assigning_type.id_for_label}}"
+				>{{form.assigning_type.label}}</label
+			>
+			{{form.assigning_type}}
+			<label class="oh-input__label" for="{{form.raised_on.id_for_label}}"
+				>{{form.raised_on.label}}</label
+			>
+			{{form.raised_on}}
+		</div>
+		<button
+			type="submit"
+			class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
+		>
+			<ion-icon class="me-1" name="save-outline"></ion-icon>
+			{% trans 'Save Changes' %}
+		</button>
+	</form>
+</div>
+
+<script>
+	$(document).ready(function () {
+		var assigning_type = $("#id_assigning_type").find(":selected").val();
+		if (assigning_type) {
+			$.ajax({
+				type: "GET",
+				url: '{% url "get-raised-on" %}',
+				data: {
+					assigning_type: assigning_type,
+				},
+				success: function (response) {
+					var raised_on = response.raised_on;
+					var cur_raised_on = $("#cur_raised_on").attr("value");
+					// Clear the existing options
+					$("#id_raised_on").empty();
+					var options = $('<option value="" >').text("---------");
+					$("#id_raised_on").append(options);
+
+					$.each(raised_on, function (id, obj) {
+						// looping all raised_on
+						var options = $(
+							'<option value="' +
+								obj.id +
+								'" ' +
+								(obj.id == cur_raised_on
+									? 'selected="selected"'
+									: "") +
+								">"
+						).text(obj.name);
+						$("#id_raised_on").append(options);
+					});
+				},
+			});
+		}
+		$("#id_assigning_type").change(function () {
+			var assigning_type = $("#id_assigning_type").val();
+			$.ajax({
+				type: "GET",
+				url: "/helpdesk/get-raised-on",
+				data: {
+					assigning_type: assigning_type,
+				},
+				success: function (response) {
+					var raised_on = response.raised_on;
+					// Clear the existing options
+					$("#id_raised_on").empty();
+					var options = $(
+						`<option value=" " selected="selected">`
+					).text(`---------`);
+
+					$("#id_raised_on").append(options);
+					$.each(raised_on, function (id, obj) {
+						// looping all raised_on
+						var options = $(`<option value=" ${obj.id}">`).text(
+							obj.name
+						);
+						$("#id_raised_on").append(options);
+					});
+				},
+			});
+		});
+	});
+</script>

@@ -531,6 +531,7 @@ function switchTab(e) {
 }
 
 function toggleAccordion(btn) {
+
     //  * This function is intended to be called explicitly via `hx-on:click` in HTMX-rendered content,
     const panel = btn.nextElementSibling;
     const icon = btn.querySelector(".icon");

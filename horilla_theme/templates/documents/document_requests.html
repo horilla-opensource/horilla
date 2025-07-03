@@ -1,0 +1,9 @@
+{% extends "index.html" %} {% block content %} {% load static %} {% load i18n %}
+{% load basefilters %} {% load horillafilters %}
+
+<div hx-get="{% url 'document-request-nav-cbv' %}" hx-trigger="load"></div>
+
+<div id="view-container" class="oh-wrapper">
+	{% comment %} {% include 'documents/requests.html' %} {% endcomment %}
+</div>
+{% endblock %}

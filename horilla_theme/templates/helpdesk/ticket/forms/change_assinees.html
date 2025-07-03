@@ -1,0 +1,29 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+	<button class="oh-modal__close top-[5px] right-[5px]" aria-label="Close">
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
+</div>
+<div class="oh-modal__dialog-body oh-modal__dialog-relative">
+	<form
+		hx-post="{% url 'ticket-change-assignees' ticket_id %}"
+		hx-target="#objectDetailsModalW25Target"
+		hx-encoding="multipart/form-data"
+		class="oh-profile-section pt-0"
+	>
+		{% csrf_token %}
+		<div class="oh-input-group">
+			<label for="id_name" class="oh-label"
+				>{% trans 'Assignees' %}</label
+			>
+			{{form.non_field_errors}} {{form.assigned_to}}
+		</div>
+		<button
+			type="submit"
+			class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
+		>
+			<ion-icon class="me-1" name="save-outline"></ion-icon>
+			{% trans 'Save Changes' %}
+		</button>
+	</form>
+</div>

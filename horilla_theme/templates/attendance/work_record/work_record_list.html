@@ -31,7 +31,7 @@
 				</th>
                 {% for day in current_month_dates_list %}
                     <th
-                        class="left-[-1px] left-[-1px] font-semibold p-3 {% if day in leave_dates %}holiday {% else %}bg-[#F4F4F4] {% endif %}"
+                        class="left-[-1px] left-[-1px] font-semibold p-3 text-[#e54f38] {% if day in leave_dates %}holiday {% else %}bg-[#F4F4F4] {% endif %}"
                     >
                         {{day.day}}
                     </th>
