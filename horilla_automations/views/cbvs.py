@@ -175,7 +175,7 @@ class AutomationListView(views.HorillaListView):
         ("Title", "title"),
         ("Model", "model"),
         ("Trigger", "trigger_display"),
-        ("Delivary Channel", "get_delivary_channel_display"),
+        ("Delivery Channel", "get_delivery_channel_display"),
         ("Email Mapping", "get_mail_to_display"),
     ]
 
