@@ -459,7 +459,7 @@ class Attachment(HorillaModel):
     def save(self, *args, **kwargs):
         self.get_file_format()
 
-        super().save(self, *args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return os.path.basename(self.file.name)
