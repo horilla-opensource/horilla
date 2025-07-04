@@ -37,7 +37,7 @@ from employee.methods.duration_methods import format_time, strtime_seconds
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, has_xss
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
@@ -124,6 +124,26 @@ class Employee(models.Model):
         to get contact no of candidates
         """
         return self.phone
+
+    def clean_fields(self, exclude=None):
+        errors = {}
+
+        # Get the list of fields to exclude from validation
+        total_exclude = set(exclude or []).union(getattr(self, "xss_exempt_fields", []))
+
+        for field in self._meta.get_fields():
+            if (
+                isinstance(field, (models.CharField, models.TextField))
+                and field.name not in total_exclude
+            ):
+                value = getattr(self, field.name, None)
+                if value and has_xss(value):
+                    errors[field.name] = ValidationError(
+                        "Potential XSS content detected."
+                    )
+
+        if errors:
+            raise ValidationError(errors)
 
     def get_image(self):
         """
@@ -905,8 +925,8 @@ class EmployeeBankDetails(HorillaModel):
     branch = models.CharField(max_length=50, null=True)
     address = models.TextField(max_length=255, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
-    state = models.CharField(max_length=50, blank=True, null=True)
-    city = models.CharField(max_length=50, blank=True, null=True)
+    state = models.CharField(max_length=50, blank=True)
+    city = models.CharField(max_length=50, blank=True)
     any_other_code1 = models.CharField(
         max_length=50, verbose_name="Bank Code #1", null=True
     )

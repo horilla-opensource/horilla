@@ -49,7 +49,7 @@
                     <div class="oh-sticky-table__thead">
                         <div class="oh-sticky-table__tr">
                             <div class="oh-sticky-table__th" style="width: 20px">
-                                <input type="checkbox" title='{% trans "Select All" %}'
+                                <input type="checkbox" title="{% trans 'Select All' %}"
                                     class="oh-input oh-input__checkbox mt-1 mr-2 all-attendances" style="margin-left: -5px"
                                     hx-on:click="toggleTableAllRowIds('.all-attendances', '.all-attendance-row');" />
                             </div>
@@ -58,7 +58,7 @@
                                 hx-target="#tab_contents">
                                 {% trans "Employee" %}
                             </div>
-                            <div data-cell-index="1" data-cell-title='{% trans "Batch" %}'
+                            <div data-cell-index="1" data-cell-title="{% trans 'Batch' %}"
                                 class="oh-sticky-table__th {% if request.sort_option.order == '-batch_attendance_id__title' %}arrow-up {% elif request.sort_option.order == 'batch_attendance_id__title' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                 hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=batch_attendance_id__title"
                                 hx-target="#tab_contents">
@@ -80,16 +80,15 @@
                                 {% trans "In Date" %}
                             </div>
                             <div data-cell-index="6" data-cell-title='{% trans "Check-Out" %}' class="oh-sticky-table__th">
-                                {% trans
-                                "Check-Out" %}</div>
+                                {% trans "Check-Out" %}</div>
                             <div data-cell-index="7" data-cell-title='{% trans "Out Date" %}'
                                 class="oh-sticky-table__th {% if request.sort_option.order == '-attendance_clock_out_date' %}arrow-up {% elif request.sort_option.order == 'attendance_clock_out_date' %}arrow-down {% else %}arrow-up-down {% endif %}"
                                 hx-get="{% url 'attendance-search' %}?{{pd}}&sortby=attendance_clock_out_date"
                                 hx-target="#tab_contents">
                                 {% trans "Out Date" %}
                             </div>
-                            <div data-cell-index="8" data-cell-title='{% trans "Shift" %}' class="oh-sticky-table__th">{% trans "Shift"
-                                %}</div>
+                            <div data-cell-index="8" data-cell-title='{% trans "Shift" %}' class="oh-sticky-table__th">
+                                {% trans "Shift" %}</div>
                             <div data-cell-index="9" data-cell-title='{% trans "Work Type" %}' class="oh-sticky-table__th">
                                 {% trans "Work Type" %}</div>
                             <div data-cell-index="10" data-cell-title='{% trans "Min Hour" %}' class="oh-sticky-table__th">

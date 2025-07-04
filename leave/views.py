@@ -3996,6 +3996,26 @@ def employee_available_leave_count(request):
         employee_id = request.user.employee_get
 
     available_leave = (
+        AvailableLeave.objects.filter(
+            leave_type_id=leave_type_id, employee_id=employee_id
+        ).first()
+        if leave_type_id and employee_id
+        else None
+    )
+    total_leave_days = available_leave.total_leave_days if available_leave else 0
+    forcasted_days = 0
+
+    if not leave_type_id or not start_date:
+        return render(
+            request,
+            "leave/leave_request/employee_available_leave_count.html",
+            {"hx_target": hx_target},
+        )
+
+    employee_id = request.GET.getlist("employee_id")
+    employee_id = employee_id[0] if employee_id else None
+
+    available_leave = (
         AvailableLeave.objects.select_related("leave_type_id", "employee_id")
         .filter(leave_type_id=leave_type_id, employee_id=employee_id)
         .first()
@@ -4023,10 +4043,13 @@ def employee_available_leave_count(request):
 
             total_leave_days += forcasted_days
 
-    pending_requests = available_leave.employee_id.leaverequest_set.filter(
-        status="requested", leave_type_id=leave_type_id
-    ).exclude(start_date__lt=datetime.today().date())
-    pending_requests_days = pending_requests.count()
+        # Only query pending requests if we have a valid employee
+        if available_leave.employee_id_id:
+            pending_requests_days = available_leave.employee_id.leaverequest_set.filter(
+                status="requested",
+                leave_type_id=leave_type_id,
+                start_date__gte=datetime.today().date(),
+            ).count()
 
     context = {
         "hx_target": hx_target,

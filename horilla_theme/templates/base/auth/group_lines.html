@@ -12,29 +12,29 @@
                   <img src="https://ui-avatars.com/api/?name={{group}}"
                       class="oh-navbar__user-image w-6 h-6 rounded-full" loading="lazy">
                 </span>
-                <span class="font-semibold">{{group}}</span> 
+                <span class="font-semibold">{{group}}</span>
                 <span class="text-xs mt-1 text-dark-300">{% trans "Total" %} {{group.user_set.all|length}} {% trans "users in this group" %}</span>
             </div>
 
             <div class="flex items-center flex-wrap gap-2 md:gap-8">
               <div class="flex gap-1 items-center">
                 {% if perms.auth.change_group %}
-                  <a class="cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center 
+                  <a class="cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center
                             hover:bg-primary-600 hover:text-white transition duration-300"
-                     hx-get="{% url "user-group-assign" %}" 
-                     hx-vals='{"group":"{{group.id}}"}' 
-                     hx-target="#groupAssignBody" 
-                     data-toggle="oh-modal-toggle" 
-                     data-target="#groupAssign" 
+                     hx-get="{% url "user-group-assign" %}"
+                     hx-vals='{"group":"{{group.id}}"}'
+                     hx-target="#groupAssignBody"
+                     data-toggle="oh-modal-toggle"
+                     data-target="#groupAssign"
                      onclick="event.stopPropagation()">
                     <i class="fa-solid fa-user-plus"></i>
                   </a>
                 {% endif %}
-            
+
                 {% if perms.auth.delete_group %}
                   <a href="#"
                     onclick="document.getElementById('deleteForm{{ group.id }}').submit(); event.stopPropagation(); return false;"
-                    class="cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center 
+                    class="cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center
                             hover:bg-primary-600 hover:text-white transition duration-300">
                     <i class="fa-solid fa-trash"></i>
                   </a>
@@ -45,7 +45,7 @@
 
                 {% endif %}
               </div>
-            
+
               <span class="icon text-xl font-bold">+</span>
             </div>
 
@@ -76,14 +76,14 @@
     <p class="text-xs text-[#666]">
       {% trans "Page" %} {{ groups.number }} {% trans "of" %} {{ groups.paginator.num_pages }}
     </p>
-  
+
     <!-- Right: Pagination controls -->
     <div class="text-sm flex gap-3 text-[#666] items-center">
       <!-- Previous -->
       {% if groups.has_previous %}
-        <button 
-          hx-get="{% url 'user-group-search' %}?{{ pd }}&page={{ groups.previous_page_number }}" 
-          hx-target="#permissionContainer" 
+        <button
+          hx-get="{% url 'user-group-search' %}?{{ pd }}&page={{ groups.previous_page_number }}"
+          hx-target="#permissionContainer"
           class="text-xs hover:text-primary-600 transition duration-300"
           title="{% trans 'Previous Page' %}">
           <i class="fa-solid fa-arrow-left"></i>
@@ -93,17 +93,17 @@
           <i class="fa-solid fa-arrow-left"></i>
         </button>
       {% endif %}
-  
+
       <!-- Current / Total -->
       <span class="text-xs">
         {{ groups.number }} / {{ groups.paginator.num_pages }}
       </span>
-  
+
       <!-- Next -->
       {% if groups.has_next %}
-        <button 
-          hx-get="{% url 'user-group-search' %}?{{ pd }}&page={{ groups.next_page_number }}" 
-          hx-target="#permissionContainer" 
+        <button
+          hx-get="{% url 'user-group-search' %}?{{ pd }}&page={{ groups.next_page_number }}"
+          hx-target="#permissionContainer"
           class="text-xs hover:text-primary-600 transition duration-300"
           title="{% trans 'Next Page' %}">
           <i class="fa-solid fa-arrow-right"></i>

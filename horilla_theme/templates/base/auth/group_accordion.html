@@ -32,7 +32,7 @@
       </div>
       {% if perms.auth.add_group %}
         <button
-            
+
             class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-primary-800 transition duration-300"
             data-toggle="oh-modal-toggle"
             data-target="#Permissions"
@@ -169,14 +169,14 @@
         $(this).find(".row-permission").prop("checked", false);
       }
     });
-    
+
     $("table").each(function () {
       var total = $(this).find("[name=permissions]").length;
       var checked = $(this).find("[name=permissions]:checked").length;
       var selectAll = $(this).find(".row-permission__select-all");
       selectAll.prop("checked", total === checked);
     });
-    
+
   }
   $(document).ready(function () {
     updateBadge();
@@ -299,6 +299,3 @@
         });
     });
 </script>
-
-
-

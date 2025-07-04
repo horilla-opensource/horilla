@@ -1,4 +1,4 @@
-{% load i18n %} 
+{% load i18n %}
 {% for perm in permissions %}
         <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-2">
             <button
@@ -26,34 +26,34 @@
                                         onchange="selectAllPermissions(this)"
                                     >
                                 </th>
-                        
+
                                 <!-- Actions Label -->
                                 <th class="text-sm font-medium p-3">
                                     {% trans "Actions" %}
                                 </th>
-                        
+
                                 <!-- Create Icon -->
                                 <th class="text-lg text-center font-medium p-3" title="{% trans 'Can create' %}">
                                     <i class="fa-regular fa-square-plus"></i>
                                 </th>
-                        
+
                                 <!-- View Icon -->
                                 <th class="text-lg text-center font-medium p-3" title="{% trans 'Can view' %}">
                                     <i class="fa-solid fa-eye"></i>
                                 </th>
-                        
+
                                 <!-- Edit Icon -->
                                 <th class="text-lg text-center font-medium p-3" title="{% trans 'Can edit' %}">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                 </th>
-                        
+
                                 <!-- Delete Icon -->
                                 <th class="text-lg text-center font-medium p-3" title="{% trans 'Can delete' %}">
                                     <i class="fa-solid fa-trash"></i>
                                 </th>
                             </tr>
                         </thead>
-                        
+
                         <tbody>
                             {% for model in perm.app_models %}
                                 {% if model.model_name not in no_permission_models %}
@@ -68,7 +68,7 @@
                                                     $(this).closest('tr').find('[type=checkbox][name=permissions]').prop('checked', $(this).is(':checked')).change();
                                                 ">
                                         </td>
-                        
+
                                         <!-- Model Info -->
                                         <td class="text-sm text-center p-3 text-[#666]">
                                             <div class="flex gap-3 items-center w-max">
@@ -81,7 +81,7 @@
                                                 <span>{{ model.verbose_name }}</span>
                                             </div>
                                         </td>
-                        
+
                                         <!-- Can Create -->
                                         <td class="text-sm text-center p-3 text-[#666]">
                                             <label class="toggle-label">
@@ -101,7 +101,7 @@
                                                 <div class="toggle-switch"></div>
                                             </label>
                                         </td>
-                        
+
                                         <!-- Can View -->
                                         <td class="text-sm text-center p-3 text-[#666]">
                                             <label class="toggle-label">
@@ -121,7 +121,7 @@
                                                 <div class="toggle-switch"></div>
                                             </label>
                                         </td>
-                        
+
                                         <!-- Can Edit -->
                                         <td class="text-sm text-center p-3 text-[#666]">
                                             <label class="toggle-label">
@@ -141,7 +141,7 @@
                                                 <div class="toggle-switch"></div>
                                             </label>
                                         </td>
-                        
+
                                         <!-- Can Delete -->
                                         <td class="text-sm text-center p-3 text-[#666]">
                                             <label class="toggle-label">
@@ -165,7 +165,7 @@
                                 {% endif %}
                             {% endfor %}
                         </tbody>
-                        
+
                     </table>
                 </div>
             </div>

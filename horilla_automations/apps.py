@@ -35,7 +35,10 @@ class HorillaAutomationConfig(AppConfig):
                     MODEL_CHOICES.append((path, model.__name__))
             MODEL_CHOICES.append(("employee.models.Employee", "Employee"))
             MODEL_CHOICES.append(
-                ("pms.models.EmployeeKeyResult", "Employee Key Results")
+                ("pms.models.EmployeeKeyResult", "Employee Key Results"),
+            )
+            MODEL_CHOICES.append(
+                ("pms.models.Comment", "Key Result Comment"),
             )
 
             MODEL_CHOICES = list(set(MODEL_CHOICES))

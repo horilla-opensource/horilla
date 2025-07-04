@@ -223,7 +223,7 @@ class Attendance(HorillaModel):
         WorkType,
         null=True,
         blank=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,  # 796
         verbose_name=_("Work Type"),
     )
     attendance_day = models.ForeignKey(

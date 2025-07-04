@@ -7,27 +7,27 @@
             <input type="text" value="{{project_id}}" name="project" style="display:none;">
                 <div class="col-sm-6">
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Managers" %}</label>
+                        <label class="oh-label" for="{{f.form.task_managers.id_for_label}}">{{f.form.task_managers.label}}</label>
                         {{f.form.task_managers}}
                     </div>
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Stage" %}</label>
+                        <label class="oh-label" for="{{f.form.stage.id_for_label}}">{{f.form.stage.label}}</label>
                         {{f.form.stage}}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Members" %}</label>
+                        <label class="oh-label" for="{{f.form.task_members.id_for_label}}">{{f.form.task_members.label}}</label>
                         {{f.form.task_members}}
                     </div>
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "Status" %}</label>
+                        <label class="oh-label" for="{{f.form.status.id_for_label}}">{{f.form.status.label}}</label>
                         {{f.form.status}}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label">{% trans "End till" %}</label>
+                        <label class="oh-label" for="{{f.form.end_till.id_for_label}}">{{f.form.end_till.label}}</label>
                         {{f.form.end_till}}
                     </div>
                 </div>

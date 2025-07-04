@@ -2325,9 +2325,9 @@ def zk_biometric_attendance_bulk_logs(devices):
                 datetime=date_time,
             )
             try:
-                if punch_code in {0, 3, 4, 5}:
+                if punch_code in {0, 3, 4}:
                     clock_in(request_data)
-                elif punch_code in {1, 2}:
+                elif punch_code in {1, 2, 5}:
                     clock_out(request_data)
             except Exception as error:
                 logger.error(
