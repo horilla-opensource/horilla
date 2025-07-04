@@ -498,19 +498,17 @@ def send_mail(request, automation, instance):
                     f"Automation <Notification> {automation.title} is triggered by {request.user.employee_get}"
                 )
 
-            if automation.delivary_channel != "notification":
-                thread = threading.Thread(
-                    target=lambda: _send_mail(email),
-                )
-                thread.start()
-
-            if automation.delivary_channel != "email":
-                thread = threading.Thread(
-                    target=lambda: _send_notification(plain_text),
-                )
-                thread.start()
-            logger.info(
-                f"Automation Triggered | {automation.get_delivary_channel_display()} | {automation}"
+        if automation.delivery_channel != "notification":
+            thread = threading.Thread(
+                target=lambda: _send_mail(email),
             )
-    except Exception as e:
-        logger.error(f"Error in Automation | {e}")
+            thread.start()
+
+        if automation.delivery_channel != "email":
+            thread = threading.Thread(
+                target=lambda: _send_notification(plain_text),
+            )
+            thread.start()
+        logger.info(
+            f"Automation Triggered | {automation.get_delivery_channel_display()} | {automation}"
+        )

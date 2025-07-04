@@ -899,7 +899,51 @@ def biometric_device_test(request, device_id):
 @install_required
 @hx_request_required
 @permission_required("biometric.view_biometricdevices")
-def biometric_device_fetch_logs(request, device_id):
+def biometric_device_bulk_fetch_logs(request):
+    script = ""
+    zk_ids = request.GET.getlist("selected_device_ids")
+    zk_devices = BiometricDevices.objects.filter(id__in=zk_ids, machine_type="zk")
+
+    if not zk_devices:
+        messages.error(request, _(""))
+        script = render_connection_response(
+            _("Biometric device not supported."),
+            _(
+                "Bulk log fetching is currently available only for ZKTeco / eSSL devices. Support for other biometric systems will be added soon."
+            ),
+            "warning",
+        )
+        return HttpResponse(script)
+
+    attendance_count, error_message = zk_biometric_attendance_bulk_logs(zk_devices)
+    if isinstance(attendance_count, int):
+        script = render_connection_response(
+            _("Logs Fetched Successfully"),
+            _(
+                f"Biometric attendance logs fetched successfully. Total records: {attendance_count}"
+            ),
+            "success",
+        )
+    elif "Authentication" in error_message:
+        script = render_connection_response(
+            _("Authentication Error"),
+            _("Double-check the provided IP, Port, and Password."),
+            "warning",
+        )
+    else:
+        script = render_connection_response(
+            _("Connection Unsuccessful"),
+            _(f"Please check the IP, Port, and Password. Error: {error_message}"),
+            "warning",
+        )
+    return HttpResponse(script)
+
+
+@login_required
+@install_required
+@hx_request_required
+@permission_required("biometric.view_biometricdevices")
+def biometric_device_fetch_logs(request, device_id=None):
     """
     Fetches biometric attendance logs from a specified device.
 
@@ -2199,6 +2243,98 @@ def zk_biometric_attendance_logs(device):
     finally:
         if conn:
             conn.disconnect()
+
+
+def zk_biometric_attendance_bulk_logs(devices):
+    errors = []
+    combined_attendances = []
+
+    bio_id_map = {
+        bio.user_id: bio
+        for bio in BiometricEmployees.objects.filter(device_id__in=devices)
+    }
+
+    for device in devices:
+        port_no = device.port
+        machine_ip = device.machine_ip
+        conn = None
+        zk_device = ZK(
+            machine_ip,
+            port=port_no,
+            timeout=5,
+            password=int(device.zk_password),
+            force_udp=False,
+            ommit_ping=False,
+        )
+
+        try:
+            conn = zk_device.connect()
+            conn.enable_device()
+            attendances = conn.get_attendance()
+            if not attendances:
+                continue
+
+            last_attendance_datetime = attendances[-1].timestamp
+
+            if device.last_fetch_date and device.last_fetch_time:
+                filtered = [
+                    att
+                    for att in attendances
+                    if (att.timestamp.date() > device.last_fetch_date)
+                    or (
+                        att.timestamp.date() == device.last_fetch_date
+                        and att.timestamp.time() > device.last_fetch_time
+                    )
+                ]
+            else:
+                filtered = attendances
+
+            # Track for final device update
+            device.last_fetch_date = last_attendance_datetime.date()
+            device.last_fetch_time = last_attendance_datetime.time()
+            device.save()
+
+            for attendance in filtered:
+                attendance.device = device  # Attach device info for later processing
+                combined_attendances.append(attendance)
+
+        except zk_exception.ZKErrorResponse as e:
+            errors.append(f"[{device.name}] ZKError: {str(e)}")
+        except Exception as e:
+            logger.error(f"[{device.name}] General Error", exc_info=True)
+            errors.append(f"[{device.name}] Error: {str(e)}")
+        finally:
+            if conn:
+                conn.disconnect()
+
+    # Process all combined attendances (after sorting based on timestamp)
+    combined_attendances.sort(key=lambda a: a.timestamp)
+
+    for attendance in combined_attendances:
+        user_id = attendance.user_id
+        punch_code = attendance.punch
+        date_time = django_timezone.make_aware(attendance.timestamp)
+        date = date_time.date()
+        time = date_time.time()
+        bio_id = bio_id_map.get(user_id)
+        if bio_id:
+            request_data = Request(
+                user=bio_id.employee_id.employee_user_id,
+                date=date,
+                time=time,
+                datetime=date_time,
+            )
+            try:
+                if punch_code in {0, 3, 4, 5}:
+                    clock_in(request_data)
+                elif punch_code in {1, 2}:
+                    clock_out(request_data)
+            except Exception as error:
+                logger.error(
+                    f"[Device: {attendance.device.name}] Punch error", exc_info=True
+                )
+
+    return len(combined_attendances), "; ".join(errors) if errors else None
 
 
 def zk_biometric_attendance_scheduler(device_id):

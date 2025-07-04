@@ -82,30 +82,33 @@ def announcement_list(request):
 @hx_request_required
 def create_announcement(request):
     """
-    This method renders form and template to update Announcement
+    Create a new announcement and notify relevant users.
     """
-
     form = AnnouncementForm()
     if request.method == "POST":
         form = AnnouncementForm(request.POST, request.FILES)
         if form.is_valid():
-            anou, attachment_ids = form.save(commit=False)
-            anou.save()
-            anou.attachments.set(attachment_ids)
+            announcement, attachment_ids = form.save(commit=False)
+            announcement.save()
+            announcement.attachments.set(attachment_ids)
+
             employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
             job_positions = form.cleaned_data["job_position"]
             company = form.cleaned_data["company_id"]
-            anou.department.set(departments)
-            anou.job_position.set(job_positions)
-            anou.company_id.set(company)
-            messages.success(request, _("Announcement created successfully."))
 
-            emp_dep = User.objects.filter(
-                employee_get__employee_work_info__department_id__in=departments
+            announcement.department.set(departments)
+            announcement.job_position.set(job_positions)
+            announcement.company_id.set(company)
+
+            dept_ids = departments.values_list("id", flat=True)
+            job_ids = job_positions.values_list("id", flat=True)
+
+            employees_from_dept = Employee.objects.filter(
+                employee_work_info__department_id__in=dept_ids
             )
-            emp_jobs = User.objects.filter(
-                employee_get__employee_work_info__job_position_id__in=job_positions
+            employees_from_job = Employee.objects.filter(
+                employee_work_info__job_position_id__in=job_ids
             )
             employees = employees | Employee.objects.filter(
                 employee_work_info__department_id__in=departments
@@ -128,18 +131,22 @@ def create_announcement(request):
                 icon="chatbox-ellipses",
             )
 
-            notify.send(
-                request.user.employee_get,
-                recipient=emp_jobs,
-                verb="Your job position was mentioned in a post.",
-                verb_ar="تم ذكر وظيفتك في منشور.",
-                verb_de="Ihre Arbeitsposition wurde in einem Beitrag erwähnt.",
-                verb_es="Tu puesto de trabajo fue mencionado en una publicación.",
-                verb_fr="Votre poste de travail a été mentionné dans un post.",
-                redirect="/",
-                icon="chatbox-ellipses",
+            send_notification(
+                user_map.filter(employee_get__id__in=dept_emp_ids),
+                _("Your department was mentioned in an announcement."),
             )
-            form = AnnouncementForm()
+            send_notification(
+                user_map.filter(employee_get__id__in=job_emp_ids),
+                _("Your job position was mentioned in an announcement."),
+            )
+            send_notification(
+                user_map.filter(employee_get__id__in=direct_only_ids),
+                _("You have been mentioned in an announcement."),
+            )
+
+            messages.success(request, _("Announcement created successfully."))
+            form = AnnouncementForm()  # Reset the form
+
     return render(request, "announcement/announcement_form.html", {"form": form})
 
 

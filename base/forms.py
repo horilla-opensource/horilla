@@ -2853,7 +2853,6 @@ class AnnouncementForm(ModelForm):
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
             filter_template_path="employee_filters.html",
-            required=True,
         ),
         label="Employees",
     )
