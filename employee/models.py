@@ -924,9 +924,9 @@ class EmployeeBankDetails(HorillaModel):
     )
     branch = models.CharField(max_length=50, null=True)
     address = models.TextField(max_length=255, null=True)
-    country = models.CharField(max_length=50, blank=True, null=True)
-    state = models.CharField(max_length=50, blank=True)
-    city = models.CharField(max_length=50, blank=True)
+    country = models.CharField(max_length=50, null=True, blank=True)
+    state = models.CharField(max_length=50, null=True, blank=True)
+    city = models.CharField(max_length=50, null=True, blank=True)
     any_other_code1 = models.CharField(
         max_length=50, verbose_name="Bank Code #1", null=True
     )
