@@ -293,10 +293,11 @@ class LeaveType(HorillaModel):
             if (
                 LeaveType.objects.filter(is_compensatory_leave=True)
                 .exclude(pk=self.pk)
-                .count()
-                >= 1
+                .exists()
             ):
-                raise ValidationError(_("Compensatory Leave Request already exists."))
+                raise ValidationError(
+                    {"name": _("Compensatory Leave Request already exists.")}
+                )
 
     def save(self, *args, **kwargs):
         if (

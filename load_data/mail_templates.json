@@ -154,5 +154,18 @@
             "body": "<p>Hi {{instance.get_full_name}},</p><p>Follow the link <a href=\"{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login\" target=\"_blank\">{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login</a><span style=\"font-size: 12.8px;\"></span>&nbsp;to track you progress</p><p><b>Username/email: </b>{{instance.get_mail }}</p><p><b>Passsword/mobile: </b>{{ instance.mobile }}</p><p>{% if request.user.employee_get %}</p><p>Regards</p><p><b>{{self.get_full_name}} | {{self.get_department}} | {{self.get_company }}</b></p><p>{% endif %}</p>",
             "company_id": null
         }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 13,
+        "fields": {
+            "created_at": "2025-07-03T09:41:18.923Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Got a Key Result Comment",
+            "body": "<p><b>{{self.get_full_name}} </b>added a comment inside {{model_instance.employee_objective_id.objective_id.title}} <b>{{model_instance.employee_objective_id.employee_id}}'s</b> OKR</p>",
+            "company_id": 1
+        }
     }
 ]

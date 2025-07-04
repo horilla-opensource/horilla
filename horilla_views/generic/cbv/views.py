@@ -1379,7 +1379,7 @@ class HorillaListView(ListView):
                 f'attachment; filename="{self.export_file_name}.pdf"'
             )
             return response
-        return export_xlsx(json_data, columns)
+        return export_xlsx(json_data, columns, file_name=self.export_file_name)
 
 
 class HorillaSectionView(TemplateView):
@@ -2089,6 +2089,18 @@ class HorillaNavView(TemplateView):
                     verbose_name = get_field(field).verbose_name
                     append((field, verbose_name))
                 except FieldDoesNotExist:
+                    # Check for related fields (field paths with '__')
+                    if "__" in field and hasattr(
+                        model_class_ref, "get_verbose_name_related_field"
+                    ):
+                        try:
+                            verbose_name = (
+                                model_class_ref.get_verbose_name_related_field(field)
+                            )
+                            append((field, verbose_name))
+                            continue
+                        except Exception as e:
+                            pass
                     append(field)
             else:
                 append(field)

@@ -302,6 +302,13 @@ def paginator_qry(qryset, page_number, records_per_page=50):
     """
     This method is used to paginate queryset
     """
+    if not qryset.ordered:
+        qryset = (
+            qryset.order_by("-created_at")
+            if hasattr(qryset.model, "created_at")
+            else qryset.order_by("-id")
+        )  # 803
+
     paginator = Paginator(qryset, records_per_page)
     qryset = paginator.get_page(page_number)
     return qryset

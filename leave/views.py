@@ -398,21 +398,29 @@ def leave_request_creation(request, type_id=None, emp_id=None):
         if "confirm" in request_copy:
             request_copy.pop("confirm")
         previous_data = request_copy.urlencode()
+
     form = LeaveRequestCreationForm()
     if request:
-        employee = request.user.employee_get
+        employee_qs = form.fields["employee_id"].queryset
+        employee = (
+            request.user.employee_get
+            if request.user.employee_get in employee_qs
+            else employee_qs.first()
+        )
+
         if employee:
-            available_leaves = employee.available_leave.all()
             assigned_leave_types = LeaveType.objects.filter(
-                id__in=available_leaves.values_list("leave_type_id", flat=True)
+                id__in=employee.available_leave.values_list("leave_type_id", flat=True)
             )
             form.fields["leave_type_id"].queryset = assigned_leave_types
+
     if type_id and emp_id:
         initial_data = {
             "leave_type_id": type_id,
             "employee_id": emp_id,
         }
         form = LeaveRequestCreationForm(initial=initial_data)
+
     form = choosesubordinates(request, form, "leave.add_leaverequest")
     if request.method == "POST":
         form = LeaveRequestCreationForm(request.POST, request.FILES)
@@ -3969,7 +3977,9 @@ def user_request_select_filter(request):
 @hx_request_required
 def employee_available_leave_count(request):
     leave_type_id = request.GET.get("leave_type_id")
+    hx_target = request.META.get("HTTP_HX_TARGET")
     start_date_str = request.GET.get("start_date")
+
     try:
         start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
     except:
@@ -3995,27 +4005,51 @@ def employee_available_leave_count(request):
     total_leave_days = available_leave.total_leave_days if available_leave else 0
     forcasted_days = 0
 
-    if (
-        available_leave
-        and available_leave.leave_type_id.leave_type_next_reset_date()
-        and start_date >= available_leave.leave_type_id.leave_type_next_reset_date()
-    ):
-        forcasted_days = available_leave.forcasted_leaves(start_date)
-        total_leave_days = (
-            available_leave.leave_type_id.carryforward_max
-            if available_leave.leave_type_id.carryforward_type
-            in ["carryforward", "carryforward expire"]
-            and available_leave.leave_type_id.carryforward_max < total_leave_days
-            else total_leave_days
+    if not leave_type_id or not start_date:
+        return render(
+            request,
+            "leave/leave_request/employee_available_leave_count.html",
+            {"hx_target": hx_target},
         )
-        if available_leave.leave_type_id.carryforward_type == "no carryforward":
-            total_leave_days = 0
-        total_leave_days += forcasted_days
 
-    pending_requests = available_leave.employee_id.leaverequest_set.filter(
-        status="requested", leave_type_id=leave_type_id
-    ).exclude(start_date__lt=datetime.today().date())
-    pending_requests_days = pending_requests.count()
+    employee_id = request.GET.getlist("employee_id")
+    employee_id = employee_id[0] if employee_id else None
+
+    available_leave = (
+        AvailableLeave.objects.select_related("leave_type_id", "employee_id")
+        .filter(leave_type_id=leave_type_id, employee_id=employee_id)
+        .first()
+    )
+
+    total_leave_days = 0
+    forcasted_days = 0
+    pending_requests_days = 0
+
+    if available_leave:
+        leave_type = available_leave.leave_type_id
+        total_leave_days = available_leave.total_leave_days
+
+        next_reset = leave_type.leave_type_next_reset_date()
+        if next_reset and start_date >= next_reset:
+            forcasted_days = available_leave.forcasted_leaves(start_date)
+
+            if leave_type.carryforward_type == "no carryforward":
+                total_leave_days = 0
+            elif (
+                leave_type.carryforward_type in ["carryforward", "carryforward expire"]
+                and leave_type.carryforward_max < total_leave_days
+            ):
+                total_leave_days = leave_type.carryforward_max
+
+            total_leave_days += forcasted_days
+
+        # Only query pending requests if we have a valid employee
+        if available_leave.employee_id_id:
+            pending_requests_days = available_leave.employee_id.leaverequest_set.filter(
+                status="requested",
+                leave_type_id=leave_type_id,
+                start_date__gte=datetime.today().date(),
+            ).count()
 
     context = {
         "hx_target": hx_target,

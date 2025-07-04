@@ -14,8 +14,6 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from django.conf import settings
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
 from django.http import HttpResponse, JsonResponse
 from django.utils.translation import gettext_lazy as _
 
@@ -154,26 +152,23 @@ def post_recruitment_in_linkedin(
         recruitment.save()
 
 
-def delete_post(recruitment, update=False):
-    """Delete recruitment post from linkedin"""
-    # Ensure you are using the correct post ID from when you created the post
-    if recruitment.linkedin_post_id:
-        linkedin_post_id = recruitment.linkedin_post_id
-        url = f"https://api.linkedin.com/v2/ugcPosts/{linkedin_post_id}"
-        headers = {
-            "Authorization": f"Bearer {recruitment.linkedin_account_id.api_token}",
-            "Content-Type": "application/json",
-        }
-        response = requests.delete(url, headers=headers)
-        if response.status_code == 204:
-            if update:
-                recruitment.linkedin_post_id = None
-                recruitment.save()
+@login_required
+def delete_post(recruitment):
+    """Delete recruitment post from LinkedIn"""
+    linkedin_post_id = recruitment.linkedin_post_id
+    if not linkedin_post_id:
+        return True  # 787
 
+    url = f"https://api.linkedin.com/v2/ugcPosts/{linkedin_post_id}"
+    headers = {
+        "Authorization": f"Bearer {recruitment.linkedin_account_id.api_token}",
+        "Content-Type": "application/json",
+    }
 
-@receiver(post_delete, sender=Recruitment)
-def delete_linkedin_post(sender, instance, **kwargs):
-    """
-    This is a post delete method, used to delete the linkedin post of recruitment"""
-    if instance.linkedin_post_id:
-        delete_post(instance)
+    response = requests.delete(url, headers=headers)
+    if response.status_code == 204:
+        recruitment.linkedin_post_id = None
+        recruitment.save()
+        return True
+
+    return False

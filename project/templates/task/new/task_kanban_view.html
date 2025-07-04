@@ -122,8 +122,8 @@
                                                 </span>
                                             </span><br>
                                             <div style="display: flex;" class="mb-2">
-                                                <label class="oh-kanban-card__subtitle">{% trans "Status" %} </label>
-                                                <select class="oh-table__editable-input w-100 ml-2"
+                                                <label class="oh-kanban-card__subtitle" for="id_{{task.id}}_task_status">{% trans "Status" %} </label>
+                                                <select class="oh-table__editable-input w-100 ml-2" id="id_{{task.id}}_task_status"
                                                     hx-get="{% url 'update-project-task-status' task.id %}?view=card"
                                                     hx-trigger="change" hx-swap="afterend" tabindex="-1" aria-hidden="true"
                                                     name="status">

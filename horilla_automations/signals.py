@@ -399,12 +399,6 @@ def send_mail(request, automation, instance):
         except Exception as e:
             logger.error(e)
 
-        emails = [str(emp.get_mail()) for emp in employees if emp and emp.get_mail()]
-        user_ids = [emp.employee_user_id for emp in employees]
-
-        to = emails[:1]
-        cc = emails[1:]
-
         email_backend = ConfiguredEmailBackend()
         display_email_name = email_backend.dynamic_from_email_with_display_name
         if request:
@@ -418,10 +412,26 @@ def send_mail(request, automation, instance):
         if pk_or_text and request and raw_emails:
             attachments = []
             try:
-                sender = request.user.employee_get
+                sender: Employee = request.user.employee_get
             except:
                 sender = None
             if context_instance:
+
+                # Prevent same person notification on automation
+                user_ids = [
+                    emp.employee_user_id
+                    for emp in employees
+                    if sender.employee_user_id.pk != emp.employee_user_id.pk
+                ]
+                emails = [
+                    str(emp.get_mail())
+                    for emp in employees
+                    if emp and emp.get_mail()
+                    if emp.get_mail() != sender.get_mail()
+                ]
+
+                to = emails[:1]
+                cc = emails[1:]
                 if template_attachments := automation.template_attachments.all():
                     for template_attachment in template_attachments:
                         template_bdy = template.Template(template_attachment.body)
@@ -487,9 +497,14 @@ def send_mail(request, automation, instance):
                     logger.error(e)
 
             def _send_notification(text):
+
                 notify.send(
                     sender,
-                    recipient=user_ids,
+                    recipient=[
+                        user
+                        for user in user_ids
+                        if sender.employee_user_id.pk != user.pk
+                    ],
                     verb=f"{text}",
                     icon="person-remove",
                     redirect="",

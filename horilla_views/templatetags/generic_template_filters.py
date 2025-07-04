@@ -46,14 +46,16 @@ time_format_mapping = {
 
 @register.filter(name="selected_format")
 def selected_format(date: datetime.date, company: object = None) -> str:
-    if company and (company.date_format or company.time_format):
-        if isinstance(date, datetime.date):
-            format = company.date_format
-            date_format_mapping.get(format)
-            return date.strftime(date_format_mapping[format])
-        elif isinstance(date, datetime.time):
-            format = company.time_format
-            return date.strftime(time_format_mapping[format])
+    if isinstance(date, datetime.date):
+        format = (
+            company.date_format if company and company.date_format else "MMM. D, YYYY"
+        )
+        strftime_format = date_format_mapping.get(format, "%b. %d, %Y")
+        return date.strftime(strftime_format)
+    elif isinstance(date, datetime.time):
+        format = company.time_format if company and company.time_format else "hh:mm A"
+        strftime_format = time_format_mapping.get(format, "%I:%M %p")
+        return date.strftime(strftime_format)
     return date
 
 
@@ -87,28 +89,31 @@ def getattribute(value, attr: str):
 @register.filter(name="format")
 def format(string: str, instance: object):
     """
-    format
+    Format a string by resolving instance attributes, including method calls like get_status_display.
     """
     attr_placeholder_regex = r"{([^}]*)}"
     attr_placeholders = re.findall(attr_placeholder_regex, string)
 
     if not attr_placeholders:
         return string
-    flag = instance
-    format_context = {}
-    for attr_placeholder in attr_placeholders:
-        attr_name: str = attr_placeholder
-        attrs = attr_name.split("__")
-        for attr in attrs:
-            value = getattr(instance, attr, "")
-            if isinstance(value, types.MethodType):
-                value = value()
-            instance = value
-            format_context[attr_name] = value
-        instance = flag
-    formatted_string = string.format(**format_context)
 
-    return formatted_string
+    original_instance = instance
+    format_context = {}
+
+    for attr_placeholder in attr_placeholders:
+        instance = original_instance  # reset each time
+        attrs = attr_placeholder.split("__")
+        try:
+            for attr in attrs:
+                instance = getattr(instance, attr, "")
+            # If final resolved attr is a method, call it
+            if callable(instance):
+                instance = instance()
+        except Exception:
+            instance = ""
+        format_context[attr_placeholder] = instance
+
+    return string.format(**format_context)
 
 
 @register.filter("accessibility")
