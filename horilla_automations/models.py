@@ -59,11 +59,11 @@ class MailAutomation(HorillaModel):
         blank=True,
         verbose_name=_("Also Send to"),
     )
-    delivery_channel = models.CharField(
+    delivary_channel = models.CharField(
         default="email",
         max_length=50,
         choices=SEND_OPTIONS,
-        verbose_name=_trans("Choose delivery Channel"),
+        verbose_name=_("Choose Delivary Channel"),
     )
     template_attachments = models.ManyToManyField(
         HorillaMailTemplate,

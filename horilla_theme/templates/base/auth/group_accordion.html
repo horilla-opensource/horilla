@@ -1,0 +1,304 @@
+{% load basefilters %} {% load i18n %}{% load static %}
+<style>
+  input:focus {
+    outline: 0.5px solid #7592aa5c !important;
+  }
+  input::not(:focus) {
+    outline: none;
+  }
+  .oh-table__editable-input {
+    font-size: 1rem !important;
+  }
+</style>
+<div id="messages" class="oh-alert-container"></div>
+
+<div class="col-span-12 lg:col-span-10">
+  <div class="flex flex-wrap justify-end gap-1 mb-3">
+      <div class="relative">
+        <input
+          hx-get="{% url 'user-group-search' %}"
+          hx-target="#permissionContainer"
+          hx-trigger="keyup changed delay:.2s"
+          type="text"
+          id="permissionSearch"
+          placeholder="Search"
+          name="search"
+          class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+          aria-label="Search Input"
+        />
+        <i
+        class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+
+      </div>
+      {% if perms.auth.add_group %}
+        <button
+            
+            class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-primary-800 transition duration-300"
+            data-toggle="oh-modal-toggle"
+            data-target="#Permissions"
+        >
+        <img src="/static/horilla_theme/assets/img/create.svg" alt="" width="13"
+              class="filter brightness-0 invert">
+        {% trans "Create" %}
+        </button>
+      {% endif %}
+    </div>
+    <div class="h-[calc(100vh_-_270px)] overflow-hidden overflow-y-auto overflow-x-auto">
+      {{group}}
+      <div id="permissionContainer" class="accordion-wrapper space-y-2" onclick="$(this).next().toggle();$(this).toggleClass('perm-accordion-active');">{% include "base/auth/group_lines.html" %}</div>
+    </div>
+  </div>
+</div>
+
+
+<div
+  class="oh-modal"
+  id="Permissions"
+  role="dialog"
+  aria-labelledby="Permissions"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog" style="max-width: 880px">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+        {% trans "Group Permissions" %}
+      </h2>
+      <button class="oh-modal__close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show'); event.preventDefault()" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body">
+      <form
+        hx-post='{% url "user-group-create" %}'
+        class="oh-profile-section perm-form"
+        id="permissionForm"
+      >
+        {% include "base/auth/group_assign.html" %}
+      </form>
+    </div>
+  </div>
+</div>
+
+<div
+  class="oh-modal"
+  id="groupAssign"
+  role="dialog"
+  aria-labelledby="groupAssign"
+  aria-hidden="true"
+>
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header">
+      <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+        {% trans "Group Assign" %}
+      </h2>
+      <button class="oh-modal__close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show'); event.preventDefault" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="groupAssignBody"></div>
+  </div>
+</div>
+
+
+
+<script>
+  function selectAllPermissions(source) {
+    const isChecked = $(source).is(':checked');
+    const table = $(source).closest('table'); // or your specific container
+    table.find('tbody input.row-permission').prop('checked', isChecked).trigger('change');
+  }
+
+  function updateGroupPermissions(elem) {
+    var groupId = elem.attr("data-group-id");
+    console.log(groupId)
+    var name = elem.attr("data-group-name");
+    var permissions = [];
+    var panel = $(`#groupPanel${groupId}`);  // or use a container class/id that wraps your entire permission section
+    panel.find("[type=checkbox][name=permissions]").each(function () {
+      if ($(this).is(":checked")) {
+        var permissionValue = $(this).val();
+        permissions.push(permissionValue);
+      }
+    });
+    $.ajax({
+      type: "post",
+      url: '{% url "update-group-permission" %}',
+      traditional: true,
+      data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+        permissions: permissions,
+        id: groupId,
+        name: name,
+      },
+      success: function (response) {
+        $("#messages").html(
+          $(`
+            <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+              ${response.message}.
+            </div>
+          `)
+        );
+      },
+      error: function (response) {
+        $("#messages").html(
+          $(`
+            <div class="oh-alert oh-alert--animated oh-alert--danger">
+              Sever error.
+            </div>
+          `)
+        );
+      },
+    });
+  }
+  function updateBadge(element = false) {
+    var panels = $(".panel");
+    $.each(panels, function (indexInArray, valueOfElement) {
+      var check = $(valueOfElement).find("[name=permissions]:checked").length;
+      $(valueOfElement).prev().find(".oh-badge.permission-badge").html(check);
+      $(valueOfElement)
+        .prev()
+        .find(".oh-badge.permission-badge")
+        .attr("title", check + " Permissions");
+    });
+
+    $("tbody tr").each(function () {
+      var check = $(this).find("[name=permissions]:checked").length;
+      if (check === 4) {
+        $(this).find(".row-permission").prop("checked", true);
+      } else {
+        $(this).find(".row-permission").prop("checked", false);
+      }
+    });
+    
+    $("table").each(function () {
+      var total = $(this).find("[name=permissions]").length;
+      var checked = $(this).find("[name=permissions]:checked").length;
+      var selectAll = $(this).find(".row-permission__select-all");
+      selectAll.prop("checked", total === checked);
+    });
+    
+  }
+  $(document).ready(function () {
+    updateBadge();
+    var timeout;
+    $("#permissionContainer [name=permissions]").on("change", function (e) {
+      e.preventDefault();
+      clearTimeout();
+      timeout = setTimeout(function () {
+        updateBadge($(this));
+        updateGroupPermissions($(e.target));
+      }, 100);
+    });
+  });
+</script>
+
+
+<!-- Script to load components and all notifications -->
+<script>
+    async function loadComponent(elementId, path, callback) {
+        try {
+            const response = await fetch(path);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+
+            if (typeof callback === "function") {
+                callback(); // Run script after component loads
+            }
+        } catch (error) {
+            console.error("Error loading component:", error);
+        }
+    }
+
+    function initSidebarToggle() {
+        // Reusable Sidebar Toggle
+        document.querySelectorAll(".toggleSidemenu").forEach((button) => {
+            button.addEventListener("click", () => {
+                const sidebarId = button.getAttribute("data-sidebar");
+                const sidebar = document.getElementById(sidebarId);
+                if (sidebar) {
+                    sidebar.classList.toggle("active");
+                    document.body.classList.toggle("overflow-hidden");
+                }
+            });
+        });
+
+        document.querySelectorAll(".closeSidemenu").forEach((button) => {
+            button.addEventListener("click", () => {
+                const sidebarId = button.getAttribute("data-sidebar");
+                const sidebar = document.getElementById(sidebarId);
+                if (sidebar) {
+                    sidebar.classList.remove("active");
+                    document.body.classList.remove("overflow-hidden");
+                }
+            });
+        });
+    }
+</script>
+
+
+<!-- ACCORDION -->
+<script>
+    // Outer accordion logic (no change needed)
+    document.querySelectorAll('.accordion-btn-gp').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const panel = btn.nextElementSibling;
+            const icon = btn.querySelector('.icon');
+            const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+
+            document.querySelectorAll('.accordion-panel-gp').forEach(p => {
+                if (p !== panel) {
+                    p.style.maxHeight = null;
+                    const i = p.previousElementSibling.querySelector('.icon');
+                    if (i) i.textContent = '+';
+                    p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
+                    p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                }
+            });
+
+            if (!isOpen) {
+                panel.style.maxHeight = panel.scrollHeight + 'px';
+                icon.textContent = '−';
+                btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+            } else {
+                panel.style.maxHeight = null;
+                icon.textContent = '+';
+                btn.classList.remove("bg-[#e54f38]", "text-white");
+                btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+            }
+        });
+    });
+
+    // Inner accordion logic (supports multiple)
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
+            const content = toggle.nextElementSibling;
+
+            // Open by default if needed (optional)
+            // content.style.maxHeight = content.scrollHeight + "px";
+            // content.style.opacity = "1";
+
+            toggle.addEventListener("click", () => {
+                const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
+
+                if (isOpen) {
+                    content.style.maxHeight = "0";
+                    content.style.opacity = "0";
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    content.style.opacity = "1";
+                }
+
+                // Adjust parent height (if inside outer accordion)
+                const outerPanel = toggle.closest('.accordion-panel-gp');
+                if (outerPanel) {
+                    setTimeout(() => {
+                        outerPanel.style.maxHeight = outerPanel.scrollHeight + "px";
+                    }, 250);
+                }
+            });
+        });
+    });
+</script>
+
+
+
