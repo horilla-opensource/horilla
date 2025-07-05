@@ -1,16 +1,4 @@
 {% load i18n %} {% load static %}
-<form
-  hx-post="{% url 'shift-allocation-request-update' form.instance.id %}"
-  hx-target="#shiftRequestModalUpdateBody"
->
-  {{form.as_p}}
+<form hx-post="{% url 'shift-allocation-request-update' form.instance.id %}" hx-target="#shiftRequestModalUpdateBody">
+    {{form.as_p}}
 </form>
-
-<script>
-  $(document).ready(function () {
-    $("select").on("select2:select", function (e) {
-      $(".leave-message").hide();
-      $(this).closest("select")[0].dispatchEvent(new Event("change"));
-    });
-  });
-</script>
