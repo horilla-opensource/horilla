@@ -60,12 +60,4 @@
             </form>
         </div>
     </div>
-    <script>
-        $(document).ready(function () {
-            $("select").on("select2:select", function (e) {
-                $(".leave-message").hide()
-                $(this).closest("select")[0].dispatchEvent(new Event("change"));
-            });
-        });
-    </script>
 </div>
