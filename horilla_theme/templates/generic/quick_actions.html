@@ -74,7 +74,7 @@
       </div>
     {% endif %}
 
-    {% for filter in stored_filters %}
+    {% comment %} {% for filter in stored_filters %}
       <div class="oh-hover-btn-container" hx-get="{{ request.path }}?{{ filter.urlencode }}" hx-target="#{{ view_id|safe }}" hx-swap="outerHTML">
         <button hx-get="{% url 'last-applied-filter' %}?{{ filter.urlencode }}" hx-swap="none" class="oh-hover-btn" style="
     cursor: pointer;
@@ -88,11 +88,52 @@
           <button hidden hx-get="{% url 'delete-saved-filter' filter.id %}" hx-swap="none"></button>
         </div>
       </div>
-    {% endfor %}
+    {% endfor %} {% endcomment %}
   </div>
 
   {% if row_status_indications %}
     <div class="flex flex-wrap gap-2">
+      {% for filter in stored_filters %}
+        <div
+            class="relative group inline-block"
+            hx-get="{{ request.path }}?{{ filter.urlencode }}"
+            hx-target="#{{ view_id|safe }}"
+            hx-swap="outerHTML">
+
+          <!-- Filter Button -->
+          <button
+            hx-get="{% url 'last-applied-filter' %}?{{ filter.urlencode }}"
+            hx-swap="none"
+            class="px-4 py-2 bg-white border border-[#b3bac0] rounded-md text-xs flex gap-2 items-center">
+            <span class="h-3 w-3 rounded-full flex" style="background-color: {{ filter.color }};"></span>
+            {{ filter.title }}
+          </button>
+
+          <!-- Edit/Delete Drawer (appears on hover or always visible depending on your design) -->
+          <div class="absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 hidden group-hover:flex gap-1 bg-white shadow p-1 rounded z-10"
+              onclick="event.stopPropagation()">
+            <!-- Edit -->
+            <button class="oh-hover-btn__small"
+                    onclick="$('#savedFilterModal').addClass('oh-modal--show')"
+                    hx-get="{% url 'saved-filter-update' filter.id %}"
+                    hx-target="#SavedFilterFormTarget"
+                    hx-swap="innerHTML">
+              <ion-icon name="create-outline"></ion-icon>
+            </button>
+
+            <!-- Delete -->
+            <button class="oh-hover-btn__small"
+                    onclick="$(this).parent().find('button:hidden').click(); $(this).closest('div.group').remove()">
+              <ion-icon name="trash-outline"></ion-icon>
+            </button>
+
+            <!-- Hidden Delete Trigger -->
+            <button hidden
+                    hx-get="{% url 'delete-saved-filter' filter.id %}"
+                    hx-swap="none"></button>
+          </div>
+        </div>
+      {% endfor %}
       {% for indication in row_status_indications %}
         <button class="px-4 py-2 bg-[white] border border-[#b3bac0] rounded-md text-xs flex gap-2 items-center" {{ indication.2|safe }}><span class="h-3 w-3 rounded-full flex {{ indication.0 }}"></span>{{ indication.1 }}</button>
       {% endfor %}
