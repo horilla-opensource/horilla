@@ -205,6 +205,7 @@ class Recruitment(HorillaModel):
         help_text=_("Resume not mandatory for candidate creation"),
         verbose_name=_("Optional Resume"),
     )
+    xss_exempt_fields = ["description"]  # 807
 
     class Meta:
         """
