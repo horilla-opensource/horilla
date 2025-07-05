@@ -4014,7 +4014,6 @@ $(document).on("htmx:afterSettle", function (event) {
 
     target.find("select").off("select2:select").on("select2:select", function (e) {
         this.dispatchEvent(new Event("change"));
-        console.log('__11___');
     });
 });
 
