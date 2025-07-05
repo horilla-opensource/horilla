@@ -31,6 +31,7 @@ from django.core import serializers
 from django.core.cache import cache as CACHE
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
+from django.db import IntegrityError, transaction
 from django.db.models import Case, IntegerField, ProtectedError, Q, When
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1682,62 +1683,72 @@ def candidate_update(request, cand_id, **kwargs):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
+@transaction.atomic
 @login_required
 @manager_can_enter(perm="recruitment.change_candidate")
 def candidate_conversion(request, cand_id, **kwargs):
-    """
-    This method is used to convert a candidate into employee
-    Args:
-        cand_id : candidate instance id
-    """
     candidate_obj = Candidate.find(cand_id)
+
     if not candidate_obj:
-        messages.error(request, _("Candidate not found"))
+        messages.error(request, ("Candidate not found"))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    cand_name = candidate_obj.name
-    cand_mob = candidate_obj.mobile
-    cand_job = candidate_obj.job_position_id
-    cand_dep = cand_job.department_id
-    cand_mail = candidate_obj.email
-    cand_gender = candidate_obj.gender
-    cand_company = candidate_obj.recruitment_id.company_id
-    cand_documents = candidate_obj.candidatedocument_set.all()
-    user_exists = User.objects.filter(username=cand_mail).exists()
+
+    if candidate_obj.converted_employee_id:
+        messages.info(request, "This candidate is already converted to an employee.")
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    user_exists = User.objects.filter(username=candidate_obj.email).exists()
+    employee_exists = Employee.objects.filter(
+        employee_user_id__username=candidate_obj.email
+    ).exists()
+
     if user_exists:
-        messages.error(request, _("Employee instance already exist"))
-    elif not Employee.objects.filter(employee_user_id__username=cand_mail).exists():
-        new_employee = Employee.objects.create(
-            employee_first_name=cand_name,
-            email=cand_mail,
-            phone=cand_mob,
-            gender=cand_gender,
-            is_directly_converted=True,
-        )
-        candidate_obj.converted_employee_id = new_employee
-        candidate_obj.save()
-        work_info, created = EmployeeWorkInformation.objects.get_or_create(
-            employee_id=new_employee
-        )
-        work_info.job_position_id = cand_job
-        work_info.department_id = cand_dep
-        work_info.company_id = cand_company
-        work_info.save()
-
-        emp_document_list = []
-        for doc in cand_documents:
-            emp_document = Document(
-                title=doc.title,
-                employee_id=new_employee,
-                document=doc.document,
-                status=doc.status,
-                reject_reason=doc.reject_reason,
+        messages.error(request, ("User instance with this mail already exists"))
+    elif not employee_exists:
+        try:
+            new_employee = Employee(
+                employee_first_name=candidate_obj.name,
+                email=candidate_obj.email,
+                phone=candidate_obj.mobile,
+                gender=candidate_obj.gender,
+                is_directly_converted=True,
             )
-            emp_document_list.append(emp_document)
+            new_employee.save()
 
-        if emp_document_list:
-            Document.objects.bulk_create(emp_document_list)
+            work_info = new_employee.employee_work_info
+            work_info.job_position_id = candidate_obj.job_position_id
+            work_info.department_id = candidate_obj.job_position_id.department_id
+            work_info.company_id = candidate_obj.recruitment_id.company_id
+            work_info.save()
+
+            Document.objects.bulk_create(
+                [
+                    Document(
+                        title=doc.title,
+                        employee_id=new_employee,
+                        document=doc.document,
+                        status=doc.status,
+                        reject_reason=doc.reject_reason,
+                    )
+                    for doc in candidate_obj.candidatedocument_set.all()
+                ]
+            )
+
+            candidate_obj.converted_employee_id = new_employee
+            candidate_obj.save()
+            messages.success(
+                request,
+                _("Candidate has been successfully converted into an employee."),
+            )
+        except IntegrityError:
+            messages.warning(request, "An error occurred while creating employee data.")
+
     else:
-        messages.info(request, "A employee with this mail already exists")
+        messages.info(request, "An employee with this email already exists")
+
+    if "HTTP_HX_REQUEST" in request.META:
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
