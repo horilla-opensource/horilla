@@ -1,5 +1,5 @@
 {% load static i18n %}
-<div class="block lg:flex lg:items-center gap-3 mb-5 bg-[#f4f7fe] rounded-md p-3 lg:sticky top-0 z-10">
+{% comment %} <div class="block lg:flex lg:items-center gap-3 mb-5 bg-[#f4f7fe] rounded-md p-3 lg:sticky top-0 z-10">
   <div class="rounded-md overflow-hidden mb-3 lg:mb-0">
     <img src="{{ employee.get_avatar }}" alt="" width="120" class="rounded-md" />
   </div>
@@ -39,7 +39,7 @@
       </p>
     </div>
   </div>
-</div>
+</div> {% endcomment %}
 
 <div class="block lg:grid grid-cols-12 gap-3">
   <div class="col-span-3 mb-3 lg:mb-0">
@@ -76,6 +76,18 @@
       <div class="mb-2">
         <span class="font-medium text-xs text-[#565E6C]">{% trans 'Experience' %}</span>
         <p class="text-xs font-semibold">{{ employee.experience|default:_('None') }}</p>
+      </div>
+      <div class="mb-2">
+        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Emergency Contact' %}</span>
+        <p class="text-xs font-semibold">{{ employee.emergency_contact|default:_('None') }}</p>
+      </div>
+      <div class="mb-2">
+        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Emergency Contact Name' %}</span>
+        <p class="text-xs font-semibold">{{ employee.emergency_contact_name|default:_('None') }}</p>
+      </div>
+      <div class="mb-2">
+        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Emergency Contact Relation' %}</span>
+        <p class="text-xs font-semibold">{{ employee.emergency_contact_relation|default:_('None') }}</p>
       </div>
     </div>
   </div>

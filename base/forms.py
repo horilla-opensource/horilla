@@ -377,13 +377,33 @@ class AssignUserGroup(Form):
 
     def save(self):
         """
-        Save method to assign group to employees
+        Save method to assign group to selected employees only.
+        It removes the group from previously assigned employees
+        and assigns it to the new ones.
         """
-        employees = self.cleaned_data["employee"]
         group = self.cleaned_data["group"]
-        group.user_set.clear()
-        for employee in employees:
-            employee.employee_user_id.groups.add(group)
+        assigning_employees = self.cleaned_data["employee"]
+        assigning_users = [
+            e.employee_user_id for e in assigning_employees if e.employee_user_id
+        ]
+
+        # Get employees currently in this group on selected company instance
+        existing_employees = Employee.objects.filter(
+            employee_user_id__in=group.user_set.all()
+        )
+        existing_users = [
+            e.employee_user_id for e in existing_employees if e.employee_user_id
+        ]
+
+        print("Assigning Employees:", assigning_employees)
+        print("Existing Employees:", existing_employees)
+
+        for user in existing_users:
+            user.groups.remove(group)
+
+        for user in assigning_users:
+            user.groups.add(group)
+
         return group
 
 
