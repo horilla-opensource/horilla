@@ -395,9 +395,6 @@ class AssignUserGroup(Form):
             e.employee_user_id for e in existing_employees if e.employee_user_id
         ]
 
-        print("Assigning Employees:", assigning_employees)
-        print("Existing Employees:", existing_employees)
-
         for user in existing_users:
             user.groups.remove(group)
 
@@ -409,7 +406,7 @@ class AssignUserGroup(Form):
 
 class AssignPermission(Form):
     """
-    Form to assign user permissions
+    Forms to assign user permision
     """
 
     employee = HorillaMultiSelectField(
@@ -423,6 +420,15 @@ class AssignPermission(Form):
         ),
         label="Employee",
     )
+    try:
+        permissions = forms.MultipleChoiceField(
+            choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
+            error_messages={
+                "required": "Please choose a permission.",
+            },
+        )
+    except:
+        pass
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
