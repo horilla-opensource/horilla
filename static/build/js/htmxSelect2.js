@@ -4000,13 +4000,18 @@
 staticUrl = $("#statiUrl").attr("data-url");
 
 $(document).ready(function () {
-    $(".oh-select").select2({
-        width: '100%'
+    $(".oh-select").each(function () {
+        if ($(this).hasClass("select2-hidden-accessible")) {
+            $(this).select2("destroy");
+        }
+        $(this).select2({ width: '100%' });
     });
+
     $("select").on("select2:select", function (e) {
-        $(this).closest("select")[0].dispatchEvent(new Event("change"));
+        $(this)[0].dispatchEvent(new Event("change"));
     });
-})
+});
+
 
 $(document).on("htmx:afterSettle", function (event) {
     var target = $(event.target);

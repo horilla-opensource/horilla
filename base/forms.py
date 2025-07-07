@@ -406,7 +406,7 @@ class AssignUserGroup(Form):
 
 class AssignPermission(Form):
     """
-    Form to assign user permissions
+    Forms to assign user permision
     """
 
     employee = HorillaMultiSelectField(
@@ -420,6 +420,15 @@ class AssignPermission(Form):
         ),
         label="Employee",
     )
+    try:
+        permissions = forms.MultipleChoiceField(
+            choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
+            error_messages={
+                "required": "Please choose a permission.",
+            },
+        )
+    except:
+        pass
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
