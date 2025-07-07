@@ -103,6 +103,14 @@ class OnboardingTask(HorillaModel):
         verbose_name_plural = _("Onboarding Tasks")
 
 
+class OnboardingCandidate(Candidate):
+    class Meta:
+        proxy = True
+        verbose_name = _("Onboarding Candidate")
+        verbose_name_plural = _("Onboarding Candidates")
+        app_label = "onboarding"
+
+
 class CandidateStage(HorillaModel):
     """
     CandidateStage model
