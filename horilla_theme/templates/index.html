@@ -12,18 +12,16 @@
         {% include "horilla_theme/components/header_scripts.html" %}
         <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            href="{% static 'cdn/font-awsome/css/all.min.css' %}"
         />
 
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+           <link
+            href="{% static 'cdn/googleapi/css/inter-font-style.css' %}"
             rel="stylesheet"
         />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+        <link href="{% static 'cdn/select2/css/select2.min.css' %}" rel="stylesheet" />
         <script src="/static/horilla_theme/assets/js/global.js"></script>
-        <script src="https://unpkg.com/hyperscript.org@0.9.7"></script>
+        <script src="{% static 'cdn/hyperscript/script/_hyperscript.min.js' %}"></script>
         <!-- Load global.css after Select2 to ensure custom styles override Select2 defaults -->
         <link
             rel="stylesheet"

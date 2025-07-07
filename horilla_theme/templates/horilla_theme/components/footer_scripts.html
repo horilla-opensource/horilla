@@ -14,7 +14,7 @@
 
 <!-- This CDN is for date format change -->
 <script src="{% static 'build/js/moment.js' %}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"></script>
+<script src="{% static 'cdn/ajax/scripts/moment-with-locales.min.js' %}"></script>
 
 <script src="{% static '/base/date_settings.js' %}"></script>
 <script src="{% static '/base/time_formatting.js' %}"></script>
@@ -30,7 +30,7 @@
 {% endif %}
 <script type="module" src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
 <script src="{% static '/build/js/sweetAlert.js' %}"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'cdn/chartJs/scripts/chart.js' %}"></script>
 <script>
   // Clear all query parameters from the URL
   function clearQueryParameters() {
