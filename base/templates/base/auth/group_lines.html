@@ -15,7 +15,7 @@
             </span>
             <button style="display: none;" type="submit" onclick="event.stopPropagation()" id="hxSubmit"></button>
           </form>
-          <span class="oh-user_permission_list-text oh-text--light">{% trans "Total" %} {{group.user_set.all|length}} {% trans "users in this group" %}</span>
+          <span class="oh-user_permission_list-text oh-text--light">{% trans "Total" %} {{ group.users_count }} {% trans "users in this group" %}</span>
         </div>
     </div>
     {% if perms.auth.change_group or perms.auth.delete_group %}
