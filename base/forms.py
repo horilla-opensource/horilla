@@ -395,9 +395,6 @@ class AssignUserGroup(Form):
             e.employee_user_id for e in existing_employees if e.employee_user_id
         ]
 
-        print("Assigning Employees:", assigning_employees)
-        print("Existing Employees:", existing_employees)
-
         for user in existing_users:
             user.groups.remove(group)
 
