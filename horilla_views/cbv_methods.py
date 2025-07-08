@@ -13,7 +13,7 @@ from venv import logger
 from django import forms, template
 from django.contrib import messages
 from django.core.cache import cache as CACHE
-from django.core.paginator import Paginator
+from django.core.paginator import Page, Paginator
 from django.db import models
 from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.related_descriptors import (
@@ -302,7 +302,7 @@ def paginator_qry(qryset, page_number, records_per_page=50):
     """
     This method is used to paginate queryset
     """
-    if not qryset.ordered:
+    if not isinstance(qryset, Page) and not qryset.ordered:
         qryset = (
             qryset.order_by("-created_at")
             if hasattr(qryset.model, "created_at")
