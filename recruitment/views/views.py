@@ -55,6 +55,7 @@ from employee.models import Employee, EmployeeWorkInformation
 from employee.views import get_content_type
 from horilla import settings
 from horilla.decorators import (
+    any_permission_required,
     hx_request_required,
     logger,
     login_required,
@@ -1351,7 +1352,9 @@ def stage_title_update(request, stage_id):
 
 
 @login_required
-@permission_required(perm="recruitment.add_candidate")
+@any_permission_required(
+    perms=["recruitment.add_candidate", "onboarding.add_onboardingcandidate"]
+)
 def candidate(request):
     """
     This method used to create candidate
@@ -1846,7 +1849,9 @@ def candidate_view_individual(request, cand_id, **kwargs):
 
 
 @login_required
-@manager_can_enter(perm="recruitment.change_candidate")
+@manager_can_enter(
+    perms=["recruitment.change_candidate", "onboarding.change_onboardingcandidate"]
+)
 def candidate_update(request, cand_id, **kwargs):
     """
     Used to update or change the candidate

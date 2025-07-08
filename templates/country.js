@@ -687,14 +687,9 @@ s_a[252] =
     "Bulawayo|Harare|ManicalandMashonaland Central|Mashonaland East|Mashonaland West|Masvingo|Matabeleland North|Matabeleland South|Midlands";
 
 function populateStates(countryElementId, stateElementId) {
-    var selectedCountryIndex =
-        document.getElementById(countryElementId).selectedIndex;
-
+    var selectedCountryIndex = document.getElementById(countryElementId).selectedIndex;
     var stateElement = document.getElementById(stateElementId);
-    if (!stateElement) {
-        console.error(`Element with ID '${stateElementId}' not found.`);
-        return; // Exit if the state element doesn't exist
-    }
+    var selectedState = stateElement?.dataset.selected;
 
     stateElement.length = 0;
     stateElement.options[0] = new Option("Select State", "");
@@ -703,33 +698,38 @@ function populateStates(countryElementId, stateElementId) {
     if (s_a[selectedCountryIndex]) {
         state_arr = s_a[selectedCountryIndex].split("|");
         for (var i = 0; i < state_arr.length; i++) {
-            let state = state_arr[i].replace(/'/g, '`');
-            stateElement.options[stateElement.length] = new Option(
-                state_arr[i],
-                state
-            );
+            let stateValue = state_arr[i].replace(/'/g, '`');
+            let option = new Option(state_arr[i], stateValue);
+            if (selectedState && selectedState === stateValue) {
+                option.selected = true;
+            }
+            stateElement.options[stateElement.length] = option;
         }
     }
 }
 
-function populateCountries(countryElementId, stateElementId) {
 
-    // Get the country select element by its ID
+function populateCountries(countryElementId, stateElementId) {
     var countryElement = document.getElementById(countryElementId);
-    var value = countryElement?.value;
-    if (value != undefined) {
+    var selectedCountry = countryElement?.dataset.selected;
+
+    if (countryElement) {
         countryElement.length = 0;
         countryElement.options[0] = new Option("Select Country", "-1");
-        countryElement.selectedIndex = 0;
+
         for (var i = 0; i < country_arr.length; i++) {
             let country = country_arr[i].replace(/'/g, '`');
-            countryElement.options[countryElement.length] = new Option(
-                country_arr[i],
-                country
-            );
+            let option = new Option(country_arr[i], country);
+            if (selectedCountry && selectedCountry === country) {
+                option.selected = true;
+            }
+            countryElement.options[countryElement.length] = option;
         }
 
+        // trigger state population if needed
         if (stateElementId) {
+            populateStates(countryElementId, stateElementId); // populate on load
+
             countryElement.onchange = function () {
                 populateStates(countryElementId, stateElementId);
             };
@@ -737,5 +737,8 @@ function populateCountries(countryElementId, stateElementId) {
     }
 }
 
-{% comment %} populateCountries("country", "id_state"); {% endcomment %}
-populateCountries("id_country", "id_state");
+
+document.addEventListener("DOMContentLoaded", function () {
+    populateCountries("id_country", "id_state");
+    populateCountries("country", "state");
+});

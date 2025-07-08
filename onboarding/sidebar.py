@@ -48,4 +48,4 @@ def onboarding_view_accessibility(
 def candidates_view_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
-    return request.user.has_perm("recruitment.view_candidate")
+    return request.user.has_perm("onboarding.view_onboardingcandidate")

@@ -57,15 +57,14 @@ def any_permission_required(function, perms):
     def _function(request, *args, **kwargs):
         if any(request.user.has_perm(perm) for perm in perms):
             return function(request, *args, **kwargs)
-
         else:
-            messages.info(request, "You dont have permission.")
+            messages.info(request, "You don’t have permission.")
             previous_url = request.META.get("HTTP_REFERER", "/")
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
+            if request.META.get("HTTP_HX_REQUEST"):
                 return render(request, "decorator_404.html")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            return HttpResponse(script)
+            return HttpResponse(
+                f'<script>window.location.href = "{previous_url}"</script>'
+            )
 
     return _function
 
@@ -167,6 +166,7 @@ def manager_can_enter(function, perm):
     do not have permission also checks, has reporting manager.
     """
 
+    @wraps(function)
     def _function(request, *args, **kwargs):
         leave_perm = [
             "leave.view_leaverequest",
@@ -233,6 +233,7 @@ def is_recruitment_manager(function, perm):
 
 
 def login_required(view_func):
+    @wraps(view_func)
     def wrapped_view(request, *args, **kwargs):
         path = request.path
         res = path.split("/", 2)[1].capitalize().replace("-", " ").upper()
@@ -283,6 +284,7 @@ def login_required(view_func):
 
 
 def hx_request_required(view_func):
+    @wraps(view_func)
     def wrapped_view(request, *args, **kwargs):
         key = "HTTP_HX_REQUEST"
         if key not in request.META.keys():

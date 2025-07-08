@@ -523,19 +523,23 @@ class ApplicationForm(RegistrationForm):
             self.fields["profile"].required = False
 
     def clean(self, *args, **kwargs):
-        name = self.cleaned_data["name"]
+        name = self.cleaned_data.get("name")
         request = getattr(_thread_locals, "request", None)
 
         errors = {}
-        profile = self.cleaned_data["profile"]
-        resume = self.cleaned_data["resume"]
-        recruitment: Recruitment = self.cleaned_data["recruitment_id"]
-        if not resume and not recruitment.optional_resume:
-            errors["resume"] = _("This field is required")
-        if not profile and not recruitment.optional_profile_image:
-            errors["profile"] = _("This field is required")
+        profile = self.cleaned_data.get("profile")
+        resume = self.cleaned_data.get("resume")
+        recruitment: Recruitment = self.cleaned_data.get("recruitment_id")
+
+        if recruitment:
+            if not resume and not recruitment.optional_resume:
+                errors["resume"] = _("This field is required")
+            if not profile and not recruitment.optional_profile_image:
+                errors["profile"] = _("This field is required")
+
         if errors:
             raise ValidationError(errors)
+
         if (
             not profile
             and request
@@ -543,6 +547,7 @@ class ApplicationForm(RegistrationForm):
         ):
             profile_pic_url = f"https://ui-avatars.com/api/?name={name}"
             self.cleaned_data["profile"] = profile_pic_url
+
         super().clean()
         return self.cleaned_data
 
@@ -854,9 +859,7 @@ class QuestionForm(ModelForm):
 
         if instance:
             self.fields["recruitment"].initial = instance.recruitment_ids.all()
-        self.fields["type"].widget.attrs.update(
-            {"class": " w-100", "style": "border:solid 1px #6c757d52;height:50px;"}
-        )
+        self.fields["type"].widget.attrs.update({"class": " w-100 oh-select"})
         for key, value in self.data.items():
             if key.startswith("options"):
                 self.option_count += 1

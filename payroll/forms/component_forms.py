@@ -43,7 +43,7 @@ from payroll.widgets import component_widgets as widget
 logger = logging.getLogger(__name__)
 
 
-class AllowanceForm(forms.ModelForm):
+class AllowanceForm(ModelForm):
     """
     Form for Allowance model
     """
@@ -183,7 +183,7 @@ class AllowanceForm(forms.ModelForm):
         return multiple_conditions
 
 
-class DeductionForm(forms.ModelForm):
+class DeductionForm(ModelForm):
     """
     Form for Deduction model
     """
