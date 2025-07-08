@@ -591,18 +591,18 @@ document.querySelectorAll('.accordion-btn').forEach((btn) => {
 });
 
 $(document).on("htmx:afterSettle", function (event) {
-    $(".dropdown-toggle").on("click", function () {
-        const dropdownMenu = $(this).next(".dropdown-menu");
-        const isOpen = dropdownMenu.is(":visible");
+    // $(".dropdown-toggle").on("click", function () {
+    //     const dropdownMenu = $(this).next(".dropdown-menu");
+    //     const isOpen = dropdownMenu.is(":visible");
 
-        $(".dropdown-menu").not(dropdownMenu).hide();
+    //     $(".dropdown-menu").not(dropdownMenu).hide();
 
-        if (isOpen) {
-            dropdownMenu.hide();
-        } else {
-            dropdownMenu.show();
-        }
-    });
+    //     if (isOpen) {
+    //         dropdownMenu.hide();
+    //     } else {
+    //         dropdownMenu.show();
+    //     }
+    // });
 
     // method for sticky issue
     const $fixedTable = $('.fixed-table');

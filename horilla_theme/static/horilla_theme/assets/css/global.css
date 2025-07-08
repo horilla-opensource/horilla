@@ -457,7 +457,7 @@
   display: flex;
 }
 
-.userlist li span {
+/* .userlist li span {
   display: flex;
   width: 30px;
   height: 30px;
@@ -467,27 +467,72 @@
   align-items: center;
   justify-content: center;
 }
-
 .userlist li span img {
   width: 100%;
 }
-
 .userlist li:nth-child(2) {
   margin-left: -10px;
 }
-
 .userlist li:nth-child(3) {
   margin-left: -10px;
 }
-
 .userlist li:nth-child(4) {
   margin-left: -10px;
 }
-
 .userlist li:nth-child(4) span {
   border: 3px solid white;
   background-color: #dbdbdb;
   font-size: 12px;
+} */
+.userlist li span {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border-radius: 50%;
+  padding: 2px;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.userlist li span img {
+  width: 100%;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.userlist li span a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.userlist li:not(:first-child) {
+  margin-left: -10px;
+}
+
+.userlist li:last-child span {
+  border: 3px solid white;
+  background-color: #dbdbdb;
+  font-size: 12px;
+  color: #666;
+}
+
+.userlist li:hover span {
+  transform: translateY(-5px) scale(1.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  position: relative;
+}
+
+.userlist li:hover span img {
+  transform: scale(1.05);
+}
+
+.userlist li:not(:hover) span {
+  transform: translateY(0) scale(1);
 }
 
 .usertablist {

@@ -1,0 +1,188 @@
+{% extends 'index.html' %}
+{% block content %}
+{% include "generic/components.html" %}
+{% load i18n basefilters static %}
+
+<style>
+    .oh-modal_close--custom {
+        border: none;
+        background: none;
+        font-size: 1.5rem;
+        opacity: 0.7;
+        position: absolute;
+        top: 25px;
+        right: 15px;
+    }
+</style>
+<div class="oh-modal" id="addSurvey" role="dialog" aria-labelledby="addSurvey" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+                {% trans "Create Survey Template" %}
+            </h2>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="addSurveyModalBody"></div>
+    </div>
+</div>
+
+
+<div class="oh-modal" id="updateSurvey" role="dialog" aria-labelledby="updateSurvey" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+                {% comment %} {% trans "Update Survey Template" %} {% endcomment %}
+            </h2>
+            <button type="button" class="oh-modal_close--custom"
+                onclick="$('#updateSurvey').removeClass('oh-modal--show');">
+                <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="updateSurveyModalBody"></div>
+    </div>
+</div>
+
+<div class="oh-modal" id="duplicateSurveyModal" role="dialog" aria-labelledby="duplicateSurveyModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="duplicateSurveyModalLabel">
+                {% trans "Duplicate Survey Template" %}
+            </h2>
+            <button type="button" class="oh-modal_close--custom"
+                onclick="$('#duplicateSurveyModal').removeClass('oh-modal--show');">
+                <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="duplicateSurveyFormModal"></div>
+    </div>
+</div>
+
+<div class="flex flex-wrap justify-between items-center mb-3">
+    <h3 class="text-lg font-semibold">{% trans "Survey Templates" %}</h3>
+    <div class="flex flex-wrap gap-1">
+        <div class="relative">
+            <input 
+                class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                type="text"
+                name="question" 
+                aria-label="Search Input"
+                placeholder="{% trans 'Search' %}" 
+                hx-get="{% url 'rec-filter-survey' %}" 
+                hx-target="#view-container"
+                hx-trigger="keyup changed delay:.2s"
+            >
+            <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+
+        </div>
+        <div class="relative dropdown-wrapper">
+            <span
+                class="px-5 py-2 h-full bg-[white]  rounded-md text-xs flex items-center gap-2  border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer">
+                <img src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}" alt="{% trans 'Filter' %}" width="15"
+                    class="mt-[-1px]">
+                {% trans "Filter" %}
+            </span>
+
+            <div
+                class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0">
+                <div class="accordion-wrapper space-y-2">
+                    {% include 'survey/filter.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="bg-white p-3 rounded-md shadow-card">
+    <div class="flex flex-wrap gap-2 justify-between mb-3" role="button">
+        <div class="flex gap-1 flex-wrap">
+
+            <div class="relative inline-block dropdown-wrapper oh-tabs__tab" data-target="#templateTab">
+                <div class="oh-dropdown" x-data="{open: false}" onclick=>
+                    <div class="tab-button px-2 py-1 border rounded-md text-xs flex items-center gap-2 hover:border-primary-600 transition duration-300 text-primary-600 border-primary-600" 
+                        data-tab="tab1"
+                    >
+                            {% trans "Template" %}
+                        <button class="ps-3 cursor-pointer" 
+                            @click="open = !open" 
+                            @click.outside="open = false"
+                            onclick="event.stopPropagation()"
+                        >
+                            <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+                        </button>
+                    </div>
+
+                    <div class="oh-dropdown__menu absolute font-medium text-sm left-5 min-w-[150px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
+                        x-show="open" style="display: none;"
+                    >
+                        <ul class="oh-dropdown__items">
+                            <li>
+                                <a class="oh-dropdown__item my-0"
+                                    role="button"
+                                    onclick="event.stopPropagation()"
+                                    hx-get="{% url 'survey-template-create' %}" 
+                                    hx-target="#genericModalBody" 
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#genericModal" 
+                                >{% trans "Add Template" %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative inline-block dropdown-wrapper oh-tabs__tab" data-target="#questionTab">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <div class="tab-button px-2 py-1 border rounded-md text-xs flex items-center gap-2 hover:border-primary-600 transition duration-300 text-primary-600 border-primary-600" 
+                        data-tab="tab1"
+                    >
+                            {% trans "Questions" %}
+                        <button class="ps-3 cursor-pointer" 
+                            @click="open = !open" 
+                            @click.outside="open = false"
+                            onclick="event.stopPropagation()"
+                        >
+                            <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+                        </button>
+                    </div>
+
+                    <div class="oh-dropdown__menu absolute font-medium text-sm left-5 min-w-[220px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
+                        x-show="open" style="display: none;"
+                    >
+                        <ul class="oh-dropdown__items">
+                            <li>
+                                <a class="oh-dropdown__item my-0"
+                                    role="button"
+                                    onclick="event.stopPropagation()"
+                                    hx-get="{% url 'recruitment-survey-question-template-create' %}" 
+                                    hx-target="#genericModalBody"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#genericModal"
+                                >{% trans "Create survey questions" %}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="oh-tabs__contents" id="view-container">
+        {% include "survey/survey_card.html" %}
+    </div>
+</div>
+
+
+<div class="oh-modal" id="templateModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog-header">
+            <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon
+                    name="close-outline"></ion-icon></button>
+        </div>
+
+        <div class="oh-modal__dialog-body" id="templateModalBody"></div>
+    </div>
+</div>
+{% endblock content %}

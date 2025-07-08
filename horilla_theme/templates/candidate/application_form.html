@@ -81,7 +81,7 @@
                                     <div>
                                         <label class="required-star" for="name">{% trans "Name" %}</label>
                                         <div class="relative">
-                                            <input type="text" id="name" name="name" placeholder="Enter your name" required style="padding-left: 35px;">
+                                            <input type="text" id="name" name="name" placeholder="Enter your name" required style="padding-left: 35px;" value="{{ form.name.value|default:'' }}">
                                             <span class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600">
                                                 <i class="fa-solid fa-user"></i></span>
                                             </div>
@@ -90,7 +90,7 @@
                                     <div>
                                         <label class="required-star" for="email">{% trans "Email" %}</label>
                                         <div class="relative">
-                                            <input type="email" id="email" name="email" placeholder="e.g. janedoe@example.com" required style="padding-left: 35px;">
+                                            <input type="email" id="email" name="email" placeholder="e.g. janedoe@example.com" required style="padding-left: 35px;" value="{{ form.email.value|default:'' }}">
                                             <span
                                             class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
                                             class="fa-solid fa-envelope"></i></span>
@@ -100,7 +100,7 @@
                                     <div>
                                         <label class="required-star" for="phone">{% trans "Phone" %}</label>
                                         <div class="relative">
-                                            <input type="text" placeholder="e.g. +1 245 999 999" name="mobile" style="padding-left: 35px;">
+                                            <input type="text" placeholder="e.g. +1 245 999 999" name="mobile" style="padding-left: 35px;" value="{{ form.mobile.value|default:'' }}">
                                             <span
                                             class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
                                             class="fa-solid fa-phone"></i></span>
@@ -130,7 +130,7 @@
                                     <div>
                                         <label for="portfolio">{% trans "Portfolio" %}</label>
                                         <div class="relative">
-                                            <input type="text" id="portfolio" name="portfolio" placeholder="e.g. https://www.linktoportfolio.com/" style="padding-left: 35px;">
+                                            <input type="text" id="portfolio" name="portfolio" placeholder="e.g. https://www.linktoportfolio.com/" style="padding-left: 35px;" value="{{ form.portfolio.value|default:'' }}">
                                             <span
                                             class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
                                             class="fa-solid fa-folder-open"></i></span>
@@ -154,7 +154,7 @@
                                     <label class="required-star" for="address">{% trans "Address" %}</label>
                                     <div class="relative">
                                         <textarea type="text" id="address" name="address" required rows="3" placeholder="Enter your address"
-                                            style="padding-left: 35px;"></textarea>
+                                            style="padding-left: 35px;">{{ form.address.value|default:'' }}</textarea>
                                             <span
                                             class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-primary-600"><i
                                             class="fa-solid fa-location-dot"></i></span>
@@ -218,7 +218,7 @@
                                     <div>
                                         <label class="required-star" for="id_country">{% trans "Country" %}</label>
                                         <div class="relative">
-                                            <select name="country" id="id_country" required class="oh-select oh-select-2" style="padding-left:30px;">
+                                            <select name="country" id="id_country" required class="oh-select oh-select-2" style="padding-left:30px;" data-selected="{{ form.country.value|default:'' }}">
                                         </select>
                                             {{form.country.errors}}
                                             <span class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-primary-600">
@@ -228,7 +228,7 @@
                                     <div>
                                         <label class="required-star" for="id_state">{% trans "State" %}</label>
                                         <div class="relative">
-                                            <select name="state" id="id_state" required class="oh-select oh-select-2" style="padding-left:30px;">
+                                            <select name="state" id="id_state" required class="oh-select oh-select-2" style="padding-left:30px;" data-selected="{{ form.state.value|default:'' }}">
                                             </select>
                                                 {{form.state.errors}}
                                             <span class="absolute left-1 top-2.5 m-auto flex items-center ps-2 text-sm text-primary-600">
@@ -239,7 +239,7 @@
                                     <div>
                                         <label class="required-star" for="city">{% trans "City" %}</label>
                                         <div class="relative">
-                                            <input type="text" id="city" required name="city" placeholder="e.g. Kerala" style="padding-left: 35px;">
+                                            <input type="text" id="city" required name="city" placeholder="e.g. Kerala" style="padding-left: 35px;" value="{{ form.city.value|default:'' }}">
                                             {{form.city.errors}}
                                             <span
                                             class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i
@@ -249,7 +249,7 @@
                                     <div>
                                         <label class="required-star" for="zip">{% trans "Zip Code" %}</label>
                                         <div class="relative">
-                                            <input type="text" id="zip" required name="zip" placeholder="e.g. 611 293" style="padding-left: 35px;">
+                                            <input type="text" id="zip" required name="zip" placeholder="e.g. 611 293" style="padding-left: 35px;" value="{{ form.zip.value|default:'' }}">
                                             {{form.zip.errors}}
                                             <span
                                             class="absolute left-1 top-0 bottom-0 m-auto flex items-center ps-2 text-sm text-primary-600"><i

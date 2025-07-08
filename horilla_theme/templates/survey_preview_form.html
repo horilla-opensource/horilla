@@ -1,0 +1,550 @@
+{% load i18n widget_tweaks attendancefilters static %}
+<style>
+	.oh-input {
+		margin-bottom: 0px;
+	}
+</style>
+<div class="oh-general__tab-target" id="personal">
+	<div class="oh-alert-container"></div>
+	<div class="overflow-hidden overflow-y-auto">
+        <div class="col-12">{{form.non_field_errors}}</div>
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-5 sort-container">
+			{% for question in questions %} 
+                <div class="bg-white rounded-md shadow-card p-5" data-question-id="{{question.id}}">
+                    <div class="d-block w-100">
+                        <p class="font-semibold text-sm mb-3">
+                            {{ question.question }} 
+                            {% if question.is_mandatory %}
+                                <span class="text-danger">
+                                * </span>
+                            {% endif %}
+                        </p>
+                        {% if question.type == "textarea" %}
+                            <textarea
+                                type="text"
+                                name="{{question.question}}"
+                                class="oh-input w-100"
+                                id="id_{{qgvuestion.id}}"
+                                {% if question.is_mandatory %} required {% endif %}
+                            ></textarea>
+                        {% elif question.type == "options" %}
+                            <p class="text-xs text-[#777777] mb-3">{% trans "Please select one option" %}</p>
+                            <select
+                                name="{{question.question}}"
+                                class="oh-select w-100"
+                                id="id_{{question.id}}"
+                                {% if question.is_mandatory %} required {% endif %}
+                            >
+                                <option value="">-------------------------</option>
+                                {% for choice in question.choices %}
+                                    <option value="{{choice}}">{{choice}}</option>
+                                {% endfor %}
+                            </select>
+                        {% elif question.type == "multiple" %}
+                            <select
+                                name="multiple_choices_{{ question.question }}"
+                                class="oh-select w-100"
+                                id="id_{{ question.id }}"
+                                multiple
+                                {% if question.is_mandatory %} required {% endif %}
+                            >
+                                {% for choice in question.choices %}
+                                    <option value="{{ choice }}">{{ choice }}</option>
+                                {% endfor %}
+                            </select>
+                        {% elif question.type == "percentage" %}
+                            {% comment %} <div class="oh-container oh-container--outline my-2 w-25 flex gap-1 items-center">
+                                <input
+                                    type="number"
+                                    class="oh-input oh-input--small oh-input--block px-0 m-0 w-40"
+                                    min="0"
+                                    max="100"
+                                    value="0"
+                                    name="percentage_{{ question.question }}"
+                                    id="id_{{ question.id }}"
+                                    {% if question.is_mandatory %} required {% endif %}
+                                /> %
+                            </div> {% endcomment %}
+                            <div class="w-full">
+                                <input 
+                                    class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer percentageSlider"
+                                    type="range" 
+                                    id="id_{{ question.id }}" 
+                                    min="0" 
+                                    max="100" 
+                                    value="50"
+                                  
+                                />
+                                <div class="flex justify-between text-sm text-gray-600 mt-2">
+                                    <span>0%</span>
+                                    <span id="sliderValue" class="text-blue-600 font-semibold">50%</span>
+                                    <span>100% </span>
+                                </div>
+                            </div>
+                        {% elif question.type == "number" %}
+                            <input
+                                type="number"
+                                class="oh-input w-40"
+                                name="{{question.question}}"
+                                id="id_{{question.id}}"
+                                {% if question.is_mandatory %} required {% endif %}
+                            />
+                            <div class="bg-red-200 w-32 h-8">Test</div>
+
+                        {% elif question.type == "file" %}
+                            <input
+                                type="file"
+                                class="oh-input"
+                                name="file_{{question.question}}"
+                                id="id_{{question.id}}"
+                                {% if question.is_mandatory %} required {% endif %}
+                            />
+                            {% comment %} <label for="id_{{question.id}}"
+                                class="bg-white flex flex-col items-center justify-center w-full h-[7rem] border-2 border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:border-gray-400 transition">
+                                <div class="flex flex-col items-center justify-center">
+                                    <i class="fa-solid fa-file-pdf text-xl mb-2 text-gray-500"></i>
+                                    <p class="text-sm font-semibold text-gray-700 mb-2 px-5 text-center">
+                                        {% trans "Drag and drop your file here, or click to browse" %}
+                                    </p>
+                                    <p class="text-xs text-[#9e9e9e]">{% trans "Maximum file size" %}: 10MB</p>
+                                </div>
+                                <input id="id_{{question.id}}" type="file" class="hidden" />
+                            </label> {% endcomment %}
+                        {% elif question.type == "date" %}
+                            <input
+                                type="date"
+                                class="oh-input w-40"
+                                name="date_{{question.question}}"
+                                id="id_{{question.id}}"
+                                {% if question.is_mandatory %} required {% endif %}
+                            />
+                        {% elif question.type == "rating" %}
+                            <div class="oh-rate">
+                                <input type="radio" id="star5" name="rate" value="5" />
+                                <label for="star5" title="5 Stars">5 stars</label>
+                                <input type="radio" id="star4" name="rate" value="4" />
+                                <label for="star4" title="4 Stars">4 stars</label>
+                                <input type="radio" id="star3" name="rate" value="3" />
+                                <label for="star3" title="3 Stars">3 stars</label>
+                                <input type="radio" id="star2" name="rate" value="2" />
+                                <label for="star2" title="2 Stars">2 stars</label>
+                                <input type="radio" id="star1" name="rate" value="1" />
+                                <label for="star1" title="1 Star">1 star</label>
+                            </div>
+                        {% elif question.type == "checkbox" %}
+                            <div class="flex flex-wrap gap-4 pt-2">
+                                <!-- Yes Option -->
+                                <div class="flex items-center gap-2">
+                                    <input 
+                                        id="yes" 
+                                        class="red-radio" 
+                                        type="radio" 
+                                        name="{{ question.question }}" 
+                                        value="yes"
+                                        checked 
+                                    />
+                                    <label 
+                                        class="cursor-pointer text-sm" 
+                                        for="yes"
+                                    >{% trans "Yes" %}</label>
+
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <input 
+                                        class="red-radio" 
+                                        type="radio" 
+                                        id="no" 
+                                        name="{{ question.question }}" 
+                                        value="no" 
+                                    />
+                                    <label 
+                                        class="cursor-pointer text-sm" 
+                                        for="no"
+                                    >{% trans "No" %}</label>
+                                </div>
+
+                            </div>
+                        {% else %}
+                            <input
+                                type="{{question.type}}"
+                                class="oh-input w-100"
+                                name="{{question.question}}"
+                                id="id_{{question.id}}"
+                                {% if question.is_mandatory %} required {% endif %}
+                            />
+                        {% endif %}
+                    </div>
+                </div>
+                {% comment %} {% elif question.type == "options" %}
+                <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                    <div class="drag-handle">
+                        <img src="/static/images/ui/drag.svg" alt="" />
+                    </div>
+                    <div class="d-block w-100">
+                        {% if question.is_mandatory %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}<span class="text-danger">
+                                * {% trans "Mandatory Question" %}</span
+                            ></span
+                        >
+                        {% else %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}</span
+                        >
+                        {% endif %}
+                        <select
+                            name="{{question.question}}"
+                            class="oh-select oh-select-2--large oh-select-2 w-100 select2-hidden-accessible"
+                            id="id_{{question.id}}"
+                            data-select2-id="select2-data-id_employee_id1"
+                            aria-hidden="true"
+                            {%
+                            if
+                            question.is_mandatory
+                            %}required{%
+                            endif
+                            %}
+                        >
+                            <option value="">-------------------------</option>
+                            {% for choice in question.choices %}
+                            <option value="{{choice}}">{{choice}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% elif question.type == "multiple" %}
+                <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                    <div class="drag-handle">
+                        <img src="/static/images/ui/drag.svg" alt="" />
+                    </div>
+                    <div class="d-block w-100">
+                        {% if question.is_mandatory %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}<span class="text-danger">
+                                * {% trans "Mandatory Question" %}</span
+                            ></span
+                        >
+                        {% else %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}</span
+                        >
+                        {% endif %}
+                        <select
+                            name="multiple_choices_{{ question.question }}"
+                            class="oh-select oh-select-2--large oh-select-2 w-100 select2-hidden-accessible"
+                            style="height: 55px"
+                            id="id_{{ question.id }}"
+                            {%
+                            if
+                            question.is_mandatory
+                            %}required{%
+                            endif
+                            %}
+                            multiple
+                        >
+                            {% for choice in question.choices %}
+                            <option value="{{ choice }}">{{ choice }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% elif question.type == "percentage" %}
+                <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                    <div class="drag-handle">
+                        <img src="/static/images/ui/drag.svg" alt="" />
+                    </div>
+                    <div class="d-block w-100">
+                        {% if question.is_mandatory %}
+                        <span class="oh-label oh-label--question">
+                            {{ question.question }}
+                            <span class="text-danger"
+                                >* {% trans "Mandatory Question" %}</span
+                            >
+                        </span>
+                        {% else %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}</span
+                        >
+                        {% endif %}
+                        <div class="oh-container oh-container--outline my-2 w-25">
+                            <input
+                                type="number"
+                                class="oh-input oh-input--small oh-input--block px-0"
+                                style="width: 70px; text-align: center"
+                                min="0"
+                                value="0"
+                                max="100"
+                                name="percentage_{{ question.question }}"
+                                id="id_{{ question.id }}"
+                                {%
+                                if
+                                question.is_mandatory
+                                %}required{%
+                                endif
+                                %}
+                            />
+                            <input
+                                type="text"
+                                class="oh-input w-25 oh-input--small oh-input--block px-0"
+                                value="%"
+                                readonly
+                            />
+                        </div>
+                    </div>
+                </div>
+                {% elif question.type == "file" %}
+                <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                    <div class="drag-handle">
+                        <img src="/static/images/ui/drag.svg" alt="" />
+                    </div>
+                    <div class="d-block w-100">
+                        {% if question.is_mandatory %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}<span class="text-danger">
+                                * {% trans "Mandatory Question" %}</span
+                            ></span
+                        >
+                        {% else %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}</span
+                        >
+                        {% endif %}
+                        <input
+                            type="file"
+                            class="oh-input w-25"
+                            name="file_{{question.question}}"
+                            id="id_{{question.id}}"
+                            {%
+                            if
+                            question.is_mandatory
+                            %}required{%
+                            endif
+                            %}
+                        />
+                    </div>
+                </div>
+                {% elif question.type == "date" %}
+                <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                    <div class="drag-handle">
+                        <img src="/static/images/ui/drag.svg" alt="" />
+                    </div>
+                    <div class="d-block w-100">
+                        {% if question.is_mandatory %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}<span class="text-danger">
+                                * {% trans "Mandatory Question" %}</span
+                            ></span
+                        >
+                        {% else %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}</span
+                        >
+                        {% endif %}
+                        <input
+                            type="date"
+                            class="oh-input w-25"
+                            name="date_{{question.question}}"
+                            id="id_{{question.id}}"
+                            {%
+                            if
+                            question.is_mandatory
+                            %}required{%
+                            endif
+                            %}
+                        />
+                    </div>
+                </div>
+                {% elif question.type == "rating" %}
+                <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                    <div class="drag-handle">
+                        <img src="/static/images/ui/drag.svg" alt="" />
+                    </div>
+                    <div class="d-block w-100">
+                        {% if question.is_mandatory %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}<span class="text-danger">
+                                * {% trans "Mandatory Question" %}</span
+                            ></span
+                        >
+                        {% else %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}</span
+                        >
+                        {% endif %}
+                        <div class="oh-rate">
+                            <input type="radio" id="star5" name="rate" value="5" />
+                            <label for="star5" title="5 Stars">5 stars</label>
+                            <input type="radio" id="star4" name="rate" value="4" />
+                            <label for="star4" title="4 Stars">4 stars</label>
+                            <input type="radio" id="star3" name="rate" value="3" />
+                            <label for="star3" title="3 Stars">3 stars</label>
+                            <input type="radio" id="star2" name="rate" value="2" />
+                            <label for="star2" title="2 Stars">2 stars</label>
+                            <input type="radio" id="star1" name="rate" value="1" />
+                            <label for="star1" title="1 Star">1 star</label>
+                        </div>
+                    </div>
+                </div>
+                {% elif question.type == "checkbox" %}
+                <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                    <div class="drag-handle">
+                        <img src="/static/images/ui/drag.svg" alt="" />
+                    </div>
+                    <div class="oh-input__group">
+                        {% if question.is_mandatory %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}<span class="text-danger">
+                                * {% trans "Mandatory Question" %}</span
+                            ></span
+                        >
+                        {% else %}
+                        <span class="oh-label oh-label--question"
+                            >{{ question.question }}</span
+                        >
+                        {% endif %}
+                        <div class="oh-input-picker-group">
+                            <div
+                                class="oh-input-picker oh-input-picker--sm oh-input-picker--selected"
+                                style="width: 80px"
+                            >
+                                <span>
+                                    <ion-icon
+                                        name="checkmark-circle-outline"
+                                    ></ion-icon>
+                                    Yes
+                                </span>
+                                <input
+                                    type="radio"
+                                    name="{{ question.question }}"
+                                    value="Yes"
+                                    selected
+                                />
+                            </div>
+                            <div
+                                class="oh-input-picker oh-input-picker--sm"
+                                style="width: 80px"
+                            >
+                                <span>
+                                    <ion-icon
+                                        name="close-circle-outline"
+                                    ></ion-icon>
+                                    No
+                                </span>
+                                <input
+                                    type="radio"
+                                    name="{{ question.question }}"
+                                    value="No"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="d-flex oh-card" data-question-id="{{question.id}}">
+                    <div class="drag-handle">
+                        <img src="/static/images/ui/drag.svg" alt="" />
+                    </div>
+                    <div class="d-block w-100">
+                        {% if question.is_mandatory %}
+                            <span class="oh-label oh-label--question"
+                                >{{ question.question }}<span class="text-danger">
+                                    * {% trans "Mandatory Question" %}</span
+                                ></span
+                            >
+                        {% else %}
+                            <span class="oh-label oh-label--question"
+                                >{{ question.question }}</span
+                            >
+                        {% endif %}
+                        <input
+                            type="{{question.type}}"
+                            class="oh-input w-100"
+                            name="{{question.question}}"
+                            id="id_{{question.id}}"
+                            {% if question.is_mandatory %} required {% endif %}
+                        />
+                    </div>
+                </div> 
+                {% endif %} {% endcomment %}
+            {% endfor %}
+		</div>
+		{% comment %}
+		<div class="d-flex justify-content-end align-items-center w-100 mt-4">
+			<button
+				type="submit"
+				class="oh-btn oh-btn--secondary oh-btn--w-100-resp"
+			>
+				{% trans "Save" %}
+			</button>
+		</div>
+		{% endcomment %}
+		<div class="col-sm-12 col-md-12 col-lg-12">
+			<p class="small text-muted text-center">
+				&copy; {% now 'Y' %} {{white_label_company_name}}. All rights
+				resevered.
+			</p>
+		</div>
+	</div>
+</div>
+<script>
+    
+    $(function () {
+        $('.percentageSlider').on('input', function () {
+        $('#sliderValue').text($(this).val() + '%');
+        });
+    });
+	$(function () {
+		$(".sort-container").sortable({
+			start: function (event, ui) {
+				ui.item.css({
+					border: "1px solid hsl(8, 77%, 56%)",
+					transform: "scale(1.01)",
+					cursor: "grabbing",
+				});
+			},
+			stop: function (event, ui) {
+				ui.item.css({
+					"background-color": "",
+					cursor: "grab",
+					border: "",
+					transform: "",
+				});
+
+				// Gather the necessary question data (e.g., question ID and new order)
+				var questionId = ui.item.data("question-id");
+				var newPosition = ui.item.index(); // Get the new position of the item in the list
+
+				// Make an AJAX request to send the updated order of the questions
+				$.ajax({
+					url: '{% url "update-question-order" %}', // Replace with your actual endpoint URL
+					method: "POST",
+					data: {
+						question_id: questionId, // Send the question ID
+						new_position: newPosition, // Send the new position
+						csrfmiddlewaretoken: "{{ csrf_token }}", // CSRF token for security if using Django
+					},
+					success: function (response) {
+						// Check if the server response indicates success
+						if (response.success) {
+							// Display the success message
+							$(".oh-alert-container").html(
+								'<div class="oh-alert oh-alert--animated oh-alert--success">' +
+									response.message +
+									"</div>"
+							);
+						}
+					},
+					error: function (xhr, status, error) {
+						// Handle error response
+						$(".oh-alert-container").html(
+							'<div class="oh-alert oh-alert--animated oh-alert--danger">' +
+								"Failed to update question order." +
+								"</div>"
+						);
+					},
+				});
+			},
+		});
+	});
+</script>
