@@ -61,7 +61,7 @@
                                                     <label class="oh-label">{% trans 'Job Position' %}</label>
                                                     {{ f.form.job_position_id }}
                                                 </div>
-                                                
+
                                                 <div class="oh-input-group">
                                                   <label class="oh-label">{% trans 'Is Hired' %}?</label>
                                                   {{ f.form.hired }}
@@ -78,12 +78,12 @@
                                                   <label class="oh-label">{% trans 'Email' %}</label>
                                                   {{ f.form.email }}
                                                 </div>
-                                      
+
                                                 <div class="oh-input-group">
                                                   <label class="oh-label">{% trans 'Gender' %}</label>
                                                   {{ f.form.gender }}
                                                 </div>
-                                      
+
                                                 <div class="oh-input-group">
                                                   <label class="oh-label">{% trans 'State' %}</label>
                                                   <select name="state" class="oh-select-2 w-100 country" id="state">
@@ -99,7 +99,7 @@
                                                     <label class="oh-label">{% trans 'Stage Type' %}</label>
                                                     {{ f.form.stage_id__stage_type }}
                                                 </div>
-                                      
+
                                                 <div class="oh-input-group">
                                                   <label class="oh-label">{% trans 'Is Canceled' %}?</label>
                                                   {{ f.form.canceled }}
@@ -173,7 +173,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="oh-accordion">
                                         <div class="oh-accordion-header">{% trans "Onboarding" %}</div>
                                         <div class="oh-accordion-body">
@@ -196,7 +196,7 @@
                                                     {{ fo.form.recruitment_id__company_id }}
                                                     </div>
                                             </div>
-                                    
+
                                             <div class="col-sm-12 col-md-12 col-lg-6">
                                                 <div class="oh-input-group">
                                                     <label class="oh-label">{% trans 'Candidates' %}</label>
@@ -250,7 +250,7 @@
             <option value="onboarding">{% trans "Onboarding" %}</option>
         </select>
     </div>
-    
+
 
     <!-- Pivot Container -->
     <div id="pivot-container" class="mb-5" style="width: 100%; overflow-x: auto;">
@@ -269,7 +269,7 @@
 
             // Hide all containers first
             $(".pivot-wrapper").hide();
-        
+
             // Determine current container and row config
             let containerId = "";
             let rowsConfig = [];
@@ -284,14 +284,14 @@
                 containerId = "pivot-onboarding";
                 rowsConfig = ["Recruitment","Candidates","Stage","Stage Manager","Task","Task Manager","Company"];
             }
-        
+
             // Show relevant container
             $("#" + containerId).show();
 
             $.getJSON(url, function (data) {
                 // Add Plotly renderers correctly
                 let plotlyRenderers = $.pivotUtilities.plotly_renderers;
-        
+
                 // Initialize pivot table with Plotly enabled
                 $("#" + containerId).pivotUI(data, {
                     rows: rowsConfig,
@@ -300,7 +300,7 @@
                     rendererName: "Table", // Default view as Table
                     onRefresh: function (config) {
                         let currentRenderer = config.rendererName;
-                        if (currentRenderer === "Table" || currentRenderer === "Table Barchart" || 
+                        if (currentRenderer === "Table" || currentRenderer === "Table Barchart" ||
                             currentRenderer === "Heatmap" || currentRenderer === "Row Heatmap" || currentRenderer === "Col Heatmap" ) {
                             $("#export-btn").show(); // Show button for tables
                         } else {
@@ -333,12 +333,12 @@
         window.loadFilteredPivotData =function loadFilteredPivotData() {
             const selectedModel = $("#model-select").val();
             const formData = $("#filterForm").serialize();
-        
+
             $(".pivot-wrapper").hide();
-        
+
             let containerId = "";
             let rowsConfig = [];
-        
+
             if (selectedModel === "candidate") {
                 containerId = "pivot-candidate";
                 rowsConfig = ["Recruitment","Job Position","Department","Candidate","Gender","Email"];
@@ -349,13 +349,13 @@
                 containerId = "pivot-onboarding";
                 rowsConfig = ["Recruitment","Candidates","Stage","Stage Manager","Task","Task Manager","Company"];
             }
-        
+
             $("#" + containerId).show();
-        
+
             $.getJSON(`recruitment-pivot?model=${selectedModel}&${formData}`, function (data) {
 
                 const plotlyRenderers = $.pivotUtilities.plotly_renderers;
-        
+
                 $("#" + containerId).pivotUI(data, {
                     rows: rowsConfig,
                     cols: [],
@@ -369,7 +369,7 @@
                         } else {
                             $("#export-btn").hide();
                         }
-      
+
                     }
                 });
             });
@@ -378,7 +378,7 @@
 
         // Initial load with all models
         loadPivotData("candidate");
-        
+
         // Model selection change event
         $("#model-select").on("change", function () {
             let selectedModel = $(this).val();
@@ -401,14 +401,14 @@
                 alert("No table found to export.");
                 return;
             }
-        
+
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet("Pivot Data");
             const baseRow = 5;
             const baseCol = 5;
-        
+
             let currentRow = baseRow;
-        
+
             // Add company details first (if not 'all')
             if ('{{company}}' !== 'all') {
                 const companyDetails = {
@@ -419,7 +419,7 @@
                     city: "{{ company.city|escapejs }}",
                     zip: "{{ company.zip|escapejs }}"
                 };
-        
+
                 function getBase64FromUrl(url) {
                     return fetch(url)
                         .then(response => response.blob())
@@ -430,7 +430,7 @@
                             reader.readAsDataURL(blob);
                         }));
                 }
-        
+
                 const logoUrl = "{{ protocol }}://{{ host }}{{ company.icon.url }}";
                 await getBase64FromUrl(logoUrl).then((base64) => {
                     const base64Data = base64.split(',')[1];
@@ -438,13 +438,13 @@
                         base64: base64Data,
                         extension: 'png'
                     });
-        
+
                     worksheet.addImage(imageId, {
                         tl: { col: baseCol - 1, row: currentRow - 1 },
                         ext: { width: 80, height: 80 }
                     });
                 });
-        
+
                 // Merge cells for company details text
                 const companyTextCell = worksheet.getCell(currentRow, baseCol + 1);
                 worksheet.mergeCells(currentRow, baseCol + 1, currentRow, baseCol + 2);
@@ -462,35 +462,35 @@
                     wrapText: true
                 };
                 worksheet.getRow(currentRow).height = 80;
-        
+
                 currentRow += 2; // Leave a blank row
             }
-        
+
             // Add timestamp
             const timestamp = new Date().toLocaleDateString('en-GB') + ' ' +
                 new Date().toLocaleTimeString('en-US', {
                     hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
                 });
-        
+
             const downloadCell = worksheet.getCell(currentRow, baseCol);
             worksheet.mergeCells(currentRow, baseCol, currentRow, baseCol + 3);
             downloadCell.value = `Generated on: ${timestamp}`;
             downloadCell.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true };
             downloadCell.font = { size: 10, italic: true, color: { argb: 'FF666666' }, bold: true };
-        
+
             currentRow += 3; // Leave some rows before the table
-        
+
             // ------------------------
             // Render pivot table
             // ------------------------
             const cellMap = {};
             const allRows = Array.from(table.rows);
             const lastRowIndex = allRows.length - 1;
-    
+
             allRows.forEach((row, rowIndex) => {
-                
+
                 let colIndex = baseCol;
-        
+
                 Array.from(row.cells).forEach((cell) => {
 
                     if (
@@ -499,21 +499,21 @@
                         cell.classList.contains("pvtAggregator") ||
                         cell.classList.contains("pvtGrandTotal")
                     ) return;
-        
+
                     while (cellMap[`${currentRow + rowIndex}-${colIndex}`]) {
                         colIndex++;
                     }
-        
+
                     const rowspan = parseInt(cell.getAttribute("rowspan")) || 1;
                     const colspan = parseInt(cell.getAttribute("colspan")) || 1;
                     const cellValue = cell.textContent.trim();
-        
+
                     const excelCell = worksheet.getCell(currentRow + rowIndex, colIndex);
                     excelCell.value = cellValue;
-        
+
                     const isHeader = rowIndex === 0;
                     const isLastRow = rowIndex === lastRowIndex;
-    
+
                     excelCell.font = {
                         bold: isHeader || isLastRow,
                         size: isHeader ? 12 : 11,
@@ -523,7 +523,7 @@
                                 'FF000000'
                         }
                     };
-    
+
                     excelCell.fill = {
                         type: 'pattern',
                         pattern: 'solid',
@@ -541,7 +541,7 @@
                         right: { style: 'thin' }
                     };
                     excelCell.alignment = { horizontal: "center", vertical: "middle" };
-        
+
                     // Merge
                     if (rowspan > 1 || colspan > 1) {
                         worksheet.mergeCells(
@@ -550,7 +550,7 @@
                             currentRow + rowIndex + rowspan - 1,
                             colIndex + colspan - 1
                         );
-        
+
                         for (let r = 0; r < rowspan; r++) {
                             for (let c = 0; c < colspan; c++) {
                                 cellMap[`${currentRow + rowIndex + r}-${colIndex + c}`] = true;
@@ -559,15 +559,15 @@
                     } else {
                         cellMap[`${currentRow + rowIndex}-${colIndex}`] = true;
                     }
-        
+
                     colIndex++;
                 });
             });
-        
+
             worksheet.getRow(currentRow + lastRowIndex).height = 25; // adjust height for Total
-        
+
             worksheet.getRow(currentRow).height = 30; // adjust height for Heading
-        
+
             // Auto-adjust column widths
             worksheet.columns.forEach(column => {
                 let maxLength = 2;
@@ -577,13 +577,13 @@
                 });
                 column.width = maxLength + 3;
             });
-        
+
             // Save
             const buffer = await workbook.xlsx.writeBuffer();
             const blob = new Blob([buffer], {
                 type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             });
-        
+
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
             link.download = filename;
@@ -591,7 +591,7 @@
         }
 
     });
-    
+
 </script>
 
 
