@@ -2,106 +2,96 @@
 {% load static %}
 {% block content %}
 {% load i18n %}
-<section
-class="oh-wrapper oh-main__topbar"
-x-data="{searchShow: false}"
->
-{% if perms.recruitment.add_recruitment %}
-  <div class="oh-main__titlebar oh-main__titlebar--left">
-    <div class="oh-main__titlebar-title fw-bold mb-0 text-dark"  style="cursor:pointer;">{% trans "Recruitments" %}</div>
-  </div>
-{% endif %}
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    {% if perms.recruitment.add_recruitment %}
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <div class="oh-main__titlebar-title fw-bold mb-0 text-dark" style="cursor:pointer;">{% trans "Recruitments" %}
+            </div>
+        </div>
+    {% endif %}
 
-<div class="oh-switch" style="width: 30px; margin-left:1200px;">
-    <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox" {% if request.GET.closed %} checked title="{% trans 'Switch to Ongoing Recruitments' %}" {% else %} title="{% trans 'Switch to Closed Recruitments' %}" {% endif %} id="is_closed" >
-</div>
+    <div class="oh-switch" style="width: 30px; margin-left:1200px;">
+        <input type="checkbox" name="is_closed" data-widget="style-widget" class="style-widget oh-switch__checkbox"
+            {% if request.GET.closed %} checked title="{% trans 'Switch to Ongoing Recruitments' %}" {% else %}
+            title="{% trans 'Switch to Closed Recruitments' %}" {% endif %} id="is_closed">
+    </div>
 
-<div class="oh-main__titlebar oh-main__titlebar--right">
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-main__titlebar-button-container">
+            <div class="oh-dropdown" x-data="{open: false}">
+                <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                    @click.outside="open = false" style="display: none;" @click.>
+                    <div class="mb-3 mt-3">
+                        <label for="job_pos_id" class="oh-label">{% trans "Job position" %}</label>
+                        <select class="" name="job_pos_id" id="job_pos_id">
+                            <option value="">------------------</option>
+                            {% for job_position in job_positions %}
+                                <option value="{{job_position}}">{{job_position}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-    <div class="oh-main__titlebar-button-container">
-
-        <div class="oh-dropdown" x-data="{open: false}">
-
-            <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open" @click.outside="open = false" style="display: none;" @click.>
-
-                <div class="mb-3 mt-3">
-                    <label for="job_pos_id" class="oh-label">{% trans "Job position" %}</label>
-                    <select class="" name="job_pos_id" id="job_pos_id">
-                        <option value="">------------------</option>
-                        {% for job_position in job_positions %}
-                            <option value="{{job_position}}">{{job_position}}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <div class="oh-tabs__action-bar mt-2" id="filter_item" x-on:click="open = false" >
-                    <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table w-100" >
-                        <ion-icon class="me-1 md hydrated" name="add-outline" role="img"aria-label="add outline"></ion-icon>
-                        {% trans "Filter" %}
-                    </button>
+                    <div class="oh-tabs__action-bar mt-2" id="filter_item" x-on:click="open = false">
+                        <button class="oh-btn oh-btn--small oh-btn--secondary oh-tabs__action-new-table w-100">
+                            <ion-icon class="me-1 md hydrated" name="add-outline" role="img"
+                                aria-label="add outline"></ion-icon>
+                            {% trans "Filter" %}
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            {% if perms.recruitment.add_recruitment %}
+                <button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                    hx-target="#objectCreateModalTarget" hx-get="{% url 'recruitment-create' %}">
+                    <ion-icon class="me-1" name="add-outline"></ion-icon>
+                    {% trans 'Recruitment' %}
+                </button>
+            {% endif %}
+            <div class="oh-main__titlebar-button-container">
+                {% if perms.recruitment.add_recruitment %}
+                    {% include 'pipeline/form/recruitment_drop_down_form.html' %}
+                {% endif %}
+            </div>
+        </div>
     </div>
-
-    {% if perms.recruitment.add_recruitment %}
-		<button class="oh-btn oh-btn--secondary" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-target="#objectCreateModalTarget" hx-get="{% url "recruitment-create" %}">
-      <ion-icon class="me-1" name="add-outline"></ion-icon>
-      {% trans 'Recruitment' %}
-    </button>
-		{% endif %}
-
-	<div class="oh-main__titlebar-button-container">
-
-		{% if perms.recruitment.add_recruitment %}
-		{% include 'pipeline/form/recruitment_drop_down_form.html' %}
-		{% endif %}
-
-
-	</div>
-</div>
 </section>
 
-
-<div
-class="oh-wrapper-main"
->
-  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-
-    <div class="oh-wrapper">
-      <div class="oh-404">
-          <img style="    width: 190px;height: 190px;" src="{% static 'images/ui/recruitment.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
-          {% if request.GET.closed %}
-            <h5 class="oh-404__subtitle">{% trans "At present, there is no closed recruitment." %}</h5>
-          {% else %}
-            <h5 class="oh-404__subtitle">{% trans "At present, there is no ongoing recruitment." %}</h5>
-          {% endif %}
-      </div>
+<div class="oh-wrapper">
+    <div class="oh-empty">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">
+            {% if request.GET.closed %}
+                {% trans "At present, there is no closed recruitment." %}
+            {% else %}
+                {% trans "At present, there is no ongoing recruitment." %}
+            {% endif %}
+        </p>
     </div>
-  </main>
 </div>
-</div>
+
 
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         {% include 'select2.js' %}
         $('#candidate-search').keyup(function (e) {
-            $('.candidate-view-type').attr('hx-vals',`{"search":"${$(this).val()}"}`)
-          });
-          $('.candidate-view-type').click(function (e) {
+            $('.candidate-view-type').attr('hx-vals', `{"search":"${$(this).val()}"}`)
+        });
+        $('.candidate-view-type').click(function (e) {
             let view = $(this).attr('data-view');
-            $('#candidate-search').attr('hx-vals',`{"view":"${view}"}`);
-          });
-          $("#job_pos_id").select2();
-          $("#portal_stage").select2();
-      $("#is_closed").on("change", function() {
-          if ($(this).is(":checked")) {
-              window.location.href = "{% url 'pipeline' %}?closed=closed";
-          } else {
-              window.location.href = "{% url 'pipeline' %}";
-          }
-      });
+            $('#candidate-search').attr('hx-vals', `{"view":"${view}"}`);
+        });
+        $("#job_pos_id").select2();
+        $("#portal_stage").select2();
+        $("#is_closed").on("change", function () {
+            if ($(this).is(":checked")) {
+                window.location.href = "{% url 'pipeline' %}?closed=closed";
+            } else {
+                window.location.href = "{% url 'pipeline' %}";
+            }
+        });
     })
-
 </script>
 
 {% endblock content %}

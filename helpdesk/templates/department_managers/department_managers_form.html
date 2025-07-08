@@ -4,10 +4,11 @@
     <div class="oh-modal__dialog-header pb-0">
         <h2 class="oh-modal__dialog-title" id="createModalTitle">
             {% if dep_id %}
-                {% trans "Update Department Manager" %}
+            {% trans "Update" %}
             {% else %}
-                {% trans "Create Department Manager" %}
+            {% trans "Create" %}
             {% endif %}
+            {{form.verbose_name}}
         </h2>
         <button class="oh-modal__close" aria-label="Close">
             <ion-icon name="close-outline"></ion-icon>
@@ -15,32 +16,25 @@
     </div>
     <div class="oh-modal__dialog-body" id="deparmentManagersForm">
         {% if form.errors %}
-        <!-- form errors  -->
-            <div class="oh-wrapper">
-                <div class="oh-alert-container">
-                    {% for error in form.non_field_errors %}
-                    <div class="oh-alert oh-alert--animated oh-alert--danger">
-                        {{ error }}
-                    </div>
-                    {% endfor %}
+        <div class="oh-wrapper">
+            <div class="oh-alert-container">
+                {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
                 </div>
+                {% endfor %}
             </div>
+        </div>
         {% endif %}
-        <form
-            {% if dep_id %}
-                hx-post="{% url 'department-manager-update' dep_id %}"
-            {% else	%}
-                hx-post="{% url 'department-manager-create' %}"
-            {% endif %}
-                hx-target="#deparmentManagersModal"
-            hx-encoding="multipart/form-data"
-            class="oh-profile-section"
-            >
+        <form {% if dep_id %} hx-post="{% url 'department-manager-update' dep_id %}"
+            hx-target="#objectUpdateModalTarget" {% else %} hx-post="{% url 'department-manager-create' %}"
+            hx-target="#objectCreateModalTarget" {% endif %} hx-encoding="multipart/form-data"
+            class="oh-profile-section">
             {% csrf_token %}
             {{form.as_p}}
             <div class="d-flex flex-row-reverse mt-3">
                 <button type="submit" class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp">
-                {% trans "Save" %}
+                    {% trans "Save" %}
                 </button>
             </div>
         </form>

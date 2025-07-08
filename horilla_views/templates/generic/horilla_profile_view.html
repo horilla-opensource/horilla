@@ -1,5 +1,14 @@
 {% load static i18n generic_template_filters %}
 <div class="oh-card mt-4 mb-5" id="{{view_id|safe}}">
+  <style>
+    .oh-general__tab-link--active{
+      padding-bottom: .2rem;
+    }
+    li.oh-general__tab{
+      margin-bottom: 10px !important;
+    }
+  </style>
+  <div id="selectedInstanceIds" data-ids="[]" ></div>
   <button
     hidden
     hx-get="{{request.path}}"

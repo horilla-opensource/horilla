@@ -1,0 +1,98 @@
+{% load i18n static %}
+{% if allocation_reqests %}
+<div class="oh-sticky-table h-100">
+    <div class="oh-sticky-table__table ">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Leave Type" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Requested Days" %}</div>
+                <div class="oh-sticky-table__th" align="center">{% trans "Actions" %}</div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for leave_allocation_request in allocation_reqests %}
+                <div class="oh-sticky-table__tr" draggable="true"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectDetailsModalW25"
+                    hx-get="{% url 'leave-allocation-request-single-view' leave_allocation_request.id %}?instances_ids={{reqests_ids}}"
+                    hx-target="#objectDetailsModalW25Target">
+                    <div class="oh-sticky-table__sd" >
+                        <div class="oh-profile oh-profile--md">
+                            <div class="oh-profile__avatar mr-1">
+                                <img src="{{leave_allocation_request.employee_id.get_avatar}}" class="oh-profile__image"
+                                    alt="" />
+                            </div>
+                            <span class="oh-profile__name oh-text--dark">{{leave_allocation_request.employee_id}}</span>
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__td">{{leave_allocation_request.leave_type_id}}</div>
+                    <div class="oh-sticky-table__td">{{leave_allocation_request.requested_days}}</div>
+                    <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                        <div class="oh-btn-group">
+                            {% if leave_allocation_request.status == 'requested' %}
+                                <a type="submit" href="{% url 'leave-allocation-request-approve' leave_allocation_request.id %}"
+                                    title="{% trans 'Approve' %}"
+                                    class="oh-btn oh-btn--success w-100"
+                                    onclick="event.stopPropagation();return confirm('{% trans "Do you want to Approve this leave allocation request?" %}')">
+                                    <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+                                </a>
+                            {% endif %}
+                            {% if leave_allocation_request.status == 'requested' or leave_allocation_request.status == 'approved' %}
+                                <a type="submit" data-toggle="oh-modal-toggle"
+                                    data-target="#bigModal"
+                                    hx-get="{% url 'leave-allocation-request-reject' leave_allocation_request.id %}"
+                                    hx-target="#bigModalTarget"
+                                    title="{% trans 'Reject' %}"
+                                    class="oh-btn oh-btn--danger w-100">
+                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                </a>
+                            {% else %}
+                                <a type="submit" href="#" title="{% trans 'Reject' %}"
+                                    class="oh-btn oh-btn--danger oh-btn--disabled
+                                    w-100" >
+                                    <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+    <div class="oh-empty h-100">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "No records available at the moment." %}</p>
+    </div>
+{% endif %}
+{% if allocation_reqests.has_next or allocation_reqests.has_previous %}
+    <div class=" float-end mt-3 mb-3">
+        {% if allocation_reqests.has_previous %}
+            <span class="oh-card-dashboard__title" style="cursor: pointer"
+                hx-target="#leaveAllocationApproveBody"
+                hx-get="{% url 'leave-allocation-approve' %}?{{pd}}&page={{ allocation_reqests.previous_page_number }}"
+                hx-trigger="click delay:0.3s">
+                <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+            </span>
+        {% endif %}
+
+        {% if allocation_reqests.has_next %}
+            <span class="oh-card-dashboard__title float-end ms-2" style="cursor: pointer"
+                hx-target="#leaveAllocationApproveBody"
+                hx-get="{% url 'leave-allocation-approve' %}?{{pd}}&page={{ allocation_reqests.next_page_number }}"
+                hx-trigger="click delay:0.3s">
+                <ion-icon name="caret-forward-outline" role="img" class="md hydrated"
+                    aria-label="caret back outline"></ion-icon>
+            </span>
+        {% endif %}
+        {% if allocation_reqests.has_next or allocation_reqests.has_previous %}
+            <span class="oh-pagination__page float-end fw-bold">
+                {% trans "Page" %} {{ allocation_reqests.number }} {%trans "of" %}
+                {{allocation_reqests.paginator.num_pages }}
+            </span>
+        {% endif %}
+    </div>
+{% endif %}

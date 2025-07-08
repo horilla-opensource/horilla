@@ -1,0 +1,4 @@
+<form hx-post="{% url 'face-config' %}" hx-swap="none" hx-on-htmx-after-request="$('#reloadMessagesButton').click();">
+    {% csrf_token %}
+    {{form.as_p}}
+</form>

@@ -61,7 +61,8 @@
                     </div>
                 </div>
                 {% if perms.attendance.change_attendancelatecomeearlyout or request.user|is_reportingmanager or perms.attendance.delete_attendancelatecomeearlyout %}
-                    <div class="oh-dropdown ml-2" x-data="{open: false}" onclick="event.stopPropagation();event.preventDefault();">
+                    <div class="oh-dropdown ml-2" x-data="{open: false}"
+                        onclick="event.stopPropagation();event.preventDefault();">
                         <button class="oh-btn oh-btn--dropdown" @click="open = !open" @click.outside="open = false">
                             {% trans "Actions" %}
                         </button>
@@ -71,20 +72,21 @@
                                     <li class="oh-dropdown__item">
                                         <a href="#" class="oh-dropdown__link" id="activityInfoImport"
                                             data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
-                                            hx-get="{% url 'attendance-activity-import' %}" hx-target="#objectCreateModalTarget"
-                                            >
+                                            hx-get="{% url 'attendance-activity-import' %}"
+                                            hx-target="#objectCreateModalTarget">
                                             {% trans "Import" %}
                                         </a>
                                     </li>
                                     <li class="oh-dropdown__item">
-                                        <a href="#" class="oh-dropdown__link" id="activityInfoExport" data-toggle="oh-modal-toggle"
-                                            data-target="#objectUpdateModal" hx-get="{% url 'attendance-activity-info-export' %}"
+                                        <a href="#" class="oh-dropdown__link" id="activityInfoExport"
+                                            data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                            hx-get="{% url 'attendance-activity-info-export' %}"
                                             hx-target="#objectUpdateModalTarget">{% trans "Export" %}</a>
                                     </li>
                                 {% endif %}
                                 {% if perms.attendance.delete_attendanceactivity %}
                                     <li class="oh-dropdown__item">
-                                        <a href="#" id="attendanceActivityDelete" data-action="delete"
+                                        <a href="#" data-action="delete" onclick="validateActivityIds(event)"
                                             class="oh-dropdown__link oh-dropdown__link--danger">{% trans "Delete" %}</a>
                                     </li>
                                 {% endif %}
@@ -107,3 +109,11 @@
         })
     </script>
 </section>
+<form id="bulkDeleteForm" hx-post="{% url 'attendance-activity-bulk-delete' %}" hx-trigger="submit"
+        hx-confirm="{% trans 'Do you really want to delete all the selected activities?' %}"
+        hx-on-htmx-after-request="$('#unselectAllActivity').click(); $('#bulkDeleteIds').val('');"
+        hx-target="#activity-table" hx-swap="afterend">
+        {% csrf_token %}
+        <input type="hidden" name="ids" id="bulkDeleteIds" value="">
+
+</form>

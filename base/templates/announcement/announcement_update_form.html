@@ -1,7 +1,6 @@
 {% load i18n %}
 {% if messages %}
     <script>reloadMessage();</script>
-
     <span hx-get="{% url 'announcement-single-view' form.instance.id %}?instance_ids={{instance_ids}}"
         hx-target="#objectDetailsModalTarget" hx-trigger="load"></span>
 
@@ -12,20 +11,21 @@
     <div class="oh-wrapper">
         <div class="oh-alert-container">
             {% for error in form.non_field_errors %}
-            <div class="oh-alert oh-alert--animated oh-alert--danger">
-                {{ error }}
-            </div>
+                <div class="oh-alert oh-alert--animated oh-alert--danger">
+                    {{ error }}
+                </div>
             {% endfor %}
         </div>
     </div>
 {% endif %}
 <div class="oh-modal__dialog-header">
-    <h5 class="oh-modal__dialog-title" id="announcementUpdateModalLabel">{% trans "Update" %} {{form.verbose_name}}
-
-        <button type="button" class="oh-modal_close--custom"
-            onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
-            <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
-        </button>
+    <h2 class="oh-modal__dialog-title" id="createModalTitle">
+        {% trans "Update" %} {{form.verbose_name}}
+    </h2>
+    <button type="button" class="oh-modal_close--custom"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');setTimeout(function () { $('#{{hx_target}}').empty(); }, 200);">
+        <ion-icon name="close-outline" role="img" aria-label="close outline"></ion-icon>
+    </button>
 </div>
 <div class="oh-modal__dialog-body">
     <form hx-post="{{request.get_full_path}}" hx-target="#{{hx_target}}" hx-encoding="multipart/form-data"

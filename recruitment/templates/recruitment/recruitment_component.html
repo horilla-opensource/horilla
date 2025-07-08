@@ -102,7 +102,16 @@
                                 <span  title="{% trans "Reveal" %}"><ion-icon class="oh-permission-table__collapse-down" name="chevron-down-outline"></ion-icon></span>
                                 <span  title="{% trans "Collapse" %}"><ion-icon class="oh-permission-table__collapse-up" name="chevron-up-outline"></ion-icon></span>
                               </button>
-                              <span class="oh-permission-table__user">{{rec}}</span>
+                              <span class="oh-permission-table__user">
+                                <div class="d-flex" style="align-items: center;">
+                                  <div>{{ rec }}</div>
+                                  {% if rec.linkedin_account_id %}
+                                    <div style="margin-left: 8px;" title="{{ rec }} posted on {{ rec.linkedin_account_id }} LinkedIn account.">
+                                      <ion-icon name="logo-linkedin"></ion-icon>
+                                    </div>
+                                  {% endif %}
+                                </div>
+                              </span>
                             </div>
                           </div>
 

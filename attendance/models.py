@@ -97,13 +97,16 @@ class AttendanceActivity(HorillaModel):
 
         return time_difference.total_seconds()
 
+    def __str__(self):
+        return f"{self.employee_id} - {self.attendance_date} - {self.clock_in} - {self.clock_out}"
+
 
 class BatchAttendance(HorillaModel):
     """
     Batch attendance model
     """
 
-    title = models.CharField(max_length=150)
+    title = models.CharField(max_length=150, verbose_name=_("Title"))
 
     def __str__(self):
         return f"{self.title}-{self.id}"
@@ -142,7 +145,7 @@ class Attendance(HorillaModel):
         WorkType,
         null=True,
         blank=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,  # 796
         verbose_name=_("Work Type"),
     )
     attendance_day = models.ForeignKey(
@@ -190,10 +193,10 @@ class Attendance(HorillaModel):
         verbose_name=_("Overtime"),
     )
     attendance_overtime_approve = models.BooleanField(
-        default=False, verbose_name=_("Overtime approved")
+        default=False, verbose_name=_("Overtime Approve")
     )
     attendance_validated = models.BooleanField(
-        default=False, verbose_name=_("Attendance validated")
+        default=False, verbose_name=_("Attendance Validate")
     )
     at_work_second = models.IntegerField(null=True, blank=True)
     overtime_second = models.IntegerField(
@@ -207,7 +210,9 @@ class Attendance(HorillaModel):
     is_validate_request_approved = models.BooleanField(
         default=False, verbose_name=_("Is validate request approved")
     )
-    request_description = models.TextField(null=True, max_length=255)
+    request_description = models.TextField(
+        null=True, max_length=255, verbose_name=_("Request Description")
+    )
     request_type = models.CharField(
         max_length=18, null=True, choices=status, default="update_request"
     )
@@ -238,6 +243,8 @@ class Attendance(HorillaModel):
             "employee_id__employee_first_name",
             "attendance_clock_in",
         ]
+        verbose_name = _("Attendance")
+        verbose_name_plural = _("Attendances")
 
     def check_min_ot(self):
         """
@@ -536,26 +543,34 @@ class Attendance(HorillaModel):
         super().clean(*args, **kwargs)
         now = datetime.now().time()
         today = datetime.today().date()
-        out_time = self.attendance_clock_out
+
+        # Convert to time if it's a string
+        if isinstance(self.attendance_clock_out, str):
+            out_time = datetime.strptime(self.attendance_clock_out, "%H:%M:%S").time()
+        else:
+            out_time = self.attendance_clock_out
+
         if self.attendance_clock_in_date < self.attendance_date:
             raise ValidationError(
                 {
-                    "attendance_clock_in_date": "Attendance check-in date never smaller than attendance date"
+                    "attendance_clock_in_date": "Attendance check-in date cannot be earlier than attendance date"
                 }
             )
+
         if (
             self.attendance_clock_out_date
             and self.attendance_clock_out_date < self.attendance_clock_in_date
         ):
             raise ValidationError(
                 {
-                    "attendance_clock_out_date": "Attendance check-out date never smaller than attendance check-in date"
+                    "attendance_clock_out_date": "Attendance check-out date cannot be earlier than check-in date"
                 }
             )
+
         if self.attendance_clock_out_date and self.attendance_clock_out_date >= today:
             if out_time > now:
                 raise ValidationError(
-                    {"attendance_clock_out": "Check out time not allow in the future"}
+                    {"attendance_clock_out": "Check-out time cannot be in the future"}
                 )
 
 
@@ -645,6 +660,8 @@ class AttendanceOverTime(HorillaModel):
 
         unique_together = [("employee_id"), ("month"), ("year")]
         ordering = ["-year", "-month_sequence"]
+        verbose_name = _("Hour Account")
+        verbose_name_plural = _("Hour Accounts")
 
     def clean(self):
         try:
@@ -828,14 +845,18 @@ class GraceTime(HorillaModel):
         default="00:00:00",
         validators=[validate_hh_mm_ss_format],
         max_length=10,
-        verbose_name=_("Allowed time"),
+        verbose_name=_("Allowed Time"),
     )
     allowed_time_in_secs = models.IntegerField()
     allowed_clock_in = models.BooleanField(
-        default=True, help_text=_("Allcocate this grace time for Check-In Attendance")
+        default=True,
+        help_text=_("Allcocate this grace time for Check-In Attendance"),
+        verbose_name=_("Allowed Clock-In"),
     )
     allowed_clock_out = models.BooleanField(
-        default=False, help_text=_("Allcocate this grace time for Check-Out Attendance")
+        default=False,
+        help_text=_("Allcocate this grace time for Check-Out Attendance"),
+        verbose_name=_("Allowed Clock-Out"),
     )
     is_default = models.BooleanField(default=False)
 

@@ -34,10 +34,15 @@ class HorillaAutomationConfig(AppConfig):
                     path = f"{model.__module__}.{model.__name__}"
                     MODEL_CHOICES.append((path, model.__name__))
             MODEL_CHOICES.append(("employee.models.Employee", "Employee"))
+            MODEL_CHOICES.append(
+                ("pms.models.EmployeeKeyResult", "Employee Key Results")
+            )
+
             MODEL_CHOICES = list(set(MODEL_CHOICES))
             try:
                 start_automation()
-            except:
+            except Exception as e:
+                print(e)
                 """
                 Migrations are not affected yet
                 """

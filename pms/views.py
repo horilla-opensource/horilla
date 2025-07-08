@@ -28,8 +28,10 @@ from django.utils.translation import gettext_lazy as _
 from base.methods import (
     closest_numbers,
     eval_validate,
+    filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
+    is_reportingmanager,
     paginator_qry,
     sortby,
 )
@@ -75,6 +77,7 @@ from pms.forms import (
     QuestionTemplateForm,
 )
 from pms.methods import (
+    check_duplication,
     check_permission_feedback_detailed_view,
     get_anonymous_feedbacks,
     pms_owner_and_manager_can_enter,
@@ -161,7 +164,7 @@ def obj_form_save(request, objective_form):
 
 
 @login_required
-@manager_can_enter(perm="pms.add_employeeobjective")
+@permission_required(perm="pms.add_employeeobjective")
 def objective_creation(request):
     """
     This view is for objective creation , and returns a objective form.
@@ -276,7 +279,7 @@ def objective_update(request, obj_id):
 
 # key result
 @login_required
-@manager_can_enter("pms.view_keyresult")
+@permission_required("pms.view_keyresult")
 def view_key_result(request):
     """
     This method is used render template to view all the key result instances
@@ -295,7 +298,7 @@ def view_key_result(request):
 
 @login_required
 @hx_request_required
-@permission_required("pms.view_key_result")
+# @permission_required("pms.view_key_result")
 def filter_key_result(request):
     """
     Filter and retrieve a list of key results based on the provided query parameters.
@@ -590,13 +593,25 @@ def objective_filter_pagination(request, objective_own):
     employee = request.user.employee_get
     manager = False
 
-    objectives = (
-        Objective.objects.filter(Q(managers=employee) | Q(assignees=employee))
+    sub_employees = filtersubordinatesemployeemodel(
+        request,
+        queryset=Employee.objects.filter(is_active=True),
+    )
+    sub_obj_ids = (
+        EmployeeObjective.objects.filter(employee_id__in=sub_employees)
+        .values_list("objective_id", flat=True)
+        .distinct()
+    )
+
+    objectives = Objective.objects.filter(
+        Q(managers=employee) | Q(assignees=employee) | Q(id__in=sub_obj_ids)
     ).distinct()
     if request.user.has_perm("pms.view_objective"):
         objectives = Objective.objects.all()
         manager = True
-    elif Objective.objects.filter(managers=employee).exists():
+    elif Objective.objects.filter(managers=employee).exists() or is_reportingmanager(
+        request
+    ):
         manager = True
     objectives = ActualObjectiveFilter(
         request.GET or initial_data, queryset=objectives
@@ -727,6 +742,14 @@ def objective_detailed_view(request, obj_id, **kwargs):
     emp_objectives = EmployeeObjective.objects.filter(
         objective_id=objective, archive=False
     )
+    if not (
+        request.user.employee_get in objective.managers.all()
+        or request.user.has_perm("pms.view_employeeobjective")
+        or emp_objectives.filter(employee_id=request.user.employee_get).exists()
+    ):
+        messages.info(request, _("You dont have permission."))
+        return redirect("objective-list-view")
+
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     now = datetime.datetime.now()
@@ -1054,7 +1077,7 @@ def create_employee_objective(request):
             obj = emp_obj.objective_id
             # Add this employee as assignee
             obj.assignees.add(emp_obj.employee_id)
-            krs.extend([key_result for key_result in obj.key_result_id.all()])
+            # krs.extend([key_result for key_result in obj.key_result_id.all()])
             set_krs = set(krs)
             emp_obj.save()
             # Add all key results
@@ -1072,6 +1095,18 @@ def create_employee_objective(request):
                     )
             messages.success(request, _("Employee objective created successfully"))
             return HttpResponse("<script>window.location.reload()</script>")
+    context = {"form": form, "k_form": KRForm(), "emp_obj": True}
+    return render(
+        request, "okr/emp_objective/emp_objective_create_form.html", context=context
+    )
+
+
+@login_required
+def get_objective_keyresults(request):
+    obj_id = request.GET.get("objective_id")
+    objective = Objective.objects.filter(id=obj_id).first()
+    keyresults = objective.key_result_id.all()
+    form = EmployeeObjectiveCreateForm(initial={"key_result_id": keyresults})
     context = {"form": form, "k_form": KRForm(), "emp_obj": True}
     return render(
         request, "okr/emp_objective/emp_objective_create_form.html", context=context
@@ -1174,11 +1209,18 @@ def change_employee_objective_status(request):
     emp_obj = request.GET.get("empObjId")
     emp_objective = EmployeeObjective.objects.filter(id=emp_obj).first()
     status = request.GET.get("status")
-    if (
-        request.user.has_perm("pms.change_employeeobjective")
-        or emp_objective.employee_id == request.user.employee_get
+    if not (
+        request.user.has_perm("pms.change_objective")
+        or request.user.has_perm("pms.change_employeeobjective")
+        or request.user.has_perm("pms.change_employeekeyresult")
         or request.user.employee_get in emp_objective.objective_id.managers.all()
+        or (
+            emp_objective.objective_id.self_employee_progress_update
+            and (emp_objective.employee_id == request.user.employee_get)
+        )
     ):
+        messages.info(request, _("You dont have permission."))
+    else:
         if emp_objective.status != status:
             emp_objective.status = status
             emp_objective.save()
@@ -1211,9 +1253,6 @@ def change_employee_objective_status(request):
             messages.info(
                 request, _("The status of the objective is the same as selected.")
             )
-
-    else:
-        messages.info(request, _("You dont have permission."))
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
@@ -1395,10 +1434,10 @@ def key_result_update(request, id):
 
 
 # feedback section
-def send_feedback_notifications(request, form):
+def send_feedback_notifications(request, feedback):
     # Send notification to employee
-    if form.employee_id:
-        employee = form.employee_id
+    if feedback.employee_id:
+        employee = feedback.employee_id
         notify.send(
             request.user.employee_get,
             recipient=employee.employee_user_id,
@@ -1407,56 +1446,22 @@ def send_feedback_notifications(request, form):
             verb_de="Sie haben Feedback erhalten!",
             verb_es="¡Has recibido retroalimentación!",
             verb_fr="Vous avez reçu des commentaires !",
-            redirect=reverse("feedback-detailed-view", kwargs={"id": form.id}),
+            redirect=reverse("feedback-detailed-view", kwargs={"id": feedback.id}),
             icon="chatbox-ellipses",
         )
-
-    # Send notification to manager
-    if form.manager_id:
-        manager = form.manager_id
+    all_employees = feedback.requested_employees()
+    for employee in all_employees:
         notify.send(
             request.user.employee_get,
-            recipient=manager.employee_user_id,
-            verb="You have been assigned as a manager in a feedback!",
-            verb_ar="لقد تم تعيينك كمدير في ملاحظة!",
-            verb_de="Sie wurden als Manager in einem Feedback zugewiesen!",
-            verb_es="¡Has sido asignado como manager en un feedback!",
-            verb_fr="Vous avez été désigné comme manager dans un commentaire !",
-            redirect=reverse("feedback-detailed-view", kwargs={"id": form.id}),
+            recipient=employee.employee_user_id,
+            verb="You have been requested to provide feedback!",
+            verb_ar="لقد طُلب منك تقديم ملاحظات!",
+            verb_de="Sie wurden gebeten, Feedback zu geben!",
+            verb_es="Se le ha solicitado que proporcione comentarios.",
+            verb_fr="Il vous a été demandé de fournir des commentaires.",
+            redirect=reverse("feedback-detailed-view", kwargs={"id": feedback.id}),
             icon="chatbox-ellipses",
         )
-
-    # Send notification to subordinates
-    if form.subordinate_id:
-        subordinates = form.subordinate_id.all()
-        for subordinate in subordinates:
-            notify.send(
-                request.user.employee_get,
-                recipient=subordinate.employee_user_id,
-                verb="You have been assigned as a subordinate in a feedback!",
-                verb_ar="لقد تم تعيينك كمرؤوس في ملاحظة!",
-                verb_de="Sie wurden als Untergebener in einem Feedback zugewiesen!",
-                verb_es="¡Has sido asignado como subordinado en un feedback!",
-                verb_fr="Vous avez été désigné comme subordonné dans un commentaire !",
-                redirect=reverse("feedback-detailed-view", kwargs={"id": form.id}),
-                icon="chatbox-ellipses",
-            )
-
-    # Send notification to colleagues
-    if form.colleague_id:
-        colleagues = form.colleague_id.all()
-        for colleague in colleagues:
-            notify.send(
-                request.user.employee_get,
-                recipient=colleague.employee_user_id,
-                verb="You have been assigned as a colleague in a feedback!",
-                verb_ar="لقد تم تعيينك كزميل في ملاحظة!",
-                verb_de="Sie wurden als Kollege in einem Feedback zugewiesen!",
-                verb_es="¡Has sido asignado como colega en un feedback!",
-                verb_fr="Vous avez été désigné comme collègue dans un commentaire !",
-                redirect=reverse("feedback-detailed-view", kwargs={"id": form.id}),
-                icon="chatbox-ellipses",
-            )
 
 
 @login_required
@@ -1486,7 +1491,7 @@ def feedback_creation(request):
             instance.subordinate_id.set(employees)
 
             messages.success(request, _("Feedback created successfully."))
-            send_feedback_notifications(request, form=instance)
+            send_feedback_notifications(request, feedback=instance)
             return redirect(feedback_list_view)
         else:
             context["feedback_form"] = form
@@ -1534,7 +1539,7 @@ def feedback_creation(request):
 
 @login_required
 @hx_request_required
-@manager_can_enter(perm="pms.change_feedback")
+@permission_required(perm="pms.change_feedback")
 def feedback_update(request, id):
     """
     This view is used to  update the feedback.
@@ -1568,9 +1573,13 @@ def feedback_update(request, id):
                     feedback_form.employee_key_results_id.add(key_result)
             instance = form.save()
             instance.subordinate_id.set(employees)
-            form = form.save()
+            other_employees = check_duplication(
+                form.instance, form.instance.others_id.all()
+            )
+            form.cleaned_data["others_id"] = other_employees
+            feedback = form.save()
             messages.info(request, _("Feedback updated successfully!."))
-            send_feedback_notifications(request, form)
+            send_feedback_notifications(request, feedback)
             response = render(request, "feedback/feedback_update.html", context)
             return HttpResponse(
                 response.content.decode("utf-8") + "<script>location.reload();</script>"
@@ -1663,6 +1672,9 @@ def feedback_list_search(request):
     requested_feedback_ids.extend(
         [i.id for i in Feedback.objects.filter(subordinate_id=employee_id)]
     )
+    requested_feedback_ids.extend(
+        [i.id for i in Feedback.objects.filter(others_id=employee_id)]
+    )
     requested_feedback = Feedback.objects.filter(
         pk__in=requested_feedback_ids,
         review_cycle__icontains=feedback,
@@ -1712,7 +1724,10 @@ def feedback_list_view(request):
     )
     # feedbacks to answer
     feedback_requested = Feedback.objects.filter(
-        Q(manager_id=employee) | Q(colleague_id=employee) | Q(subordinate_id=employee),
+        Q(manager_id=employee)
+        | Q(colleague_id=employee)
+        | Q(subordinate_id=employee)
+        | Q(others_id=employee),
         start_date__lte=datetime.date.today(),
         end_date__gte=datetime.date.today(),
     ).distinct()
@@ -1855,6 +1870,7 @@ def feedback_answer_get(request, id, **kwargs):
         + [feedback.manager_id]
         + list(feedback.colleague_id.all())
         + list(feedback.subordinate_id.all())
+        + list(feedback.others_id.all())
     )
     if not employee in feedback_employees:
         messages.info(request, _("You are not allowed to answer"))
@@ -1959,7 +1975,7 @@ def feedback_answer_view(request, id, **kwargs):
 
 
 @login_required
-@manager_can_enter(perm="pms.delete_feedback")
+@permission_required(perm="pms.delete_feedback")
 def feedback_delete(request, id):
     """
     This view is used to  delete the feedback.
@@ -2102,50 +2118,49 @@ def get_collegues(request):
     try:
         employee_id = request.GET.get("employee_id")
         employee = Employee.objects.get(id=int(employee_id)) if employee_id else None
-
-        if employee:
-            employees_queryset = Employee.objects.none()
-            reporting_manager = (
-                employee.employee_work_info.reporting_manager_id
-                if employee.employee_work_info
-                else None
+        employees_queryset = Employee.objects.none()
+        reporting_manager = (
+            employee.employee_work_info.reporting_manager_id
+            if employee and employee.employee_work_info
+            else None
+        )
+        if request.GET.get("data") == "keyresults":
+            employees_queryset = EmployeeKeyResult.objects.filter(
+                employee_objective_id__employee_id=employee
             )
-
-            if request.GET.get("data") == "colleagues":
-                department = employee.get_department()
-                # employee ids to exclude from collegue list
-                exclude_ids = [employee.id]
-                if reporting_manager:
-                    exclude_ids.append(reporting_manager.id)
-
-                # Get employees in the same department as the employee
-                employees_queryset = Employee.objects.filter(
-                    is_active=True, employee_work_info__department_id=department
-                ).exclude(id__in=exclude_ids)
-            elif request.GET.get("data") == "manager":
-                if reporting_manager:
-                    employees_queryset = Employee.objects.filter(
-                        id=reporting_manager.id
-                    )
-            elif request.GET.get("data") == "subordinates":
-                employees_queryset = Employee.objects.filter(
-                    is_active=True, employee_work_info__reporting_manager_id=employee
-                )
-            elif request.GET.get("data") == "keyresults":
-                employees_queryset = EmployeeKeyResult.objects.filter(
-                    employee_objective_id__employee_id=employee
-                )
-            # Convert QuerySets to a list
-            employees = [(employee.id, employee) for employee in employees_queryset]
-            context = {"employees": employees}
-            employee_html = render_to_string("employee/employees_select.html", context)
-            return HttpResponse(employee_html)
         else:
-            return JsonResponse({"error": "Employee not found"}, status=404)
-    except Employee.DoesNotExist:
-        return JsonResponse({"error": "Invalid Employee ID"}, status=400)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+            if employee and employee.employee_work_info:
+                if request.GET.get("data") == "colleagues":
+                    department = employee.get_department()
+                    # employee ids to exclude from collegue list
+                    exclude_ids = [employee.id]
+                    if reporting_manager:
+                        exclude_ids.append(reporting_manager.id)
+
+                    # Get employees in the same department as the employee
+                    employees_queryset = Employee.objects.filter(
+                        is_active=True, employee_work_info__department_id=department
+                    ).exclude(id__in=exclude_ids)
+                elif request.GET.get("data") == "manager":
+                    if reporting_manager:
+                        employees_queryset = Employee.objects.filter(
+                            id=reporting_manager.id
+                        )
+                elif request.GET.get("data") == "subordinates":
+                    employees_queryset = Employee.objects.filter(
+                        is_active=True,
+                        employee_work_info__reporting_manager_id=employee,
+                    )
+
+        # Convert QuerySets to a list
+        employees = [(employee.id, employee) for employee in employees_queryset]
+        context = {"employees": employees}
+        employee_html = render_to_string("employee/employees_select.html", context)
+        return HttpResponse(employee_html)
+    except:
+        context = {"employees": []}
+        employee_html = render_to_string("employee/employees_select.html", context)
+        return HttpResponse(employee_html)
 
 
 @login_required
@@ -3288,11 +3303,26 @@ def key_result_current_value_update(request):
         current_value = eval_validate(request.POST.get("current_value"))
         emp_kr_id = eval_validate(request.POST.get("emp_key_result_id"))
         emp_kr = EmployeeKeyResult.objects.get(id=emp_kr_id)
-        if current_value <= emp_kr.target_value:
+        if (
+            request.user.has_perm("pms.change_objective")
+            or request.user.has_perm("pms.change_employeeobjective")
+            or request.user.has_perm("pms.change_employeekeyresult")
+            or request.user.employee_get
+            in emp_kr.employee_objective_id.objective_id.managers.all()
+            or (
+                emp_kr.employee_objective_id.objective_id.self_employee_progress_update
+                and (
+                    emp_kr.employee_objective_id.employee_id
+                    == request.user.employee_get
+                )
+            )
+        ):
             emp_kr.current_value = current_value
             emp_kr.save()
             emp_kr.employee_objective_id.update_objective_progress()
             return JsonResponse({"type": "sucess"})
+        else:
+            messages.info(request, "You dont have permission")
     except:
         return JsonResponse({"type": "error"})
 
@@ -3750,9 +3780,10 @@ def dashboard_feedback_answer(request):
     ).distinct()
     feedbacks = feedback_requested.exclude(feedback_answer__employee_id=employee)
     feedbacks = paginator_qry(feedbacks, page_number)
+
     return render(
         request,
-        "request_and_approve/feedback_answer.html",
+        "dashboard/feedback_answer.html",
         {
             "feedbacks": feedbacks,
             "pd": previous_data,

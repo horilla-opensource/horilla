@@ -208,9 +208,11 @@ class ModelForm(forms.ModelForm):
                 label = ""
                 if field.label is not None:
                     label = _(field.label.title())
+                existing_class = field.widget.attrs.get("class", "oh-input w-100")
                 field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": label}
+                    {"class": f"{existing_class}", "placeholder": label}
                 )
+
             elif isinstance(widget, (forms.Select,)):
                 field.empty_label = None
                 if not isinstance(field, forms.ModelMultipleChoiceField):
@@ -245,8 +247,12 @@ class ModelForm(forms.ModelForm):
                 pass
 
             try:
-                self.fields["company_id"].initial = (
-                    request.user.employee_get.get_company
+                company_field = self.fields["company_id"]
+                company = request.user.employee_get.get_company
+                company_queryset = company_field.queryset
+
+                company_field.initial = (
+                    company if company in company_queryset else company_queryset.first()
                 )
             except:
                 pass
@@ -371,13 +377,30 @@ class AssignUserGroup(Form):
 
     def save(self):
         """
-        Save method to assign group to employees
+        Save method to assign group to selected employees only.
+        It removes the group from previously assigned employees
+        and assigns it to the new ones.
         """
-        employees = self.cleaned_data["employee"]
         group = self.cleaned_data["group"]
-        group.user_set.clear()
-        for employee in employees:
-            employee.employee_user_id.groups.add(group)
+        assigning_employees = self.cleaned_data["employee"]
+        assigning_users = [
+            e.employee_user_id for e in assigning_employees if e.employee_user_id
+        ]
+
+        # Get employees currently in this group on selected company instance
+        existing_employees = Employee.objects.filter(
+            employee_user_id__in=group.user_set.all()
+        )
+        existing_users = [
+            e.employee_user_id for e in existing_employees if e.employee_user_id
+        ]
+
+        for user in existing_users:
+            user.groups.remove(group)
+
+        for user in assigning_users:
+            user.groups.add(group)
+
         return group
 
 
@@ -446,7 +469,7 @@ class CompanyForm(ModelForm):
 
         model = Company
         fields = "__all__"
-        excluded_fields = ["date_format", "time_format", "is_active"]
+        exclude = ["date_format", "time_format", "is_active"]
 
     def validate_image(self, file):
         max_size = 5 * 1024 * 1024
@@ -2355,7 +2378,6 @@ class AnnouncementForm(ModelForm):
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
             filter_template_path="employee_filters.html",
-            required=True,
         ),
         label="Employees",
     )
@@ -2386,6 +2408,9 @@ class AnnouncementForm(ModelForm):
         self.fields["attachments"] = MultipleFileField(label=_("Attachments"))
         self.fields["attachments"].required = False
         self.fields["description"].required = False
+        self.fields["disable_comments"].widget.attrs.update(
+            {"hx-on:click": "togglePublicComments()"}
+        )
 
     def save(self, commit: bool = ...) -> Any:
         attachement = []
@@ -2412,13 +2437,31 @@ class AnnouncementForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        # Remove 'employees' field error if it's handled manually
         if isinstance(self.fields["employees"], HorillaMultiSelectField):
             self.errors.pop("employees", None)
-
             employee_data = self.fields["employees"].queryset.filter(
                 id__in=self.data.getlist("employees")
             )
             cleaned_data["employees"] = employee_data
+
+        # Get submitted M2M values
+        employees_selected = cleaned_data.get("employees")
+        departments_selected = self.cleaned_data.get("department")
+        job_positions_selected = self.cleaned_data.get("job_position")
+
+        # Check if none of the three are selected
+        if (
+            not employees_selected
+            and not departments_selected
+            and not job_positions_selected
+        ):
+            raise forms.ValidationError(
+                _(
+                    "You must select at least one of: Employees, Department, or Job Position."
+                )
+            )
 
         return cleaned_data
 
@@ -2705,40 +2748,45 @@ class HolidayForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(HolidayForm, self).__init__(*args, **kwargs)
         self.fields["name"].widget.attrs["autocomplete"] = "name"
+        self.fields["start_date"].label = (
+            f"{self.Meta.model()._meta.get_field('start_date').verbose_name}"
+        )
+        self.fields["end_date"].label = (
+            f"{self.Meta.model()._meta.get_field('end_date').verbose_name}"
+        )
 
 
 class HolidaysColumnExportForm(forms.Form):
     """
     Form for selecting columns to export in holiday data.
-
-    This form allows users to select specific columns from the Holidays model
-    for export. The available columns are dynamically generated based on the
-    model's meta information, excluding specified excluded_fields.
-
-    Attributes:
-        - model_fields: A list of fields in the Holidays model.
-        - field_choices: A list of field choices for the form, consisting of field names
-          and their verbose names, excluding specified excluded_fields.
-        - selected_fields: A MultipleChoiceField representing the selected columns
-          to be exported.
     """
 
-    model_fields = Holidays._meta.get_fields()
-    field_choices = [
-        (field.name, field.verbose_name.capitalize())
-        for field in model_fields
-        if hasattr(field, "verbose_name") and field.name not in excluded_fields
-    ]
     selected_fields = forms.MultipleChoiceField(
-        choices=field_choices,
+        choices=[],
         widget=forms.CheckboxSelectMultiple,
-        initial=[
+        initial=[],
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Use a single model instance for dynamic verbose names
+        model_instance = Holidays()
+        meta = model_instance._meta
+
+        field_choices = [
+            (field.name, meta.get_field(field.name).verbose_name)
+            for field in meta.fields
+            if field.name not in excluded_fields
+        ]
+
+        self.fields["selected_fields"].choices = field_choices
+        self.fields["selected_fields"].initial = [
             "name",
             "start_date",
             "end_date",
             "recurring",
-        ],
-    )
+        ]
 
 
 class CompanyLeaveForm(ModelForm):

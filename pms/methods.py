@@ -123,3 +123,16 @@ def get_anonymous_feedbacks(employee):
         | AnonymousFeedback.objects.filter(employee_id=employee)
     )
     return anonymous_feedbacks
+
+
+def check_duplication(feedback, other_employees):
+    """Remove already existing employee from feedback request and return updated employees"""
+    req_employees = set(feedback.subordinate_id.all())
+    req_employees.update(feedback.colleague_id.all())
+    if feedback.manager_id:
+        req_employees.add(feedback.manager_id)
+    if feedback.employee_id:
+        req_employees.add(feedback.employee_id)
+    # Remove already requested employees from others_id
+    updated_employees = [emp for emp in other_employees if emp not in req_employees]
+    return updated_employees

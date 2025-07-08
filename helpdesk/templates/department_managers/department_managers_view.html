@@ -23,9 +23,9 @@
 							{% if perms.helpdesk.change_departmentmanager %}
 							<a
 								hx-get="{% url 'department-manager-update' manager.id %}"
-								hx-target="#deparmentManagersModal"
+								hx-target="#objectUpdateModalTarget"
 								data-toggle="oh-modal-toggle"
-								data-target="#deparmentManagersModal"
+								data-target="#objectUpdateModal"
 								type="button"
 								class="oh-btn oh-btn--light-bkg w-50"
 								title="{% trans 'Edit' %}"

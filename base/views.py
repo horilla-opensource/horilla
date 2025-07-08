@@ -7,11 +7,13 @@ This module is used to map url pattens with django views or methods
 import csv
 import json
 import os
+import random
+import threading
 import uuid
 from datetime import datetime, timedelta
 from email.mime.image import MIMEImage
 from os import path
-from urllib.parse import parse_qs, unquote, urlencode
+from urllib.parse import parse_qs, unquote, urlencode, urlparse
 
 import pandas as pd
 from dateutil import parser
@@ -23,15 +25,22 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.files.base import ContentFile
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMessage, EmailMultiAlternatives, send_mail
 from django.core.management import call_command
 from django.db.models import ProtectedError, Q
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import (
+    FileResponse,
+    Http404,
+    HttpResponse,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import strip_tags
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -111,6 +120,7 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     format_date,
     generate_colors,
+    generate_otp,
     get_key_instances,
     is_reportingmanager,
     paginator_qry,
@@ -594,7 +604,14 @@ def login_user(request):
             return redirect("login")
 
         login(request, user)
+
         messages.success(request, _("Login successful."))
+
+        # Ensure `next_url` is a safe local URL
+        if not url_has_allowed_host_and_scheme(
+            next_url, allowed_hosts={request.get_host()}
+        ):
+            next_url = "/"
 
         if params:
             next_url += f"?{params}"
@@ -785,6 +802,95 @@ def change_username(request):
         return render(request, "base/auth/username_change_form.html", {"form": form})
 
     return render(request, "base/auth/username_change.html", {"form": form})
+
+
+def two_factor_auth(request):
+    """
+    function to handle two-factor authentication for users.
+    """
+    # request.session["otp_code"] = None
+    try:
+        otp = get_otp(request)
+    except:
+        otp = None
+
+    if request.method == "POST":
+        user_otp = request.POST.get("otp")
+        if user_otp == otp:
+            request.session["otp_code"] = None
+            request.session["otp_code_timestamp"] = None
+            request.session["otp_code_verified"] = True
+            request.session.save()
+            messages.success(request, "OTP verified successfully.")
+            return redirect("/")
+        elif otp is None:
+            messages.error(request, "OTP expired. Please request a new one.")
+            return render(request, "base/auth/two_factor_auth.html")
+        else:
+            messages.error(request, "Invalid OTP.")
+            return render(request, "base/auth/two_factor_auth.html")
+
+    if not horilla_apps.TWO_FACTORS_AUTHENTICATION:
+        return redirect("/")
+
+    if otp is None:
+        send_otp(request)
+    return render(request, "base/auth/two_factor_auth.html")
+
+
+def send_otp(request):
+    """
+    Function to send OTP to the user's email address.
+    It generates a new OTP code, stores it in the session, and sends it via email.
+    """
+    employee = request.user.employee_get
+    email = employee.get_mail()
+
+    email_backend = ConfiguredEmailBackend()
+    display_email_name = email_backend.dynamic_from_email_with_display_name
+
+    otp_code = set_otp(request)
+    email = EmailMessage(
+        subject="Your OTP Code",
+        body=f"Your OTP code is {otp_code}",
+        from_email=display_email_name,
+        to=[email],
+    )
+    thread = threading.Thread(target=email.send)
+    thread.start()
+
+    return redirect("two-factor")
+
+
+def set_otp(request):
+    """
+    Function to set the OTP code in the session.
+    Generates a new OTP code, stores it in the session, and sets a timestamp for expiration.
+    """
+
+    otp_code = generate_otp()
+    request.session["otp_code"] = otp_code
+    request.session["otp_code_timestamp"] = timezone.now().timestamp()
+    request.session["otp_code_verified"] = False
+    request.session.save()
+    return otp_code
+
+
+def get_otp(request):
+    """
+    Function to retrieve the OTP code from the session.
+    Checks if the OTP code has expired (10 minutes) and clears it if so.
+    """
+    created_at = request.session.get("otp_code_timestamp", 0)
+    current_time = timezone.now().timestamp()
+
+    if current_time - created_at > 600:
+        request.session["otp_code"] = None
+        request.session["otp_code_timestamp"] = None
+        request.session.save()
+        return None
+    else:
+        return request.session.get("otp_code")
 
 
 def logout_user(request):
@@ -1596,12 +1702,15 @@ def view_mail_template(request, obj_id):
 
 
 @login_required
-@require_http_methods(["POST"])
+@hx_request_required
 @permission_required("base.add_horillamailtemplate")
 def create_mail_templates(request):
     """
     This method is used to create offerletter template
     """
+    form = MailTemplateForm()
+    searchWords = form.get_template_language()
+
     if request.method == "POST":
         form = MailTemplateForm(request.POST)
         if form.is_valid():
@@ -1609,7 +1718,12 @@ def create_mail_templates(request):
             instance.save()
             messages.success(request, "Template created")
             return HttpResponse("<script>window.location.reload()</script>")
-    return redirect(view_mail_templates)
+
+    return render(
+        request,
+        "mail/htmx/form.html",
+        {"form": form, "duplicate": False, "searchWords": searchWords},
+    )
 
 
 @login_required
@@ -1653,9 +1767,12 @@ def company_view(request):
     """
     This method used to view created companies
     """
-
     companies = Company.objects.all()
-    return render(request, "base/company/company.html", {"companies": companies})
+    return render(
+        request,
+        "base/company/company.html",
+        {"companies": companies, "model": Company()},
+    )
 
 
 @login_required
@@ -3293,33 +3410,31 @@ def employee_permission_assign(request):
 
     context = {}
     template = "base/auth/permission.html"
-    if request.GET.get("profile_tab"):
+    if request.GET.get("profile_tab") and request.GET.get("employee_id"):
         template = "tabs/group_permissions.html"
-        employees = Employee.objects.filter(id=request.GET["employee_id"]).distinct()
-        emoloyee = employees.first()
-        context["employee"] = emoloyee
+        employees = Employee.objects.filter(id=request.GET["employee_id"])
+        context["employee"] = employees.first()
     else:
         employees = Employee.objects.filter(
             employee_user_id__user_permissions__isnull=False
         ).distinct()
         context["show_assign"] = True
-    permissions = []
-    no_permission_models = NO_PERMISSION_MODALS
-    for app_name in APPS:
-        app_models = []
-        for model in get_models_in_app(app_name):
-            if model._meta.model_name not in no_permission_models:
-                app_models.append(
-                    {
-                        "verbose_name": model._meta.verbose_name.capitalize(),
-                        "model_name": model._meta.model_name,
-                    }
-                )
-        permissions.append(
-            {"app": app_name.capitalize().replace("_", " "), "app_models": app_models}
-        )
+    permissions = [
+        {
+            "app": app_name.capitalize().replace("_", " "),
+            "app_models": [
+                {
+                    "verbose_name": model._meta.verbose_name.capitalize(),
+                    "model_name": model._meta.model_name,
+                }
+                for model in get_models_in_app(app_name)
+                if model._meta.model_name not in NO_PERMISSION_MODALS
+            ],
+        }
+        for app_name in APPS
+    ]
     context["permissions"] = permissions
-    context["no_permission_models"] = no_permission_models
+    context["no_permission_models"] = NO_PERMISSION_MODALS
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
@@ -3338,26 +3453,29 @@ def employee_permission_search(request, codename=None, uid=None):
     template = "base/auth/permission_lines.html"
     employees = EmployeeFilter(request.GET).qs
     if request.GET.get("profile_tab"):
-        template = "base/auth/permission_accordion.html"
-        employees = employees.filter(id=request.GET["employee_id"]).distinct()
+        employees = Employee.objects.filter(id=request.GET["employee_id"])
+        context["employee"] = employees.first()
     else:
         employees = employees.filter(
             employee_user_id__user_permissions__isnull=False
         ).distinct()
         context["show_assign"] = True
-    permissions = []
-    apps = APPS
-    for app_name in apps:
-        app_models = []
-        for model in get_models_in_app(app_name):
-            app_models.append(
+    permissions = [
+        {
+            "app": app_name.capitalize().replace("_", " "),
+            "app_models": [
                 {
                     "verbose_name": model._meta.verbose_name.capitalize(),
                     "model_name": model._meta.model_name,
                 }
-            )
-        permissions.append({"app": app_name.capitalize(), "app_models": app_models})
+                for model in get_models_in_app(app_name)
+                if model._meta.model_name not in NO_PERMISSION_MODALS
+            ],
+        }
+        for app_name in APPS
+    ]
     context["permissions"] = permissions
+    context["no_permission_models"] = NO_PERMISSION_MODALS
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
@@ -6761,7 +6879,8 @@ def generate_error_report(error_list, error_data, file_name):
     path_info = f"error-sheet-{uuid.uuid4()}"
     urlpatterns.append(path(path_info, get_error_sheet, name=path_info))
     DYNAMIC_URL_PATTERNS.append(path_info)
-
+    for key in error_data:
+        error_data[key] = []
     return path_info
 
 
@@ -7368,3 +7487,34 @@ def view_penalties(request):
     """
     records = PenaltyFilter(request.GET).qs
     return render(request, "penalty/penalty_view.html", {"records": records})
+
+
+def protected_media(request, path):
+    page_urls = [
+        "/login",
+        "/forgot-password",
+        "/change-username",
+        "/change-password",
+        "/employee-reset-password",
+        "/recruitment/candidate-survey",
+        "/recruitment/open-recruitments",
+        "/recruitment/candidate-self-status-tracking",
+    ]
+
+    exempted_folders = ["base/icon/"]
+
+    media_path = os.path.join(settings.MEDIA_ROOT, path)
+    if not os.path.exists(media_path):
+        raise Http404("File not found")
+
+    referer = urlparse(request.META.get("HTTP_REFERER", ""))
+    referer_path = referer.path
+
+    if referer_path not in page_urls and not any(
+        path.startswith(folder) for folder in exempted_folders
+    ):
+        if not request.user.is_authenticated:
+            messages.error(request, "You must be logged in to access this file.")
+            return redirect("login")
+
+    return FileResponse(open(media_path, "rb"))

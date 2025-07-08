@@ -1,3 +1,4 @@
+# pylint: disable=too-few-public-methods
 """
 Module containing forms for managing biometric devices and associated data.
 
@@ -9,11 +10,11 @@ from django import forms
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from attendance.forms import ModelForm
-from base.forms import Form
+from base.forms import Form, ModelForm
 from base.methods import reload_queryset
 from employee.models import Employee
 from horilla.horilla_middlewares import _thread_locals
+from horilla_widgets.forms import default_select_option_template
 
 from .models import BiometricDevices, BiometricEmployees
 
@@ -40,12 +41,6 @@ class BiometricDeviceForm(ModelForm):
             "scheduler_duration",
             "is_active",
         ]
-        labels = {
-            "name": _("Device Name"),
-            "machine_ip": _("IP Address"),
-            "port": _("TCP COMM.Port"),
-            "anviz_request_id": _("Header Request ID"),
-        }
         widgets = {
             "machine_type": forms.Select(
                 attrs={
@@ -60,6 +55,12 @@ class BiometricDeviceForm(ModelForm):
                 }
             ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        company_widget = self.fields["company_id"].widget
+        if isinstance(company_widget, forms.Select):
+            company_widget.option_template_name = default_select_option_template
 
 
 class BiometricDeviceSchedulerForm(ModelForm):
@@ -87,7 +88,7 @@ class EmployeeBiometricAddForm(Form):
     """
     Form for adding employees to a biometric device.
 
-    This form allows administrators to add multiple employees to a biometric device
+    This form allows administrators to add employees to a biometric device
     for biometric authentication. It includes a field for selecting employees from
     a queryset and ensures that only active employees not already associated with
     a 'zk' type biometric device are available for selection.
@@ -101,8 +102,15 @@ class EmployeeBiometricAddForm(Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.request = getattr(_thread_locals, "request")
+        self.device_id = (
+            self.request.resolver_match.kwargs.get("device_id", None)
+            if self.request.resolver_match
+            else None
+        )
+        self.device = BiometricDevices.find(self.device_id)
         zk_employee_ids = BiometricEmployees.objects.filter(
-            device_id__machine_type="zk"
+            device_id=self.device
         ).values_list("employee_id", flat=True)
         self.fields["employee_ids"].queryset = Employee.objects.filter(
             is_active=True
@@ -194,6 +202,10 @@ class COSECUserForm(Form):
 
 
 class DahuaUserForm(Form):
+    """
+    This form is used to map a Horilla employee to a user entry on a Dahua biometric device.
+    """
+
     CARD_STATUS_CHOICES = [
         (0, "Normal"),
         (1 << 0, "Reported for loss"),
@@ -269,21 +281,26 @@ class DahuaUserForm(Form):
 
     def clean(self):
         cleaned_data = super().clean()
+        device = None
         error_fields = {}
         card_no = cleaned_data.get("card_no")
         user_id = cleaned_data.get("user_id")
+
         if self.device_id:
             device = BiometricDevices.find(self.device_id)
-        if card_no:
+
+        if card_no and device:
             if BiometricEmployees.objects.filter(
                 dahua_card_no=card_no, device_id=device
             ).exists():
                 error_fields["card_no"] = _("This Card Number already exists.")
-        if user_id:
+
+        if user_id and device:
             if BiometricEmployees.objects.filter(
                 user_id=user_id, device_id=device
             ).exists():
                 error_fields["user_id"] = _("This User ID already exists.")
+
         if error_fields:
             raise forms.ValidationError(error_fields)
 
@@ -291,7 +308,18 @@ class DahuaUserForm(Form):
 
 
 class MapBioUsers(ModelForm):
+    """
+    Form for mapping biometric users to Horilla employees.
+
+    This form is used to associate a biometric user (from a biometric device) with
+    an employee in the Horilla system.
+    """
+
     class Meta:
+        """
+        Meta class to add additional options
+        """
+
         model = BiometricEmployees
         fields = ["employee_id", "user_id"]
 
@@ -323,8 +351,9 @@ class MapBioUsers(ModelForm):
                 raise forms.ValidationError(
                     {
                         "user_id": _(
-                            "This biometric {} is already mapped with an employee"
-                        ).format(user_id_label)
+                            "This biometric %(label)s is already mapped with an employee"
+                        )
+                        % {"label": user_id_label}
                     }
                 )
 

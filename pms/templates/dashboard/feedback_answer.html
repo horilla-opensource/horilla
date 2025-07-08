@@ -1,0 +1,83 @@
+{% load i18n static %}
+{% if feedbacks %}
+<div class="oh-sticky-table h-100">
+    <div class="oh-sticky-table__table">
+        <div class="oh-sticky-table__thead">
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__th">{% trans "Employee" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Due Date" %}</div>
+                <div class="oh-sticky-table__th" align="center">{% trans "Actions" %}</div>
+            </div>
+        </div>
+        <div class="oh-sticky-table__tbody">
+            {% for feedback in feedbacks %}
+            <div class="oh-sticky-table__tr">
+                <div class="oh-sticky-table__sd">
+                    <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                            <img
+                                src="{{feedback.employee_id.get_avatar}}"
+                                class="oh-profile__image"
+                            />
+                        </div>
+                        <span class="oh-profile__name oh-text--dark"
+                            >{{feedback.employee_id}}</span
+                        >
+                    </div>
+                </div>
+                <div class="oh-sticky-table__td">
+                    {{feedback.review_cycle | title}}
+                </div>
+                <div class="oh-sticky-table__td">
+                    {{ current_date|timesince:feedback.end_date }}
+                </div>
+                <div class="oh-sticky-table__td">
+                    <div class="oh-btn-group">
+                        <a
+                            class="oh-btn oh-btn--info w-100"
+                            href="{% url 'feedback-answer-get' id=feedback.id %}"
+                            title="{% trans 'Answer' %}"
+                            >{% trans "Answer" %}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor%}
+        </div>
+    </div>
+</div>
+{% else %}
+    <div class="oh-empty h-100">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "No records available at the moment." %}</p>
+    </div>
+{% endif %}
+{% if feedbacks.has_next or feedbacks.has_previous %}
+    <div class=" float-end mt-3 mb-3">
+        {% if feedbacks.has_previous %}
+            <span class="oh-card-dashboard__title" style="cursor: pointer"
+                hx-target="#feedbackAnswerCardBody"
+                hx-get="{% url 'dashboard-feedback-answer' %}?{{pd}}&page={{ feedbacks.previous_page_number }}"
+                hx-trigger="click delay:0.3s">
+                <ion-icon name="caret-back-outline" role="img" class="md hydrated" aria-label="caret back outline"></ion-icon>
+            </span>
+        {% endif %}
+
+        {% if feedbacks.has_next %}
+            <span class="oh-card-dashboard__title float-end ms-2" style="cursor: pointer"
+                hx-target="#feedbackAnswerCardBody"
+                hx-get="{% url 'dashboard-feedback-answer' %}?{{pd}}&page={{ feedbacks.next_page_number }}"
+                hx-trigger="click delay:0.3s">
+                <ion-icon name="caret-forward-outline" role="img" class="md hydrated"
+                    aria-label="caret back outline"></ion-icon>
+            </span>
+        {% endif %}
+        {% if feedbacks.has_next or feedbacks.has_previous %}
+            <span class="oh-pagination__page float-end fw-bold">
+                {% trans "Page" %} {{ feedbacks.number }} {%trans "of" %}
+                {{feedbacks.paginator.num_pages }}
+            </span>
+        {% endif %}
+    </div>
+{% endif %}

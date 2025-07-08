@@ -6,16 +6,16 @@ from distutils.util import strtobool
 from operator import itemgetter
 from urllib.parse import parse_qs
 
+from django.conf import settings
 from django.contrib import messages
-from django.core.paginator import Paginator
-from django.db.models import ProtectedError, Q
+from django.core import serializers
+from django.db.models import ProtectedError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods
-from haystack.query import SearchQuerySet
 
 from base.forms import TagsForm
 from base.methods import (
@@ -29,7 +29,13 @@ from base.models import Department, JobPosition, Tags
 from employee.models import Employee
 from employee.views import get_content_type
 from helpdesk.decorators import ticket_owner_can_enter
-from helpdesk.filter import FAQCategoryFilter, FAQFilter, TicketFilter, TicketReGroup
+from helpdesk.filter import (
+    FAQCategoryFilter,
+    FAQFilter,
+    FaqSearch,
+    TicketFilter,
+    TicketReGroup,
+)
 from helpdesk.forms import (
     AttachmentForm,
     CommentForm,
@@ -79,9 +85,10 @@ def faq_category_view(request):
     """
 
     faq_categories = FAQCategory.objects.all()
+    questions = FAQ.objects.values_list("question", flat=True)
     context = {
         "faq_categories": faq_categories,
-        "f": FAQFilter(request.GET),
+        "questions": list(questions),
     }
 
     return render(request, "helpdesk/faq/faq_view.html", context=context)
@@ -198,6 +205,10 @@ def faq_view(request, obj_id, **kwargs):
     """
 
     faqs = FAQ.objects.filter(category=obj_id)
+    faq_category = FAQCategory.objects.filter(id=obj_id)
+    if not faq_category:
+        messages.info(request, _("No FAQ found for the given category."))
+        return redirect(faq_category_view)
     context = {
         "faqs": faqs,
         "f": FAQFilter(request.GET),
@@ -285,18 +296,11 @@ def faq_search(request):
     category = request.GET.get("category", "")
     previous_data = request.GET.urlencode()
     query = request.GET.get("search", "")
-    faqs = FAQ.objects.filter(is_active=True)
     data_dict = parse_qs(previous_data)
     get_key_instances(FAQ, data_dict)
 
     if query:
-        results_list = (
-            SearchQuerySet()
-            .filter(Q(question__icontains=query) | Q(answer__icontains=query))
-            .using("default")
-        )
-        result_pks = [result.pk for result in results_list]
-        faqs = FAQ.objects.filter(pk__in=result_pks)
+        faqs = FaqSearch(request.GET).qs
 
     else:
         faqs = FAQ.objects.filter(is_active=True)
@@ -308,6 +312,7 @@ def faq_search(request):
         faqs = faqs.filter(category=id)
     if category:
         data_dict.pop("category")
+
     context = {
         "faqs": faqs,
         "f": FAQFilter(request.GET),
@@ -1492,21 +1497,6 @@ def tickets_bulk_delete(request):
 
 
 @login_required
-def add_department_manager(request):
-    form = DepartmentManagerCreateForm()
-    if request.method == "POST":
-        form = DepartmentManagerCreateForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-
-            return HttpResponse("<script>window.location.reload()</script>")
-    context = {
-        "form": form,
-    }
-    return render(request, "helpdesk/faq/department_managers_form.html", context)
-
-
-@login_required
 @hx_request_required
 def create_department_manager(request):
     form = DepartmentManagerCreateForm()
@@ -1676,9 +1666,11 @@ def ticket_type_delete(request, t_type_id):
 @login_required
 @permission_required("helpdesk.view_departmentmanager")
 def view_department_managers(request):
-    department_managers = DepartmentManager.objects.all()
+    model_class = DepartmentManager
+    department_managers = model_class.objects.all()
 
     context = {
+        "model": model_class,
         "department_managers": department_managers,
     }
     return render(request, "department_managers/department_managers.html", context)
@@ -1705,3 +1697,116 @@ def get_department_employees(request):
     context = {"employees": employees}
     employee_html = render_to_string("employee/employees_select.html", context)
     return HttpResponse(employee_html)
+
+
+@login_required
+def load_faqs(request):
+    base_dir = settings.BASE_DIR
+    faq_file = os.path.join(base_dir, "load_data", "faq.json")
+    faq_category_file = os.path.join(base_dir, "load_data", "faq_category.json")
+    tags_file = os.path.join(base_dir, "load_data", "tags.json")
+
+    with open(faq_category_file, "r") as cats:
+        faq_category_raw = json.load(cats)
+
+    with open(tags_file, "r") as t:
+        tags_raw = json.load(t)
+
+    with open(faq_file, "r") as faqs:
+        faq_raw = json.load(faqs)
+
+    category_lookup = {item["pk"]: item["fields"]["title"] for item in faq_category_raw}
+
+    tag_lookup = {item["pk"]: item["fields"]["title"] for item in tags_raw}
+
+    if request.method == "POST":
+        selected_ids = [int(k) for k in request.POST.keys() if k.isdigit()]
+        selected_faqs = [a for a in faq_raw if a["pk"] in selected_ids]
+
+        category_needed = [
+            faq["fields"].get("category")
+            for faq in selected_faqs
+            if faq["fields"].get("category")
+        ]
+
+        tags_needed_list = [
+            faq["fields"].get("tags")
+            for faq in selected_faqs
+            if faq["fields"].get("tags")
+        ]
+        tags_needed = [item for item_list in tags_needed_list for item in item_list]
+
+        for category_json in faq_category_raw:
+            if category_json["pk"] in category_needed:
+                category_data = list(
+                    serializers.deserialize("json", json.dumps([category_json]))
+                )[0].object
+                existing = FAQCategory.objects.filter(title=category_data.title).first()
+                if not existing:
+                    category_data.pk = None
+                    category_data.save()
+
+        for tag_json in tags_raw:
+            if tag_json["pk"] in tags_needed:
+                tag_data = list(
+                    serializers.deserialize("json", json.dumps([tag_json]))
+                )[0].object
+                existing = Tags.objects.filter(title=tag_data.title).first()
+                if not existing:
+                    tag_data.pk = None
+                    tag_data.save()
+
+        for faq_json in selected_faqs:
+            deserialized = list(
+                serializers.deserialize("json", json.dumps([faq_json]))
+            )[0]
+            faq_obj = deserialized.object
+
+            category_pk = faq_json["fields"].get("category")
+            tag_pk = faq_json["fields"].get("tags")
+            category_title = category_lookup.get(category_pk)
+            tags_title = [tag_lookup.get(pk, "") for pk in tag_pk]
+            category = FAQCategory.objects.filter(title=category_title).first()
+            tags = Tags.objects.filter(title__in=tags_title)
+            faq_obj.category = category
+
+            if not FAQ.objects.filter(question=faq_obj.question).exists():
+                faq_obj.pk = None
+                faq_obj.save()
+                faq_obj.tags.set(tags)
+
+                messages.success(
+                    request, f"Automation '{faq_obj.question}' created successfully."
+                )
+            else:
+                messages.warning(
+                    request, f"Automation '{faq_obj.question}' already exists."
+                )
+
+        script = """
+            <script>
+                $('.oh-modal--show').removeClass('oh-modal--show');
+                $('#reloadMessagesButton').click();
+                $('.filterButton').click();
+            </script>
+        """
+        return HttpResponse(script)
+
+    processed_faqs = []
+    for faq in faq_raw:
+        processed = faq.copy()
+
+        category_pk = faq["fields"].get("category")
+        tag_pk = faq["fields"].get("tags")
+        processed["tags"] = [tag_lookup.get(pk, "") for pk in tag_pk]
+        processed["category"] = category_lookup.get(category_pk, "")
+        processed_faqs.append(processed)
+
+    return render(
+        request,
+        "helpdesk/faq/load_faq.html",
+        {
+            "faqs": processed_faqs,
+            "catagories": category_lookup,
+        },
+    )

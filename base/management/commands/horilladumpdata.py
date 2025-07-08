@@ -1,15 +1,16 @@
 import os
-from django.conf import settings
-from django.core.management.base import BaseCommand
-from django.core.management import call_command
+
 from django.apps import apps as django_apps
+from django.conf import settings
+from django.core.management import call_command
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
     help = "Dump all relevant data to JSON files."
 
     def handle(self, *args, **options):
-        
+
         folder_name = input("Enter the name of the folder to save JSON files: ").strip()
         if not folder_name:
             self.stderr.write(self.style.ERROR("Folder name cannot be empty."))

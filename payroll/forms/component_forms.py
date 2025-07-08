@@ -21,7 +21,7 @@ from employee.filters import EmployeeFilter
 from employee.models import BonusPoint, Employee
 from horilla import horilla_middlewares
 from horilla.methods import get_horilla_model_class
-from horilla_widgets.forms import HorillaForm, orginal_template_name
+from horilla_widgets.forms import HorillaForm, default_select_option_template
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from notifications.signals import notify
@@ -235,7 +235,7 @@ class DeductionForm(forms.ModelForm):
         self.fields["style"].widget = widget.StyleWidget(form=self)
         for field_name, field in self.fields.items():
             if isinstance(field.widget, forms.Select):
-                field.widget.option_template_name = orginal_template_name
+                field.widget.option_template_name = default_select_option_template
 
     def clean(self, *args, **kwargs):
         cleaned_data = super().clean(*args, **kwargs)

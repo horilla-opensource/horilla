@@ -2,110 +2,82 @@
 {% if messages %}
     {% for message in messages %}
         <div class="oh-wrapper">
-          <div class="oh-alert-container">
-            <div class="oh-alert oh-alert--animated {{message.tags}} ">{{message}}</div>
-          </div>
+            <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated {{message.tags}} ">{{message}}</div>
+            </div>
         </div>
     {% endfor %}
 {% endif%}
 {% if periods %}
-<div class="oh-sticky-table">
-  <div class="oh-sticky-table__table">
-    <div class="oh-sticky-table__thead">
-      <div class="oh-sticky-table__tr">
-        <div class="oh-sticky-table__th">{% trans "Title" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
-        <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
-        <div class="oh-sticky-table__th">{% trans "Company" %}</div>
-        {% if perms.pms.change_period or perms.pms.delete_period or request.user|filtersubordinates %}
-            <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
-        {% endif %}
-      </div>
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th">{% trans "Title" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+                    <div class="oh-sticky-table__th">{% trans "Company" %}</div>
+                    {% if perms.pms.change_period or perms.pms.delete_period or request.user|filtersubordinates %}
+                        <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="oh-sticky-table__tbody">
+                {% for period in periods %}
+                    <div class="oh-sticky-table__tr" draggable="true">
+                        <div class="oh-sticky-table__sd">
+                            <div class="oh-profile oh-profile--md">
+                                <span class="oh-profile__name oh-text--dark">{{period.period_name}}</span>
+                            </div>
+                        </div>
+                        <div class="oh-sticky-table__td dateformat_changer">
+                            {{period.start_date}}
+                        </div>
+                        <div class="oh-sticky-table__td dateformat_changer">
+                            {{period.end_date}}
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            {% for p in period.company_id.all %}
+                                {% if p.company %}
+                                    {{p.company}} ,
+                                {% endif %}
+                            {% empty %}
+                                {% trans "None." %}
+                            {% endfor %}
+                        </div>
+                        {% if perms.pms.change_period or perms.pms.delete_period or request.user|filtersubordinates %}
+                            <div class="oh-sticky-table__td">
+                                <div class="oh-btn-group">
+                                    {% if perms.pms.change_period or request.user|filtersubordinates %}
+                                        <a data-toggle="oh-modal-toggle" data-target="#PeriodModal"
+                                            class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}"
+                                            hx-get="{% url 'period-update' period_id=period.id%}" hx-target="#periodModalTarget">
+                                            <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline">
+                                            </ion-icon>
+                                        </a>
+                                    {% endif %}
+                                    {% if perms.pms.delete_period or request.user|filtersubordinates %}
+                                        <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                            hx-confirm="{% trans 'Do you want to delete this period ?' %}"
+                                            hx-get="{%url 'period-delete' period_id=period.id %}" hx-target="#periodListTable"
+                                            title="{% trans 'Delete' %}">
+                                            <ion-icon name="trash-outline" role="img" class="md hydrated"
+                                                aria-label="trash outline">
+                                            </ion-icon>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor%}
+            </div>
+        </div>
     </div>
-    <div class="oh-sticky-table__tbody">
-      {% for period in periods %}
-      <div class="oh-sticky-table__tr" draggable="true">
-        <div class="oh-sticky-table__sd">
-          <div class="oh-profile oh-profile--md">
-            <span class="oh-profile__name oh-text--dark"
-              >{{period.period_name}}</span
-            >
-          </div>
-        </div>
-        <div class="oh-sticky-table__td dateformat_changer">
-          {{period.start_date}}
-        </div>
-        <div class="oh-sticky-table__td dateformat_changer">
-          {{period.end_date}}
-        </div>
-        <div class="oh-sticky-table__td">
-          {% for p in period.company_id.all %}
-            {% if p.company %}
-              {{p.company}} ,
-            {% endif %}
-          {% empty %}
-            {% trans "None." %}
-          {% endfor %}
-        </div>
-        {% if perms.pms.change_period or perms.pms.delete_period or request.user|filtersubordinates %}
-        <div class="oh-sticky-table__td">
-          <div class="oh-btn-group">
-            {% if perms.pms.change_period or request.user|filtersubordinates %}
-            <a
-              data-toggle="oh-modal-toggle"
-              data-target="#PeriodModal"
-              class="oh-btn oh-btn--light-bkg w-100"
-              title="{% trans 'Update' %}"
-              hx-get="{% url 'period-update' period_id=period.id%}"
-              hx-target="#periodModalTarget"
-            >
-              <ion-icon
-                name="create-outline"
-                role="img"
-                class="md hydrated"
-                aria-label="create outline"
-              ></ion-icon
-            ></a>
-            {% endif %} {% if perms.pms.delete_period or request.user|filtersubordinates %}
-            <a
-              class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-              hx-confirm="{% trans 'Do you want to delete this period ?' %}"
-              hx-get="{%url 'period-delete' period_id=period.id %}"
-              hx-target="#periodListTable"
-              title="{% trans 'Delete' %}"
-            >
-              <ion-icon
-                name="trash-outline"
-                role="img"
-                class="md hydrated"
-                aria-label="trash outline"
-              ></ion-icon>
-            </a>
-            {% endif %}
-          </div>
-        </div>
-        {% endif %}
-      </div>
-      {% endfor%}
-    </div>
-  </div>
-</div>
 {% else %}
-<div class="oh-wrapper-main">
-  <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-    <div class="oh-wrapper">
-      <div class="oh-404">
-        <img
-          style="width: 190px; height: 190px"
-          src="{% static 'images/ui/deadline.png' %}"
-          class="oh-404__image mb-4"
-          alt="Page not found. 404."
-        />
-        <h5 class="oh-404__subtitle">
-          {% trans "No time periods have been created." %}
-        </h5>
-      </div>
+    <div class="oh-empty">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "No time periods have been created." %}</p>
     </div>
-  </main>
-</div>
 {% endif %}

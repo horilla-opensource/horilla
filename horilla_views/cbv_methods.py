@@ -302,6 +302,13 @@ def paginator_qry(qryset, page_number, records_per_page=50):
     """
     This method is used to paginate queryset
     """
+    if not qryset.ordered:
+        qryset = (
+            qryset.order_by("-created_at")
+            if hasattr(qryset.model, "created_at")
+            else qryset.order_by("-id")
+        )  # 803
+
     paginator = Paginator(qryset, records_per_page)
     qryset = paginator.get_page(page_number)
     return qryset
@@ -529,7 +536,7 @@ def flatten_dict(d, parent_key=""):
     return dict(items)
 
 
-def export_xlsx(json_data, columns):
+def export_xlsx(json_data, columns, file_name="quick_export"):
     """
     Quick export method
     """
@@ -657,5 +664,5 @@ def export_xlsx(json_data, columns):
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    response["Content-Disposition"] = 'attachment; filename="quick_export.xlsx"'
+    response["Content-Disposition"] = f'attachment; filename="{file_name}.xlsx"'
     return response

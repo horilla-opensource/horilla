@@ -1,0 +1,95 @@
+<div id="generic-history-container">
+    <button hidden hx-get="{{ request.path }}" class="reload-record" hx-target="#generic-history-container" hx-swap="outerHTML"></button>
+    {% load static %} {% load i18n %}
+    {% load audit_filters %}
+    <div class="oh-activity-sidebar__header mt-5" style="position: sticky; top: 0; z-index: 100; background-color: #fff;padding-bottom: 10px;">
+      <a style="cursor: pointer;" onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');"><ion-icon name="chevron-forward-outline" class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md flip-rtl hydrated" data-target="#activitySidebar" role="img"></ion-icon></a>
+      <span class="oh-activity-sidebar__title fw-bold">{{ object }}'s Logs</span>
+    </div>
+    <div class="row">
+      {% if tracking %}
+        {% for history in tracking %}
+          <div class="oh-history__container">
+            <div class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2">
+              <span class="oh-history_date-content">
+                <span class="dateformat_changer">{{ history.pair.1.history_date|date:'M. d, Y' }}</span>&nbsp,&nbsp
+                <span class="timeformat_changer">{{ history.pair.1.history_date|date:'g:i A' }}</span>
+              </span>
+            </div>
+            <div class="d-flex">
+              <div class="oh-history_user-img">
+                <img src="{{ history.updated_by.get_avatar }}" alt="" class="oh-history_user-pic" />
+              </div>
+              <div class="oh-history_user-details">
+                <span class="oh-history__username">{{ history.updated_by }}</span>
+                <div class="oh-history_abt pb-0">
+                  {% if history.pair.0.history_title %}
+                    <span class="oh-history_task-state">{{ history.pair.0.history_title }}</span>
+                  {% endif %}
+                  {% if history.pair.0.history_description %}
+                    <p class="oh-history_time">{{ history.pair.0.history_description }}</p>
+                  {% endif %}
+                  <div class="oh-history_tabs">
+                    {% for tag in history.pair.0.history_tags.all %}
+                      <a href="#" class="oh-history_msging-email oh-history_tabs-items">{{ tag.title }}</a>
+                    {% endfor %}
+                  </div>
+                </div>
+                <div class="oh-history_msg-container">
+                  <div class="oh-history_task-tracker">
+                    <span class="oh-history_msging-email">
+                      {{ history.type }}
+                      {% if has_perm_to_revert %}
+                      <button hidden id="revert{{history.pair.1.pk}}" hx-post="{% url 'history-revert' object.pk history.pair.1.pk %}?model={{ model }}"></button>
+                      {% if history.pair.1.pk %}
+                      <a href="javascript:void(0);" title="Restore the previous state"
+                      onclick="Swal.fire({
+                            title: 'Are you sure?',
+                            text: 'This will revert the object to a previous state.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, revert it'
+                          }).then(result => {
+                            if (result.isConfirmed) {
+                              document.getElementById('revert{{ history.pair.1.pk }}').click();
+                            }
+                          })">
+                        <ion-icon name="git-pull-request-outline"></ion-icon>
+                      </a>
+                      {% endif %}
+                      {% endif %}
+                    </span>
+                    <ul class="ul">
+                      {% for change in history.changes %}
+                        <li class="oh-history_task-list">
+                          <div class="oh-history_track-value">
+                            <span>{{ history.pair.1|fk_history:change }}</span>
+                            <img src="{% static '/images/ui/arrow-right-line.svg' %}" class="oh-progress_arrow" alt="" />
+                            <span class="oh-history_tracking-value">{{ history.pair.0|fk_history:change }}</span>
+                            <span class="oh-history-task-state"><i>({{ change.field }})</i></span>
+                          </div>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="oh-wrapper" align="center" style="margin-top: 7vh; margin-bottom:7vh;">
+          <div align="center">
+            <img src="{% static 'images/ui/history.png' %}" class="oh-404__image" alt="Page not found. 404." />
+            <h5 class="oh-404__subtitle mt-4 ml-2">{% trans 'No history found.' %}</h5>
+          </div>
+        </div>
+
+        {% comment %} <div class="d-flex justify-content-center align-items-center" style="height: 40vh">
+          <h5 class="oh-404__subtitle">{% trans 'No history found.' %}</h5>
+        </div> {% endcomment %}
+      {% endif %}
+    </div>
+  </div>

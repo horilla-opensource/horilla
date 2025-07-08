@@ -31,7 +31,8 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods, require_POST
 
 from base.backends import ConfiguredEmailBackend
 from base.methods import (
@@ -276,16 +277,8 @@ def task_creation(request):
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            response = render(
-                request,
-                "onboarding/task_form.html",
-                {"form": form, "stage_id": stage_id},
-            )
             messages.success(request, _("New task created successfully..."))
-
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     return render(
         request, "onboarding/task_form.html", {"form": form, "stage_id": stage_id}
     )
@@ -310,6 +303,7 @@ def task_update(
     POST : return onboarding view
     """
     onboarding_task = OnboardingTask.objects.get(id=task_id)
+    form = OnboardingTaskForm(instance=onboarding_task)
     if request.method == "POST":
         form = OnboardingTaskForm(request.POST, instance=onboarding_task)
         if form.is_valid():
@@ -335,18 +329,7 @@ def task_update(
                 icon="people-circle",
                 redirect=reverse("onboarding-view"),
             )
-            response = render(
-                request,
-                "onboarding/task_update.html",
-                {
-                    "form": form,
-                    "task_id": task_id,
-                },
-            )
-            return HttpResponse(
-                response.content.decode("utf-8") + "<script>location.reload();</script>"
-            )
-    form = OnboardingTaskForm(instance=onboarding_task)
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
     return render(
         request,
         "onboarding/task_update.html",
@@ -438,14 +421,14 @@ def candidate_update(request, obj_id):
 
 
 @login_required
-@permission_required("recruitment.delete_candidate")
+@permission_required("onboarding.delete_onboardingcandidate")
 def candidate_delete(request, obj_id):
     """
     function used to delete hired candidates .
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    obj_id : recruitment id
+    obj_id : candidate id
 
     Returns:
     GET : return candidate view
@@ -537,7 +520,7 @@ def paginator_qry(qryset, page_number):
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="onboarding.view_onboardingcandidate")
 def candidates_view(request):
     """
     function used to view hired candidates .
@@ -598,7 +581,7 @@ def hired_candidate_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="onboarding.view_onboardingcandidate")
 def candidate_filter(request):
     """
     function used to filter hired candidates .
@@ -797,7 +780,7 @@ def onboarding_query_grouper(request, queryset):
 
 
 @login_required
-@all_manager_can_enter("onboarding.view_candidatestage")
+@all_manager_can_enter("onboarding.view_onboardingstage")
 def onboarding_view(request):
     """
     function used to view onboarding main view.
@@ -811,7 +794,7 @@ def onboarding_view(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs
-    if not request.user.has_perm("onboarding.view_candidatestage"):
+    if not request.user.has_perm("onboarding.view_onboardingstage"):
         recruitments = recruitments.filter(
             is_active=True, recruitment_managers__in=[request.user.employee_get]
         ) | recruitments.filter(
@@ -858,7 +841,7 @@ def onboarding_view(request):
 
 
 @login_required
-@all_manager_can_enter("onboarding.view_candidatestage")
+@all_manager_can_enter("onboarding.view_onboardingstage")
 def kanban_view(request):
     # filter_obj = RecruitmentFilter(request.GET)
     # # is active filteration not providing on pipeline
@@ -866,7 +849,7 @@ def kanban_view(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs
-    if not request.user.has_perm("onboarding.view_candidatestage"):
+    if not request.user.has_perm("onboarding.view_onboardingstage"):
         recruitments = recruitments.filter(
             is_active=True, recruitment_managers__in=[request.user.employee_get]
         ) | recruitments.filter(
@@ -1451,28 +1434,45 @@ def onboard_candidate_chart(request):
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required("candidate.change_candidate")
+@csrf_exempt
+@require_POST
 def update_joining(request):
     """
-    Ajax method to update joinng date
+    Ajax method to update joining date of candidate
     """
-    cand_id = request.POST["candId"]
-    date = request.POST["date"]
-    candidate_obj = Candidate.objects.get(id=cand_id)
-    candidate_obj.joining_date = date
+    cand_id = request.POST.get("candId")
+    date_value = request.POST.get("date")
+
+    if not cand_id:
+        messages.error(request, _("Missing candidate ID."))
+        return JsonResponse({"type": "danger"}, status=400)
+
+    if date_value is None:
+        messages.error(request, _("Missing date of joining."))
+        return JsonResponse({"type": "danger"}, status=400)
+
+    if date_value == "":
+        date_value = None
+
+    candidate_obj = Candidate.find(cand_id)
+    if not candidate_obj:
+        messages.error(request, _("Candidate not found"))
+        return JsonResponse({"type": "danger"}, status=400)
+
+    candidate_obj.joining_date = date_value
     candidate_obj.save()
-    return JsonResponse(
-        {
-            "type": "success",
-            "message": _("{candidate}'s Date of joining updated sussefully").format(
-                candidate=candidate_obj.name
-            ),
-        }
+    messages.success(
+        request,
+        _("{candidate}'s Date of joining updated successfully").format(
+            candidate=candidate_obj.name
+        ),
     )
+    return JsonResponse({"type": "success"})
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def view_dashboard(request):
     recruitment = Recruitment.objects.all().values_list("title", flat=True)
     candidates = Candidate.objects.all()
@@ -1493,7 +1493,7 @@ def view_dashboard(request):
 
 
 @login_required
-@permission_required("candidate.view_candidate")
+@permission_required(perm="recruitment.view_candidate")
 def dashboard_stage_chart(request):
     recruitment = request.GET.get("recruitment")
     labels = OnboardingStage.objects.filter(
@@ -1628,14 +1628,32 @@ def onboarding_send_mail(request, candidate_id):
 
 @login_required
 @stage_manager_can_enter("recruitment.change_stage")
+@csrf_exempt
+@require_POST
 def update_probation_end(request):
     """
-    This method is used to update the probotion end date
+    Updates the probation end date for a candidate.
     """
-    candidate_id = request.GET.getlist("candidate_id")
-    probation_end = request.GET["probation_end"]
-    Candidate.objects.filter(id__in=candidate_id).update(probation_end=probation_end)
-    return JsonResponse({"message": "Probation end date updated", "type": "success"})
+    candidate_id = request.POST.get("candidate_id")
+    probation_end = request.POST.get("probation_end")
+
+    if not candidate_id:
+        messages.error(request, _("Missing candidate ID."))
+        return JsonResponse({"type": "danger"}, status=400)
+
+    try:
+        candidate = Candidate.objects.get(id=candidate_id)
+    except Candidate.DoesNotExist:
+        messages.error(request, _("Candidate not found."))
+        return JsonResponse({"type": "danger"}, status=404)
+
+    if probation_end == "":
+        probation_end = None
+
+    candidate.probation_end = probation_end
+    candidate.save()
+    messages.success(request, _("Probation end date updated"))
+    return JsonResponse({"type": "success"})
 
 
 @login_required
@@ -1711,13 +1729,32 @@ def update_offer_letter_status(request):
     """
     This method is used to update the offer letter status
     """
-    candidate_id = request.GET["candidate_id"]
-    status = request.GET["status"]
-    candidate = Candidate.objects.get(id=candidate_id)
+    candidate_id = request.GET.get("candidate_id")
+    status = request.GET.get("status")
+    candidate = None
+    if not candidate_id or not status:
+        messages.error(request, "candidate or status is missing")
+        return redirect("/onboarding/candidates-view/")
+    if not status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
+        messages.error(request, "Please Pass valid status")
+        return redirect("/onboarding/candidates-view/")
+    try:
+        candidate = Candidate.objects.get(id=candidate_id)
+    except Candidate.DoesNotExist:
+        messages.error(request, "Candidate not found")
+        return redirect("/onboarding/candidates-view/")
     if status in ["not_sent", "sent", "accepted", "rejected", "joined"]:
         candidate.offer_letter_status = status
         candidate.save()
-    return HttpResponse("Success")
+    messages.success(request, "Status of offer letter updated successfully")
+    url = "/onboarding/candidates-view/"
+    return HttpResponse(
+        f"""
+                <script>
+                window.location.href="{url}"
+                </script>
+                """
+    )
 
 
 @login_required

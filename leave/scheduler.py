@@ -6,12 +6,11 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from dateutil.relativedelta import relativedelta
 
-today = datetime.now()
-
 
 def leave_reset():
     from leave.models import LeaveType
 
+    today = datetime.now()
     today_date = today.date()
     leave_types = LeaveType.objects.filter(reset=True)
     # Looping through filtered leave types with reset is true

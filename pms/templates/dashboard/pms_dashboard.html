@@ -35,9 +35,13 @@
                                 <span class="oh-card-dashboard__title">{% trans "Total key results" %}</span>
                             </div>
                             <div class="oh-card-dashboard__body">
-                                <a href="{% url 'view-key-result' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                {% if perms.pms.view_keyresult %}
+                                    <a href="{% url 'view-key-result' %}" style="text-decoration: none;" class="oh-card-dashboard__counts">
+                                        <span class="oh-card-dashboard__count">{{count_key_result}}</span>
+                                    </a>
+                                {% else %}
                                     <span class="oh-card-dashboard__count">{{count_key_result}}</span>
-                                </a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

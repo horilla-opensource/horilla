@@ -536,6 +536,11 @@ class EmployeeExportExcelForm(forms.Form):
             "employee_work_info__work_type_id",
             "employee_work_info__reporting_manager_id",
             "employee_work_info__employee_type_id",
+            "employee_work_info__location",
+            "employee_work_info__date_joining",
+            "employee_work_info__basic_salary",
+            "employee_work_info__salary_hour",
+            "employee_work_info__contract_end_date",
             "employee_work_info__company_id",
         ],
     )

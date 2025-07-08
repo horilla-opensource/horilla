@@ -90,7 +90,9 @@ class Document(HorillaModel):
     status = models.CharField(
         choices=STATUS, max_length=10, default="requested", verbose_name=_("Status")
     )
-    reject_reason = models.TextField(blank=True, null=True, max_length=255)
+    reject_reason = models.TextField(
+        blank=True, null=True, max_length=255, verbose_name=_("Reject Reason")
+    )
     issue_date = models.DateField(null=True, blank=True, verbose_name=_("Issue Date"))
     expiry_date = models.DateField(null=True, blank=True, verbose_name=_("Expiry Date"))
     notify_before = models.IntegerField(

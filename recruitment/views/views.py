@@ -31,6 +31,7 @@ from django.core import serializers
 from django.core.cache import cache as CACHE
 from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
+from django.db import IntegrityError, transaction
 from django.db.models import Case, IntegerField, ProtectedError, Q, When
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -55,6 +56,7 @@ from employee.models import Employee, EmployeeWorkInformation
 from employee.views import get_content_type
 from horilla import settings
 from horilla.decorators import (
+    any_permission_required,
     hx_request_required,
     logger,
     login_required,
@@ -104,6 +106,7 @@ from recruitment.models import (
     CandidateDocument,
     CandidateRating,
     InterviewSchedule,
+    LinkedInAccount,
     Recruitment,
     RecruitmentGeneralSetting,
     RecruitmentSurvey,
@@ -116,6 +119,7 @@ from recruitment.models import (
     StageFiles,
     StageNote,
 )
+from recruitment.views.linkedin import delete_post, post_recruitment_in_linkedin
 from recruitment.views.paginator_qry import paginator_qry
 
 
@@ -248,6 +252,13 @@ def recruitment(request):
             recruitment_obj.open_positions.set(
                 JobPosition.objects.filter(id__in=form.data.getlist("open_positions"))
             )
+            if (
+                recruitment_obj.publish_in_linkedin
+                and recruitment_obj.linkedin_account_id
+            ):
+                post_recruitment_in_linkedin(
+                    request, recruitment_obj, recruitment_obj.linkedin_account_id
+                )
             for survey in form.cleaned_data["survey_templates"]:
                 for sur in survey.recruitmentsurvey_set.all():
                     sur.recruitment_ids.add(recruitment_obj)
@@ -322,7 +333,12 @@ def recruitment_update(request, rec_id):
     Args:
         id : recruitment_id
     """
-    recruitment_obj = Recruitment.objects.get(id=rec_id)
+    recruitment_obj = Recruitment.find(rec_id)
+    if not recruitment_obj:
+        messages.error(
+            request, _("The recruitment entry you are trying to edit does not exist.")
+        )
+        return HttpResponse("<script>window.location.reload();</script>")
     survey_template_list = []
     survey_templates = RecruitmentSurvey.objects.filter(
         recruitment_ids=rec_id
@@ -343,6 +359,15 @@ def recruitment_update(request, rec_id):
                 for sur in survey.recruitmentsurvey_set.all():
                     sur.recruitment_ids.add(recruitment_obj)
             recruitment_obj.save()
+            if len(form.changed_data) > 0:
+                if (
+                    recruitment_obj.publish_in_linkedin
+                    and recruitment_obj.linkedin_account_id
+                ):
+                    delete_post(recruitment_obj)
+                    post_recruitment_in_linkedin(
+                        request, recruitment_obj, recruitment_obj.linkedin_account_id
+                    )
             messages.success(request, _("Recruitment Updated."))
             response = render(
                 request, "recruitment/recruitment_form.html", {"form": form}
@@ -566,11 +591,15 @@ def update_candidate_sequence(request):
         .first()
     )
     data = {}
+
     for index, cand_id in enumerate(order_list):
         candidate = CACHE.get(request.session.session_key + "pipeline")[
             "candidates"
         ].filter(id=cand_id)
-        candidate.update(sequence=index, stage_id=stage)
+        candidate.update(
+            sequence=index, stage_id=stage, hired=(stage.stage_type == "hired")
+        )
+
     return JsonResponse(data)
 
 
@@ -647,7 +676,7 @@ def change_candidate_stage(request):
                             if stage.recruitment_id.is_vacancy_filled():
                                 context["message"] = _("Vaccancy is filled")
                                 context["vacancy"] = stage.recruitment_id.vacancy
-                        messages.success(request, "Candidate stage updated")
+                        messages.success(request, _("Candidate stage updated"))
                 except Candidate.DoesNotExist:
                     messages.error(request, _("Candidate not found."))
         else:
@@ -665,7 +694,7 @@ def change_candidate_stage(request):
                             context["vacancy"] = stage.recruitment_id.vacancy
                     candidate.stage_id = stage
                     candidate.save()
-                    messages.success(request, "Candidate stage updated")
+                    messages.success(request, _("Candidate stage updated"))
             except Candidate.DoesNotExist:
                 messages.error(request, _("Candidate not found."))
         return JsonResponse(context)
@@ -678,7 +707,7 @@ def change_candidate_stage(request):
     if stage:
         candidate.stage_id = stage
         candidate.save()
-        messages.success(request, "Candidate stage updated")
+        messages.success(request, _("Candidate stage updated"))
     return stage_component(request)
 
 
@@ -1290,7 +1319,9 @@ def stage_title_update(request, stage_id):
 
 
 @login_required
-@permission_required(perm="recruitment.add_candidate")
+@any_permission_required(
+    perms=["recruitment.add_candidate", "onboarding.add_onboardingcandidate"]
+)
 def candidate(request):
     """
     This method used to create candidate
@@ -1473,7 +1504,7 @@ def interview_employee_remove(request, interview_id, employee_id):
     interview.employee_id.remove(employee_id)
     messages.success(request, "Interviewer removed succesfully.")
     interview.save()
-    return redirect(interview_filter_view)
+    return HttpResponse("<script>$('.filterButton')[0].click()</script>")
 
 
 @login_required
@@ -1611,7 +1642,9 @@ def candidate_view_individual(request, cand_id, **kwargs):
 
 
 @login_required
-@manager_can_enter(perm="recruitment.change_candidate")
+@manager_can_enter(
+    perms=["recruitment.change_candidate", "onboarding.change_onboardingcandidate"]
+)
 def candidate_update(request, cand_id, **kwargs):
     """
     Used to update or change the candidate
@@ -1655,62 +1688,72 @@ def candidate_update(request, cand_id, **kwargs):
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
+@transaction.atomic
 @login_required
 @manager_can_enter(perm="recruitment.change_candidate")
 def candidate_conversion(request, cand_id, **kwargs):
-    """
-    This method is used to convert a candidate into employee
-    Args:
-        cand_id : candidate instance id
-    """
     candidate_obj = Candidate.find(cand_id)
+
     if not candidate_obj:
-        messages.error(request, _("Candidate not found"))
+        messages.error(request, ("Candidate not found"))
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-    cand_name = candidate_obj.name
-    cand_mob = candidate_obj.mobile
-    cand_job = candidate_obj.job_position_id
-    cand_dep = cand_job.department_id
-    cand_mail = candidate_obj.email
-    cand_gender = candidate_obj.gender
-    cand_company = candidate_obj.recruitment_id.company_id
-    cand_documents = candidate_obj.candidatedocument_set.all()
-    user_exists = User.objects.filter(username=cand_mail).exists()
+
+    if candidate_obj.converted_employee_id:
+        messages.info(request, "This candidate is already converted to an employee.")
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
+    user_exists = User.objects.filter(username=candidate_obj.email).exists()
+    employee_exists = Employee.objects.filter(
+        employee_user_id__username=candidate_obj.email
+    ).exists()
+
     if user_exists:
-        messages.error(request, _("Employee instance already exist"))
-    elif not Employee.objects.filter(employee_user_id__username=cand_mail).exists():
-        new_employee = Employee.objects.create(
-            employee_first_name=cand_name,
-            email=cand_mail,
-            phone=cand_mob,
-            gender=cand_gender,
-            is_directly_converted=True,
-        )
-        candidate_obj.converted_employee_id = new_employee
-        candidate_obj.save()
-        work_info, created = EmployeeWorkInformation.objects.get_or_create(
-            employee_id=new_employee
-        )
-        work_info.job_position_id = cand_job
-        work_info.department_id = cand_dep
-        work_info.company_id = cand_company
-        work_info.save()
-
-        emp_document_list = []
-        for doc in cand_documents:
-            emp_document = Document(
-                title=doc.title,
-                employee_id=new_employee,
-                document=doc.document,
-                status=doc.status,
-                reject_reason=doc.reject_reason,
+        messages.error(request, ("User instance with this mail already exists"))
+    elif not employee_exists:
+        try:
+            new_employee = Employee(
+                employee_first_name=candidate_obj.name,
+                email=candidate_obj.email,
+                phone=candidate_obj.mobile,
+                gender=candidate_obj.gender,
+                is_directly_converted=True,
             )
-            emp_document_list.append(emp_document)
+            new_employee.save()
 
-        if emp_document_list:
-            Document.objects.bulk_create(emp_document_list)
+            work_info = new_employee.employee_work_info
+            work_info.job_position_id = candidate_obj.job_position_id
+            work_info.department_id = candidate_obj.job_position_id.department_id
+            work_info.company_id = candidate_obj.recruitment_id.company_id
+            work_info.save()
+
+            Document.objects.bulk_create(
+                [
+                    Document(
+                        title=doc.title,
+                        employee_id=new_employee,
+                        document=doc.document,
+                        status=doc.status,
+                        reject_reason=doc.reject_reason,
+                    )
+                    for doc in candidate_obj.candidatedocument_set.all()
+                ]
+            )
+
+            candidate_obj.converted_employee_id = new_employee
+            candidate_obj.save()
+            messages.success(
+                request,
+                _("Candidate has been successfully converted into an employee."),
+            )
+        except IntegrityError:
+            messages.warning(request, "An error occurred while creating employee data.")
+
     else:
-        messages.info(request, "A employee with this mail already exists")
+        messages.info(request, "An employee with this email already exists")
+
+    if "HTTP_HX_REQUEST" in request.META:
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
@@ -2593,7 +2636,9 @@ def open_recruitments(request):
     """
     This method is used to render the open recruitment page
     """
-    recruitments = Recruitment.default.filter(closed=False, is_published=True)
+    recruitments = Recruitment.default.filter(
+        closed=False, is_published=True, is_active=True
+    )
     context = {
         "recruitments": recruitments,
     }

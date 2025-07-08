@@ -1,0 +1,237 @@
+{% load static i18n horillafilters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Request Report</title>
+    <style>
+        @page {
+            size: landscape;
+            margin: 5mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.2;
+        }
+
+        .header-section {
+            display: table;
+            width: 100%;
+            margin-bottom: 5px;
+        }
+
+        .logo-cell {
+            display: table-cell;
+            width: 80px;
+            vertical-align: top;
+        }
+
+        .info-cell {
+            display: table-cell;
+            vertical-align: top;
+            padding-left: 5px;
+        }
+
+        .year-info {
+            text-align: right;
+            margin-bottom: 2px;
+            font-weight: bold;
+        }
+
+        .company-info div {
+            margin-bottom: 1px;
+        }
+
+        .company-logo {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+
+        .report-title {
+            text-align: center;
+            background-color: #6c757d;
+            color: white;
+            padding: 5px 0;
+            margin: 8px 0 10px 0;
+            font-size: 12px;
+        }
+
+        .table-container {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        table {
+            width: 100%;
+            font-size: 10px;
+            border-collapse: collapse;
+            table-layout: fixed;
+            margin: 0 auto;
+        }
+
+        th, td {
+            padding: 4px 2px;
+            text-align: center;
+            border: 1px solid #ddd;
+            word-break: break-word;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .col-employee {
+            width: 16%;
+        }
+
+        .col-total {
+            width: 8%;
+        }
+
+        .col-period {
+            width: 10%;
+        }
+
+        .col-used {
+            width: 8%;
+        }
+
+        .col-remaining {
+            width: 8%;
+        }
+
+        .periods-header {
+            border: 2px solid #000;
+            vertical-align: middle;
+            padding: 4px;
+        }
+
+        .other-cell {
+            border: 2px solid #000;
+        }
+
+        .period-cell-l {
+            border-top: 2px solid #000;
+            border-left: 2px solid #000;
+            border-bottom: 2px solid #000;
+        }
+
+        .period-cell-r {
+            border-top: 2px solid #000;
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+        }
+
+        .footer {
+            margin-top: 10px;
+            font-size: 10px;
+            width: 98%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .footer-note {
+            margin-bottom: 3px;
+        }
+
+        .footer-date {
+            float: left;
+            width: 50%;
+        }
+
+        .footer-signature {
+            float: right;
+            width: 50%;
+            text-align: right;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <div class="logo-cell">
+            <img class="company-logo" src="{{ request.scheme }}://{{ request.get_host }}{{ company_data.icon.url }}" alt="Company Logo">
+        </div>
+        <div class="info-cell">
+            <div class="year-info">YEAR: {{ report_creation_date|date:"Y" }}</div>
+            <div class="company-info">
+                <div><strong>COMPANY:</strong> {{ company_data.company }}</div>
+                <div><strong>ADDRESS:</strong> {{ company_data.address }}</div>
+                <div><strong>CITY:</strong> {{ company_data.city }}</div>
+                <div><strong>STATE:</strong> {{ company_data.state }}</div>
+                <div><strong>ZIP:</strong> {{ company_data.zip }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="report-title">
+        <h1>LEAVE REPORT</h1>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="periods-header col-employee" rowspan="2">Employee</th>
+                    <th class="periods-header col-total" rowspan="2">Total<br>Leaves</th>
+                    <th class="periods-header" colspan="6">Leave Periods</th>
+                    <th class="periods-header col-used" rowspan="2">Used<br>Leaves</th>
+                    <th class="periods-header col-remaining" rowspan="2">Remaining<br>Leaves</th>
+                </tr>
+                <tr>
+                    <th class="period-cell-l col-period">Period 1<br>Start</th>
+                    <th class="period-cell-r col-period">Period 1<br>End</th>
+                    <th class="period-cell-l col-period">Period 2<br>Start</th>
+                    <th class="period-cell-r col-period">Period 2<br>End</th>
+                    <th class="period-cell-l col-period">Period 3<br>Start</th>
+                    <th class="period-cell-r col-period">Period 3<br>End</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employee_data %}
+                <tr>
+                    <td class="other-cell col-employee">
+                        {% if employee.new_hire %}
+                            * {{ employee.employee.get_full_name }}
+                        {% else %}
+                            {{ employee.employee.get_full_name }}
+                        {% endif %}
+                    </td>
+                    <td class="other-cell col-total">{{ employee.total_leave_days }}</td>
+                    <td class="period-cell-l col-period">{{ employee.period1_start|date:"d-m-Y" }}</td>
+                    <td class="period-cell-r col-period">{{ employee.period1_end|date:"d-m-Y" }}</td>
+                    <td class="period-cell-l col-period">{{ employee.period2_start|date:"d-m-Y" }}</td>
+                    <td class="period-cell-r col-period">{{ employee.period2_end|date:"d-m-Y" }}</td>
+                    <td class="period-cell-l col-period">{{ employee.period3_start|date:"d-m-Y" }}</td>
+                    <td class="period-cell-r col-period">{{ employee.period3_end|date:"d-m-Y" }}</td>
+                    <td class="other-cell col-used">{{ employee.used_leave_days }}</td>
+                    <td class="other-cell col-remaining">{{ employee.remaining_leave_days }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <div class="footer-note">* New hire (joined within the last year)</div>
+        <div class="clearfix">
+            <div class="footer-date">Date: {{ report_creation_date|date:"d-m-Y" }}</div>
+            <div class="footer-signature">Human Resources Management</div>
+        </div>
+    </div>
+</body>
+</html>
