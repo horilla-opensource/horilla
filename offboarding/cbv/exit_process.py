@@ -664,13 +664,15 @@ if apps.is_installed("asset"):
         For dashboard task status table
         """
 
-        # view_id = "view-container"
-        AssetAssignment = get_horilla_model_class(
-            app_label="asset", model="assetassignment"
-        )
-        model = AssetAssignment
         bulk_select_option = False
         view_id = "dashboard_task_status"
+
+        def __init__(self, *args, **kwargs):
+            self.AssetAssignment = get_horilla_model_class(
+                app_label="asset", model="assetassignment"
+            )
+            self.model = self.AssetAssignment  # 809
+            super().__init__(*args, **kwargs)
 
         def get_queryset(self):
             """
@@ -717,17 +719,23 @@ if apps.is_installed("pms"):
         For dashboard task status table
         """
 
-        # view_id = "view-container"
-        Feedback = get_horilla_model_class(app_label="pms", model="feedback")
-        model = Feedback
         bulk_select_option = False
         view_id = "dashboard_task_status"
+        columns = [
+            ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
+            ("Feedback", "review_cycle"),
+            ("Status", "status"),
+        ]
+
+        def __init__(self, *args, **kwargs):
+            self.Feedback = get_horilla_model_class(app_label="pms", model="feedback")
+            self.model = self.Feedback  # 809
+            super().__init__(*args, **kwargs)
 
         def get_queryset(self):
             """
             Returns a filtered queryset of records assigned to a specific employee
             """
-
             offboarding_employees = OffboardingEmployee.objects.entire().values_list(
                 "employee_id__id", "notice_period_starts"
             )
@@ -745,9 +753,3 @@ if apps.is_installed("pms"):
                 super().get_queryset().filter(id__in=qs.values_list("id", flat=True))
             )
             return queryset
-
-        columns = [
-            ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
-            ("Feedback", "review_cycle"),
-            ("Status", "status"),
-        ]
