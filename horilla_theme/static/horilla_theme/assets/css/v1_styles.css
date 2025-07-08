@@ -3099,3 +3099,214 @@ span.oh-activity-sidebar__a img {
     background: #ddd;
     border-radius: 5px;
   }
+
+
+
+  /* REPORT MODULE STYLE */
+
+  #pivot-container {
+    border: 1px solid #ddd;
+  }
+  #pivot-container .pvtUiCell {
+    background-color: #fff;
+  }
+  #pivot-container .pvtUiCell .pvtRenderer,
+  #pivot-container .pvtUiCell .pvtAggregator {
+    border: transparent;
+  }
+
+  .pvtRenderer {
+    background-color: transparent !important;
+  }
+  .pvtRenderer :focus {
+    border: none !important;
+    outline: none !important;
+  }
+  .pvtRenderer :focus {
+    border: none !important;
+    outline: none !important;
+  }
+
+  #pivot-container .pvtColLabel,
+  #pivot-container .pvtRowLabel {
+    font-weight: 500 !important;
+  }
+
+  #pivot-container .pvtTable tbody tr th,
+  #pivot-container .pvtTable thead tr th {
+    background-color: #fff !important;
+    border: 1px solid #e9edf1 !important;
+  }
+
+  .pvtAxisContainer li {
+    display: flex;
+  }
+
+  .pvtAxisContainer li span.pvtAttr {
+    border-radius: 0 !important;
+    flex: 1 1 auto;
+    background-color: #f9f9f9 !important;
+    position: relative;
+  }
+  .pvtAxisContainer li span.pvtAttr .pvtTriangle {
+    position: absolute;
+    right: 8px;
+  }
+
+  .pvtHorizList .ui-sortable-handle .pvtAttr {
+    padding: 2px 26px 2px 8px !important;
+  }
+  .pvtAxisContainer,
+  .pvtVals {
+    border: 1px solid #e9edf1 !important;
+  }
+
+  .pvtRendererArea {
+    padding: 0 !important;
+  }
+
+  #pivot-container {
+    width: 100%;
+    overflow-x: auto;
+  }
+  #pivot-container .pvtTable {
+    min-width: 1200px;
+    width: 100%;
+    min-width: unset;
+    max-width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    background-color: #ffffff;
+    table-layout: auto;
+  }
+
+  .pvtUi {
+    width: 100% !important;
+  }
+
+  #pivot-container .pvtUiCell .pvtAggregator,
+  #pivot-container .pvtUiCell .pvtRenderer {
+    background-color: transparent !important;
+  }
+
+  .pvtAttrDropdown {
+    border: 1px solid #eaeaea !important;
+  }
+
+  .pvtSearch {
+    border: 1px solid hsl(213, 22%, 84%) !important;
+    border-radius: 0rem !important;
+    padding: 0.8rem 1.25rem !important;
+    color: hsl(0, 0%, 11%) !important;
+    margin-bottom: 4px !important;
+  }
+
+  .pvtFilterBox {
+    padding: 16px;
+    width: auto !important;
+    border: 1px solid #e9edf1 !important;
+  }
+  .pvtFilterBox h4, .pvtFilterBox .h4 {
+    font-weight: bold;
+    font-size: 0.9rem;
+    text-align: left;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+  }
+  .pvtFilterBox p {
+    margin-bottom: 0 !important;
+    display: flex;
+    gap: 8px;
+  }
+  .pvtFilterBox p :nth-child(1) {
+    width: 100%;
+    border-radius: 0 !important;
+    background-color: hsl(8, 77%, 56%);
+    color: hsl(0, 0%, 100%);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.65rem 1rem;
+    border: none;
+  }
+  .pvtFilterBox p :nth-child(2) {
+    width: 100%;
+    border-radius: 0 !important;
+    background-color: #f0f0f0;
+    color: hsl(0, 0%, 16%);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.65rem 1rem;
+    border: none;
+  }
+  .pvtFilterBox p input {
+    background-color: transparent !important;
+  }
+  .pvtFilterBox p button {
+    border: none !important;
+    margin-bottom: 4px;
+  }
+  .pvtFilterBox .pvtCheckContainer p :nth-child(1) {
+    background-color: unset !important;
+    width: auto;
+    padding: 0.5rem 0 !important;
+  }
+  .pvtFilterBox .pvtCheckContainer p :nth-child(2) {
+    background-color: transparent !important;
+    width: auto;
+  }
+
+  #pivot-container .pvtTable td {
+    border: 1px solid #e9edf1 !important;
+  }
+
+  #pivot-container .pvtTable tr:nth-child(2n) td {
+    background-color: #fff !important;
+    border: 1px solid #e9edf1 !important;
+  }
+
+  #pivot-container .pvtTable th {
+    background-color: #007bff;
+    padding: 12px;
+    border: 1px solid #ccc;
+    font-size: 18px;
+  }
+
+  #pivot-container .pvtTable td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #fdfdfd;
+    color: #333;
+  }
+
+  #pivot-container .pvtTable tr:nth-child(even) td {
+    background-color: #f2f2f2;
+  }
+
+  #pivot-container .pvtRowLabel,
+  #pivot-container .pvtColLabel {
+    background-color: #e9ecef;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  #pivot-container .pvtTotalLabel {
+    background-color: #6c757d;
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  #pivot-container .pvtGrandTotal {
+    background-color: #343a40;
+    font-weight: bold;
+    font-size: 16px;
+    color: #fff;
+  }
+
+  #pivot-container .pvtTable tbody tr th,
+  #pivot-container .pvtTable thead tr th {
+    background-color: #e6eeee;
+    border: 2px solid #cdcdcd;
+    font-size: 10pt;
+    padding: 8px;
+  }

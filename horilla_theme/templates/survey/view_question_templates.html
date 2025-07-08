@@ -63,13 +63,13 @@
     <h3 class="text-lg font-semibold">{% trans "Survey Templates" %}</h3>
     <div class="flex flex-wrap gap-1">
         <div class="relative">
-            <input 
+            <input
                 class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                 type="text"
-                name="question" 
+                name="question"
                 aria-label="Search Input"
-                placeholder="{% trans 'Search' %}" 
-                hx-get="{% url 'rec-filter-survey' %}" 
+                placeholder="{% trans 'Search' %}"
+                hx-get="{% url 'rec-filter-survey' %}"
                 hx-target="#view-container"
                 hx-trigger="keyup changed delay:.2s"
             >
@@ -101,12 +101,12 @@
 
             <div class="relative inline-block dropdown-wrapper oh-tabs__tab" data-target="#templateTab">
                 <div class="oh-dropdown" x-data="{open: false}" onclick=>
-                    <div class="tab-button px-2 py-1 border rounded-md text-xs flex items-center gap-2 hover:border-primary-600 transition duration-300 text-primary-600 border-primary-600" 
+                    <div class="tab-button px-2 py-1 border rounded-md text-xs flex items-center gap-2 hover:border-primary-600 transition duration-300 text-primary-600 border-primary-600"
                         data-tab="tab1"
                     >
                             {% trans "Template" %}
-                        <button class="ps-3 cursor-pointer" 
-                            @click="open = !open" 
+                        <button class="ps-3 cursor-pointer"
+                            @click="open = !open"
                             @click.outside="open = false"
                             onclick="event.stopPropagation()"
                         >
@@ -122,10 +122,10 @@
                                 <a class="oh-dropdown__item my-0"
                                     role="button"
                                     onclick="event.stopPropagation()"
-                                    hx-get="{% url 'survey-template-create' %}" 
-                                    hx-target="#genericModalBody" 
+                                    hx-get="{% url 'survey-template-create' %}"
+                                    hx-target="#genericModalBody"
                                     data-toggle="oh-modal-toggle"
-                                    data-target="#genericModal" 
+                                    data-target="#genericModal"
                                 >{% trans "Add Template" %}</a>
                             </li>
                         </ul>
@@ -135,12 +135,12 @@
 
             <div class="relative inline-block dropdown-wrapper oh-tabs__tab" data-target="#questionTab">
                 <div class="oh-dropdown" x-data="{open: false}">
-                    <div class="tab-button px-2 py-1 border rounded-md text-xs flex items-center gap-2 hover:border-primary-600 transition duration-300 text-primary-600 border-primary-600" 
+                    <div class="tab-button px-2 py-1 border rounded-md text-xs flex items-center gap-2 hover:border-primary-600 transition duration-300 text-primary-600 border-primary-600"
                         data-tab="tab1"
                     >
                             {% trans "Questions" %}
-                        <button class="ps-3 cursor-pointer" 
-                            @click="open = !open" 
+                        <button class="ps-3 cursor-pointer"
+                            @click="open = !open"
                             @click.outside="open = false"
                             onclick="event.stopPropagation()"
                         >
@@ -156,7 +156,7 @@
                                 <a class="oh-dropdown__item my-0"
                                     role="button"
                                     onclick="event.stopPropagation()"
-                                    hx-get="{% url 'recruitment-survey-question-template-create' %}" 
+                                    hx-get="{% url 'recruitment-survey-question-template-create' %}"
                                     hx-target="#genericModalBody"
                                     data-toggle="oh-modal-toggle"
                                     data-target="#genericModal"
@@ -168,7 +168,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="oh-tabs__contents" id="view-container">
         {% include "survey/survey_card.html" %}
     </div>

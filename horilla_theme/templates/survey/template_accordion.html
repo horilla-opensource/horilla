@@ -126,7 +126,7 @@
                                                                 <ion-icon name="trash-outline"></ion-icon>
                                                             </a>
                                                         {% endif %}
-                                                        
+
                                                     </div>
                                                 </td>
                                             {% endif %}
@@ -160,7 +160,7 @@
                                                     hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
                                                     hx-target="#view-container"
                                                     min="1"
-                                                /> / {{ grouper.list.paginator.num_pages }} 
+                                                /> / {{ grouper.list.paginator.num_pages }}
                                                 </div>
                                             {% if grouper.list.has_next %}
                                                 <button
@@ -192,7 +192,7 @@
             </div>
         {% endfor %}
     </div>
-    
+
     {% if templates.has_next or templates.has_previous %}
         {% if templates.paginator.count %}
             <div
@@ -218,7 +218,7 @@
                             hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
                             hx-target="#view-container"
                             min="1"
-                        /> / {{ templates.paginator.num_pages }} 
+                        /> / {{ templates.paginator.num_pages }}
                         </div>
                     {% if templates.has_next %}
                         <button

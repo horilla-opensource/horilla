@@ -59,13 +59,13 @@
                                             {% endif %}
                                             {% if perms.recruitment.delete_recruitmentsurvey %}
                                                 <li>
-                                                    <a href="{% url 'recruitment-survey-question-template-delete' question.id %}" 
+                                                    <a href="{% url 'recruitment-survey-question-template-delete' question.id %}"
                                                         onclick="
                                                             event.preventDefault();
-                                                            event.stopPropagation(); 
+                                                            event.stopPropagation();
                                                             confirm('{% trans "Are you sure want to delete?" %}')
                                                         "
-                                                        class="text-danger w-full text-left px-3 py-2" 
+                                                        class="text-danger w-full text-left px-3 py-2"
                                                     >
                                                         {% trans "Delete" %}
                                                     </a>
@@ -78,7 +78,7 @@
                             <div class="mr-2">
                                 <h5 class="mb-1 font-medium text-sm">{{question}}</h5>
                                 <p class="text-xs text-[#565E6C] mb-1">
-                                    {% for rec in question.recruitment_ids.all %} {{rec}},&nbsp; 
+                                    {% for rec in question.recruitment_ids.all %} {{rec}},&nbsp;
                                     {% endfor %}
                                 </p>
                             </div>
@@ -113,7 +113,7 @@
                                 hx-get="{% url 'rec-filter-survey' %}?{{pd}}"
                                 hx-target="#view-container"
                                 min="1"
-                            /> / {{ questions.paginator.num_pages }} 
+                            /> / {{ questions.paginator.num_pages }}
                             </div>
                         {% if questions.has_next %}
                             <button
@@ -152,7 +152,7 @@
 
             $(".oh-tabs__tab").on("click", function (e) {
                 var dataTarget = $(this).data('target');
-                
+
                 $(".oh-tabs__content").hide();
                 $(this).addClass("bg-primary-300");
                 $(".oh-tabs__tab").not(this).removeClass("bg-primary-300");

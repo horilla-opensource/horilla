@@ -9,11 +9,11 @@
 	<div class="overflow-hidden overflow-y-auto">
         <div class="col-12">{{form.non_field_errors}}</div>
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-5 sort-container">
-			{% for question in questions %} 
+			{% for question in questions %}
                 <div class="bg-white rounded-md shadow-card p-5" data-question-id="{{question.id}}">
                     <div class="d-block w-100">
                         <p class="font-semibold text-sm mb-3">
-                            {{ question.question }} 
+                            {{ question.question }}
                             {% if question.is_mandatory %}
                                 <span class="text-danger">
                                 * </span>
@@ -66,14 +66,14 @@
                                 /> %
                             </div> {% endcomment %}
                             <div class="w-full">
-                                <input 
+                                <input
                                     class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer percentageSlider"
-                                    type="range" 
-                                    id="id_{{ question.id }}" 
-                                    min="0" 
-                                    max="100" 
+                                    type="range"
+                                    id="id_{{ question.id }}"
+                                    min="0"
+                                    max="100"
                                     value="50"
-                                  
+
                                 />
                                 <div class="flex justify-between text-sm text-gray-600 mt-2">
                                     <span>0%</span>
@@ -135,31 +135,31 @@
                             <div class="flex flex-wrap gap-4 pt-2">
                                 <!-- Yes Option -->
                                 <div class="flex items-center gap-2">
-                                    <input 
-                                        id="yes" 
-                                        class="red-radio" 
-                                        type="radio" 
-                                        name="{{ question.question }}" 
+                                    <input
+                                        id="yes"
+                                        class="red-radio"
+                                        type="radio"
+                                        name="{{ question.question }}"
                                         value="yes"
-                                        checked 
+                                        checked
                                     />
-                                    <label 
-                                        class="cursor-pointer text-sm" 
+                                    <label
+                                        class="cursor-pointer text-sm"
                                         for="yes"
                                     >{% trans "Yes" %}</label>
 
                                 </div>
 
                                 <div class="flex items-center gap-2">
-                                    <input 
-                                        class="red-radio" 
-                                        type="radio" 
-                                        id="no" 
-                                        name="{{ question.question }}" 
-                                        value="no" 
+                                    <input
+                                        class="red-radio"
+                                        type="radio"
+                                        id="no"
+                                        name="{{ question.question }}"
+                                        value="no"
                                     />
-                                    <label 
-                                        class="cursor-pointer text-sm" 
+                                    <label
+                                        class="cursor-pointer text-sm"
                                         for="no"
                                     >{% trans "No" %}</label>
                                 </div>
@@ -465,7 +465,7 @@
                             {% if question.is_mandatory %} required {% endif %}
                         />
                     </div>
-                </div> 
+                </div>
                 {% endif %} {% endcomment %}
             {% endfor %}
 		</div>
@@ -488,7 +488,7 @@
 	</div>
 </div>
 <script>
-    
+
     $(function () {
         $('.percentageSlider').on('input', function () {
         $('#sliderValue').text($(this).val() + '%');
