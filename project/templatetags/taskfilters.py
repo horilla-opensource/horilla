@@ -57,6 +57,8 @@ def is_project_manager(user, project):
     """
     This method will return true, if the user is manager of the project
     """
+    if user.is_superuser:
+        return True
     employee = user.employee_get
     return Project.objects.filter(id=project.id, managers=employee).exists()
 
