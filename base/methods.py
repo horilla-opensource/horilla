@@ -9,6 +9,7 @@ import pandas as pd
 import pdfkit
 from django.apps import apps
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
@@ -25,6 +26,16 @@ from employee.models import Employee, EmployeeWorkInformation
 from horilla.horilla_apps import NESTED_SUBORDINATE_VISIBILITY
 from horilla.horilla_middlewares import _thread_locals
 from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
+
+
+def users_count(self):
+    """
+    Restrict Group users_count to selected company context
+    """
+    return Employee.objects.filter(employee_user_id__in=self.user_set.all()).count()
+
+
+Group.add_to_class("users_count", property(users_count))
 
 
 def filtersubordinates(request, queryset, perm=None, field="employee_id"):

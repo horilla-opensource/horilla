@@ -54,7 +54,7 @@
                 {% include 'task/new/filter_task.html' %}
             </div>
         </div>
-        {% if request.user|is_project_manager:project or request.user.is_superuser %}
+        {% if perms.project.add_task or request.user|is_project_manager:project %}
             <div class="oh-main__titlebar-button-container">
                 <div class="oh-btn-group ml-2">
                     <div>

@@ -58,49 +58,46 @@ def decorator_with_arguments(decorator):
 
 
 @decorator_with_arguments
-def manager_can_enter(function, perm):
+def manager_can_enter(function, perm=None, perms=None):
     """
-    Decorator that checks if the user has the specified permission or is a manager.
+    Decorator that checks if the user has the specified permission(s) or is a manager.
 
     Args:
-        perm (str): The permission to check.
+        perm (str): A single permission string.
+        perms (list): A list of permission strings.
 
     Returns:
-        function: The decorated function.
-
-    Raises:
-        None
-
+        function: The decorated view.
     """
 
     def _function(request, *args, **kwargs):
-        """
-        Inner function that performs the permission and manager check.
-
-        Args:
-            request (HttpRequest): The request object.
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            HttpResponse: The response from the decorated function.
-
-        """
         user = request.user
         employee = Employee.objects.filter(employee_user_id=user).first()
+
         is_manager = (
             Stage.objects.filter(stage_managers=employee).exists()
             or Recruitment.objects.filter(recruitment_managers=employee).exists()
         )
-        if user.has_perm(perm) or is_manager:
+
+        # Combine perm and perms into one list to check
+        all_perms = []
+        if perm:
+            all_perms.append(perm)
+        if perms:
+            all_perms.extend(perms)
+
+        has_required_perm = any(user.has_perm(p) for p in all_perms)
+
+        if has_required_perm or is_manager:
             return function(request, *args, **kwargs)
-        messages.info(request, "You dont have permission.")
+
+        messages.info(request, "You don't have permission.")
         previous_url = request.META.get("HTTP_REFERER", "/")
-        script = f'<script>window.location.href = "{previous_url}"</script>'
-        key = "HTTP_HX_REQUEST"
-        if key in request.META.keys():
+
+        if request.META.get("HTTP_HX_REQUEST"):
             return render(request, "decorator_404.html")
-        return HttpResponse(script)
+
+        return HttpResponse(f'<script>window.location.href = "{previous_url}"</script>')
 
     return _function
 

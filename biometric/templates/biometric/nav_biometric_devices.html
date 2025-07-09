@@ -17,40 +17,64 @@
         </div>
     </div>
 
-    <form hx-get='{% url "search-devices" %}' hx-swap="innerHTML" hx-target="#biometricDeviceList" id="filterForm" class="d-flex">
-        <div class="oh-main__titlebar oh-main__titlebar--right">
-            <div class="oh-input-group oh-input__search-group"
-                :class="searchShow ? 'oh-input__search-group--show' : ''">
-                <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
-                <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" id="devices-search"
-                    name="search" placeholder="{% trans 'Search' %}" onkeyup="$('.filterButton')[0].click()" />
-            </div>
+    <div class="oh-main__titlebar oh-main__titlebar--right">
+        <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
+            <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
+            <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" id="devices-search"
+                name="search" placeholder="{% trans 'Search' %}" hx-get="{% url 'search-devices' %}" hx-swap="innerHTML"
+                hx-target="#biometricDeviceList" hx-trigger="keyup delay:500ms" />
+        </div>
 
-            <div class="oh-main__titlebar-button-container">
-                <div class="oh-dropdown" x-data="{open: false}">
-                    <button class="oh-btn" @click="open = !open" onclick="event.preventDefault()">
-                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-                        <div id="filterCount"></div>
-                    </button>
-                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
-                        @click.outside="open = false" id="biometricDeviceFilter" style="display: none; width: 550px">
+        <div class="oh-main__titlebar-button-container">
+            <div class="oh-dropdown" x-data="{open: false}">
+                <button class="oh-btn" @click="open = !open" onclick="event.preventDefault()">
+                    <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                    <div id="filterCount"></div>
+                </button>
+                <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                    @click.outside="open = false" id="biometricDeviceFilter" style="display: none; width: 550px">
+                    <form hx-get="{% url 'search-devices' %}" hx-swap="innerHTML" hx-target="#biometricDeviceList"
+                        id="filterForm" class="d-flex">
                         {% include 'biometric/biometric_device_filter.html' %}
+                    </form>
+                </div>
+            </div>
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn oh-btn--dropdown oh-btn--shadow" @click="open = !open"
+                        @click.outside="open = false" onclick="event.preventDefault()">
+                        {% trans "Actions" %}
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open">
+                        <ul class="oh-dropdown__items">
+                            <li class="oh-dropdown__item">
+                                <div id="selectedDevicesContainer"></div>
+                                <a href="#" class="oh-dropdown__link" hx-on:click="updateSelectedDevices()"
+                                    hx-get="{% url 'biometric-device-bulk-fetch-logs' %}"
+                                    hx-include="#selectedDevicesContainer" hx-trigger="click delay:1s"
+                                    hx-target="#BiometricDeviceTestFormTarget" data-toggle="oh-modal-toggle"
+                                    data-target="#BiometricDeviceTestModal">
+                                    {% trans "Fetch Logs" %}
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-                <div class="oh-btn-group ml-2">
-                    <div class="oh-dropdown">
-                        {% if perms.recruitment.add_candidate %}
+            </div>
+            <div class="oh-btn-group ml-2">
+                <div class="oh-dropdown">
+                    {% if perms.recruitment.add_candidate %}
                         <button class="oh-btn oh-btn--secondary" id="addBiometricDevice" data-toggle="oh-modal-toggle"
                             data-target="#BiometricDeviceModal" hx-get="{% url 'biometric-device-add' %}"
                             hx-target="#BiometricDeviceFormTarget">
                             <ion-icon name="add-sharp" class="mr-1"></ion-icon>
                             {% trans "Add" %}
                         </button>
-                        {% endif %}
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
+    </div>
     </form>
 </section>
 <div id="filterTagContainerSectionNav" class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>

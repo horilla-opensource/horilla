@@ -57,15 +57,14 @@ def any_permission_required(function, perms):
     def _function(request, *args, **kwargs):
         if any(request.user.has_perm(perm) for perm in perms):
             return function(request, *args, **kwargs)
-
         else:
-            messages.info(request, "You dont have permission.")
+            messages.info(request, "You don’t have permission.")
             previous_url = request.META.get("HTTP_REFERER", "/")
-            key = "HTTP_HX_REQUEST"
-            if key in request.META.keys():
+            if request.META.get("HTTP_HX_REQUEST"):
                 return render(request, "decorator_404.html")
-            script = f'<script>window.location.href = "{previous_url}"</script>'
-            return HttpResponse(script)
+            return HttpResponse(
+                f'<script>window.location.href = "{previous_url}"</script>'
+            )
 
     return _function
 

@@ -1,4 +1,5 @@
 import os
+import tempfile
 from pathlib import Path
 
 from django import forms
@@ -121,21 +122,26 @@ class GdriveBackupSetupForm(ModelForm):
         service_account_file = cleaned_data.get("service_account_file")
 
         try:
-            if GoogleDriveBackup.objects.exists():
-                authenticate(service_account_file.path)
-            else:
-                file_data = service_account_file.read()
-                # Save the processed file to the desired location
-                file_name = service_account_file.name
-                new_file_name = file_name
-                # Save using Django's default storage system
-                relative_path = default_storage.save(
-                    new_file_name, ContentFile(file_data)
-                )
-                # Get the full absolute path
-                full_path = default_storage.path(relative_path)
-                authenticate(full_path)
-                os.remove(full_path)
+            # Read file content from InMemoryUploadedFile or whatever you receive
+            file_data = service_account_file.read()
+            file_name = service_account_file.name
+
+            # Save using Django's storage (optional, if you need to persist it later)
+            if not GoogleDriveBackup.objects.exists():
+                # Save to storage if no backup exists
+                relative_path = default_storage.save(file_name, ContentFile(file_data))
+
+            # Always write to temp file for authentication (because .path isn't supported)
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as tmp_file:
+                tmp_file.write(file_data)
+                tmp_file.flush()
+                temp_path = tmp_file.name
+
+            # Authenticate using temp file path
+            authenticate(temp_path)
+
+            # Clean up temp file
+            os.remove(temp_path)
 
         except Exception as e:
             raise forms.ValidationError("Please provide a valid service account file.")

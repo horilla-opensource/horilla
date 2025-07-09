@@ -398,21 +398,29 @@ def leave_request_creation(request, type_id=None, emp_id=None):
         if "confirm" in request_copy:
             request_copy.pop("confirm")
         previous_data = request_copy.urlencode()
+
     form = LeaveRequestCreationForm()
     if request:
-        employee = request.user.employee_get
+        employee_qs = form.fields["employee_id"].queryset
+        employee = (
+            request.user.employee_get
+            if request.user.employee_get in employee_qs
+            else employee_qs.first()
+        )
+
         if employee:
-            available_leaves = employee.available_leave.all()
             assigned_leave_types = LeaveType.objects.filter(
-                id__in=available_leaves.values_list("leave_type_id", flat=True)
+                id__in=employee.available_leave.values_list("leave_type_id", flat=True)
             )
             form.fields["leave_type_id"].queryset = assigned_leave_types
+
     if type_id and emp_id:
         initial_data = {
             "leave_type_id": type_id,
             "employee_id": emp_id,
         }
         form = LeaveRequestCreationForm(initial=initial_data)
+
     form = choosesubordinates(request, form, "leave.add_leaverequest")
     if request.method == "POST":
         form = LeaveRequestCreationForm(request.POST, request.FILES)

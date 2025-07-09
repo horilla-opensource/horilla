@@ -646,6 +646,13 @@ class AttendanceRequestForm(BaseModelForm):
             "request_description",
             "batch_attendance_id",
         ]
+        widgets = {
+            "attendance_date": DateTimeInput(attrs={"type": "date"}),
+            "attendance_clock_in": DateTimeInput(attrs={"type": "time"}),
+            "attendance_clock_in_date": DateTimeInput(attrs={"type": "date"}),
+            "attendance_clock_out": DateTimeInput(attrs={"type": "time"}),
+            "attendance_clock_out_date": DateTimeInput(attrs={"type": "date"}),
+        }
 
     def as_p(self, *args, **kwargs):
         """

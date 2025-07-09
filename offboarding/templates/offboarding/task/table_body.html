@@ -193,8 +193,8 @@
                     {% endif %}
                 {% endif %}
             {% endfor %}
-            {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
-            <div class="oh-sticky-table__td"></div>
+            {% if perms.offboarding.add_offboardingtask or request.user.employee_get|is_stage_manager:stage.grouper.title or request.user.employee_get|is_offboarding_manager %}
+                <div class="oh-sticky-table__td"></div>
             {% endif %}
         </div>
     {% endif %}

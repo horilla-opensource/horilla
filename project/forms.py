@@ -187,10 +187,12 @@ class TaskAllForm(ModelForm):
         request = getattr(_thread_locals, "request", None)
         employee = request.user.employee_get
         if not self.instance.pk:
-            if request.user.is_superuser:
+            if request.user.is_superuser or request.user.has_perm("project.add_task"):
                 projects = Project.objects.all()
             elif Project.objects.filter(managers=employee).exists():
                 projects = Project.objects.filter(managers=employee)
+            else:
+                projects = Project.objects.none()
             self.fields["project"].queryset = projects
 
         else:

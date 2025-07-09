@@ -8,21 +8,12 @@ class ProjectConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
+        from horilla.horilla_settings import APP_URLS, APPS
         from horilla.urls import urlpatterns
 
+        APPS.append("project")
         urlpatterns.append(
             path("project/", include("project.urls")),
         )
+        APP_URLS.append("project.urls")
         super().ready()
-        try:
-            from django.urls import include, path
-
-            from horilla.urls import urlpatterns
-
-            urlpatterns.append(
-                path("project/", include("project.urls")),
-            )
-        except:
-            """
-            Models not ready yet
-            """

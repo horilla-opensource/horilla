@@ -5,12 +5,8 @@
     <div class="d-flex justify-content-between">
         <button
             class="oh-btn oh-btn--secondary"
-            data-toggle="oh-modal-toggle"
-            data-target="#exportRecords"
             onclick="
-                window.location.href = `{% url 'work-record-export' %}?month={{leave_dates.0.month}}&
-                year={{leave_dates.0.year}}&
-                {{request.POST.urlencode}}`
+                window.location.href = `{% url 'work-record-export' %}?month={{leave_dates.0.month}}&year={{leave_dates.0.year}}&{{request.POST.urlencode}}`
             "
         >
             <ion-icon

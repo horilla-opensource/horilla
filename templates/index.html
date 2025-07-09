@@ -194,6 +194,9 @@
                     {% block content %}
                         {% include 'dashboard.html' %}
                     {% endblock content %}
+                    <div class="oh-modal" id="genericModal" role="dialog" aria-labelledby="genericModal" aria-hidden="true">
+                        <div class="oh-modal__dialog" id="genericModalBody"></div>
+                    </div>
                     <div class="oh-modal" style="z-index: 100;" id="objectDetailsModal" role="dialog"
                         aria-labelledby="objectDetailsModalLabel" aria-hidden="true">
                         <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 550px" id="objectDetailsModalTarget"> </div>
