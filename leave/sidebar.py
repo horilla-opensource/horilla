@@ -9,50 +9,50 @@ from django.utils.translation import gettext_lazy as trans
 from base.templatetags.basefilters import is_leave_approval_manager, is_reportingmanager
 from leave.templatetags.leavefilters import is_compensatory
 
-MENU = trans("Leave")
+MENU = trans("")
 IMG_SRC = "images/ui/leave.svg"
 
 SUBMENUS = [
     {
-        "menu": trans("Dashboard"),
+        "menu": trans(""),
         "redirect": reverse("leave-dashboard"),
         "accessibility": "leave.sidebar.dashboard_accessibility",
     },
     {
-        "menu": trans("My Leave Requests"),
+        "menu": trans(""),
         "redirect": reverse("user-request-view"),
     },
     {
-        "menu": trans("Leave Requests"),
+        "menu": trans(""),
         "redirect": reverse("request-view"),
         "accessibility": "leave.sidebar.leave_request_accessibility",
     },
     {
-        "menu": trans("Leave Types"),
+        "menu": trans(""),
         "redirect": reverse("type-view"),
         "accessibility": "leave.sidebar.type_accessibility",
     },
     {
-        "menu": trans("Assigned Leave"),
+        "menu": trans(""),
         "redirect": reverse("assign-view"),
         "accessibility": "leave.sidebar.assign_accessibility",
     },
     {
-        "menu": trans("Leave Allocation Request"),
+        "menu": trans(""),
         "redirect": reverse("leave-allocation-request-view"),
     },
     {
-        "menu": trans("Holidays"),
+        "menu": trans(""),
         "redirect": reverse("holiday-view"),
         "accessibility": "leave.sidebar.holiday_accessibility",
     },
     {
-        "menu": trans("Company Leaves"),
+        "menu": trans(""),
         "redirect": reverse("company-leave-view"),
         "accessibility": "leave.sidebar.company_leave_accessibility",
     },
     {
-        "menu": trans("Restrict Leaves"),
+        "menu": trans(""),
         "redirect": reverse("restrict-view"),
         "accessibility": "leave.sidebar.restrict_leave_accessibility",
     },

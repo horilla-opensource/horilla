@@ -25,12 +25,12 @@ SUBMENUS = [
         "accessibility": "employee.sidebar.employee_accessibility",
     },
     {
-        "menu": trans("Document Requests"),
+        "menu": trans(""),
         "redirect": reverse("document-request-view"),
         "accessibility": "employee.sidebar.document_accessibility",
     },
     {
-        "menu": trans("Shift Requests"),
+        "menu": trans(""),
         "redirect": reverse("shift-request-view"),
     },
     {
@@ -38,25 +38,25 @@ SUBMENUS = [
         "redirect": reverse("work-type-request-view"),
     },
     {
-        "menu": trans("Rotating Shift Assign"),
+        "menu": trans(""),
         "redirect": reverse("rotating-shift-assign"),
         "accessibility": "employee.sidebar.rotating_shift_accessibility",
     },
     {
-        "menu": trans("Rotating Work Type Assign"),
+        "menu": trans(""),
         "redirect": reverse("rotating-work-type-assign"),
         "accessibility": "employee.sidebar.rotating_work_type_accessibility",
     },
     {
-        "menu": trans("Disciplinary Actions"),
+        "menu": trans(""),
         "redirect": reverse("disciplinary-actions"),
     },
     {
-        "menu": trans("Policies"),
+        "menu": trans(""),
         "redirect": reverse("view-policies"),
     },
     {
-        "menu": trans("Organization Chart"),
+        "menu": trans(""),
         "redirect": reverse("organisation-chart"),
     },
 ]

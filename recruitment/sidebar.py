@@ -14,52 +14,52 @@ from recruitment.templatetags.recruitmentfilters import (
     is_stagemanager,
 )
 
-MENU = _("Recruitment")
+MENU = _("")
 ACCESSIBILITY = "recruitment.sidebar.menu_accessibilty"
 IMG_SRC = "images/ui/recruitment.svg"
 
 SUBMENUS = [
     {
-        "menu": _("Dashboard"),
+        "menu": _(""),
         "redirect": reverse("recruitment-dashboard"),
     },
     {
-        "menu": _("Recruitment Pipeline"),
+        "menu": _(""),
         "redirect": reverse("pipeline"),
         "accessibility": "recruitment.sidebar.pipeline_accessibility",
     },
     {
-        "menu": _("Recruitment Survey"),
+        "menu": _(""),
         "redirect": reverse("recruitment-survey-question-template-view"),
         "accessibility": "recruitment.sidebar.survey_accessibility",
     },
     {
-        "menu": _("Candidates"),
+        "menu": _(""),
         "redirect": reverse("candidate-view"),
         "accessibility": "recruitment.sidebar.candidates_accessibility",
     },
     {
-        "menu": _("Interview"),
+        "menu": _(""),
         "redirect": reverse("interview-view"),
         "accessibility": "recruitment.sidebar.interview_accessibility",
     },
     {
-        "menu": _("Recruitment"),
+        "menu": _(""),
         "redirect": reverse("recruitment-view"),
         "accessibility": "recruitment.sidebar.recruitment_accessibility",
     },
     {
-        "menu": _("Open Jobs"),
+        "menu": _(""),
         "redirect": reverse("open-recruitments"),
         "accessibility": "recruitment.sidebar.recruitment_accessibility",
     },
     {
-        "menu": _("Stages"),
+        "menu": _(""),
         "redirect": reverse("rec-stage-view"),
         "accessibility": "recruitment.sidebar.stage_accessibility",
     },
     {
-        "menu": _("Skill Zone"),
+        "menu": _(""),
         "redirect": reverse("skill-zone-view"),
         "accessibility": "recruitment.sidebar.skill_zone_accessibility",
     },

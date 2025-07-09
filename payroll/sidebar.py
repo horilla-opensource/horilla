@@ -6,45 +6,45 @@ payroll/sidebar.py
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as trans
 
-MENU = trans("Payroll")
+MENU = trans("")
 IMG_SRC = "images/ui/wallet-outline.svg"
 
 SUBMENUS = [
     {
-        "menu": trans("Dashboard"),
+        "menu": trans(""),
         "redirect": reverse("view-payroll-dashboard"),
         "accessibility": "payroll.sidebar.dasbhoard_accessibility",
     },
     {
-        "menu": trans("Contract"),
+        "menu": trans(""),
         "redirect": reverse("view-contract"),
         "accessibility": "payroll.sidebar.dasbhoard_accessibility",
     },
     {
-        "menu": trans("Allowances"),
+        "menu": trans(""),
         "redirect": reverse("view-allowance"),
         "accessibility": "payroll.sidebar.allowance_accessibility",
     },
     {
-        "menu": trans("Deductions"),
+        "menu": trans(""),
         "redirect": reverse("view-deduction"),
         "accessibility": "payroll.sidebar.deduction_accessibility",
     },
     {
-        "menu": trans("Payslips"),
+        "menu": trans(""),
         "redirect": reverse("view-payslip"),
     },
     {
-        "menu": trans("Loan / Advanced Salary"),
+        "menu": trans(""),
         "redirect": reverse("view-loan"),
         "accessibility": "payroll.sidebar.loan_accessibility",
     },
     {
-        "menu": trans("Encashments & Reimbursements"),
+        "menu": trans(""),
         "redirect": reverse("view-reimbursement"),
     },
     {
-        "menu": trans("Federal Tax"),
+        "menu": trans(""),
         "redirect": reverse("filing-status-view"),
         "accessibility": "payroll.sidebar.federal_tax_accessibility",
     },

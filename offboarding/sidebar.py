@@ -11,23 +11,23 @@ from offboarding.templatetags.offboarding_filter import (
     is_offboarding_employee,
 )
 
-MENU = _("Offboarding")
+MENU = _("")
 IMG_SRC = "images/ui/exit-outline.svg"
 ACCESSIBILITY = "offboarding.sidebar.offboarding_accessibility"
 
 
 SUBMENUS = [
     {
-        "menu": _("Dashboard"),
+        "menu": _(""),
         "redirect": reverse("offboarding-dashboard"),
         "accessibility": "offboarding.sidebar.dashboard_accessibility",
     },
     {
-        "menu": _("Exit Process"),
+        "menu": _(""),
         "redirect": reverse("offboarding-pipeline"),
     },
     {
-        "menu": _("Resignation Letters"),
+        "menu": _(""),
         "redirect": reverse("resignation-request-view"),
         "accessibility": "offboarding.sidebar.resignation_letter_accessibility",
     },

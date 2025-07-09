@@ -10,46 +10,46 @@ from django.utils.translation import gettext_lazy as _
 from base.context_processors import enable_late_come_early_out_tracking
 from base.templatetags.basefilters import is_reportingmanager
 
-MENU = _("Attendance")
+MENU = _("")
 IMG_SRC = "images/ui/attendances.svg"
 
 
 SUBMENUS = [
     {
-        "menu": _("Dashboard"),
+        "menu": _(""),
         "redirect": reverse("attendance-dashboard"),
         "accessibility": "attendance.sidebar.dashboard_accessibility",
     },
     {
-        "menu": _("Attendances"),
+        "menu": _(""),
         "redirect": reverse("attendance-view"),
         "accessibility": "attendance.sidebar.attendances_accessibility",
     },
     {
-        "menu": _("Attendance Requests"),
+        "menu": _(""),
         "redirect": reverse("request-attendance-view"),
     },
     {
-        "menu": _("Hour Account"),
+        "menu": _(""),
         "redirect": reverse("attendance-overtime-view"),
         "accessibility": "attendance.sidebar.hour_account_accessibility",
     },
     {
-        "menu": _("Work Records"),
+        "menu": _(""),
         "redirect": reverse("work-records"),
         "accessibility": "attendance.sidebar.work_record_accessibility",
     },
     {
-        "menu": _("Attendance Activities"),
+        "menu": _(""),
         "redirect": reverse("attendance-activity-view"),
     },
     {
-        "menu": _("Late Come Early Out"),
+        "menu": _(""),
         "redirect": reverse("late-come-early-out-view"),
         "accessibility": "attendance.sidebar.tracking_accessibility",
     },
     {
-        "menu": _("My Attendances"),
+        "menu": _(""),
         "redirect": reverse("view-my-attendance"),
     },
 ]

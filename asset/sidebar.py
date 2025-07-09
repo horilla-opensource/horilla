@@ -5,31 +5,31 @@ assets/sidebar.py
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-MENU = _("Assets")
+MENU = _("")
 IMG_SRC = "images/ui/assets.svg"
 
 SUBMENUS = [
     {
-        "menu": _("Dashboard"),
+        "menu": _(""),
         "redirect": reverse("asset-dashboard"),
         "accessibility": "asset.sidebar.dashboard_accessibility",
     },
     {
-        "menu": _("Asset View"),
+        "menu": _(""),
         "redirect": reverse("asset-category-view"),
         "accessibility": "asset.sidebar.dashboard_accessibility",
     },
     {
-        "menu": _("Asset Batches"),
+        "menu": _(""),
         "redirect": reverse("asset-batch-view"),
         "accessibility": "asset.sidebar.lot_accessibility",
     },
     {
-        "menu": _("Request and Allocation"),
+        "menu": _(""),
         "redirect": reverse("asset-request-allocation-view"),
     },
     {
-        "menu": _("Asset History"),
+        "menu": _(""),
         "redirect": reverse("asset-history"),
         "accessibility": "asset.sidebar.history_accessibility",
     },
