@@ -150,6 +150,7 @@ function initializeSummernote(candId,searchWords,) {
           x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
           style="cursor: pointer"
         >
+        
         <div class="oh-sidebar__menu-icon">
           <img
             src="{% static menues.img_src %}"
@@ -170,7 +171,7 @@ function initializeSummernote(candId,searchWords,) {
           x-show="isOpen"
           x-transition
         >
-          <ul class="oh-sidebar__submenu-items">
+           <ul class="oh-sidebar__submenu-items">
               {% for submenu in menues.submenu %}
               <li class="oh-sidebar__submenu-item">
               <a
@@ -181,7 +182,7 @@ function initializeSummernote(candId,searchWords,) {
               </a>
               </li>
               {% endfor %}
-          </ul>
+          </ul> 
         </div>
       </li>
       {% endfor %}
@@ -198,7 +199,8 @@ function initializeSummernote(candId,searchWords,) {
           x-bind:class="isOpen ? 'oh-sidebar__menu-link--active' : ''"
           style="cursor: pointer"
         >
-          <div class="oh-sidebar__menu-icon">
+          <!-- 
+ <div class="oh-sidebar__menu-icon">
             <svg
               fill="#ffffff"
               height="20"
@@ -233,8 +235,8 @@ function initializeSummernote(candId,searchWords,) {
                 </g>
               </g>
             </svg>
-          </div>
-          <span>{% trans "Configuration" %}</span>
+          </div>-->
+          <!-- <span>{% trans "Configuration" %}</span> -->
         </a>
         <div
           class="oh-sidebar__submenu"
@@ -245,13 +247,14 @@ function initializeSummernote(candId,searchWords,) {
           >
           <ul class="oh-sidebar__submenu-items">
             {% if "leave"|app_installed and perms.base.view_multipleapprovalcondition %}
-            <li class="oh-sidebar__submenu-item">
+            <!-- 
+ <li class="oh-sidebar__submenu-item">
               <a
                 href="{% url 'multiple-approval-condition' %}"
                 class="oh-sidebar__submenu-link"
                 >{% trans "Multiple Approvals" %}</a
               >
-            </li>
+            </li> 
             {% endif %}
             {% if perms.base.view_horillamailtemplate %}
             <li class="oh-sidebar__submenu-item">
@@ -261,7 +264,8 @@ function initializeSummernote(candId,searchWords,) {
                 class="oh-sidebar__submenu-link"
                 >{% trans "Mail Templates" %}</a
               >
-            </li>
+            </li> 
+            
             {% endif %}
             {% if "horilla_automations"|app_installed and perms.horilla_automations.view_mailautomation %}
             <li class="oh-sidebar__submenu-item">
@@ -299,6 +303,7 @@ function initializeSummernote(candId,searchWords,) {
                 >{% trans "Restrict Leaves" %}</a
               >
             </li>
+            -->
             {% endif %}
           </ul>
         </div>
