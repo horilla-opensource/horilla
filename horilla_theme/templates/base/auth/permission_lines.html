@@ -1,0 +1,233 @@
+{% load basefilters i18n %}
+  {% for employee in employees %}
+  <div class="accordion-wrapper space-y-2">
+    <div class="accordion-item border border-primary-300 rounded-md perm-accordion" id="userPanel{{employee.id}}">
+      <button
+        onclick="event.preventDefault()"
+        class="accordion-btn-gp w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
+
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">
+            <img src="{{ employee.get_avatar }}" class="w-6 h-6 rounded-full" loading="lazy" />
+          </span>
+            <span class="font-semibold">{{ employee }}</span>
+            <span class="text-xs mt-1 text-dark-300">{{ employee.employee_work_info.job_role_id.job_role }} | {{ employee.employee_work_info.job_position_id }} | {{ employee.employee_work_info.department_id }}</span>
+        </div>
+        <div class="flex items-center flex-wrap gap-2 md:gap-8">
+          <span class="icon text-xl font-bold">+</span>
+        </div>
+
+      </button>
+    <div class="panel view-employees accordion-panel-gp max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700" id="panel{{employee.id}}" data-user-id="{{ employee.id }}">
+      <div class="py-3">
+        <script>
+          $(document).ready(function () {
+            checkSelected(`{{employee.employee_user_id.user_permissions.all|user_perms|safe}}`, '#panel{{employee.id}}', true)
+          })
+        </script>
+        {% if perms.auth.add_permission or perms.auth.change_permission or perms.auth.delete_permission %}
+          {% include 'base/auth/permission_table.html' %}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  
+  {% endfor %}
+  {% if employees.has_previous or employees.has_next %}
+  <div class="oh-wrapper w-100">
+    <div class="oh-pagination">
+      <span class="oh-pagination__page" data-toggle="modal" data-target="#addEmployeeModal">{% trans 'Page' %} {{ employees.number }} {% trans 'of' %} {{ employees.paginator.num_pages }}.</span>
+
+      <nav class="oh-pagination__nav">
+        <div class="oh-pagination__input-container me-3">
+          <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
+
+          <input type="number" name="page" class="oh-pagination__input" value="{{ employees.number }}" hx-get="{% url 'permission-search' %}?{{ pd }}" hx-target="#permissionContainer" min="1" />
+          <span class="oh-pagination__label">{% trans 'of' %} {{ employees.paginator.num_pages }}</span>
+        </div>
+
+        <ul class="oh-pagination__items">
+          {% if employees.has_previous %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page=1" class="oh-pagination__link">{% trans 'First' %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a>
+            </li>
+          {% endif %}
+          {% if employees.has_next %}
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a>
+            </li>
+            <li class="oh-pagination__item oh-pagination__item--wide">
+              <a hx-target="#permissionContainer" hx-get="{% url 'permission-search' %}?{{ pd }}&page={{ employees.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+  {% endif %}
+</div>
+<script>
+  document.body.addEventListener("htmx:afterSwap", function () {
+    updateBadge();
+  });
+
+  var timeout;
+  function selectAllPermissions(source) {
+    const isChecked = $(source).is(':checked');
+    const table = $(source).closest('table'); // or your specific container
+    table.find('tbody input.row-permission').prop('checked', isChecked).trigger('change');
+  }
+
+  function updatePermissions(panelElem) {
+    var userId = panelElem.data("user-id");
+    var permissions = [];
+  
+    panelElem.find("[name=permissions]:checked").each(function () {
+      permissions.push($(this).val());
+    });
+  
+    $.ajax({
+      type: "post",
+      url: '{% url "update-user-permission" %}',
+      traditional: true,
+      data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+        permissions: permissions,
+        employee: userId,
+      },
+      success: function (response) {
+        $("#messages").html(`
+          <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+            ${response.message}
+          </div>
+        `);
+      },
+      error: function () {
+        $("#messages").html(`
+          <div class="oh-alert oh-alert--animated oh-alert--danger">
+            Something went wrong.
+          </div>
+        `);
+      }
+    });
+  }
+
+  $(document).ready(function () {
+    updateBadge();
+    var timeout;
+    $(".view-employees [name=permissions]").on("change", function (e) {
+      e.preventDefault();
+      clearTimeout(timeout);
+    
+      const panel = $(this).closest(".panel.view-employees");
+    
+      timeout = setTimeout(() => {
+        updateBadge();
+        updatePermissions(panel);  // ✅ pass correct panel
+      }, 100);
+    });
+  });
+  
+
+  function updateBadge() {
+    // Loop through each employee panel
+    $(".accordion-wrapper").each(function () {
+      const wrapper = $(this);
+  
+      // For each permission panel
+      wrapper.find(".panel").each(function () {
+        const panel = $(this);
+        const badge = panel.prev(".inner-accordion-toggle").find(".permission-badge");
+        const checkedCount = panel.find("[name=permissions]:checked").length;
+  
+        badge.text(checkedCount);
+        badge.attr("title", checkedCount + " Permissions");
+      });
+  
+      // Update row-permission checkboxes (4 perms = checked)
+      wrapper.find("tbody tr").each(function () {
+        const row = $(this);
+        const rowPermissionCheckbox = row.find(".row-permission");
+        const checkedCount = row.find("[name=permissions]:checked").length;
+  
+        rowPermissionCheckbox.prop("checked", checkedCount === 4);
+      });
+  
+      // Update "Select All" checkboxes
+      wrapper.find("table").each(function () {
+        const table = $(this);
+        const allCheckboxes = table.find("tbody [name=permissions]");
+        const checkedCheckboxes = table.find("tbody [name=permissions]:checked");
+        const selectAll = table.find(".row-permission__select-all");
+  
+        selectAll.prop("checked", allCheckboxes.length === checkedCheckboxes.length);
+      });
+    });
+  }
+  
+  
+
+</script>
+
+<!-- ACCORDION -->
+<script>
+  // Outer accordion logic (no change needed)
+  document.querySelectorAll('.accordion-btn-gp').forEach((btn) => {
+      btn.addEventListener('click', () => {
+          const panel = btn.nextElementSibling;
+          const icon = btn.querySelector('.icon');
+          const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+
+          document.querySelectorAll('.accordion-panel-gp').forEach(p => {
+              if (p !== panel) {
+                  p.style.maxHeight = null;
+                  const i = p.previousElementSibling.querySelector('.icon');
+                  if (i) i.textContent = '+';
+                  p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
+                  p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+              }
+          });
+
+          if (!isOpen) {
+              panel.style.maxHeight = panel.scrollHeight + 'px';
+              icon.textContent = '−';
+              btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+          } else {
+              panel.style.maxHeight = null;
+              icon.textContent = '+';
+              btn.classList.remove("bg-[#e54f38]", "text-white");
+              btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+          }
+      });
+  });
+
+  // Inner accordion logic (supports multiple)
+  document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
+          const content = toggle.nextElementSibling;
+
+          toggle.addEventListener("click", () => {
+              const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
+
+              if (isOpen) {
+                  content.style.maxHeight = "0";
+                  content.style.opacity = "0";
+              } else {
+                  content.style.maxHeight = content.scrollHeight + "px";
+                  content.style.opacity = "1";
+              }
+
+              // Adjust parent height (if inside outer accordion)
+              const outerPanel = toggle.closest('.accordion-panel-gp');
+              if (outerPanel) {
+                  setTimeout(() => {
+                      outerPanel.style.maxHeight = outerPanel.scrollHeight + "px";
+                  }, 250);
+              }
+          });
+      });
+  });
+</script>

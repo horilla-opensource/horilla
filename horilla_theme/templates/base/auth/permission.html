@@ -1,468 +1,121 @@
+{% extends 'settings.html' %} {% block settings %}
 
-{% extends 'settings.html' %} {% block settings %}{% load i18n %} {% load horillafilters %}
-<div class="col-span-12 lg:col-span-10 ">
+<script>
 
-    <div class="bg-white rounded-md shadow-card p-3">
-        <div
-            class="h-[calc(100vh_-_230px)] overflow-hidden overflow-y-auto overflow-x-auto">
+  function checkSelected(names, target, initial = false) {
+    names = JSON.parse(`${names}`);
+    $.each(names, function (indexInArray, valueOfElement) {
+      if (!initial) {
+        $(target)
+          .find(`[value=${valueOfElement}]`)
+          .prop("checked", true)
+          .change();
+      } else {
+        $(target).find(`[value=${valueOfElement}]`).prop("checked", true);
+      }
+    });
+  }
+  var showSearch = true
+</script>
 
-            <div class="accordion-wrapper space-y-2">
-                <!-- Accordion Item -->
-                <div class="accordion-item border border-primary-300 rounded-md">
-                    <button
-                        class="accordion-btn w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span
-                                class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">HR</span><span
-                                class="font-semibold">HR Group</span> <span
-                                class="text-xs mt-1 text-dark-300">Total 0 users in this
-                                group</span>
-                        </div>
-                        <div class="flex items-center flex-wrap gap-2 md:gap-8">
+{% include "base/auth/permission_accordion.html" %}
 
+<script>
+  // Inner accordion logic — rebind after page load or HTMX swap
+  function bindInnerAccordions() {
+    document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
+      const content = toggle.nextElementSibling;
 
+      toggle.removeEventListener('click', toggle._boundClick);
+      toggle._boundClick = () => {
+        const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
 
-                            <div class="flex gap-1">
-                                <a
-                                    class="dropdown-toggle cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"><i
-                                        class="fa-solid fa-user-plus"></i></a>
-                                <a
-                                    class="dropdown-toggle cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"><i
-                                        class="fa-solid fa-trash"></i></a>
+        if (isOpen) {
+          content.style.maxHeight = "0";
+          content.style.opacity = "0";
+        } else {
+          content.style.maxHeight = content.scrollHeight + "px";
+          content.style.opacity = "1";
+        }
 
-                            </div>
-                            <span class="icon text-xl font-bold">+</span>
-                        </div>
-                    </button>
-                    <div
-                        class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
-                        <div class="py-3">
-                            <div
-                                class="border border-[#ebebeb] rounded-md  overflow-hidden">
-                                <h5
-                                    class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
-                                    Base <span
-                                        class="bg-primary-600 text-white px-2 py-1 rounded-full ms-1 text-xs">120</span>
-                                </h5>
-                                <div class="p-4">
-                                    <div class="overflow-hidden overflow-x-auto">
-                                        <table class="w-full">
-                                            <thead class=" top-0 bg-[white] text-left">
-                                                <tr class="border-b border-[#ececec]">
-                                                    <th
-                                                        class=" text-sm font-medium  text-left p-3 w-30">
-                                                        <input type="checkbox" value="" class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer">
-                                                    </th>
-                                                    <th class="text-sm font-medium p-3">
-                                                        Tasks
-                                                    </th>
-                                                    <th class="text-lg text-center font-medium p-3">
-                                                        <i
-                                                            class="fa-regular fa-square-plus"></i>
-                                                    </th>
-                                                    <th class="text-lg text-center font-medium p-3">
-                                                        <i class="fa-solid fa-eye"></i>
-                                                    </th>
-                                                    <th class="text-lg text-center font-medium p-3">
-                                                        <i
-                                                            class="fa-solid fa-pen-to-square"></i>
-                                                    </th>
-                                                    <th class="text-lg text-center font-medium p-3">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr class="border-b border-[#f3f3f3]">
-                                                    <td
-                                                        class="left text-sm  text-left p-3 text-[#666]">
-                                                        <input type="checkbox" value="" class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer">
-                                                    </td>
-                                                    <td
-                                                        class=" text-sm  text-center p-3 text-[#666]">
-                                                        <div
-                                                            class="flex gap-3 items-center w-max">
-                                                            <img src="/assets/icons/user1.png"
-                                                                alt=""
-                                                                width="30"><span>Company</span>
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                </tr>
-                                                <tr class="border-b border-[#f3f3f3]">
-                                                    <td
-                                                        class="left text-sm  text-left p-3 text-[#666]">
-                                                        <input type="checkbox" value="" class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer">
-                                                    </td>
-                                                    <td
-                                                        class=" text-sm  text-center p-3 text-[#666]">
-                                                        <div
-                                                            class="flex gap-3 items-center w-max">
-                                                            <img src="/assets/icons/user1.png"
-                                                                alt=""
-                                                                width="30"><span>Company</span>
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                </tr>
-                                                <tr class="border-b border-[#f3f3f3]">
-                                                    <td
-                                                        class="left text-sm  text-left p-3 text-[#666]">
-                                                        <input type="checkbox" value="" class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer">
-                                                    </td>
-                                                    <td
-                                                        class=" text-sm  text-center p-3 text-[#666]">
-                                                        <div
-                                                            class="flex gap-3 items-center w-max">
-                                                            <img src="/assets/icons/user1.png"
-                                                                alt=""
-                                                                width="30"><span>Company</span>
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                </tr>
-                                                <tr class="border-b border-[#f3f3f3]">
-                                                    <td
-                                                        class="left text-sm  text-left p-3 text-[#666]">
-                                                        <input type="checkbox" value="" class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer">
-                                                    </td>
-                                                    <td
-                                                        class=" text-sm  text-center p-3 text-[#666]">
-                                                        <div
-                                                            class="flex gap-3 items-center w-max">
-                                                            <img src="/assets/icons/user1.png"
-                                                                alt=""
-                                                                width="30"><span>Company</span>
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                </tr>
-                                                <tr class="border-b border-[#f3f3f3]">
-                                                    <td
-                                                        class="left text-sm  text-left p-3 text-[#666]">
-                                                        <input type="checkbox" value="" class="custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer">
-                                                    </td>
-                                                    <td
-                                                        class=" text-sm  text-center p-3 text-[#666]">
-                                                        <div
-                                                            class="flex gap-3 items-center w-max">
-                                                            <img src="/assets/icons/user1.png"
-                                                                alt=""
-                                                                width="30"><span>Company</span>
-                                                        </div>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                    <td
-                                                        class="text-sm text-center p-3 text-[#666]">
-                                                        <label class="toggle-label">
-                                                            <input type="checkbox"
-                                                                class="toggle-input"
-                                                                data-target="#limitFields"
-                                                                checked="">
-                                                            <div class="toggle-switch">
-                                                            </div>
-                                                        </label>
-                                                    </td>
-                                                </tr>
+        // Auto-resize parent
+        const outerPanel = toggle.closest('.accordion-panel-gp');
+        if (outerPanel) {
+          setTimeout(() => {
+            outerPanel.style.maxHeight = outerPanel.scrollHeight + "px";
+          }, 250);
+        }
+      };
+      toggle.addEventListener("click", toggle._boundClick);
+    });
+  }
+
+  // Run on page load
+  document.addEventListener("DOMContentLoaded", bindInnerAccordions);
+
+  // Run after HTMX replaces any HTML
+  document.body.addEventListener("htmx:afterSwap", bindInnerAccordions);
+</script>
 
 
-                                            </tbody>
-                                        </table>
+<script>
+  function updateBadge() {
+    $(".accordion-wrapper").each(function () {
+      const wrapper = $(this);
 
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      wrapper.find(".panel.view-employees").each(function () {
+        const panel = $(this);
+        const badge = panel.prev(".inner-accordion-toggle").find(".permission-badge");
+        const checkedCount = panel.find("[name=permissions]:checked").length;
 
-                <!-- Accordion Item -->
-                <div class="accordion-item border border-primary-300 rounded-md">
-                    <button
-                        class="accordion-btn w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span
-                                class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">HR</span><span
-                                class="font-semibold">HR Group</span> <span
-                                class="text-xs mt-1 text-dark-300">Total 0 users in this
-                                group</span>
-                        </div>
-                        <div class="flex items-center flex-wrap gap-2 md:gap-8">
+        badge.text(checkedCount);
+        badge.attr("title", checkedCount + " Permissions");
+      });
 
+      wrapper.find("table").each(function () {
+        const table = $(this);
+        const allCheckboxes = table.find("tbody [name=permissions]");
+        const checkedCheckboxes = table.find("tbody [name=permissions]:checked");
+        const selectAll = table.find(".row-permission__select-all");
 
+        selectAll.prop("checked", allCheckboxes.length === checkedCheckboxes.length);
+      });
 
-                            <div class="flex gap-1">
-                                <a
-                                    class="dropdown-toggle cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"><i
-                                        class="fa-solid fa-user-plus"></i></a>
-                                <a
-                                    class="dropdown-toggle cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"><i
-                                        class="fa-solid fa-trash"></i></a>
+      wrapper.find("tbody tr").each(function () {
+        const row = $(this);
+        const rowPermissionCheckbox = row.find(".row-permission");
+        const rowPermissionCount = row.find("[name=permissions]:checked").length;
 
-                            </div>
-                            <span class="icon text-xl font-bold">+</span>
-                        </div>
-                    </button>
-                    <div
-                        class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
-                        <div class="py-3">
-                            aaa
-                        </div>
-                    </div>
-                </div>
+        rowPermissionCheckbox.prop("checked", rowPermissionCount === 4);
+      });
+    });
+  }
 
-                <!-- Accordion Item -->
-                <div class="accordion-item border border-primary-300 rounded-md">
-                    <button
-                        class="accordion-btn w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span
-                                class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">HR</span><span
-                                class="font-semibold">HR Group</span> <span
-                                class="text-xs mt-1 text-dark-300">Total 0 users in this
-                                group</span>
-                        </div>
-                        <div class="flex items-center flex-wrap gap-2 md:gap-8">
+  // Debounced permission update + badge refresh
+  let permissionChangeTimeout;
 
+  $(document).on("change", ".view-employees [name=permissions]", function (e) {
+    clearTimeout(permissionChangeTimeout);
 
+    const target = $(this);
+    permissionChangeTimeout = setTimeout(function () {
+      updateBadge();
+      updatePermissions(target.closest(".panel.view-employees"));
+    }, 150);
+  });
 
-                            <div class="flex gap-1">
-                                <a
-                                    class="dropdown-toggle cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"><i
-                                        class="fa-solid fa-user-plus"></i></a>
-                                <a
-                                    class="dropdown-toggle cursor-pointer px-2 py-1 text-sm bg-white shadow-card text-primary-600 rounded-sm w-7 h-7 flex items-center justify-center hover:bg-primary-600 hover:text-white transition duration-300"><i
-                                        class="fa-solid fa-trash"></i></a>
+  // Select all per table
+  function selectAllPermissions(source) {
+    const isChecked = $(source).is(":checked");
+    const table = $(source).closest("table");
+    table.find("tbody input.row-permission").prop("checked", isChecked).trigger("change");
+  }
 
-                            </div>
-                            <span class="icon text-xl font-bold">+</span>
-                        </div>
-                    </button>
-                    <div
-                        class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
-                        <div class="py-3">
-                            aaa
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-        <div class="flex justify-between items-center mt-4 w-full  bottom-0 inset-0">
-            <p class="text-xs text-[#666]">Page 1 of 1</p>
-            <div class="text-sm flex gap-3 text-[#666] items-center">
-                <button class="text-xs hover:text-primary-600 transition duration-300"><i class="fa-solid fa-arrow-left"></i></button>
-                1 / 3
-                <button class="text-xs hover:text-primary-600 transition duration-300"><i class="fa-solid fa-arrow-right"></i></button>
-            </div>
-        </div>
-    </div>
+  // Trigger badge count on load (for already checked states)
+  $(document).ready(() => {
+    updateBadge();
+  });
+  </script>
 
 
-
-</div>
 {% endblock settings %}

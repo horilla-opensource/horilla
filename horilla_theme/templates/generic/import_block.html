@@ -8,81 +8,97 @@
     (&nbsp;<i class="fa-solid fa-download pe-1"></i>)
   </button>
   <div class="oh-modal" id="importModal{{ view_id }}">
-    <div class="oh-modal__dialog" id="objectCreateModalTarget">
-      <div class="oh-modal__dialog-header">
-        <h2 class="oh-modal__dialog-title">Import Records</h2>
-        <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline" role="img"></ion-icon></button>
-        <div class="oh-modal__dialog-body p-0 pb-4">
-          <form hx-post="/{{ post_import_sheet_path }}" hx-encoding="multipart/form-data" class="oh-profile-section">
-            <div class="oh-modal__dialog-body mr-5" id="uploading" style="display: none">
-              <div class="loader-container">
-                <div class="loader"></div>
-                <div class="loader-text">Uploading...</div>
-              </div>
+    <div class="oh-modal__dialog rounded-lg " id="objectCreateModalTarget">
+      <div class="rounded-lg modal-box bg-white w-full max-w-md md:min-w-[100%] shadow-card p-0 transition-all duration-300 opacity-100 scale-100" id="importModal{{ view_id }}">
+          <div class="pt-5 pb-5 pr-5 pl-5">
+            <div class="flex justify-between items-center mb-2">
+              <h2 class="text-md font-semibold">Import Records</h2>
+              <button class="text-gray-500 hover:text-red-500 text-xl" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"><ion-icon name="close-outline" role="img"></ion-icon></button>
             </div>
-            <div id="error-container" style="color: red"></div>
-            <div class="modal-body">
-              <div class="oh-dropdown__import-form">
-                <label class="oh-dropdown__import-label">
-                  <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon md hydrated" role="img" aria-label="cloud upload"></ion-icon>
-                  <span class="oh-dropdown__import-form-title">Upload a File</span>
-                  <span class="oh-dropdown__import-form-text">Drag and drop files here</span>
-                </label>
-                <input type="file" name="file" required="" />
-                <div class="d-inline float-end">
-                  <a onclick="
-                                  $('#submitGetImportSheet{{ view_id }}').click();
-                                  " style="text-decoration:none; display: inline-block;" class="oh-dropdown__link" hx-on:click="template_download(event)">
-                    <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;" role="img" class="md hydrated"></ion-icon>
-                    <span>Download Template</span>
-                  </a>
+
+            <!-- HTMX Form -->
+            <form hx-post="/{{ post_import_sheet_path }}"
+             onsubmit="$('#uploading{{view_id}}').show(); $('#uploadBtn{{view_id}}').prop('disabled', true).addClass('opacity-50 cursor-not-allowed'); return true;"
+             hx-encoding="multipart/form-data" class="oh-profile-section">
+              <div id="uploading{{view_id}}" style="display: none">
+                <div class="loader-container">
+                  <div class="loader"></div>
+                  <div class="loader-text">Uploading...</div>
                 </div>
               </div>
-            </div>
-            {% if import_help %}
-              <h6 class="mt-3"><b>{% trans 'Import Help' %}</b></h6>
-              <div class="row">
-                {% for key in import_help %}
-                  <div class="mt-1 col-3">
-                    <b>{{ key }}</b>
-                    {% for val in import_help|get_item:key %}
-                      <li>{{ val }}</li>
-                    {% endfor %}
-                  </div>
-                {% endfor %}
+
+              <div id="error-container" class="text-red-500 mb-3"></div>
+
+              <!-- File Upload -->
+              <label for="resumeUpload{{ view_id }}" class="bg-white flex flex-col items-center justify-center w-full h-[7rem] mb-4 border-2 border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:border-gray-400 transition">
+                <div class="flex flex-col items-center justify-center">
+                  <i class="fa-solid fa-file-pdf text-xl mb-2 text-gray-500"></i>
+                  <p class="text-sm font-semibold text-gray-700 mb-1 px-5 text-center">Upload a File</p>
+                  <p class="text-xs text-[#9e9e9e]">Click Here or Drag and drop your file here</p>
+                </div>
+                <input required id="resumeUpload{{ view_id }}"class="opacity-0" type="file" name="file" required />
+              </label>
+
+              <!-- PDF Preview (Optional) -->
+              <div id="pdfPreview{{ view_id }}" class="mt-4 text-sm text-gray-600 hidden mb-2">
+                <i class="fa-solid fa-file-pdf text-red-500 mr-2"></i>
+                <span id="pdfFileName{{ view_id }}"></span>
               </div>
-            {% endif %}
-            <div class="modal-footer d-flex flex-row-reverse">
-              <input type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3" value="Upload" />
-            </div>
-          </form>
-          <script>
-            let htmxBusy = false
 
-            document.body.addEventListener('htmx:configRequest', function (event) {
-              if (htmxBusy) {
-                event.preventDefault()
-                console.warn('Blocked concurrent HTMX request.')
-              } else {
-                htmxBusy = true
-              }
-            })
+              <!-- Help Section -->
+              {% if import_help %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {% for key in import_help %}
+                    <div>
+                      <h3 class="text-sm font-semibold mb-1">{{ key }}</h3>
+                      <ul class="mylist text-sm">
+                        {% for val in import_help|get_item:key %}
+                          <li>{{ val }}</li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
 
-            document.body.addEventListener('htmx:afterRequest', function () {
-              htmxBusy = false
-            })
+              <!-- Footer Actions -->
+              <div class="flex gap-1 justify-between pt-5 mt-5 border-t border-[#00000027]">
+                <a onclick="$('#submitGetImportSheet{{ view_id }}').click();" class="px-4 py-2 border border-primary-600 text-primary-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-primary-800 transition duration-300"><i class="fa-solid fa-cloud-arrow-down pe-1"></i>Download Template</a>
+                <button
+                 onclick="
+                 if($('#resumeUpload{{ view_id }}').val()){
+                  $('#uploading{{view_id}}').show();
+                  $(this).addClass('opacity-50');
+                  setTimeout(() => {
+                    $(this).attr('type','button');
+                  }, 100);
+                 }
+                "
+                 type="submit"
+                 class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">Upload</button>
+              </div>
+            </form>
 
-            document.body.addEventListener('htmx:responseError', function () {
-              htmxBusy = false
-            })
-          </script>
-          <form id="submitGetImportSheet{{ view_id }}Form" action="/{{ get_import_sheet_path }}" method="post">
-            {% csrf_token %}
-            <input type="text" name="selected_ids" hidden />
-            <input type="submit" hidden id="submitGetImportSheet{{ view_id }}" />
-          </form>
+            <!-- Hidden Template Form -->
+            <form id="submitGetImportSheet{{ view_id }}Form" action="/{{ get_import_sheet_path }}" method="post">
+              {% csrf_token %}
+              <input type="text" name="selected_ids" hidden />
+              <input type="submit" hidden id="submitGetImportSheet{{ view_id }}" />
+            </form>
+          </div>
         </div>
-      </div>
     </div>
   </div>
+  <script>
+    // Optional: PDF name preview (only if you want to show filename)
+    document.getElementById("resumeUpload{{ view_id }}").addEventListener("change", function (e) {
+        const fileName = e.target.files[0]?.name;
+        if (fileName) {
+            const preview = document.getElementById("pdfPreview{{ view_id }}");
+            const nameDisplay = document.getElementById("pdfFileName{{ view_id }}");
+            preview.classList.remove("hidden");
+            nameDisplay.textContent = fileName;
+        }
+    });
+</script>
 {% endif %}

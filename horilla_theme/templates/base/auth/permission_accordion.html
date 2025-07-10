@@ -1,0 +1,114 @@
+    {% load i18n %}
+    <div id="messages" class="oh-alert-container"></div>
+
+    <div class="col-span-12 lg:col-span-10">
+        <div class="flex flex-wrap justify-end gap-1 mb-3">
+            <div class="relative" id="searchContainer">
+                <input hx-get="{% url 'permission-search' %}" hx-target="#permissionContainer"
+                    hx-trigger="keyup changed delay:.2s" type="text" id="permissionSearch" placeholder="Search"
+                    name="search" 
+                    class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                    aria-label="Search Input">
+                <i
+                class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+
+            </div>
+            <script>
+                if (showSearch) {
+                    $("#searchContainer").show();
+                }
+            </script>
+            {% if show_assign %}
+                {% if perms.auth.add_permission %}
+                    <button style="margin-left: 10px;" class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-primary-800 transition duration-300"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#Permissions" hx-get="{% url 'permission-table' %}" hx-target="#permissionForm">
+                        <img src="/static/horilla_theme/assets/img/create.svg" alt="" width="13"
+                        class="filter brightness-0 invert">
+                        {% trans "Assign" %}
+                    </button>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div id="permissionContainer">
+        <span hx-get="{% url 'permission-search' %}" hx-swap="outerHTML" hx-trigger="load" >
+            <div class="animated-background"></div>
+        </span>
+    </div>
+    <div class="oh-modal" id="Permissions" role="dialog" aria-labelledby="Permissions" aria-hidden="true">
+        <div class="oh-modal__dialog" style="max-width: 880px">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="editModal1ModalLabel">
+                    {% trans "Permissions" %}
+                </h2>
+                <button class="oh-modal__close" aria-label="Close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show'); event.preventDefault()">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body">
+                <form hx-post="{% url 'permission-table' %}" class="oh-profile-section perm-form" id="permissionForm">
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACCORDION -->
+    <script>
+        // Outer accordion logic (no change needed)
+        document.querySelectorAll('.accordion-btn-gp').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const panel = btn.nextElementSibling;
+                const icon = btn.querySelector('.icon');
+                const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+    
+                document.querySelectorAll('.accordion-panel-gp').forEach(p => {
+                    if (p !== panel) {
+                        p.style.maxHeight = null;
+                        const i = p.previousElementSibling.querySelector('.icon');
+                        if (i) i.textContent = '+';
+                        p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
+                        p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                    }
+                });
+    
+                if (!isOpen) {
+                    panel.style.maxHeight = panel.scrollHeight + 'px';
+                    icon.textContent = '−';
+                    btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                } else {
+                    panel.style.maxHeight = null;
+                    icon.textContent = '+';
+                    btn.classList.remove("bg-[#e54f38]", "text-white");
+                    btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                }
+            });
+        });
+    
+        // Inner accordion logic (supports multiple)
+        document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
+                const content = toggle.nextElementSibling;
+    
+                toggle.addEventListener("click", () => {
+                    const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
+    
+                    if (isOpen) {
+                        content.style.maxHeight = "0";
+                        content.style.opacity = "0";
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        content.style.opacity = "1";
+                    }
+    
+                    // Adjust parent height (if inside outer accordion)
+                    const outerPanel = toggle.closest('.accordion-panel-gp');
+                    if (outerPanel) {
+                        setTimeout(() => {
+                            outerPanel.style.maxHeight = outerPanel.scrollHeight + "px";
+                        }, 250);
+                    }
+                });
+            });
+        });
+    </script>
