@@ -31,7 +31,7 @@
       </div>
     </div>
   </div>
-  
+
   {% endfor %}
   {% if employees.has_previous or employees.has_next %}
   <div class="oh-wrapper w-100">
@@ -84,11 +84,11 @@
   function updatePermissions(panelElem) {
     var userId = panelElem.data("user-id");
     var permissions = [];
-  
+
     panelElem.find("[name=permissions]:checked").each(function () {
       permissions.push($(this).val());
     });
-  
+
     $.ajax({
       type: "post",
       url: '{% url "update-user-permission" %}',
@@ -121,54 +121,54 @@
     $(".view-employees [name=permissions]").on("change", function (e) {
       e.preventDefault();
       clearTimeout(timeout);
-    
+
       const panel = $(this).closest(".panel.view-employees");
-    
+
       timeout = setTimeout(() => {
         updateBadge();
         updatePermissions(panel);  // ✅ pass correct panel
       }, 100);
     });
   });
-  
+
 
   function updateBadge() {
     // Loop through each employee panel
     $(".accordion-wrapper").each(function () {
       const wrapper = $(this);
-  
+
       // For each permission panel
       wrapper.find(".panel").each(function () {
         const panel = $(this);
         const badge = panel.prev(".inner-accordion-toggle").find(".permission-badge");
         const checkedCount = panel.find("[name=permissions]:checked").length;
-  
+
         badge.text(checkedCount);
         badge.attr("title", checkedCount + " Permissions");
       });
-  
+
       // Update row-permission checkboxes (4 perms = checked)
       wrapper.find("tbody tr").each(function () {
         const row = $(this);
         const rowPermissionCheckbox = row.find(".row-permission");
         const checkedCount = row.find("[name=permissions]:checked").length;
-  
+
         rowPermissionCheckbox.prop("checked", checkedCount === 4);
       });
-  
+
       // Update "Select All" checkboxes
       wrapper.find("table").each(function () {
         const table = $(this);
         const allCheckboxes = table.find("tbody [name=permissions]");
         const checkedCheckboxes = table.find("tbody [name=permissions]:checked");
         const selectAll = table.find(".row-permission__select-all");
-  
+
         selectAll.prop("checked", allCheckboxes.length === checkedCheckboxes.length);
       });
     });
   }
-  
-  
+
+
 
 </script>
 

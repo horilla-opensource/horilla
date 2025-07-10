@@ -6,7 +6,7 @@
             <div class="relative" id="searchContainer">
                 <input hx-get="{% url 'permission-search' %}" hx-target="#permissionContainer"
                     hx-trigger="keyup changed delay:.2s" type="text" id="permissionSearch" placeholder="Search"
-                    name="search" 
+                    name="search"
                     class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                     aria-label="Search Input">
                 <i
@@ -61,7 +61,7 @@
                 const panel = btn.nextElementSibling;
                 const icon = btn.querySelector('.icon');
                 const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
-    
+
                 document.querySelectorAll('.accordion-panel-gp').forEach(p => {
                     if (p !== panel) {
                         p.style.maxHeight = null;
@@ -71,7 +71,7 @@
                         p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
                     }
                 });
-    
+
                 if (!isOpen) {
                     panel.style.maxHeight = panel.scrollHeight + 'px';
                     icon.textContent = '−';
@@ -84,15 +84,15 @@
                 }
             });
         });
-    
+
         // Inner accordion logic (supports multiple)
         document.addEventListener("DOMContentLoaded", () => {
             document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
                 const content = toggle.nextElementSibling;
-    
+
                 toggle.addEventListener("click", () => {
                     const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
-    
+
                     if (isOpen) {
                         content.style.maxHeight = "0";
                         content.style.opacity = "0";
@@ -100,7 +100,7 @@
                         content.style.maxHeight = content.scrollHeight + "px";
                         content.style.opacity = "1";
                     }
-    
+
                     // Adjust parent height (if inside outer accordion)
                     const outerPanel = toggle.closest('.accordion-panel-gp');
                     if (outerPanel) {
