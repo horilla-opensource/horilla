@@ -1,0 +1,20 @@
+{
+    "name": "Horilla Dev Environment",
+    "image": "mcr.microsoft.com/devcontainers/python:3.10",
+    "postCreateCommand": "pip install -r requirements.txt && python manage.py migrate && python manage.py runserver 0.0.0.0:8000",
+    "forwardPorts": [8000],
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "python.defaultInterpreterPath": "/usr/local/bin/python"
+        },
+        "extensions": [
+          "ms-python.python",
+          "ms-python.vscode-pylance",
+          "batisteo.vscode-django"
+        ]
+      }
+    },
+    "remoteUser": "vscode"
+  }
+  
