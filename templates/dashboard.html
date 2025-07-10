@@ -132,7 +132,7 @@
                                 <a href="{% url 'candidate-view' %}?joining_date={{current_date}}"
                                     style="text-decoration: none">
                                     <div class="oh-card-dashboard__header">
-                                        <span class="oh-card-dashboard__title">{% trans "New Joining Today" %}</span>
+                                        <span class="oh-card-dashboard__title">{% trans "" %}</span>
                                     </div>
                                     <div class="oh-card-dashboard__body">
                                         <div class="oh-card-dashboard__counts">
@@ -149,7 +149,7 @@
                                 <a href="{% url 'candidate-view' %}?scheduled_from={{first_day_of_week}}&scheduled_till={{last_day_of_week}}"
                                     style="text-decoration: none">
                                     <div class="oh-card-dashboard__header">
-                                        <span class="oh-card-dashboard__title">{% trans "New Joining This Week" %}</span>
+                                        <span class="oh-card-dashboard__title">{% trans "" %}</span>
                                     </div>
                                     <div class="oh-card-dashboard__body">
                                         <div class="oh-card-dashboard__counts">
@@ -166,7 +166,7 @@
                         <a href="{% url 'employee-view' %}" style="text-decoration: none">
                             <div class="oh-card-dashboard oh-card-dashboard--neutral tile">
                                 <div class="oh-card-dashboard__header">
-                                    <span class="oh-card-dashboard__title">{% trans "Total Strength" %}</span>
+                                    <span class="oh-card-dashboard__title">{% trans "" %}</span>
                                 </div>
                                 <div class="oh-card-dashboard__body">
                                     <div class="oh-card-dashboard__counts">
@@ -191,7 +191,7 @@
             {% endif %}
             <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
                 <div style="display: flex;align-items:center;justify-content:space-between;margin-right:20px">
-                    <span class="oh-card-dashboard__title">{% trans "Announcements" %}</span>
+                    <span class="oh-card-dashboard__title">{% trans "" %}</span>
                     {% if perms.base.add_announcement %}
                         <span>
                             <button id="addAnnouncement" style="display: inline-block;padding: 0px;
@@ -221,7 +221,7 @@
                 {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
                     <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
                         <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
-                            <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
+                            <span class="oh-card-dashboard__title">{% trans "" %}</span>
                         </div>
                         <div class="oh-card-dashboard__body" hx-get="{% url 'employee-leave' %}" hx-trigger="load"
                             style="height:300px;overflow-x: auto;">
