@@ -967,43 +967,45 @@ class ReimbursementForm(ModelForm):
                         {"ad_to_encash": _("Not enough available days to redeem")}
                     )
 
-    def save(self, commit: bool = ...) -> Any:
-        is_new = not self.instance.pk
-        attachemnt = []
+    def save(self, commit: bool = True) -> Any:
         multiple_attachment_ids = []
-        attachemnts = None
-        if self.files.getlist("attachment"):
-            attachemnts = self.files.getlist("attachment")
-            self.instance.attachemnt = attachemnts[0]
-            multiple_attachment_ids = []
-            for attachemnt in attachemnts:
-                file_instance = ReimbursementMultipleAttachment()
-                file_instance.attachment = attachemnt
-                file_instance.save()
-                multiple_attachment_ids.append(file_instance.pk)
-        instance = super().save(commit)
-        instance.other_attachments.add(*multiple_attachment_ids)
+        is_new = not self.instance.pk
+        attachments = self.files.getlist("attachment")
 
-        emp = Employee.objects.get(id=self.initial["employee_id"])
-        try:
-            if is_new:
-                notify.send(
-                    emp,
-                    recipient=(
-                        emp.employee_work_info.reporting_manager_id.employee_user_id
-                    ),
-                    verb=f"You have a new reimbursement request to approve for {emp}.",
-                    verb_ar=f"لديك طلب استرداد نفقات جديد يتعين عليك الموافقة عليه لـ {emp}.",
-                    verb_de=f"Sie haben einen neuen Rückerstattungsantrag zur Genehmigung für {emp}.",
-                    verb_es=f"Tienes una nueva solicitud de reembolso para aprobar para {emp}.",
-                    verb_fr=f"Vous avez une nouvelle demande de remboursement à approuver pour {emp}.",
-                    icon="information",
-                    redirect=f"/payroll/view-reimbursement?id={instance.id}",
-                )
-        except Exception as e:
-            pass
+        if attachments:
+            self.instance.attachment = attachments[0]
 
-        return instance, attachemnts
+        instance = super().save(commit=commit)
+
+        if attachments:
+            attachment_objs = [
+                ReimbursementMultipleAttachment(attachment=file) for file in attachments
+            ]
+            created_attachments = ReimbursementMultipleAttachment.objects.bulk_create(
+                attachment_objs
+            )
+            multiple_attachment_ids = [obj.pk for obj in created_attachments]
+            instance.other_attachments.add(*multiple_attachment_ids)
+
+        if is_new:
+            try:
+                manager = instance.employee_id.employee_work_info.reporting_manager_id
+                if manager and manager.employee_user_id:
+                    notify.send(
+                        instance.employee_id,  # 816
+                        recipient=manager.employee_user_id,
+                        verb=f"You have a new reimbursement request to approve for {instance.employee_id}.",
+                        verb_ar=f"لديك طلب استرداد نفقات جديد يتعين عليك الموافقة عليه لـ {instance.employee_id}.",
+                        verb_de=f"Sie haben einen neuen Rückerstattungsantrag zur Genehmigung für {instance.employee_id}.",
+                        verb_es=f"Tienes una nueva solicitud de reembolso para aprobar para {instance.employee_id}.",
+                        verb_fr=f"Vous avez une nouvelle demande de remboursement à approuver pour {instance.employee_id}.",
+                        icon="information",
+                        redirect=f"/payroll/view-reimbursement?id={instance.id}",
+                    )
+            except Exception:
+                pass
+
+        return instance, attachments
 
 
 class ConditionForm(ModelForm):
