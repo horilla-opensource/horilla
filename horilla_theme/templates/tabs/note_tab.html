@@ -49,7 +49,86 @@
 </style>
 
 {% if notes %}
-    <span id="addnote" style="cursor: pointer">
+<div class="bg-white rounded-md shadow-card p-3 mb-5 lg:mb-0">
+    <!-- Title -->
+    <div class="flex items-center justify-between mb-3">
+        <h5 class="font-semibold text-sm">{{ employee }}'s {% trans "Notes" %}</h5>
+    </div>
+
+    <!-- Add Note Form -->
+    {% if perms.employee.add_employeenote or request.user|is_reportingmanager %}
+    <form hx-target="#note_target" hx-post="{% url 'add-employee-note' employee.id %}" id="commentForm">
+        {% csrf_token %}
+        <input type="text" name="description" id="commentInput"
+            class="oh-input w-full mt-2" placeholder="{% trans 'Add notes' %}" hx-on:keyup="toggleCommentButton(this);">
+        <button type="submit" id="commentButton"
+            class="oh-btn oh-btn--secondary mt-2"
+            style="display: none;">
+            <i class="fa-regular fa-square-plus"></i>
+            {% trans "Add" %}
+        </button>
+    </form>
+    {% endif %}
+
+    <!-- Notes List -->
+    <div class="h-[calc(100vh_-_480px)] overflow-hidden overflow-y-auto mt-4" id="note_target">
+        {% for note in notes %}
+            <div class="border border-dark-50 p-3 rounded-md mb-2" id="employeeNote{{note.id}}">
+                <div class="flex justify-between">
+                    <h3 class="font-semibold text-sm">{{ note.description }}</h3>
+                    {% if perms.employee.delete_employeenote or request.user|is_reportingmanager %}
+                    <span class="cursor-pointer" hx-get="{% url 'employee-note-delete' note.id %}"
+                        hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+                        hx-target="#employeeNote{{note.id}}" hx-swap="delete" title='{% trans "Delete" %}'>
+                        <ion-icon name="trash-outline" style="color: #e54f38;"></ion-icon>
+                    </span>
+                    {% endif %}
+                </div>
+
+                {% if perms.employee.view_notefiles or request.user|is_reportingmanager %}
+                <div class="flex flex-wrap gap-2 mt-2 mb-2">
+                    {% for file in note.note_files.all %}
+                    <a href="{{ file.files.url }}" target="_blank" rel="noopener noreferrer">
+                        <span class="oh-file-icon oh-file-icon--pdf" id="noteFile{{file.id}}"
+                              onmouseover="enlargeDoc('{{ file.files.url }}',$(this))"
+                              onmouseout="hideEnlargeDoc()" style="width: 40px; height: 40px;">
+                            {% if perms.employee.delete_notefiles or request.user|is_reportingmanager %}
+                            <img src="{% static 'images/ui/minus-icon.png' %}"
+                                 style="display: block; width: 50%; height: 50%;"
+                                 hx-get="{% url 'delete-employee-note-file' file.id %}" hx-target="#noteFile{{file.id}}"
+                                 hx-swap="delete" onclick="event.stopPropagation();event.preventDefault()" />
+                            {% endif %}
+                        </span>
+                    </a>
+                    {% endfor %}
+                    {% if perms.employee.add_notefiles or request.user|is_reportingmanager %}
+                    <form hx-post="{% url 'add-more-files-employee' note.id %}" class="add-files-form"
+                          hx-encoding="multipart/form-data" hx-swap="innerHTML" hx-target="#note_target">
+                        {% csrf_token %}
+                        <label for="addFile_{{note.id}}" title="{% trans "Add Files" %}">
+                            <ion-icon name="add-outline" style="font-size: 12px;border: 1px solid #818791; border-radius: 5px;"
+                            class="text-gray-700"></ion-icon>
+                        </label>
+                        <input type="file" name="files" class="d-none" multiple id="addFile_{{note.id}}"
+                               onchange="submitForm(this)">
+                        <input type="submit" class="d-none add_more_submit" value="save" />
+                    </form>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <p class="text-xs text-[#565E6C] mt-1">
+                    {% trans "By" %} <span class="text-primary-600">{{ note.updated_by }}</span>
+                </p>
+                <p class="text-xs text-[#565E6C] mt-1">
+                    {% trans "At" %} {{ note.created_at|date:"d/m/Y" }} {{ note.created_at|time:"H:i A" }}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+    {% comment %} <span id="addnote" style="cursor: pointer">
         <div class="mt-4">
             <form hx-target="#note_target" hx-post="{% url 'add-employee-note' employee.id %}" id="commentForm">
                 {% csrf_token %}
@@ -132,7 +211,7 @@
                 </li>
             </div>
         {% endfor %}
-    </ol>
+    </ol> {% endcomment %}
 {% else %}
     <div class="mt-4">
         <form hx-target="#note_target" hx-post="{% url 'add-employee-note' employee.id %}"

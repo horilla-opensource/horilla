@@ -8,19 +8,19 @@
     {% include "generic/components.html" %}
 
     <div class="oh-checkpoint-badge mb-2"
-    id="selectedInstances" 
-    data-ids="[]" 
-    data-clicked="" 
+    id="selectedInstances"
+    data-ids="[]"
+    data-clicked=""
     style="display: none">
     </div>
     <div class="oh-checkpoint-badge mb-2"
-    id="shiftselectedInstancesIndividual" 
-    data-ids="[]" 
-    data-clicked="" 
+    id="shiftselectedInstancesIndividual"
+    data-ids="[]"
+    data-clicked=""
     style="display: none">
     </div>
-    <div class="oh-wrapper" 
-        hx-get="/employee/profile{{ request.path }}?{{ request.GET.urlencode }}&instance_ids={{ request.GET.instance_ids }}" 
+    <div class="oh-wrapper"
+        hx-get="/employee/profile{{ request.path }}?{{ request.GET.urlencode }}&instance_ids={{ request.GET.instance_ids }}"
         hx-trigger="load">
     </div>
     <div
@@ -44,7 +44,7 @@
       </div>
     </div>
   </div>
-   
+
     <script>
         $(document).ready(function () {
             var exists = $("#view-container").find(".oh-general__tab-link--active").length;
@@ -140,7 +140,7 @@
         {% if "attendance"|app_installed %}
         function validateHours(url) {
             $.ajax({
-                url: "{% url 'active-tab' %}",  
+                url: "{% url 'active-tab' %}",
                 method: "GET",
                 data: {
                     path: "{% url 'attendances-tab-view' %}",
@@ -157,7 +157,7 @@
 
         function validateOTHours(url) {
             $.ajax({
-                url: "{% url 'active-tab' %}",  
+                url: "{% url 'active-tab' %}",
                 method: "GET",
                 data: {
                     path: "{% url 'attendances-tab-view' %}",
@@ -172,7 +172,7 @@
             });
         }
         {% endif %}
-       
+
         {% if request.GET.deleted %}
         $('#reloadMessagesButton').click();
         {% endif %}
@@ -182,7 +182,7 @@
 
 <!-- Inline styles -->
 <style>
-    .oh-general__tab { 
+    .oh-general__tab {
 		margin-bottom: 15px;
 	 }
 	 .resign-status {
@@ -194,155 +194,155 @@
 		font-weight: 600;
 		color: #357579;
 		}
-    .file-upload { 
+    .file-upload {
 		margin-top: 6px !important;
-		width: 34px !important; 
-		height: 34px !important; 
+		width: 34px !important;
+		height: 34px !important;
 		font-size: 1.75rem !important;
 	 }
-    .enlarge-image-container { 
-		display: none; 
-		position: fixed; 
-		top: 40%; 
-		left: 40%; 
-		transform: translate(-50%, -50%); 
-		width: 30%; 
-		height: 50%; z-index: 9999; 
+    .enlarge-image-container {
+		display: none;
+		position: fixed;
+		top: 40%;
+		left: 40%;
+		transform: translate(-50%, -50%);
+		width: 30%;
+		height: 50%; z-index: 9999;
 	}
-    .enlarge-image-container img { 
-		max-width: 100%; 
-		height: auto; 
+    .enlarge-image-container img {
+		max-width: 100%;
+		height: auto;
 		border-radius: 5%; }
-    .oh-sticky-table { 
-		max-height: 65vh; 
+    .oh-sticky-table {
+		max-height: 65vh;
 	}
 
-    .oh-sticky-table__sd { 
-		z-index: 11 !important; 
+    .oh-sticky-table__sd {
+		z-index: 11 !important;
 	}
-    .oh-sticky-table__right { 
-		position: sticky; right: 0; 
-		background-color: #fff; 
+    .oh-sticky-table__right {
+		position: sticky; right: 0;
+		background-color: #fff;
 	}
-    .oh-sticky-table__top { 
-		z-index: 12 !important; 
+    .oh-sticky-table__top {
+		z-index: 12 !important;
 		top: 0; }
-    .oh-modal_close--custom { 
-		border: none; 
-		background: none; 
-		font-size: 1.5rem; 
-		opacity: 0.7; 
-		position: absolute; 
-		top: 25px; 
-		right: 15px; 
+    .oh-modal_close--custom {
+		border: none;
+		background: none;
+		font-size: 1.5rem;
+		opacity: 0.7;
+		position: absolute;
+		top: 25px;
+		right: 15px;
 	}
-    .oh-tabs__tablist .oh-tabs__tab--active:nth-last-child(2) { 
-		border-right: 1px solid hsl(213deg, 22%, 84%); 
+    .oh-tabs__tablist .oh-tabs__tab--active:nth-last-child(2) {
+		border-right: 1px solid hsl(213deg, 22%, 84%);
 	}
-    .custom-dialog { 
-		max-width: 1000px; 
-		max-height: 800px; 
+    .custom-dialog {
+		max-width: 1000px;
+		max-height: 800px;
 	}
-    .file-validation { 
-		color: #4f5bd9; 
-		background-color: #d8e7f0; 
-		border-color: #d6e9c6; 
-		padding: 15px; border: 1px solid 
+    .file-validation {
+		color: #4f5bd9;
+		background-color: #d8e7f0;
+		border-color: #d6e9c6;
+		padding: 15px; border: 1px solid
 		transparent; border-radius: 4px; }
-    .oh-not-found { 
-		display: flex; justify-content: center; 
-		align-items: center; 
-		flex-direction: column; 
-		height: 50vh; opacity: 0.5; 
+    .oh-not-found {
+		display: flex; justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		height: 50vh; opacity: 0.5;
 	}
 
 	.custom-dialog {
 		max-width: 1000px;
 		max-height: 800px;
 	}
-    body { 
-		background-color: #f9f9f9 !important; 
+    body {
+		background-color: #f9f9f9 !important;
 	}
-    .draft--dot { 
-		background-color: grey; 
+    .draft--dot {
+		background-color: grey;
 	}
-    .review_ongoing--dot { 
-		background-color: orange; 
+    .review_ongoing--dot {
+		background-color: orange;
 	}
-    .confirmed--dot { 
-		background-color: rgb(103, 171, 238); 
+    .confirmed--dot {
+		background-color: rgb(103, 171, 238);
 	}
-    .paid--dot { 
-		background-color: green; 
+    .paid--dot {
+		background-color: green;
 	}
-    .status-draft { 
-		border-left: 3.4px solid grey !important; border-radius: 4px 0 0 4px; 
+    .status-draft {
+		border-left: 3.4px solid grey !important; border-radius: 4px 0 0 4px;
 	}
-    .status-review_ongoing { 
-		border-left: 3.4px solid orange !important; 
-		border-radius: 4px 0 0 4px; 
+    .status-review_ongoing {
+		border-left: 3.4px solid orange !important;
+		border-radius: 4px 0 0 4px;
 	}
-    .status-confirmed { 
-		border-left: 3.4px solid rgb(103, 171, 238) !important; 
-		border-radius: 4px 0 0 4px; 
+    .status-confirmed {
+		border-left: 3.4px solid rgb(103, 171, 238) !important;
+		border-radius: 4px 0 0 4px;
 	}
-    .status-paid { 
-		border-left: 3.4px solid green !important; 
-		border-radius: 4px 0 0 4px; 
+    .status-paid {
+		border-left: 3.4px solid green !important;
+		border-radius: 4px 0 0 4px;
 	}
-    .sent-to-employee { 
-		background-color: yellowgreen; 
-		color: white; 
+    .sent-to-employee {
+		background-color: yellowgreen;
+		color: white;
 	}
-    .at_risk--dot { 
-		background-color: red; 
+    .at_risk--dot {
+		background-color: red;
 	}
-    .not_started--dot { 
-		background-color: grey; 
+    .not_started--dot {
+		background-color: grey;
 	}
-    .behind--dot { 
-		background-color: orange; 
+    .behind--dot {
+		background-color: orange;
 	}
-    .closed--dot { 
-		background-color: rgb(103, 171, 238); 
+    .closed--dot {
+		background-color: rgb(103, 171, 238);
 	}
-    .on_track--dot { 
-		background-color: yellowgreen; 
+    .on_track--dot {
+		background-color: yellowgreen;
 	}
-    .status-At.Risk { 
-		border-left: 3.4px solid red !important; 
-		border-radius: 4px 0 0 4px; 
+    .status-At.Risk {
+		border-left: 3.4px solid red !important;
+		border-radius: 4px 0 0 4px;
 	}
-    .status-Not.Started { 
-		border-left: 3.4px solid grey !important; 
-		border-radius: 4px 0 0 4px; 
+    .status-Not.Started {
+		border-left: 3.4px solid grey !important;
+		border-radius: 4px 0 0 4px;
 	}
-    .status-Behind { 
-		border-left: 3.4px solid orange !important; 
+    .status-Behind {
+		border-left: 3.4px solid orange !important;
 		border-radius: 4px 0 0 4px; }
-    .status-Closed { 
-		border-left: 3.4px solid rgb(103, 171, 238) !important; 
-		border-radius: 4px 0 0 4px; 
+    .status-Closed {
+		border-left: 3.4px solid rgb(103, 171, 238) !important;
+		border-radius: 4px 0 0 4px;
 	}
-    .status-On.Track { 
-		border-left: 3.4px solid yellowgreen !important; 
-		border-radius: 4px 0 0 4px; 
+    .status-On.Track {
+		border-left: 3.4px solid yellowgreen !important;
+		border-radius: 4px 0 0 4px;
 	}
     .status-rejected {
-		border-left: 4px solid red !important; 
-		border-radius: 5px 0 0 4px; 
+		border-left: 4px solid red !important;
+		border-radius: 5px 0 0 4px;
 	}
-    .status-cancelled { 
-		border-left: 4px solid grey !important; 
-		border-radius: 5px 0 0 4px; 
+    .status-cancelled {
+		border-left: 4px solid grey !important;
+		border-radius: 5px 0 0 4px;
 	}
-    .status-requested { 
-		border-left: 4px solid orange !important; 
-		border-radius: 5px 0 0 4px; 
+    .status-requested {
+		border-left: 4px solid orange !important;
+		border-radius: 5px 0 0 4px;
 	}
-    .status-approved { 
-		border-left: 4px solid yellowgreen !important; 
-		border-radius: 5px 0 0 4px; 
+    .status-approved {
+		border-left: 4px solid yellowgreen !important;
+		border-radius: 5px 0 0 4px;
 	}
     .approved--dot{
         background-color:yellowgreen;
@@ -356,19 +356,19 @@
       .approved-True{
         border-left: 3.4px solid yellowgreen !important;
         border-radius: 4px 0 0 4px;
-      
+
       }
       .canceled-True {
-      
+
         border-left: 3.4px solid red !important;
         border-radius: 4px 0 0 4px;
-        
+
       }
       .requested-False-False {
-      
+
         border-left: 3.4px solid orange !important;
         border-radius: 4px 0 0 4px;
-        
+
       }
       .validated--dot{
         background-color:yellowgreen;
@@ -376,22 +376,22 @@
       .not-validated--dot{
         background-color:rgba(128, 128, 128, 0.482);
       }
-      
+
       .validated-True{
         border-left: 3.4px solid yellowgreen !important;
         border-radius: 4px 0 0 4px;
-      
+
       }
       .validated-False {
-      
+
         border-left: 3.4px solid rgba(128, 128, 128, 0.482) !important;
         border-radius: 4px 0 0 4px;
-      
+
 
       }
       .bulk-request--dot {
-      
-        background-color:rgb(31 122 220 / 48%); 
+
+        background-color:rgb(31 122 220 / 48%);
       }
     .diff-cell{
       background: rgba(255, 166, 0, 0.158);
@@ -402,8 +402,8 @@
       .not-validated--dot{
         background-color:rgba(128, 128, 128, 0.482);
       }
-          
-      
+
+
 </style>
 
 <div id="enlargeImageContainer"></div>

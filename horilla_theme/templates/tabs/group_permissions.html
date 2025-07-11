@@ -14,8 +14,8 @@
         {% endif %}
     </div>
     <br>
- 
-    
+
+
     <div class="oh-tabs__contents mt-5" style="display: none" id="tab_2_permission">
         <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center mb-3 ">
             <h2 class="text-md font-semibold">
@@ -38,7 +38,7 @@
                         <img src="https://ui-avatars.com/api/?name={{gp}}"
                             class="oh-navbar__user-image w-6 h-6 rounded-full" loading="lazy">
                         </span>
-                        <span class="font-semibold">{{gp}}</span> 
+                        <span class="font-semibold">{{gp}}</span>
                         <span class="text-xs mt-1 text-dark-300">{% trans "Total" %} {{gp.user_set.all|length}} {% trans "users in this group" %}</span>
                     </div>
                 </button>
@@ -72,11 +72,11 @@
     function bindInnerAccordions() {
       document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
         const content = toggle.nextElementSibling;
-  
+
         toggle.removeEventListener('click', toggle._boundClick);
         toggle._boundClick = () => {
           const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
-  
+
           if (isOpen) {
             content.style.maxHeight = "0";
             content.style.opacity = "0";
@@ -84,7 +84,7 @@
             content.style.maxHeight = content.scrollHeight + "px";
             content.style.opacity = "1";
           }
-  
+
           // Auto-resize parent
           const outerPanel = toggle.closest('.accordion-panel-gp');
           if (outerPanel) {
@@ -96,12 +96,12 @@
         toggle.addEventListener("click", toggle._boundClick);
       });
     }
-  
+
     // Run on page load
     document.addEventListener("DOMContentLoaded", bindInnerAccordions);
-  
-    // Run after HTMX replaces any HTML 
+
+    // Run after HTMX replaces any HTML
     document.body.addEventListener("htmx:afterSwap", bindInnerAccordions);
   </script>
-  
+
 {% endif %}
