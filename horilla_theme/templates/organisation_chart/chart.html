@@ -1,0 +1,75 @@
+{% load static %}
+<div class="oh-main__org-chart-container rounded shadow-card m-0 border-none" id="orgChart"></div>
+{{ act_datasource|json_script:"chart-data" }}
+<script src="{% static 'cdn/orgChart/orgChart.js' %}"></script>
+
+<script>
+	var chart;
+	var flatData = [];
+	function initChart() {
+		const hierarchicalData = JSON.parse(
+			document.getElementById("chart-data").textContent
+		);
+
+		let idCounter = 1;
+		flatData = [];
+
+		function processNode(node, pid) {
+			const id = idCounter++;
+			const newNode = {
+				id: id,
+				pid: pid,
+				name: node.name,
+				title: node.title,
+				tags: ["primary"],
+			};
+			flatData.push(newNode);
+
+			if (node.children && node.children.length > 0) {
+				for (const child of node.children) {
+					processNode(child, id);
+				}
+			}
+		}
+
+		processNode(hierarchicalData, null);
+
+		OrgChart.templates.primary = Object.assign({}, OrgChart.templates.ana);
+		OrgChart.templates.primary.size = [275, 80];
+		OrgChart.templates.primary.node = `
+            <rect x="0" y="0" height="80" width="250" fill="#e54f381a" stroke="#e54f38bd" stroke-width="1" rx="10" ry="10"></rect>
+        `;
+		OrgChart.templates.primary.field_0 = `
+            <text class="field_0" x="110" y="30" text-anchor="middle" style="font-weight:bold;font-size:14px;">{val}</text>
+        `;
+		OrgChart.templates.primary.field_1 = `
+            <text class="field_1" x="110" y="55" text-anchor="middle" style="font-size:12px;fill:#666;">{val}</text>
+        `;
+
+		chart = new OrgChart("#orgChart", {
+			nodeBinding: {
+				field_0: "name",
+				field_1: "title",
+			},
+			tags: {
+				primary: { template: "primary" },
+			},
+			enableSearch: true,
+			toolbar: false,
+			nodeMouseClick: OrgChart.action.none,
+			mouseScrool: OrgChart.action.ctrlZoom,
+			mouseScrool: OrgChart.action.scroll,
+			orientation: OrgChart.orientation.left,
+			align: OrgChart.align.orientation,
+			nodes: flatData,
+			scaleInitial: 0.8,
+			collapse: {
+				level: 2,
+				allChildren: true,
+			},
+		});
+	}
+	$(document).ready(function () {
+			initChart();
+	});
+</script>

@@ -1,0 +1,107 @@
+{% load i18n static %}
+
+{% if perms.auth.view_permission or perms.auth.view_group %}
+
+<div class="oh-tabs__contents p-3">
+    <div class="mb-2 mt-4" id="tab_1_permission">
+        {% if employee %}
+            <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+                <h2 class="text-md font-semibold mb-3">{% trans "Employee Permissions" %}</h2>
+            </div>
+            {% include "base/auth/permission_lines.html" %}
+        {% else %}
+        {% include "base/auth/permission_table.html" %}
+        {% endif %}
+    </div>
+    <br>
+ 
+    
+    <div class="oh-tabs__contents mt-5" style="display: none" id="tab_2_permission">
+        <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center mb-3 ">
+            <h2 class="text-md font-semibold">
+                {% trans "Groups" %}
+            </h2>
+            {% if perms.auth.change_group %}
+            <button class="ms-5 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex flex-wrap items-center gap-2 hover:bg-primary-800 transition duration-300"
+                    hx-get="{% url "assign-group-user" %}" hx-vals='{"employee":"{{employee.id}}"}' hx-target="#groupAssignBody" data-toggle="oh-modal-toggle" data-target="#groupAssign" onclick="event.stopPropagation()" title="Assign user groups">
+                <ion-icon name="person-add-outline" class="text-light"></ion-icon> Add
+            </button>
+            {% endif %}
+        </div>
+        {% if employee.employee_user_id.groups.all.first %}
+            {% for gp in employee.employee_user_id.groups.all %}
+                <button
+                onclick="event.stopPropagation()"
+                class="w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">
+                        <img src="https://ui-avatars.com/api/?name={{gp}}"
+                            class="oh-navbar__user-image w-6 h-6 rounded-full" loading="lazy">
+                        </span>
+                        <span class="font-semibold">{{gp}}</span> 
+                        <span class="text-xs mt-1 text-dark-300">{% trans "Total" %} {{gp.user_set.all|length}} {% trans "users in this group" %}</span>
+                    </div>
+                </button>
+            {% endfor %}
+        {% else %}
+          <div class="oh-wrapper h-full" align="center">
+                <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+                    <div class="flex flex-col items-center justify-center h-full">
+                        <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                        <p class="text-[#666] mb-5">{% trans "This employee is not assigned to any groups." %}</p>
+                    </div>
+                </div>
+            </div>
+          {% endif %}
+    </div>
+</div>
+<script>
+    var showSearch = true
+    $(document).ready(function () {
+        setTimeout(() => {
+            $("#tab_2_permission").show();
+        }, 150);
+    });
+    function selectAllPermissions(elem) {
+        $(elem).closest('.oh-sticky-table__thead').siblings('.oh-sticky-table__tbody').find('.row-permission').prop('checked', $(elem).is(':checked')).change()
+    }
+</script>
+
+<script>
+    // Inner accordion logic — rebind after page load or HTMX swap
+    function bindInnerAccordions() {
+      document.querySelectorAll('.inner-accordion-toggle').forEach((toggle) => {
+        const content = toggle.nextElementSibling;
+  
+        toggle.removeEventListener('click', toggle._boundClick);
+        toggle._boundClick = () => {
+          const isOpen = content.style.maxHeight && content.style.maxHeight !== "0px";
+  
+          if (isOpen) {
+            content.style.maxHeight = "0";
+            content.style.opacity = "0";
+          } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+            content.style.opacity = "1";
+          }
+  
+          // Auto-resize parent
+          const outerPanel = toggle.closest('.accordion-panel-gp');
+          if (outerPanel) {
+            setTimeout(() => {
+              outerPanel.style.maxHeight = outerPanel.scrollHeight + "px";
+            }, 250);
+          }
+        };
+        toggle.addEventListener("click", toggle._boundClick);
+      });
+    }
+  
+    // Run on page load
+    document.addEventListener("DOMContentLoaded", bindInnerAccordions);
+  
+    // Run after HTMX replaces any HTML 
+    document.body.addEventListener("htmx:afterSwap", bindInnerAccordions);
+  </script>
+  
+{% endif %}

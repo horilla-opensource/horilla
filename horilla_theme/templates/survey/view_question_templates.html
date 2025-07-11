@@ -85,7 +85,15 @@
             </span>
 
             <div
-                class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0">
+                class="
+                    dropdown-content
+                    absolute right-0 z-10
+                    bg-white rounded-lg
+                    [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)]
+                    min-w-[400px]
+                    p-3
+                "
+            >
                 <div class="accordion-wrapper space-y-2">
                     {% include 'survey/filter.html' %}
                 </div>
@@ -100,11 +108,20 @@
         <div class="flex gap-1 flex-wrap">
 
             <div class="relative inline-block dropdown-wrapper oh-tabs__tab" data-target="#templateTab">
-                <div class="oh-dropdown" x-data="{open: false}" onclick=>
-                    <div class="tab-button px-2 py-1 border rounded-md text-xs flex items-center gap-2 hover:border-primary-600 transition duration-300 text-primary-600 border-primary-600"
-                        data-tab="tab1"
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <div
+                        class="
+                            tab-button
+                            px-2 py-1
+                            rounded-md
+                            text-sm font-bold text-primary-600
+                            w-[160px] h-[50px]
+                            flex items-center justify-between gap-2
+                            transition duration-300
+                            border border-primary-600 hover:border-primary-800
+                        "
                     >
-                            {% trans "Template" %}
+                        {% trans "Template" %}
                         <button class="ps-3 cursor-pointer"
                             @click="open = !open"
                             @click.outside="open = false"
@@ -114,19 +131,28 @@
                         </button>
                     </div>
 
-                    <div class="oh-dropdown__menu absolute font-medium text-sm left-5 min-w-[150px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
+                    <div
                         x-show="open" style="display: none;"
+                        class="
+                            oh-dropdown__menu
+                            absolute left-5
+                            min-w-[150px]
+                            bg-white
+                            rounded-lg shadow-card
+                            py-2 z-50
+                            transition-all duration-200
+                        "
                     >
                         <ul class="oh-dropdown__items">
-                            <li>
-                                <a class="oh-dropdown__item my-0"
-                                    role="button"
-                                    onclick="event.stopPropagation()"
-                                    hx-get="{% url 'survey-template-create' %}"
-                                    hx-target="#genericModalBody"
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#genericModal"
-                                >{% trans "Add Template" %}</a>
+                            <li class="oh-dropdown__item text-xs hover:text-primary-600 "
+                                role="button"
+                                onclick="event.stopPropagation()"
+                                hx-get="{% url 'survey-template-create' %}"
+                                hx-target="#genericModalBody"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                            >
+                                {% trans "Add Template" %}
                             </li>
                         </ul>
                     </div>
@@ -135,10 +161,20 @@
 
             <div class="relative inline-block dropdown-wrapper oh-tabs__tab" data-target="#questionTab">
                 <div class="oh-dropdown" x-data="{open: false}">
-                    <div class="tab-button px-2 py-1 border rounded-md text-xs flex items-center gap-2 hover:border-primary-600 transition duration-300 text-primary-600 border-primary-600"
-                        data-tab="tab1"
+                    <div
+                        class="
+                            tab-button
+                            px-2 py-1
+                            rounded-md
+                            text-sm font-bold
+                            w-[160px] h-[50px]
+                            flex items-center justify-between gap-2
+                            transition duration-300
+                            text-primary-600
+                            border border-primary-600 hover:border-primary-800
+                        "
                     >
-                            {% trans "Questions" %}
+                        {% trans "Questions" %}
                         <button class="ps-3 cursor-pointer"
                             @click="open = !open"
                             @click.outside="open = false"
@@ -148,19 +184,27 @@
                         </button>
                     </div>
 
-                    <div class="oh-dropdown__menu absolute font-medium text-sm left-5 min-w-[220px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
+                    <div
                         x-show="open" style="display: none;"
+                        class="
+                            oh-dropdown__menu
+                            absolute left-5
+                            min-w-[220px]
+                            bg-white rounded-lg shadow-card
+                            py-2 z-50
+                            transition-all duration-200
+                        "
                     >
                         <ul class="oh-dropdown__items">
-                            <li>
-                                <a class="oh-dropdown__item my-0"
-                                    role="button"
-                                    onclick="event.stopPropagation()"
-                                    hx-get="{% url 'recruitment-survey-question-template-create' %}"
-                                    hx-target="#genericModalBody"
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#genericModal"
-                                >{% trans "Create survey questions" %}</a>
+                            <li class="oh-dropdown__item text-xs hover:text-primary-600"
+                                role="button"
+                                onclick="event.stopPropagation()"
+                                hx-get="{% url 'recruitment-survey-question-template-create' %}"
+                                hx-target="#genericModalBody"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                            >
+                                {% trans "Create survey questions" %}
                             </li>
                         </ul>
                     </div>
@@ -178,8 +222,9 @@
 <div class="oh-modal" id="templateModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
         <div class="oh-modal__dialog-header">
-            <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon
-                    name="close-outline"></ion-icon></button>
+            <button type="button" class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
         </div>
 
         <div class="oh-modal__dialog-body" id="templateModalBody"></div>

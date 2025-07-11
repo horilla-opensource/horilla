@@ -1,0 +1,60 @@
+{% extends 'index.html' %} 
+{% load i18n %}
+
+{% block styles %}
+<style>
+	.select2-container--default {
+		padding-bottom: 0 !important;
+	}
+    .oh-main__topbar {
+        padding-top:0px;
+    }
+</style>
+{% endblock %}
+
+{% block content %} 
+
+    <div class="oh-wrapper oh-main__topbar">
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+            <div style="display: flow">
+                <h1 class="text-lg font-semibold">
+                    {% trans "Organization Chart" %}
+                </h1>
+            </div>
+        </div>
+        <div class="oh-main__titlebar oh-main__titlebar--right pr-5">
+            <div class="flex gap-2 items-center">
+                <p class="text-sm text-gray font-semibold">
+                    {% trans "Reporting Managers" %} :
+                </p>
+                <div>
+                    <select
+                        id="mangerSelect"
+                        class="oh-select {% if not reporting_manager_dict %} hidden {% endif %}"
+                        style="
+                            align-items: center;
+                            background-color: #fff;
+                            border: 1px solid #aaa;
+                            border-radius: 2px;
+                        "
+                        name="manager_id"
+                        title="{% trans 'Reporting Managers' %}"
+                        hx-post="{% url 'organisation-chart' %}"
+                        hx-target="#chart_target"
+                    >
+                        {% for manager_id, values in reporting_manager_dict.items %}
+                            <option value="{{ manager_id }}" {% if act_manager_id == manager_id %} selected {% endif %} >{{ values }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="oh-wrapper" id="chart_target"></div>
+
+    <script>
+        $(document).ready(function (e) {
+            htmx.trigger("#mangerSelect", "change");
+        });
+    </script>
+{% endblock %}

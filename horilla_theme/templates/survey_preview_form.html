@@ -12,13 +12,16 @@
 			{% for question in questions %}
                 <div class="bg-white rounded-md shadow-card p-5" data-question-id="{{question.id}}">
                     <div class="d-block w-100">
-                        <p class="font-semibold text-sm mb-3">
-                            {{ question.question }}
-                            {% if question.is_mandatory %}
-                                <span class="text-danger">
-                                * </span>
-                            {% endif %}
-                        </p>
+                        <div class="flex" >
+                            <p class="font-semibold text-sm mb-3">
+                                {{ question.question }}
+                                {% if question.is_mandatory %}
+                                    <span class="text-danger">
+                                    * </span>
+                                {% endif %}
+                            </p>
+                            <span class="oh-info mr-2" title="{{question.type|title}}"></span>
+                        </div>
                         {% if question.type == "textarea" %}
                             <textarea
                                 type="text"

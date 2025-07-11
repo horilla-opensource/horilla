@@ -8,6 +8,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title class="time-runner stop-runner">{{white_label_company_name}}</title>
         <link rel="stylesheet" href="{% static 'build/css/summernote-lite.min.css' %}" />
+        <link rel="stylesheet" href="{% static 'build/css/orgChart.css' %}" />
 
         {% include "horilla_theme/components/header_scripts.html" %}
 
@@ -35,6 +36,9 @@
         />
         <link rel="stylesheet" href="{% static 'build/css/pivottable.min.css' %}" />
 
+        {% block styles %}
+        <!-- Page-specific styles (optional) -->
+        {% endblock %}
     </head>
 
     <body class="bg-secondary-50 font-[Inter,_sans-serif]">

@@ -2235,6 +2235,101 @@ ul.errorlist ul.errorlist li {
     background: rgb(227 78 56 / 10%);
     color: #e34e38;
 }
+.oh-permission-panel,
+.oh-user-panel {
+  background-color: hsl(0, 0%, 97.5%);
+  border: 2px solid hsl(213, 22%, 93%);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0 1rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.oh-permission-panel:hover,
+.oh-user-panel:hover {
+  background-color: hsl(0, 0%, 96%);
+}
+
+.oh-user-panel {
+  padding: 0.5rem 0 0.5rem 0.75rem;
+}
+
+.oh-permission-panel__remove,
+.oh-user-panel__remove {
+  background-color: transparent;
+  border: none;
+  border-left: 2px solid hsl(213, 22%, 93%);
+  width: 35px;
+  height: 35px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+}
+.oh-permission-panel__remove:hover,
+.oh-user-panel__remove:hover {
+  color: hsl(1, 100%, 61%);
+}
+
+.oh-user-panel__remove {
+  border-left: none;
+}
+
+.oh-permission-table__collapse {
+  border: none;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  font-size: 1.25rem;
+  visibility: hidden;
+}
+
+.oh-sticky-table__tr:hover .oh-permission-table__collapse {
+  visibility: visible;
+}
+
+.oh-permission-table__tr .oh-sticky-table__sd {
+  width: 35%;
+}
+
+.oh-permission-count {
+  width: 100%;
+  display: flex;
+  padding: 0.5rem 0rem;
+  font-style: italic;
+  color: hsl(0, 0%, 37%);
+  width: 100%;
+}
+
+.oh-permission-table--collapsed .oh-permission-panel,
+.oh-permission-table--collapsed .oh-user-panel {
+  display: none;
+}
+
+.oh-permission-table--collapsed .oh-permission-table__collapse .oh-permission-table__collapse-up {
+  display: none;
+}
+
+.oh-permission-table--collapsed .oh-permission-table__collapse .oh-permission-table__collapse-down {
+  display: block;
+}
+
+.oh-permission-table__collapse .oh-permission-table__collapse-up {
+  display: block;
+}
+
+.oh-permission-table__collapse .oh-permission-table__collapse-down {
+  display: none;
+}
+
+@media (max-width: 575.98px) {
+  .oh-permission-table__collapse {
+    display: none !important;
+  }
+}
 
 .oh-filter-tag-container {
     display: flex;

@@ -625,6 +625,13 @@ $(document).on("htmx:afterSettle", function (event) {
             }
         });
     };
+
+    if ($(".oh-permission-table--toggle").length > 0) {
+        $(".oh-permission-table--toggle").each(function () {
+            const $this = $(this);
+            $this.closest("tr").addClass("oh-permission-table--collapsed")
+        });
+    }
 });
 
 $(".oh-password-input--toggle").on("click", function (e) {
@@ -647,6 +654,6 @@ $(".oh-password-input--toggle").on("click", function (e) {
 });
 
 $(`.oh-accordion-header`).on("click", function (e) {
-        e.preventDefault();
-        $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");
-    });
+    e.preventDefault();
+    $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");
+});
