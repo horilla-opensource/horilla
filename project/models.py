@@ -17,7 +17,10 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from base.horilla_company_manager import HorillaCompanyManager
+from base.models import Company
 from employee.models import Employee
+from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
 from horilla.models import HorillaModel
 from horilla_views.cbv_methods import render_template
@@ -75,6 +78,10 @@ class Project(HorillaModel):
         upload_to="project/files", blank=True, null=True, verbose_name=_("Project File")
     )
     description = models.TextField(verbose_name=_("Description"))
+    company_id = models.ForeignKey(
+        Company, null=True, editable=False, on_delete=models.PROTECT
+    )
+    objects = HorillaCompanyManager("company_id")
 
     def get_description(self, length=50):
         """
@@ -222,15 +229,15 @@ class Project(HorillaModel):
                 self.status = "expired"
 
     def save(self, *args, **kwargs):
-        is_new = self.pk is None
+        is_new, request = self.pk is None, getattr(
+            horilla_middlewares._thread_locals, "request", None
+        )
+        if is_new and (cid := request.session.get("selected_company")) and cid != "all":
+            self.company_id = Company.find(cid)
         super().save(*args, **kwargs)
-
         if is_new:
             ProjectStage.objects.create(
-                title="Todo",
-                project=self,
-                sequence=1,
-                is_end_stage=False,
+                title="Todo", project=self, sequence=1, is_end_stage=False
             )
 
     def __str__(self):
@@ -261,6 +268,7 @@ class ProjectStage(HorillaModel):
     )
     sequence = models.IntegerField(null=True, blank=True, editable=False)
     is_end_stage = models.BooleanField(default=False, verbose_name=_("Is end stage"))
+    objects = HorillaCompanyManager("project__company_id")
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -351,6 +359,7 @@ class Task(HorillaModel):
     )
     description = models.TextField(verbose_name=_("Description"))
     sequence = models.IntegerField(default=0)
+    objects = HorillaCompanyManager("project__company_id")
 
     def clean(self) -> None:
         if self.end_date is not None and self.project.end_date is not None:
@@ -552,6 +561,7 @@ class TimeSheet(HorillaModel):
         verbose_name=_("Status"),
     )
     description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
+    objects = HorillaCompanyManager("project_id__company_id")
 
     class Meta:
         ordering = ("-id",)

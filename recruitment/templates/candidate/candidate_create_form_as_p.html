@@ -24,8 +24,8 @@
             <div class="row">
                 <div class="col-lg-6">
                     <label class="oh-label" for="{{form.country.id_for_label}}">{{form.country.label}}</label>
-                    <select name="country" class="w-100 oh-select-2" id="id_country">
-                        <option value="{{form.instance.country}}" selected>{{form.instance.country}}</option>
+                    <select name="country" class="w-100 oh-select-2" id="id_country"
+                        data-selected="{{ form.country.value|default:'' }}">
                     </select>
                     {{form.country.errors}}
                     <span class="dropdown-wrapper" aria-hidden="true"></span>
@@ -33,8 +33,8 @@
                 </div>
                 <div class="col-lg-6">
                     <label class="oh-label d-block" for="{{form.state.id_for_label}}">{{form.state.label}}</label>
-                    <select name="state" class="w-100 oh-select-2" id="id_state">
-                        <option value="{{form.instance.state}}" selected>{{form.instance.state}}</option>
+                    <select name="state" class="w-100 oh-select-2" id="id_state"
+                        data-selected="{{ form.state.value|default:'' }}">
                     </select>
                     {{form.state.errors}}
                 </div>

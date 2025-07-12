@@ -1,10 +1,3 @@
 {% load i18n %}
 <label class="oh-label" for="id_{{field.name }}" title="{{field.help_text|safe }}">{{field.label}}</label>
 {{field}}
-<script>
-    $(document).ready(function () {
-        $("select").on("select2:select", function (e) {
-            $(this).closest("select")[0].dispatchEvent(new Event("change"));
-        });
-    });
-</script>

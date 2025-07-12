@@ -154,9 +154,10 @@ def post_recruitment_in_linkedin(
 
 @login_required
 def delete_post(recruitment):
-    """Delete recruitment post from linkedin"""
-    # Ensure you are using the correct post ID from when you created the post
-    linkedin_post_id = recruitment.linkedin_post_id  # e.g., "urn:li:ugcPost:123456789"
+    """Delete recruitment post from LinkedIn"""
+    linkedin_post_id = recruitment.linkedin_post_id
+    if not linkedin_post_id:
+        return True  # 787
 
     url = f"https://api.linkedin.com/v2/ugcPosts/{linkedin_post_id}"
     headers = {
@@ -165,11 +166,9 @@ def delete_post(recruitment):
     }
 
     response = requests.delete(url, headers=headers)
-
     if response.status_code == 204:
-        # Successfully deleted
         recruitment.linkedin_post_id = None
         recruitment.save()
         return True
-    else:
-        return False
+
+    return False

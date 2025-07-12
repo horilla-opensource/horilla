@@ -20,7 +20,7 @@
                     </div>
                     <div class="oh-input-group">
                         <label class="oh-label" for="country">{{f.form.country.label}}</label>
-                        <select name="country" class="oh-select-2 w-100 country" id="country">
+                        <select name="country" class="oh-select-2 w-100 country" id="country" data-selected="{{ f.form.country.value|default:'' }}">
                         </select>
                     </div>
                     <div class="oh-input-group">
@@ -54,7 +54,7 @@
 
                     <div class="oh-input-group">
                         <label class="oh-label" for="state">{{f.form.state.label}}</label>
-                        <select name="state" class="oh-select-2 w-100 country" id="state">
+                        <select name="state" class="oh-select-2 w-100 state" id="state" data-selected="{{ f.form.state.value|default:'' }}">
                         </select>
                     </div>
 
@@ -196,6 +196,3 @@
 </div>
 
 <script src="{% static '/base/filter.js' %}"></script>
-<script>
-    {% include "country.js" %}
-</script>

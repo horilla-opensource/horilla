@@ -41,11 +41,11 @@ def onboarding_view_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
     return is_taskmanager(request.user) or request.user.has_perm(
-        "onboarding.view_onboarding"
+        "onboarding.view_onboardingstage"
     )
 
 
 def candidates_view_accessibility(
     request, _submenu: dict = {}, user_perms: PermWrapper = [], *args, **kwargs
 ) -> bool:
-    return request.user.has_perm("recruitment.view_candidate")
+    return request.user.has_perm("onboarding.view_onboardingcandidate")

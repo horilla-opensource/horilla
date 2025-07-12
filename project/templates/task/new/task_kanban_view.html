@@ -28,7 +28,7 @@
                                 </span>
                             </div>
                         </span>
-                        {% if request.user|is_project_manager:stage.project or request.user.is_superuser %}
+                        {% if request.user|is_project_manager:stage.project %}
                             <div class="oh-kanban__head-actions oh-kanban__dropdown" onclick="event.stopPropagation();">
                                 <button class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
                                     <ion-icon name="ellipsis-vertical-sharp" role="img" class="md hydrated"
@@ -78,7 +78,7 @@
                                             <span class="oh-profile__name oh-text--dark" data-type="label"
                                                 style="font-weight:bold">{{task}}</span>
                                         </div>
-                                        {% if request.user|is_project_manager:stage.project or request.user.is_superuser or request.user|is_task_manager:task %}
+                                        {% if request.user|is_project_manager:stage.project or request.user|is_task_manager:task %}
                                             <div class="oh-kanban__card-actions oh-kanban__dropdown" onclick="event.stopPropagation();">
                                                 <button
                                                     class="oh-btn oh-btn--small oh-btn--transparent oh-kanban__btn oh-kanban__dropdown-toggle">
@@ -144,7 +144,7 @@
                     </div>
                 </div>
             {% endfor %}
-            {% if request.user|is_project_manager:stages.first.project or request.user.is_superuser %}
+            {% if request.user|is_project_manager:stages.first.project %}
                 <div class="oh-kanban__add-container">
                     <button class="oh-btn oh-btn--x-small oh-kanban__add-section mr-2" data-toggle="oh-modal-toggle"
                         data-target="#objectCreateModal" hx-get="{% url 'create-project-stage' project_id %}"
