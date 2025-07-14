@@ -1,0 +1,188 @@
+{% load static i18n %}
+{% block styles %}
+<style>
+    .oh-label {
+        display: block;
+    }
+</style>
+{% endblock styles %}
+<div class="flex flex-wrap justify-between items-center mb-3">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="text-lg font-semibold">
+            {% trans "Skill Zone" %}
+        </h1>
+    </div>
+
+    <div class="flex flex-wrap gap-1">
+        <form hx-get="{% url 'skill-zone-filter' %}" onsubmit="event.preventDefault()" id="filterForm" hx-target='#skill_zone_container' class="d-flex gap-3">
+            <div class="oh-input-group oh-input__search-group relative">
+                <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+                <input 
+                    type="text" 
+                    class="
+                        text-color-600 
+                        ps-8 p-1.5 pb-2 
+                        placeholder:text-xs 
+                        placeholder:text-dark-100 
+                        w-full 
+                        border border-primary-500 rounded-md 
+                        focus-visible:outline-0 
+                        text-sm [transition:.3s] 
+                        focus:border-primary-600
+                    " 
+                    aria-label="Search Input"
+                    placeholder="{% trans 'Search' %}" 
+                    name="search" 
+                    hx-get="{% url 'skill-zone-filter' %}"
+                    onkeyup="$('.filterButton').click()" 
+                />
+            </div>
+
+            <div class="relative dropdown-wrapper">
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <span
+                        @click="open = !open" 
+                        onclick="event.preventDefault()"
+                        class="
+                            px-5 py-2 
+                            h-full bg-[white] 
+                            rounded-md 
+                            text-xs 
+                            flex items-center gap-2 
+                            border border-primary-500 
+                            hover:border-primary-600 
+                            transition duration-300 
+                            cursor-pointer
+                        "
+                    >
+                        <img src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}" 
+                            alt="{% trans 'Filter' %}" 
+                            width="15"
+                            class="mt-[-1px]"
+                        />
+                        {% trans "Filter" %}
+                    </span>
+
+                    <div class="
+                            absolute right-0
+                            z-10 p-3 
+                            bg-white 
+                            rounded-lg 
+                            [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] 
+                            min-w-[400px] 
+                        " 
+                        x-show="open"
+                        style="display: none" 
+                        @click.outside="open = false"
+                    >
+                        <div class="oh-dropdown__filter-body">
+                            <div class="oh-accordion oh-accordion--show">
+                                <div class="oh-accordion-header">{% trans "Candidate Filter" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label"
+                                                    for="{{f.form.candidate_id.id_for_label}}">{{f.form.candidate_id.label}}</label>
+                                                {{f.form.candidate_id}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label"
+                                                    for="{{f.form.candidate_id__recruitment_id.id_for_label}}">{{f.form.candidate_id__recruitment_id.label}}</label>
+                                                {{f.form.candidate_id__recruitment_id}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label"
+                                                    for="{{f.form.candidate_id__job_position_id.id_for_label}}">{{f.form.candidate_id__job_position_id.label}}</label>
+                                                {{f.form.candidate_id__job_position_id}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label"
+                                                    for="{{f.form.candidate_id__rejected_candidate__reject_reason_id.id_for_label}}">
+                                                    {% trans "Reject Reason" %}
+                                                </label>
+                                                {{f.form.candidate_id__rejected_candidate__reject_reason_id}}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label"
+                                                    for="{{f.form.scheduled_from.id_for_label}}">{{f.form.scheduled_from.label}}</label>
+                                                {{f.form.scheduled_from}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label"
+                                                    for="{{f.form.scheduled_till.id_for_label}}">{{f.form.scheduled_till.label}}</label>
+                                                {{f.form.scheduled_till}}
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-sm-12 col-md-12 col-lg-6 mb-2">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label"
+                                                    for="{{f.form.candidate_id__offer_letter_status.id_for_label}}">{% trans "Offer Letter Status" %}</label>
+                                                {{f.form.candidate_id__offer_letter_status}}
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+                                            <div class="oh-input-group">
+                                                <label class="oh-label"
+                                                    for="{{f.form.is_active.id_for_label}}">{{f.form.is_active.label}}</label>
+                                                {{f.form.is_active}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                                <div class="flex justify-end ">
+                                    <button  
+                                        class="
+                                            filterButton 
+                                            px-4 py-2 
+                                            bg-primary-600 
+                                            text-white text-xs 
+                                            rounded-md 
+                                            flex items-center gap-2 
+                                            hover:bg-primary-800 
+                                            transition duration-300
+                                        "
+                                        id="applyFilter"
+                                    >
+                                        <img src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}"  
+                                            alt="{% trans 'Filter' %}" 
+                                            class="invert mt-[-1px]"
+                                            width="15"
+                                        />
+                                        {% trans "Filter" %}
+                                    </button>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="oh-btn-group ml-2">
+            <a class="oh-btn oh-btn--secondary oh-btn--shadow" data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal" hx-get="{% url 'skill-zone-create' %}"
+                hx-target="#objectCreateModalTarget">
+                <ion-icon name="add-outline" class="me-1"></ion-icon>
+                {% trans "Create" %}
+            </a>
+        </div>
+    </div>
+</div>
+{% include "generic/filter_tags.html" %}

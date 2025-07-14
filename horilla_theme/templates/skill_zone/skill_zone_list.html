@@ -1,0 +1,373 @@
+{% load i18n static %}
+{% if skill_zones %}
+    <div class="accordion-wrapper shadow-card p-3">
+        {% for skill_zone in skill_zones %}
+        <div
+            class="
+                oh-accordion accordion-item 
+                rounded-md 
+                overflow-hidden
+            "
+        >
+            <div
+                class="
+                    oh-accordion-header 
+                    no-after 
+                    w-full
+                    flex justify-between items-center 
+                    border border-primary-600 
+                    transition-all
+                    h-12
+                "
+                role="button"
+            >
+                <div class="flex items-center gap-2">
+                    <span
+                        class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs"
+                        title="{{skill_zone.list|length}} Candidate"
+                    >
+                        {{skill_zone.list|length}}
+                    </span>
+                    <span class="text-base" >
+                    {{skill_zone.grouper.title|title}}
+                    </span>
+                </div>
+
+                {% if perms.recruitment.add_skillzonecandidate or perms.recruitment.change_skillzone or perms.recruitment.delete_skillzone %}
+                    <div class="oh-btn-group">
+                        {% if perms.recruitment.add_skillzonecandidate %}
+                            <a
+                                class="oh-btn oh-btn--light-bkg w-100"
+                                onclick="event.stopPropagation();"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                hx-get="{% url 'skill-zone-cand-create' skill_zone.grouper.id %}"
+                                hx-target="#genericModalBody"
+                                title="Add candidate"
+                            >
+                                <ion-icon name="person-add-outline"></ion-icon>
+                            </a>
+                        {% endif %}
+
+                        {% if perms.recruitment.change_skillzone %}
+                            <a
+                                onclick="event.stopPropagation();"
+                                hx-get="{% url 'skill-zone-update' skill_zone.grouper.id %}"
+                                hx-target="#objectUpdateModalTarget"
+                                data-toggle="oh-modal-toggle"
+                                data-target="#objectUpdateModal"
+                                class="oh-btn oh-btn--light-bkg w-100"
+                                title="{% trans 'Edit' %}"
+                                ><ion-icon name="create-outline"></ion-icon
+                            ></a>
+
+                            {% if skill_zone.grouper.is_active %}
+                                <form
+                                    action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"
+                                    onsubmit="return confirm(`{% trans 'Do you want to archive this skill zone ?' %}`)"
+                                    method="post"
+                                >
+                                    {% csrf_token %}
+                                    <button
+                                        onclick="event.stopPropagation();"
+                                        type="submit"
+                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                        title="{% trans 'Archive' %}"
+                                    >
+                                        <ion-icon name="archive"></ion-icon>
+                                    </button>
+                                </form>
+                            {% else %}
+                                <form
+                                    action="{% url 'skill-zone-archive' skill_zone.grouper.id %}"
+                                    onsubmit="return confirm(`{% trans 'Do you want to unarchive this skill zone?' %}`)"
+                                    method="post"
+                                >
+                                    {% csrf_token %}
+                                    <button
+                                        onclick="event.stopPropagation();"
+                                        type="submit"
+                                        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                        title="{% trans 'Un-Archive' %}"
+                                    >
+                                        <ion-icon name="archive"></ion-icon>
+                                    </button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+
+                        {% if perms.recruitment.delete_skillzone %}
+                            <form
+                                hx-post="{% url 'skill-zone-delete' skill_zone.grouper.id %}?view=list"
+                                hx-confirm="{% trans 'Are you sure want to delete this skill zone?' %}"
+                            >
+                                {% csrf_token %}
+                                <button
+                                    onclick="event.stopPropagation();"
+                                    type="submit"
+                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                    title="{% trans 'Remove' %}"
+                                >
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="oh-accordion-body transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                <div class="py-3">
+                    <div class="overflow-auto max-h-[400px] overflow-x-auto">
+                        {% if skill_zone.list %}
+                            <table class="fixed-table w-full">
+                                <thead class="sticky top-0 bg-[white] text-left z-5">
+                                    <tr class="border-b border-[#ececec]">
+                                        <th class="stickyleft text-sm font-medium text-left p-3" >{% trans "Candidate" %}</th>
+                                        <th class="text-sm font-medium text-left p-3">{% trans "Reason" %}</th>
+                                        <th class="text-sm font-medium text-left p-3">{% trans "Added on" %}</th>
+                                        <th class="text-sm font-medium text-left p-3">{% trans "Resume" %}</th>
+                                        {% if perms.recruitment.change_skillzonecandidate or perms.recruitment.delete_skillzonecandidate %}
+                                            <th class="text-sm font-medium p-3 text-center">{% trans "Actions" %}</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for sz_candidate in skill_zone.list %}
+                                        <tr 
+                                            class="border-b border-[#f3f3f3]"
+                                            onclick="window.location.href = `{% url 'candidate-view-individual' sz_candidate.candidate_id.id %}` "
+                                        >
+                                            <td class="stickyleft text-sm text-left p-3 text-[#666]">
+                                                <div class="oh-profile oh-profile--md">
+                                                    <div class="oh-profile__avatar mr-1">
+                                                        <img
+                                                            src="{{sz_candidate.candidate_id.get_avatar}}"
+                                                            alt=""
+                                                            class="oh-profile__image oh-table-img"
+                                                            width="30"
+                                                        />
+                                                    </div>
+                                                    <span>{{sz_candidate.candidate_id.get_full_name}}</span>
+                                                </div>
+                                            </td>
+                                            <td class="text-sm text-left p-3 text-[#666]">
+                                                {{sz_candidate.reason}}
+                                            </td>
+                                            <td class="text-sm text-left p-3 text-[#666]">
+                                                {{sz_candidate.added_on}}
+                                            </td>
+                                            <td class="text-sm text-left p-3 text-[#666]">
+                                                <a
+                                                    onclick="event.stopPropagation()"
+                                                    class="oh-btn oh-btn--light inline-flex"
+                                                    href="{{sz_candidate.candidate_id.resume.url}}"
+                                                    target="_blank"
+                                                    title="{% trans 'Resume' %}"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    <span
+                                                        class="oh-file-icon oh-file-icon--pdf"
+                                                    ></span>
+                                                    &nbsp {% trans "View" %}
+                                                </a>
+                                            </td>
+                                            {% if perms.recruitment.change_skillzonecandidate or perms.recruitment.delete_skillzonecandidate %}
+                                                <td onclick="event.stopPropagation()">
+                                                    <div class="oh-btn-group">
+                                                        {% if perms.recruitment.change_skillzonecandidate %}
+                                                            <button
+                                                                class="oh-btn oh-btn--light-bkg w-100"
+                                                                title="{% trans 'Edit' %}"
+                                                                data-toggle="oh-modal-toggle"
+                                                                data-target="#genericModal"
+                                                                hx-get="{% url 'skill-zone-cand-edit' sz_candidate.id %}"
+                                                                hx-target="#genericModalBody"
+                                                            >
+                                                                <ion-icon
+                                                                    name="create-outline"
+                                                                ></ion-icon>
+                                                            </button>
+                                                        {% endif %} 
+                                                        {% if perms.recruitment.delete_skillzonecandidate %}
+                                                            <form
+                                                                action="{% url 'skill-zone-cand-delete' sz_candidate.id  %}"
+                                                                onsubmit="return confirm(`{% trans 'Do you want to remove this candidate' %}`)"
+                                                                method="post"
+                                                                onsubmit="Are you sure want to delete this candidate?"
+                                                                class="w-100"
+                                                            >
+                                                                {% csrf_token %}
+                                                                <button
+                                                                    type="submit"
+                                                                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                                                    title="Remove"
+                                                                >
+                                                                    <ion-icon
+                                                                        name="trash-outline"
+                                                                    ></ion-icon>
+                                                                </button>
+                                                            </form>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                            {% if skill_zone.list.has_next or skill_zone.list.has_previous %}
+                                <div
+                                    class="flex justify-between sticky bottom-0 items-center mt-4 w-full inset-0"
+                                >
+                                    <p class="text-xs text-[#666]">{% trans "Page" %} {{ skill_zone.list.number }} {% trans "of" %} {{ skill_zone.list.paginator.num_pages }}</p>
+                                    <div class="flex gap-3 text-[#666] items-center">
+                                        {% if skill_zone.list.has_previous %}
+                                            <button
+                                                class="text-xs hover:text-primary-600 transition duration-300"
+                                                hx-target="#skill_zone_container"
+                                                hx-get="{% url 'skill-zone-filter' %}?{{pd}}&{{skill_zone.dynamic_name}}={{ skill_zone.list.previous_page_number }}"
+                                            >
+                                                <i class="fa-solid fa-arrow-left"></i>
+                                            </button>
+                                        {% endif %}
+                                        {{ skill_zone.list.number }} / {{ skill_zone.list.paginator.num_pages }}
+                                        {% if skill_zone.list.has_next %}
+                                            <button
+                                                class="text-xs hover:text-primary-600 transition duration-300"
+                                                hx-target="#skill_zone_container"
+                                                hx-get="{% url 'skill-zone-filter' %}?{{pd}}&{{skill_zone.dynamic_name}}={{ skill_zone.list.next_page_number }}"
+                                            >
+                                                <i class="fa-solid fa-arrow-right"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <div class="oh-wrapper h-full" align="center" >
+                                <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+                                    <div class="flex flex-col items-center justify-center h-full">
+                                        <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                                        <p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+    {% if skill_zone.has_next or skill_zone.has_previous %}
+        <div
+            class="flex justify-between sticky bottom-0 items-center mt-4 w-full inset-0"
+        >
+            <p class="text-xs text-[#666]">{% trans "Page" %} {{ skill_zone.number }} {% trans "of" %} {{ skill_zone.paginator.num_pages }}</p>
+            <div class="flex gap-3 text-[#666] items-center">
+                {% if skill_zone.has_previous %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#skill_zone_container"
+                        hx-get="{% url 'skill-zone-filter' %}?{{pd}}&{{skill_zone.dynamic_name}}={{ skill_zone.previous_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                {% endif %}
+                {{ skill_zone.number }} / {{ skill_zone.paginator.num_pages }}
+                {% if skill_zone.has_next %}
+                    <button
+                        class="text-xs hover:text-primary-600 transition duration-300"
+                        hx-target="#skill_zone_container"
+                        hx-get="{% url 'skill-zone-filter' %}?{{pd}}&{{skill_zone.dynamic_name}}={{ skill_zone.next_page_number }}"
+                    >
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% else %}
+    <div class="oh-wrapper h-full" align="center" >
+        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+            <div class="flex flex-col items-center justify-center h-full">
+                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                <p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% comment %}
+<div class="oh-pagination">
+	<span class="oh-pagination__page">
+		{% trans "Page" %} {{ skill_zones.number }} {% trans "of" %} {{
+		skill_zones.paginator.num_pages }}.
+	</span>
+	<nav class="oh-pagination__nav">
+		<div class="oh-pagination__input-container me-3">
+			<span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+			<input
+				type="number"
+				name="page"
+				class="oh-pagination__input"
+				value="{{skill_zones.number}}"
+				hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list"
+				hx-target="#skill_zone_container"
+				min="1"
+			/>
+			<span class="oh-pagination__label"
+				>{% trans "of" %} {{skill_zones.paginator.num_pages}}</span
+			>
+		</div>
+		<ul class="oh-pagination__items">
+			{% if skill_zones.has_previous %}
+			<li class="oh-pagination__item oh-pagination__item--wide">
+				<a
+					hx-target="#skill_zone_container"
+					hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list&page=1"
+					class="oh-pagination__link"
+					>{% trans "First" %}</a
+				>
+			</li>
+			<li class="oh-pagination__item oh-pagination__item--wide">
+				<a
+					hx-target="#skill_zone_container"
+					hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list&page={{ skill_zones.previous_page_number }}"
+					class="oh-pagination__link"
+					>{% trans "Previous" %}</a
+				>
+			</li>
+			{% endif %} {% if skill_zones.has_next %}
+			<li class="oh-pagination__item oh-pagination__item--wide">
+				<a
+					hx-target="#skill_zone_container"
+					hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list&page={{ skill_zones.next_page_number }}"
+					class="oh-pagination__link"
+					>{% trans "Next" %}</a
+				>
+			</li>
+			<li class="oh-pagination__item oh-pagination__item--wide">
+				<a
+					hx-target="#skill_zone_container"
+					hx-get="{% url 'skill-zone-filter' %}?{{pd}}&view=list&page={{ skill_zones.paginator.num_pages }}"
+					class="oh-pagination__link"
+					>{% trans "Last" %}</a
+				>
+			</li>
+			{% endif %}
+		</ul>
+	</nav>
+</div>
+{% else %}
+<div class="oh-404">
+	<img
+		style="width: 150px; height: 150px"
+		src="{% static 'images/ui/no-results.png' %}"
+		class="oh-404__image mb-4"
+	/>
+	<h5 class="oh-404__subtitle">{% trans "No search result found!" %}</h5>
+</div> {% endcomment %}
