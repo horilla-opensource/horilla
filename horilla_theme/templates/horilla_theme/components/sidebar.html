@@ -8,7 +8,10 @@
     <nav class="space-y-2 overflow-hidden overflow-y-auto h-[calc(100vh_-_95px)] sidebar-scroll">
       {% include "horilla_theme/components/sidebar/top_menu.html" %}
       {% for menues in sidebar %}
-        <button class="sideboxmain group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300" title="{{ menues.menu }}">
+        <button class="sideboxmain group flex items-center gap-3 p-3 rounded-full transition duration-300"
+          data-menu="{{ menues.menu }}"
+          title="{{ menues.menu }}">
+
           <img src="{% static menues.img_src %}" alt="" style="filter: brightness(0) invert(0);" class="w-4.5 h-4.5 transition duration-300 group-hover:filter group-hover:brightness-0 group-hover:invert" />
           <div class="sidebox absolute shadow-card mb-3 bg-white min-w-56 left-[75px]">
             <h5 class="border-b border-b-dark-50 py-3 px-3 font-semibold text-left text-[15px]">{{ menues.menu }}</h5>
@@ -100,4 +103,28 @@ function removeId(element, storeKey = "selectedInstances") {
     ids = JSON.stringify(ids);
     $(`#${storeKey}`).attr("data-ids", ids);
 }
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const allMenus = document.querySelectorAll(".sideboxmain");
+
+    // Apply active class from localStorage
+    const activeMenu = localStorage.getItem("activeSidebarMenu");
+    if (activeMenu) {
+      allMenus.forEach(btn => {
+        if (btn.dataset.menu === activeMenu) {
+          btn.classList.add("active");
+        }
+      });
+    }
+
+    // Set new active menu on click
+    allMenus.forEach(btn => {
+      btn.addEventListener("click", function () {
+        localStorage.setItem("activeSidebarMenu", btn.dataset.menu);
+        allMenus.forEach(el => el.classList.remove("active"));
+        btn.classList.add("active");
+      });
+    });
+  });
 </script>

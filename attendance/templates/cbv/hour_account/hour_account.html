@@ -135,7 +135,7 @@
         },
         success: function(response) {
             window.location.href = url
-        },hx-get="{% url "attendances-tab-view" %}?{{request.GET.urlencode}}"
+        },
         error: function(xhr, status, error) {
             console.error(error);
         }

@@ -1,94 +1,97 @@
 {% load i18n %}
-<div class="block lg:flex lg:items-center gap-3 mb-5 bg-[#f4f7fe] rounded-md p-3 lg:sticky top-0 z-10">
-  <div class="rounded-md overflow-hidden mb-3 lg:mb-0">
-    <img src="{{ candidate.get_avatar }}" alt="" width="120" class="rounded-md" />
-  </div>
-  <div class="block lg:flex items-center gap-2 justify-between flex-auto">
-    <div class="mb-3 lg:mb-0">
-      <h5 class="mb-1 font-medium text-sm">{{ candidate }}</h5>
-      <p class="text-[13px] text-[#565E6C] mb-1">
-        <i class="fa-solid fa-envelope pe-2"></i>
-        {{ candidate.get_email }}
-      </p>
-      <p class="text-[13px] text-[#565E6C] mb-1">
-        <i class="fa-solid fa-phone pe-2"></i> {{ candidate.phone }}
-      </p>
-      <p class="text-[13px] text-[#565E6C] mb-1">
-        <i class="fa-solid {% if candidate.gender == 'male' %}
-
-
-            fa-mars
-
-
-          {% elif candidate.gender == 'female' %}
-
-
-            fa-venus
-
-
-          {% else %}
-
-
-            fa-genderless
-
-
-          {% endif %} pe-2">
-
-        </i>
-        {{ candidate.get_gender_display }}
-      </p>
-    </div>
-  </div>
-</div>
 <div class="block lg:grid grid-cols-6 gap-3">
-  <div class="col-span-3 mb-3 lg:mb-0">
-    <div class="border border-dark-50 rounded-md p-3 h-full">
-      <h5 class="mb-1 font-medium text-sm">{% trans 'Personal Information' %}</h5>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Date of birth' %}</span>
-        <p class="text-xs font-semibold">{{ candidate.dob|date:'SHORT_DATE_FORMAT'|default:'None' }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Address' %}</span>
-        <p class="text-xs font-semibold">{{ candidate.address|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Country' %}</span>
-        <p class="text-xs font-semibold">{{ candidate.country|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'State' %}</span>
-        <p class="text-xs font-semibold">{{ candidate.state|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'City' %}</span>
-        <p class="text-xs font-semibold">{{ candidate.city|default:_('None') }}</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-span-3 mb-3 lg:mb-0">
-    <div class="border border-dark-50 rounded-md p-3 h-full">
-      <h5 class="mb-1 font-medium text-sm">{% trans 'Recruitment Information' %}</h5>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Recruitment' %}</span>
-        <p class="text-xs font-semibold">{{ candidate.stage_id.recruitment_id|default:'None' }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Applied Position' %}</span>
-        <p class="text-xs font-semibold">{{ candidate.job_position_id|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Current Stage' %}</span>
-        <p class="text-xs font-semibold">{{ candidate.stage_id|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Offer Letter Status' %}</span>
-        <p class="text-xs font-semibold">{{ candidate.get_offer_letter_status_display|default:_('None') }}</p>
-      </div>
-      <div class="mb-2">
-        <span class="font-medium text-xs text-[#565E6C]">{% trans 'Is Hired' %}?</span>
-        <p class="text-xs font-semibold">{% if candidate.is_hired %} Yes {% else %} No {% endif %}</p>
-      </div>
-    </div>
-  </div>
+	<div class="col-span-3 mb-3 lg:mb-0">
+		<div class="border border-dark-50 rounded-md p-3 h-full">
+			<h5 class="mb-1 font-medium text-sm">
+				{% trans 'Personal Information' %}
+			</h5>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'Date of birth' %}</span
+				>
+				<p class="text-xs font-semibold">
+					{{ candidate.dob|date:'SHORT_DATE_FORMAT'|default:'None' }}
+				</p>
+			</div>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'Address' %}</span
+				>
+				<p class="text-xs font-semibold">
+					{{ candidate.address|default:_('None') }}
+				</p>
+			</div>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'Country' %}</span
+				>
+				<p class="text-xs font-semibold">
+					{{ candidate.country|default:_('None') }}
+				</p>
+			</div>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'State' %}</span
+				>
+				<p class="text-xs font-semibold">
+					{{ candidate.state|default:_('None') }}
+				</p>
+			</div>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'City' %}</span
+				>
+				<p class="text-xs font-semibold">
+					{{ candidate.city|default:_('None') }}
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="col-span-3 mb-3 lg:mb-0">
+		<div class="border border-dark-50 rounded-md p-3 h-full">
+			<h5 class="mb-1 font-medium text-sm">
+				{% trans 'Recruitment Information' %}
+			</h5>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'Recruitment' %}</span
+				>
+				<p class="text-xs font-semibold">
+					{{ candidate.stage_id.recruitment_id|default:'None' }}
+				</p>
+			</div>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'Applied Position' %}</span
+				>
+				<p class="text-xs font-semibold">
+					{{ candidate.job_position_id|default:_('None') }}
+				</p>
+			</div>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'Current Stage' %}</span
+				>
+				<p class="text-xs font-semibold">
+					{{ candidate.stage_id|default:_('None') }}
+				</p>
+			</div>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'Offer Letter Status' %}</span
+				>
+				<p class="text-xs font-semibold">
+					{{ candidate.get_offer_letter_status_display|default:_('None') }}
+				</p>
+			</div>
+			<div class="mb-2">
+				<span class="font-medium text-xs text-[#565E6C]"
+					>{% trans 'Is Hired' %}?</span
+				>
+				<p class="text-xs font-semibold">
+					{% if candidate.is_hired %} Yes {% else %} No {% endif %}
+				</p>
+			</div>
+		</div>
+	</div>
 </div>

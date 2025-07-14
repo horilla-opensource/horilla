@@ -1,2 +1,7 @@
 {% load i18n static %}
-<a href="/" title="{% trans "Dashboard" %}" class="flex items-center gap-3 p-3 rounded-full transition duration-300 bg-primary-600"><img src="{% static 'images/ui/dashboard.svg' %}" alt="" class="w-4.5 h-4.5 transition duration-300 filter brightness-1 invert" /></a>
+<a href="/" title="{% trans 'Dashboard' %}"
+   class="sideboxmain group flex items-center gap-3 p-3 rounded-full transition duration-300"
+   data-menu="Dashboard">
+  <img src="{% static 'images/ui/dashboard.svg' %}" alt="" style="filter: brightness(0) invert(0);"
+       class="w-4.5 h-4.5 transition duration-300 filter brightness-1 invert" />
+</a>

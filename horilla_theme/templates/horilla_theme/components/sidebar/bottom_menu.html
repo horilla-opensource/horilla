@@ -1,6 +1,9 @@
 {% load basefilters i18n horillafilters %}
 {% if request.user|config_perms %}
-  <button title="{% trans 'Configurations' %}" class="sideboxmain group flex items-center gap-3 p-3 rounded-full bg-[#0000000e] hover:bg-primary-600 transition duration-300">
+  <button title="{% trans 'Configurations' %}"
+    class="sideboxmain group flex items-center gap-3 p-3 rounded-full transition duration-300"
+    data-menu="Configuration">
+
     <svg style="filter: brightness(0) invert(0);" class="w-4.5 h-4.5 transition duration-300 hover:filter group-hover:filter group-hover:brightness-0 group-hover:invert" fill="#ffffff" height="20" width="24" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 482.568 482.568" xml:space="preserve" stroke="#ffffff">
       <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
       <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>

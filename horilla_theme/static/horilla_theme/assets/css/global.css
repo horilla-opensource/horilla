@@ -1017,10 +1017,9 @@ input[type="checkbox"].custom-checkbox:hover {
   width: 30%;
 }
 
-.select2-container--default {
+/* .select2-container--default {
   padding-bottom: 0.75rem;
-}
-
+} */
 #accordionToggle:focus-visible {
   outline: none;
 }
@@ -1030,3 +1029,37 @@ input[type="checkbox"].custom-checkbox:hover {
   color: #a9a9a9;
   cursor: no-drop;
 }
+
+/* .bg-primary-900 {
+  background-color: #672419;
+}
+.bg-primary-800 {
+  background-color: #AC3B2A;
+}
+.bg-primary-700 {
+  background-color: #ce4732;
+}
+.bg-primary-600 {
+  background-color: #E54F38;
+}
+.bg-primary-500 {
+  background-color: #F7C8C1;
+}
+.bg-primary-400 {
+  background-color: #FBE5E1;
+}
+.bg-primary-300 {
+  background-color: #FCEDEB;
+}
+.bg-primary-200 {
+  background-color: #FEF6F5;
+}
+.bg-primary-100 {
+  background-color: #FFF5F1;
+}
+.bg-primary-50 {
+  background-color: #f6f6f6;
+}
+.text-primary-600 {
+  color: #e54f38;
+} */
