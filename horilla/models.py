@@ -91,7 +91,7 @@ class HorillaModel(models.Model):
         Override the save method to automatically set the created_by and
         modified_by fields based on the current request user.
         """
-        self.full_clean()
+        # self.full_clean()
 
         request = getattr(_thread_locals, "request", None)
 
