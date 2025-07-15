@@ -3,7 +3,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 1,
         "fields": {
-            "created_at": "2025-04-30T06:35:03.533Z",
+            "created_at": "2025-06-30T06:35:03.533Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -27,7 +27,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 2,
         "fields": {
-            "created_at": "2025-04-30T06:35:03.555Z",
+            "created_at": "2025-06-30T06:35:03.555Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -51,7 +51,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 3,
         "fields": {
-            "created_at": "2025-04-30T06:35:03.575Z",
+            "created_at": "2025-06-30T06:35:03.575Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -75,7 +75,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 4,
         "fields": {
-            "created_at": "2025-04-30T06:35:03.600Z",
+            "created_at": "2025-06-30T06:35:03.600Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -99,7 +99,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 5,
         "fields": {
-            "created_at": "2025-04-30T06:35:03.620Z",
+            "created_at": "2025-06-30T06:35:03.620Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -123,7 +123,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 6,
         "fields": {
-            "created_at": "2025-04-30T06:35:03.644Z",
+            "created_at": "2025-06-30T06:35:03.644Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -147,7 +147,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 7,
         "fields": {
-            "created_at": "2025-05-02T09:28:27.362Z",
+            "created_at": "2025-06-02T09:28:27.362Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -171,7 +171,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 8,
         "fields": {
-            "created_at": "2025-05-02T09:48:13.418Z",
+            "created_at": "2025-06-02T09:48:13.418Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -195,7 +195,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 9,
         "fields": {
-            "created_at": "2025-05-02T10:28:32.477Z",
+            "created_at": "2025-06-02T10:28:32.477Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -219,7 +219,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 10,
         "fields": {
-            "created_at": "2025-05-07T08:25:05.235Z",
+            "created_at": "2025-06-07T08:25:05.235Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -243,7 +243,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 11,
         "fields": {
-            "created_at": "2025-05-09T10:53:19.511Z",
+            "created_at": "2025-06-09T10:53:19.511Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,
@@ -267,7 +267,7 @@
         "model": "horilla_automations.mailautomation",
         "pk": 12,
         "fields": {
-            "created_at": "2025-05-09T11:43:48.332Z",
+            "created_at": "2025-06-09T11:43:48.332Z",
             "created_by": 1,
             "modified_by": 1,
             "is_active": true,

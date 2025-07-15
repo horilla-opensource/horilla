@@ -223,8 +223,8 @@
         </div>
     </div>
 </div>
+<script src="{% static '/index/country.js' %}"></script>
 <script>
-    {% include 'country.js' %}
     {% include 'select2.js' %}
     var resume = "{{resume.file.url}}"
     {% if resume %}

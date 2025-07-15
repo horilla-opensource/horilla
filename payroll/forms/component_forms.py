@@ -903,69 +903,81 @@ class ReimbursementForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if self.instance.pk:
-            employee_id = self.instance.employee_id
-            type = self.instance.type
 
-        else:
-            employee_id = request.user.employee_get
-            type = cleaned_data["type"]
+        type_ = cleaned_data.get("type")
+        employee = cleaned_data.get("employee_id")
 
-        available_points = BonusPoint.objects.filter(employee_id=employee_id).first()
-        if type == "bonus_encashment":
-            if self.instance.pk:
-                bonus_to_encash = self.instance.bonus_to_encash
-            else:
-                bonus_to_encash = cleaned_data["bonus_to_encash"]
+        if not type_ or not employee:
+            return cleaned_data
 
-            if available_points.points < bonus_to_encash:
-                raise forms.ValidationError(
-                    {"bonus_to_encash": "Not enough bonus points to redeem"}
-                )
-            if bonus_to_encash <= 0:
-                raise forms.ValidationError(
-                    {"bonus_to_encash": "Points must be greater than zero to redeem."}
-                )
-        if type == "leave_encashment":
-            if self.instance.pk:
-                leave_type_id = self.instance.leave_type_id
-                cfd_to_encash = self.instance.cfd_to_encash
-                ad_to_encash = self.instance.ad_to_encash
+        if type_ == "bonus_encashment":
+            bonus_to_encash = (
+                self.instance.bonus_to_encash
+                if self.instance.pk
+                else cleaned_data.get("bonus_to_encash")
+            )
+            available_points = BonusPoint.objects.filter(employee_id=employee).first()
+
+            if bonus_to_encash is not None:
+                if bonus_to_encash <= 0:
+                    self.add_error(
+                        "bonus_to_encash", "Points must be greater than zero to redeem."
+                    )
+                elif not available_points or available_points.points < bonus_to_encash:
+                    self.add_error(
+                        "bonus_to_encash", "Not enough bonus points to redeem"
+                    )
+
+        elif type_ == "leave_encashment":
+            leave_type = (
+                self.instance.leave_type_id
+                if self.instance.pk
+                else cleaned_data.get("leave_type_id")
+            )
+            cfd_to_encash = (
+                self.instance.cfd_to_encash
+                if self.instance.pk
+                else cleaned_data.get("cfd_to_encash", 0)
+            )
+            ad_to_encash = (
+                self.instance.ad_to_encash
+                if self.instance.pk
+                else cleaned_data.get("ad_to_encash", 0)
+            )
+
+            if not leave_type:
+                self.add_error("leave_type_id", "This field is required")
             else:
-                leave_type_id = cleaned_data["leave_type_id"]
-                cfd_to_encash = cleaned_data["cfd_to_encash"]
-                ad_to_encash = cleaned_data["ad_to_encash"]
-            encashable_leaves = self.get_encashable_leaves(employee_id)
-            if leave_type_id is None:
-                raise forms.ValidationError({"leave_type_id": "This field is required"})
-            elif leave_type_id not in encashable_leaves:
-                raise forms.ValidationError(
-                    {"leave_type_id": "This leave type is not encashable"}
-                )
-            else:
-                AvailableLeave = get_horilla_model_class(
-                    app_label="leave", model="availableleave"
-                )
-                available_leave = AvailableLeave.objects.filter(
-                    leave_type_id=leave_type_id, employee_id=employee_id
-                ).first()
-                if cfd_to_encash < 0:
-                    raise forms.ValidationError(
-                        {"cfd_to_encash": _("Value can't be negative.")}
-                    )
-                if ad_to_encash < 0:
-                    raise forms.ValidationError(
-                        {"ad_to_encash": _("Value can't be negative.")}
-                    )
-                if cfd_to_encash > available_leave.carryforward_days:
-                    raise forms.ValidationError(
-                        {"cfd_to_encash": _("Not enough carryforward days to redeem")}
-                    )
-                if ad_to_encash > available_leave.available_days:
-                    raise forms.ValidationError(
-                        {"ad_to_encash": _("Not enough available days to redeem")}
-                    )
+                encashable = self.get_encashable_leaves(employee)
+                if leave_type not in encashable:
+                    self.add_error("leave_type_id", "This leave type is not encashable")
+                else:
+                    AvailableLeave = get_horilla_model_class("leave", "availableleave")
+                    available_leave = AvailableLeave.objects.filter(
+                        leave_type_id=leave_type, employee_id=employee
+                    ).first()
+
+                    if available_leave:
+                        if cfd_to_encash < 0:
+                            self.add_error(
+                                "cfd_to_encash", _("Value can't be negative.")
+                            )
+                        elif cfd_to_encash > available_leave.carryforward_days:
+                            self.add_error(
+                                "cfd_to_encash",
+                                _("Not enough carryforward days to redeem"),
+                            )
+
+                        if ad_to_encash < 0:
+                            self.add_error(
+                                "ad_to_encash", _("Value can't be negative.")
+                            )
+                        elif ad_to_encash > available_leave.available_days:
+                            self.add_error(
+                                "ad_to_encash", _("Not enough available days to redeem")
+                            )
+
+        return cleaned_data
 
     def save(self, commit: bool = True) -> Any:
         multiple_attachment_ids = []
