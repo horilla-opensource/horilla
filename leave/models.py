@@ -291,6 +291,16 @@ class LeaveType(HorillaModel):
                 )
 
     def save(self, *args, **kwargs):
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
+
         if (
             self.carryforward_type != "no carryforward"
             and self.carryforward_max is None
