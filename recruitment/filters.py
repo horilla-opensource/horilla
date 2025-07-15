@@ -550,7 +550,7 @@ class SkillZoneFilter(FilterSet):
         ]
 
 
-class SkillZoneCandFilter(FilterSet):
+class SkillZoneCandFilter(HorillaFilterSet):
     """
     Skillzone Candidate FIlter
     """

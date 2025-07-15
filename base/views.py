@@ -3470,9 +3470,17 @@ def employee_permission_assign(request, pk=None):
 
     context = {}
     template = "base/auth/permission.html"
-    if request.GET.get("profile_tab") and request.GET.get("employee_id"):
+    path = request.path
+    parts = path.strip("/").split("/")
+    id_part = parts[-1]
+    emp_id = None
+    if id_part != "employee-permission-assign":
+        emp_id = id_part
+    else:
+        id_part = None
+    if emp_id:
         template = "tabs/group_permissions.html"
-        employees = Employee.objects.filter(id=request.GET["employee_id"])
+        employees = Employee.objects.filter(id=emp_id)
         context["employee"] = employees.first()
     else:
         employees = Employee.objects.filter(

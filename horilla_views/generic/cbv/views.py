@@ -1016,6 +1016,8 @@ class HorillaListView(ListView):
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
+        if not self.search_url:
+            self.search_url = self.request.path
         context["view_id"] = self.view_id
         context["columns"] = self.visible_column
         context["hidden_columns"] = list(set(self.columns) - set(self.visible_column))

@@ -3204,9 +3204,10 @@ def employee_note_delete(request, note_id):
     """
 
     note = EmployeeNote.objects.get(id=note_id)
+    emp_id = note.employee_id.id
     note.delete()
     messages.success(request, _("Note deleted successfully."))
-    return HttpResponse()
+    return redirect(f"/employee/note-tab/{emp_id}")
 
 
 @login_required
