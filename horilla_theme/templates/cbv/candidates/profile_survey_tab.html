@@ -1,0 +1,65 @@
+{% load i18n %}
+{% load horillafilters %}
+{% load static %}
+
+{% if candidate.recruitmentsurveyanswer_set.all %}
+            {% for surveys in candidate.recruitmentsurveyanswer_set.all %}
+            <div class="oh-survey__table">
+              {% for question, answer_list in surveys.answer.items %}
+              {% if question != "csrfmiddlewaretoken" %}
+                  <div class="oh-survey__table-row">
+                    <div class="oh-survey__table-col">
+                      {% if question|slice:"0:11" == "percentage_" %}
+                        {{ question|slice:"11:" }}
+                      {% elif question|slice:"0:7" == "rating_" %}
+                        {{ question|slice:"7:" }}
+                      {% elif question|slice:"0:5" == "file_" %}
+                        {{ question|slice:"5:" }}
+                      {% else %}
+                        {{ question }}
+                      {% endif %}
+                    </div>
+                    <div class="oh-survey__table-col">
+                      {% if answer_list|length > 1 %}
+                        {{ answer_list|join:", " }}
+                      {% else %}
+                        {% if answer_list.0 == "on" or answer_list.0 == "off"%}
+                          {{ answer_list.0|on_off }}
+                        {% elif question|slice:"0:11" == "percentage_" %}
+                          {{ answer_list.0 }}%
+                        {% elif question|slice:"0:5" == "file_" %}
+                          <a href="/media/{{ answer_list.0 }}" target="_blank">{{ answer_list.0 }}</a>
+                        {% elif question|slice:"0:7" == "rating_" %}
+                            <div class="oh-rate">
+                              <input type="radio" id="star5{{question.id}}" value="5" disabled {% if answer_list.0 == '5' %} checked {% endif %} />
+                              <label for="star5{{question.id}}" title="5 Stars">5 {% trans "Stars" %}</label>
+                              <input type="radio" id="star4{{question.id}}" value="4" disabled  {% if answer_list.0 == '4' %} checked {% endif %} />
+                              <label for="star4{{question.id}}" title="4 Stars">4 {% trans "Stars" %}</label>
+                              <input type="radio" id="star3{{question.id}}" value="3" disabled  {% if answer_list.0 == '3' %} checked {% endif %} />
+                              <label for="star3{{question.id}}" title="3 Stars">3 {% trans "Stars" %}</label>
+                              <input type="radio" id="star2{{question.id}}" value="2" disabled  {% if answer_list.0 == '2' %} checked {% endif %}  />
+                              <label for="star2{{question.id}}" title="2 Stars">2 {% trans "Stars" %}</label>
+                              <input type="radio" id="star1{{question.id}}" value="1" disabled  {% if answer_list.0 == '1' %} checked {% endif %} />
+                              <label for="star1{{question.id}}" title="1 Star">1 {% trans "Star" %}</label>
+                            </div>
+                        {% else %}
+                          {{ answer_list.0 }}
+                        {% endif %}
+                      {% endif %}
+                    </div>
+                  </div>
+              {% endif %}
+            {% endfor %}
+            </div>
+            {% endfor %}
+            {% else %}
+              <div class="oh-wrapper h-full" align="center">
+                  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+                      <div class="flex flex-col items-center justify-center h-full">
+                          <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                          <p class="text-[#666] mb-5">{% trans "No survey templates have been established yet." %}</p>
+                      </div>
+                  </div>
+              </div>
+            {% endif %}
+        </div>

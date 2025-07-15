@@ -1,0 +1,104 @@
+{% load i18n static %}
+<div class="bg-white rounded-md shadow-card p-3 mb-5 lg:mb-0">
+    <!-- Heading -->
+    <div class="flex items-center justify-between mb-3">
+        <h5 class="font-semibold text-sm">{{ candidate }}'s {% trans "Notes" %}</h5>
+    </div>
+
+    <!-- Add Note Form -->
+    <form hx-target="#noteContainerList" hx-select=".oh-activity-sidebar__qa-list"
+          hx-post="{% url 'add-note' candidate.id %}" id="commentForm"
+          hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');$('#commentButton').hide();">
+        {% csrf_token %}
+        <input type="text" name="description" id="commentInput"
+               class="oh-input w-full mt-2"
+               placeholder="{% trans 'Add notes' %}"
+               hx-on:keyup="toggleCommentButton(this);">
+        <button type="submit" id="commentButton"
+                class="oh-btn oh-btn--secondary mt-2"
+                style="display: none;">
+                <i class="fa-regular fa-square-plus"></i>
+            {% trans "Add" %}
+        </button>
+    </form>
+
+    <!-- Notes List -->
+    <div class="h-[calc(100vh_-_480px)] overflow-hidden overflow-y-auto mt-4">
+        <ol class="oh-activity-sidebar__qa-list" role="list" id="noteContainerList">
+            {% if candidate.stagenote_set.all %}
+                {% for note in candidate.stagenote_set.all %}
+                    <li class="fade-me-out border border-dark-50 p-3 rounded-md mb-2" id="candidateNoteItem{{note.id}}">
+                        <div class="flex justify-between">
+                            <span class="font-semibold text-sm">{{ note.description }}</span>
+                            <form method="POST"
+                                  hx-post="{% url 'note-delete-individual' note.id %}"
+                                  hx-confirm="{% trans 'Are you sure you want to delete this note?' %}"
+                                  hx-target="#candidateNoteItem{{note.id}}"
+                                  hx-swap="outerHTML"
+                                  hx-on-htmx-after-request="reloadMessage(this);$('#commentInput').val('');"
+                                  class="inline-block">
+                                {% csrf_token %}
+                                <button type="submit" class="bg-transparent border-0 p-0 cursor-pointer" title="{% trans 'Delete' %}">
+                                    <ion-icon name="trash-outline" style="font-size: 20px; color: #e54f38;"></ion-icon>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 mt-2 mb-2">
+                            {% for file in note.stage_files.all %}
+                                <a href="{{ file.files.url }}" target="_blank" rel="noopener noreferrer" id="candidateNoteFile{{file.id}}">
+                                    <span class="oh-file-icon oh-file-icon--pdf"
+                                          onmouseover="enlargeImage('{{ file.files.url }}', $(this)); $('#showImageContainer').addClass('enlarge-image-container');"
+                                          onmouseleave="hideEnlargeImage(); $('#showImageContainer').removeClass('enlarge-image-container');"
+                                          style="width: 40px; height: 40px;">
+                                        <img src="{% static 'images/ui/minus-icon.png' %}"
+                                             style="display: block; width: 50%; height: 50%;"
+                                             hx-get="{% url 'delete-individual-note-file' file.id %}"
+                                             hx-target="#candidateNoteFile{{file.id}}"
+                                             hx-swap="outerHTML"
+                                             hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+                                             onclick="event.stopPropagation(); event.preventDefault();" />
+                                    </span>
+                                </a>
+                            {% endfor %}
+
+                            <form hx-post="{% url 'add-more-files-individual' note.id %}"
+                                  hx-encoding="multipart/form-data"
+                                  hx-swap="innerHTML"
+                                  hx-target="#note"
+                                  class="add-files-form">
+                                {% csrf_token %}
+                                <label for="addFile_{{note.id}}" title="Add Files">
+                                    <ion-icon name="add-outline" style="font-size: 12px;border: 1px solid #818791; border-radius: 5px;" class="text-gray-700"></ion-icon>
+                                </label>
+                                <input type="file" name="files" id="addFile_{{note.id}}" class="d-none" multiple
+                                       onchange="submitForm(this)" hx-on:change="setTimeout(() => {reloadMessage(this);},100);">
+                                <input type="submit" class="d-none add_more_submit" value="save" />
+                            </form>
+                        </div>
+
+                        <p class="text-xs text-[#565E6C] mt-1">
+                            {% trans 'By' %} <span class="text-primary-600">{{ note.updated_by }}</span>
+                        </p>
+                        <p class="text-xs text-[#565E6C] mt-1">
+                            @ {{note.stage_id }} {% trans "stage" %}
+                        </p>
+
+                        <div style="width: 50%">
+                            <div id="enlargeDocContainer" class="enlargeDocContainer"></div>
+                        </div>
+                    </li>
+                {% endfor %}
+            {% else %}
+                <div class="oh-wrapper h-full" align="center">
+                    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+                        <div class="flex flex-col items-center justify-center h-full">
+                            <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+                            <p class="text-[#666] mb-5">{% trans "No notes have been added for this candidate" %}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </ol>
+    </div>
+</div>

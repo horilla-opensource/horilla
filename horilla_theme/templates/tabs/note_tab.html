@@ -77,11 +77,6 @@
                     <div class="flex justify-between">
                         <h3 class="font-semibold text-sm">{{ note.description }}</h3>
                         {% if perms.employee.delete_employeenote or request.user|is_reportingmanager %}
-                        {% comment %} <span class="cursor-pointer" hx-get="{% url 'employee-note-delete' note.id %}"
-                            hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
-                            hx-target="#employeeNote{{note.id}}" hx-swap="delete" title='{% trans "Delete" %}'>
-                            <ion-icon name="trash-outline" style="color: #e54f38;"></ion-icon>
-                        </span> {% endcomment %}
                         <form method="POST"
                                 hx-post="{% url 'employee-note-delete' note.id %}"
                                 hx-confirm="{% trans 'Are you sure you want to delete this note?' %}"

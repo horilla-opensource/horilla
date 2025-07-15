@@ -4,18 +4,18 @@
         {% for skill_zone in skill_zones %}
         <div
             class="
-                oh-accordion accordion-item 
-                rounded-md 
+                oh-accordion accordion-item
+                rounded-md
                 overflow-hidden
             "
         >
             <div
                 class="
-                    oh-accordion-header 
-                    no-after 
+                    oh-accordion-header
+                    no-after
                     w-full
-                    flex justify-between items-center 
-                    border border-primary-600 
+                    flex justify-between items-center
+                    border border-primary-600
                     transition-all
                     h-12
                 "
@@ -133,7 +133,7 @@
                                 </thead>
                                 <tbody>
                                     {% for sz_candidate in skill_zone.list %}
-                                        <tr 
+                                        <tr
                                             class="border-b border-[#f3f3f3]"
                                             onclick="window.location.href = `{% url 'candidate-view-individual' sz_candidate.candidate_id.id %}` "
                                         >
@@ -187,7 +187,7 @@
                                                                     name="create-outline"
                                                                 ></ion-icon>
                                                             </button>
-                                                        {% endif %} 
+                                                        {% endif %}
                                                         {% if perms.recruitment.delete_skillzonecandidate %}
                                                             <form
                                                                 action="{% url 'skill-zone-cand-delete' sz_candidate.id  %}"
