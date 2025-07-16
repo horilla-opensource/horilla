@@ -281,7 +281,7 @@
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="text-md font-semibold">{% trans "Asset Requests To Approve" %}</h3>
                 </div>
-                <div class="flex flex-col items-center justify-center" hx-get='{% url "dashboard-asset-request-approve" %}' hx-trigger="load">
+                <div class="flex-col items-center justify-center" hx-get='{% url "dashboard-asset-request-approve" %}' hx-trigger="load">
                     {% comment %} <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4" />
                     <p class="text-[#666]">No records available at the moment</p> {% endcomment %}
                 </div>
@@ -331,47 +331,30 @@
             </h3>
         </div>
         <div class="flex gap-2 justify-between items-center mb-4">
-            <select id="type" class="oh-select" name="type" onchange="changeView(this)" style="
-                width: 150px;
-                padding: 5px;
-                color: #5e5c5c;
-                border-radius: 4px;
-                border: 1px solid #d1d5db;
-            ">
-                <option value="day">{% trans "Day" %}</option>
-                <option value="weekly">{% trans "Weekly" %}</option>
-                <option value="monthly">{% trans "Monthly" %}</option>
-                <option value="date_range">{% trans "Date range" %}</option>
-            </select>
-            <input type="date" id="attendance_month" onchange="changeMonth()" class="oh-select" style="
-                width: 150px;
-                padding: 5px;
-                color: #5e5c5c;
-                border-radius: 4px;
-                border: 1px solid #d1d5db;
-            " />
+                <select id="type" class="oh-input w-40 text-[#5e5c5c]" name="type" onchange="changeView(this)" >
+                    <option value="day">{% trans "Day" %}</option>
+                    <option value="weekly">{% trans "Weekly" %}</option>
+                    <option value="monthly">{% trans "Monthly" %}</option>
+                    <option value="date_range">{% trans "Date range" %}</option>
+                </select>
+            <input type="date" id="attendance_month" onchange="changeMonth()" class="oh-input w-40" />
         </div>
-        <div class="w-full max-w-xs mx-auto">
-            <div class="relative">
+        <div class="w-full">
+            <div class="relative h-[350px]">
                 <canvas id="dailyAnalytic"></canvas>
             </div>
         </div>
     </div>
+
     <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card">
         <div class="flex justify-between items-center mb-2">
             <h3 class="text-md font-semibold">{% trans "Hours Chart" %}</h3>
-            <input type="month" class="mb-2 float-end pointer oh-select"
-            id="hourAccountMonth" onchange="dynamicMonth($(this))"
-            style="
-            width: 150px;
-            padding: 5px;
-            color: #5e5c5c;
-            border-radius: 4px;
-            border: 1px solid #d1d5db;
-        " />
-          </div>
-        <div class="w-full max-w-xs mx-auto">
-            <div class="relative">
+            <input type="month" class="mb-2 float-end pointer oh-input w-40"
+                id="hourAccountMonth" onchange="dynamicMonth($(this))"
+            />
+        </div>
+        <div class="w-full">
+            <div class="relative h-[370px]">
                 <canvas id="pendingHoursCanvas"></canvas>
             </div>
         </div>

@@ -1,70 +1,91 @@
-{% load static %} {% load i18n %} {% load audit_filters %}
-
+{% load static i18n audit_filters %}
 {% if employee.employee_work_info.tracking %}
-<div class="relative max-w-[800px] m-auto pt-8">
+    <div class="relative max-w-[800px] m-auto pt-8">
+        <div
+            class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-[#dbdbdb] hidden md:block"
+        ></div>
 
-  <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-[#dbdbdb] hidden md:block"></div>
+        <ul class="space-y-10">
+            {% for history in employee.employee_work_info.tracking %}
+                <li class="flex justify-between items-start relative">
+                    <div
+                        class="md:w-1/2 md:pr-10 md:text-right mt-2 md:mt-0 order-1 md:order-none"
+                    >
+                        <div
+                            class="inline-block px-4 py-2 rounded-md text-center bg-primary-200 text-primary-600"
+                        >
+                            <span class="text-xs block font-semibold">
+                                <span class="dateformat_changer">{{ history.pair.1.history_date|date }}</span>
+                                &nbsp,&nbsp
+                                <span class="timeformat_changer">{{ history.pair.1.history_date|time }}</span>
+                            </span>
+                        </div>
+                    </div>
 
-  <ul class="space-y-10">
-    {% for history in employee.employee_work_info.tracking %}
-    <li class="flex justify-between items-start relative">
+                    <div
+                        class="absolute top-0 left-1/2 transform text-sm -translate-x-1/2 md:translate-x-0 md:-ml-[18px] z-10 w-9 h-9 bg-primary-600 text-white font-semibold rounded-full flex items-center justify-center"
+                    >
+                        <img
+                            src="{{ history.updated_by.get_avatar }}"
+                            class="w-100 rounded-full"
+                        />
+                    </div>
 
-      <div class="md:w-1/2 md:pr-10 md:text-right mt-2 md:mt-0 order-1 md:order-none">
-        <div class="inline-block px-4 py-2 rounded-md text-center bg-primary-200 text-primary-600">
-          <span class="text-xs block font-semibold">
-            {{ history.pair.1.history_date|date:"m/d/Y, h:i A" }}
-          </span>
-        </div>
-      </div>
-
-      <div
-        class="absolute top-0 left-1/2 transform text-sm -translate-x-1/2 md:translate-x-0 md:-ml-[18px] z-10 w-9 h-9 bg-primary-600 text-white font-semibold rounded-full flex items-center justify-center">
-        {{ history.updated_by.get_initials|default:"HB" }}
-      </div>
-
-      <div class="md:w-1/2 md:pl-10 md:text-left">
-        <h5 class="text-xs font-semibold">
-          {{ history.updated_by.get_full_name|default:"Horilla Bot" }}
-        </h5>
-        {% if history.pair.0.history_title %}
-        <p class="text-xs text-[#777777] mb-2">{{ history.pair.0.history_title }}</p>
-        {% endif %}
-        {% if history.pair.0.history_description %}
-          <p class="text-xs text-[#777777] mb-2">
-            {{history.pair.0.history_description}}
-          </p>
-        {% endif %}
-        <div class="oh-history_tabs">
-          {% for tag in history.pair.0.history_tags.all %}
-            <a href="#" class="oh-history_msging-email oh-history_tabs-items"
-            >{{tag.title}}</a
-            >
-          {% endfor %}
-
-        </div>
-        <div class="bg-white p-2 px-3 rounded border border-dark-50">
-          <h3 class="text-primary-600 font-semibold text-xs mb-1">Changes</h3>
-          <ul class="mylist">
-            {% for change in history.changes %}
-            <li class="text-xs">
-              {{ history.pair.1|fk_history:change }} → {{ history.pair.0|fk_history:change }}
-              ({{ change.field }})
-            </li>
+                    <div class="md:w-1/2 md:pl-10 md:text-left">
+                        <h5 class="text-xs font-semibold">
+                            {{ history.updated_by.get_full_name|default:"Horilla Bot" }}
+                        </h5>
+                        {% if history.pair.0.history_title %}
+                        <p class="text-xs text-[#777777] mb-2">
+                            {{ history.pair.0.history_title }}
+                        </p>
+                        {% endif %}
+                        {% if history.pair.0.history_description %}
+                        <p class="text-xs text-[#777777] mb-2">
+                            {{history.pair.0.history_description}}
+                        </p>
+                        {% endif %}
+                        <div class="oh-history_tabs">
+                            {% for tag in history.pair.0.history_tags.all %}
+                            <a
+                                href="#"
+                                class="oh-history_msging-email oh-history_tabs-items"
+                                >{{tag.title}}</a
+                            >
+                            {% endfor %}
+                        </div>
+                        <div class="bg-white p-2 px-3 rounded border border-dark-50">
+                            <h3 class="text-primary-600 font-semibold text-xs mb-1">
+                                {% trans "Changes" %}
+                            </h3>
+                            <ul class="mylist">
+                                {% for change in history.changes %}
+                                <li class="text-xs">
+                                    {{ history.pair.1|fk_history:change }} →
+                                    {{ history.pair.0|fk_history:change }} ({{ change.field }})
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </li>
             {% endfor %}
-          </ul>
-        </div>
-      </div>
-    </li>
-    {% endfor %}
-  </ul>
-</div>
+        </ul>
+    </div>
 {% else %}
-<div class="oh-wrapper h-full" align="center">
-  <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
-      <div class="flex flex-col items-center justify-center h-full">
-          <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
-          <p class="text-[#666] mb-5">{% trans "No history found." %}</p>
-      </div>
-  </div>
-</div>
+    <div class="oh-wrapper h-full" align="center">
+        <div
+            class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]"
+        >
+            <div class="flex flex-col items-center justify-center h-full">
+                <img
+                    src="/static/horilla_theme/assets/img/no-records.svg"
+                    alt=""
+                    width="300"
+                    class="mb-4"
+                />
+                <p class="text-[#666] mb-5">{% trans "No history found." %}</p>
+            </div>
+        </div>
+    </div>
 {% endif %}

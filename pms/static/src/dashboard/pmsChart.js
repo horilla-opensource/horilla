@@ -494,7 +494,8 @@ if (document.getElementById("feedbackChart")) {
 		"#a5b4fc",
 		"#d1d5db",
 	];
-	visibility = Array(labels.length).fill(true);
+	let label_length = labels ? labels.length : 0
+	visibility = Array(label_length).fill(true);
 
 	// Destroy previous chart if it exists
 	if (feedbackChartInstance) {
@@ -508,7 +509,7 @@ if (document.getElementById("feedbackChart")) {
 		datasets: [
 			{
 			...dataSet[0],
-			backgroundColor: colors.slice(0, labels.length),
+			backgroundColor: colors.slice(0, label_length),
 			borderWidth: 0,
 			borderRadius: 10,
 			hoverOffset: 8,

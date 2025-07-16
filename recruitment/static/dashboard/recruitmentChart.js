@@ -200,7 +200,6 @@ $(document).ready(function () {
 
 			labels.forEach((label, index) => {
 				const color = colors[index % colors.length];
-				console.log(color,"1111111111111")
 
 				const $item = $(`
 					<div style="display: flex; align-items: center; margin-bottom: 6px; cursor: pointer;">

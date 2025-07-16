@@ -127,4 +127,57 @@ function removeId(element, storeKey = "selectedInstances") {
       });
     });
   });
+
+function isChartEmpty(chart) {
+    return chart.data.datasets.every(dataset => {
+        if (Array.isArray(dataset.data)) {
+            return dataset.data.every(value => !value || value === 0);
+        } else if (typeof dataset.data === 'object') {
+            return Object.values(dataset.data).every(value => !value || value === 0);
+        }
+        return true;
+    });
+}
+
+function showEmptyState(chart, message = "No records available at the moment") {
+    const $canvas = $(chart.canvas);
+    const chartId = $canvas.attr("id");
+
+    // Hide canvas wrapper
+    $canvas.closest(".relative").hide();
+
+    if ($("#no-data-" + chartId).length === 0) {
+        const emptyHTML = `
+      <div id="no-data-${chartId}" class="h-[350px] flex items-center justify-center">
+        <div class="flex flex-col items-center justify-center">
+          <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+          <p class="text-[#666] mb-5">${message}</p>
+        </div>
+      </div>
+    `;
+        $canvas.closest(".relative").after(emptyHTML);
+    } else {
+        $("#no-data-" + chartId).show();
+    }
+}
+
+function hideEmptyState(chart) {
+    const $canvas = $(chart.canvas);
+    const chartId = $canvas.attr("id");
+
+    // Show canvas wrapper
+    $canvas.closest(".relative").show();
+    $("#no-data-" + chartId).hide();
+}
+
+function emptyChart(chart) {
+    if (!chart) return;
+
+    if (isChartEmpty(chart)) {
+        showEmptyState(chart);
+    } else {
+        hideEmptyState(chart);
+    }
+}
+
 </script>

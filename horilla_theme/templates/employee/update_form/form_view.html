@@ -4,34 +4,28 @@
 <div id="view-container" class="oh-wrapper" style="margin:0 150px 0px 150px;">
     <section class="oh-wrapper oh-main__topbar oh-profile-section__topbar pt-0" x-data="{searchShow: false}">
         <div class="oh-main__titlebar oh-main__titlebar--left">
-            <h1 class="oh-main__titlebar-title fw-bold mb-0 text-lg font-semibold mb-3">{% trans "Edit" %} {{form.instance.employee_first_name}}</h1>
+            <h1 class="oh-main__titlebar-title fw-bold text-lg font-semibold mb-3">{% trans "Edit" %} {{form.instance.employee_first_name}}</h1>
         </div>
         <div class="oh-main__titlebar oh-main__titlebar--left d-flex align-items-center">
             <ul class="oh-general__tabs oh-profile-section__tab">
                 <li class="oh-general__tab">
-                    <a href="#" class="oh-general__tab-link oh-general__tab-link--active text-sm font-semibold mb-3" data-action="general-tab" data-target="#personal">{% trans "Personal Info" %}</a>
+                    <a class="oh-general__tab-link oh-general__tab-link--active text-sm font-semibold mb-3" role="button" data-action="general-tab" data-target="#personal">{% trans "Personal Info" %}</a>
                 </li>
                 <li class="oh-general__tab">
-                    <a href="#" class="oh-general__tab-link text-sm font-semibold mb-3" data-action="general-tab" data-target="#work">{% trans "Work Info" %}</a>
+                    <a class="oh-general__tab-link text-sm font-semibold mb-3" role="button" data-action="general-tab"  data-target="#work">{% trans "Work Info" %}</a>
                 </li>
                 <li class="oh-general__tab">
-        <a href="#" class="oh-general__tab-link text-sm font-semibold mb-3" data-action="general-tab" data-target="#bank">{% trans "Bank Info" %}</a>
-    </li>
-</ul>
+                    <a class="oh-general__tab-link text-sm font-semibold mb-3" role="button" data-action="general-tab" data-target="#bank">{% trans "Bank Info" %}</a>
+                </li>
+            </ul>
+        </div>
+    </section>
+    {% include 'employee/update_form/personal_info.html' %}
+    {% include 'employee/update_form/work_details.html' %}
+    {% include 'employee/update_form/bank_details.html' %}
 </div>
-</section>
-{% include 'employee/update_form/personal_info.html' %}
-{% include 'employee/update_form/work_details.html' %}
-{% include 'employee/update_form/bank_details.html' %}
 
-</div>
 <script>
-    {% include 'country.js' %}
-    populateCountries("country", "state");
-    $("#id_country").val("{{form.instance.country}}").change()
-    $("#id_state").val("{{form.instance.state}}").change()
-    $("#country").val("{{bank_form.instance.country}}").change()
-    $("#state").val("{{bank_form.instance.state}}").change()
     $(document).ready(function() {
       $('#id_profile').change(function (e) {
 

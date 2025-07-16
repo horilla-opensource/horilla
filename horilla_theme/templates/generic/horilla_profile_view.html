@@ -1,162 +1,218 @@
 {% load static i18n generic_template_filters %}
 <div class="" id="{{view_id|safe}}">
-  <div class="">
-    <!-- Left Column: 6/12 -->
-    <!-- Right Column: 6/12 -->
-    <div class="col-span-12 lg:col-span-9">
-
-      <div class="bg-white rounded-md shadow-card p-3 mb-5">
-        <div class="block lg:flex lg:items-center gap-3 mb-5 bg-[#f4f7fe] rounded-md p-3 lg:sticky top-0 z-10">
-          <div class="rounded-md overflow-hidden mb-3 lg:mb-0">
-            <img src="{{ object.get_avatar }}" alt="" width="120" class="rounded-md" />
-          </div>
-          <div class="block lg:flex items-center gap-2 justify-between flex-auto">
-            <div class="mb-3 lg:mb-0">
-              <h5 class="mb-1 font-medium text-sm">{{ employee }}</h5>
-              <p class="text-[13px] text-[#565E6C] mb-1">
-                <i class="fa-solid fa-envelope pe-2"></i>
-                {{ object.get_email }}
-              </p>
-              <p class="text-[13px] text-[#565E6C] mb-1">
-                <i class="fa-solid fa-phone pe-2"></i> {{ object.phone }}
-              </p>
-              <p class="text-[13px] text-[#565E6C] mb-1">
-                <i class="fa-solid {% if object.gender == 'male' %}
-                    fa-mars
-                  {% elif object.gender == 'female' %}
-                    fa-venus
-                  {% else %}
-                    fa-genderless
-                  {% endif %} pe-2">
-
-                </i>
-                {{ object.get_gender_display }}
-              </p>
-            </div>
-            <div class="w-auto lg:w-[350px] rounded-md p-3">
-              <div class="flex justify-end items-start mb-2 lg:mb-0">
-                <div class="flex items-center gap-4">
-                  <!-- Settings Button -->
-                  <div class="relative inline-block dropdown-wrapper">
-                    <button
-                        class="dropdown-toggle p-2 group text-primary-600 w-8 h-8 text-sm bg-white shadow-card hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center">
-                        <i class="fas fa-cog transition duration-300 group-hover:text-white"></i>
-                    </button>
-                        <!-- <a class="cursor-pointer dropdown-toggle">
-                            <i class="fa-solid fa-ellipsis-vertical text-black"></i>
-                        </a> -->
-                        <!-- Dropdown Content -->
-                        <div
-                            class="dropdown-menu hidden absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200">
-                            <ul class="text-xs">
-                            {% for action in actions %}
-                                {% if action.accessibility|accessibility:instance %}
-                                <li>
-                                    <a {{action.attrs|format:instance|safe}} class="w-[200px] text-dark-600 flex justify-start text-left px-3 py-1 hover:text-primary-600 transition duration-300">
-                                        <button
-                                        style="border: none; background: transparent"
+	<div class="">
+		<!-- Left Column: 6/12 -->
+		<!-- Right Column: 6/12 -->
+		<div class="col-span-12 lg:col-span-9">
+			<div class="bg-white rounded-md shadow-card p-3 mb-5">
+				<div
+					class="block lg:flex lg:items-center gap-3 mb-5 bg-[#f4f7fe] rounded-md p-3 lg:sticky top-0 z-10"
+				>
+					<div class="rounded-md overflow-hidden mb-3 lg:mb-0">
+						<img
+							src="{{ object.get_avatar }}"
+							alt=""
+							width="120"
+							class="rounded-md"
+						/>
+					</div>
+					<div
+						class="block lg:flex items-center gap-2 justify-between flex-auto"
+					>
+						<div class="mb-3 lg:mb-0">
+							<h5 class="mb-1 font-medium text-sm">
+								{{ object }}
+							</h5>
+							<p class="text-[13px] text-[#565E6C] mb-1">
+								<i class="fa-solid fa-envelope pe-2"></i>
+								{{ object.get_email }}
+							</p>
+							<p class="text-[13px] text-[#565E6C] mb-1">
+								<i class="fa-solid fa-phone pe-2"></i>
+                                {{ object.phone }}
+							</p>
+							<p class="text-[13px] text-[#565E6C] mb-1">
+								<i
+									class="fa-solid {% if object.gender == 'male' %} fa-mars {% elif object.gender == 'female' %} fa-venus {% else %} fa-genderless {% endif %} pe-2"
+								>
+								</i>
+								{{ object.get_gender_display }}
+							</p>
+						</div>
+						<div class="w-auto lg:w-[350px] rounded-md p-3">
+							<div
+								class="flex justify-end items-start mb-2 lg:mb-0"
+							>
+								<div class="flex items-center gap-4">
+									<!-- Settings Button -->
+									<div
+										class="relative inline-block"
+                                        x-data="{open: false}"
+									>
+										<button
+											class="p-2 group text-primary-600 w-8 h-8 text-sm bg-white shadow-card hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
+                                            title = "Actions"
+                                            @click="open = !open" @click.outside="open = false"
                                         >
-                                        {{action.title}}
-                                      </button>
-                                    </a>
-                                </li>
-                                {% endif %}
-                            {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
+											<i
+												class="fas fa-cog transition duration-300 group-hover:text-white"
+											></i>
+										</button>
 
-                  <!-- Pagination Buttons -->
-                  {% if previous_url and next_url %}
-                  <div class="flex gap-1 ml-auto">
-                    <button data-action="previous"
-                        hx-get="{{previous_url}}?instance_ids={{instance_ids}}"
-                        {% if push_url %}
-                        hx-push-url = "{{object.get_push_url}}"
+                                        <div
+											class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 transition-all duration-200"
+										    x-show="open"
+                                        >
+											<ul class="text-xs">
+												{% for action in actions %}
+                                                    {% if action.accessibility|accessibility:instance %}
+                                                        <li role="button">
+                                                            <p
+                                                                class="w-[200px] text-dark-600 font-bold text-left text-xs px-3 py-1 hover:text-primary-600 transition duration-300"
+                                                            >
+                                                                <a
+                                                                    {{action.attrs|format:instance|safe}}
+                                                                >
+                                                                    {{action.title}}
+                                                                </a>
+                                                            </p>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endfor %}
+											</ul>
+										</div>
+									</div>
+
+									<!-- Pagination Buttons -->
+									{% if previous_url and next_url %}
+									<div class="flex gap-1 ml-auto">
+										<button
+											data-action="previous"
+											hx-get="{{previous_url}}?instance_ids={{instance_ids}}"
+											{% if push_url %}
+											    hx-push-url="{{object.get_push_url}}"
+											{% endif %}
+											hx-target="#{{view_id|safe}}"
+											hx-swap="outerHTML"
+                                            title = "Previous"
+											class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+										>
+											<i
+												class="fa-solid fa-angle-left"
+											></i>
+										</button>
+										<button
+											data-action="next"
+											hx-get="{{next_url}}?instance_ids={{instance_ids}}"
+											{% if push_url %}
+											    hx-push-url="{{object.get_push_url}}"
+											{% endif %}
+											hx-target="#{{view_id|safe}}"
+											hx-swap="outerHTML"
+                                            title="Next"
+											class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+										>
+											<i
+												class="fa-solid fa-angle-right"
+											></i>
+										</button>
+									</div>
+									{% endif %}
+								</div>
+							</div>
+
+							{% comment %}
+							<h5 class="mb-1 font-medium text-sm">
+								{% trans 'Emergency Contact' %}
+							</h5>
+							<p
+								class="flex justify-between text-[13px] text-[#565E6C] mb-1"
+							>
+								<span>{% trans 'Name' %}</span>
+								<span class="text-color-600 font-semibold"
+									>{{ object.emergency_contact_name }}</span
+								>
+							</p>
+							<p
+								class="flex justify-between text-[13px] text-[#565E6C] mb-1"
+							>
+								<span>{% trans 'Relationship' %}</span>
+								<span class="text-color-600 font-semibold"
+									>{{ object.emergency_contact_relation
+									}}</span
+								>
+							</p>
+							<p
+								class="flex justify-between text-[13px] text-[#565E6C] mb-1"
+							>
+								<span>{% trans 'Phone Number' %}</span>
+								<span class="text-color-600 font-semibold"
+									>{{ object.emergency_contact }}</span
+								>
+							</p>
+							{% endcomment %}
+						</div>
+					</div>
+				</div>
+				<ul class="usertablist">
+					{% for tab in visible_tabs %}
+                        {% if not tab.accessibility or tab.accessibility|accessibility:instance %}
+                            <li>
+                                <button
+                                    onclick=" $('#{{view_id}} li button.active').removeClass('active'); $(this).addClass('active');"
+                                    data-url="{{tab.url|format:instance}}"
+                                    hx-get="{{tab.url|format:instance}}"
+                                    hx-target="#{{view_id}}profileTab"
+                                    data-tab="{{tab.title}}"
+                                    class="{% if forloop.counter == 1 and not active_target %} active {% endif %}"
+                                >
+                                    {{tab.title}}
+                                </button>
+                                <span
+                                    hx-get="{{tab.url|format:instance}}"
+                                    hx-target="#{{view_id}}profileTab"
+                                >
+                                </span>
+                            </li>
                         {% endif %}
-                        hx-target="#{{view_id|safe}}"
-                        hx-swap="outerHTML"
-                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
-                        <i class="fa-solid fa-angle-left"></i>
-                    </button>
-                    <button data-action="next"
-                        hx-get="{{next_url}}?instance_ids={{instance_ids}}"
-                        {% if push_url %}
-                        hx-push-url = "{{object.get_push_url}}"
-                        {% endif %}
-                        hx-target="#{{view_id|safe}}"
-                        hx-swap="outerHTML"class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
-                        <i class="fa-solid fa-angle-right"></i>
-                    </button>
-                  </div>
-                  {% endif %}
-                </div>
-              </div>
+                    {% endfor %}
+				</ul>
+			</div>
 
-              {% comment %} <h5 class="mb-1 font-medium text-sm">{% trans 'Emergency Contact' %}</h5>
-              <p class="flex justify-between text-[13px] text-[#565E6C] mb-1">
-                <span>{% trans 'Name' %}</span> <span class="text-color-600 font-semibold">{{ object.emergency_contact_name }}</span>
-              </p>
-              <p class="flex justify-between text-[13px] text-[#565E6C] mb-1">
-                <span>{% trans 'Relationship' %}</span> <span class="text-color-600 font-semibold">{{ object.emergency_contact_relation }}</span>
-              </p>
-              <p class="flex justify-between text-[13px] text-[#565E6C] mb-1">
-                <span>{% trans 'Phone Number' %}</span> <span class="text-color-600 font-semibold">{{ object.emergency_contact }}</span>
-              </p> {% endcomment %}
-            </div>
-          </div>
-        </div>
-        <ul class="usertablist">
-          {% for tab in visible_tabs %} {% if not tab.accessibility or tab.accessibility|accessibility:instance %}
-          <li>
-            <button
-              onclick=" $('#{{view_id}} li button.active').removeClass('active'); $(this).addClass('active');"
-              data-url="{{tab.url|format:instance}}"
-              hx-get="{{tab.url|format:instance}}"
-              hx-target="#{{view_id}}profileTab"
-              data-tab="{{tab.title}}"
-              class="{% if forloop.counter == 1 and not active_target %} active {% endif %}">{{tab.title}}</button>
-              <span
-              hx-get="{{tab.url|format:instance}}"
-              hx-target="#{{view_id}}profileTab">
-              </span>
-          </li>
-          {% endif %} {% endfor %}
-        </ul>
-      </div>
+			<div class="bg-white rounded-md shadow-card p-3 mb-5 lg:mb-0">
+				<div
+					class="h-[calc(100vh_-_260px)] overflow-hidden overflow-y-auto"
+					id="{{view_id}}profileTab"
+				></div>
+			</div>
+		</div>
+	</div>
+	<script>
+		$("#{{view_id}} ul.usertablist li button").click(function (e) {
+		  var target = `[data-url="${$(this).attr('data-url')}"]`
+		  e.preventDefault();
+		  $.ajax({
+		    type: "get",
+		    url: "{% url 'active-tab' %}",
+		    data: {
+		      "path":"{{request.path}}",
+		      "target":target,
+		    },
+		    success: function (response) {
 
-      <div class="bg-white rounded-md shadow-card p-3 mb-5 lg:mb-0">
-        <div class="h-[calc(100vh_-_260px)] overflow-hidden overflow-y-auto" id="{{view_id}}profileTab">
-        </div>
-      </div>
-    </div>
-  </div>
-  <script>
-    $("#{{view_id}} ul.usertablist li button").click(function (e) {
-      var target = `[data-url="${$(this).attr('data-url')}"]`
-      e.preventDefault();
-      $.ajax({
-        type: "get",
-        url: "{% url 'active-tab' %}",
-        data: {
-          "path":"{{request.path}}",
-          "target":target,
-        },
-        success: function (response) {
-
-        }
-      });
-    });
-    {% if active_target %}
-    $("#{{view_id|safe}}").find(`{{active_target|safe}}`).click();
-    setTimeout(() => {
-    $("#{{view_id|safe}}").find(`{{active_target|safe}}`).parent().find('span').click()
-    }, 100);
-    {% else %}
-    setTimeout(() => {
-    $("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).click()
-    $("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).parent().find('span').click()
-    }, 100);
-    {% endif %}
-  </script>
+		    }
+		  });
+		});
+		{% if active_target %}
+            $("#{{view_id|safe}}").find(`{{active_target|safe}}`).click();
+            setTimeout(() => {
+            $("#{{view_id|safe}}").find(`{{active_target|safe}}`).parent().find('span').click()
+            }, 100);
+		{% else %}
+            setTimeout(() => {
+            $("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).click()
+            $("#{{view_id|safe}} .usertablist").find(`li button[data-url]:first`).parent().find('span').click()
+            }, 100);
+		{% endif %}
+	</script>
 </div>

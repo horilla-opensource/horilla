@@ -1,0 +1,51 @@
+{% load static audit_filters i18n %} 
+{% if candidate.candidate_rating.all %}
+    <div class="row p-4">
+        {% for rate in candidate.candidate_rating.all %}
+            <div class="shadow-card border-primary-500 py-3">
+                <div class="flex">
+                    <div class="w-10 h-10 mr-2 relative">
+                        <img
+                            src="{{rate.employee_id.get_avatar}}"
+                            class="w-full h-full rounded-full"
+                            alt=""
+                        />
+                    </div>
+                    <div class="mx-3">
+                        <span class="text-base font-medium">{{rate.employee_id}}</span>
+                        <ul class="ul">
+                            <div class="oh-rate" style="pointer-events: none">
+                                <input type="radio" id="star5" value="5" disabled {% if rate.rating == 5 %} checked {% endif %} />
+                                <label for="star5" title="5 Stars" class="star"></label>
+                                <input type="radio" id="star4" value="4" disabled {% if rate.rating == 4 %} checked {% endif %} />
+                                <label for="star4" title="4 Stars" class="star"></label>
+                                <input type="radio" id="star3" value="3" disabled {% if rate.rating == 3 %} checked {% endif %} />
+                                <label for="star3" title="3 Stars" class="star"></label>
+                                <input type="radio" id="star2" value="2" disabled {% if rate.rating == 2 %} checked {% endif %} />
+                                <label for="star2" title="2 Stars" class="star"></label>
+                                <input type="radio" id="star1" value="1" disabled {% if rate.rating == 1 %} checked {% endif %} />
+                                <label for="star1" title="1 Star" class="star"></label>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="oh-wrapper h-full" align="center">
+        <div
+            class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]"
+        >
+            <div class="flex flex-col items-center justify-center h-full">
+                <img
+                    src="/static/horilla_theme/assets/img/no-records.svg"
+                    width="300"
+                    class="mb-4"
+                    alt=""
+                />
+                <p class="text-[#666] mb-5">{% trans "No rating found." %}</p>
+            </div>
+        </div>
+    </div>
+{% endif %}

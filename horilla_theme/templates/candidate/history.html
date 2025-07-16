@@ -1,78 +1,101 @@
-{% load static %} {% load i18n %} {% load audit_filters %}
-<div class="row">
-  {% if candidate.tracking %}
-    {% for history in candidate.tracking %}
-    <div class="oh-history__container">
-      <div class="oh-history_date oh-card__title oh-card__title--sm fw-bold me-2">
-        <span class="oh-history_date-content">
-          <span class="dateformat_changer">{{ history.pair.1.history_date|date:"M. d, Y" }}</span>&nbsp,&nbsp
-          <span class="timeformat_changer">{{ history.pair.1.history_date|date:"g:i A" }}</span>
-        </span>
-      </div>
-      <div class="d-flex">
-        <div class="oh-history_user-img">
-          <img
-            src="{{history.updated_by.get_avatar}}"
-            alt=""
-            class="oh-history_user-pic"
-          />
-          <div class="oh-history_user-state oh-user_inactive"></div>
-        </div>
-        <div class="oh-history_user-details">
-          <span class="oh-history__username">{{history.updated_by}}</span>
-          <div class="oh-history_abt pb-0">
-            {% if history.pair.0.history_title %}
-            <span class="oh-history_task-state"
-              >{{history.pair.0.history_title}}</span
-            >
-            {% endif %} {% if history.pair.0.history_description %}
-            <p class="oh-history_time">{{history.pair.0.history_description}}</p>
-            {% endif %}
-            <div class="oh-history_tabs">
-              {% for tag in history.pair.0.history_tags.all %}
-              <a href="#" class="oh-history_msging-email oh-history_tabs-items"
-                >{{tag.title}}</a
-              >
-              {% endfor %}
-            </div>
-          </div>
-          <div class="oh-history_msg-container">
-            <div class="oh-history_task-tracker">
-              <span class="oh-history_msging-email">{{history.type}}</span>
-              <ul class="ul">
-                {% for change in history.changes %}
-                <li class="oh-history_task-list">
-                  <div class="oh-history_track-value">
-                    <span>{{history.pair.1|fk_history:change}}</span>
+{% load static i18n audit_filters %}
+{% if candidate.tracking %}
+    <div class="relative max-w-[800px] m-auto pt-8">
+        <div
+            class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-[#dbdbdb] hidden md:block"
+        ></div>
+
+        <ul class="space-y-10">
+            {% for history in candidate.tracking %}
+
+            <li class="flex justify-between items-start relative">
+                <div
+                    class="md:w-1/2 md:pr-10 md:text-right mt-2 md:mt-0 order-1 md:order-none"
+                >
+                    <div
+                        class="inline-block px-4 py-2 rounded-md text-center bg-primary-200 text-primary-600"
+                    >
+                        <span class="text-xs block font-semibold">
+                            <span class="dateformat_changer">{{ history.pair.1.history_date|date }}</span>
+                            &nbsp,&nbsp
+                            <span class="timeformat_changer">{{ history.pair.1.history_date|time }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <div
+                    class="
+                        absolute top-0 left-1/2
+                        transform -translate-x-1/2
+                        md:translate-x-0
+                        md:-ml-[18px]
+                        z-10 w-9 h-9
+                        bg-primary-600
+                        text-white font-semibold text-sm
+                        rounded-full
+                        flex items-center justify-center
+                    "
+                >
                     <img
-                      src="{% static  '/images/ui/arrow-right-line.svg' %}"
-                      class="oh-progress_arrow"
-                      alt=""
+                        src="{{ history.updated_by.get_avatar }}"
+                        class="w-100 rounded-full"
                     />
-                    <span class="oh-history_tracking-value"
-                      >{{history.pair.0|fk_history:change}}</span
-                    >
-                    <span class="oh-history-task-state"
-                      ><i>({{change.field}})</i></span
-                    >
-                  </div>
-                </li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+                </div>
+
+                <div class="md:w-1/2 md:pl-10 md:text-left">
+                    <h5 class="text-xs font-semibold">
+                        {{ history.updated_by.get_full_name|default:"Horilla Bot" }}
+                    </h5>
+                    {% if history.pair.0.history_title %}
+                    <p class="text-xs text-[#777777] mb-2">
+                        {{ history.pair.0.history_title }}
+                    </p>
+                    {% endif %} {% if history.pair.0.history_description %}
+                    <p class="text-xs text-[#777777] mb-2">
+                        {{history.pair.0.history_description}}
+                    </p>
+                    {% endif %}
+                    <div class="oh-history_tabs">
+                        {% for tag in history.pair.0.history_tags.all %}
+                        <a
+                            href="#"
+                            class="oh-history_msging-email oh-history_tabs-items"
+                            >{{tag.title}}</a
+                        >
+                        {% endfor %}
+                    </div>
+                    <div class="bg-white p-2 px-3 rounded border border-dark-50">
+                        <h3 class="text-primary-600 font-semibold text-xs mb-1">
+                            {% trans "Changes" %}
+                        </h3>
+                        <ul class="mylist">
+                            {% for change in history.changes %}
+                            <li class="text-xs">
+                                {{ history.pair.1|fk_history:change }} →
+                                {{ history.pair.0|fk_history:change }} ({{ change.field }})
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
-    {% endfor %}
-  {% else %}
+{% else %}
     <div class="oh-wrapper h-full" align="center">
-        <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+        <div
+            class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]"
+        >
             <div class="flex flex-col items-center justify-center h-full">
-                <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
-                <p class="text-[#666] mb-5">{% trans "No history for this candidate" %}</p>
+                <img
+                    src="/static/horilla_theme/assets/img/no-records.svg"
+                    alt=""
+                    width="300"
+                    class="mb-4"
+                />
+                <p class="text-[#666] mb-5">{% trans "No history found." %}</p>
             </div>
         </div>
     </div>
-  {% endif %}
-</div>
+{% endif %}

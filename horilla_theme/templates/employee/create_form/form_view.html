@@ -1,4 +1,6 @@
-{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+{% extends 'index.html' %}
+{% load static i18n %}
+{% block content %}
 <div id="view-container" style="margin: 20px 150px 0px 150px;">
     <section
         class="oh-wrapper oh-main__topbar oh-profile-section__topbar "
@@ -25,14 +27,10 @@
             </ul>
         </div>
     </section>
-    <script src="{% static 'country.js' %}"></script>
 
     <div id="personal-info">
         {% include 'employee/create_form/personal_info.html' %}
     </div>
-    <script>
-        {% include 'country.js' %}
-    </script>
 
     {% endblock content %}
 </div>

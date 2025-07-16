@@ -46,7 +46,7 @@
             {% endfor %}
             <br>
             {% if interview_schedule.description %}
-              <span class="d-flex ms-3 mb-2 mt-2">{% trans "Description" %} : <span class=" ms-2">{{ interview_schedule.description }}</span>                      
+              <span class="d-flex ms-3 mb-2 mt-2">{% trans "Description" %} : <span class=" ms-2">{{ interview_schedule.description }}</span>
             {% endif %}
         </span>
         {% if interview_schedule.completed %}
@@ -80,7 +80,7 @@
     <span class="font-semibold text-sm">
       {{ candidate }}'s {% trans "Scheduled Interviews" %}
     </span>
-  
+
     <button type="button"
             hx-get="{% url 'interview-schedule' candidate.id %}"
             title="{% trans 'Schedule Interview' %}"
@@ -93,7 +93,7 @@
         {% trans "Add" %}
     </button>
   </div>
-  
+
 
   <div class="oh-wrapper h-full" align="center">
     <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
