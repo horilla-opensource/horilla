@@ -1,0 +1,95 @@
+{% load static i18n basefilters %}
+<div
+    class="modal-box w-full rounded-lg p-0 transition-all duration-300 opacity-100 scale-100"
+>
+    <div class="" id="detailViewContainer">
+        <div class="flex items-center gap-5 mb-5">
+            <div>
+                <img src="{{attendance.employee_id.get_avatar}}" alt="" class="w-[50px] h-[50px] rounded-full" />
+            </div>
+            <div>
+                <p class="mb-1 text-sm font-semibold">
+                    {{ attendance.employee_id.get_full_name }}
+                </p>
+                <p class="text-xs text-[#666]">
+                    {{attendance.employee_id.employee_work_info.department_id}} /
+                    {{attendance.employee_id.employee_work_info.job_position_id}}
+                </p>
+            </div>
+        </div>
+        <div class="my-5">
+            <table class="table w-full mt-3 mb-5 ">
+                <tr class="text-left">
+                    <th>{% trans "Field" %}</th>
+                    <th style="border-bottom: solid orange 4px">{% trans "Current Value" %}</th>
+                    <th style="border-bottom: solid green 4px">
+                        {% trans "Requested Value" %}
+                    </th>
+                </tr>
+                {% for key, diff in data.items %}
+                    <tr class='text-xs mb-2 text-[#666]'>
+                        <td class="pt-2 pb-2 text-[#000] font-semibold">{{ key }}</td>
+                        {% with val0=diff.0|default_if_none:"" val1=diff.1|default_if_none:"" %}
+                            {% if key == "Check-Out Date" or key == "Attendance date" or key == "Check-In Date" %}
+                                <td class="p-2 ml-2 dateformat_changer">{{ val0 }}</td>
+                                <td class="p-2 ml-2 dateformat_changer">{{ val1 }}</td>
+                            {% elif key == "Check-Out" or key == "Check-In" %}
+                                <td class="p-2 ml-2 timeformat_changer">{{ val0 }}</td>
+                                <td class="p-2 ml-2 timeformat_changer">{{ val1 }}</td>
+                            {% else %}
+                                <td class="p-2 ml-2">{{ val0 }}</td>
+                                <td class="p-2 ml-2">{{ val1 }}</td>
+                            {% endif %}
+                        {% endwith %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <div class="text-xs font-semibold border-t border-[#c8c7c7] pt-2 my-2">
+                <span>{% trans "Description" %}</span>
+            </div>
+            <div class="text-xs text-[#666]">
+                <span>{{attendance.request_description}}</span>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap justify-between gap-2 md:gap-1">
+            <div class="flex gap-1">
+                <a href="{% url 'cancel-validate-attendance-request' attendance.id %}" data-toggle="oh-modal-toggle"
+                    class="oh-btn oh-btn--secondary w-100">
+                    <ion-icon name="close-circle-outline"></ion-icon>
+                    {% trans "Reject" %}
+                </a>
+                {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+                <a href="{% url 'approve-validate-attendance-request' attendance.id %}" class="oh-btn oh-btn--success w-100">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                    {% trans "Approve" %}
+                </a>
+                {% endif %}
+                {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+                <a hx-get="{% url 'update-attendance-request' attendance.id %}?detail_view=true"
+                    hx-target="#genericModalEditBody" data-target="#genericModalEdit"
+                    data-toggle="oh-modal-toggle" class="oh-btn oh-btn--info w-100">
+                    <ion-icon name="create-outline"></ion-icon>
+                    {% trans "Edit" %}
+                </a>
+                {% endif %}
+            </div>
+            {% if requests_ids %}
+                <div class="flex gap-1 ml-auto">
+                    <button data-action="previous"
+                        hx-get="{% url 'validate-attendance-request' previous %}?requests_ids={{requests_ids}}"
+                        hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');" hx-target="#validateAttendanceRequestModalBody"
+                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                        <i class="fa-solid fa-angle-left"></i>
+                    </button>
+                    <button data-action="next"
+                        hx-get="{% url 'validate-attendance-request' next %}?requests_ids={{requests_ids}}"
+                        hx-target="#validateAttendanceRequestModalBody" hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');"
+                        class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+                        <i class="fa-solid fa-angle-right"></i>
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

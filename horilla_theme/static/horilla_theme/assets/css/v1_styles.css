@@ -1520,6 +1520,13 @@
     font-size: 0.8rem;
 }
 
+.oh-timeoff-modal__profile-content .oh-profile__image {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  object-position: center;
+}
+
 .oh-history_user-img {
   width: 40px;
   height: 40px;
