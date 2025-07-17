@@ -37,44 +37,43 @@ Backups can also be triggered manually by calling `backup_postgres()`.
 
 """
 
-import os
-import environ
 import datetime
-import subprocess
-import shutil
 import logging
 import logging.config
+import os
+import shutil
+import subprocess
 from pathlib import Path
+
+import environ
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
 
 # === Logging Configuration ===
 
 LOGGING_CONFIG = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': '[%(asctime)s] [%(levelname)s] %(name)s: %(message)s'
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {"format": "[%(asctime)s] [%(levelname)s] %(name)s: %(message)s"},
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "standard",
         },
     },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'standard',
+    "loggers": {
+        "pg_backup": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
-    'loggers': {
-        'pg_backup': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-    }
 }
 
 logging.config.dictConfig(LOGGING_CONFIG)
-logger = logging.getLogger('pg_backup')
+logger = logging.getLogger("pg_backup")
 
 # === Configuration ===
 
@@ -90,7 +89,9 @@ db = settings.DATABASES["default"]
 DB_ENGINE = db["ENGINE"]
 
 if "postgresql" not in DB_ENGINE:
-    logger.warning("Skipping backup scheduler: not a PostgreSQL database (engine: %s)", DB_ENGINE)
+    logger.warning(
+        "Skipping backup scheduler: not a PostgreSQL database (engine: %s)", DB_ENGINE
+    )
 else:
     DB_NAME = db["NAME"]
     DB_USER = db["USER"]
@@ -110,13 +111,18 @@ else:
 
         command = [
             shutil.which("pg_dump"),
-            "-h", DB_HOST,
-            "-p", DB_PORT,
-            "-U", DB_USER,
-            "-F", "c",
+            "-h",
+            DB_HOST,
+            "-p",
+            DB_PORT,
+            "-U",
+            DB_USER,
+            "-F",
+            "c",
             "-b",
             "-v",
-            "-f", str(backup_file),
+            "-f",
+            str(backup_file),
             DB_NAME,
         ]
 
@@ -145,11 +151,11 @@ else:
                 hour, minute = map(int, time_str.split(":"))
                 scheduler.add_job(
                     backup_postgres,
-                    'cron',
+                    "cron",
                     hour=hour,
                     minute=minute,
                     id=f"backup_{hour}_{minute}",
-                    replace_existing=True
+                    replace_existing=True,
                 )
                 logger.info("Backup scheduled at %02d:%02d", hour, minute)
             except ValueError:

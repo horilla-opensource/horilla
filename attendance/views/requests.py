@@ -433,11 +433,11 @@ def validate_attendance_request(request, attendance_id):
         first_dict = empty_data
     else:
         other_dict = json.loads(attendance.requested_data)
-    requests_ids_json = request.GET.get("requests_ids")
+    requests_ids_json = request.session.get("ordered_ids_attendance", [])
     previous_instance_id = next_instance_id = attendance.pk
     if requests_ids_json:
         previous_instance_id, next_instance_id = closest_numbers(
-            json.loads(requests_ids_json), attendance_id
+            requests_ids_json, attendance_id
         )
     return render(
         request,
