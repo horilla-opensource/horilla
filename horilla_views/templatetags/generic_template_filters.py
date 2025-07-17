@@ -49,11 +49,11 @@ time_format_mapping = {
 def selected_format(date: datetime.date, company: object = None) -> str:
     if company and (company.date_format or company.time_format):
         if isinstance(date, datetime.date):
-            format = company.date_format
+            format = company.date_format if company.date_format else "MMM. D, YYYY"
             date_format_mapping.get(format)
             return date.strftime(date_format_mapping[format])
         elif isinstance(date, datetime.time):
-            format = company.time_format
+            format = company.time_format if company.time_format else "hh:mm A"
             return date.strftime(time_format_mapping[format])
     return date
 

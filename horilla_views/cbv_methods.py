@@ -302,7 +302,7 @@ def paginator_qry(qryset, page_number, records_per_page=50):
     """
     This method is used to paginate queryset
     """
-    if not isinstance(qryset, Page) and not qryset.ordered:
+    if hasattr(qryset, "ordered") and not qryset.ordered:
         qryset = (
             qryset.order_by("-created_at")
             if hasattr(qryset.model, "created_at")
@@ -378,7 +378,10 @@ def sortby(
     none_queryset = []
     model = queryset.model
     model_attr = getmodelattribute(model, sort_key)
-    is_method = isinstance(model_attr, types.FunctionType)
+    is_method = (
+        isinstance(model_attr, types.FunctionType)
+        or model_attr not in model._meta.get_fields()
+    )
     if not is_method:
         none_queryset = queryset.filter(**{f"{sort_key}__isnull": True})
         none_ids = list(none_queryset.values_list("id", flat=True))
