@@ -34,10 +34,9 @@ from django import forms
 from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db.models.query import QuerySet
-from django.forms import DateTimeInput
+from django.forms import DateInput, DateTimeInput, TimeInput
 from django.template.loader import render_to_string
 from django.utils.html import format_html
-from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
 from attendance.filters import AttendanceFilters
@@ -78,6 +77,8 @@ class AttendanceUpdateForm(BaseModelForm):
     This model form is used to direct save the validated query dict to attendance model
     from AttendanceUpdateForm. This form can be used to update existing attendance.
     """
+
+    container_id = "attendanceUpdateFormFields"
 
     class Meta:
         """
@@ -205,6 +206,7 @@ class AttendanceForm(BaseModelForm):
     Model form for Attendance model
     """
 
+    container_id = "attendanceFormFields"
     employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
         widget=HorillaMultiSelectWidget(
@@ -661,6 +663,14 @@ class AttendanceRequestForm(BaseModelForm):
             "batch_attendance_id",
         ]
 
+        widgets = {
+            "attendance_clock_in": TimeInput(attrs={"type": "time"}),
+            "attendance_clock_out": TimeInput(attrs={"type": "time"}),
+            "attendance_clock_out_date": DateInput(attrs={"type": "date"}),
+            "attendance_date": DateInput(attrs={"type": "date"}),
+            "attendance_clock_in_date": DateInput(attrs={"type": "date"}),
+        }
+
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -1076,12 +1086,16 @@ class BulkAttendanceRequestForm(BaseModelForm):
     from_date = forms.DateField(
         required=False,
         label=_("From Date"),
-        widget=forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+        widget=forms.DateInput(
+            attrs={"type": "date", "class": "form-control oh-input w-100"}
+        ),
     )
     to_date = forms.DateField(
         required=False,
         label=_("To Date"),
-        widget=forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+        widget=forms.DateInput(
+            attrs={"type": "date", "class": "form-control oh-input w-100"}
+        ),
     )
     batch_attendance_id = forms.ModelChoiceField(
         queryset=BatchAttendance.objects.all(),
@@ -1109,6 +1123,11 @@ class BulkAttendanceRequestForm(BaseModelForm):
             "attendance_worked_hour",
             "request_description",
         )
+
+        widgets = {
+            "attendance_clock_in": TimeInput(attrs={"type": "time"}),
+            "attendance_clock_out": TimeInput(attrs={"type": "time"}),
+        }
 
     def update_worked_hour_hx_fields(self, field_name):
         """Update the widget attributes for worked hour fields."""

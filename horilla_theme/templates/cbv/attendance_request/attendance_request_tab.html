@@ -28,9 +28,9 @@
             hx-swap="outerHTML"
             hx-on:click="htmxLoadIndicator(this);"
         ></button>
-        {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %} 
-        
-        {% if queryset|length %} 
+        {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
+
+        {% if queryset|length %}
             {% if bulk_select_option %} {% include "generic/quick_actions.html" %} {% endif %}
 
             <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative">
@@ -86,12 +86,12 @@
 
                                 {% for cell in columns %}
                                     {% with cell_attr=header_attrs|get_item:cell.1 %}
-                                    <th 
+                                    <th
                                         class="text-sm font-medium text-left p-3"
                                         id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
 
                                     >
-                                        <div class="flex gap-3 min-w-[150px] {% for sort_map in sortby_mapping %} {% if sort_map.0 == cell.0 %}cursor-pointer {% endif %}{% endfor %}" 
+                                        <div class="flex gap-3 min-w-[150px] {% for sort_map in sortby_mapping %} {% if sort_map.0 == cell.0 %}cursor-pointer {% endif %}{% endfor %}"
                                             {{cell_attr|safe}}
                                             {% for sort_map in sortby_mapping %}
                                                 {% if sort_map.0 == cell.0 %}
@@ -166,7 +166,7 @@
                                     </td>
                                     {% endif %}
                                     {% for cell in columns %}
-                                        {% with attribute=cell.1 index=forloop.counter %} 
+                                        {% with attribute=cell.1 index=forloop.counter %}
                                             <td class="text-sm text-left p-3 text-[#666]
                                                 {% if cell.1 == "attendance_date" %}
                                                     {% if 'attendance_date' in instance.requested_fields or instance.request_type == 'create_request' %}
@@ -265,7 +265,7 @@
                                                         <i class="fa-solid fa-xmark"></i>
                                                     </button> {% endcomment %}
                                                 </div>
-                                            {% else %} 
+                                            {% else %}
                                                 {{instance|getattribute:option_method|safe}}
                                             {% endif %}
 
@@ -297,7 +297,7 @@
                                                         <i class="fa-solid fa-xmark"></i>
                                                     </button> {% endcomment %}
                                                 </div>
-                                            {% else %} 
+                                            {% else %}
                                                 {{instance|getattribute:action_method|safe}}
                                             {% endif %}
 
@@ -340,7 +340,7 @@
         {% else %}
             {% if not custom_empty_template %}
                 <div class="oh-wrapper h-full" align="center" >
-                    
+
                     <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
                         <div class="flex flex-col items-center justify-center h-full">
                             <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
@@ -365,14 +365,14 @@
     badge.html(count);
     badge.attr("title", title);
     {% endif %}
-  </script> 
+  </script>
   {% if bulk_select_option %}
   <script>
     selectSelected("#{{view_id|safe}}",'{{selected_instances_key_id}}')
   </script>
-  {% endif %} 
+  {% endif %}
   <script>
-    $("ul[data-search-url] a").click(function (e) { 
+    $("ul[data-search-url] a").click(function (e) {
       e.preventDefault();
       const url =  $(this).attr("hx-get")
       const $urlObj = $('<a>', { href: url });
@@ -429,5 +429,5 @@
     }, 200);
 
   </script>
-  
+
 </div>
