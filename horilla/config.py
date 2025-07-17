@@ -52,10 +52,13 @@ def sidebar(request):
                     if getattr(sidebar, "ACCESSIBILITY", None):
                         accessibility = import_method(sidebar.ACCESSIBILITY)
 
-                    if not accessibility or accessibility(
-                        request,
-                        sidebar.MENU,
-                        PermWrapper(request.user),
+                    if hasattr(sidebar, "MENU") and (
+                        not accessibility
+                        or accessibility(
+                            request,
+                            sidebar.MENU,
+                            PermWrapper(request.user),
+                        )
                     ):
                         MENU = {}
                         MENU["menu"] = sidebar.MENU
