@@ -862,11 +862,11 @@ class LeaveRequest(HorillaModel):
                     )
 
     def clean(self):
-
         cleaned_data = super().clean()
-
-        attachment = self.attachment
-        leave_type = self.leave_type_id
+        leave_type = getattr(self, "leave_type_id", None)
+        if not leave_type:  # 836
+            return
+        attachment = getattr(self, "attachment", None)
         requ_days = set(self.requested_dates())
         restricted_leaves = RestrictLeave.objects.all()
         request = getattr(horilla_middlewares._thread_locals, "request", None)
