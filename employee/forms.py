@@ -218,6 +218,18 @@ class EmployeeForm(ModelForm):
                 error_message = _("An Employee with this Email already exists")
 
             raise forms.ValidationError({"email": error_message})
+        contact_name = self.cleaned_data["emergency_contact_name"]
+        contact_number = self.cleaned_data["emergency_contact"]
+        contact_relationship = self.cleaned_data["emergency_contact_relation"]
+
+        if contact_name:
+            if not contact_number:
+                self.add_error('emergency_contact',
+                               "This field is required when Emergency Contact Name is filled.")
+            if not contact_relationship:
+                self.add_error('emergency_contact_relation',
+                               "This field is required when Emergency Contact Name is filled.")
+
 
     def get_next_badge_id(self):
         """
