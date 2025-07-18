@@ -37,7 +37,6 @@ from django.db.models.query import QuerySet
 from django.forms import DateInput, DateTimeInput, TimeInput
 from django.template.loader import render_to_string
 from django.utils.html import format_html
-from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 
 from attendance.filters import AttendanceFilters
@@ -78,6 +77,8 @@ class AttendanceUpdateForm(BaseModelForm):
     This model form is used to direct save the validated query dict to attendance model
     from AttendanceUpdateForm. This form can be used to update existing attendance.
     """
+
+    container_id = "attendanceUpdateFormFields"
 
     class Meta:
         """
@@ -205,6 +206,7 @@ class AttendanceForm(BaseModelForm):
     Model form for Attendance model
     """
 
+    container_id = "attendanceFormFields"
     employee_id = HorillaMultiSelectField(
         queryset=Employee.objects.filter(employee_work_info__isnull=False),
         widget=HorillaMultiSelectWidget(

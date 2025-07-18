@@ -378,7 +378,10 @@ def sortby(
     none_queryset = []
     model = queryset.model
     model_attr = getmodelattribute(model, sort_key)
-    is_method = isinstance(model_attr, types.FunctionType)
+    is_method = (
+        isinstance(model_attr, types.FunctionType)
+        or model_attr not in model._meta.get_fields()
+    )
     if not is_method:
         none_queryset = queryset.filter(**{f"{sort_key}__isnull": True})
         none_ids = list(none_queryset.values_list("id", flat=True))

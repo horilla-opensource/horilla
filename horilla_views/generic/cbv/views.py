@@ -354,6 +354,8 @@ class HorillaListView(ListView):
                         current = record
                         for part in parts[:-1]:
                             current = current.setdefault(part, {})
+                        if isinstance(value, float) and value.is_integer():
+                            value = int(value)
                         current[parts[-1]] = value
                 serialized.append(record)
             with_ref, without_ref = split_by_import_reference(serialized)
