@@ -405,7 +405,7 @@ class EmployeeBankDetailsForm(ModelForm):
     Form for EmployeeBankDetails model
     """
 
-    address = forms.CharField(widget=forms.Textarea(attrs={"rows": 2, "cols": 40}))
+    # address = forms.CharField(widget=forms.Textarea(attrs={"rows": 2, "cols": 40}))
 
     class Meta:
         """
@@ -418,19 +418,14 @@ class EmployeeBankDetailsForm(ModelForm):
             "account_number",
             "branch",
             "any_other_code1",
-            "address",
-            "country",
-            "state",
-            "city",
-            "any_other_code2",
         )
-        exclude = ["employee_id", "is_active", "additional_info"]
+        exclude = ["employee_id", "is_active", "additional_info" ,"any_other_code2" , "city" , "state" , "country" , "address" ]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["address"].widget.attrs["autocomplete"] = "address"
-        for visible in self.visible_fields():
-            visible.field.widget.attrs["class"] = "oh-input w-100"
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     self.fields["address"].widget.attrs["autocomplete"] = "address"
+    #     for visible in self.visible_fields():
+    #         visible.field.widget.attrs["class"] = "oh-input w-100"
 
     def as_p(self, *args, **kwargs):
         context = {"form": self}
@@ -449,7 +444,7 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
 
         model = EmployeeBankDetails
         fields = "__all__"
-        exclude = ["employee_id", "is_active", "additional_info"]
+        exclude = ["employee_id", "is_active", "additional_info" ,"any_other_code2" , "city" , "state" , "country" , "address" ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
