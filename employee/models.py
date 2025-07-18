@@ -73,10 +73,10 @@ class Employee(models.Model):
         verbose_name=_("User"),
     )
     employee_first_name = models.CharField(
-        max_length=200, null=False, verbose_name=_("First Name")
+        max_length=200, null=False,blank=False , verbose_name=_("First Name")
     )
     employee_last_name = models.CharField(
-        max_length=200, null=True, blank=True, verbose_name=_("Last Name")
+        max_length=200, null=True, blank=False, verbose_name=_("Last Name")
     )
     employee_profile = models.ImageField(
         upload_to="employee/profile", null=True, blank=True
@@ -86,6 +86,11 @@ class Employee(models.Model):
         max_length=25,
         default=1,
         verbose_name=_("Mobile Number"),
+    )
+    nic = models.CharField(verbose_name=_("NIC"),max_length=12, null=True, blank=False)
+    passport = models.CharField(
+        max_length=50, null=True, blank=True,
+        verbose_name = "Passport Number"
     )
     address = models.TextField(max_length=200, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
@@ -104,7 +109,7 @@ class Employee(models.Model):
     children = models.IntegerField(blank=True, null=True)
     emergency_contact = models.CharField(max_length=15, null=True, blank=True)
     emergency_contact_name = models.CharField(max_length=20, null=True, blank=True)
-    emergency_contact_relation = models.CharField(max_length=20, null=True, blank=True)
+    emergency_contact_relation = models.CharField(max_length=20, null=True, blank=True ,  verbose_name="Relationship to Emergency Contact")
     is_active = models.BooleanField(default=True)
     additional_info = models.JSONField(null=True, blank=True)
     is_from_onboarding = models.BooleanField(
@@ -732,11 +737,12 @@ class EmployeeBankDetails(HorillaModel):
         related_name="employee_bank_details",
         verbose_name=_("Employee"),
     )
-    bank_name = models.CharField(max_length=50 , default='sample')
+    bank_name = models.CharField(max_length=50 , default='sample' ,  verbose_name="Bank Name")
     account_number = models.CharField(
         max_length=50,
         null=True,
         blank=False,
+        verbose_name="Account Number",
     )
     branch = models.CharField(max_length=50, null=True)
     address = models.TextField(max_length=255, null=True)
