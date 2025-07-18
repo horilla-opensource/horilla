@@ -63,7 +63,7 @@ class Employee(models.Model):
         ("married", trans("Married")),
         ("divorced", trans("Divorced")),
     )
-    badge_id = models.CharField(max_length=50, null=True, blank=True)
+    badge_id = models.CharField(max_length=50, null=True, blank=True )
     employee_user_id = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -84,13 +84,15 @@ class Employee(models.Model):
     email = models.EmailField(max_length=254, unique=True)
     phone = models.CharField(
         max_length=25,
+        default=1,
+        verbose_name=_("Mobile Number"),
     )
     address = models.TextField(max_length=200, blank=True, null=True)
     country = models.CharField(max_length=100, blank=True, null=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
     zip = models.CharField(max_length=20, null=True, blank=True)
-    dob = models.DateField(null=True, blank=True)
+    dob = models.DateField(null=True, blank=True , verbose_name="Date Of Birth")
     gender = models.CharField(
         max_length=10, null=True, choices=choice_gender, default="male"
     )
@@ -730,7 +732,7 @@ class EmployeeBankDetails(HorillaModel):
         related_name="employee_bank_details",
         verbose_name=_("Employee"),
     )
-    bank_name = models.CharField(max_length=50)
+    bank_name = models.CharField(max_length=50 , default='sample')
     account_number = models.CharField(
         max_length=50,
         null=True,
