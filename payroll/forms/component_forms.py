@@ -810,16 +810,19 @@ class ReimbursementForm(ModelForm):
 
     def get_employee(self):
         """Resolves employee either from form data or request."""
+        employee_qs = self.fields["employee_id"].queryset
         employee_id = self.data.get("employee_id") if self.data else None
-        if employee_id:
-            return Employee.objects.filter(id=employee_id).first()
-        elif self.request:
-            return (
-                self.request.user.employee_get
-                if not self.instance.pk
-                else self.instance.employee_id
-            )
-        return None
+
+        if employee_id and (emp := employee_qs.filter(id=employee_id).first()):
+            return emp
+
+        if self.request and (emp := self.request.user.employee_get):
+            if not self.instance.pk and emp in employee_qs:
+                return emp
+            if self.instance.pk and emp.id == self.instance.employee_id:
+                return emp
+
+        return employee_qs.first()
 
     def get_encashable_leaves(self, employee):
         LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
