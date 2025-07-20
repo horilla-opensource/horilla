@@ -3,8 +3,8 @@ import sys
 from datetime import timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
-
-
+from django.conf import settings
+from django.core.mail import send_mail
 def update_experience():
     from employee.models import EmployeeWorkInformation
 
@@ -132,6 +132,119 @@ def block_unblock_disciplinary():
     return
 
 
+
+def send_probation_end_notifications():
+
+    from employee.models import Employee
+    from django.utils import timezone
+    from employee.models import EmployeeWorkInformation
+
+    today = timezone.now().date()
+
+    # Employees whose probation ends today
+    # ending_today = Employee.objects.filter(
+    #     probation_end_date=today,
+    #     # probation_notification_sent=False,
+    #     is_active=True
+    # )
+
+    ending_today = EmployeeWorkInformation.objects.filter(
+        probation_end_date=today,
+        employee_id__is_active=True
+    )
+
+
+    # upcoming_month = Employee.objects.filter(
+    #     probation_end_date=today + timedelta(days=30),
+    #     # probation_notification_sent=False,
+    #     is_active=True
+    # )
+    # upcoming_two_week = Employee.objects.filter(
+    #     probation_end_date=today + timedelta(days=14),
+    #     probation_notification_sent=False,
+    #     is_active=True
+    # )
+    # upcoming_one_week = Employee.objects.filter(
+    #     probation_end_date=today + timedelta(days=7),
+    #     # probation_notification_sent=False,
+    #     is_active=True
+    # )
+
+    # Send notifications for probation ending today
+    for employee in ending_today:
+        context = {
+            'employee': employee,
+            'probation_end_date': employee.probation_end_date,
+            'days_remaining': 0
+        }
+
+        send_probation_email(employee, 'probation_notification.html', context)
+
+
+def send_probation_email(employee, template_name, context):
+
+    subject = f"Probation Period Notification: {employee.employee_id.get_full_name()}"
+
+    # Render HTML email
+    html_message = render_to_string(
+        f"emails/{template_name}",
+        context
+    )
+
+    # Determine recipients (employee, manager, HR)
+    recipients = [employee.email]
+    # if employee.reporting_manager_id.get_email():
+    #     recipients.append(employee.employee_work_info.reporting_manager.work_email)
+
+    # Add HR email from settings
+    hr_email = getattr(settings, 'HR_EMAIL', 'hr@wireapps.co.uk')
+    recipients.append(hr_email)
+
+    # print(html_message)
+    #
+    # print(recipients)
+    #
+    # print(subject)
+
+    # send_mail(
+    #     subject=subject,
+    #     message="",  # Empty message since we're using html_message
+    #     from_email=settings.DEFAULT_FROM_EMAIL,
+    #     recipient_list=list(set(recipients)),  # Remove duplicates
+    #     html_message=html_message,
+    #     fail_silently=False
+    # )
+
+
+def send_contract_end_notification():
+    from django.utils import timezone
+    from employee.models import EmployeeWorkInformation
+
+    today = timezone.now().date()
+
+    ending_today = EmployeeWorkInformation.objects.filter(
+        contract_end_date=today,
+        employee_id__is_active=True
+    )
+    # new contract date > last contrat date
+    # print("Contract",ending_today)
+
+
+def send_birthday_in_this_month_notification():
+    from django.utils import timezone
+    from employee.models import Employee
+
+    today = timezone.now().date()
+    current_month = today.month
+
+    birthday_list = Employee.objects.filter(
+        dob__month=current_month,
+
+    )
+    # only once
+    # print("Birhtday" , birthday_list)
+
+
 if not any(
     cmd in sys.argv
     for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
@@ -142,4 +255,8 @@ if not any(
     scheduler = BackgroundScheduler()
     scheduler.add_job(update_experience, "interval", hours=4)
     scheduler.add_job(block_unblock_disciplinary, "interval", seconds=25)
+    # scheduler.add_job(send_probation_end_notifications, "interval", days=1)
+    # scheduler.add_job(send_contract_end_notification, "interval", seconds=30)
+    # scheduler.add_job(send_birthday_in_this_month_notification, "interval", seconds=5)
     scheduler.start()
+
