@@ -605,6 +605,17 @@ class EmployeeWorkInformation(models.Model):
     """
     EmployeeWorkInformation model
     """
+    CURRENCY_CHOICES = [
+        ('LKR', 'LKR - Sri Lankan Rupee'),
+        ('USD', 'USD - US Dollar'),
+        ('EUR', 'EUR - Euro'),
+        ('INR', 'INR - Indian Rupee'),
+        ('GBP', 'GBP - British Pound'),
+        ('AUD', 'AUD - Australian Dollar'),
+        ('CAD', 'CAD - Canadian Dollar'),
+        ('JPY', 'JPY - Japanese Yen'),
+        ('CNY', 'CNY - Chinese Yuan'),
+    ]
 
     employee_id = models.OneToOneField(
         Employee,
@@ -691,12 +702,18 @@ class EmployeeWorkInformation(models.Model):
     contract_end_date = models.DateField(
         blank=True, null=True, verbose_name=_("Contract End Date")
     )
+    probation_end_date = models.DateField(
+        blank=True,
+        null=True,
+        verbose_name=_("Probation End Date"),
+    )
     basic_salary = models.IntegerField(
         null=True, blank=True, default=0, verbose_name=_("Basic Salary")
     )
     salary_hour = models.IntegerField(
         null=True, blank=True, default=0, verbose_name=_("Salary Per Hour")
     )
+    salary_currency = models.CharField(max_length=3,choices=CURRENCY_CHOICES,null=True,blank=True, verbose_name=_("Salary Currency") , default='LKR')
     additional_info = models.JSONField(null=True, blank=True)
     experience = models.FloatField(null=True, blank=True, default=0)
     history = HorillaAuditLog(
