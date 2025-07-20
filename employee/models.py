@@ -101,6 +101,21 @@ class Employee(models.Model):
     gender = models.CharField(
         max_length=10, null=True, choices=choice_gender, default="male"
     )
+    blood_group = models.CharField(
+        max_length=3,
+        choices=[
+            ('A+', 'A+'),
+            ('A-', 'A-'),
+            ('B+', 'B+'),
+            ('B-', 'B-'),
+            ('AB+', 'AB+'),
+            ('AB-', 'AB-'),
+            ('O+', 'O+'),
+            ('O-', 'O-'),
+        ],
+        blank=True,
+        null=True
+    )
     qualification = models.CharField(max_length=50, blank=True, null=True)
     experience = models.IntegerField(null=True, blank=True)
     marital_status = models.CharField(
@@ -121,6 +136,12 @@ class Employee(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_work_info__company_id"
     )
+
+    def clean(self):
+        super().clean()
+        import re
+        if self.nic and not re.match(r'^(?:\d{9}[vVxX]|\d{12})$', self.nic):
+            raise ValidationError({'nic': "Invalid NIC format."})
 
     def clean_fields(self, exclude=None):
         errors = {}
