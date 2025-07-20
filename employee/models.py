@@ -716,6 +716,9 @@ class EmployeeWorkInformation(models.Model):
     salary_currency = models.CharField(max_length=3,choices=CURRENCY_CHOICES,null=True,blank=True, verbose_name=_("Salary Currency") , default='LKR')
     additional_info = models.JSONField(null=True, blank=True)
     experience = models.FloatField(null=True, blank=True, default=0)
+    probation_ended = models.BooleanField(
+        default=False,
+    )
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
