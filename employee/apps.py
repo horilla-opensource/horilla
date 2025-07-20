@@ -19,3 +19,7 @@ class EmployeeConfig(AppConfig):
 
     default_auto_field = "django.db.models.BigAutoField"
     name = "employee"
+
+    def ready(self):
+        from employee import scheduler
+        scheduler.start()
