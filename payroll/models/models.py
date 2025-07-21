@@ -138,6 +138,11 @@ class Contract(HorillaModel):
         ("monthly", _("Monthly")),
     ]
 
+    CONTRACT_TYPE_CHOICES = (
+        ("sri_lanka", _("Sri Lankan Contract")),
+        ("uk", _("UK Contract")),
+    )
+
     if apps.is_installed("attendance"):
         WAGE_CHOICES.append(("hourly", _("Hourly")))
 
@@ -163,6 +168,11 @@ class Contract(HorillaModel):
         on_delete=models.PROTECT,
         related_name="contract_set",
         verbose_name=_("Employee"),
+    )
+    contract_type = models.CharField(
+        choices=CONTRACT_TYPE_CHOICES,
+        default="sri_lanka",
+        verbose_name=_("Contract Type"),
     )
     contract_start_date = models.DateField(verbose_name=_("Start Date"))
     contract_end_date = models.DateField(
@@ -210,7 +220,7 @@ class Contract(HorillaModel):
         null=True,
         blank=True,
         related_name="contracts",
-        verbose_name=_("Job Position"),
+        verbose_name=_("Designation"),
     )
     job_role = models.ForeignKey(
         JobRole,
@@ -721,6 +731,14 @@ class Allowance(HorillaModel):
         ("children", _("Children")),
     ]
 
+    ALLOWANCE_CHOICES = (
+        ("accommodation", _("Accommodation Allowance")),
+        ("transport", _("Transport Allowance")),
+        ("internet", _("Internet Allowance")),
+        ("vehicle", _("Vehicle Allowance")),
+        ("fuel", _("Fuel Allowance")),
+    )
+
     if apps.is_installed("attendance"):
         attendance_choices = [
             ("overtime", _("Overtime")),
@@ -736,6 +754,7 @@ class Allowance(HorillaModel):
     title = models.CharField(
         max_length=255, null=False, blank=False, help_text=_("Title of the allowance")
     )
+    allowance_type = models.CharField(choices=ALLOWANCE_CHOICES, max_length=255 , default="accommodation" , verbose_name=_("Allowance Type"))
     one_time_date = models.DateField(
         null=True,
         blank=True,
