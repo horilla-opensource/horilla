@@ -1,4 +1,9 @@
 {% load generic_template_filters i18n %}
+<style>
+  .opacity-50{
+    opacity: .5!important;
+  }
+</style>
 {% if import_fields and import_accessibility %}
   <div id="import_{{ view_id }}" class="oh-checkpoint-badge text-warning" style="cursor: pointer;color: hsl(211.72deg 91% 60%) !important;" data-toggle="oh-modal-toggle" data-target="#importModal{{ view_id }}" onclick="
       ids = $('#{{ selected_instances_key_id }}').attr('data-ids');
@@ -13,7 +18,7 @@
         <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline" role="img"></ion-icon></button>
         <div class="oh-modal__dialog-body p-0 pb-4">
           <form hx-post="/{{ post_import_sheet_path }}" hx-encoding="multipart/form-data" class="oh-profile-section">
-            <div class="oh-modal__dialog-body mr-5" id="uploading" style="display: none">
+            <div class="oh-modal__dialog-body mr-5" id="uploading{{view_id}}" style="display: none">
               <div class="loader-container">
                 <div class="loader"></div>
                 <div class="loader-text">Uploading...</div>
@@ -27,7 +32,7 @@
                   <span class="oh-dropdown__import-form-title">Upload a File</span>
                   <span class="oh-dropdown__import-form-text">Drag and drop files here</span>
                 </label>
-                <input type="file" name="file" required="" />
+                <input  id="resumeUpload{{ view_id }}" type="file" name="file" required="" />
                 <div class="d-inline float-end">
                   <a onclick="
                                   $('#submitGetImportSheet{{ view_id }}').click();
@@ -52,29 +57,19 @@
               </div>
             {% endif %}
             <div class="modal-footer d-flex flex-row-reverse">
-              <input type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3" value="Upload" />
+              <input
+              onclick="
+                 if($('#resumeUpload{{ view_id }}').val()){
+                  $('#uploading{{view_id}}').show();
+                  $(this).addClass('opacity-50');
+                  setTimeout(() => {
+                    $(this).attr('type','button');
+                  }, 100);
+                 }
+                "
+               type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3" value="Upload" />
             </div>
           </form>
-          <script>
-            let htmxBusy = false
-
-            document.body.addEventListener('htmx:configRequest', function (event) {
-              if (htmxBusy) {
-                event.preventDefault()
-                console.warn('Blocked concurrent HTMX request.')
-              } else {
-                htmxBusy = true
-              }
-            })
-
-            document.body.addEventListener('htmx:afterRequest', function () {
-              htmxBusy = false
-            })
-
-            document.body.addEventListener('htmx:responseError', function () {
-              htmxBusy = false
-            })
-          </script>
           <form id="submitGetImportSheet{{ view_id }}Form" action="/{{ get_import_sheet_path }}" method="post">
             {% csrf_token %}
             <input type="text" name="selected_ids" hidden />

@@ -910,7 +910,7 @@ def assign_related(
                 else:
                     reverse_obj_dict[field] = value
         else:
-            instance = [
+            instances = [
                 data
                 for data in pk_values_mapping[reverse_field]
                 if getattr(
@@ -919,7 +919,8 @@ def assign_related(
                     record[reverse_field],
                 )
                 == record[reverse_field]
-            ][0]
-            reverse_obj_dict.update({reverse_field: instance})
-
+            ]
+            if instances:
+                instance = instances[0]
+                reverse_obj_dict.update({reverse_field: instance})
     return reverse_obj_dict

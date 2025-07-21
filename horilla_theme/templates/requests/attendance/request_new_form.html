@@ -21,7 +21,7 @@
                 <div class="oh-profile-section__card">
                     <div class="row">
                         <div class="col-12">{{form.errors}}</div>
-                        {% for field in form.visible_fields %} 
+                        {% for field in form.visible_fields %}
                             {% if field.field.widget|is_select_multiple or field.field.widget|is_text_area %}
                                 <div class="flex oh-label" for="id_{{ field.name }}">
                                     <label
@@ -64,12 +64,12 @@
                                         <div class="oh-switch" style="width: 30px">
                                             {{ field|add_class:"oh-switch__checkbox" }}
                                         </div>
-                                    {% else %} 
-                                        {{ field|add_class:"form-control" }} 
-                                    {% endif %} 
+                                    {% else %}
+                                        {{ field|add_class:"form-control" }}
+                                    {% endif %}
                                     {{field.errors}}
                                 </div>
-                            {% endif %} 
+                            {% endif %}
                         {% endfor %}
                     </div>
 

@@ -373,6 +373,8 @@ class HorillaListView(ListView):
                         current = record
                         for part in parts[:-1]:
                             current = current.setdefault(part, {})
+                        if isinstance(value, float) and value.is_integer():
+                            value = int(value)
                         current[parts[-1]] = value
                 serialized.append(record)
             with_ref, without_ref = split_by_import_reference(serialized)
@@ -496,11 +498,13 @@ class HorillaListView(ListView):
                     bulk_base_fk_grouping = {}
                     bulk_create_reverse_related_grouping = {}
                     bulk_create_base_grouping = []
+                    items = []
 
                     related_fields = list(
                         self.reverse_model_relation_to_base_model.keys()
                     )
                     fk_fields = self.fk_o2o_field_in_base_model
+
                     for record in records_to_import:
                         if record.get(update_reference_key):
                             del record[update_reference_key]
@@ -575,12 +579,17 @@ class HorillaListView(ListView):
                                         records=items,
                                         view=self,
                                     )
+
+                    if not items:
+                        items = bulk_create_base_grouping
                     pre_generic_import.send(
                         sender=self.model,
                         records=items,
                         view=self,
                     )
+
                     self.model.objects.bulk_create(bulk_create_base_grouping)
+
                     post_generic_import.send(
                         sender=self.model,
                         records=items,
