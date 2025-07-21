@@ -778,23 +778,23 @@ class EmployeeBankDetails(HorillaModel):
         related_name="employee_bank_details",
         verbose_name=_("Employee"),
     )
-    bank_name = models.CharField(max_length=50 , default='sample' ,  verbose_name="Bank Name")
+    bank_name = models.CharField(max_length=50 ,null=True , blank=False ,  verbose_name="Bank Name")
     account_number = models.CharField(
         max_length=50,
         null=True,
         blank=False,
         verbose_name="Account Number",
     )
-    branch = models.CharField(max_length=50, null=True)
+    branch = models.CharField(max_length=50, null=True , blank=False)
     address = models.TextField(max_length=255, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
     state = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=50, blank=True)
     any_other_code1 = models.CharField(
-        max_length=50, verbose_name="Bank Code #1", null=True
+        max_length=50, verbose_name="Bank Code", null=True
     )
     any_other_code2 = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name="Bank Code #2"
+        max_length=50, null=True, blank=True, verbose_name="Branch Code"
     )
     additional_info = models.JSONField(null=True, blank=True)
     objects = HorillaCompanyManager(
