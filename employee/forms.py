@@ -427,12 +427,23 @@ class EmployeeBankDetailsForm(ModelForm):
 
         model = EmployeeBankDetails
         fields = (
-            "bank_name",
             "account_number",
+            "bank_name",
             "branch",
             "any_other_code1",
+            "any_other_code2",
         )
-        exclude = ["employee_id", "is_active", "additional_info" ,"any_other_code2" , "city" , "state" , "country" , "address" ]
+        exclude = ["employee_id", "is_active", "additional_info"  , "city" , "state" , "country" , "address"  ]
+        # widgets = {
+        #     "bank_name": forms.HiddenInput(),
+        #     "branch": forms.HiddenInput(),
+        #     "any_other_code1": forms.HiddenInput(),
+        #     "any_other_code2": forms.HiddenInput(),
+        # }
+        # bank_name = forms.CharField(required=False)
+        # branch = forms.CharField(required=False)
+        # any_other_code1 = forms.CharField(required=False)
+        # any_other_code2 = forms.CharField(required=False)
 
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
@@ -457,7 +468,17 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
 
         model = EmployeeBankDetails
         fields = "__all__"
-        exclude = ["employee_id", "is_active", "additional_info" ,"any_other_code2" , "city" , "state" , "country" , "address" ]
+        exclude = ["employee_id", "is_active", "additional_info"  , "city" , "state" , "country" , "address" ]
+        # widgets = {
+        #     "bank_name": forms.HiddenInput(),
+        #     "branch": forms.HiddenInput(),
+        #     "any_other_code1": forms.HiddenInput(),
+        #     "any_other_code2": forms.HiddenInput(),
+        # }
+        # bank_name = forms.CharField(required=False)
+        # branch = forms.CharField(required=False)
+        # any_other_code1 = forms.CharField(required=False)
+        # any_other_code2 = forms.CharField(required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
