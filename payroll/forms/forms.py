@@ -39,6 +39,11 @@ class ContractForm(ModelForm):
         fields = "__all__"
         exclude = [
             "is_active",
+            "job_role",
+            "filing_status",
+            "wage_type",
+            "pay_frequency",
+            "shift",
         ]
         model = Contract
 
