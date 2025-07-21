@@ -263,26 +263,10 @@
         {% include 'onboarding/candidates.html' %}
     </div>
 {% else %}
-    <div
-        style="
-            height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        "
-        class=""
-    >
-        <div style="" class="">
-            <img
-                style="width: 190px; height: 190px; margin: 0 auto"
-                src="{% static 'images/ui/candidate.png' %}"
-                class="oh-404__image d-block mb-4"
-                alt="Page not found. 404."
-            />
-            <h5 class="oh-404__subtitle">
-                {% trans "At present, There are no Candidates onboarding." %}
-            </h5>
-        </div>
+    <div class="oh-empty">
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+        <p class="oh-empty__subtitle">{% trans "At present, There are no Candidates onboarding." %}</p>
     </div>
 {% endif %}
 <div

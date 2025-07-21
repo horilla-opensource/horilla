@@ -186,8 +186,9 @@
                                     value="{{letter.id}}"
                                 />
                                 <input type="hidden" name="offboarding_id" />
+                                <input type="hidden" name="employee_id" value="{{letter.employee_id.id}}" />
                                 <input type="hidden" name="notice_period_starts"
-                                value="{% now "Y-m-d" %}"
+                                value="{{letter.planned_to_leave_on|date:"Y-m-d"}}"
                                 id="notice_period_starts{{letter.id}}">
                                 <input
                                     type="hidden"

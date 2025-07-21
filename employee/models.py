@@ -16,6 +16,7 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.templatetags.static import static
 from django.utils.translation import gettext as _
 from django.utils.translation import gettext_lazy as trans
 
@@ -33,7 +34,7 @@ from base.models import (
 from employee.methods.duration_methods import format_time, strtime_seconds
 from horilla import horilla_middlewares
 from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, has_xss
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
@@ -113,6 +114,26 @@ class Employee(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_work_info__company_id"
     )
+
+    def clean_fields(self, exclude=None):
+        errors = {}
+
+        # Get the list of fields to exclude from validation
+        total_exclude = set(exclude or []).union(getattr(self, "xss_exempt_fields", []))
+
+        for field in self._meta.get_fields():
+            if (
+                isinstance(field, (models.CharField, models.TextField))
+                and field.name not in total_exclude
+            ):
+                value = getattr(self, field.name, None)
+                if value and has_xss(value):
+                    errors[field.name] = ValidationError(
+                        "Potential XSS content detected."
+                    )
+
+        if errors:
+            raise ValidationError(errors)
 
     def get_image(self):
         """
@@ -223,17 +244,9 @@ class Employee(models.Model):
         )
 
     def get_avatar(self):
-        """
-        Method will retun the api to the avatar or path to the profile image
-        """
-        url = (
-            f"https://ui-avatars.com/api/?name={self.get_full_name()}&background=random"
-        )
-        if self.employee_profile:
-            full_filename = self.employee_profile.name
-            if default_storage.exists(full_filename):
-                url = self.employee_profile.url
-        return url
+        if self.employee_profile and default_storage.exists(self.employee_profile.name):
+            return self.employee_profile.url
+        return static("images/ui/default_avatar.jpg")
 
     def get_leave_status(self):
         """
@@ -573,13 +586,6 @@ class EmployeeWorkInformation(models.Model):
         related_name="employee_work_info",
         verbose_name=_("Employee"),
     )
-    job_position_id = models.ForeignKey(
-        JobPosition,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        verbose_name=_("Job Position"),
-    )
     department_id = models.ForeignKey(
         Department,
         on_delete=models.PROTECT,
@@ -587,19 +593,12 @@ class EmployeeWorkInformation(models.Model):
         blank=True,
         verbose_name=_("Department"),
     )
-    work_type_id = models.ForeignKey(
-        WorkType,
+    job_position_id = models.ForeignKey(
+        JobPosition,
         on_delete=models.PROTECT,
         null=True,
         blank=True,
-        verbose_name=_("Work Type"),
-    )
-    employee_type_id = models.ForeignKey(
-        EmployeeType,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        verbose_name=_("Employee Type"),
+        verbose_name=_("Job Position"),
     )
     job_role_id = models.ForeignKey(
         JobRole,
@@ -616,27 +615,6 @@ class EmployeeWorkInformation(models.Model):
         related_name="reporting_manager",
         verbose_name=_("Reporting Manager"),
     )
-    company_id = models.ForeignKey(
-        Company,
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        verbose_name=_("Company"),
-    )
-    tags = models.ManyToManyField(
-        EmployeeTag, blank=True, verbose_name=_("Employee tag")
-    )
-    location = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name=_("Work Location")
-    )
-    email = models.EmailField(
-        max_length=254, blank=True, null=True, verbose_name=_("Email")
-    )
-    mobile = models.CharField(
-        max_length=254,
-        blank=True,
-        null=True,
-    )
     shift_id = models.ForeignKey(
         EmployeeShift,
         on_delete=models.DO_NOTHING,
@@ -644,10 +622,47 @@ class EmployeeWorkInformation(models.Model):
         blank=True,
         verbose_name=_("Shift"),
     )
+    work_type_id = models.ForeignKey(
+        WorkType,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        verbose_name=_("Work Type"),
+    )
+
+    employee_type_id = models.ForeignKey(
+        EmployeeType,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        verbose_name=_("Employee Type"),
+    )
+    tags = models.ManyToManyField(
+        EmployeeTag, blank=True, verbose_name=_("Employee tag")
+    )
+    location = models.CharField(
+        max_length=50, null=True, blank=True, verbose_name=_("Work Location")
+    )
+    company_id = models.ForeignKey(
+        Company,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        verbose_name=_("Company"),
+    )
+    email = models.EmailField(
+        max_length=254, blank=True, null=True, verbose_name=_("Work Email")
+    )
+    mobile = models.CharField(
+        max_length=254, blank=True, null=True, verbose_name=_("Work Phone")
+    )
+
     date_joining = models.DateField(
         null=True, blank=True, verbose_name=_("Joining Date")
     )
-    contract_end_date = models.DateField(blank=True, null=True)
+    contract_end_date = models.DateField(
+        blank=True, null=True, verbose_name=_("Contract End Date")
+    )
     basic_salary = models.IntegerField(
         null=True, blank=True, default=0, verbose_name=_("Basic Salary")
     )
@@ -718,16 +733,17 @@ class EmployeeBankDetails(HorillaModel):
     bank_name = models.CharField(max_length=50)
     account_number = models.CharField(
         max_length=50,
-        null=False,
+        null=True,
         blank=False,
-        default="",
     )
-    branch = models.CharField(max_length=50)
-    address = models.TextField(max_length=255)
+    branch = models.CharField(max_length=50, null=True)
+    address = models.TextField(max_length=255, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
     state = models.CharField(max_length=50, blank=True)
     city = models.CharField(max_length=50, blank=True)
-    any_other_code1 = models.CharField(max_length=50, verbose_name="Bank Code #1")
+    any_other_code1 = models.CharField(
+        max_length=50, verbose_name="Bank Code #1", null=True
+    )
     any_other_code2 = models.CharField(
         max_length=50, null=True, blank=True, verbose_name="Bank Code #2"
     )
@@ -735,6 +751,10 @@ class EmployeeBankDetails(HorillaModel):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+
+    class Meta:
+        verbose_name = _("Employee Bank Details")
+        verbose_name_plural = _("Employee Bank Details")
 
     def __str__(self) -> str:
         return f"{self.employee_id}-{self.bank_name}"
@@ -806,6 +826,10 @@ class Policy(HorillaModel):
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
 
     objects = HorillaCompanyManager("company_id")
+
+    class Meta:
+        verbose_name = _("Policy")
+        verbose_name_plural = _("Policies")
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)

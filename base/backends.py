@@ -245,7 +245,9 @@ def new_init(
     if request and request.user and request.user.is_authenticated:
         user_id = request.user.pk
         reply_to = cache.get(f"reply_to{user_id}") if not reply_to else reply_to
-    from_email = cache.get(f"dynamic_display_name{user_id}")
+
+    if not from_email:
+        from_email = cache.get(f"dynamic_display_name{user_id}")
 
     message_init(
         self,

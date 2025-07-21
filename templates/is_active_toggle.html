@@ -1,0 +1,12 @@
+<div class="oh-switch p-3">
+    {% if url %}
+        <input type="checkbox" name="is_active" id="isActiveToggleId"
+        hx-post={{url}}
+        hx-trigger="change" hx-target="#genericModalBody"
+        class="oh-switch__checkbox"
+        {% if instance.is_active %} checked {% endif %}>
+    {% else %}
+        <input type="checkbox" id="isActiveToggleId" class="oh-switch__checkbox"
+        {% if instance.is_active %} checked {% endif %} disabled >
+    {% endif %}
+</div>

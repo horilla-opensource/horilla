@@ -1,0 +1,187 @@
+{% load static %} {% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Login - {{white_label_company_name}} Dashboard</title>
+        <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}"
+        />
+        <link rel="stylesheet" href="{% static '/build/css/style.min.css' %}" />
+        <link rel="manifest" href="{% static 'build/manifest.json' %}" />
+    </head>
+    <style>
+        .oh-opacity-0 {
+            opacity: 0;
+        }
+    </style>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <div id="main">
+            <div class="oh-alert-container">
+                {% for message in messages %}
+                <div class="oh-alert oh-alert--animated {{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            <main class="oh-auth">
+                <div
+                    class="oh-onboarding-card"
+                    style="max-height: 790px; max-width: 975px"
+                    id="ohAuthCard"
+                >
+                    <div class="oh-onboarding-card__header">
+                        <span class="oh-onboarding-card__company-name"
+                            >{{white_label_company_name}} HRMS</span
+                        >
+                    </div>
+                    <h1
+                        class="oh-onboarding-card__title oh-onboarding-card__title--h2 text-center my-3"
+                    >
+                        {% trans "Two Factor Authentication" %}
+                    </h1>
+                    <p class="text-muted text-center">
+                        {% trans "Enter the OTP send to your email: " %}
+                        <b>{{request.user.employee_get.get_mail}}</b>.
+                    </p>
+                    <div id="OtpContainer" >
+                        {% if request.session.otp_code %}
+                            <form
+                                class="oh-form-group"
+                                method="POST"
+                                action="{% url 'two-factor' %}"
+                            >
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="oh-input-group">
+                                            <label class="oh-label" for="password"
+                                                >{% trans "Enter OTP" %}</label
+                                            >
+                                            <div class="oh-password-input-container">
+                                                <input
+                                                    type="password"
+                                                    id="otp"
+                                                    name="otp"
+                                                    class="oh-input oh-input--password w-100"
+                                                    placeholder="Enter OTP"
+                                                    required
+                                                />
+                                                <button
+                                                    type="button"
+                                                    class="oh-btn oh-btn--transparent oh-password-input--toggle"
+                                                >
+                                                    <ion-icon
+                                                        class="oh-passowrd-input__show-icon"
+                                                        title="Show Password"
+                                                        name="eye-outline"
+                                                    ></ion-icon>
+                                                    <ion-icon
+                                                        class="oh-passowrd-input__hide-icon d-none"
+                                                        title="Hide Password"
+                                                        name="eye-off-outline"
+                                                    ></ion-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="oh-modal__dialog-footer p-0 mt-3 justify-content-between">
+                                    <div class="mt-3 oh-text--secondary oh-opacity-0" id="otp-timer">
+                                        <span class=""> {% trans "Resend OTP in" %} <span class="time fw-bold">20</span></span>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        class="oh-btn oh-btn--secondary-outline"
+                                        role="button"
+                                    >
+                                        {% trans "Authenticate" %}
+                                        <ion-icon
+                                            class="ms-2"
+                                            name="arrow-forward-outline"
+                                        ></ion-icon>
+                                    </button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <form
+                                class="oh-form-group"
+                                hx-post="{% url 'send-otp' %}"
+                                hx-target="#OtpContainer"
+                                hx-select="#OtpContainer"
+                                hx-swap="outerHTML"
+                            >
+                                {% csrf_token %}
+                                <div class="oh-modal__dialog-footer p-0 mt-3 justify-content-center">
+                                    <button
+                                        type="submit"
+                                        class="oh-btn oh-btn--secondary-outline m-2"
+                                        role="button"
+                                    >
+                                        {% trans "Send OTP" %}
+                                        <ion-icon
+                                            class="ms-2"
+                                            name="arrow-forward-outline"
+                                        ></ion-icon>
+                                    </button>
+                                </div>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <img src={% if white_label_company.icon %}
+                "{{white_label_company.icon.url}}" {% else %} "{% static 'images/ui/auth-logo.png' %}" {% endif %} alt="Horilla" />
+            </main>
+        </div>
+        <script src="{% static '/build/js/web.frontend.min.js' %}"></script>
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="{% static 'htmx/htmx.min.js' %}"></script>
+        <script src="{% static 'build/js/htmxSelect2.js' %}"></script>
+        <script src="{% static '/index/index.js' %}"></script>
+        <script type="module"  src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+        <script>
+            $(document).on("htmx:beforeRequest", function (event, data) {
+                var response = event.detail.xhr.response;
+                var target = $(event.detail.elt.getAttribute("hx-target"));
+                if (!target.closest("form").length) {
+                    target.html();
+                }
+            });
+            setTimeout(function () {
+                var timer = $("#otp-timer");
+                timer.removeClass("oh-opacity-0");
+
+                let counter = 20;
+                let $timeSpan = timer.find(".time");
+                let resendUrl = "{% url 'send-otp' %}";
+
+                let interval = setInterval(function () {
+                    counter--;
+                    if (counter <= 0) {
+                        clearInterval(interval);
+                        $timeSpan.html(`<a href='${resendUrl}' class="oh-text--secondary">{% trans "Resend" %}`);
+                    } else {
+                        $timeSpan.text(`${counter}`);
+                    }
+                }, 1000);
+            }, 5000);
+        </script>
+    </body>
+</html>

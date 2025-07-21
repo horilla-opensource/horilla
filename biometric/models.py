@@ -48,11 +48,17 @@ class BiometricDevices(HorillaModel):
     """
 
     BIO_DEVICE_TYPE = [
-        ("zk", _("ZKTeco Biometric")),
+        ("zk", _("ZKTeco / eSSL Biometric")),
         ("anviz", _("Anviz Biometric")),
         ("cosec", _("Matrix COSEC Biometric")),
         ("dahua", _("Dahua Biometric")),
         ("etimeoffice", _("e-Time Office")),
+    ]
+    BIO_DEVICE_DIRECTION = [
+        ("in", _("In Device")),
+        ("out", _("Out Device")),
+        ("alternate", _("Alternate In/Out Device")),
+        ("system", _("System Direction(In/Out) Device")),
     ]
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     name = models.CharField(max_length=100, verbose_name=_("Name"))
@@ -86,8 +92,8 @@ class BiometricDevices(HorillaModel):
     )
     api_token = models.CharField(max_length=500, null=True, blank=True)
     api_expires = models.CharField(max_length=100, null=True, blank=True)
-    is_live = models.BooleanField(default=False)
-    is_scheduler = models.BooleanField(default=False)
+    is_live = models.BooleanField(default=False, verbose_name=_("Is Live"))
+    is_scheduler = models.BooleanField(default=False, verbose_name=_("Is Scheduled"))
     scheduler_duration = models.CharField(
         null=True,
         default="00:00",
@@ -96,6 +102,12 @@ class BiometricDevices(HorillaModel):
     )
     last_fetch_date = models.DateField(null=True, blank=True)
     last_fetch_time = models.TimeField(null=True, blank=True)
+    device_direction = models.CharField(
+        max_length=50,
+        choices=BIO_DEVICE_DIRECTION,
+        default="system",
+        verbose_name=_("Device Direction"),
+    )
     company_id = models.ForeignKey(
         Company,
         null=True,
@@ -281,6 +293,10 @@ class COSECAttendanceArguments(models.Model):
         BiometricDevices, on_delete=models.CASCADE, null=True, blank=True
     )
     objects = models.Manager()
+
+    class Meta:
+        verbose_name = _("COSEC Attendance Arguments")
+        verbose_name_plural = _("COSEC Attendance Arguments")
 
     def __str__(self):
         return f"{self.device_id} - {self.last_fetch_roll_ovr_count} - {self.last_fetch_seq_number}"

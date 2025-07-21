@@ -88,29 +88,6 @@ if apps.is_installed("attendance"):
         work_records = WorkRecords.objects.filter(leave_request_id=instance).delete()
 
 
-@receiver(post_save, sender=LeaveRequest)
-def update_available(sender, instance, **kwargs):
-    """
-    post save method to update the available leaves
-    """
-
-    _sender = sender
-
-    def update_leaves():
-        try:
-            if instance.leave_type_id:
-                available_leaves = instance.employee_id.available_leave.filter(
-                    leave_type_id=instance.leave_type_id
-                )
-                for assigned in available_leaves:
-                    assigned.save()
-        except Exception as e:
-            pass
-
-    thread = threading.Thread(target=update_leaves)
-    thread.start()
-
-
 # @receiver(post_migrate)
 def add_missing_leave_to_workrecords(sender, **kwargs):
     if sender.label not in ["attendance", "leave"]:

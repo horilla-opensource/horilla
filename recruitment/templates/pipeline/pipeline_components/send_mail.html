@@ -134,10 +134,6 @@
             var selectedIds = JSON.parse($("#selectedInstances").attr("data-ids"));
             $("#candidates[name=candidates]select[multiple]").val(selectedIds).change();
         {% endif %}
-
-        $("select").on("select2:select", function (e) {
-            $(this).closest("select")[0].dispatchEvent(new Event("change"));
-        });
     });
 
     document.querySelector('.submit-send').onclick = function (event) {

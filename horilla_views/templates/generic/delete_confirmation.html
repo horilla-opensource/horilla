@@ -42,7 +42,7 @@
             .check-list li:hover {
               background-color: #e5ffff;
             }
-            .oh-inner-sidebar__link{
+            .confirmation-sidebar--item{
               cursor: pointer;
             }
 
@@ -168,7 +168,7 @@
                                 <a
                                  id="{{item.0.verbose_name|lower}}"
                                  onclick="$(`[data-target='#{{key}}']`).click();$(this).parent().find('button').click()"
-                                 class="oh-inner-sidebar__link">{{item.0.verbose_name}}</a>
+                                 class="oh-inner-sidebar__link confirmation-sidebar--item">{{item.0.verbose_name}}</a>
                                  <button
                                  hidden
                                  hx-get="/{{dynamic_list_path|get_item:item.0.verbose_name}}"
@@ -214,7 +214,7 @@
         $(`#deleteConfirmationBody ${target}`).removeClass("d-none");
         localStorage.setItem("deleteConfirmation",target)
     });
-    $(".oh-inner-sidebar__link").click(function (e) {
+    $(".confirmation-sidebar--item").click(function (e) {
         e.preventDefault();
         $(this).closest("ul").find(".oh-inner-sidebar__link--active").removeClass("oh-inner-sidebar__link--active");
         $(this).addClass("oh-inner-sidebar__link--active");

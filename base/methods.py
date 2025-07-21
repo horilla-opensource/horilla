@@ -9,6 +9,7 @@ import pandas as pd
 import pdfkit
 from django.apps import apps
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.staticfiles import finders
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
@@ -25,6 +26,16 @@ from employee.models import Employee, EmployeeWorkInformation
 from horilla.horilla_apps import NESTED_SUBORDINATE_VISIBILITY
 from horilla.horilla_middlewares import _thread_locals
 from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
+
+
+def users_count(self):
+    """
+    Restrict Group users_count to selected company context
+    """
+    return Employee.objects.filter(employee_user_id__in=self.user_set.all()).count()
+
+
+Group.add_to_class("users_count", property(users_count))
 
 
 def filtersubordinates(request, queryset, perm=None, field="employee_id"):
@@ -608,29 +619,30 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
 
 def reload_queryset(fields):
     """
-    This method is used to reload the querysets in the form
+    Reloads querysets in the form based on active filters and selected company.
     """
+    request = getattr(_thread_locals, "request", None)
+    selected_company = request.session.get("selected_company") if request else None
+
+    recruitment_installed = apps.is_installed("recruitment")
     model_filters = {
         "Employee": {"is_active": True},
-        "Candidate": {"is_active": True} if apps.is_installed("recruitment") else None,
+        "Candidate": {"is_active": True} if recruitment_installed else None,
     }
-    request = getattr(_thread_locals, "request", None)
 
-    selected_company = request.session.get("selected_company") if request else None
     for field in fields.values():
-        if isinstance(field, ModelChoiceField):
-            model_name = field.queryset.model.__name__
-            filter_criteria = model_filters.get(model_name)
-            if filter_criteria is not None:
-                field.queryset = field.queryset.model.objects.filter(**filter_criteria)
-            # Future updation for company select field options when select a comapany from navbar
-            # Comment this line to ensure dynamically update the list of departments
-            # based on the company selected from the navbar.
-            # on the /employee-view-update/<int:id>/ page
-            # elif selected_company and not selected_company == 'all':
-            #     field.queryset = field.queryset.model.objects.filter(id=selected_company)
-            else:
-                field.queryset = field.queryset.model.objects.all()
+        if not isinstance(field, ModelChoiceField):
+            continue
+
+        model = field.queryset.model
+        model_name = model.__name__
+
+        if model_name == "Company" and selected_company and selected_company != "all":
+            field.queryset = model.objects.filter(id=selected_company)
+        elif (filters := model_filters.get(model_name)) is not None:
+            field.queryset = model.objects.filter(**filters)
+        else:
+            field.queryset = model.objects.all()
 
     return fields
 
@@ -1006,3 +1018,12 @@ def template_pdf(template, context={}, html=False, filename="payslip.pdf"):
         return response
     except Exception as e:
         return HttpResponse(f"Error generating PDF: {str(e)}", status=500)
+
+
+def generate_otp():
+    """
+    Function to generate a random 6-digit OTP (One-Time Password).
+    Returns:
+        str: A 6-digit random OTP as a string.
+    """
+    return str(random.randint(100000, 999999))

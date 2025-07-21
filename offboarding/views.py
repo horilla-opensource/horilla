@@ -16,6 +16,7 @@ from base.methods import closest_numbers, eval_validate, paginator_qry, sortby
 from base.models import Department, JobPosition
 from base.views import general_settings
 from employee.models import Employee
+from horilla import horilla_middlewares
 from horilla.decorators import (
     hx_request_required,
     login_required,
@@ -60,9 +61,21 @@ from offboarding.models import (
 )
 
 
+def any_manager(employee: Employee):
+    """
+    This method is used to check the employee is in managers
+    employee: Employee model instance
+    """
+    return (
+        Offboarding.objects.filter(managers=employee).exists()
+        | OffboardingStage.objects.filter(managers=employee).exists()
+        | OffboardingTask.objects.filter(managers=employee).exists()
+    )
+
+
 def pipeline_grouper(filters={}, offboardings=[]):
     groups = []
-
+    request = getattr(horilla_middlewares._thread_locals, "request", None)
     for offboarding in offboardings:
         employees = []
         stages = PipelineStageFilter(
@@ -76,6 +89,15 @@ def pipeline_grouper(filters={}, offboardings=[]):
                 filters,
                 OffboardingEmployee.objects.filter(stage_id=stage),
             ).qs.order_by("stage_id__id")
+
+            if request and not (
+                request.user.has_perm("offboarding.view_offboarding")
+                or any_manager(request.user.employee_get)
+            ):
+                stage_employees = stage_employees.filter(
+                    employee_id=request.user.employee_get
+                )
+
             page_name = "page" + stage.title + str(offboarding.id)
             employee_grouper = group_by(
                 stage_employees,
@@ -399,10 +421,14 @@ def change_stage(request):
     for employee in employees:
         employee.stage_id = stage
         employee.save()
-    if stage.type == "archived":
-        Employee.objects.filter(
-            id__in=employees.values_list("employee_id__id", flat=True)
-        ).update(is_active=False)
+
+    target_state = False if stage.type == "archived" else True
+    employee_ids = employees.values_list("employee_id__id", flat=True)
+    Employee.objects.filter(
+        id__in=employee_ids,
+        is_active=not target_state,  # Only update if is_active differs
+    ).update(is_active=target_state)
+
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
         offboarding=stage.offboarding_id
@@ -852,12 +878,13 @@ def update_status(request):
     This method is used to update the status of resignation letter
     """
     ids = request.GET.getlist("letter_ids")
-    status = request.GET["status"]
+    status = request.GET.get("status")
+    employee_id = request.GET.get("employee_id")
     offboarding_id = request.GET.get("offboarding_id")
-    default_notice_end = (
-        get_horilla_model_class(
-            app_label="payroll", model="payrollgeneralsetting"
-        ).objects.first()
+    contract_notice_end_date = (
+        get_horilla_model_class(app_label="payroll", model="contract")
+        .objects.filter(employee_id=employee_id, contract_status="active")
+        .first()
         if apps.is_installed("payroll")
         else None
     )
@@ -865,7 +892,7 @@ def update_status(request):
     if offboarding_id:
         offboarding = Offboarding.objects.get(id=offboarding_id)
         notice_period_starts = request.GET.get("notice_period_starts")
-        notice_period_ends = request.GET.get("notice_period_ends")
+        notice_period_ends = request.GET.get("notice_period_ends", None)
         if notice_period_starts:
             notice_period_starts = datetime.strptime(
                 notice_period_starts, "%Y-%m-%d"
@@ -876,11 +903,13 @@ def update_status(request):
                 notice_period_ends, "%Y-%m-%d"
             ).date()
         else:
-            notice_period_ends = None
-            if default_notice_end:
+            if contract_notice_end_date:
                 notice_period_ends = notice_period_starts + timedelta(
-                    days=default_notice_end.notice_period
+                    days=contract_notice_end_date.notice_period_in_days
                 )
+            else:
+                notice_period_ends = None
+
         if not notice_period_starts:
             notice_period_starts = today
 

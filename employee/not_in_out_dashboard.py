@@ -187,7 +187,11 @@ def get_mail_preview(request):
     if emp_id:
         employee = Employee.objects.get(id=emp_id)
         context = template.Context(
-            {"instance": employee, "self": request.user.employee_get}
+            {
+                "instance": employee,
+                "self": request.user.employee_get,
+                "request": request,
+            }
         )
         body = template_bdy.render(context) or " "
     return JsonResponse({"body": body})

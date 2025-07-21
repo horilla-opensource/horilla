@@ -48,6 +48,11 @@ urlpatterns = [
         name="biometric-device-fetch-logs",
     ),
     path(
+        "biometric-device-bulk-fetch-logs/",
+        views.biometric_device_bulk_fetch_logs,
+        name="biometric-device-bulk-fetch-logs",
+    ),
+    path(
         "biometric-device-add",
         views.biometric_device_add,
         name="biometric-device-add",
@@ -66,11 +71,6 @@ urlpatterns = [
         "biometric-device-archive/<uuid:device_id>/",
         views.biometric_device_archive,
         name="biometric-device-archive",
-    ),
-    path(
-        "search-devices",
-        views.search_devices,
-        name="search-devices",
     ),
     path(
         "biometric-device-employees/<uuid:device_id>/",

@@ -16,6 +16,15 @@
     </head>
 
     <body>
+        {% if messages %}
+            <div class="oh-alert-container">
+                {% for message in messages %}
+                    <div class="oh-alert oh-alert--animated {{message.tags}}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
         <div id="main">
             <div class="oh-wrapper mt-4 ">
                 {% if request.user.is_authenticated %}

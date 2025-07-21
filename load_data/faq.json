@@ -1,0 +1,977 @@
+[
+    {
+        "model": "helpdesk.faq",
+        "pk": 1,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.360Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to create an Employee?",
+            "answer": "Employee > Employees > Create > Fill out the form",
+            "category": 1,
+            "company_id": null,
+            "tags": [9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 2,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.424Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How are document requests handled?",
+            "answer": "Admins or managers create document requests specifying details like title, format, and size. Employees upload documents directly from their profile.",
+            "category": 1,
+            "company_id": null,
+            "tags": [2, 9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 3,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.474Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Payroll module in Horilla HRMS?",
+            "answer": "The Payroll module in Horilla HRMS enables businesses to manage employee allowances, deductions, taxes, and generate accurate payslips, ensuring streamlined and efficient payroll processes.",
+            "category": 2,
+            "company_id": null,
+            "tags": [10]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 4,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.529Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Allowance Management feature?",
+            "answer": "Allowance Management enables users to create and customize allowances, set eligibility conditions, and specify fixed or variable allowances. It simplifies targeting allowances to employee groups and ensures fairness.",
+            "category": 2,
+            "company_id": null,
+            "tags": [10]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 5,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.580Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to create a leave request?",
+            "answer": "Click on My Leave Request > Select Leave Type > Fill out the form",
+            "category": 3,
+            "company_id": null,
+            "tags": []
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 6,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.615Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to export work records?",
+            "answer": "Click on Work Records inside Attendance, filter the data and click on Export button",
+            "category": 4,
+            "company_id": null,
+            "tags": [7, 13]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 7,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.666Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to create a shift request?",
+            "answer": "go to employee --> shift request --> create --> Fill out the form",
+            "category": 1,
+            "company_id": null,
+            "tags": [9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 8,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.718Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to add stage managers to an existing stage?",
+            "answer": "Recruitment --> Stage 3 dot --> Edit --> Managers",
+            "category": 6,
+            "company_id": null,
+            "tags": [4, 5, 6]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 9,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.772Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is recruitment pipeline?",
+            "answer": "All the details about the recruitment, stage, and candidate can be controlled from here.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 10,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.826Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to assign leave type to employee",
+            "answer": "Leave > Assigned Leave > Assign",
+            "category": 3,
+            "company_id": null,
+            "tags": [8]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 11,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.881Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to create leave types",
+            "answer": "Leave > Leave Types > Create > Fill Out Form",
+            "category": 3,
+            "company_id": null,
+            "tags": [8]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 12,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.932Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Attendance Module used for?",
+            "answer": "The Attendance Module tracks and manages employee attendance, including check-ins, check-outs, and biometric integration.",
+            "category": 4,
+            "company_id": null,
+            "tags": [7]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 13,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.991Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Check-In/Check-Out system?",
+            "answer": "It records employee working hours by tracking their check-in and check-out times.",
+            "category": 4,
+            "company_id": null,
+            "tags": [7]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 14,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.066Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the purpose of Biometric Devices?",
+            "answer": "Biometric devices, such as ZKTeco,Matrix COSEC & Anviz synchronize attendance data automatically for accurate tracking.",
+            "category": 4,
+            "company_id": null,
+            "tags": [7, 12]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 15,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.162Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How can employees edit their attendance records?",
+            "answer": "Employees can submit an Attendance Request to edit or add missing attendance records.",
+            "category": 4,
+            "company_id": null,
+            "tags": [7]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 16,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.242Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Hour Account feature?",
+            "answer": "It tracks total worked hours for employees by month and year.",
+            "category": 4,
+            "company_id": null,
+            "tags": [7]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 17,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.308Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What does the Work Records feature do?",
+            "answer": "It compiles daily attendance statuses (e.g., present, absent) into monthly records.",
+            "category": 4,
+            "company_id": null,
+            "tags": [7]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 18,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.361Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is Attendance Activity?",
+            "answer": "It shows attendance records generated from check-ins, check-outs, or biometric devices.",
+            "category": 4,
+            "company_id": null,
+            "tags": [7]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 19,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.431Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What does Late Come Early Out mean?",
+            "answer": "It flags employees who check in late or leave early based on their shift schedule.",
+            "category": 4,
+            "company_id": null,
+            "tags": [7]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 20,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.502Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What can employees see in My Attendance?",
+            "answer": "Employees can view their previous attendance records and statuses.",
+            "category": 4,
+            "company_id": null,
+            "tags": [7]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 21,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.637Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What are Attendance Requests?",
+            "answer": "They allow employees to request modifications to attendance records if errors occur.",
+            "category": 4,
+            "company_id": null,
+            "tags": [2, 7]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 22,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.698Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Employee Profile view used for?",
+            "answer": "The Employee Profile view displays all details about an employee, including personal, work, bank information, and more. It also allows employees to customize visible tabs.",
+            "category": 1,
+            "company_id": null,
+            "tags": [9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 23,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.762Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How can an employee request a shift change?",
+            "answer": "Employees can request a shift change through the 'Reallocate Shift' option in the Work Type & Shift tab in their profile. Admin approval is required for changes.",
+            "category": 1,
+            "company_id": null,
+            "tags": [2, 9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 24,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.819Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What details can employees view in the Attendance tab?",
+            "answer": "The Attendance tab shows all attendance records for the employee in a detailed tabular view.",
+            "category": 1,
+            "company_id": null,
+            "tags": [7, 9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 25,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.886Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What actions are available in the Employee Directory?",
+            "answer": "The Employee Directory allows actions like importing, exporting, bulk archiving, unarchiving, updating, and deleting employee data.",
+            "category": 1,
+            "company_id": null,
+            "tags": [9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 26,
+        "fields": {
+            "created_at": "2025-06-05T11:31:41.950Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Shift Request feature?",
+            "answer": "The Shift Request feature allows employees to request temporary or permanent shift changes. Approval by a manager or admin is required.",
+            "category": 1,
+            "company_id": null,
+            "tags": [2, 9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 27,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.017Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is a Rotating Work Type Assign?",
+            "answer": "A Rotating Work Type Assign automates frequent changes in work types based on conditions like intervals, weekends, or specific dates.",
+            "category": 1,
+            "company_id": null,
+            "tags": [9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 28,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.078Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How can managers manage disciplinary actions for employees?",
+            "answer": "Admins can create disciplinary actions like warnings or suspensions, and these may block employee logins for the specified period.",
+            "category": 1,
+            "company_id": null,
+            "tags": [9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 29,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.137Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What can employees find in the Policies section?",
+            "answer": "Employees can access company policies and guidelines in the Policies section for reference.",
+            "category": 1,
+            "company_id": null,
+            "tags": [9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 30,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.188Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Organization Chart feature?",
+            "answer": "The Organization Chart provides a visual representation of reporting structures, helping to identify team members and managers.",
+            "category": 1,
+            "company_id": null,
+            "tags": [9]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 31,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.238Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Recruitment module in Horilla HRMS?",
+            "answer": "The Recruitment module allows HR professionals to create and manage job postings, receive and review resumes, manage interviews, and track candidate progress throughout the hiring process.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 32,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.289Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Recruitment Pipeline feature?",
+            "answer": "The Recruitment Pipeline is a comprehensive feature that organizes candidates through various stages using tabular and Kanban views. It supports multiple recruitment drives, each represented as a tab for easy management.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4, 15]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 33,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.341Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How can I create a new recruitment in Horilla?",
+            "answer": "To create a new recruitment, click on the '+ Create' button from Recruitment > Recruitments , specify the job position, description, vacancies, managers, start and end dates, and select a recruitment survey.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 34,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.395Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What are the main stage types in the recruitment process?",
+            "answer": "The main stage types are Initial, Interview, Hired, and Cancelled. Each type serves a specific purpose, such as automatically registering candidates or marking them as hired.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4, 5]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 35,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.440Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How do I add a new stage to the recruitment process?",
+            "answer": "To add a new stage, click on the '+ Stage' button from Recruitment Pipeline, provide the stage title, assign stage managers, and specify the stage type (e.g., Initial, Interview, Hired).",
+            "category": 6,
+            "company_id": null,
+            "tags": [4, 5]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 36,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.493Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is Resume Shortlisting and how does it work?",
+            "answer": "Resume Shortlisting is a feature that uses skill-based keyword optimization to rank resumes. The system calculates scores for each resume based on matching skills and displays them in descending order.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4, 16]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 37,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.542Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Skill Zone feature?",
+            "answer": "The Skill Zone categorizes candidates based on their skills, helping recruiters match them to relevant job positions more efficiently.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4, 17]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 38,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.610Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How can I manage interviews within the Recruitment module?",
+            "answer": "You can manage interviews through the 'Scheduled Interviews' page, where you can add, edit, or delete interviews, assign interviewers, and track the status of interviews.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4, 18]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 39,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.664Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "Can I customize application forms in Horilla HRMS?",
+            "answer": "Yes, the Recruitment Survey feature allows HR managers to create custom questionnaires for candidates, which are integrated into the application forms.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 40,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.734Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What are the available views for managing candidates?",
+            "answer": "Candidates can be managed using the Kanban view, list view, and detailed view. These views allow for filtering, grouping, and performing actions like editing, exporting, or converting candidates to employees.",
+            "category": 6,
+            "company_id": null,
+            "tags": [4, 19]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 41,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.797Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What features does the Payroll Dashboard offer?",
+            "answer": "The Payroll Dashboard provides visual insights into payroll processes, including charts for payslips, contract details, and department-wise payslips. Managers can also download data as Excel files.",
+            "category": 2,
+            "company_id": null,
+            "tags": [10, 11]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 42,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.850Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How does Contract Management work in Horilla?",
+            "answer": "Contract Management allows users to create contracts, define compensation, set contract duration, and manage leave settings. It supports various wage types for customized work arrangements.",
+            "category": 2,
+            "company_id": null,
+            "tags": [10]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 43,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.903Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How are deductions managed in Horilla?",
+            "answer": "The Deduction Management feature allows users to create and personalize deductions, set eligibility conditions, and choose fixed or variable amounts. It ensures streamlined deductions and fair practices.",
+            "category": 2,
+            "company_id": null,
+            "tags": [10]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 44,
+        "fields": {
+            "created_at": "2025-06-05T11:31:42.964Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Loan and Advance Salary module?",
+            "answer": "This module helps manage employee loans, installments, and advance salary transactions, ensuring accurate and transparent financial dealings.",
+            "category": 2,
+            "company_id": null,
+            "tags": [10]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 45,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.039Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What does the Encashments & Reimbursements feature offer?",
+            "answer": "This feature supports reimbursements for company-related expenses, leave encashments, and bonus point encashments, simplifying the process for diverse employee needs.",
+            "category": 2,
+            "company_id": null,
+            "tags": [10]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 46,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.114Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How does the Federal Tax feature work?",
+            "answer": "The Federal Tax feature automates tax calculations, defines tax brackets, and sets rates based on income. It ensures compliance and smooth payroll processing. Admins or users with permission need to create the tax brackets and then can be used in the contract",
+            "category": 2,
+            "company_id": null,
+            "tags": [10]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 47,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.212Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How are payslips generated in Horilla?",
+            "answer": "The Payslip Generation feature calculates salaries, including allowances, deductions, and taxes, and creates accurate and detailed payslips for each pay period.",
+            "category": 2,
+            "company_id": null,
+            "tags": [10]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 48,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.308Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Asset Management System in Horilla HRMS?",
+            "answer": "The Asset Management System enables employees to request and manage work-related assets like computers and equipment. It categorizes assets, tracks requests, and ensures efficient allocation.",
+            "category": 7,
+            "company_id": null,
+            "tags": [1]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 49,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.367Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What features are available on the Asset Dashboard?",
+            "answer": "The Asset Dashboard displays the total number of assets, asset requests, and assets in use. It includes pie charts and tables for asset allocation and provides tools for admins to approve requests and allocate assets directly.",
+            "category": 7,
+            "company_id": null,
+            "tags": [1, 11]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 50,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.430Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How can admin search for assets in Horilla HRMS?",
+            "answer": "Admin can search for specific asset categories or individual assets using the search bar. The system dynamically filters results based on the search term.",
+            "category": 7,
+            "company_id": null,
+            "tags": [1]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 51,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.484Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Asset Import feature?",
+            "answer": "The Asset Import feature allows admin to upload large amounts of asset data, such as names, purchase dates, and categories, from an external file like Excel, improving efficiency in asset management.",
+            "category": 7,
+            "company_id": null,
+            "tags": [1, 14]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 52,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.543Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the purpose of the Asset Export feature?",
+            "answer": "The Asset Export feature enables admin to download asset data, either filtered or in full, for reporting or further processing.",
+            "category": 7,
+            "company_id": null,
+            "tags": [1, 13]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 53,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.604Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How can asset categories be managed in Horilla HRMS?",
+            "answer": "Admin can create, update, and delete asset categories. Categories can only be deleted if they are empty, ensuring no associated assets remain in use.",
+            "category": 7,
+            "company_id": null,
+            "tags": [1]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 54,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.657Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the Asset Request and Allocation feature?",
+            "answer": "This feature allows employees to request new assets or return allocated ones, while admins can allocate or reallocate assets based on requests and availability.",
+            "category": 7,
+            "company_id": null,
+            "tags": [1, 2, 3]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 55,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.713Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What details can be updated in the Asset Updation form?",
+            "answer": "Admin can update details like asset name, description, tracking ID, purchase date, cost, status, and expiry date. Notifications can also be set for upcoming expiry dates.",
+            "category": 7,
+            "company_id": null,
+            "tags": [1]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 56,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.772Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How does Asset History tracking work?",
+            "answer": "The Asset History feature tracks details of returned assets, allowing admin to filter, group, and sort asset usage data as needed.",
+            "category": 7,
+            "company_id": null,
+            "tags": [1]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 57,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.869Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is the 'Candidate Self Tracking' feature, and how can I enable it?",
+            "answer": "The 'Candidate Self Tracking' feature allows candidates to monitor the status of their job applications. To enable it:\r\n\r\nNavigate to Settings > Recruitment > Candidate Self Tracking.\r\n\r\nToggle the feature to Enabled.\r\n\r\nClick Save to apply the changes.\r\n\r\nOnce enabled, candidates can log in to their profiles to view updates on their application status.",
+            "category": 5,
+            "company_id": null,
+            "tags": [4, 20]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 58,
+        "fields": {
+            "created_at": "2025-06-05T11:31:43.992Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How can I manage user permissions and user groups in Horilla HRMS?",
+            "answer": "Horilla HRMS allows administrators to define granular user permissions and create user groups to streamline access control:\r\n\r\nUser Permissions: Administrators can specify who can access specific modules and perform certain actions within the system. settings > general > Employee permissions\r\n\r\nUser Groups: By creating user groups, administrators can assign permissions to entire groups, simplifying the management of access levels and functionalities. settings > general > User group",
+            "category": 5,
+            "company_id": null,
+            "tags": [20]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 59,
+        "fields": {
+            "created_at": "2025-06-05T11:31:44.121Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to customize date and time formats in Horilla HRMS?",
+            "answer": "Admins can configure the date and time formats from the settings > general > date and time format",
+            "category": 5,
+            "company_id": null,
+            "tags": [20]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 60,
+        "fields": {
+            "created_at": "2025-06-05T11:31:44.217Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How do I set up and manage departments in Horilla HRMS?",
+            "answer": "Navigate to Settings > Base Configuration > Departments.\r\nClick on Create to add a new department.",
+            "category": 5,
+            "company_id": null,
+            "tags": [20]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 61,
+        "fields": {
+            "created_at": "2025-06-05T11:31:44.308Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to create Compny, Department, Job position, Job role?",
+            "answer": "Navigate to settings > Base\r\n\r\nyou can create Company, Department, Job position and job role by filling out the respective forms.",
+            "category": 5,
+            "company_id": null,
+            "tags": [20]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 62,
+        "fields": {
+            "created_at": "2025-06-05T11:31:44.382Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is IP restriction?",
+            "answer": "Admins can enable Ip restriction from settings > attendance > Ip restriction.\r\nif enabled, Admins can add the Ips from which users can mark the attendance (office wifi ip, or vpn ip etc). Then the Employees can only mark the attendance from that ips only.",
+            "category": 5,
+            "company_id": null,
+            "tags": [7, 20]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 63,
+        "fields": {
+            "created_at": "2025-06-05T11:31:44.453Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "What is Grace time, and how to configure it?",
+            "answer": "Horilla automatically add an employee as late come or early out (if track late come early out is enabled) , if an employee marked checking after the starting time of shift schedule (even 1 minute after) the employee is considered late, same for early out also. Admins can add some grace time to the shift that only after the grace time the employees are marked as late.\r\n\r\nnavigate to settings> Attendance > Grace time to create and add the grace time.",
+            "category": 5,
+            "company_id": null,
+            "tags": [7, 20]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 64,
+        "fields": {
+            "created_at": "2025-06-05T11:31:44.502Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How to enable 'Compensatory Leave'?",
+            "answer": "Navigate to settings > Leave > Compensatory Leave > enable",
+            "category": 3,
+            "company_id": null,
+            "tags": [7, 20]
+        }
+    },
+    {
+        "model": "helpdesk.faq",
+        "pk": 65,
+        "fields": {
+            "created_at": "2025-06-05T11:31:44.556Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "question": "How can employees manage disciplinary actions?",
+            "answer": "Admins can create disciplinary actions like warnings or suspensions, and these may block employee logins for the specified period.",
+            "category": 1,
+            "company_id": null,
+            "tags": [9]
+        }
+    }
+]

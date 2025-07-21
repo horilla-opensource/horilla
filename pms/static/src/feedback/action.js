@@ -14,7 +14,7 @@ var unarchiveMessages = {
   fr: "Voulez-vous vraiment désarchiver tous les retours sélectionnés?",
 };
 
-var deleteMessages = {
+var deleteFeedbackMessages = {
   ar: "هل ترغب حقاً في حذف كل التعليقات المحددة؟",
   de: "Möchten Sie wirklich alle ausgewählten Rückmeldungen löschen?",
   es: "¿Realmente quieres eliminar todas las retroalimentaciones seleccionadas?",
@@ -219,7 +219,7 @@ $("#deleteFeedback").click(function (e) {
   var languageCode = null;
   getCurrentLanguageCode(function (code) {
     languageCode = code;
-    var confirmMessage = deleteMessages[languageCode];
+    var confirmMessage = deleteFeedbackMessages[languageCode];
     var textMessage = norowMessages[languageCode];
     var checkedRows = $(".feedback-checkbox").filter(":checked");
     if (checkedRows.length === 0) {

@@ -1,0 +1,28 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="objectCreateModalLabel">{% trans "Bulk Reject Requests" %}</span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline" role="img" class="md hydrated" aria-label="close outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body" id="BulkRejectForm">
+    <form id="bulk-reject-form" class="oh-profile-section" hx-target="#objectCreateModalTarget"
+        hx-post="{% url 'document-bulk-reject' %}">
+        <div class="oh-input-group">
+            <label class="oh-label" for="{{form.reject_reason.id_for_label}}">{{form.reject_reason.label}}</label>
+            {{form.reject_reason}}
+            {% if form.reject_reason.errors %}
+                {{ form.reject_reason.errors }}
+            {% endif %}
+        </div>
+        {% for id in ids %}
+            <input type="hidden" name="ids" value="{{ id }}">
+        {% endfor %}
+
+        <div class="d-flex flex-row-reverse w-100 align-items-center mt-4">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow bulk_reject">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>

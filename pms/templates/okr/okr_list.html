@@ -73,7 +73,7 @@
             {% trans "All Objective" %}
             <div style="align-items:center;display:flex">
             <span class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round ms-2 mr-2" id="" data-category-id="1" title="{{objectives.paginator.count}} objectives" onclick="event.stopPropagation()">{{objectives.paginator.count}}</span>
-            {% if perms.pms.add_objectives or  request.user|is_reportingmanager  %}
+            {% if perms.pms.add_objectives %}
                 <button onclick="event.stopPropagation()" style="display: inline-block;padding: 0px;
                     border-radius: 6px;
                     display: flex;

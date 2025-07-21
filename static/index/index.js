@@ -32,12 +32,29 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function handleSidebarToggle() {
+    // Delay the execution slightly to allow existing toggle logic to finish
+    setTimeout(() => {
+        const isOpen = !$('.oh-wrapper-main').hasClass('oh-wrapper-main--closed');
+        localStorage.setItem('sidebarOpen', isOpen);
+    }, 50);
+}
+
 function addToSelectedId(newIds, storeKey) {
     ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
 
     ids = [...ids, ...newIds.map(String)];
     ids = Array.from(new Set(ids));
     $(`#${storeKey}`).attr("data-ids", JSON.stringify(ids));
+}
+
+function togglePublicComments() {
+    if ($('#id_disable_comments').is(':checked')) {
+        $('#id_public_comments').prop('checked', false);
+        $('#id_public_comments_parent_div').hide();
+    } else {
+        $('#id_public_comments_parent_div').show();
+    }
 }
 
 function attendanceDateChange(selectElement) {
@@ -192,6 +209,8 @@ function toggleReimbursmentType(element) {
             .parent()
             .hide()
             .attr("required", false);
+        // #819
+        $("#objectCreateModalTarget [name=employee_id]").trigger("change");
     } else if (element.val() == "bonus_encashment") {
         $("#objectCreateModalTarget [name=attachment]").parent().hide();
         $("#objectCreateModalTarget [name=attachment]").attr("required", false);
@@ -380,112 +399,6 @@ function ajaxWithResponseHandler(event) {
     });
 }
 
-var originalConfirm = window.confirm;
-// Override the default confirm function with SweetAlert
-window.confirm = function (message) {
-    var event = window.event || {};
-    event.preventDefault();
-    var languageCode = $("#main-section-data").attr("data-lang") || "en";
-    var confirm = confirmModal[languageCode];
-    var cancel = cancelModal[languageCode];
-
-    $("#confirmModalBody").html(message);
-    var submit = false;
-
-    Swal.fire({
-        text: message,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
-        confirmButtonText: confirm,
-        cancelButtonText: cancel,
-    }).then((result) => {
-        if (result.isConfirmed) {
-            var path = event.target["htmx-internal-data"]?.path;
-            var verb = event.target["htmx-internal-data"]?.verb;
-            var hxTarget = handleHtmxTarget(event, path, verb)
-            var hxVals = $(event.target).attr("hx-vals")
-                ? JSON.parse($(event.target).attr("hx-vals"))
-                : {};
-            var hxSwap = $(event.target).attr("hx-swap");
-            $(event.target).each(function () {
-                $.each(this.attributes, function () {
-                    if (
-                        this.specified &&
-                        this.name === "hx-on-htmx-before-request"
-                    ) {
-                        eval(this.value);
-                    }
-                });
-            });
-            if (event.target.tagName.toLowerCase() === "form") {
-                if (path && verb) {
-                    if (verb === "post") {
-                        htmx.ajax("POST", path, {
-                            target: hxTarget,
-                            swap: hxSwap,
-                            values: hxVals,
-                        }).then((response) => {
-                            ajaxWithResponseHandler(event);
-                        });
-                    } else {
-                        htmx.ajax("GET", path, {
-                            target: hxTarget,
-                            swap: hxSwap,
-                            values: hxVals,
-                        }).then((response) => {
-                            ajaxWithResponseHandler(event);
-                        });
-                    }
-                } else {
-                    event.target.submit();
-                }
-            } else if (event.target.tagName.toLowerCase() === "a") {
-                if (event.target.href) {
-                    window.location.href = event.target.href;
-                } else {
-                    if (verb === "post") {
-                        htmx.ajax("POST", path, {
-                            target: hxTarget,
-                            swap: hxSwap,
-                            values: hxVals,
-                        }).then((response) => {
-                            ajaxWithResponseHandler(event);
-                        });
-                    } else {
-                        htmx.ajax("GET", path, {
-                            target: hxTarget,
-                            swap: hxSwap,
-                            values: hxVals,
-                        }).then((response) => {
-                            ajaxWithResponseHandler(event);
-                        });
-                    }
-                }
-            } else {
-                if (verb === "post") {
-                    htmx.ajax("POST", path, {
-                        target: hxTarget,
-                        swap: hxSwap,
-                        values: hxVals,
-                    }).then((response) => {
-                        ajaxWithResponseHandler(event);
-                    });
-                } else {
-                    htmx.ajax("GET", path, {
-                        target: hxTarget,
-                        swap: hxSwap,
-                        values: hxVals,
-                    }).then((response) => {
-                        ajaxWithResponseHandler(event);
-                    });
-                }
-            }
-        }
-    });
-};
-
 function handleHtmxTarget(event, path, verb) {
     var targetElement;
     var hxTarget = $(event.target).attr("hx-target");
@@ -512,129 +425,34 @@ function handleHtmxTarget(event, path, verb) {
             targetElement = $(hxTarget);
         }
         hxTarget = targetElement.length ? targetElement[0] : null;
-
     } else if (path && verb) {
         hxTarget = event.target;
     }
-    return hxTarget
+    return hxTarget;
 }
 
-var excludeIds = "#employeeSearch";
-// To exclude more elements, add their IDs (prefixed with '#') or class names (prefixed with '.'), separated by commas to 'excludeIds'.
-setTimeout(() => {
-    $("[name='search']").not(excludeIds).focus();
-}, 100);
-
-$("#close").attr(
-    "class",
-    "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
-);
-
-$("body").on("click", ".select2-search__field", function (e) {
-    //When click on Select2 fields in filter form,Auto close issue
-    e.stopPropagation();
-});
-
-var nav = $("section.oh-wrapper.oh-main__topbar");
-nav.after(
-    $(
-        `
-  <div id="filterTagContainerSectionNav" class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>
-  `
-    )
-);
-
-$(document).on("htmx:beforeRequest", function (event, data) {
-    if (
-        !Array.from(event.target.getAttributeNames()).some((attr) =>
-            attr.startsWith("hx-on")
-        )
-    ) {
-        var response = event.detail.xhr.response;
-        var target = $(event.detail.elt.getAttribute("hx-target"));
-        var avoid_target_ids = [
-            "BiometricDeviceTestFormTarget",
-            "reloadMessages",
-            "infinite",
-        ];
-        var avoid_target_class = [
-            "oh-badge--small"
-        ]
-        if (
-            !target.closest("form").length &&
-            !avoid_target_ids.includes(target.attr("id")) &&
-            !avoid_target_class.some((cls) => target.hasClass(cls))
-        ) {
-            target.html(`<div class="animated-background"></div>`);
+function hxConfirm(element, messageText) {
+    Swal.fire({
+        html: messageText,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            htmx.trigger(element, 'confirmed');
         }
-    }
-});
-
-$(document).on('click', '.select2-selection__choice__remove', function (event) {
-    if ($('[role="tooltip"]:visible').length) {
-        $('[role="tooltip"]').hide();
-    }
-});
-
-$(document).on("keydown", function (event) {
-    // Check if the cursor is not focused on an input field
-    var isInputFocused = $(document.activeElement).is(
-        "input, textarea, select"
-    );
-
-    if (event.keyCode === 27) {
-        // Key code 27 for Esc in keypad
-        $(".oh-modal--show").removeClass("oh-modal--show");
-        $(".oh-activity-sidebar--show").removeClass(
-            "oh-activity-sidebar--show"
-        );
-    }
-
-    if (event.keyCode === 46) {
-        // Key code 46 for delete in keypad
-        // If there have any objectDetailsModal with oh-modal--show
-        // take delete button inside that else take the delete button from navbar Actions
-        if (!isInputFocused) {
-            var $modal = $(".oh-modal--show");
-            var $deleteButton = $modal.length
-                ? $modal.find('[data-action="delete"]')
-                : $(".oh-dropdown").find('[data-action="delete"]');
-            if ($deleteButton.length) {
-                $deleteButton.click();
-                $deleteButton[0].click();
-            }
+        else {
+            element.checked = false
+            return false
         }
-    } else if (event.keyCode === 107) {
-        // Key code for the + key on the numeric keypad
-        if (!isInputFocused) {
-            // Click the create option from navbar of current page
-            $('[data-action="create"]').click();
-        }
-    } else if (event.keyCode === 39) {
-        // Key code for the right arrow key
-        if (!isInputFocused) {
-            var $modal = $(".oh-modal--show");
-            var $nextButton = $modal.length
-                ? $modal.find('[data-action="next"]')
-                : $('[data-action="next"]'); // Click on the next button in detail view modal
-            if ($nextButton.length) {
-                $nextButton[0].click();
-            }
-        }
-    } else if (event.keyCode === 37) {
-        // Key code for the left arrow key
-        if (!isInputFocused) {
-            // Click on the previous button in detail view modal
-            var $modal = $(".oh-modal--show");
-            var $previousButton = $modal.length
-                ? $modal.find('[data-action="previous"]')
-                : $('[data-action="previous"]');
-            if ($previousButton.length) {
-                $previousButton[0].click();
-            }
-        }
-    }
-});
+
+    });
+}
+
 function handleDownloadAndRefresh(event, url) {
     // Use in import_popup.html file
     event.preventDefault();
@@ -704,26 +522,289 @@ function hideEnlargeImage() {
     enlargeImageContainer.empty();
 }
 
+function submitForm(elem) {
+    $(elem).siblings(".add_more_submit").click();
+}
+
+function show_answer(element) {
+    const $parentItem = $(element).closest(".oh-faq__item");
+    const isShown = $parentItem.hasClass("oh-faq__item--show");
+
+    $(".oh-faq__item--show").removeClass("oh-faq__item--show");
+
+    if (!isShown) {
+        $parentItem.addClass("oh-faq__item--show");
+    }
+}
+
+var originalConfirm = window.confirm;
+// Override the default confirm function with SweetAlert
+window.confirm = function (message) {
+    var event = window.event || {};
+    event.preventDefault();
+    var languageCode = $("#main-section-data").attr("data-lang") || "en";
+    var confirm = confirmModal[languageCode];
+    var cancel = cancelModal[languageCode];
+
+    $("#confirmModalBody").html(message);
+    var submit = false;
+
+    Swal.fire({
+        text: message,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: confirm,
+        cancelButtonText: cancel,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            var path = event.target["htmx-internal-data"]?.path;
+            var verb = event.target["htmx-internal-data"]?.verb;
+            var hxTarget = handleHtmxTarget(event, path, verb);
+            var hxVals = $(event.target).attr("hx-vals")
+                ? JSON.parse($(event.target).attr("hx-vals"))
+                : {};
+            var hxSwap = $(event.target).attr("hx-swap");
+            $(event.target).each(function () {
+                $.each(this.attributes, function () {
+                    if (
+                        this.specified &&
+                        this.name === "hx-on-htmx-before-request"
+                    ) {
+                        eval(this.value);
+                    }
+                });
+            });
+            if (event.target.tagName.toLowerCase() === "form") {
+                if (path && verb) {
+                    // Collect all form values
+                    const formData = new FormData(event.target);
+                    const values = {};
+                    formData.forEach((value, key) => {
+                        values[key] = value;
+                    });
+
+                    // Merge with hx-vals, if any
+                    Object.assign(values, hxVals);
+
+                    htmx.ajax(verb.toUpperCase(), path, {
+                        target: hxTarget,
+                        swap: hxSwap,
+                        values: values,
+                    }).then((response) => {
+                        ajaxWithResponseHandler(event);
+                    });
+                } else {
+                    event.target.submit();  // fallback
+                }
+            }
+            else if (event.target.tagName.toLowerCase() === "a") {
+                if (event.target.href) {
+                    window.location.href = event.target.href;
+                } else {
+                    if (verb === "post") {
+                        htmx.ajax("POST", path, {
+                            target: hxTarget,
+                            swap: hxSwap,
+                            values: hxVals,
+                        }).then((response) => {
+                            ajaxWithResponseHandler(event);
+                        });
+                    } else {
+                        htmx.ajax("GET", path, {
+                            target: hxTarget,
+                            swap: hxSwap,
+                            values: hxVals,
+                        }).then((response) => {
+                            ajaxWithResponseHandler(event);
+                        });
+                    }
+                }
+            } else {
+                if (verb === "post") {
+                    htmx.ajax("POST", path, {
+                        target: hxTarget,
+                        swap: hxSwap,
+                        values: hxVals,
+                    }).then((response) => {
+                        ajaxWithResponseHandler(event);
+                    });
+                } else {
+                    htmx.ajax("GET", path, {
+                        target: hxTarget,
+                        swap: hxSwap,
+                        values: hxVals,
+                    }).then((response) => {
+                        ajaxWithResponseHandler(event);
+                    });
+                }
+            }
+        }
+    });
+};
+
+var excludeIds = "#employeeSearch";
+// To exclude more elements, add their IDs (prefixed with '#') or class names (prefixed with '.'), separated by commas to 'excludeIds'.
+setTimeout(() => {
+    $("[name='search']").not(excludeIds).focus();
+}, 100);
+
+$("#close").attr(
+    "class",
+    "oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md hydrated"
+);
+
+$("body").on("click", ".select2-search__field", function (e) {
+    //When click on Select2 fields in filter form,Auto close issue
+    e.stopPropagation();
+});
+
+var nav = $("section.oh-wrapper.oh-main__topbar");
+nav.after(
+    $(
+        `
+  <div id="filterTagContainerSectionNav" class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>
+  `
+    )
+);
+
+$(function () {
+    const $wrapper = $('.oh-wrapper-main');
+    const sidebarOpen = localStorage.getItem('sidebarOpen');
+
+    if (sidebarOpen === 'false') {
+        $wrapper.addClass('oh-wrapper-main--closed');
+    } else {
+        $wrapper.removeClass('oh-wrapper-main--closed');
+    }
+
+    $('#sidebar').on('mouseleave', () => {
+        if (localStorage.getItem('sidebarOpen') === 'false') {
+            $wrapper.addClass('oh-wrapper-main--closed');
+        }
+    });
+});
+
+$(document).on('click', '.oh-kanban__card-body-collapse', function (e) {
+    e.preventDefault();
+
+    var $cardBody = $(this).closest('.oh-kanban__card-body');
+
+    $cardBody.find('.oh-kanban__card-content').toggleClass('oh-kanban__card-content--hide');
+
+    $(this).toggleClass('oh-kanban__card-collapse--down');
+});
+
+
+$(document).on("htmx:beforeRequest", function (event, data) {
+    if (
+        !Array.from(event.target.getAttributeNames()).some((attr) =>
+            attr.startsWith("hx-on")
+        )
+    ) {
+        var response = event.detail.xhr.response;
+        var target = $(event.detail.elt.getAttribute("hx-target"));
+        var avoid_target_ids = [
+            "BiometricDeviceTestFormTarget",
+            "reloadMessages",
+            "infinite",
+            "OtpContainer"
+        ];
+        var avoid_target_class = ["oh-badge--small"];
+        if (
+            !target.closest("form").length &&
+            !avoid_target_ids.includes(target.attr("id")) &&
+            !avoid_target_class.some((cls) => target.hasClass(cls))
+        ) {
+            target.html(`<div class="animated-background"></div>`);
+        }
+    }
+});
+
+$(document).on("click", ".select2-selection__choice__remove", function (event) {
+    if ($('[role="tooltip"]:visible').length) {
+        $('[role="tooltip"]').hide();
+    }
+});
+
+$(document).on("keydown", function (event) {
+    // Check if the cursor is not focused on an input field
+    var isInputFocused = $(document.activeElement).is(
+        "input, textarea, select"
+    );
+
+    if (event.keyCode === 27) {
+        // Key code 27 for Esc in keypad
+        $(".oh-modal--show").removeClass("oh-modal--show");
+        $(".oh-activity-sidebar--show").removeClass(
+            "oh-activity-sidebar--show"
+        );
+    }
+
+    if (event.keyCode === 46) {
+        // Key code 46 for delete in keypad
+        // If there have any objectDetailsModal with oh-modal--show
+        // take delete button inside that else take the delete button from navbar Actions
+        if (!isInputFocused) {
+            var $modal = $(".oh-modal--show");
+            var $deleteButton = $modal.length
+                ? $modal.find('[data-action="delete"]')
+                : $(".oh-dropdown").find('[data-action="delete"]');
+            if ($deleteButton.length) {
+                $deleteButton.click();
+                $deleteButton[0].click();
+            }
+        }
+    } else if (event.keyCode === 107) {
+        // Key code for the + key on the numeric keypad
+        if (!isInputFocused) {
+            // Click the create option from navbar of current page
+            $('[data-action="create"]').click();
+        }
+    } else if (event.keyCode === 39) {
+        // Key code for the right arrow key
+        if (!isInputFocused) {
+            var $modal = $(".oh-modal--show");
+            var $nextButton = $modal.length
+                ? $modal.find('[data-action="next"]')
+                : $('[data-action="next"]'); // Click on the next button in detail view modal
+            if ($nextButton.length) {
+                $nextButton[0].click();
+            }
+        }
+    } else if (event.keyCode === 37) {
+        // Key code for the left arrow key
+        if (!isInputFocused) {
+            // Click on the previous button in detail view modal
+            var $modal = $(".oh-modal--show");
+            var $previousButton = $modal.length
+                ? $modal.find('[data-action="previous"]')
+                : $('[data-action="previous"]');
+            if ($previousButton.length) {
+                $previousButton[0].click();
+            }
+        }
+    }
+});
+
 $(document).on("click", function (event) {
     if (!$(event.target).closest("#enlargeImageContainer").length) {
         hideEnlargeImage();
     }
 });
-function submitForm(elem) {
-    $(elem).siblings(".add_more_submit").click();
-}
 
-$(document).on('htmx:afterSwap', function () {
-    if ( $('[data-summernote]').length > 0 ) {
-        $('[data-summernote]').summernote({
+$(document).on("htmx:afterSwap", function () {
+    if ($("[data-summernote]").length > 0) {
+        $("[data-summernote]").summernote({
             height: 300,
             codeviewFilter: false,
             codeviewIframeFilter: false,
             callbacks: {
-                onChange: function(contents) {
+                onChange: function (contents) {
                     $('[name="body"]').val(contents);
-                }
-            }
+                },
+            },
         });
     }
 });

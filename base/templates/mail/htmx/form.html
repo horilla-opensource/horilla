@@ -1,44 +1,72 @@
 {% load i18n %}
-{% if form.instance.id %}
-    <form id="editForm" hx-post="{% url "view-mail-template" form.instance.id %}" hx-target="#viewTemplateModalBody">
-{% else %}
-    <form id="createForm" hx-post="{% url "create-mail-template" %}" hx-target="#viewTemplateModalBody">
-{% endif %}
-    <div id="viewTemplateModalContainer">
-        <div class="my-3" id="keyResultCard">
-            <div class="oh-card oh-card--no-shadow oh-card__body">
-                <div class="oh-input__group">
-                    <label class="oh-input__label mt-0" for="id_title">{% trans "Title" %}</label>
-                    {{ form.title }}
-                </div>
-                <div class="oh-input__group">
-                    <label class="oh-input__label mt-2" for="id_body">{% trans "Body" %}</label>
-                    {{ form.body }}
-                </div>
-                <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
-                    {% trans "Hint: Type '{' to get sender or receiver data" %}
-                </div>
-                <div class="oh-input__group">
-                    <label class="oh-input__label mt-2" for="id_company_id">{% trans "Company" %}</label>
-                    {{ form.company_id }}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title"
+        >{{form.instance.title|default:_("Add Template")}}</span
+    >
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <form
+        id="editForm"
+        hx-post="{{request.path}}"
+        hx-target="#objectCreateModalTarget"
+    >
+        <div id="viewTemplateModalContainer">
+            <div class="my-3" id="keyResultCard">
+                <div class="oh-card oh-card--no-shadow oh-card__body">
+                    <div class="oh-input__group">
+                        <label class="oh-input__label mt-0" for="id_title"
+                            >{% trans "Title" %}</label
+                        >
+                        {{ form.title }}
+                    </div>
+                    <div class="oh-input__group">
+                        <label class="oh-input__label mt-2" for="id_body"
+                            >{% trans "Body" %}</label
+                        >
+                        {{ form.body }}
+                    </div>
+                    <div
+                        class="form-hint"
+                        style="margin-top: 10px; font-size: 14px; color: #888"
+                    >
+                        {% trans "Hint: Type '{' to get sender or receiver data" %}
+                    </div>
+                    <div class="oh-input__group">
+                        <label class="oh-input__label mt-2" for="id_company_id"
+                            >{% trans "Company" %}</label
+                        >
+                        {{ form.company_id }}
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    {% if duplicate %}
+        {% if duplicate %}
         <div class="oh-modal__dialog-footer p-0">
-            <button id="submitFormButton" type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "Save Duplicate" %}</button>
+            <button
+                id="submitFormButton"
+                type="submit"
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+            >
+                {% trans "Save Duplicate" %}
+            </button>
         </div>
-    {% else %}
-        <button id="submitFormButton" type="submit" hidden ></button>
-    {% endif %}
-</form>
+        {% else %}
+        <div class="oh-modal__dialog-footer">
+            <button
+                type="submit"
+                class="oh-btn oh-btn--secondary oh-btn--shadow"
+            >
+                {% trans "Save" %}
+            </button>
+        </div>
+        {% endif %}
+    </form>
+</div>
 <script>
-    $(document).ready(function () {
         function initializeSummernote() {
-            {% if form.instance.title %}
-                setModalLabel("{{ form.instance.title|escapejs }}", "#viewTemplateModalLabel");
-            {% endif %}
             var searchWords = {{ searchWords|safe }};
             var mentions = Object.keys(searchWords);
             $("#id_body").summernote({
@@ -61,9 +89,9 @@
         // Initial Summernote initialization
         initializeSummernote();
 
-        // Re-initialize Summernote after HTMX content swap
-        document.body.addEventListener('htmx:afterSwap', function (event) {
-            initializeSummernote();
-        });
+
+    // Re-initialize Summernote after HTMX content swap
+    $(document).on("htmx:afterRequest", function () {
+        initializeSummernote();
     });
 </script>

@@ -85,6 +85,10 @@ def update_selected_company(request):
     This method is used to update the selected company on the session
     """
     company_id = request.GET.get("company_id")
+    user = request.user.employee_get
+    user_company = getattr(
+        getattr(user, "employee_work_info", None), "company_id", None
+    )
     request.session["selected_company"] = company_id
     company = (
         AllCompany()
@@ -103,21 +107,13 @@ def update_selected_company(request):
         if re.match(pattern, previous_path):
             employee_id = get_last_section(previous_path)
             employee = Employee.objects.filter(id=employee_id).first()
-
-            if (
-                not EmployeeWorkInformation.objects.filter(
-                    employee_id=employee_id
-                ).exists()
-                or employee.employee_work_info.company_id != company
-            ):
+            emp_company = getattr(
+                getattr(employee, "employee_work_info", None), "company_id", None
+            )
+            if emp_company != company:
                 text = "Other Company"
-                if (
-                    company_id
-                    == request.user.employee_get.employee_work_info.company_id
-                ):
+                if company_id == user_company:
                     text = "My Company"
-                if company_id == "all":
-                    text = "All companies"
                 company = {
                     "company": company.company,
                     "icon": company.icon.url,
@@ -134,11 +130,13 @@ def update_selected_company(request):
                 """
                 )
 
-    text = "Other Company"
-    if company_id == request.user.employee_get.employee_work_info.company_id:
-        text = "My Company"
     if company_id == "all":
         text = "All companies"
+    elif company_id == user_company:
+        text = "My Company"
+    else:
+        text = "Other Company"
+
     company = {
         "company": company.company,
         "icon": company.icon.url,

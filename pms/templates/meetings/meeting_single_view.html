@@ -95,20 +95,23 @@
     </div>
     <div class="oh-modal__button-container text-center mt-3">
         <div class="oh-btn-group">
-            <button data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-target="#objectCreateModalTarget" hx-get="{% url 'create-meeting' %}?instance_id={{meeting.id}}" type="submit" class="oh-btn oh-btn--info w-100" title="dit">
-                <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
-            </button>
-
-            <form
-                action="{% url 'meetings-delete' meeting.id %}"
-                onsubmit="return confirm('{% trans "Are you sure to delete this meeting?" %}')"
-                method="post"
-                style="display: contents;width:100%">
-                {% csrf_token %}
-                <button onclick="event.stopPropagation()" class="oh-btn oh-btn--secondary  w-100" title="{% trans 'Delete' %}">
-                <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+            {% if perms.pms.change_meetings or request.user.employee_get in meeting.manager.all %}
+                <button data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-target="#objectCreateModalTarget" hx-get="{% url 'create-meeting' %}?instance_id={{meeting.id}}" type="submit" class="oh-btn oh-btn--info w-100" title="{% trans 'Edit' %}">
+                    <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
                 </button>
-            </form>
+            {% endif %}
+            {% if perms.pms.delete_meetings %}
+                <form
+                    action="{% url 'meetings-delete' meeting.id %}"
+                    onsubmit="return confirm('{% trans "Are you sure to delete this meeting?" %}')"
+                    method="post"
+                    style="display: contents;width:100%">
+                    {% csrf_token %}
+                    <button onclick="event.stopPropagation()" class="oh-btn oh-btn--secondary  w-100" title="{% trans 'Delete' %}">
+                    <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+                    </button>
+                </form>
+            {% endif %}
 
         </div>
     </div>

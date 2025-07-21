@@ -8,7 +8,7 @@
 <!-- htmx form -->
 <div class="oh-modal__dialog-body">
     <form
-        hx-post='{% url "create-reimbursement" %}?instance_id={{form.instance.id}}'
+        hx-post="{% url 'create-reimbursement' %}?{% if form.instance.id %}instance_id={{form.instance.id}}{% endif %}"
         hx-target="#objectCreateModalTarget"
         hx-encoding="multipart/form-data"
     >

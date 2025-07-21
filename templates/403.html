@@ -1,0 +1,155 @@
+{% load static %}
+
+<style>
+
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: "Poppins", sans-serif;
+}
+
+.hr-error {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.hr-error_container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    max-width: 1180px;
+    margin-left: auto;
+    margin-right: auto;
+
+    width: 100%;
+
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+
+}
+
+.hr-404 {
+    font-size: 7rem;
+    line-height: 7.2rem;
+    margin-bottom: 0;
+}
+
+.hr-error_msg {
+    font-weight: bold;
+    font-size: 2rem;
+    color: #e54f38;
+}
+
+.hr-error_btn {
+    background-color: hsl(8deg, 77%, 56%);
+    border: 2px solid hsl(8deg, 77%, 56%);
+    color: hsl(0deg, 0%, 100%);
+    border-radius: 35px;
+    padding: 0.5rem 2rem;
+    text-decoration: none;
+    margin-top: 2rem;
+    gap: 0.8rem;
+    display: inline-flex;
+    transition: all 0.4s ease-in-out;
+    align-items: center;
+    font-size: 1rem;
+
+}
+
+.hr-error_btn:hover {
+    color: hsl(0deg, 0%, 100%);
+    background-color: hsl(8deg, 77%, 45%);
+    border: 2px solid hsl(8deg, 77%, 45%);
+}
+
+.hr-error_img img {
+    width: 100%;
+    height: 100%;
+}
+
+.hr-error_bg {
+    position: relative;
+    background-color: #e54f38;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    box-shadow: rgb(0 0 0 / 26%) 0px 4px 4px;
+}
+
+.hr-error_bg img {
+    position: absolute;
+    top: 40px;
+    left: 0;
+}
+.hr-bg-img--error{
+    position: relative;
+    max-width: 320px;
+}
+
+@media (max-width:768px) {
+
+    .hr-error_container {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+
+    .hr-error_bg {
+        position: relative;
+        background-color: #e54f38;
+        width: 320px;
+        height: 320px;
+    }
+
+    .hr-error_content {
+        padding: 2rem 0;
+    }
+}
+</style>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horilla</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
+</head>
+
+<body>
+    <section class="hr-error_container">
+        <div class="hr-error">
+            <div class="hr-error_img hr-error_bg">
+                <img src="{% static "/images/ui/404_error_image.png" %}">
+            </div>
+            <div class="oh-wrapper">
+                <h1 class="hr-404">403</h1>
+                <br>
+                {% for message in messages %}
+                    <div class="oh-alert-container">
+                        <div class="oh-alert oh-alert--animated hr-error_msg {{message.tags}}">
+                            {% if forloop.counter == 2 %}
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    {{ message }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>

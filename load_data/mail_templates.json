@@ -1,0 +1,158 @@
+[
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 1,
+        "fields": {
+            "created_at": "2025-06-30T06:35:03.434Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Leave Request Template",
+            "body": "<p style=\"font-size: 12.8px;\">This is to inform you that {{ model_instance.employee_id }} has submitted a leave request for {{model_instance.requested_days}} days. Please take the necessary actions to review and process the request at your earliest convenience.</p><p style=\"font-size: 12.8px;\"><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance.employee_id }}.<br><br>Thank you for your prompt attention to this matter.</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 2,
+        "fields": {
+            "created_at": "2025-06-30T06:35:03.460Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Leave Allocation Request Template",
+            "body": "<p style=\"font-size: 12.8px;\">This is to inform you that {{ model_instance.employee_id }} has submitted a leave allocation request for {{model_instance.requested_days}} days. Please take the necessary actions to review and process the request at your earliest convenience.</p><p style=\"font-size: 12.8px;\"><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance.employee_id }}.<br><br>Thank you for your prompt attention to this matter.&nbsp;</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 3,
+        "fields": {
+            "created_at": "2025-06-30T06:35:03.478Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Candidate Added Template",
+            "body": "<p style=\"font-size: 12.8px;\">This is to inform you that {{ model_instance}} has been added to the recruitment {{model_instance.recruitment_id}}. Please take the necessary actions.</p><p style=\"font-size: 12.8px;\"><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance}}.<br><br>Thank you for your prompt attention to this matter.</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 4,
+        "fields": {
+            "created_at": "2025-06-30T06:35:03.497Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Interview Template",
+            "body": "<p data-start=\"234\" data-end=\"421\" class=\"\">This is to inform you that an interview has been scheduled for {{model_instance.candidate_id}} on {{model_instance.interview_date}} at {{model_instance.interview_time}}.</p><p data-start=\"234\" data-end=\"421\" class=\"\"><span style=\"font-size: 12.8px;\">Kindly take the necessary steps to prepare for or facilitate this interview as appropriate.</span></p><p data-start=\"234\" data-end=\"421\" class=\"\"><span style=\"font-size: 12.8px;\">Thank you for your prompt attention to this matter.</span></p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 5,
+        "fields": {
+            "created_at": "2025-06-30T06:35:03.515Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Add As Recruitment Manager Template",
+            "body": "<p data-pm-slice=\"1 1 []\">We are pleased to inform you that you have been assigned as the Recruitment Manager for {{ model_instance}}.</p><p></p><p>You may now proceed with the necessary steps to manage the recruitment process. Should you require any additional information or resources, please don't hesitate to reach out.</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 6,
+        "fields": {
+            "created_at": "2025-06-30T06:36:05.669Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Add As Stage Manager Template",
+            "body": "<p data-pm-slice=\"1 1 []\">We are pleased to inform you that you have been assigned as the Stage Manager for {{ model_instance}}.</p><p></p><p>You may now proceed with the necessary steps to manage the recruitment stage process. Should you require any additional information or resources, please don't hesitate to reach out.</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 7,
+        "fields": {
+            "created_at": "2025-06-02T08:56:53.382Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Offer letter Automation",
+            "body": "<p>Dear <b>{{instance.get_full_name}}</b>,</p><p><span style=\"font-size: 12.8px;\">We are pleased to extend to you an offer of employment for the position of<b> </b></span><b>{{instance.get_job_position}}</b><span style=\"font-size: 12.8px;\"><b> </b>at<b> </b></span><b>{{instance.get_company}}</b><span style=\"font-size: 12.8px;\">. We were very impressed by your qualifications and believe you will be a valuable addition to our team.</span></p><p><span style=\"font-size: 12.8px;\"><b>Offer Details:</b></span></p><ul><li>Position:&nbsp;<span style=\"font-weight: bolder;\">{{instance.get_job_position}}</span></li><li>Department:&nbsp;<span style=\"font-weight: 700;\">{{instance.get_job_position.department_id}}</span></li></ul><p><span style=\"font-size: 12.8px;\">Warm regards,</span></p><p>{{self.get_full_name}}<span style=\"font-size: 12.8px;\"></span></p><p>{{self.get_job_position}} |&nbsp;<span style=\"font-size: 12.8px;\"></span>{{self.get_company}}</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 8,
+        "fields": {
+            "created_at": "2025-06-02T09:03:19.682Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Candidate Hired Notification Automation",
+            "body": "<p>Candidate<b> {{instance.get_full_name}}&nbsp;</b>is Hired</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 9,
+        "fields": {
+            "created_at": "2025-06-02T09:21:40.929Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Application Received Automation",
+            "body": "<p><span style=\"font-size: 12.8px;\">Dear </span><b>{{instance.get_full_name}}</b><span style=\"font-size: 12.8px;\">,</span></p><p><span style=\"font-size: 12.8px;\">Thank you for applying for the </span><b>{{instance.get_job_position}}</b><span style=\"font-size: 12.8px;\"> position at </span><b>{{instance.get_company}}</b><span style=\"font-size: 12.8px;\">. We have received your application, and our team will be reviewing your profile shortly.&nbsp;</span></p><p>If your qualifications match our requirements, we will reach out to you to discuss the next steps in the hiring process. Regardless of the outcome, we appreciate your interest in joining our team.</p><p><span style=\"font-size: 12.8px;\">Thank you again for considering </span>{{instance.get_company}}<span style=\"font-size: 12.8px;\">. We wish you all the best!</span></p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 10,
+        "fields": {
+            "created_at": "2025-06-03T06:48:48.607Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "OKR Updated  Automation",
+            "body": "<p>OKR has been updated</p>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 11,
+        "fields": {
+            "created_at": "2025-06-09T10:21:25.298Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Employee Portal Access Automation",
+            "body": "<p>Hi {{instance.get_full_name}},</p><p>Access following link&nbsp;<a href=\"{{ request.scheme }}://{{ request.get_host }}\" target=\"_blank\" style=\"transition-property: all;\">{{ request.scheme }}://{{ request.get_host }}</a>&nbsp;to access Horilla HR employee self service portal</p><div><b>Username:</b> {{instance.employee_user_id.username}}</div><div><b>Initial Password: </b>{{instance.phone}}</div><div><br></div><div><span style=\"background-color: rgb(255, 255, 0);\"><i>Reset after first login</i></span></div>",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.horillamailtemplate",
+        "pk": 12,
+        "fields": {
+            "created_at": "2025-06-09T11:03:19.494Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": false,
+            "title": "Candidate Self Tracking Portal Automation",
+            "body": "<p>Hi {{instance.get_full_name}},</p><p>Follow the link <a href=\"{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login\" target=\"_blank\">{{ request.scheme }}://{{ request.get_host }}/recruitment/candidate-login</a><span style=\"font-size: 12.8px;\"></span>&nbsp;to track you progress</p><p><b>Username/email: </b>{{instance.get_mail }}</p><p><b>Passsword/mobile: </b>{{ instance.mobile }}</p><p>{% if request.user.employee_get %}</p><p>Regards</p><p><b>{{self.get_full_name}} | {{self.get_department}} | {{self.get_company }}</b></p><p>{% endif %}</p>",
+            "company_id": null
+        }
+    }
+]

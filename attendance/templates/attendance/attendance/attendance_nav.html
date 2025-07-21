@@ -136,7 +136,7 @@
                     name="search" placeholder="{% trans 'Search' %}" />
                 <div id="searchFieldDiv" style="display:none;">
                     <select name="search_field" class='oh-input__icon'
-                        style="border: none; display: flex; position: absolute; z-index: 999; margin-left:8%;" size="3"
+                        style="border: none; display: flex; position: absolute; z-index: 100; margin-left:8%;" size="3"
                         onclick="$('.filterButton')[0].click();">
                         <option style="margin-left: -10px;" value="day">{% trans "Search in : Day" %}</option>
                         <option style="margin-left: -10px;" value="shift">{% trans "Search in : Shift" %}</option>
@@ -216,7 +216,7 @@
             </button>
             <div class="oh-dropdown__menu oh-dropdown__menu--right" x-show="open" style="display: none">
                 <ul class="oh-dropdown__items">
-                    {% if perms.attendance.create_attendance or request.user|is_reportingmanager %}
+                    {% if perms.attendance.add_attendance or request.user|is_reportingmanager %}
                         <li class="oh-dropdown__item">
                             <a href="#" class="oh-dropdown__link attendance-info-import" data-toggle="oh-modal-toggle"
                                 data-target="#attendanceImport">{% trans "Import" %}</a>

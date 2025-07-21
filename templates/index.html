@@ -25,17 +25,18 @@
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-32x32.png' %}{% endif %}">
     <link rel="icon" type="image/png" sizes="16x16"
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/favicon-16x16.png' %}{% endif %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.20/dist/sweetalert2.min.css">
 
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="{% static 'build/css/style.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'build/css/sweetalert2.min.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'build/css/summernote-lite.min.css' %}" />
     <link rel="stylesheet" href="{% static 'build/css/orgChart.css' %}" />
+    <link rel="stylesheet" href="{% static '/jquery/jqueryui.css' %}">
+    <link rel="stylesheet" href="{% static 'build/css/pivottable.min.css' %}" />
     <script src="{% static '/jquery/ajax.js' %}"></script>
     <script src="{% static '/jquery/jquery.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static '/jquery/jqueryui.css' %}">
     <script src="{% static '/jquery/jqueryui.js' %}"></script>
     <script src="{% static '/base/toggleColumn.js' %}"></script>
     <script src="{% static '/build/js/orgChart.js' %}"></script>
@@ -61,9 +62,9 @@
     {% if messages %}
         <div class="oh-alert-container">
             {% for message in messages %}
-            <div class="oh-alert oh-alert--animated {{message.tags}}">
-                {{ message }}
-            </div>
+                <div class="oh-alert oh-alert--animated {{message.tags}}">
+                    {{ message }}
+                </div>
             {% endfor %}
         </div>
     {% endif %}
@@ -75,17 +76,7 @@
     {% endif %}
     <button id="reloadMessagesButton" hx-get="{% url 'reload-messages' %}" hx-swap="afterend" hidden hx-target="#reloadMessages"></button>
 
-    <div class="oh-wrapper-main" :class="!sidebarOpen ? 'oh-wrapper-main--closed' : ''" x-data="{sidebarOpen: true}"
-        @load.window="
-                        width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-                        if (width < 575.98) {
-                          sidebarOpen = false
-                        }" @resize.window="
-                        width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-                        if (width < 575.98) {
-                          sidebarOpen = false
-                        }"
-        >
+    <div class="oh-wrapper-main">
 
         <!-- Start of Sidebar -->
         <div id="sidebar">
@@ -136,8 +127,7 @@
             <nav class="oh-navbar" style="width: -webkit-fill-available;;">
                 <div class="oh-wrapper oh-navbar__wrapper">
                     <div class="oh-navbar__toggle-container">
-                        <a href="#" class="oh-navbar__toggle-link oh-link__unstyled"
-                            @click="sidebarOpen = !sidebarOpen">
+                        <a href="#" class="oh-navbar__toggle-link oh-link__unstyled" onclick="handleSidebarToggle()">
                             <img src="{% static 'images/ui/menu.svg' %}" width="24" height="24"
                                 class="oh-navbar__toggle-menu" loading="lazy" />
                         </a>
@@ -160,11 +150,11 @@
 
                         {% if request.user|any_permission:'base' or perms.attendance.view_attendancevalidationcondition %}
                             <!-- Start of settings button in nav bar -->
-                                <div class="oh-navbar__action-icons" title="Settings">
-                                    <a href="/settings/general-settings" id="settingsMenu" class="oh-navbar__action-icons-link">
-                                        <ion-icon name="settings-outline" class="oh-navbar__icon"></ion-icon>
-                                    </a>
-                                </div>
+                            <div class="oh-navbar__action-icons" title="Settings">
+                                <a href="{% url 'general-settings' %}" id="settingsMenu" class="oh-navbar__action-icons-link">
+                                    <ion-icon name="settings-outline" class="oh-navbar__icon"></ion-icon>
+                                </a>
+                            </div>
                             <!-- End of settings button in nav bar -->
                         {% endif %}
 
@@ -195,15 +185,18 @@
 
             <!-- Start of main section -->
             <div id='main-section'>
-                <div id="tripple-loader-contaner"
+                {% comment %} <div id="tripple-loader-contaner"
                     class="d-flex justify-content-center align-items-center  tripple-loader-contaner--visible"
                     style="height:90vh;">
                     <div class="triple-spinner"></div>
-                </div>
+                </div> {% endcomment %}
                 <div id="main-section-data" style="display: none;" data-lang="{{LANGUAGE_CODE}}">
                     {% block content %}
                         {% include 'dashboard.html' %}
                     {% endblock content %}
+                    <div class="oh-modal" id="genericModal" role="dialog" aria-labelledby="genericModal" aria-hidden="true">
+                        <div class="oh-modal__dialog" id="genericModalBody"></div>
+                    </div>
                     <div class="oh-modal" style="z-index: 100;" id="objectDetailsModal" role="dialog"
                         aria-labelledby="objectDetailsModalLabel" aria-hidden="true">
                         <div class="oh-modal__dialog oh-modal__dialog-relative" style="max-width: 550px" id="objectDetailsModalTarget"> </div>
@@ -235,30 +228,32 @@
             event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
         })
     </script>
-
-    {% comment %} <script type="module" src="{% static 'images/ion-icons/ionicons/ionicons.esm.js' %}"></script>
-    <script nomodule src="{% static 'images/ion-icons/ionicons/ionicons.js' %}"></script> {% endcomment %}
     <!-- this is the master js  -->
     <script src="{% static '/index/index.js' %}"></script>
     <script src="{% static '/index/saveFilters.js' %}"></script>
     <script src="{% static 'build/js/htmxSelect2.js' %}"></script>
     <script src="{% static 'build/js/summernote-lite.min.js' %}"></script>
+    <script src="{% static '/index/country.js' %}"></script>
 
     <!-- This CDN is for date format change -->
     <script src="{% static 'build/js/moment.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"></script>
 
-
     <script src="{% static '/base/date_settings.js' %}"></script>
     <script src="{% static '/base/time_formatting.js' %}"></script>
     <script src="{% static '/base/time_settings.js' %}"></script>
     <script src="{% static '/base/date_formatting.js' %}"></script>
+
+    <script src="{% static 'build/js/pivottable.min.js' %}"></script>
+    <script src="{% static 'build/js/pivottable_plot.min.js' %}"></script>
+    <script src="{% static 'build/js/pivottable_ploty.min.js' %}"></script>
+    <script src="{% static 'build/js/pivottable_excel.min.js' %}"></script>
+
     {% if "attendance"|app_installed %}
         <script src="{% static 'attendance/actions.js' %}"></script>
     {% endif %}
-    <script type="module"  src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
+    <script type="module" src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
     <script src="{% static '/build/js/sweetAlert.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Clear all query parameters from the URL
@@ -296,8 +291,6 @@
             function switchTab(e) {
                 let parentContainerEl = e.target.closest(".oh-tabs");
                 let tabElement = e.target.closest(".oh-tabs__tab");
-
-
                 let targetSelector = e.target.dataset.target;
                 let targetEl = parentContainerEl
                     ? parentContainerEl.querySelector(targetSelector)

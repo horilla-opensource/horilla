@@ -1,0 +1,75 @@
+{% load static i18n %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title">{% trans "Load Automations" %}</span>
+    <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <div class="oh-card">
+        <form hx-post="{{request.path}}" hx-target="#genericModalBody">
+            {% csrf_token %}
+            <div
+                class="oh-layout--grid-3"
+                style="
+                    grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
+                "
+            >
+                {% for automation in automations %}
+                <div class="oh-card rounded">
+                    <div class="oh-kanban-card__details">
+                        <div class="d-flex-justify-between mb-2">
+                            <span class="oh-kanban-card__title"
+                                >{{automation.fields.title}}</span
+                            >
+                            <span>
+                                <input
+                                    name="{{automation.pk}}"
+                                    type="checkbox"
+                                    class="custom-radio-checkmark"
+                                />
+                            </span>
+                        </div>
+                        <div
+                            class="oh-kanban-card__subtitle truncated-text"
+                            style="
+                                height: 120px;
+                                white-space: wrap;
+                            "
+                        >
+                            {{automation.template_body|safe}}
+                        </div>
+                        <ul class="oh-faq__tags m-0">
+                            {% if automation.fields.delivery_channel == 'email' %}
+                            <li class="oh-faq__tag text-light bg-primary">
+                                {% trans "Email" %}
+                            </li>
+                            {% elif automation.fields.delivery_channel == 'notification' %}
+                            <li class="oh-faq__tag text-light bg-danger">
+                                {% trans "Notification" %}
+                            </li>
+                            {% elif automation.fields.delivery_channel == 'both' %}
+                            <li class="oh-faq__tag text-light bg-primary">
+                                {% trans "Email" %}
+                            </li>
+                            <li class="oh-faq__tag text-light bg-danger">
+                                {% trans "Notification" %}
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex flex-row-reverse">
+                <button
+                    type="submit"
+                    class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
+                >
+                    {% trans "Add" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

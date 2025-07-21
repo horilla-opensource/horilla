@@ -97,6 +97,9 @@ class AttendanceActivity(HorillaModel):
 
         return time_difference.total_seconds()
 
+    def __str__(self):
+        return f"{self.employee_id} - {self.attendance_date} - {self.clock_in} - {self.clock_out}"
+
 
 class BatchAttendance(HorillaModel):
     """
@@ -142,7 +145,7 @@ class Attendance(HorillaModel):
         WorkType,
         null=True,
         blank=True,
-        on_delete=models.DO_NOTHING,
+        on_delete=models.SET_NULL,  # 796
         verbose_name=_("Work Type"),
     )
     attendance_day = models.ForeignKey(
@@ -540,26 +543,34 @@ class Attendance(HorillaModel):
         super().clean(*args, **kwargs)
         now = datetime.now().time()
         today = datetime.today().date()
-        out_time = self.attendance_clock_out
+
+        # Convert to time if it's a string
+        if isinstance(self.attendance_clock_out, str):
+            out_time = datetime.strptime(self.attendance_clock_out, "%H:%M:%S").time()
+        else:
+            out_time = self.attendance_clock_out
+
         if self.attendance_clock_in_date < self.attendance_date:
             raise ValidationError(
                 {
-                    "attendance_clock_in_date": "Attendance check-in date never smaller than attendance date"
+                    "attendance_clock_in_date": "Attendance check-in date cannot be earlier than attendance date"
                 }
             )
+
         if (
             self.attendance_clock_out_date
             and self.attendance_clock_out_date < self.attendance_clock_in_date
         ):
             raise ValidationError(
                 {
-                    "attendance_clock_out_date": "Attendance check-out date never smaller than attendance check-in date"
+                    "attendance_clock_out_date": "Attendance check-out date cannot be earlier than check-in date"
                 }
             )
+
         if self.attendance_clock_out_date and self.attendance_clock_out_date >= today:
             if out_time > now:
                 raise ValidationError(
-                    {"attendance_clock_out": "Check out time not allow in the future"}
+                    {"attendance_clock_out": "Check-out time cannot be in the future"}
                 )
 
 

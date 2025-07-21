@@ -1,0 +1,86 @@
+[
+    {
+        "model": "helpdesk.faqcategory",
+        "pk": 1,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.594Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Employee",
+            "description": "FAQs related to employee are shown here"
+        }
+    },
+    {
+        "model": "helpdesk.faqcategory",
+        "pk": 2,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.660Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Payroll",
+            "description": "FAQs related to attendance are shown here"
+        }
+    },
+    {
+        "model": "helpdesk.faqcategory",
+        "pk": 3,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.686Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Leave",
+            "description": "FAQs related to leave are shown here"
+        }
+    },
+    {
+        "model": "helpdesk.faqcategory",
+        "pk": 4,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.712Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Attendance",
+            "description": "FAQs related to attendance are shown here"
+        }
+    },
+    {
+        "model": "helpdesk.faqcategory",
+        "pk": 5,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.737Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Base",
+            "description": "FAQs related to base are shown here"
+        }
+    },
+    {
+        "model": "helpdesk.faqcategory",
+        "pk": 6,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.761Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Recruitment",
+            "description": "FAQs related to recruitment are shown here"
+        }
+    },
+    {
+        "model": "helpdesk.faqcategory",
+        "pk": 7,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.787Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Asset",
+            "description": "FAQs related to attendance are shown here"
+        }
+    }
+]

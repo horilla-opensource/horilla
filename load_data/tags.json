@@ -1,0 +1,262 @@
+[
+    {
+        "model": "base.tags",
+        "pk": 1,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.815Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Asset",
+            "color": "#4cbdef",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 2,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.846Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Request",
+            "color": "#bec30c",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 3,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.871Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Allocation",
+            "color": "#046d88;",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 4,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.904Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Recruitment",
+            "color": "#fb8787",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 5,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.935Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Stage",
+            "color": "#b8a5fa;",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 6,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.963Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Manager",
+            "color": "#00b2ba",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 7,
+        "fields": {
+            "created_at": "2025-06-05T11:31:39.989Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Attendance",
+            "color": "#afbcee",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 8,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.013Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Leave",
+            "color": "#66cffd",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 9,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.042Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Employee",
+            "color": "#806d8d",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 10,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.065Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Payroll",
+            "color": "#a16879",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 11,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.091Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Dashboard",
+            "color": "#8a8585",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 12,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.117Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Biometric",
+            "color": "#e35959",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 13,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.144Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Export",
+            "color": "#70a5eb",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 14,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.170Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Import",
+            "color": "#1dc56e",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 15,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.190Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Pipeline",
+            "color": "#843787",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 16,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.220Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Resume",
+            "color": "#63a189",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 17,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.245Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Skill Zone",
+            "color": "#f4b74e",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 18,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.272Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Interview",
+            "color": "#f5dcb3",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 19,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.298Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "Candidate",
+            "color": "#b2e1f5",
+            "company_id": null
+        }
+    },
+    {
+        "model": "base.tags",
+        "pk": 20,
+        "fields": {
+            "created_at": "2025-06-05T11:31:40.325Z",
+            "created_by": 1,
+            "modified_by": 1,
+            "is_active": true,
+            "title": "settings",
+            "color": "#ba9ca8",
+            "company_id": null
+        }
+    }
+]

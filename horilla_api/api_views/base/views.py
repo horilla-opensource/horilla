@@ -429,6 +429,7 @@ class WorkTypeRequestView(APIView):
 
 
 class WorkTypeRequestCancelView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
         work_type_request = WorkTypeRequest.find(pk)
@@ -1288,6 +1289,7 @@ class EmployeeTabPermissionCheck(APIView):
 
 
 class CheckUserLevel(APIView):
+
     def get(self, request):
         perm = request.GET.get("perm")
         if request.user.has_perm(perm):

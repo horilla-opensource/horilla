@@ -1,155 +1,133 @@
 {% load i18n %}{% load static recruitmentfilters %}
-<section
-class="oh-wrapper oh-main__topbar"
-x-data="{searchShow: false}"
->
-<div class="oh-main__titlebar oh-main__titlebar--left">
-  <h1 class="oh-main__titlebar-title fw-bold">
-    {% trans "Scheduled Interviews" %}
-  </h1>
-</div>
-<form
-  hx-get="{% url 'interview-filter-view' %}"
-  hx-target="#section"
-  id="filterForm"
-  class="d-flex"
-  onsubmit = "event.preventDefault()"
->
-<div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
+<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
+    <div class="oh-main__titlebar oh-main__titlebar--left">
+        <h1 class="oh-main__titlebar-title fw-bold">
+            {% trans "Scheduled Interviews" %}
+        </h1>
+    </div>
+    <form hx-get="{% url 'interview-filter-view' %}" hx-target="#section" id="filterForm" class="d-flex"
+        onsubmit="event.preventDefault()">
+        <div class="oh-main__titlebar oh-main__titlebar--right oh-d-flex-column--resp oh-mb-3--small">
 
-<div class="oh-main__titlebar-button-container">
-  <div class="oh-input-group oh-input__search-group mr-4">
-    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated" role="img" aria-label="search outline"></ion-icon>
-    <input
-      name="search" type="text" placeholder="Search"
-      style="margin-right:10px" class="oh-input oh-input__icon mr-3"
-      autocomplete="false"
-      aria-label="Search Input"
-      onkeyup="$('.filterButton')[0].click()"
-    />
-  </div>
-  <div class="oh-dropdown" x-data="{open: false}">
-    <button
-      class="oh-btn ml-2"
-      @click="open = !open"
-      onclick="event.preventDefault()"
-    >
-      <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
-      <div id="filterCount"></div>
-    </button>
-    <div
-      class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
-      x-show="open"
-      @click.outside="open = false"
-      style="display: none"
-    >
-      <div class="oh-dropdown__filter-body">
-        <div class="oh-accordion">
-          <div class="oh-accordion-header">{% trans "Interview" %}</div>
-          <div class="oh-accordion-body">
-            <div class="row">
-              <div class="col-sm-12 col-md-12 col-lg-6">
-
-                <div class="oh-input-group">
-                  <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">{% trans "Candidate" %}</label>
-                  {{f.form.candidate_id}}
+            <div class="oh-main__titlebar-button-container">
+                <div class="oh-input-group oh-input__search-group mr-4">
+                    <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left md hydrated"
+                        role="img" aria-label="search outline"></ion-icon>
+                    <input name="search" type="text" placeholder="Search" style="margin-right:10px"
+                        class="oh-input oh-input__icon mr-3" autocomplete="false" aria-label="Search Input"
+                        onkeyup="$('.filterButton')[0].click()" />
                 </div>
+                <div class="oh-dropdown" x-data="{open: false}">
+                    <button class="oh-btn ml-2" @click="open = !open" onclick="event.preventDefault()">
+                        <ion-icon name="filter" class="mr-1"></ion-icon>{% trans "Filter" %}
+                        <div id="filterCount"></div>
+                    </button>
+                    <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
+                        @click.outside="open = false" style="display: none">
+                        <div class="oh-dropdown__filter-body">
+                            <div class="oh-accordion">
+                                <div class="oh-accordion-header">{% trans "Interview" %}</div>
+                                <div class="oh-accordion-body">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
 
-                <div class="oh-input-group">
-                  <label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Interview Date From" %}</label>
-                  {{f.form.scheduled_from}}
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.candidate_id.id_for_label}}">
+                                                    {{f.form.candidate_id.label}}</label>
+                                                {{f.form.candidate_id}}
+                                            </div>
+
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.scheduled_from.id_for_label}}">
+                                                    {{f.form.scheduled_from.label}}</label>
+                                                {{f.form.scheduled_from}}
+                                            </div>
+
+                                        </div>
+                                        <div class="col-sm-12 col-md-12 col-lg-6">
+
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.employee_id.id_for_label}}">
+                                                    {{f.form.employee_id.label}}</label>
+                                                {{f.form.employee_id}}
+                                            </div>
+
+                                            <div class="oh-input-group">
+                                                <label class="oh-label" for="{{f.form.scheduled_till.id_for_label}}">
+                                                    {{f.form.scheduled_till.label}}</label>
+                                                {{f.form.scheduled_till}}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="oh-dropdown__filter-footer">
+                            <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton">
+                                {% trans "Filter" %}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-
-              </div>
-              <div class="col-sm-12 col-md-12 col-lg-6">
-
-                <div class="oh-input-group">
-                  <label class="oh-label" for ="{{f.form.action.id_for_label}}">{% trans "Interviewer" %}</label>
-                  {{f.form.employee_id}}
+                <div class="oh-btn-group ml-2">
+                    <div class="oh-dropdown">
+                        {% if perms.recruitment.add_interviewschedule %}
+                        <a hx-get='{% url "create-interview-schedule" %}' hx-target="#createTarget" hx-swap="innerHTML"
+                            data-target="#createModal" data-toggle="oh-modal-toggle" class='oh-btn oh-btn--secondary'>
+                            <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
-
-                <div class="oh-input-group">
-                  <label class="oh-label" for="{{f.form.start_date.id_for_label}}">{% trans "Interview Date Till" %}</label>
-                  {{f.form.scheduled_till}}
-                </div>
-
-              </div>
             </div>
-          </div>
         </div>
-      </div>
-      <div class="oh-dropdown__filter-footer">
-        <button
-          class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-        >
-          {% trans "Filter" %}
-        </button>
-      </div>
-    </div>
-  </div>
-     <div class="oh-btn-group ml-2">
-        <div class="oh-dropdown" >
-          {% if perms.recruitment.add_interviewschedule %}
-            <a hx-get='{% url "create-interview-schedule" %}'
-                hx-target="#createTarget"
-                hx-swap="innerHTML"
-                data-target="#createModal"
-                data-toggle="oh-modal-toggle"
-              class='oh-btn oh-btn--secondary'
-              >
-              <ion-icon name="add-sharp" class="mr-1"></ion-icon>{% trans "Create" %}
-            </a>
-        {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
-</form>
+    </form>
 </section>
 <script>
-  $(document).ready(function () {
-    function candidateFilter(element) {
-      var search = $("#candidate-search").val();
-      const form = document.querySelector("#filterForm");
-      const formData = new FormData(form);
-      const queryString = new URLSearchParams(formData).toString();
-      const searchParams = new URLSearchParams(queryString);
-      const queryObject = Object.fromEntries(searchParams.entries());
-      view = $(element).attr("data-view");
-      queryObject["search"] = search;
-      queryObject["view"] = view;
-      stringQueyObject = JSON.stringify(queryObject);
-      // $('#list').attr('hx-vals', stringQueyObject);
-      // $('#card').attr('hx-vals', stringQueyObject);
-    }
-
-    $("#candidate-search").keyup(function (e) {
-      $(".candidate-view-type").attr(
-        "hx-vals",
-        `{"search":"${$(this).val()}"}`
-      );
-    });
-    $(".candidate-view-type").on("click", function (e) {
-      let view = $(this).attr("data-view");
-      var currentURL = window.location.href;
-      if (view != undefined) {
-        if (/\?view=[^&]+/.test(currentURL)) {
-          newURL = currentURL.replace(/\?view=[^&]+/, "?view=" + view);
-        } else {
-          var separator = currentURL.includes("?") ? "&" : "?";
-          newURL = currentURL + separator + "view=" + view;
+    $(document).ready(function () {
+        function candidateFilter(element) {
+            var search = $("#candidate-search").val();
+            const form = document.querySelector("#filterForm");
+            const formData = new FormData(form);
+            const queryString = new URLSearchParams(formData).toString();
+            const searchParams = new URLSearchParams(queryString);
+            const queryObject = Object.fromEntries(searchParams.entries());
+            view = $(element).attr("data-view");
+            queryObject["search"] = search;
+            queryObject["view"] = view;
+            stringQueyObject = JSON.stringify(queryObject);
+            // $('#list').attr('hx-vals', stringQueyObject);
+            // $('#card').attr('hx-vals', stringQueyObject);
         }
-        history.pushState({}, "", newURL);
-        $("#candidate-search").attr("hx-vals", `{"view":"${view}"}`);
-        $("#filterForm").attr("hx-vals", `{"view":"${view}"}`);
-        $(".oh-btn--view-active").removeClass("oh-btn--view-active");
-        $(this).children("a").addClass("oh-btn--view-active");
-      }
+
+        $("#candidate-search").keyup(function (e) {
+            $(".candidate-view-type").attr(
+                "hx-vals",
+                `{"search":"${$(this).val()}"}`
+            );
+        });
+        $(".candidate-view-type").on("click", function (e) {
+            let view = $(this).attr("data-view");
+            var currentURL = window.location.href;
+            if (view != undefined) {
+                if (/\?view=[^&]+/.test(currentURL)) {
+                    newURL = currentURL.replace(/\?view=[^&]+/, "?view=" + view);
+                } else {
+                    var separator = currentURL.includes("?") ? "&" : "?";
+                    newURL = currentURL + separator + "view=" + view;
+                }
+                history.pushState({}, "", newURL);
+                $("#candidate-search").attr("hx-vals", `{"view":"${view}"}`);
+                $("#filterForm").attr("hx-vals", `{"view":"${view}"}`);
+                $(".oh-btn--view-active").removeClass("oh-btn--view-active");
+                $(this).children("a").addClass("oh-btn--view-active");
+            }
+        });
+        $('#id_field').on('change', function () {
+            $('.filterButton')[0].click();
+        })
     });
-    $('#id_field').on('change',function(){
-      $('.filterButton')[0].click();
-    })
-  });
 </script>
 
 <script src="{% static '/candidate/bulk.js' %}"></script>

@@ -35,6 +35,10 @@ class PayrollSettings(HorillaModel):
     company_id = models.ForeignKey(Company, null=True, on_delete=models.PROTECT)
     objects = HorillaCompanyManager("company_id")
 
+    class Meta:
+        verbose_name = _("Payroll Settings")
+        verbose_name_plural = _("Payroll Settings")
+
     def __str__(self):
         return f"Payroll Settings {self.currency_symbol}"
 

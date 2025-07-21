@@ -78,6 +78,8 @@ class EmployeeTypeAPIView(APIView):
         get(request, pk=None): Returns a single employee type if pk is provided, otherwise returns all employee types.
     """
 
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk=None):
         if pk:
             employee_type = EmployeeType.objects.get(id=pk)

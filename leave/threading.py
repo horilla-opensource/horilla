@@ -25,11 +25,6 @@ class LeaveMailSendThread(Thread):
     def send_email(self, subject, content, recipients, leave_request_id="#"):
         email_backend = ConfiguredEmailBackend()
         display_email_name = email_backend.dynamic_from_email_with_display_name
-        if self.request:
-            try:
-                display_email_name = f"{self.request.user.employee_get.get_full_name()} <{self.request.user.employee_get.email}>"
-            except:
-                logger.error(Exception)
 
         host = self.host
         protocol = self.protocol

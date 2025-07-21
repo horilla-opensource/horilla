@@ -1,52 +1,53 @@
 {% extends 'index.html' %} {% load static i18n %}
 {% block content %}
 <style>
-  .search-highlight {
-    background-color: rgba(255, 68, 0, 0.076);
-  }
+    .search-highlight {
+        background-color: rgba(255, 68, 0, 0.076);
+    }
 </style>
 
 {% include 'offboarding/pipeline/nav.html' %}
 <div id="offboardingContainer">
-  {% if offboardings %}
-    {% include 'offboarding/pipeline/offboardings.html' %}
-  {% else %}
-    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
-        <img style="display: block; width: 15%; margin: 20px auto; filter: opacity(0.5);" src="{% static 'images/ui/notice.png' %}" class="" alt="Page not found. 404." />
-        <h5 class="oh-404__subtitle">{% trans "There is no offboardings at this moment." %}</h5>
-    </div>
-  {% endif %}
+    {% if offboardings %}
+        {% include 'offboarding/pipeline/offboardings.html' %}
+    {% else %}
+        <div class="oh-empty">
+            <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+            <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+            <p class="oh-empty__subtitle">{% trans "There is no offboardings at this moment." %}</p>
+        </div>
+    {% endif %}
 </div>
 
 <script>
-  // intial select notice period starts and end
-  function initialNoticePeriod($element) {
-    let employeeId = $element.val()
-    $.ajax({
-      type: 'get',
-      url: "{% url 'get-notice-period' %}",
-      data: { employee_id: employeeId },
-      success: function (response) {
-        let totalNoticePeriod = response["notice_period"]
-        let unit = response["unit"]
-        let noticePeriodStarts = response["notice_period_starts"]
-        $("#offboardingEmployeeForm [name=unit]").val(unit);
-        $("#offboardingEmployeeForm [name=notice_period_starts]").val(noticePeriodStarts);
-        $("#offboardingEmployeeForm [name=notice_period]").val(totalNoticePeriod);
-      }
-    })
-  }
-  function noticePeriodUpdate (elem) {
-    start_date = elem.val();
-    $.ajax({
-      type: 'get',
-      url: "{% url 'get-notice-period-end-date' %}",
-      data: { "start_date": start_date },
-      success: function (response) {
-        end_date = response.end_date;
-        $("#offboardingEmployeeForm [name=notice_period_ends]").val(end_date);
-      }
-    })
-  }
+    // intial select notice period starts and end
+    function initialNoticePeriod($element) {
+        let employeeId = $element.val()
+        $.ajax({
+            type: 'get',
+            url: "{% url 'get-notice-period' %}",
+            data: { employee_id: employeeId },
+            success: function (response) {
+                let totalNoticePeriod = response["notice_period"]
+                let unit = response["unit"]
+                let noticePeriodStarts = response["notice_period_starts"]
+                $("#offboardingEmployeeForm [name=unit]").val(unit);
+                $("#offboardingEmployeeForm [name=notice_period_starts]").val(noticePeriodStarts);
+                $("#offboardingEmployeeForm [name=notice_period]").val(totalNoticePeriod);
+            }
+        })
+    }
+    function noticePeriodUpdate(elem) {
+        start_date = elem.val();
+        $.ajax({
+            type: 'get',
+            url: "{% url 'get-notice-period-end-date' %}",
+            data: { "start_date": start_date },
+            success: function (response) {
+                end_date = response.end_date;
+                $("#offboardingEmployeeForm [name=notice_period_ends]").val(end_date);
+            }
+        })
+    }
 </script>
 {% endblock %}

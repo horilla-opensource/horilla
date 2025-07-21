@@ -1,4 +1,5 @@
-<div class="oh-modal" id="deleteConfirmation" role="dialog" aria-labelledby="deleteConfirmation" aria-hidden="true">
+{% load i18n %}
+<div style="z-index: 1022;" class="oh-modal" id="deleteConfirmation" role="dialog" aria-labelledby="deleteConfirmation" aria-hidden="true">
   <div class="oh-modal__dialog oh-modal__dialog--custom" id="deleteConfirmationBody">
   </div>
 </div>
@@ -16,6 +17,18 @@
 
 <div class="oh-activity-sidebar" id="genericSidebar" style="z-index:1000;">
   <div class="oh-activity-sidebar__body" id="genericOffCanvas">
+  </div>
+</div>
+
+<div class="oh-modal" id="allocationModal" role="dialog" aria-labelledby="allocationModal" aria-hidden="true">
+  <div class="oh-modal__dialog oh-modal__dialog--custom oh-modal__dialog-process">
+    <div class="oh-modal__dialog-header">
+      <span class="oh-modal__dialog-title" id="addEmployeeModalLabel">{% trans "Allocation" %}</span>
+      <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+    </div>
+    <div class="oh-modal__dialog-body oh-modal__dialog-body-process" id="allocationModalBody">
+
+    </div>
   </div>
 </div>
 

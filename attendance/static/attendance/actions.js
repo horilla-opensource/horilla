@@ -124,38 +124,53 @@ function getCurrentLanguageCode(callback) {
     }
 }
 
-$(".validate").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    var closest = $(this)
-        .closest(".oh-sticky-table__thead")
-        .siblings(".oh-sticky-table__tbody");
-    if (is_checked) {
-        $(closest)
-            .children()
-            .find(".validate-row")
-            .prop("checked", true)
-            .closest(".oh-sticky-table__tr")
-            .addClass("highlight-selected");
-    } else {
-        $(closest)
-            .children()
-            .find(".validate-row")
-            .prop("checked", false)
-            .closest(".oh-sticky-table__tr")
-            .removeClass("highlight-selected");
-    }
-});
+function validateActivityIds(event) {
+    event.preventDefault();
 
-$(".validate-row").change(function () {
-    var parentTable = $(this).closest(".oh-sticky-table");
-    var body = parentTable.find(".oh-sticky-table__tbody");
-    var parentCheckbox = parentTable.find(".validate");
-    parentCheckbox.prop(
-        "checked",
-        body.find(".validate-row:checked").length ===
-        body.find(".validate-row").length
-    );
-});
+    getCurrentLanguageCode(function (languageCode) {
+        var textMessage = norowdeleteMessages[languageCode];
+        var $selectedActivity = $("#selectedActivity");
+        var idsRaw = $selectedActivity.attr("data-ids");
+
+        if (!idsRaw) {
+            Swal.fire({
+                text: textMessage,
+                icon: "warning",
+                confirmButtonText: "Close",
+            });
+            return;
+        }
+
+        let ids;
+        try {
+            ids = JSON.parse(idsRaw);
+        } catch (e) {
+            console.error("Invalid JSON in data-ids:", e);
+            Swal.fire({
+                text: "An unexpected error occurred. Please refresh the page.",
+                icon: "error",
+                confirmButtonText: "Close",
+            });
+            return;
+        }
+
+        if (!Array.isArray(ids) || ids.length === 0) {
+            Swal.fire({
+                text: textMessage,
+                icon: "warning",
+                confirmButtonText: "Close",
+            });
+            return;
+        }
+
+        $("#bulkDeleteIds").val(idsRaw);
+
+        // Submit the form programmatically
+        document.getElementById('bulkDeleteForm').dispatchEvent(
+            new Event('submit', { bubbles: true, cancelable: true })
+        );
+    });
+}
 
 $(".all-hour-account").change(function (e) {
     var is_checked = $(this).is(":checked");
@@ -420,71 +435,33 @@ function unselectAllHourAcconts() {
     });
 }
 
-$(".all-attendances").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    var closest = $(this)
-        .closest(".oh-sticky-table__thead")
-        .siblings(".oh-sticky-table__tbody");
-    if (is_checked) {
+function toggleTableAllRowIds(headerSelector, rowCheckboxClass) {
+    $(headerSelector).change(function (e) {
+        var is_checked = $(this).is(":checked");
+        var closest = $(this)
+            .closest(".oh-sticky-table__thead")
+            .siblings(".oh-sticky-table__tbody");
         $(closest)
             .children()
-            .find(".all-attendance-row")
-            .prop("checked", true)
+            .find(rowCheckboxClass)
+            .prop("checked", is_checked)
             .closest(".oh-sticky-table__tr")
-            .addClass("highlight-selected");
-    } else {
-        $(closest)
-            .children()
-            .find(".all-attendance-row")
-            .prop("checked", false)
-            .closest(".oh-sticky-table__tr")
-            .removeClass("highlight-selected");
-    }
-});
+            .toggleClass("highlight-selected", is_checked);
+    });
+}
 
-$(".all-attendance-row").change(function () {
-    var parentTable = $(this).closest(".oh-sticky-table");
-    var body = parentTable.find(".oh-sticky-table__tbody");
-    var parentCheckbox = parentTable.find(".all-attendances");
-    parentCheckbox.prop(
-        "checked",
-        body.find(".all-attendance-row:checked").length ===
-        body.find(".all-attendance-row").length
-    );
-});
+function toggleTableHeaderCheckbox(rowCheckboxSelector, headerCheckboxSelector) {
+    $(document).on("change", rowCheckboxSelector, function () {
+        var parentTable = $(this).closest(".oh-sticky-table");
+        var body = parentTable.find(".oh-sticky-table__tbody");
+        var parentCheckbox = parentTable.find(headerCheckboxSelector);
+        var totalRows = body.find(rowCheckboxSelector).length;
+        var checkedRows = body.find(`${rowCheckboxSelector}:checked`).length;
+        parentCheckbox.prop("checked", totalRows > 0 && totalRows === checkedRows);
+    });
+}
 
-$(".ot-attendances").change(function (e) {
-    var is_checked = $(this).is(":checked");
-    var closest = $(this)
-        .closest(".oh-sticky-table__thead")
-        .siblings(".oh-sticky-table__tbody");
-    if (is_checked) {
-        $(closest)
-            .children()
-            .find(".ot-attendance-row")
-            .prop("checked", true)
-            .closest(".oh-sticky-table__tr")
-            .addClass("highlight-selected");
-    } else {
-        $(closest)
-            .children()
-            .find(".ot-attendance-row")
-            .prop("checked", false)
-            .closest(".oh-sticky-table__tr")
-            .removeClass("highlight-selected");
-    }
-});
 
-$(".ot-attendance-row").change(function () {
-    var parentTable = $(this).closest(".oh-sticky-table");
-    var body = parentTable.find(".oh-sticky-table__tbody");
-    var parentCheckbox = parentTable.find(".ot-attendances");
-    parentCheckbox.prop(
-        "checked",
-        body.find(".ot-attendance-row:checked").length ===
-        body.find(".ot-attendance-row").length
-    );
-});
 
 function getCookie(name) {
     let cookieValue = null;
@@ -1259,53 +1236,53 @@ $("#hourAccountbulkDelete").click(function (e) {
     });
 });
 
-$("#attendanceActivityDelete").click(function (e) {
-    e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = deleteMessages[languageCode];
-        var textMessage = norowdeleteMessages[languageCode];
-        ids = [];
-        ids.push($("#selectedActivity").attr("data-ids"));
-        ids = JSON.parse($("#selectedActivity").attr("data-ids"));
-        if (ids.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            Swal.fire({
-                text: confirmMessage,
-                icon: "error",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    ids = [];
-                    ids.push($("#selectedActivity").attr("data-ids"));
-                    ids = JSON.parse($("#selectedActivity").attr("data-ids"));
-                    $.ajax({
-                        type: "POST",
-                        url: "/attendance/attendance-activity-bulk-delete",
-                        data: {
-                            csrfmiddlewaretoken: getCookie("csrftoken"),
-                            ids: JSON.stringify(ids),
-                        },
-                        success: function (response, textStatus, jqXHR) {
-                            if (jqXHR.status === 200) {
-                                location.reload();
-                            }
-                        },
-                    });
-                }
-            });
-        }
-    });
-});
+// $("#attendanceActivityDelete").click(function (e) {
+//     e.preventDefault();
+//     var languageCode = null;
+//     getCurrentLanguageCode(function (code) {
+//         languageCode = code;
+//         var confirmMessage = deleteMessages[languageCode];
+//         var textMessage = norowdeleteMessages[languageCode];
+//         ids = [];
+//         ids.push($("#selectedActivity").attr("data-ids"));
+//         ids = JSON.parse($("#selectedActivity").attr("data-ids"));
+//         if (ids.length === 0) {
+//             Swal.fire({
+//                 text: textMessage,
+//                 icon: "warning",
+//                 confirmButtonText: "Close",
+//             });
+//         } else {
+//             Swal.fire({
+//                 text: confirmMessage,
+//                 icon: "error",
+//                 showCancelButton: true,
+//                 confirmButtonColor: "#008000",
+//                 cancelButtonColor: "#d33",
+//                 confirmButtonText: "Confirm",
+//             }).then(function (result) {
+//                 if (result.isConfirmed) {
+//                     ids = [];
+//                     ids.push($("#selectedActivity").attr("data-ids"));
+//                     ids = JSON.parse($("#selectedActivity").attr("data-ids"));
+//                     $.ajax({
+//                         type: "POST",
+//                         url: "/attendance/attendance-activity-bulk-delete",
+//                         data: {
+//                             csrfmiddlewaretoken: getCookie("csrftoken"),
+//                             ids: JSON.stringify(ids),
+//                         },
+//                         success: function (response, textStatus, jqXHR) {
+//                             if (jqXHR.status === 200) {
+//                                 location.reload();
+//                             }
+//                         },
+//                     });
+//                 }
+//             });
+//         }
+//     });
+// });
 
 $("#lateComeBulkDelete").click(function (e) {
     e.preventDefault();

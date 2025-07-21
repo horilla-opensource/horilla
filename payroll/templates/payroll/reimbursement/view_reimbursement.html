@@ -1,98 +1,97 @@
 {% extends 'index.html' %}
 {% block content %}
 {% load static %} {% load i18n %}
-  {% include 'payroll/reimbursement/nav.html' %}
-  <style>
+{% include 'payroll/reimbursement/nav.html' %}
+<style>
     .toggle-highlight {
-      background-color: gold;
-      transition: background-color 0.5s ease;
+        background-color: gold;
+        transition: background-color 0.5s ease;
     }
+
     .loan-type {
-      background: #73bbe12b;
-      font-size: 0.8rem;
-      padding: 4px 8px;
-      border-radius: 10px;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #357579;
+        background: #73bbe12b;
+        font-size: 0.8rem;
+        padding: 4px 8px;
+        border-radius: 10px;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #357579;
     }
-  </style>
-  <div id="reimbursementContainer">
+</style>
+<div id="reimbursementContainer">
     {% if reimbursement_exists %}
-    {% if view == "list" %}
-    {% include 'payroll/reimbursement/reimbursement_list.html' %}
+        {% if view == "list" %}
+            {% include 'payroll/reimbursement/reimbursement_list.html' %}
+        {% else %}
+            {% include 'payroll/reimbursement/request_cards.html' %}
+        {% endif %}
     {% else %}
-    {% include 'payroll/reimbursement/request_cards.html' %}
-    {% endif %}
-    {% else %}
-      {% include "filter_tags.html" %}
-      <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
-        <div class="oh-wrapper">
-          <div class="oh-404">
-              <img style="    width: 150px;height: 150px;" src="{% static 'images/ui/reimbursement.png' %}" class="oh-404__image mb-4" alt="Page not found. 404."/>
-              <h5 class="oh-404__subtitle">{% trans "There are currently no reimbursement to consider." %}</h5>
-          </div>
+        {% include "filter_tags.html" %}
+        <div class="oh-empty">
+            <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+            <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
+            <p class="oh-empty__subtitle">{% trans "There are currently no reimbursement to consider." %}</p>
         </div>
-      </main>
     {% endif %}
-  </div>
-  <div class="oh-modal" id="reimbursementModal" role="dialog" aria-hidden="true">
+</div>
+
+<div class="oh-modal" id="reimbursementModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog" style="max-width: 550px">
-      <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-      </div>
+        <div class="oh-modal__dialog-header">
+            <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon
+                    name="close-outline"></ion-icon></button>
+        </div>
 
-      <div class="oh-modal__dialog-body" id="organisation-chart"></div>
+        <div class="oh-modal__dialog-body" id="organisation-chart"></div>
     </div>
-  </div>
-  <div class="oh-modal" id="reimbursementAttachementModal" role="dialog" aria-hidden="true">
+</div>
+
+<div class="oh-modal" id="reimbursementAttachementModal" role="dialog" aria-hidden="true">
     <div class="oh-modal__dialog">
-      <div class="oh-modal__dialog-header">
-        <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-      </div>
+        <div class="oh-modal__dialog-header">
+            <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon
+                    name="close-outline"></ion-icon></button>
+        </div>
 
-      <div class="oh-modal__dialog-body" id="reimbursementAttachementModalBody"></div>
+        <div class="oh-modal__dialog-body" id="reimbursementAttachementModalBody"></div>
     </div>
-  </div>
+</div>
 
-  <div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000;">
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index:1000;">
+    <div class="oh-activity-sidebar__body" id="commentContainer"></div>
+</div>
 
-    <div class="oh-activity-sidebar__body" id="commentContainer">
-    </div>
-
-  </div>
-
-  <script>
+<script>
     function reimbursementConfirm(params, target, approve = false) {
-      event.preventDefault();event.stopPropagation()
-      Swal.fire({
-          text: params,
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonColor: "#008000",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Close",
-      }).then((result) => {
-          if (result.isConfirmed) {
-              if (approve) {
-                  $(`${target} [name=amount]`).attr("required", true);
-              }
-              $(target + "Button").click();
-              if (event.target.tagName.toLowerCase() === "form") {
-                  event.target.submit();
-              } else if (event.target.tagName.toLowerCase() === "a") {
-                  window.location.href = event.target.href;
-              }
-          } else {
-          }
-      });
-  }
+        event.preventDefault(); event.stopPropagation()
+        Swal.fire({
+            text: params,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Confirm",
+            cancelButtonText: "Close",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                if (approve) {
+                    $(`${target} [name=amount]`).attr("required", true);
+                }
+                $(target + "Button").click();
+                if (event.target.tagName.toLowerCase() === "form") {
+                    event.target.submit();
+                } else if (event.target.tagName.toLowerCase() === "a") {
+                    window.location.href = event.target.href;
+                }
+            } else {
+            }
+        });
+    }
 
 
-  // This lines is used to set default selected stage for exits lines
+    // This lines is used to set default selected stage for exits lines
 
-    function enlargeImage(src,$element) {
+    function enlargeImage(src, $element) {
         $(".enlargeImageContainer").empty()
         var enlargeImageContainer = $element.parents().closest("li").find(".enlargeImageContainer")
         enlargeImageContainer.empty()
@@ -125,36 +124,36 @@
         $(elem).siblings(".add_more_submit").click();
     }
     function inputAmount(elem) {
-      let amount=elem.val()
-      $(elem).parents().closest(".oh-sticky-table__tr").find('[name=amount]').val(amount);
+        let amount = elem.val()
+        $(elem).parents().closest(".oh-sticky-table__tr").find('[name=amount]').val(amount);
     }
-    function enlargeattachment(src,$element) {
-      $("#enlargeattachmentContainer").empty()
-      var enlargeattachmentContainer = $("#enlargeattachmentContainer")
-      enlargeattachmentContainer.empty()
-      style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
-      var enlargedImage = $('<iframe>').attr({ src: src, style: style })
-      var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
-      enlargeattachmentContainer.append(enlargedImage)
-      enlargeattachmentContainer.append(name)
-      setTimeout(function () {
-          enlargeattachmentContainer.show()
+    function enlargeattachment(src, $element) {
+        $("#enlargeattachmentContainer").empty()
+        var enlargeattachmentContainer = $("#enlargeattachmentContainer")
+        enlargeattachmentContainer.empty()
+        style = 'width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white'
+        var enlargedImage = $('<iframe>').attr({ src: src, style: style })
+        var name = $('<span>').text(src.split('/').pop().replace(/_/g, ' '))
+        enlargeattachmentContainer.append(enlargedImage)
+        enlargeattachmentContainer.append(name)
+        setTimeout(function () {
+            enlargeattachmentContainer.show()
 
-          const iframe = document.querySelector('iframe').contentWindow
-          var iframe_document = iframe.document
-          iframe_image = iframe_document.getElementsByTagName('img')[0]
-          $(iframe_image).attr('style', 'width:100%; height:100%;')
-      }, 100)
-  }
-
-  function hideEnlargeattachment() {
-      var enlargeattachmentContainer = $('#enlargeattachmentContainer')
-      enlargeattachmentContainer.empty()
-  }
-  $(document).on('click', function (event) {
-    if (!$(event.target).closest('#enlargeattachmentContainer').length) {
-      hideEnlargeattachment()
+            const iframe = document.querySelector('iframe').contentWindow
+            var iframe_document = iframe.document
+            iframe_image = iframe_document.getElementsByTagName('img')[0]
+            $(iframe_image).attr('style', 'width:100%; height:100%;')
+        }, 100)
     }
-  })
-  </script>
+
+    function hideEnlargeattachment() {
+        var enlargeattachmentContainer = $('#enlargeattachmentContainer')
+        enlargeattachmentContainer.empty()
+    }
+    $(document).on('click', function (event) {
+        if (!$(event.target).closest('#enlargeattachmentContainer').length) {
+            hideEnlargeattachment()
+        }
+    })
+</script>
 {% endblock %}

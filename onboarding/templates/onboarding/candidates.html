@@ -1,540 +1,589 @@
 {% load i18n %}{% load static %}
 {% include 'filter_tags.html' %}
 <style>
-  .rejected-candidate{
-
-  }
+    .rejected-candidate {}
 </style>
 
 
 {% if candidates %}
 
 <div class="oh-checkpoint-badge text-success mb-2" id="selectAllInstances" style="cursor: pointer;">
-  {% trans "Select All Candidates" %}
+    {% trans "Select All Candidates" %}
 </div>
 <div class="oh-checkpoint-badge text-secondary mb-2" id="unselectAllInstances" style="cursor: pointer;display: none">
-  {% trans "Unselect All Candidates" %}
+    {% trans "Unselect All Candidates" %}
 </div>
 <div class="oh-checkpoint-badge text-info mb-2" id="exportCandidates" style="cursor: pointer;display: none">
     {% trans "Export Candidates" %}
 </div>
-<div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" style="display: none;" >
+<div class="oh-checkpoint-badge text-danger mb-2" id="selectedCandidate" style="display: none;">
 </div>
 <!-- start of column toggle -->
 <div class="oh-table_sticky--wrapper">
-  <div class="oh-sticky-dropdown--header">
-    <div class="oh-dropdown" x-data="{open: false}">
-      <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
-        role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
-      <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-      <ul class="oh-dropdown__items" id="CandidateViewCells">
-      </ul>
-      </div>
+    <div class="oh-sticky-dropdown--header">
+        <div class="oh-dropdown" x-data="{open: false}">
+            <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
+                    role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
+            <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
+                <ul class="oh-dropdown__items" id="CandidateViewCells">
+                </ul>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 <!-- start of column toggle -->
 <div id="candidate-view-table" data-table-name="candidate_view_tab">
-  <!-- start of sticky table -->
-  <div class="oh-sticky-table">
-    <div class="oh-sticky-table__table">
-      <div class="oh-sticky-table__thead">
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__th" style="width:10px;">
-            <div class="centered-div">
-                <input
-                  type="checkbox"
-                  class="oh-input oh-input__checkbox group-select"
-                  id="allCandidate"
-                  title="{% trans 'Select All' %}"
-                  onchange="$(this).closest('.oh-sticky-table').find('.candidate-checkbox').prop('checked',$(this).is(':checked')).change();"
-                  />
-              </div>
-            </div>
-          <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=name">{% trans "Candidate" %}</div>
-          <div data-cell-index="1" data-cell-title='{% trans "Email" %}' class="oh-sticky-table__th">{% trans "Email" %}</div>
-          <div data-cell-index="2" data-cell-title='{% trans "Date of joining" %}' class="oh-sticky-table__th {% if request.sort_option.order == '-joining_date' %}arrow-up {% elif request.sort_option.order == 'joining_date' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=joining_date">{% trans "Date of joining" %}</div>
-          <div data-cell-index="3" data-cell-title='{% trans "Probation ends" %}' class="oh-sticky-table__th {% if request.sort_option.order == '-probation_end' %}arrow-up {% elif request.sort_option.order == 'probation_end' %}arrow-down {% else %} arrow-up-down {% endif %}" hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=probation_end">{% trans "Probation ends" %}</div>
-          <div data-cell-index="4" data-cell-title='{% trans "Job position" %}' class="oh-sticky-table__th">{% trans "Job position" %}</div>
-          <div data-cell-index="5" data-cell-title='{% trans "Recruitment" %}' class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
-          <div data-cell-index="6" data-cell-title='{% trans "Offer letter" %}' class="oh-sticky-table__th">{% trans "Offer letter" %}</div>
-          <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 290px;">{% trans "Actions" %}</div>
-        </div>
-      </div>
-      {% for candidate in candidates %}
-      <div class="oh-sticky-table__tbody">
-        <div class="oh-sticky-table__tr">
-          <div class="oh-sticky-table__sd">
-              <div class="centered-div">
-                <input
-                  type="checkbox"
-                  class="oh-input candidate-checkbox oh-input__checkbox all-candidate-row"
-                  id="{{candidate.id}}"
-                  onchange="highlightRow($(this))"
-                />
-              </div>
-          </div>
-          <div class="oh-sticky-table__td">
-            <div class="oh-profile oh-profile--md">
-                <div class="oh-profile__avatar mr-1">
-                  <img src="{{candidate.get_avatar}}"
-                      class="oh-profile__image" alt="" />
+    <!-- start of sticky table -->
+    <div class="oh-sticky-table">
+        <div class="oh-sticky-table__table">
+            <div class="oh-sticky-table__thead">
+                <div class="oh-sticky-table__tr">
+                    <div class="oh-sticky-table__th" style="width:10px;">
+                        <div class="centered-div">
+                            <input type="checkbox" class="oh-input oh-input__checkbox group-select" id="allCandidate"
+                                title="{% trans 'Select All' %}"
+                                onchange="$(this).closest('.oh-sticky-table').find('.candidate-checkbox').prop('checked',$(this).is(':checked')).change();" />
+                        </div>
+                    </div>
+                    <div class="oh-sticky-table__th {% if request.sort_option.order == '-name' %}arrow-up {% elif request.sort_option.order == 'name' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                        hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=name">{% trans "Candidate" %}</div>
+                    <div data-cell-index="1" data-cell-title='{% trans "Email" %}' class="oh-sticky-table__th">{% trans "Email" %}</div>
+                    <div data-cell-index="2" data-cell-title='{% trans "Date of joining" %}'
+                        class="oh-sticky-table__th {% if request.sort_option.order == '-joining_date' %}arrow-up {% elif request.sort_option.order == 'joining_date' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                        hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=joining_date">{% trans "Date of joining" %}</div>
+                    <div data-cell-index="3" data-cell-title='{% trans "Probation ends" %}'
+                        class="oh-sticky-table__th {% if request.sort_option.order == '-probation_end' %}arrow-up {% elif request.sort_option.order == 'probation_end' %}arrow-down {% else %} arrow-up-down {% endif %}"
+                        hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&orderby=probation_end">{% trans "Probation ends" %}</div>
+                    <div data-cell-index="4" data-cell-title='{% trans "Job position" %}' class="oh-sticky-table__th">{% trans "Job position" %}</div>
+                    <div data-cell-index="5" data-cell-title='{% trans "Recruitment" %}' class="oh-sticky-table__th">{% trans "Recruitment" %}</div>
+                    <div data-cell-index="6" data-cell-title='{% trans "Offer letter" %}' class="oh-sticky-table__th">{% trans "Offer letter" %}</div>
+                    <div class="oh-sticky-table__th oh-sticky-table__right" style="width: 290px;">{% trans "Actions" %}
+                    </div>
                 </div>
-                <span class="oh-profile__name oh-text--dark">{{candidate.name}}</span>
             </div>
-          </div>
-          <a data-cell-index="1" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-            {{candidate.email|truncatechars:10}}
-            {% if candidate.get_last_sent_mail %}
-              <span title="{{candidate.get_last_sent_mail.subject}} | {{candidate.get_last_sent_mail.get_status_display}}" class="oh-dot oh-dot--small me-1" style="background-color:{% if candidate.get_last_sent_mail.status == "sent" %}yellowgreen{% else %}red{% endif %}"></span>
-            {% endif %}
-          </a>
-          <a data-cell-index="2" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-            <input type="date" class="oh-input joining-date" style="width: 150px;" value={{candidate.joining_date|date:"Y-m-d"}}
-              name="joining_date" data-candidate-id="{{candidate.id}}">
-          </a>
-          <a data-cell-index="3" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
-            <input type="date" class="oh-input" style="width: 150px;" value="{{candidate.probation_end|date:'Y-m-d'}}"
-              name="probation_end" onchange="probotionEnd($(this))" data-candidate-id="{{candidate.id}}">
-          </a>
-          <a data-cell-index="4" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.job_position_id}}</a>
-          <a data-cell-index="5" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">{{candidate.recruitment_id}}</a>
-          <a data-cell-index="6" style="color: inherit; text-decoration: none" class="oh-sticky-table__td" onload="event.stopPropagation()">
-            <select hx-get="{% url 'update-offer-letter-status' %}?candidate_id={{candidate.id}}" hx-swap="none"  name="status" id="id_offeletter_status_{{candidate.id}}" class="w-100" style="height: 40px;border:solid 1px rgba(128, 128, 128, 0.32);">
-              {% for status in candidate.offer_letter_statuses %}
-              {{candidate.offer_letter_status }} {{status.0}}
-              <option value="{{status.0}}" {% if candidate.offer_letter_status == status.0 %} selected{% endif %}>{{status.1}}</option>
-              {% endfor %}
-            </select>
-          </a>
-          <div style="color: inherit; text-decoration: none" class="oh-sticky-table__td oh-sticky-table__right">
-            <div class="oh-btn-group">
-              <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
-                href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"><ion-icon
-                  name="create-outline"></ion-icon></a>
-              {% if perms.recruitment.change_candidate %}
-              <button type="button" hx-get="{% url 'send-mail' candidate.id %}" title="{% trans "Send Mail" %}" hx-target="#objectDetailsModalTarget" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" >
-                <ion-icon name="mail-open-outline" role="img" class="md hydrated" aria-label="mail open outline"></ion-icon>
-              </button>
-              {% endif %}
-              {% if perms.recruitment.change_candidate %}
-              <button {% if candidate.is_offer_rejected %} style="background: #ff4500a3;
-              color: white;" {% endif %} type="button" hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{candidate.id}}" {% if candidate.is_offer_rejected %} title="{% trans "Added In Rejected Candidates" %}" {% else %} title="{% trans "Add To Rejected Candidates" %}" {% endif %} hx-target="#rejectReasonModalBody" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#rejectReasonModal" >
-                <ion-icon name="thumbs-down-outline"></ion-icon></button>
-              {% endif %}
-              {% if not candidate.converted_employee_id %}
-                <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
-                  title="{% trans 'Send Portal / Start Onboarding' %}" onclick="$('select[name=ids]').val('{{candidate.id}}');"
-                  data-target="#addAttachments" data-toggle="oh-modal-toggle"
-                  href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon name="link-outline"></ion-icon></a>
-              {% else %}
-                <a href="#" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Send Portal / Start onboarding' %}"
-                  data-toggle="oh-modal-toggle" disabled ><ion-icon
-                    name="link-outline"></ion-icon></a>
-              {% endif %}
-              <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" onclick="return confirm('{% trans "Do you want to delete this record" %}?')"  id="delete-link"
-                href="{% url 'candidate-delete' candidate.id %}" title="{% trans 'Delete' %}"><ion-icon
-                  name="trash-outline"></ion-icon></a>
-            </div>
-          </div>
+            {% for candidate in candidates %}
+                <div class="oh-sticky-table__tbody">
+                    <div class="oh-sticky-table__tr">
+                        <div class="oh-sticky-table__sd">
+                            <div class="centered-div">
+                                <input type="checkbox"
+                                    class="oh-input candidate-checkbox oh-input__checkbox all-candidate-row"
+                                    id="{{candidate.id}}" onchange="highlightRow($(this))" />
+                            </div>
+                        </div>
+                        <div class="oh-sticky-table__td">
+                            <div class="oh-profile oh-profile--md">
+                                <div class="oh-profile__avatar mr-1">
+                                    <img src="{{candidate.get_avatar}}" class="oh-profile__image" alt="" />
+                                </div>
+                                <span class="oh-profile__name oh-text--dark">{{candidate.name}}</span>
+                            </div>
+                        </div>
+                        <a data-cell-index="1" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+                            {{candidate.email|truncatechars:10}}
+                            {% if candidate.get_last_sent_mail %}
+                                <span title="{{candidate.get_last_sent_mail.subject}} | {{candidate.get_last_sent_mail.get_status_display}}"
+                                    class="oh-dot oh-dot--small me-1"
+                                    style="background-color:{% if candidate.get_last_sent_mail.status == " sent" %}yellowgreen{% else %}red{% endif %}">
+                                </span>
+                            {% endif %}
+                        </a>
+                        <a data-cell-index="2" style="color: inherit; text-decoration: none" class="oh-sticky-table__td">
+                            <input type="date" class="oh-input joining-date" style="width: 150px;"
+                                value={{candidate.joining_date|date:"Y-m-d"}} name="joining_date"
+                                data-candidate-id="{{candidate.id}}">
+                        </a>
+                        <a data-cell-index="3" class="oh-sticky-table__td" style="color: inherit; text-decoration: none">
+                            <input type="date" class="oh-input" style="width: 150px;"
+                                value="{{ candidate.probation_end|date:'Y-m-d' }}" name="probation_end"
+                                oninput="probationEnd($(this))" data-candidate-id="{{ candidate.id }}">
+                        </a>
+                        <a data-cell-index="4" style="color: inherit; text-decoration: none"
+                            class="oh-sticky-table__td">{{candidate.job_position_id}}</a>
+                        <a data-cell-index="5" style="color: inherit; text-decoration: none"
+                            class="oh-sticky-table__td">{{candidate.recruitment_id}}</a>
+                        <a data-cell-index="6" style="color: inherit; text-decoration: none" class="oh-sticky-table__td"
+                            onload="event.stopPropagation()">
+                            <select hx-get="{% url 'update-offer-letter-status' %}?candidate_id={{candidate.id}}"
+                                hx-swap="none" name="status" id="id_offeletter_status_{{candidate.id}}" class="w-100"
+                                style="height: 40px;border:solid 1px rgba(128, 128, 128, 0.32);">
+                                {% for status in candidate.offer_letter_statuses %}
+                                    {{candidate.offer_letter_status }} {{status.0}}
+                                    <option value="{{status.0}}" {% if candidate.offer_letter_status == status.0 %} selected{% endif %}>{{status.1}}</option>
+                                {% endfor %}
+                            </select>
+                        </a>
+                        <div style="color: inherit; text-decoration: none"
+                            class="oh-sticky-table__td oh-sticky-table__right">
+                            <div class="oh-btn-group">
+                                <a class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}"
+                                    href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"><ion-icon
+                                        name="create-outline"></ion-icon></a>
+                                {% if perms.recruitment.change_candidate %}
+                                    <button type="button" hx-get="{% url 'send-mail' candidate.id %}" title="{% trans 'Send Mail' %}" hx-target="#objectDetailsModalTarget" hx-swap="innerHTML"
+                                        class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle"
+                                        data-target="#objectDetailsModal">
+                                        <ion-icon name="mail-open-outline" role="img" class="md hydrated"
+                                            aria-label="mail open outline">
+                                        </ion-icon>
+                                    </button>
+                                {% endif %}
+                                {% if perms.recruitment.change_candidate %}
+                                    <button {% if candidate.is_offer_rejected %} style="background: #ff4500a3; color: white;" {% endif %} type="button"
+                                        hx-get="{% url 'add-to-rejected-candidates' %}?candidate_id={{candidate.id}}"
+                                        title="{% if candidate.is_offer_rejected %} {% trans 'Added In Rejected Candidates' %}{% else %}{% trans 'Add To Rejected Candidates' %}{% endif %}"
+                                        hx-target="#rejectReasonModalBody" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100"
+                                        data-toggle="oh-modal-toggle" data-target="#rejectReasonModal">
+                                        <ion-icon name="thumbs-down-outline"></ion-icon>
+                                    </button>
+                                {% endif %}
+                                {% if not candidate.converted_employee_id %}
+                                    <a href="#" class="oh-btn w-100" style="background-color: yellowgreen;color: white;"
+                                        title="{% trans 'Send Portal / Start Onboarding' %}"
+                                        onclick="$('select[name=ids]').val('{{candidate.id}}');" data-target="#addAttachments"
+                                        data-toggle="oh-modal-toggle"
+                                        href="{% url 'email-send' %}?ids={{candidate.id}}"><ion-icon
+                                            name="link-outline"></ion-icon></a>
+                                {% else %}
+                                    <a href="#" class="oh-btn oh-btn--light-bkg w-100"
+                                        title="{% trans 'Send Portal / Start onboarding' %}" data-toggle="oh-modal-toggle"
+                                        disabled><ion-icon name="link-outline"></ion-icon></a>
+                                {% endif %}
+                                <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                                    onclick="return confirm('{% trans " Do you want to delete this record" %}?')"
+                                    id="delete-link" href="{% url 'candidate-delete' candidate.id %}"
+                                    title="{% trans 'Delete' %}">
+                                    <ion-icon name="trash-outline"></ion-icon>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-      </div>
-      {% endfor %}
     </div>
-  </div>
-  <!-- start of sticky table -->
+    <!-- start of sticky table -->
 
-  <!-- start of pagination -->
-  <div class="oh-pagination">
-    <span class="oh-pagination__page">
-      {% trans "Page" %} {{ candidates.number }} {% trans "of" %} {{ candidates.paginator.num_pages }}.
-    </span>
-    <nav class="oh-pagination__nav">
-      <div class="oh-pagination__input-container me-3">
-        <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
-        <input type="number" name="page" class="oh-pagination__input" value="{{candidates.number}}"
-          hx-get="{% url 'candidate-filter' %}?{{pd}}" hx-target="#candidates" min="1" />
-        <span class="oh-pagination__label">{% trans "of" %} {{candidates.paginator.num_pages}}</span>
-      </div>
-      <ul class="oh-pagination__items">
-        {% if candidates.has_previous %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&page=1" class="oh-pagination__link">{%
-            trans "First" %}</a>
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target="#candidates"
-            hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.previous_page_number }}"
-            class="oh-pagination__link">{% trans "Previous" %}</a>
-        </li>
-        {% endif %} {% if candidates.has_next %}
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.next_page_number }}"
-            class="oh-pagination__link">{% trans "Next" %}</a>
-        </li>
-        <li class="oh-pagination__item oh-pagination__item--wide">
-          <a hx-target="#candidates"
-            hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.paginator.num_pages }}"
-            class="oh-pagination__link">{% trans "Last" %}</a>
-        </li>
-        {% endif %}
-      </ul>
-    </nav>
-  </div>
-  <!-- end of pagination -->
+    <!-- start of pagination -->
+    <div class="oh-pagination">
+        <span class="oh-pagination__page">
+            {% trans "Page" %} {{ candidates.number }} {% trans "of" %} {{ candidates.paginator.num_pages }}.
+        </span>
+        <nav class="oh-pagination__nav">
+            <div class="oh-pagination__input-container me-3">
+                <span class="oh-pagination__label me-1">{% trans "Page" %}</span>
+                <input type="number" name="page" class="oh-pagination__input" value="{{candidates.number}}"
+                    hx-get="{% url 'candidate-filter' %}?{{pd}}" hx-target="#candidates" min="1" />
+                <span class="oh-pagination__label">{% trans "of" %} {{candidates.paginator.num_pages}}</span>
+            </div>
+            <ul class="oh-pagination__items">
+                {% if candidates.has_previous %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target="#candidates" hx-get="{% url 'candidate-filter' %}?{{pd}}&page=1"
+                            class="oh-pagination__link">{% trans "First" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target="#candidates"
+                            hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.previous_page_number }}"
+                            class="oh-pagination__link">{% trans "Previous" %}</a>
+                    </li>
+                {% endif %}
+                {% if candidates.has_next %}
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target="#candidates"
+                            hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.next_page_number }}"
+                            class="oh-pagination__link">{% trans "Next" %}</a>
+                    </li>
+                    <li class="oh-pagination__item oh-pagination__item--wide">
+                        <a hx-target="#candidates"
+                            hx-get="{% url 'candidate-filter' %}?{{pd}}&page={{ candidates.paginator.num_pages }}"
+                            class="oh-pagination__link">{% trans "Last" %}</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    <!-- end of pagination -->
 </div>
 {% else %}
-  <!-- start of empty page -->
-  <div class="oh-404">
-    <img
-      style="width: 150px; height: 150px"
-      src="{% static 'images/ui/no-results.png' %}"
-      class="oh-404__image mb-4"
-    />
+<!-- start of empty page -->
+<div class="oh-404">
+    <img style="width: 150px; height: 150px" src="{% static 'images/ui/no-results.png' %}" class="oh-404__image mb-4" />
     <h5 class="oh-404__subtitle">
-      {% trans "No search result found!" %}
+        {% trans "No search result found!" %}
     </h5>
-  </div>
+</div>
 <!-- end of empty page -->
 {% endif %}
-<div id="ohMessages">
-</div>
 <script>
-  function probotionEnd($element){
-    candId = $element.attr("data-candidate-id");
-    dateVal = $element.val()
-    $.ajax({
-      type: "get",
-      url: "{% url 'update-probotion-end' %}",
-      data: {
-        "candidate_id":candId,
-        "probation_end":dateVal,
-      },
-      success: function (response) {
-        $("#ohMessages").append(`
-            <div class="oh-alert-container">
-				<div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-				${response.message}
-				</div>
-            </div>`);
-      }
-    });
-  }
-  $(document).ready(function () {
-    $(".joining-date").change(function (e) {
-      let candId = $(this).attr("data-candidate-id");
-      var value = $(this).val();
-      e.preventDefault();
-      $.ajax({
-        type: "POST",
-        url: `/onboarding/update-joining`,
-        data: {
-          csrfmiddlewaretoken: `{{ csrf_token }}`,
-          candId: candId,
-          date: value,
-        },
-        success: function (response) {
-          $("#ohMessages").append(`
-            <div class="oh-alert-container">
-				<div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-				${response.message}
-				</div>
-            </div>`);
-        },
-      });
-    });
+    function isValidDateFormat(dateStr) {
+        if (!dateStr) return true; // Allow empty (clearing)
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
 
-  });
-  // toggle columns //
-  toggleColumns("candidate-view-table","CandidateViewCells")
-  localStorageCandidateViewCells = localStorage.getItem("candidate_view_tab")
-  if (!localStorageCandidateViewCells) {
-    $("#CandidateViewCells").find("[type=checkbox]").prop("checked",true)
-  }
-  // $("[type=checkbox]").change()
-  // end of toggle column//
-</script>
-<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
-  <div class="oh-modal__dialog">
-    <div class="oh-modal__dialog-header">
-      <span class="oh-modal__dialog-title" id="sendMailModalLabel"><h5>{% trans 'Send Mail' %}</h5></span>
-      <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-    </div>
-    <div class="oh-modal__dialog-body" id="mail-content"></div>
-  </div>
-</div>
-<div class="oh-modal" id="rejectReasonModal" role="dialog" aria-hidden="true">
-  <div class="oh-modal__dialog" style="max-width: 550px">
-    <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
-    </div>
-
-    <div class="oh-modal__dialog-body" id="rejectReasonModalBody"></div>
-  </div>
-</div>
-
-
-<script>
-  var archive_CanMessages = {
-    ar: "هل ترغب حقًا في أرشفة جميع المرشحين المحددين؟",
-    de: "Möchten Sie wirklich alle ausgewählten Kandidaten archivieren?",
-    es: "¿Realmente deseas archivar a todos los candidatos seleccionados?",
-    en: "Do you really want to archive all the selected candidates?",
-    fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
-  };
-
-  var unarchive_CanMessages = {
-    ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
-    de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
-    es: "¿Realmente deseas desarchivar a todos los candidatos seleccionados?",
-    en: "Do you really want to unarchive all the selected candidates?",
-    fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
-  };
-
-  var delete_CanMessages = {
-    ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
-    de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
-    es: "¿Realmente deseas eliminar a todos los candidatos seleccionados?",
-    en: "Do you really want to delete all the selected candidates?",
-    fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
-  };
-
-  var noRowMessages = {
-    ar: "لم يتم تحديد أي صفوف.",
-    de: "Es wurden keine Zeilen ausgewählt.",
-    es: "No se han seleccionado filas.",
-    en: "No rows have been selected.",
-    fr: "Aucune ligne n'a été sélectionnée.",
-  };
-
-  var rowMessages = {
-    ar: " تم الاختيار",
-    de: " Ausgewählt",
-    es: " Seleccionado",
-    en: " Selected",
-    fr: " Sélectionné",
-  };
-  function makeListUnique1(list) {
-    return Array.from(new Set(list));
-  }
-  function arrayDifference(arr1, arr2) {
-    return arr1.filter(element => !arr2.includes(element));
-  }
-
-  function removeElementFromArray(array, elementToRemove) {
-    const indexToRemove = array.indexOf(elementToRemove);
-
-    if (indexToRemove !== -1) {
-      array.splice(indexToRemove, 1);
+        const year = parseInt(dateStr.split("-")[0], 10);
+        return !(isNaN(year) || year < 1000 || year > 9999);
     }
-    return array
-  }
-  function addingCandidateIds() {
-    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-    var domNotCheckedIds = []
 
-    var selectedCount = 0;
+    function probationEnd($element) {
+        const candId = $element.attr("data-candidate-id");
+        const dateVal = $element.val();
 
-    $(".all-candidate-row:checked").each(function () {
-      ids.push(this.id);
-    });
+        if (!candId || !isValidDateFormat(dateVal)) return;
 
-    $.each($(".candidate-checkbox:checked").not(), function (indexInArray, valueOfElement) {
-      domNotCheckedIds.push($(valueOfElement).attr("id"))
-    });
-
-    ids = makeListUnique1(ids);
-    ids = arrayDifference(ids, domNotCheckedIds)
-    var selectedCount = ids.length;
-  }
-
-  function tickCandidateCheckboxes() {
-    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-    var uniqueIds = makeListUnique1(ids);
-    $.each(uniqueIds, function (indexInArray, valueOfElement) {
-      checkbox = $("#" + valueOfElement)
-      checkbox.prop("checked", true).change()
-    });
-
-    addingCandidateIds()
-  }
-
-  function updateCount() {
-    var ids = makeListUnique1(JSON.parse($("#selectedInstances").attr("data-ids") || "[]"));
-    $("#unselectAllInstances, #selectedCandidate, #exportCandidates").hide();
-    if (ids.length) {
-      $("#unselectAllInstances, #selectedCandidate, #exportCandidates").show();
-      $("#selectedCandidate").text("{% trans "Selected" %}" + " -" + ids.length);
+        sendProbationRequest(candId, dateVal || "");
     }
-  }
 
-  $(".all-candidate-row").change(function (e) {
-    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-    if ($(this).is(":checked")) {
-      ids.push($(this).attr("id"))
-      $("#selectedInstances").attr("data-ids", JSON.stringify(makeListUnique1(ids)));
-    } else {
-      $(".group-select").prop("checked",false)
-      ids = makeListUnique1(removeElementFromArray(ids, this.id))
-      $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
-    }
-    $("#hired_candidates").val(ids)
-    updateCount()
-  });
+    function sendProbationRequest(candidateId, dateValue) {
+          const $input = $(`input[data-candidate-id="${candidateId}"]`);
+          $input.prop("disabled", true);
 
-
-  function getCurrentLanguageCode(callback) {
-    var languageCode = $("#main-section-data").attr("data-lang");
-    var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
-    if (allowedLanguageCodes.includes(languageCode)) {
-      callback(languageCode);
-    } else {
-      $.ajax({
-        type: "GET",
-        url: "/employee/get-language-code/",
-        success: function (response) {
-          var ajaxLanguageCode = response.language_code;
-          $("#main-section-data").attr("data-lang", ajaxLanguageCode);
-          callback(
-            allowedLanguageCodes.includes(ajaxLanguageCode)
-              ? ajaxLanguageCode
-              : "en"
-          );
-        },
-        error: function () {
-          callback("en");
-        },
-      });
-    }
-  }
-
-  $(document).ready(function () {
-    var excelMessages = {
-      ar: "هل ترغب في تنزيل ملف Excel؟",
-      de: "Möchten Sie die Excel-Datei herunterladen?",
-      es: "¿Desea descargar el archivo de Excel?",
-      en: "Do you want to download the excel file?",
-      fr: "Voulez-vous télécharger le fichier Excel?",
-    };
-    var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-    var uniqueIds = makeListUnique1(ids);
-    var selectedCount = uniqueIds.length;
-    var message1 = rowMessages[languageCode];
-    $("#selectAllInstances").click(function () {
-      $("#selectedInstances").attr("data-clicked", 1);
-      var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
-      if (savedFilters && savedFilters["filterData"] !== null) {
-        var filter = savedFilters["filterData"];
-        $.ajax({
-          url: '{% url "candidate-select-filter-onboarding" %}',
-          data: { page: "all", filter: JSON.stringify(filter) },
-          type: "GET",
-          dataType: "json",
-          success: function (response) {
-            var employeeIds = response.employee_ids;
-            var selectedCount = employeeIds.length;
-            var selectedCount = employeeIds.length;
-
-            var selectedCount = employeeIds.length;
-
-            for (var i = 0; i < employeeIds.length; i++) {
-              var empId = employeeIds[i];
-              $("#" + empId).prop("checked", true).change();
-            }
-            var previousIds = $("#selectedInstances").attr("data-ids")
-            $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))));
-            tickCandidateCheckboxes();
-
-          },
-          error: function (xhr, status, error) {
-            console.error("Error:", error);
-          },
-        });
-      } else {
-        $.ajax({
-          url: '{% url "candidate-select-onboarding" %}',
-          data: { page: "all" },
-          type: "GET",
-          dataType: "json",
-          success: function (response) {
-            var employeeIds = response.employee_ids;
-            var selectedCount = employeeIds.length;
-            for (var i = 0; i < employeeIds.length; i++) {
-              var empId = employeeIds[i];
-              $("#" + empId).prop("checked", true);
-            }
-            $("#selectedInstances").attr(
-              "data-ids",
-              JSON.stringify(employeeIds)
-            );
-            tickCandidateCheckboxes();
-          },
-          error: function (xhr, status, error) {
-            console.error("Error:", error);
-          },
-        });
-      }
-    });
-    $("#unselectAllInstances").click(function () {
-      $("#selectedInstances").attr("data-ids", "[]");
-      tickCandidateCheckboxes()
-      $(".all-candidate-row").prop("checked", false).change()
-    });
-    $("#exportCandidates").click(function (e) {
-      var currentDate = new Date().toISOString().slice(0, 10);
-      var languageCode = null;
-      ids = [];
-      ids.push($("#selectedInstances").attr("data-ids"));
-      ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-      getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = excelMessages[languageCode];
-        Swal.fire({
-          text: confirmMessage,
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonColor: "#008000",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Confirm",
-        }).then(function (result) {
-          if (result.isConfirmed) {
-            $.ajax({
-              type: "GET",
-              url: "/recruitment/candidate-info-export",
+          $.ajax({
+              type: "POST",
+              url: "{% url 'update-probation-end' %}",
               data: {
-                ids: JSON.stringify(ids),
-              },
-              dataType: "binary",
-              xhrFields: {
-                responseType: "blob",
+                  "candidate_id": candidateId,
+                  "probation_end": dateValue,
+                  "csrfmiddlewaretoken": "{{ csrf_token }}"
               },
               success: function (response) {
-                const file = new Blob([response], {
-                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                });
-                const url = URL.createObjectURL(file);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "Candidate_file_" + currentDate + ".xlsx";
-                document.body.appendChild(link);
-                link.click();
+                  $('#reloadMessagesButton').click();
               },
-              error: function (xhr, textStatus, errorThrown) {
-                console.error("Error downloading file:", errorThrown);
+              error: function () {
+                  $('#reloadMessagesButton').click();
               },
-            });
-          }
-        });
-      });
-    });
-  });
-  // toggle columns //
-  toggleColumns("candidate-toggle-table", "CandidateCells")
-  localStorageCandidateCells = localStorage.getItem("candidate_toggle_tab")
-  if (!localStorageCandidateCells) {
-    $("#CandidateCells").find("[type=checkbox]").prop("checked", true)
-  }
+              complete: function () {
+                  $input.prop("disabled", false);
+              }
+          });
+    }
+    $(document).ready(function () {
+        $(".joining-date").change(function (e) {
+            e.preventDefault();
+            const $element = $(this);
+            const candId = $element.attr("data-candidate-id");
+            const value = $element.val();
 
-  updateCount()
-  tickCandidateCheckboxes()
+            if (!candId || !isValidDateFormat(value)) return;
+            updateJoiningDate(candId, value || "");
+        });
+
+        function updateJoiningDate(candId, dateValue) {
+            const $input = $(`input[data-candidate-id="${CSS.escape(candId)}"]`);
+            $input.prop("disabled", true);
+            $.ajax({
+                type: "POST",
+                url: `/onboarding/update-joining`,
+                data: {
+                    csrfmiddlewaretoken: `{{ csrf_token }}`,
+                    candId: candId,
+                    date: dateValue,
+                },
+                success: function (response) {
+                    $('#reloadMessagesButton').click();
+                },
+                error: function (xhr) {
+                    $('#reloadMessagesButton').click();
+                },
+                complete: function () {
+                    $input.prop("disabled", false);
+                }
+            });
+        }
+    });
+
+    // toggle columns //
+    toggleColumns("candidate-view-table", "CandidateViewCells")
+    localStorageCandidateViewCells = localStorage.getItem("candidate_view_tab")
+    if (!localStorageCandidateViewCells) {
+        $("#CandidateViewCells").find("[type=checkbox]").prop("checked", true)
+    }
+    // $("[type=checkbox]").change()
+    // end of toggle column//
+</script>
+<div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
+    <div class="oh-modal__dialog">
+        <div class="oh-modal__dialog-header">
+            <span class="oh-modal__dialog-title" id="sendMailModalLabel">
+                <h5>{% trans 'Send Mail' %}</h5>
+            </span>
+            <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
+        </div>
+        <div class="oh-modal__dialog-body" id="mail-content"></div>
+    </div>
+</div>
+<div class="oh-modal" id="rejectReasonModal" role="dialog" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px">
+        <div class="oh-modal__dialog-header">
+            <button type="button" class="oh-modal__close" aria-label="Close"><ion-icon
+                    name="close-outline"></ion-icon></button>
+        </div>
+
+        <div class="oh-modal__dialog-body" id="rejectReasonModalBody"></div>
+    </div>
+</div>
+
+
+<script>
+    var archive_CanMessages = {
+        ar: "هل ترغب حقًا في أرشفة جميع المرشحين المحددين؟",
+        de: "Möchten Sie wirklich alle ausgewählten Kandidaten archivieren?",
+        es: "¿Realmente deseas archivar a todos los candidatos seleccionados?",
+        en: "Do you really want to archive all the selected candidates?",
+        fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
+    };
+
+    var unarchive_CanMessages = {
+        ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
+        de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
+        es: "¿Realmente deseas desarchivar a todos los candidatos seleccionados?",
+        en: "Do you really want to unarchive all the selected candidates?",
+        fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
+    };
+
+    var delete_CanMessages = {
+        ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
+        de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
+        es: "¿Realmente deseas eliminar a todos los candidatos seleccionados?",
+        en: "Do you really want to delete all the selected candidates?",
+        fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
+    };
+
+    var noRowMessages = {
+        ar: "لم يتم تحديد أي صفوف.",
+        de: "Es wurden keine Zeilen ausgewählt.",
+        es: "No se han seleccionado filas.",
+        en: "No rows have been selected.",
+        fr: "Aucune ligne n'a été sélectionnée.",
+    };
+
+    var rowMessages = {
+        ar: " تم الاختيار",
+        de: " Ausgewählt",
+        es: " Seleccionado",
+        en: " Selected",
+        fr: " Sélectionné",
+    };
+    function makeListUnique1(list) {
+        return Array.from(new Set(list));
+    }
+    function arrayDifference(arr1, arr2) {
+        return arr1.filter(element => !arr2.includes(element));
+    }
+
+    function removeElementFromArray(array, elementToRemove) {
+        const indexToRemove = array.indexOf(elementToRemove);
+
+        if (indexToRemove !== -1) {
+            array.splice(indexToRemove, 1);
+        }
+        return array
+    }
+    function addingCandidateIds() {
+        var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+        var domNotCheckedIds = []
+
+        var selectedCount = 0;
+
+        $(".all-candidate-row:checked").each(function () {
+            ids.push(this.id);
+        });
+
+        $.each($(".candidate-checkbox:checked").not(), function (indexInArray, valueOfElement) {
+            domNotCheckedIds.push($(valueOfElement).attr("id"))
+        });
+
+        ids = makeListUnique1(ids);
+        ids = arrayDifference(ids, domNotCheckedIds)
+        var selectedCount = ids.length;
+    }
+
+    function tickCandidateCheckboxes() {
+        var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+        var uniqueIds = makeListUnique1(ids);
+        $.each(uniqueIds, function (indexInArray, valueOfElement) {
+            checkbox = $("#" + valueOfElement)
+            checkbox.prop("checked", true).change()
+        });
+
+        addingCandidateIds()
+    }
+
+    function updateCount() {
+        var ids = makeListUnique1(JSON.parse($("#selectedInstances").attr("data-ids") || "[]"));
+        $("#unselectAllInstances, #selectedCandidate, #exportCandidates").hide();
+        if (ids.length) {
+            $("#unselectAllInstances, #selectedCandidate, #exportCandidates").show();
+            $("#selectedCandidate").text("{% trans "Selected" %}" + " -" + ids.length);
+        }
+    }
+
+    $(".all-candidate-row").change(function (e) {
+        var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+        if ($(this).is(":checked")) {
+            ids.push($(this).attr("id"))
+            $("#selectedInstances").attr("data-ids", JSON.stringify(makeListUnique1(ids)));
+        } else {
+            $(".group-select").prop("checked", false)
+            ids = makeListUnique1(removeElementFromArray(ids, this.id))
+            $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+        }
+        $("#hired_candidates").val(ids)
+        updateCount()
+    });
+
+
+    function getCurrentLanguageCode(callback) {
+        var languageCode = $("#main-section-data").attr("data-lang");
+        var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
+        if (allowedLanguageCodes.includes(languageCode)) {
+            callback(languageCode);
+        } else {
+            $.ajax({
+                type: "GET",
+                url: "/employee/get-language-code/",
+                success: function (response) {
+                    var ajaxLanguageCode = response.language_code;
+                    $("#main-section-data").attr("data-lang", ajaxLanguageCode);
+                    callback(
+                        allowedLanguageCodes.includes(ajaxLanguageCode)
+                            ? ajaxLanguageCode
+                            : "en"
+                    );
+                },
+                error: function () {
+                    callback("en");
+                },
+            });
+        }
+    }
+
+    $(document).ready(function () {
+        var excelMessages = {
+            ar: "هل ترغب في تنزيل ملف Excel؟",
+            de: "Möchten Sie die Excel-Datei herunterladen?",
+            es: "¿Desea descargar el archivo de Excel?",
+            en: "Do you want to download the excel file?",
+            fr: "Voulez-vous télécharger le fichier Excel?",
+        };
+        var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+        var uniqueIds = makeListUnique1(ids);
+        var selectedCount = uniqueIds.length;
+        var message1 = rowMessages[languageCode];
+        $("#selectAllInstances").click(function () {
+            $("#selectedInstances").attr("data-clicked", 1);
+            var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+            if (savedFilters && savedFilters["filterData"] !== null) {
+                var filter = savedFilters["filterData"];
+                $.ajax({
+                    url: '{% url "candidate-select-filter-onboarding" %}',
+                    data: { page: "all", filter: JSON.stringify(filter) },
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        var employeeIds = response.employee_ids;
+                        var selectedCount = employeeIds.length;
+                        var selectedCount = employeeIds.length;
+
+                        var selectedCount = employeeIds.length;
+
+                        for (var i = 0; i < employeeIds.length; i++) {
+                            var empId = employeeIds[i];
+                            $("#" + empId).prop("checked", true).change();
+                        }
+                        var previousIds = $("#selectedInstances").attr("data-ids")
+                        $("#selectedInstances").attr("data-ids", JSON.stringify(Array.from(new Set([...employeeIds, ...JSON.parse(previousIds)]))));
+                        tickCandidateCheckboxes();
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    },
+                });
+            } else {
+                $.ajax({
+                    url: '{% url "candidate-select-onboarding" %}',
+                    data: { page: "all" },
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        var employeeIds = response.employee_ids;
+                        var selectedCount = employeeIds.length;
+                        for (var i = 0; i < employeeIds.length; i++) {
+                            var empId = employeeIds[i];
+                            $("#" + empId).prop("checked", true);
+                        }
+                        $("#selectedInstances").attr(
+                            "data-ids",
+                            JSON.stringify(employeeIds)
+                        );
+                        tickCandidateCheckboxes();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error:", error);
+                    },
+                });
+            }
+        });
+        $("#unselectAllInstances").click(function () {
+            $("#selectedInstances").attr("data-ids", "[]");
+            tickCandidateCheckboxes()
+            $(".all-candidate-row").prop("checked", false).change()
+        });
+        $("#exportCandidates").click(function (e) {
+            var currentDate = new Date().toISOString().slice(0, 10);
+            var languageCode = null;
+            ids = [];
+            ids.push($("#selectedInstances").attr("data-ids"));
+            ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+            getCurrentLanguageCode(function (code) {
+                languageCode = code;
+                var confirmMessage = excelMessages[languageCode];
+                Swal.fire({
+                    text: confirmMessage,
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonColor: "#008000",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Confirm",
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "GET",
+                            url: "/recruitment/candidate-info-export",
+                            data: {
+                                ids: JSON.stringify(ids),
+                            },
+                            dataType: "binary",
+                            xhrFields: {
+                                responseType: "blob",
+                            },
+                            success: function (response) {
+                                const file = new Blob([response], {
+                                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                });
+                                const url = URL.createObjectURL(file);
+                                const link = document.createElement("a");
+                                link.href = url;
+                                link.download = "Candidate_file_" + currentDate + ".xlsx";
+                                document.body.appendChild(link);
+                                link.click();
+                            },
+                            error: function (xhr, textStatus, errorThrown) {
+                                console.error("Error downloading file:", errorThrown);
+                            },
+                        });
+                    }
+                });
+            });
+        });
+    });
+    // toggle columns //
+    toggleColumns("candidate-toggle-table", "CandidateCells")
+    localStorageCandidateCells = localStorage.getItem("candidate_toggle_tab")
+    if (!localStorageCandidateCells) {
+        $("#CandidateCells").find("[type=checkbox]").prop("checked", true)
+    }
+
+    updateCount()
+    tickCandidateCheckboxes()
 </script>
