@@ -326,19 +326,19 @@
 										class="oh-profile__info-value">{{employee.employee_bank_details.branch|default:_("None")}}</span>
 								</li>
 
-								<li class="oh-profile__card-info-item">
-									<span class="oh-profile__info-label mb-1">
-										<ion-icon name="map-outline"></ion-icon>
-										<span>{% trans "Bank Address" %}</span>
-									</span>
-									<span
-										class="oh-profile__info-value">{{employee.employee_bank_details.address|default:_("None")}}</span>
-								</li>
+{#								<li class="oh-profile__card-info-item">#}
+{#									<span class="oh-profile__info-label mb-1">#}
+{#										<ion-icon name="map-outline"></ion-icon>#}
+{#										<span>{% trans "Bank Address" %}</span>#}
+{#									</span>#}
+{#									<span#}
+{#										class="oh-profile__info-value">{{employee.employee_bank_details.address|default:_("None")}}</span>#}
+{#								</li>#}
 
 								<li class="oh-profile__card-info-item">
 									<span class="oh-profile__info-label mb-1">
 										<ion-icon name="information-outline"></ion-icon>
-										<span>{% trans "Bank Code" %} #2</span>
+										<span>{% trans "Branch Code" %}</span>
 									</span>
 									<span
 										class="oh-profile__info-value">{{employee.employee_bank_details.any_other_code2|default:_("None")}}</span>
@@ -360,20 +360,20 @@
 								<li class="oh-profile__card-info-item">
 									<span class="oh-profile__info-label mb-1">
 										<ion-icon name="information-outline"></ion-icon>
-										<span>{% trans "Bank Code" %} #1</span>
+										<span>{% trans "Bank Code" %}</span>
 									</span>
 									<span
 										class="oh-profile__info-value">{{employee.employee_bank_details.any_other_code1|default:_("None")}}</span>
 								</li>
 
-								<li class="oh-profile__card-info-item">
-									<span class="oh-profile__info-label mb-1">
-										<ion-icon name="flag-outline"></ion-icon>
-										<span>{% trans "Country" %}</span>
-									</span>
-									<span
-										class="oh-profile__info-value">{{employee.employee_bank_details.country|default:_("None")}}</span>
-								</li>
+{#								<li class="oh-profile__card-info-item">#}
+{#									<span class="oh-profile__info-label mb-1">#}
+{#										<ion-icon name="flag-outline"></ion-icon>#}
+{#										<span>{% trans "Country" %}</span>#}
+{#									</span>#}
+{#									<span#}
+{#										class="oh-profile__info-value">{{employee.employee_bank_details.country|default:_("None")}}</span>#}
+{#								</li>#}
 							</ul>
 						</div>
 					</div>
