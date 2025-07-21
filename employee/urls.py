@@ -425,4 +425,10 @@ urlpatterns = [
         name="employee-tag-delete",
         kwargs={"model": EmployeeTag, "HttpResponse": True},
     ),
+
+
+    path("api/bank-info/all/", views.get_all_bank_info, name="get_all_bank_info"),
+    path('api/bank-info/<str:bank_name>/', views.get_bank_info),
+    path('api/branch-code/<str:bank_name>/<str:branch_name>/', views.get_branch_code),
+
 ]
