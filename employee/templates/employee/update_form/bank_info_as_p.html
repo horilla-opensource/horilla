@@ -1,13 +1,64 @@
 {% load i18n %} {% load basefilters %}{% load widget_tweaks %}
 {{ form.non_field_errors }}
 
+<div class="card ">
+    <div class="card-body">
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <div class="oh-input__group">
+                    <label class="oh-label required-star" for="bankName">
+                        {% trans "Bank Name" %}
+                    </label>
+                    <br>
+                    <select id="bankName" name="bank_name" class="form-control w-100 p-2" style="border-color: #cdd5df">
+                        <option value="">{% trans "Select Bank" %}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="oh-input__group">
+                    <label class="oh-label required-star" for="branchName">
+                        {% trans "Branch Name" %}
+                    </label>
+                    <br>
+                    <select id="branchName" class="form-control w-100 p-2" style="border-color: #cdd5df">
+                        <option value="">{% trans "Select Branch" %}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="oh-input__group">
+                    <label class="oh-label" for="bankCode">{% trans "Bank Code" %}</label>
+                    <br>
+                    <input type="text" id="bankCode" name="any_other_code1" class="form-control w-100 p-2"  style="border: 1px solid #cdd5df; box-shadow: none;" readonly
+                           value="{{ form.initial.any_other_code1 }}">
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="oh-input__group">
+                    <label class="oh-label" for="branchCode">{% trans "Branch Code" %}</label>
+                    <br>
+                    <input type="text" id="branchCode" name="any_other_code2" class="form-control w-100 p-2"  style="border: 1px solid #cdd5df; box-shadow: none;" readonly
+                           value="{{ form.initial.any_other_code2 }}">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <div class="row">
     {% for field in form %}
-        {% if field.label != "Employee profile" and field.label != 'Country' and field.label != 'State' and field.label != 'Address' and field.label != 'Badge id' %}
-            <div class="col-lg-6">
+        {% if field.name not in 'bank_name branch any_other_code1 any_other_code2' %}
+            <div class="col-lg-6 mb-3">
                 <div class="oh-input__group">
-                    <label class="oh-label {% if field.field.required %}required-star{% endif %}" for="id_{{ field.name }}"
-                        title="{{ field.help_text|safe }}">
+                    <label class="oh-label {% if field.field.required %}required-star{% endif %}"
+                           for="id_{{ field.name }}"
+                           title="{{ field.help_text|safe }}">
                         {% trans field.label %}
                     </label>
 
@@ -20,38 +71,97 @@
                     {{ field.errors }}
                 </div>
             </div>
-        {% elif field.label == 'Address' %}
-            <div class="col-lg-12">
-                <div class="oh-input__group">
-                    <label class="oh-label {% if field.field.required %}required-star{% endif %}" for="id_{{ field.name }}"
-                        title="{{ field.help_text|safe }}">
-                        {% trans field.label %}
-                    </label>
-                    {{ field }}
-                    {{ field.errors }}
-                </div>
-            </div>
-        {% elif field.label == 'Country' %}
-            <div class="row">
-                <div class="col-lg-6">
-                    <label class="oh-label" for="country">{% trans "Country" %}</label>
-                    <select name="country" class="w-100 oh-select-2" id="country"
-                        data-selected="{{ form.country.value|default:'' }}">
-                        <option value="{{form.instance.country}}" selected>{{form.instance.country}}</option>
-                    </select>
-                    {{form.country.errors}}
-                    <span class="dropdown-wrapper" aria-hidden="true"></span>
-                    </span>
-                </div>
-                <div class="col-lg-6">
-                    <label class="oh-label d-block" for="state">{% trans "State" %}</label>
-                    <select name="state" class="w-100 oh-select-2" id="state" data-selected="{{ form.state.value|default:'' }}">
-                        <option value="{{form.instance.state}}" selected>{{form.instance.state}}</option>
-
-                    </select>
-                    {{form.state.errors}}
-                </div>
-            </div>
         {% endif %}
     {% endfor %}
 </div>
+<input type="hidden" name="bank_name" id="bankNameHidden" value="{{ form.bank_name.value|default:'' }}">
+<input type="hidden" name="branch" id="branchHidden" value="{{ form.branch.value|default:'' }}">
+<input type="hidden" name="any_other_code1" id="bankCodeHidden" value="{{ form.any_other_code1.value|default:'' }}">
+<input type="hidden" name="any_other_code2" id="branchCodeHidden" value="{{ form.any_other_code2.value|default:'' }}">
+{% block javascript %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const bankSelect = document.getElementById("bankName");
+    const branchSelect = document.getElementById("branchName");
+    const bankCodeInput = document.getElementById("bankCode");
+    const branchCodeInput = document.getElementById("branchCode");
+
+    const hiddenBankName = document.getElementById("bankNameHidden");
+    const hiddenBranch = document.getElementById("branchHidden");
+    const hiddenBankCode = document.getElementById("bankCodeHidden");
+    const hiddenBranchCode = document.getElementById("branchCodeHidden");
+
+    let bankData = {};
+
+    const initialBank = "{{ form.initial.bank_name|escapejs }}";
+    const initialBranch = "{{ form.initial.branch|escapejs }}";
+
+    fetch("/employee/api/bank-info/all/")
+        .then(response => response.json())
+        .then(data => {
+            bankData = data;
+
+            for (const bankName in data) {
+                const option = document.createElement("option");
+                option.value = bankName;
+                option.textContent = bankName;
+                if (bankName === initialBank) option.selected = true;
+                bankSelect.appendChild(option);
+            }
+
+            if (initialBank) {
+                loadBankInfo(initialBank, initialBranch);
+                hiddenBankName.value = initialBank;
+                hiddenBranch.value = initialBranch;
+                hiddenBankCode.value = data[initialBank]?.bank_code || "";
+                hiddenBranchCode.value = data[initialBank]?.branches[initialBranch] || "";
+            }
+        })
+        .catch(err => console.error("Failed to load bank info", err));
+
+    bankSelect.addEventListener("change", () => {
+        const selectedBank = bankSelect.value;
+        loadBankInfo(selectedBank);
+        hiddenBankName.value = selectedBank;
+        hiddenBranch.value = "";
+        hiddenBankCode.value = bankData[selectedBank]?.bank_code || "";
+        hiddenBranchCode.value = "";
+    });
+
+    branchSelect.addEventListener("change", () => {
+        const selectedBank = bankSelect.value;
+        const selectedBranch = branchSelect.value;
+        if (selectedBank && selectedBranch && bankData[selectedBank]) {
+            const branchCode = bankData[selectedBank].branches[selectedBranch];
+            branchCodeInput.value = branchCode || "";
+
+            hiddenBranch.value = selectedBranch;
+            hiddenBranchCode.value = branchCode || "";
+        }
+    });
+
+    function loadBankInfo(bankName, preSelectBranch = "") {
+        const bankInfo = bankData[bankName];
+        if (!bankInfo) return;
+
+        bankCodeInput.value = bankInfo.bank_code || "";
+
+        branchSelect.innerHTML = `<option value="">{% trans "Select Branch" %}</option>`;
+        for (const branch in bankInfo.branches) {
+            const option = document.createElement("option");
+            option.value = branch;
+            option.textContent = branch;
+            if (branch === preSelectBranch) {
+                option.selected = true;
+                branchCodeInput.value = bankInfo.branches[branch];
+
+                hiddenBranch.value = branch;
+                hiddenBranchCode.value = bankInfo.branches[branch];
+            }
+            branchSelect.appendChild(option);
+        }
+    }
+});
+
+</script>
+{% endblock %}
