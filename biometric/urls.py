@@ -73,11 +73,6 @@ urlpatterns = [
         name="biometric-device-archive",
     ),
     path(
-        "search-devices",
-        views.search_devices,
-        name="search-devices",
-    ),
-    path(
         "biometric-device-employees/<uuid:device_id>/",
         views.biometric_device_employees,
         name="biometric-device-employees",

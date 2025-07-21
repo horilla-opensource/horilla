@@ -431,6 +431,28 @@ function handleHtmxTarget(event, path, verb) {
     return hxTarget;
 }
 
+function hxConfirm(element, messageText) {
+    Swal.fire({
+        html: messageText,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            htmx.trigger(element, 'confirmed');
+        }
+        else {
+            element.checked = false
+            return false
+        }
+
+    });
+}
+
 function handleDownloadAndRefresh(event, url) {
     // Use in import_popup.html file
     event.preventDefault();
