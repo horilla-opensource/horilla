@@ -421,14 +421,14 @@ def candidate_update(request, obj_id):
 
 
 @login_required
-@permission_required("recruitment.delete_candidate")
+@permission_required("onboarding.delete_onboardingcandidate")
 def candidate_delete(request, obj_id):
     """
     function used to delete hired candidates .
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    obj_id : recruitment id
+    obj_id : candidate id
 
     Returns:
     GET : return candidate view
@@ -520,7 +520,7 @@ def paginator_qry(qryset, page_number):
 
 
 @login_required
-@permission_required(perm="recruitment.view_candidate")
+@permission_required(perm="onboarding.view_onboardingcandidate")
 def candidates_view(request):
     """
     function used to view hired candidates .
@@ -581,7 +581,7 @@ def hired_candidate_view(request):
 
 @login_required
 @hx_request_required
-@permission_required(perm="recruitment.view_candidate")
+@permission_required(perm="onboarding.view_onboardingcandidate")
 def candidate_filter(request):
     """
     function used to filter hired candidates .
@@ -780,7 +780,7 @@ def onboarding_query_grouper(request, queryset):
 
 
 @login_required
-@all_manager_can_enter("onboarding.view_candidatestage")
+@all_manager_can_enter("onboarding.view_onboardingstage")
 def onboarding_view(request):
     """
     function used to view onboarding main view.
@@ -794,7 +794,7 @@ def onboarding_view(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs
-    if not request.user.has_perm("onboarding.view_candidatestage"):
+    if not request.user.has_perm("onboarding.view_onboardingstage"):
         recruitments = recruitments.filter(
             is_active=True, recruitment_managers__in=[request.user.employee_get]
         ) | recruitments.filter(
@@ -841,7 +841,7 @@ def onboarding_view(request):
 
 
 @login_required
-@all_manager_can_enter("onboarding.view_candidatestage")
+@all_manager_can_enter("onboarding.view_onboardingstage")
 def kanban_view(request):
     # filter_obj = RecruitmentFilter(request.GET)
     # # is active filteration not providing on pipeline
@@ -849,7 +849,7 @@ def kanban_view(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs
-    if not request.user.has_perm("onboarding.view_candidatestage"):
+    if not request.user.has_perm("onboarding.view_onboardingstage"):
         recruitments = recruitments.filter(
             is_active=True, recruitment_managers__in=[request.user.employee_get]
         ) | recruitments.filter(

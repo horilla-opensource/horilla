@@ -377,13 +377,30 @@ class AssignUserGroup(Form):
 
     def save(self):
         """
-        Save method to assign group to employees
+        Save method to assign group to selected employees only.
+        It removes the group from previously assigned employees
+        and assigns it to the new ones.
         """
-        employees = self.cleaned_data["employee"]
         group = self.cleaned_data["group"]
-        group.user_set.clear()
-        for employee in employees:
-            employee.employee_user_id.groups.add(group)
+        assigning_employees = self.cleaned_data["employee"]
+        assigning_users = [
+            e.employee_user_id for e in assigning_employees if e.employee_user_id
+        ]
+
+        # Get employees currently in this group on selected company instance
+        existing_employees = Employee.objects.filter(
+            employee_user_id__in=group.user_set.all()
+        )
+        existing_users = [
+            e.employee_user_id for e in existing_employees if e.employee_user_id
+        ]
+
+        for user in existing_users:
+            user.groups.remove(group)
+
+        for user in assigning_users:
+            user.groups.add(group)
+
         return group
 
 
@@ -2361,7 +2378,6 @@ class AnnouncementForm(ModelForm):
             filter_class=EmployeeFilter,
             filter_instance_contex_name="f",
             filter_template_path="employee_filters.html",
-            required=True,
         ),
         label="Employees",
     )
@@ -2421,13 +2437,31 @@ class AnnouncementForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+
+        # Remove 'employees' field error if it's handled manually
         if isinstance(self.fields["employees"], HorillaMultiSelectField):
             self.errors.pop("employees", None)
-
             employee_data = self.fields["employees"].queryset.filter(
                 id__in=self.data.getlist("employees")
             )
             cleaned_data["employees"] = employee_data
+
+        # Get submitted M2M values
+        employees_selected = cleaned_data.get("employees")
+        departments_selected = self.cleaned_data.get("department")
+        job_positions_selected = self.cleaned_data.get("job_position")
+
+        # Check if none of the three are selected
+        if (
+            not employees_selected
+            and not departments_selected
+            and not job_positions_selected
+        ):
+            raise forms.ValidationError(
+                _(
+                    "You must select at least one of: Employees, Department, or Job Position."
+                )
+            )
 
         return cleaned_data
 

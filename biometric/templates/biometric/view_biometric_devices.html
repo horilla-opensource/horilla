@@ -73,6 +73,22 @@
                 break;
         }
     }
+    function updateSelectedDevices(el) {
+        let container = $('#selectedDevicesContainer');
+        container.empty();
+        $('.oh-kanban-card--biometric').each(function () {
+            $(this).find('.biometric-device-instance:checked').each(function () {
+                let deviceId = $(this).val();
+                $('<input>', {
+                    type: 'hidden',
+                    name: 'selected_device_ids',
+                    value: deviceId
+                }).appendTo(container);
+            });
+        });
+    }
+
+
 </script>
 
 {% endblock %}

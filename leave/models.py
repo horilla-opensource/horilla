@@ -281,10 +281,26 @@ class LeaveType(HorillaModel):
 
     def clean(self, *args, **kwargs):
         if self.is_compensatory_leave:
-            if LeaveType.objects.filter(is_compensatory_leave=True).count() >= 1:
-                raise ValidationError(_("Compensatory Leave Request already exists."))
+            if (
+                LeaveType.objects.filter(is_compensatory_leave=True)
+                .exclude(pk=self.pk)
+                .exists()
+            ):
+                raise ValidationError(
+                    {"name": _("Compensatory Leave Request already exists.")}
+                )
 
     def save(self, *args, **kwargs):
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
+
         if (
             self.carryforward_type != "no carryforward"
             and self.carryforward_max is None
@@ -846,11 +862,11 @@ class LeaveRequest(HorillaModel):
                     )
 
     def clean(self):
-
         cleaned_data = super().clean()
-
-        attachment = self.attachment
-        leave_type = self.leave_type_id
+        leave_type = getattr(self, "leave_type_id", None)
+        if not leave_type:  # 836
+            return
+        attachment = getattr(self, "attachment", None)
         requ_days = set(self.requested_dates())
         restricted_leaves = RestrictLeave.objects.all()
         request = getattr(horilla_middlewares._thread_locals, "request", None)
