@@ -76,5 +76,5 @@ XlsxWriter
 gunicorn
 psycopg2-binary
 whitenoise
-uvicorn
 django-storages
+uvicorn

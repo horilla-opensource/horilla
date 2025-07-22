@@ -34,7 +34,7 @@ from base.models import (
 from employee.methods.duration_methods import format_time, strtime_seconds
 from horilla import horilla_middlewares
 from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel, has_xss
+from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
@@ -116,6 +116,7 @@ class Employee(models.Model):
     )
 
     def clean_fields(self, exclude=None):
+        from horilla.models import has_xss
         errors = {}
 
         # Get the list of fields to exclude from validation
