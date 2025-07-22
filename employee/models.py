@@ -690,7 +690,7 @@ class EmployeeWorkInformation(models.Model):
         verbose_name=_("Company"),
     )
     email = models.EmailField(
-        max_length=254, blank=False, null=True, verbose_name=_("Work Email")
+        max_length=254, blank=True, null=True, verbose_name=_("Work Email")
     )
     mobile = models.CharField(
         max_length=254, blank=True, null=True, verbose_name=_("Work Phone")
@@ -778,14 +778,14 @@ class EmployeeBankDetails(HorillaModel):
         related_name="employee_bank_details",
         verbose_name=_("Employee"),
     )
-    bank_name = models.CharField(max_length=50 ,null=True , blank=False ,  verbose_name="Bank Name")
+    bank_name = models.CharField(max_length=50 ,null=True , blank=False , default="None",  verbose_name="Bank Name")
     account_number = models.CharField(
         max_length=50,
         null=True,
         blank=False,
         verbose_name="Account Number",
     )
-    branch = models.CharField(max_length=50, null=True , blank=False)
+    branch = models.CharField(max_length=50, null=True ,blank=False , default="None")
     address = models.TextField(max_length=255, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
     state = models.CharField(max_length=50, blank=True)
