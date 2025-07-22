@@ -690,7 +690,7 @@ class EmployeeWorkInformation(models.Model):
         verbose_name=_("Company"),
     )
     email = models.EmailField(
-        max_length=254, blank=True, null=True, verbose_name=_("Work Email")
+        max_length=254, blank=False, null=True, verbose_name=_("Work Email")
     )
     mobile = models.CharField(
         max_length=254, blank=True, null=True, verbose_name=_("Work Phone")
