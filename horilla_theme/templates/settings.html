@@ -1,5 +1,6 @@
 {% extends 'index.html' %}
-{% block content static i18n horillafilters %}
+{% block content %}
+{% load static i18n horillafilters %}
 
 <h3 class="text-lg font-semibold mb-3">{% trans "Settings" %}</h3>
 
@@ -41,7 +42,8 @@
 										>{% trans "Employee Permission" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.auth.view_permission %}
+								{% endif %}
+								{% if perms.auth.view_permission %}
 								<li class="py-1">
 									<a
 										id="defaultAccessibility"
@@ -50,7 +52,8 @@
 										>{% trans "Accessibility Restriction" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.auth.view_group %}
+								{% endif %}
+								{% if perms.auth.view_group %}
 								<li class="py-1">
 									<a
 										id="userGroup"
@@ -59,7 +62,8 @@
 										>{% trans "User Group" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.base.view_company %}
+								{% endif %}
+								{% if perms.base.view_company %}
 								<li class="py-1">
 									<a
 										id="date"
@@ -68,9 +72,8 @@
 										>{% trans "Date & Time Format" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.base.view_tags or
-								perms.employee.view_emplyeetag or
-								perms.horilla_audit.view_audittag %}
+								{% endif %}
+								{% if perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag %}
 								<li class="py-1">
 									<a
 										id="ticket_type"
@@ -79,9 +82,8 @@
 										>{% trans "History Tags" %} Tags</a
 									>
 								</li>
-								{% endif %} {% if
-								perms.base.view_dynamicemailconfiguration and
-								not "outlook_auth"|app_installed %}
+								{% endif %}
+								{% if perms.base.view_dynamicemailconfiguration and not "outlook_auth"|app_installed %}
 								<li class="py-1">
 									<a
 										id="date"
@@ -99,8 +101,8 @@
 										>{% trans "Outlook Mail" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.horilla_backup.view_googledrivebackup %}
+								{% endif %}
+								{% if perms.horilla_backup.view_googledrivebackup %}
 								<li class="py-1">
 									<a
 										id="date"
@@ -109,8 +111,8 @@
 										>{% trans "Gdrive Backup" %}
 									</a>
 								</li>
-								{% endif %} {% if "horilla_ldap"|app_installed
-								%}
+								{% endif %}
+								{% if "horilla_ldap"|app_installed %}
 								<li class="py-1">
 									<a
 										id="date"
@@ -150,7 +152,8 @@
 										>{% trans "Department" %}</a
 									>
 								</li>
-								{% endif %} {% if perms.base.view_jobposition %}
+								{% endif %}
+								{% if perms.base.view_jobposition %}
 								<li class="py-1">
 									<a
 										id="jobPosition"
@@ -159,7 +162,8 @@
 										>{% trans "Job Positions" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.base.view_jobrole %}
+								{% endif %}
+								{% if perms.base.view_jobrole %}
 								<li class="py-1">
 									<a
 										id="jobRole"
@@ -168,7 +172,8 @@
 										>{% trans "Job Role" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.base.view_company %}
+								{% endif %}
+								{% if perms.base.view_company %}
 								<li class="py-1">
 									<a
 										id="company"
@@ -209,8 +214,8 @@
 										>{% trans "Candidate Self Tracking" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.recruitment.view_rejectreason %}
+								{% endif %}
+								{% if perms.recruitment.view_rejectreason %}
 								<li class="py-1">
 									<a
 										id="candidateRejectReasons"
@@ -219,8 +224,8 @@
 										>{% trans "Candidate Reject Reason" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.recruitment.add_recruitment %}
+								{% endif %}
+								{% if perms.recruitment.add_recruitment %}
 								<li class="py-1">
 									<a
 										id="skills"
@@ -268,8 +273,8 @@
 										>{% trans "Work Type" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.base.view_rotatingworktype %}
+								{% endif %}
+								{% if perms.base.view_rotatingworktype %}
 								<li class="py-1">
 									<a
 										id="rotatingWorkType"
@@ -278,8 +283,8 @@
 										>{% trans "Rotating Work Type" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.base.view_employeeshift
-								%}
+								{% endif %}
+								{% if perms.base.view_employeeshift %}
 								<li class="py-1">
 									<a
 										id="employeeShift"
@@ -288,8 +293,8 @@
 										>{% trans "Employee Shift" %}</a
 									>
 								</li>
-								{% endif %} {% if perms.base.view_rotatingshift
-								%}
+								{% endif %}
+								{% if perms.base.view_rotatingshift %}
 								<li class="py-1">
 									<a
 										id="rotatingShift"
@@ -298,8 +303,8 @@
 										>{% trans "Rotating Shift" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.base.view_employeeshiftschedule %}
+								{% endif %}
+								{% if perms.base.view_employeeshiftschedule %}
 								<li class="py-1">
 									<a
 										id="employeeShiftSchedule"
@@ -308,8 +313,8 @@
 										>{% trans "Employee Shift Schedule" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.base.view_employeetype
-								%}
+								{% endif %}
+								{% if perms.base.view_employeetype %}
 								<li class="py-1">
 									<a
 										id="employeeType"
@@ -318,8 +323,8 @@
 										>{% trans "Employee Type" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.employee.view_actiontype
-								%}
+								{% endif %}
+								{% if perms.employee.view_actiontype %}
 								<li class="py-1">
 									<a
 										id="date"
@@ -328,8 +333,8 @@
 										>{% trans "Disciplinary Action Type" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.employee.view_employeetag %}
+								{% endif %}
+								{% if perms.employee.view_employeetag %}
 								<li class="py-1">
 									<a
 										id="ticket_type"
@@ -360,21 +365,17 @@
 					>
 						<div class="py-3">
 							<ul>
-								{% if
-								perms.attendance.view_attendancevalidationcondition
-								%}
+								{% if perms.attendance.view_attendancevalidationcondition %}
 								<li class="py-1">
 									<a
 										id="trackLateComeEalryOut"
 										href="{% url 'track-late-come-early-out' %}"
 										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "Track Late Come & Early Out"
-										%}
+										>{% trans "Track Late Come & Early Out" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.attendance.view_attendancevalidationcondition
-								%}
+								{% endif %}
+								{% if perms.attendance.view_attendancevalidationcondition %}
 								<li class="py-1">
 									<a
 										id="condition"
@@ -383,9 +384,8 @@
 										>{% trans "Attendance Break Point" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.attendance.view_attendancevalidationcondition
-								%}
+								{% endif %}
+								{% if perms.attendance.view_attendancevalidationcondition %}
 								<li class="py-1">
 									<a
 										id="condition"
@@ -394,9 +394,8 @@
 										>{% trans "Check In/Check Out" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.attendance.view_attendancevalidationcondition
-								%}
+								{% endif %}
+								{% if perms.attendance.view_attendancevalidationcondition %}
 								<li class="py-1">
 									<a
 										id="condition"
@@ -405,18 +404,20 @@
 										>{% trans "Grace Time" %}
 									</a>
 								</li>
-								{% endif %} {% if biometric_app_exists %} {% if
-								perms.base.view_biometricattendance %}
-								<li class="py-1">
-									<a
-										id="condition"
-										href="{% url 'enable-biometric-attendance' %}"
-										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "Biometric Attendance" %}
-									</a>
-								</li>
-								{% endif %} {% endif %} {% if
-								perms.attendance.add_attendance %}
+								{% endif %}
+								{% if biometric_app_exists %}
+								{% if perms.base.view_biometricattendance %}
+									<li class="py-1">
+										<a
+											id="condition"
+											href="{% url 'enable-biometric-attendance' %}"
+											class="hover:text-primary-600 transition duration-300 text-[13px]"
+											>{% trans "Biometric Attendance" %}
+										</a>
+									</li>
+									{% endif %}
+								{% endif %}
+								{% if perms.attendance.add_attendance %}
 								<li class="py-1">
 									<a
 										id="ip_resriction"
@@ -425,9 +426,8 @@
 										>{% trans "IP Restriction" %}
 									</a>
 								</li>
-								{% endif %} {% if
-								perms.geofencing.add_geofencing or
-								perms.facedetection.add_facedetection %}
+								{% endif %}
+								{% if perms.geofencing.add_geofencing or perms.facedetection.add_facedetection %}
 								<li class="py-1">
 									<a
 										id="geo_face_conf"
@@ -441,7 +441,8 @@
 						</div>
 					</div>
 				</div>
-				{% endif %} {% if "leave"|app_installed %}
+				{% endif %}
+				{% if "leave"|app_installed %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -457,9 +458,7 @@
 					>
 						<div class="py-3">
 							<ul>
-								{% if
-								perms.attendance.view_attendancevalidationcondition
-								%}
+								{% if perms.attendance.view_attendancevalidationcondition %}
 								<li class="py-1">
 									<a
 										id="condition"
@@ -468,24 +467,25 @@
 										>{% trans "Restrictions" %}
 									</a>
 								</li>
-								{% endif %} {% if "attendance"|app_installed %}
-								{% if
-								perms.attendance.view_attendancevalidationcondition
-								%}
-								<li class="py-1">
-									<a
-										id="condition"
-										href="{% url 'compensatory-leave-settings-view' %}"
-										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "Compensatory Leave" %}
-									</a>
-								</li>
-								{% endif %} {% endif %}
+								{% endif %}
+								{% if "attendance"|app_installed %}
+									{% if perms.attendance.view_attendancevalidationcondition %}
+									<li class="py-1">
+										<a
+											id="condition"
+											href="{% url 'compensatory-leave-settings-view' %}"
+											class="hover:text-primary-600 transition duration-300 text-[13px]"
+											>{% trans "Compensatory Leave" %}
+										</a>
+									</li>
+									{% endif %}
+								{% endif %}
 							</ul>
 						</div>
 					</div>
 				</div>
-				{% endif %} {% if "payroll"|app_installed %}
+				{% endif %}
+				{% if "payroll"|app_installed %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -515,7 +515,8 @@
 						</div>
 					</div>
 				</div>
-				{% endif %} {% if "pms"|app_installed %}
+				{% endif %}
+				{% if "pms"|app_installed %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -545,7 +546,8 @@
 						</div>
 					</div>
 				</div>
-				{% endif %} {% if "helpdesk"|app_installed %}
+				{% endif %}
+				{% if "helpdesk"|app_installed %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -570,8 +572,8 @@
 										>{% trans "Department Managers" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.helpdesk.view_tickettype
-								%}
+								{% endif %}
+								{% if perms.helpdesk.view_tickettype %}
 								<li class="py-1">
 									<a
 										id="ticket_type"
@@ -580,8 +582,8 @@
 										>{% trans "Ticket Type" %}
 									</a>
 								</li>
-								{% endif %} {% if perms.employee.view_emplyeetag
-								%}
+								{% endif %}
+								{% if perms.employee.view_emplyeetag %}
 								<li class="py-1">
 									<a
 										id="help_desk"
@@ -595,7 +597,8 @@
 						</div>
 					</div>
 				</div>
-				{% endif %} {% if "whatsapp"|app_installed %}
+				{% endif %}
+				{% comment %} {% if "whatsapp"|app_installed %} {% endcomment %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -603,7 +606,7 @@
 						class="accordion-btn-stng font-medium w-full flex justify-between items-center px-3 py-1 bg-[#fff5f1] text-[#e54f38] text-[13px] transition-all"
 						data-id="whatsapp"
 					>
-						{% trans "Whatsapp Configuration" %}
+						{% trans "Integrations" %}
 						<span class="icon text-xl font-bold">+</span>
 					</button>
 					<div
@@ -616,17 +619,27 @@
 								<li class="py-1">
 									<a
 										id="whatsapp_credentials"
-										href="{% url 'whatsapp-credential-view' %}"
+										href="#"
+										{% comment %} href="{% url 'whatsapp-credential-view' %}" {% endcomment %}
 										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>General Settings</a
+										>{% trans "Whatsapp" %}</a
 									>
 								</li>
 								{% endif %}
+
+								<li class="py-1">
+									<a
+										id="google_meet"
+										href="#"
+										class="hover:text-primary-600 transition duration-300 text-[13px]"
+										>{% trans "Google Meet" %}</a
+									>
+								</li>
 							</ul>
 						</div>
 					</div>
 				</div>
-				{% endif %}
+				{% comment %} {% endif %} {% endcomment %}
 			</div>
 		</div>
 	</div>
@@ -664,7 +677,7 @@
 				$(".accordion-btn-stng .icon").text("+");
 
 				$panel.removeClass("max-h-0").addClass("max-h-[9999px]");
-				$button.find(".icon").text("−");
+				$button.find(".icon").text("-");
 
 				localStorage.setItem("openAccordion", panelId);
 			} else {
@@ -679,7 +692,7 @@
 			const $button = $(`.accordion-btn-stng[data-id="${openPanel}"]`);
 			const $panel = $button.next(".accordion-panel");
 			$panel.removeClass("max-h-0").addClass("max-h-[9999px]");
-			$button.find(".icon").text("−");
+			$button.find(".icon").text("-");
 		}
 	});
 </script>

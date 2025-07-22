@@ -1,168 +1,208 @@
-{% extends "settings.html" %} 
-{% load static i18n %} 
+{% extends "settings.html" %}
+{% load static i18n %}
 {% block settings %}
 
 <div id="response" hidden></div>
 
-<div class="flex gap-2 accordion-btn-stng bg-[#fff5f1] font-medium items-center px-3 py-3 text-[#e54f38] border border-primary-300 rounded-md w-full mb-3">
-    <h5 class="text-sm font-semibold">{% trans "Default Accessibility" %}</h5>
-    <span class="oh-info mr-2 mb-2" title="{% trans 'Limit default view access to horilla feature' %}"></span>
+<div
+	class="flex gap-2 accordion-btn-stng bg-[#fff5f1] font-medium items-center px-3 py-3 text-[#e54f38] border border-primary-300 rounded-md w-full mb-3"
+>
+	<h5 class="text-sm font-semibold">{% trans "Default Accessibility" %}</h5>
+	<span
+		class="oh-info mr-2 mb-2"
+		title="{% trans 'Limit default view access to horilla feature' %}"
+	></span>
 </div>
 
-<div class="shadow-card p-3 border border-[#eee6e6b9] rounded-md" id="accessibilityContainer">
-    {% for accessibility, display in accessibility %}
-    <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-2">
-        <div class="inner-accordion-toggle w-full text-xs font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center gap-2 perm-accordion justify-between">
-            <span>{{display}}</span>
-            <button class="btn-square btn-square2 w-14 h-8 cursor-pointer bg-[#ff000024] text-xs text-[red] disabled:cursor-not-allowed" title="Clear Filters">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
+<div
+	class="shadow-card p-3 border border-[#eee6e6b9] rounded-md"
+	id="accessibilityContainer"
+>
+	{% for accessibility, display in accessibility %}
+	<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-2">
+		<div
+			class="inner-accordion-toggle w-full text-xs font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center gap-2 perm-accordion justify-between"
+		>
+			<span>{{display}}</span>
+			<button
+				class="btn-square btn-square2 w-14 h-8 cursor-pointer bg-[#ff000024] text-xs text-[red] disabled:cursor-not-allowed"
+                data-feature-id = "{{accessibility}}_body"
+				title="Clear Filters"
+			>
+				<i class="fa-solid fa-xmark"></i>
+			</button>
+		</div>
 
-        <div class="panel inner-accordion-content transition-all duration-300 overflow-hidden max-h-0 accessibilityBody" id="{{accessibility}}_body">
-            <form class="p-2" hx-post="" hx-target="#response" hx-swap="afterend">
-                <div class="flex gap-2 items-center col-12 col-md-6" id="id_pk_parent_div" style="padding-right: 0">
-                    <div class="oh-label__info" for="id_pk">
-                        <label class="oh-label font-medium text-xs" for="id_pk"><b>{% trans "Restrict All" %}</b></label>
-                    </div>
-                    <div id="dynamic_field_pk">
-                        <div class="oh-switch" onclick="event.stopPropagation()">
-                            <input data-accessibility="{{accessibility}}" type="checkbox" class="oh-switch__checkbox" name="exclude_all" />
-                        </div>
-                    </div>
-                </div>
-                <div id="{{accessibility}}formcontainer">
-                    <div class="text-xs mt-3 p-4 bg-[#87cefa38] rounded-md border border-l-4 border-sky-300 border-l-[#27a3ef]">
-                        {% trans "Only the employees selected in any of the fields will have access to the " %} `<b>{{display}}</b>` {% trans "feature" %}
-                        <br />
-                        {% trans "If none are selected, the feature will be available to all normal users and employees." %}
-                    </div>
-                    <input hidden type="text" name="feature" value="{{accessibility}}" />
-                    {{accessibility_filter.form.structured}}
-                    <input hidden type="submit" value="submit" />
-                </div>
-            </form>
-        </div>
-    </div>
-    {% endfor %}
+		<div
+			class="panel inner-accordion-content transition-all duration-300 overflow-hidden max-h-0 accessibilityBody"
+			id="{{accessibility}}_body"
+		>
+			<form
+				class="p-2"
+				hx-post=""
+				hx-target="#response"
+				hx-swap="afterend"
+			>
+				<div
+					class="flex gap-2 items-center col-12 col-md-6"
+					id="id_pk_parent_div"
+					style="padding-right: 0"
+				>
+					<div class="oh-label__info" for="id_pk">
+						<label class="oh-label font-medium text-xs" for="id_pk"
+							><b>{% trans "Restrict All" %}</b></label
+						>
+					</div>
+					<div id="dynamic_field_pk">
+						<div
+							class="oh-switch"
+							onclick="event.stopPropagation()"
+						>
+							<input
+								data-accessibility="{{accessibility}}"
+								type="checkbox"
+								class="oh-switch__checkbox"
+								name="exclude_all"
+							/>
+						</div>
+					</div>
+				</div>
+				<div id="{{accessibility}}formcontainer">
+					<div
+						class="text-xs mt-3 p-4 bg-[#87cefa38] rounded-md border border-l-4 border-sky-300 border-l-[#27a3ef]"
+					>
+						{% trans "Only the employees selected in any of the fields will have access to the " %} `<b>{{display}}</b>`
+						{% trans "feature" %}
+						<br />
+						{% trans "If none are selected, the feature will be available to all normal users and employees." %}
+					</div>
+					<input
+						hidden
+						type="text"
+						name="feature"
+						value="{{accessibility}}"
+					/>
+					{{accessibility_filter.form.structured}}
+					<input hidden type="submit" value="submit" />
+				</div>
+			</form>
+		</div>
+	</div>
+	{% endfor %}
 </div>
 
 <script>
-    // Initialize all functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Select2
-        
-        // Event delegation for clear buttons
-        document.getElementById('accessibilityContainer').addEventListener('click', function(e) {
-            if (e.target.closest('.btn-square2')) {
+	document.addEventListener("DOMContentLoaded", function () {
+		document
+			.getElementById("accessibilityContainer")
+			.addEventListener("change", function (e) {
+				if (e.target.name === "exclude_all") {
+					const feature = e.target.dataset.accessibility;
+					const container = $(`#${feature}formcontainer`);
+					container.toggle(!e.target.checked);
+					e.target
+						.closest("form")
+						.querySelector("input[type=submit]")
+						.click();
+				}
+			});
+
+		document.querySelectorAll(".accessibilityBody").forEach((container) => {
+			const feature = container.id.replace("_body", "");
+			initializeFeatureForm(feature);
+		});
+
+		bindInnerAccordions();
+	});
+    $(document).ready(function(){
+
+            $(".btn-square2").on("click", function(e){
                 e.stopPropagation();
-                const btn = e.target.closest('.btn-square2');
-                const featureId = btn.closest('.border').querySelector('.accessibilityBody').id.replace('_body', '');
-                
+                let featureId = $(this).data("featureId")
                 Swal.fire({
                     title: '{% trans "Are you sure?" %}',
                     text: '{% trans "This will clear all filters you have applied." %}',
-                    icon: 'warning',
+                    icon: "warning",
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: `{% trans 'Yes' %}, {% trans 'Clear it' %}!`
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: `{% trans 'Yes' %}, {% trans 'Clear it' %}!`,
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $(`#${featureId}_body select`).val(null).trigger('change');
-                        $(`#${featureId}_body`).find('input[type=submit]').click();
+                        $(`#${featureId} select`)
+                            .val(null)
+                            .trigger("change");
+                        $(`#${featureId}`)
+                            .find("input[type=submit]")
+                            .click();
                     }
                 });
-            }
-        });
-        
-        // Event delegation for exclude_all checkboxes
-        document.getElementById('accessibilityContainer').addEventListener('change', function(e) {
-            if (e.target.name === 'exclude_all') {
-                const feature = e.target.dataset.accessibility;
-                const container = $(`#${feature}formcontainer`);
-                container.toggle(!e.target.checked);
-                e.target.closest('form').querySelector('input[type=submit]').click();
-            }
-        });
-        
-        // Initialize all feature forms without triggering change events
-        document.querySelectorAll('.accessibilityBody').forEach(container => {
-            const feature = container.id.replace('_body', '');
-            initializeFeatureForm(feature);
-        });
-        
-        // Accordion functionality
+            })
+
+    })
+
+	function initializeFeatureForm(feature) {
+		$.ajax({
+			url:
+				"{% url 'get-initial-accessibility-data' %}?feature=" + feature,
+			success: function (response) {
+				const form = $(`#${feature}_body form`);
+
+				form.data("initializing", true);
+
+				for (const [key, values] of Object.entries(response)) {
+					const field = form.find(`[name="${key}"]`);
+					if (!field.length) continue;
+
+					if (field[0].tagName === "SELECT") {
+						field.val(values);
+
+						if (field.data("select2")) {
+							field.trigger("change.select2");
+						}
+					} else if (key === "exclude_all" && values[0] === "on") {
+						field.prop("checked", true);
+						$(`#${feature}formcontainer`).hide();
+					}
+				}
+				$("select").addClass("oh-select oh-select-2").select2();
+
+				setTimeout(() => form.removeData("initializing"), 100);
+			},
+		});
+	}
+
+	function bindInnerAccordions() {
+		document
+			.querySelectorAll(".inner-accordion-toggle")
+			.forEach((toggle) => {
+				toggle.addEventListener("click", function () {
+					const content = this.nextElementSibling;
+					const isOpen =
+						content.style.maxHeight &&
+						content.style.maxHeight !== "0px";
+
+					if (isOpen) {
+						content.style.maxHeight = "0";
+					} else {
+						content.style.maxHeight = content.scrollHeight + "px";
+					}
+				});
+			});
+	}
+
+	$("#accessibilityContainer").on("change", "select", function (e) {
+		const form = $(this).closest("form");
+		if (form.data("initializing")) return;
+		form.find("input[type=submit]").click();
+	});
+
+    {% comment %} // HTMX event handling
+    document.body.addEventListener('htmx:afterSwap', function() {
+        // Reinitialize accordions after content changes
         bindInnerAccordions();
-    });
-
-    // Initialize feature form data without triggering change events
-    function initializeFeatureForm(feature) {
-        $.ajax({
-            url: "{% url 'get-initial-accessibility-data' %}?feature=" + feature,
-            success: function(response) {
-                const form = $(`#${feature}_body form`);
-                
-                // Temporarily disable change handling
-                form.data('initializing', true);
-                
-                for (const [key, values] of Object.entries(response)) {
-                    const field = form.find(`[name="${key}"]`);
-                    if (!field.length) continue;
-                    
-                    if (field[0].tagName === 'SELECT') {
-                        // Set value without triggering change
-                        field.val(values);
-                        
-                        // Update Select2 UI without triggering change event
-                        if (field.data('select2')) {
-                            field.trigger('change.select2');
-                        }
-                    } 
-                    else if (key === "exclude_all" && values[0] === "on") {
-                        field.prop("checked", true);
-                        $(`#${feature}formcontainer`).hide();
-                    }
-                }
-		        $('select').addClass('oh-select oh-select-2').select2();
-
-                // Re-enable change handling
-                setTimeout(() => form.removeData('initializing'), 100);
-            }
-        });
-    }
-
-    // Accordion functionality without opacity transitions
-    function bindInnerAccordions() {
-		console.log("/////////////////////")
-        document.querySelectorAll('.inner-accordion-toggle').forEach(toggle => {
-            toggle.addEventListener('click', function() {
-                const content = this.nextElementSibling;
-                const isOpen = content.style.maxHeight && content.style.maxHeight !== '0px';
-                
-                if (isOpen) {
-                    content.style.maxHeight = '0';
-                } else {
-                    content.style.maxHeight = content.scrollHeight + 'px';
-                }
-            });
-        });
-    }
-
-    // Form change handler with initialization guard
-    $('#accessibilityContainer').on('change', 'select', function(e) {
-        const form = $(this).closest('form');
-        if (form.data('initializing')) return;
-        form.find('input[type=submit]').click();
-    });
-
-    // // HTMX event handling
-    // document.body.addEventListener('htmx:afterSwap', function() {
-    //     // Reinitialize accordions after content changes
-    //     bindInnerAccordions();
-        
-    //     // Reinitialize Select2 after content changes
-    //     $('select').addClass('oh-select oh-select-2').select2();
-    // });
+        // Reinitialize Select2 after content changes
+        $('select').addClass('oh-select oh-select-2').select2();
+    }); {% endcomment %}
 </script>
 {% endblock settings %}

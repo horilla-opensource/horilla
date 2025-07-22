@@ -1,6 +1,10 @@
-
 from django import forms
-from accessibility.filters import _filter_form_structured, AccessibilityFilter,HorillaFilterSet
+
+from accessibility.filters import (
+    AccessibilityFilter,
+    HorillaFilterSet,
+    _filter_form_structured,
+)
 
 
 def __new_init__(self, *args, **kwargs):
@@ -8,9 +12,7 @@ def __new_init__(self, *args, **kwargs):
     for field_name, field in self.form.fields.items():
         filter_widget = self.filters[field_name]
         widget = filter_widget.field.widget
-        if isinstance(
-            widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
-        ):
+        if isinstance(widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)):
             field.widget.attrs.update({"class": "oh-input w-100"})
         elif isinstance(widget, (forms.Select,)):
             field.widget.attrs.update(
@@ -36,5 +38,6 @@ def __new_init__(self, *args, **kwargs):
                 }
             )
     self.form.structured = _filter_form_structured(self.form)
+
 
 AccessibilityFilter.__init__ = __new_init__
