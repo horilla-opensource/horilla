@@ -46,12 +46,12 @@
                         ></ion-icon>
                         </button>
                         <div
-                        class="oh-dropdown__menu oh-sticky-table_dropdown"
-                        x-show="open"
-                        @click.outside="
-                            open = false
-                            $($el).closest('#{{ view_id|safe }}').find('.reload-record').click();
-                        "
+                            class="oh-dropdown__menu oh-sticky-table_dropdown"
+                            x-show="open"
+                            @click.outside="
+                                open = false
+                                $($el).closest('#{{ view_id|safe }}').find('.reload-record').click();
+                            "
                         >
                         {{ toggle_form.as_list }}
                         </div>
@@ -59,7 +59,7 @@
                 </div>
                 {% endif %}
                 <div
-                    class="max-h-[calc(100vh_-_300px)] overflow-hidden overflow-y-auto overflow-x-auto"
+                    class="max-h-[calc(100vh_-_380px)] overflow-hidden overflow-y-auto overflow-x-auto"
                 >
                     <table class="fixed-table w-full" data-bulk-select-option = "{{bulk_select_option|yesno:'true,false'}}">
                         <thead class="sticky top-0 bg-[white] z-[1]">

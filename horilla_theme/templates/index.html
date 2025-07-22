@@ -42,7 +42,7 @@
         {% endblock %}
     </head>
 
-    <body class="bg-secondary-50 font-[Inter,_sans-serif]">
+    <body class="bg-secondary-50 font-[Inter,_sans-serif] overflow-hidden">
         {% get_current_language_bidi as LANGUAGE_BIDI %}
         {% get_current_language as LANGUAGE_CODE %}
         <div hidden id="statiUrl" data-url='{% static "" %}'></div>
@@ -53,7 +53,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="ml-[4.7rem] h-screen">
+        <div class="ml-[4.7rem] h-screen overflow-auto">
             <div class="bg-[#F6F6F6]">
                 <!-- Include Header -->
                 <div id="header">
