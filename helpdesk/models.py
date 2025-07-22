@@ -10,6 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, Department, JobPosition, Tags
 from employee.models import Employee
+from horilla import horilla_middlewares
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
@@ -250,9 +251,31 @@ class Attachment(HorillaModel):
 class FAQCategory(HorillaModel):
     title = models.CharField(max_length=30)
     description = models.TextField(blank=True, null=True, max_length=255)
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        editable=False,
+        verbose_name=_("Company"),
+        on_delete=models.CASCADE,
+    )
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
+
+        super().save()
 
     class Meta:
         verbose_name = _("FAQ Category")
@@ -267,10 +290,23 @@ class FAQ(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
-    objects = HorillaCompanyManager(related_company_field="company_id")
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return self.question
+
+    def save(self, *args, **kwargs):
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
+
+        super().save()
 
     class Meta:
         verbose_name = _("FAQ")
