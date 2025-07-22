@@ -128,7 +128,7 @@ from horilla_documents.forms import (
 )
 from horilla_documents.models import Document, DocumentRequest
 from notifications.signals import notify
-
+from employee.utils.bank_branch_data import BANK_BRANCH_DATA
 
 def return_none(a, b):
     return None
@@ -3614,3 +3614,26 @@ def employee_tag_update(request, tag_id):
         "base/employee_tag/employee_tag_form.html",
         {"form": form, "tag_id": tag_id},
     )
+
+def get_all_bank_info(request):
+    return JsonResponse(BANK_BRANCH_DATA)
+
+def get_bank_info(request, bank_name):
+    bank_info = BANK_BRANCH_DATA.get(bank_name)
+    if not bank_info:
+        return JsonResponse({"error": "Bank not found"}, status=404)
+    return JsonResponse(bank_info)
+
+def get_branch_code(request, bank_name, branch_name):
+    bank_info = BANK_BRANCH_DATA.get(bank_name)
+    if not bank_info:
+        return JsonResponse({"error": "Bank not found"}, status=404)
+
+    branch_code = bank_info["branches"].get(branch_name)
+    if not branch_code:
+        return JsonResponse({"error": "Branch not found"}, status=404)
+
+    return JsonResponse({
+        "bank_code": bank_info["bank_code"],
+        "branch_code": branch_code
+    })
