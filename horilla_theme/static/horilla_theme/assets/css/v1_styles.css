@@ -2209,11 +2209,12 @@ ul.errorlist ul.errorlist li {
     background-color: #e34e38;
 }
 
-.sideboxmain img {
+.sideboxmain img, .sideboxmain svg {
     width: 20px;
+    filter: brightness(0);
 }
 
-.sideboxmain.active img {
+.sideboxmain.active img, .sideboxmain.active svg {
     filter: brightness(0) invert(1);
 
 }
