@@ -1063,3 +1063,8 @@ input[type="checkbox"].custom-checkbox:hover {
 .text-primary-600 {
   color: #e54f38;
 } */
+.dropdown-wrapper:focus-within .dropdown-content {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}

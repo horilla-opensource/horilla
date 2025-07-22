@@ -11,6 +11,27 @@
         <div class="flex gap-1">
             <span
                 class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
+                hx-get="{% url 'notifications:notification-sound' %}"
+                hx-swap="none"
+                title="Notification Sound"
+                onclick="
+                    event.stopPropagation();
+                    event.preventDefault();
+                    toggleNotificationIcon($(this));
+                "
+            >
+                {% if request.user.employee_get.notification_sound.sound_enabled %}
+                <span class="material-symbols-outlined text-lg font-light">
+                    volume_up
+                </span>
+                {% else %}
+                <span class="material-symbols-outlined text-lg font-light">
+                    volume_off
+                </span>
+                {% endif %}
+            </span>
+            <span
+                class="cursor-pointer text-xs group text-primary-600 w-7 h-7 bg-primary-100 hover:bg-primary-600 hover:text-white rounded-full transition duration-300 flex items-center justify-center"
                 onclick="event.stopPropagation();event.preventDefault();"
                 hx-get="{% url 'read-notifications' %}"
                 hx-target="#notificationContainer"
@@ -45,7 +66,6 @@
     </div>
 </div>
 <script src="{% static 'notifications/notify.js' %}" type="text/javascript" ></script>
-{% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
 
 <script>
     var staticUrl = $("#statiUrl").attr("data-url");
@@ -88,4 +108,13 @@
     $("#viewallnotification").click(function () {
         $("#showallnotificationbtn").toggle();
     });
+
+    function toggleNotificationIcon($el) {
+        const $icon = $el.find(".material-symbols-outlined");
+        if ($icon.length) {
+            const current = $icon.text().trim();
+            $icon.text(current === "volume_up" ? "volume_off" : "volume_up");
+        }
+    }
 </script>
+{% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}

@@ -1,4 +1,4 @@
-{% load static i18n horillafilters %}
+{% load static i18n horillafilters notifications_tags %}
 <div
     class="flex justify-between items-center bg-[#fff] py-3 px-5 border-b border-b-dark-50 fixed w-[calc(100%-76px)] z-40"
 >
@@ -47,7 +47,7 @@
 
             <div class="relative dropdown-wrapper">
                 <button
-                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 relative before:content[''] before:absolute before:bg-[#1dd75b] before:w-3 before:h-3 before:top-0 before:-right-0 before:rounded-full"
+                    class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 relative"
                     hx-get="{% url 'notifications' %}"
                     hx-target="#notificationContainer"
                     hx-trigger="load"
@@ -55,6 +55,9 @@
                     <i
                         class="fas fa-bell transition duration-300 group-hover:text-white"
                     ></i>
+                    <span class="absolute bg-[#d7391d] w-7 h-7 rounded-full text-xs text-slate-200 font-semibold flex items-center justify-center border-2 border-white p-1 [right:-10px] [top:-7px]">
+                        {% live_notify_badge %}
+                    </span>
                 </button>
                 {% include "notification/notification.html" %}
             </div>
