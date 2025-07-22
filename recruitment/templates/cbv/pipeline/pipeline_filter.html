@@ -111,8 +111,9 @@
             <label class="oh-label">{% trans 'Country' %}</label>
             <select
               name="country"
-              class="oh-select-2 w-100 country"
+              class="oh-select w-100 country"
               id="country"
+              data-selected="{{ candidate_filter_obj.form.country.value|default:'' }}"
             ></select>
           </div>
           <div class="col-sm-12 col-md-12 col-lg-12 mb-2">
@@ -139,7 +140,8 @@
             <label class="oh-label">{% trans 'State' %}</label>
             <select
               name="state"
-              class="oh-select-2 w-100 country"
+              class="oh-select w-100 country"
+              data-selected="{{ candidate_filter_obj.form.state.value|default:'' }}"
               id="state"
             ></select>
           </div>
@@ -166,6 +168,3 @@
 </div>
 
 <script src="{% static '/base/filter.js' %}"></script>
-<script>
-  {% include "country.js" %}
-</script>
