@@ -944,7 +944,7 @@ class WorkRecords(models.Model):
     ]
 
     record_name = models.CharField(max_length=250, null=True, blank=True)
-    work_record_type = models.CharField(max_length=5, null=True, choices=choices)
+    work_record_type = models.CharField(max_length=10, null=True, choices=choices)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
     )
@@ -956,8 +956,8 @@ class WorkRecords(models.Model):
             validate_time_format,
         ],
         default="00:00",
-        max_length=5,
-    )
+        max_length=10,
+    )  # 841
     min_hour = models.CharField(
         null=True,
         blank=True,
@@ -965,7 +965,7 @@ class WorkRecords(models.Model):
             validate_time_format,
         ],
         default="00:00",
-        max_length=5,
+        max_length=10,
     )
     at_work_second = models.IntegerField(null=True, blank=True, default=0)
     min_hour_second = models.IntegerField(null=True, blank=True, default=0)
