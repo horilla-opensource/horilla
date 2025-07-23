@@ -41,7 +41,6 @@ class ContractForm(ModelForm):
             "is_active",
             "job_role",
             "filing_status",
-            "wage_type",
             "pay_frequency",
             "shift",
         ]
