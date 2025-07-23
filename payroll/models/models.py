@@ -138,10 +138,10 @@ class Contract(HorillaModel):
         ("monthly", _("Monthly")),
     ]
 
-    CONTRACT_TYPE_CHOICES = (
-        ("sri_lanka", _("Sri Lankan Contract")),
-        ("uk", _("UK Contract")),
-    )
+    # CONTRACT_TYPE_CHOICES = (
+    #     ("sri_lanka", _("Sri Lankan Contract")),
+    #     ("uk", _("UK Contract")),
+    # )
 
     if apps.is_installed("attendance"):
         WAGE_CHOICES.append(("hourly", _("Hourly")))
@@ -169,11 +169,11 @@ class Contract(HorillaModel):
         related_name="contract_set",
         verbose_name=_("Employee"),
     )
-    contract_type = models.CharField(
-        choices=CONTRACT_TYPE_CHOICES,
-        default="sri_lanka",
-        verbose_name=_("Contract Type"),
-    )
+    # contract_type = models.CharField(
+    #     choices=CONTRACT_TYPE_CHOICES,
+    #     default="sri_lanka",
+    #     verbose_name=_("Contract Type"),
+    # )
     contract_start_date = models.DateField(verbose_name=_("Start Date"))
     contract_end_date = models.DateField(
         null=True, blank=True, verbose_name=_("End Date")
