@@ -739,6 +739,11 @@ class Allowance(HorillaModel):
         ("fuel", _("Fuel Allowance")),
     )
 
+    CONTRACT_TYPE_CHOICES = (
+        ("sri_lanka", _("Sri Lankan Contract")),
+        ("uk", _("UK Contract")),
+    )
+
     if apps.is_installed("attendance"):
         attendance_choices = [
             ("overtime", _("Overtime")),
@@ -755,6 +760,13 @@ class Allowance(HorillaModel):
         max_length=255, null=False, blank=False, help_text=_("Title of the allowance")
     )
     allowance_type = models.CharField(choices=ALLOWANCE_CHOICES, max_length=255 , default="accommodation" , verbose_name=_("Allowance Type"))
+    contract_type = models.CharField(
+        max_length=50,
+        choices=CONTRACT_TYPE_CHOICES,
+        default="sri_lanka",
+        verbose_name=_("Contract Type"),
+        help_text=_("The type of contract this allowance applies to"),
+    )
     one_time_date = models.DateField(
         null=True,
         blank=True,
