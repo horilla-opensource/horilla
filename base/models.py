@@ -1724,7 +1724,7 @@ class TrackLateComeEarlyOut(HorillaModel):
 
 
 class Holidays(HorillaModel):
-    name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
+    name = models.CharField(max_length=300, null=False, verbose_name=_("Name"))
     start_date = models.DateField(verbose_name=_("Start Date"))
     end_date = models.DateField(null=True, blank=True, verbose_name=_("End Date"))
     recurring = models.BooleanField(default=False, verbose_name=_("Recurring"))
