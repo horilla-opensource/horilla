@@ -497,5 +497,23 @@ if not any(
     except:
         pass
 
+def schedule_public_poya_fetch():
+    import django
+    django.setup()
+
+    from base.management.commands.fetch_public_poya_days import Command
+    cmd = Command()
+    cmd.handle()
+
+def start():
     scheduler.add_job(recurring_holiday, "interval", hours=4)
+    scheduler.add_job(
+        schedule_public_poya_fetch,
+        trigger="cron",
+        month=1,
+        day=1,
+        hour=0,
+        minute=0,
+        id="yearly_poya_fetch"
+    )
     scheduler.start()
