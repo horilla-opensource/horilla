@@ -1,0 +1,178 @@
+{% load static %} {% load i18n %} {% if messages %}
+<span hx-trigger="load" hx-target="#biometricDeviceList"
+    hx-get="{% url 'view-biometric-devices' %}?{{ pd }}&page=1&view=card" hx-swap="outerHTML"
+    hx-select="#biometricDeviceList" hx-target="#biometricDeviceList" hx-on-htmx-after-request="
+        {% if device_id %}
+            setTimeout(function () { $('.oh-modal__close').click() }, 500);
+        {% endif %}
+        reloadMessage(this);
+    ">
+</span>
+{% endif %}
+
+<div class="oh-modal__dialog-header pb-0">
+    <h2 class="oh-modal__dialog-title" id="biometricDeviceLabel">
+        {% if device_id %} {% trans "Edit" %} {% else %} {% trans "Add" %} {% endif %} {{ biometric_form.verbose_name }}
+    </h2>
+    <button type="button" class="oh-modal__close" data-dismiss="oh-modal" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<div class="oh-modal__dialog-body" id="biometricDeviceModalBody">
+    <form
+        hx-post="{% if device_id %}{% url 'biometric-device-edit' device_id %}{% else %}{% url 'biometric-device-add' %}?{{ pd }}{% endif %}"
+        hx-target="{% if device_id %}#objectUpdateModalTarget{% else %}#BiometricDeviceFormTarget{% endif %}"
+        id="biometricDeviceForm" class="oh-profile-section pt-0">
+        {% csrf_token %} {{ biometric_form.non_field_errors }}
+        <div class="col-sm-12 col-md-12 col-lg-12">
+            {# name #}
+            <div class="oh-input-group">
+                <label class="oh-label" for="{{ biometric_form.name.id_for_label }}">{{ biometric_form.name.label }}</label>
+                {{ biometric_form.name }}
+                {% if biometric_form.name.errors %}
+                    {{ biometric_form.name.errors }}
+                {% endif %}
+            </div>
+
+            {# machine_type #}
+            <div class="oh-input-group">
+                <label class="oh-label" for="{{ biometric_form.machine_type.id_for_label }}">{{ biometric_form.machine_type.label }}</label>
+                {{ biometric_form.machine_type }}
+                {% if biometric_form.machine_type.errors %}
+                    {{ biometric_form.machine_type.errors }}
+                {% endif %}
+            </div>
+
+            {# machine_ip #}
+            <div class="oh-input-group" id="machinIpInput" style="display: none">
+                <label class="oh-label" for="{{ biometric_form.machine_ip.id_for_label }}">{{ biometric_form.machine_ip.label }}</label>
+                {{ biometric_form.machine_ip }}
+                {% if biometric_form.machine_ip.errors %}
+                    {{ biometric_form.machine_ip.errors }}
+                {% endif %}
+            </div>
+
+            {# port #}
+            <div class="oh-input-group" id="machinPortInput" style="display: none">
+                <label class="oh-label" for="{{ biometric_form.port.id_for_label }}">{{ biometric_form.port.labe }}</label>
+                {{ biometric_form.port }}
+                {% if biometric_form.port.errors %}
+                    {{ biometric_form.port.errors }}
+                {% endif %}
+            </div>
+
+            {# zk_password #}
+            <div class="oh-input-group" id="zkPassword" style="display: none">
+                <label class="oh-label" for="{{ biometric_form.zk_password.id_for_label }}">{{ biometric_form.zk_password.label }}</label>
+                {{ biometric_form.zk_password }}
+                {% if biometric_form.zk_password.errors %}
+                    {{ biometric_form.zk_password.errors }}
+                {% endif %}
+            </div>
+
+            {# bio_username #}
+            <div class="oh-input-group" id="machinUserName" style="display: none">
+                <label class="oh-label" for="{{ biometric_form.bio_username.id_for_label }}">{{ biometric_form.bio_username.label }}</label>
+                {{ biometric_form.bio_username }}
+                {% if biometric_form.bio_username.errors %}
+                    {{ biometric_form.bio_username.errors }}
+                {% endif %}
+            </div>
+
+            {# bio_password #}
+            <div class="oh-input-group" id="machinPassword" style="display: none">
+                <label class="oh-label" for="{{ biometric_form.bio_password.id_for_label }}">{{ biometric_form.bio_password.label }}</label>
+                {{ biometric_form.bio_password }}
+                {% if biometric_form.bio_password.errors %}
+                    {{ biometric_form.bio_password.errors }}
+                {% endif %}
+                <button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle"
+                    style="padding-top: 55px">
+                    <ion-icon class="oh-passowrd-input__show-icon" title="Show Password" name="eye-outline"></ion-icon>
+                    <ion-icon class="oh-passowrd-input__hide-icon d-none" title="Hide Password"
+                        name="eye-off-outline"></ion-icon>
+                </button>
+            </div>
+
+            {# Anviz specific fields #}
+            <div class="oh-input-group" id="apiRequestIDInput" style="display: none">
+                <label class="oh-label" for="{{ biometric_form.anviz_request_id.id_for_label }}">{{ biometric_form.anviz_request_id.label }}</label>
+                {{ biometric_form.anviz_request_id }}
+                {% if biometric_form.anviz_request_id.errors %}
+                    {{ biometric_form.anviz_request_id.errors }}
+                {% endif %}
+            </div>
+
+            <div class="oh-input-group" id="apiUrlInput" style="display: none">
+                <label class="oh-label" for="{{ biometric_form.api_url.id_for_label }}">{{ biometric_form.api_url.label }}</label>
+                {{ biometric_form.api_url }}
+                {% if biometric_form.api_url.errors %}
+                    {{ biometric_form.api_url.errors }}
+                {% endif %}
+            </div>
+
+            <div class="oh-input-group" id="apiKeyInput" style="display: none">
+                <label class="oh-label" for="{{ biometric_form.api_key.id_for_label }}">{{ biometric_form.api_key.label }}</label>
+                {{ biometric_form.api_key }}
+                {% if biometric_form.api_key.errors %}
+                    {{ biometric_form.api_key.errors }}
+                {% endif %}
+            </div>
+
+            <div class="oh-input-group" id="apiSecretInput" style="display: none">
+                <label class="oh-label" for="{{ biometric_form.api_secret.id_for_label }}">{{ biometric_form.api_secret.label }}</label>
+                {{ biometric_form.api_secret }}
+                {% if biometric_form.api_secret.errors %}
+                    {{ biometric_form.api_secret.errors }}
+                {% endif %}
+            </div>
+
+            {# direction and company #}
+            <div class="oh-input-group">
+                <label class="oh-label" for="{{ biometric_form.device_direction.id_for_label }}">{{ biometric_form.device_direction.label }}</label>
+                {{ biometric_form.device_direction }}
+                {% if biometric_form.device_direction.errors %}
+                    {{ biometric_form.device_direction.errors }}
+                {% endif %}
+            </div>
+
+            <div class="oh-input-group">
+                <label class="oh-label" for="{{ biometric_form.company_id.id_for_label }}">{{ biometric_form.company_id.label }}</label>
+                {{ biometric_form.company_id }}
+                {% if biometric_form.company_id.errors %}
+                    {{ biometric_form.company_id.errors }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="oh-modal__dialog-footer p-0 pt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                {% trans "Save" %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        if ($('select[name="machine_type"]').length) {
+            $('select[name="machine_type"]').change();
+        }
+
+        $(".oh-password-input--toggle").click(function () {
+            var passwordInput = $(this).prev('input[name="bio_password"]');
+            var showIcon = $(this).find(".oh-passowrd-input__show-icon");
+            var hideIcon = $(this).find(".oh-passowrd-input__hide-icon");
+            if (passwordInput.attr("type") === "password") {
+                passwordInput.attr("type", "text");
+                showIcon.addClass("d-none");
+                hideIcon.removeClass("d-none");
+            } else {
+                passwordInput.attr("type", "password");
+                showIcon.removeClass("d-none");
+                hideIcon.addClass("d-none");
+            }
+        });
+    });
+</script>

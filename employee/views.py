@@ -208,6 +208,18 @@ def employee_profile(request):
     This method is used to view own profile of employee.
     """
     employee = request.user.employee_get
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        company_id = getattr(
+            getattr(getattr(employee, "employee_work_info", None), "company_id", None),
+            "id",
+            None,
+        )
+
+        if str(company_id) != str(selected_company):
+            messages.error(request, "Employee is not working in the selected company.")
+            return redirect("employee-view")
+
     today = datetime.today()
     now = timezone.now()
     return render(

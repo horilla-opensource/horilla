@@ -209,6 +209,8 @@ function toggleReimbursmentType(element) {
             .parent()
             .hide()
             .attr("required", false);
+        // #819
+        $("#objectCreateModalTarget [name=employee_id]").trigger("change");
     } else if (element.val() == "bonus_encashment") {
         $("#objectCreateModalTarget [name=attachment]").parent().hide();
         $("#objectCreateModalTarget [name=attachment]").attr("required", false);
@@ -427,6 +429,28 @@ function handleHtmxTarget(event, path, verb) {
         hxTarget = event.target;
     }
     return hxTarget;
+}
+
+function hxConfirm(element, messageText) {
+    Swal.fire({
+        html: messageText,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            htmx.trigger(element, 'confirmed');
+        }
+        else {
+            element.checked = false
+            return false
+        }
+
+    });
 }
 
 function handleDownloadAndRefresh(event, url) {

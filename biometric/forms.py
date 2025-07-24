@@ -39,6 +39,8 @@ class BiometricDeviceForm(ModelForm):
         exclude = [
             "is_scheduler",
             "scheduler_duration",
+            "last_fetch_date",
+            "last_fetch_time",
             "is_active",
         ]
         widgets = {

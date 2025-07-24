@@ -1597,19 +1597,23 @@ def view_reimbursement(request):
 @hx_request_required
 def create_reimbursement(request):
     """
-    This method is used to create reimbursement
+    Create or update a reimbursement entry.
     """
-    instance_id = eval_validate(str(request.GET.get("instance_id")))
     instance = None
+    instance_id = request.GET.get("instance_id")
+
     if instance_id:
         instance = Reimbursement.objects.filter(id=instance_id).first()
-    form = forms.ReimbursementForm(instance=instance)
+
     if request.method == "POST":
         form = forms.ReimbursementForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(request, "Reimbursent saved successfully")
-            return HttpResponse("<script>window.location.reload()</script>")
+            messages.success(request, "Reimbursement saved successfully")
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+    else:
+        form = forms.ReimbursementForm(instance=instance)
+
     return render(request, "payroll/reimbursement/form.html", {"form": form})
 
 

@@ -1176,6 +1176,7 @@ class HorillaMailTemplate(HorillaModel):
         verbose_name=_("Company"),
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
+    xss_exempt_fields = ["body"]
 
     def __str__(self) -> str:
         return f"{self.title}"

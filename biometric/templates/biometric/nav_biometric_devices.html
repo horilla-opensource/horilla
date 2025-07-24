@@ -21,8 +21,9 @@
         <div class="oh-input-group oh-input__search-group" :class="searchShow ? 'oh-input__search-group--show' : ''">
             <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
             <input type="text" class="oh-input oh-input__icon" aria-label="Search Input" id="devices-search"
-                name="search" placeholder="{% trans 'Search' %}" hx-get="{% url 'search-devices' %}" hx-swap="innerHTML"
-                hx-target="#biometricDeviceList" hx-trigger="keyup delay:500ms" />
+                name="search" placeholder="{% trans 'Search' %}" hx-get="{% url 'view-biometric-devices' %}"
+                hx-swap="outerHTML" hx-select="#biometricDeviceList" hx-target="#biometricDeviceList"
+                hx-trigger="keyup delay:500ms" />
         </div>
 
         <div class="oh-main__titlebar-button-container">
@@ -33,8 +34,7 @@
                 </button>
                 <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
                     @click.outside="open = false" id="biometricDeviceFilter" style="display: none; width: 550px">
-                    <form hx-get="{% url 'search-devices' %}" hx-swap="innerHTML" hx-target="#biometricDeviceList"
-                        id="filterForm" class="d-flex">
+                    <form hx-get="{% url 'view-biometric-devices' %}" hx-swap="outerHTML" hx-select="#biometricDeviceList" hx-target="#biometricDeviceList" id="filterForm">
                         {% include 'biometric/biometric_device_filter.html' %}
                     </form>
                 </div>
