@@ -3,12 +3,12 @@
     "model": "base.horillamailtemplate",
     "pk": 1,
     "fields": {
-      "created_at": "2025-06-30T06:35:03.434Z",
-      "created_by": 1,
-      "modified_by": 1,
-      "is_active": false,
-      "title": "Leave Request Template",
-      "body": "<p style=\"font-size: 12.8px;\">This is to inform you that {{ model_instance.employee_id }} has submitted a leave request for {{model_instance.requested_days}} days. Please take the necessary actions to review and process the request at your earliest convenience.</p><p style=\"font-size: 12.8px;\"><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance.employee_id }}.<br><br>Thank you for your prompt attention to this matter.</p>",
+      "created_at": "2025-06-05T09:39:13.733Z",
+      "created_by": null,
+      "modified_by": null,
+      "is_active": true,
+      "title": "Offer letter",
+      "body": "<p style=\"font-size: 12.8px; text-align: center;\"><span style=\"font-weight: bolder;\"><span style=\"font-family: &quot;Courier New&quot;; font-size: 24px;\">Congratulations! Job Offer at {{instance.get_company}}</span></span></p><p style=\"font-size: 12.8px;\">username:{{instance.get_email}}</p><p style=\"font-size: 12.8px;\">password:{{instance.phone}}</p><p style=\"font-size: 12.8px;\"><i><span style=\"font-size: 14px;\">Dear {{instance.get_full_name}},</span></i></p><p style=\"font-size: 12.8px;\">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; I am delighted to extend an official offer of employment to you for the position of [Job Title] at [Company Name]. We were thoroughly impressed with your skills, experience, and the passion you demonstrated during the interview process.</p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Here are the details of your job offer:&nbsp;</span></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">&nbsp; &nbsp; Job Position: {{instance.get_job_position}}</span></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">We believe that your unique talents will make a significant contribution to our team, and we are thrilled about the prospect of you joining us. Please take the time to review the attached detailed job description, as well as the terms and conditions outlined in the employment contract.</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">To signify your acceptance of this job offer, please confirm your agreement by [Date to Respond]. If you have any questions or need further clarification, feel free to contact me directly</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">We are excited about the value you will bring to [Company Name], and we eagerly anticipate the positive impact you'll have on our team.</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Welcome aboard, and we look forward to a successful and fulfilling working relationship!</span><br></p><p style=\"font-size: 12.8px;\"><span style=\"font-size: 12.8px;\">Warm regards,</span></p>",
       "company_id": null
     }
   },
@@ -16,20 +16,46 @@
     "model": "base.horillamailtemplate",
     "pk": 2,
     "fields": {
-      "created_at": "2025-06-30T06:35:03.460Z",
+      "created_at": "2025-06-12T10:23:52.188Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "title": "Leave Allocation Request Template",
-      "body": "<p style=\"font-size: 12.8px;\">This is to inform you that {{ model_instance.employee_id }} has submitted a leave allocation request for {{model_instance.requested_days}} days. Please take the necessary actions to review and process the request at your earliest convenience.</p><p style=\"font-size: 12.8px;\"><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance.employee_id }}.<br><br>Thank you for your prompt attention to this matter.&nbsp;</p>",
-      "company_id": null
+      "title": "Leave Request Mail",
+      "body": "<p>Dear,</p><p>This is to inform you that {{ model_instance.employee_id }} has submitted a leave request for {{model_instance.requested_days}} days. Please take the necessary actions to review and process the request at your earliest convenience.<br><br>If you require any additional information or updates, feel free to communicate directly with {{ model_instance.employee_id }}.<br><br>Thank you for your prompt attention to this matter.</p>",
+      "company_id": 1
     }
   },
   {
     "model": "base.horillamailtemplate",
     "pk": 3,
     "fields": {
-      "created_at": "2025-06-30T06:35:03.478Z",
+      "created_at": "2025-07-24T07:30:08.679Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": false,
+      "title": "Leave Request Template",
+      "body": "<div style=\"font-family: 'Segoe UI', sans-serif; background-color: #f9f9f9; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);\">\n    <h2 style=\"color: #000000; text-align: center; font-size: 22px; margin-bottom: 25px;\">Leave Request</h2>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      Dear {{ model_instance.employee_id.get_reporting_manager }},\n    </p>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      {{ model_instance.employee_id }} has submitted a leave request. Please find the details below.\n    </p>\n\n    <div style=\"margin: 20px 0; padding: 15px; background: #f4f4f4; border-left: 4px solid hsl(8, 77%, 56%); border-radius: 6px;\">\n      <p style=\"margin: 6px 0;\"><strong>Leave Type:</strong> {{ model_instance.leave_type_id }}</p>\n      <p style=\"margin: 6px 0;\"><strong>From Date:</strong> {{ model_instance.start_date }} ({{ model_instance.get_start_date_breakdown_display }})</p>\n      <p style=\"margin: 6px 0;\"><strong>To Date:</strong> {{ model_instance.end_date }} ({{ model_instance.get_end_date_breakdown_display }})</p>\n      <p style=\"margin: 6px 0;\"><strong>Total Days:</strong> {{ model_instance.requested_days }}</p>\n      <p style=\"margin: 6px 0;\"><strong>Description:</strong> {{ model_instance.description }}</p>\n    </div>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      Please log in to the HRMS system to review and take necessary action on this request.\n    </p>\n\n    <div style=\"text-align: center; margin-top: 25px;\">\n      <a href=\"{{ request.scheme }}://{{ request.get_host }}/leave/request-view/?id={{ model_instance.id }}\" style=\"display: inline-block; padding: 10px 20px; background-color: hsl(8, 77%, 56%); color: white; text-decoration: none; border-radius: 6px; font-weight: 500;\">\n         Review Request\n      </a>\n    </div>\n\n    <hr style=\"margin: 30px 0; border: none; border-top: 1px solid #eee;\">\n\n    <p style=\"font-size: 12px; color: #888; text-align: center; line-height: 1.5;\">\n      This is an automated message from the HRMS system.<br>\n      Regards, <strong>{{ model_instance.employee_id.get_company }}</strong>\n    </p>\n  </div>\n</div>",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.horillamailtemplate",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-07-24T07:30:08.701Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": false,
+      "title": "Leave Allocation Request Template",
+      "body": "<div style=\"font-family: 'Segoe UI', sans-serif; background-color: #f9f9f9; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);\">\n    <h2 style=\"color: #000000; text-align: center; font-size: 22px; margin-bottom: 25px;\">Leave Allocation Request</h2>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      Dear {{ model_instance.employee_id.get_reporting_manager }},\n    </p>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      {{ model_instance.employee_id }} has submitted a leave allocation request for <strong>{{ model_instance.requested_days }} days</strong>.\n    </p>\n\n    <div style=\"margin: 20px 0; padding: 15px; background: #f4f4f4; border-left: 4px solid hsl(8, 77%, 56%); border-radius: 6px;\">\n      <p style=\"margin: 6px 0;\"><strong>Leave Type:</strong> {{ model_instance.leave_type_id }}</p>\n      <p style=\"margin: 6px 0;\"><strong>Requested Days:</strong> {{ model_instance.requested_days }}</p>\n      <p style=\"margin: 6px 0;\"><strong>Requested Date:</strong> {{ model_instance.requested_date }}</p>\n      <p style=\"margin: 6px 0;\"><strong>Description:</strong> {{ model_instance.description }}</p>\n    </div>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      Please log in to the HRMS to review and take appropriate action.\n    </p>\n\n    <div style=\"text-align: center; margin-top: 25px;\">\n      <a href=\"{{ request.scheme }}://{{ request.get_host }}/leave/leave-allocation-request-view/?id={{ model_instance.id }}\" style=\"display: inline-block; padding: 10px 20px; background-color: hsl(8, 77%, 56%); color: white; text-decoration: none; border-radius: 6px; font-weight: 500;\">\n         Review Request\n      </a>\n    </div>\n\n    <hr style=\"margin: 30px 0; border: none; border-top: 1px solid #eee;\">\n\n    <p style=\"font-size: 12px; color: #888; text-align: center; line-height: 1.5;\">\n      This is an automated message from the HRMS system.<br>\n      Regards, <strong>{{ model_instance.employee_id.get_company }}</strong>\n    </p>\n  </div>\n</div>",
+      "company_id": null
+    }
+  },
+  {
+    "model": "base.horillamailtemplate",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-07-24T07:30:08.716Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
@@ -40,9 +66,9 @@
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 4,
+    "pk": 6,
     "fields": {
-      "created_at": "2025-06-30T06:35:03.497Z",
+      "created_at": "2025-07-24T07:30:08.729Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
@@ -53,9 +79,9 @@
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 5,
+    "pk": 7,
     "fields": {
-      "created_at": "2025-06-30T06:35:03.515Z",
+      "created_at": "2025-07-24T07:30:08.741Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
@@ -66,9 +92,9 @@
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 6,
+    "pk": 8,
     "fields": {
-      "created_at": "2025-06-30T06:36:05.669Z",
+      "created_at": "2025-07-24T07:30:08.756Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
@@ -79,9 +105,9 @@
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 7,
+    "pk": 9,
     "fields": {
-      "created_at": "2025-06-02T08:56:53.382Z",
+      "created_at": "2025-07-24T07:30:08.769Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
@@ -92,9 +118,9 @@
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 8,
+    "pk": 10,
     "fields": {
-      "created_at": "2025-06-02T09:03:19.682Z",
+      "created_at": "2025-07-24T07:30:08.783Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
@@ -105,22 +131,22 @@
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 9,
+    "pk": 11,
     "fields": {
-      "created_at": "2025-06-02T09:21:40.929Z",
+      "created_at": "2025-07-24T07:30:08.795Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "title": "Application Received Automation",
-      "body": "<p><span style=\"font-size: 12.8px;\">Dear </span><b>{{instance.get_full_name}}</b><span style=\"font-size: 12.8px;\">,</span></p><p><span style=\"font-size: 12.8px;\">Thank you for applying for the </span><b>{{instance.get_job_position}}</b><span style=\"font-size: 12.8px;\"> position at </span><b>{{instance.get_company}}</b><span style=\"font-size: 12.8px;\">. We have received your application, and our team will be reviewing your profile shortly.&nbsp;</span></p><p>If your qualifications match our requirements, we will reach out to you to discuss the next steps in the hiring process. Regardless of the outcome, we appreciate your interest in joining our team.</p><p><span style=\"font-size: 12.8px;\">Thank you again for considering </span>{{instance.get_company}}<span style=\"font-size: 12.8px;\">. We wish you all the best!</span></p>",
+      "title": "Application Received Template",
+      "body": "<p>Dear {{ instance.name }},</p>\n\n<p>Thank you for applying for the <strong>{{ instance.job_position_id }}</strong> position at \n{% if instance.recruitment_id.company_id %}\n<strong>{{ instance.recruitment_id.company_id }}</strong>.\n{% else %}\nour company.\n{% endif %}</p>\n\n<p>We have received your application and our recruitment team is currently reviewing your profile.</p>\n\n<p>If your qualifications align with our current requirements, we will contact you for the next steps in the hiring process. In the meantime, feel free to visit our portal for any updates or communication.</p>\n\n<p>We appreciate your interest in joining our team and taking the time to apply.</p>\n\n<p>Best regards,<br>\n{% if instance.recruitment_id.company_id %}\n<strong>{{ instance.recruitment_id.company_id }}</strong><br>\n{% endif %}\nRecruitment Team</p>\n\n<hr style=\"border:none;border-top:1px solid #eee;\">\n\n<p style=\"font-size:12px;color:#888;text-align:center;\">\nThis is an automated message from the HRMS system.\n</p>",
       "company_id": null
     }
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 10,
+    "pk": 12,
     "fields": {
-      "created_at": "2025-06-03T06:48:48.607Z",
+      "created_at": "2025-07-24T07:30:08.810Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
@@ -131,22 +157,22 @@
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 11,
+    "pk": 13,
     "fields": {
-      "created_at": "2025-06-09T10:21:25.298Z",
+      "created_at": "2025-07-24T07:30:08.824Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
-      "title": "Employee Portal Access Automation",
-      "body": "<p>Hi {{instance.get_full_name}},</p><p>Access following link&nbsp;<a href=\"{{ request.scheme }}://{{ request.get_host }}\" target=\"_blank\" style=\"transition-property: all;\">{{ request.scheme }}://{{ request.get_host }}</a>&nbsp;to access Horilla HR employee self service portal</p><div><b>Username:</b> {{instance.employee_user_id.username}}</div><div><b>Initial Password: </b>{{instance.phone}}</div><div><br></div><div><span style=\"background-color: rgb(255, 255, 0);\"><i>Reset after first login</i></span></div>",
+      "title": "Employee Portal Access Template",
+      "body": "<div style=\"font-family: 'Segoe UI', sans-serif; background-color: #f9f9f9; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);\">\n    \n    <h2 style=\"color: #000000; text-align: center; font-size: 22px; margin-bottom: 25px;\">\n      Access Your HRMS Portal\n    </h2>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      Hi {{ instance.get_full_name }},\n    </p>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      You can now access the HRMS Portal using the details below:\n    </p>\n\n    <div style=\"margin: 20px 0; padding: 15px; background: #f4f4f4; border-left: 4px solid hsl(8, 77%, 56%); border-radius: 6px;\">\n      <p style=\"margin: 6px 0;\">\n        <strong>Portal Link:</strong> \n        <a href=\"{{ request.scheme }}://{{ request.get_host }}\" target=\"_blank\" style=\"color: hsl(8, 77%, 56%); text-decoration: none;\">\n          {{ request.scheme }}://{{ request.get_host }}\n        </a>\n      </p>\n      <p style=\"margin: 6px 0;\">\n        <strong>Username:</strong> \n        <span style=\"color: #333; font-size: 14px;\">{{ instance.email }}</span>\n      </p>\n      <p style=\"margin: 6px 0;\">\n        <strong>Initial Password:</strong> \n        <span style=\"color: #333; font-size: 14px;\">{{ instance.phone }}</span>\n      </p>\n      <p style=\"margin: 10px 0; font-style: italic; background: #fff8c4; padding: 6px 10px; border-radius: 4px; display: inline-block;\">\n        Please reset your password after first login.\n      </p>\n    </div>\n\n    <hr style=\"margin: 30px 0; border: none; border-top: 1px solid #eee;\">\n\n    <p style=\"font-size: 12px; color: #888; text-align: center; line-height: 1.5;\">\n      This is an automated message from the HRMS system.<br>\n      Regards, {% if instance.get_company %}<strong>{{ instance.get_company }}</strong>{% endif %}</p>\n  </div>\n</div>",
       "company_id": null
     }
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 12,
+    "pk": 14,
     "fields": {
-      "created_at": "2025-06-09T11:03:19.494Z",
+      "created_at": "2025-07-24T07:30:08.840Z",
       "created_by": 1,
       "modified_by": 1,
       "is_active": false,
@@ -157,14 +183,27 @@
   },
   {
     "model": "base.horillamailtemplate",
-    "pk": 13,
+    "pk": 15,
     "fields": {
-      "created_at": "2025-07-23T06:30:13.020Z",
+      "created_at": "2025-07-24T07:30:08.858Z",
       "created_by": 1,
       "modified_by": 1,
-      "is_active": true,
-      "title": "Work Type Request",
-      "body": "<pre style=\"\"><span style=\"text-wrap-mode: wrap;\">Dear {{ model_instance.employee_id.get_reporting_manager }},\n\nA new work type change request has been submitted by {{ model_instance.employee_id }}.\n\nPlease review the request details below:\n\nEmployee: {{ model_instance.employee_id }}  \nCurrent Work Type: {{ model_instance.previous_work_type_id }}  \nRequested Work Type: {{ model_instance.work_type_id }}  \nRequested From: {{ model_instance.requested_date }}  \nRequested Till: {{ model_instance.requested_till }}\n\nDescription:  \n{{ model_instance.description }}\n\nPlease log in to the HRMS system:  \n{{ request.scheme }}://{{ request.get_host }}/employee/work-type-request-view/?id={{ model_instance.id }}  \nto review and take appropriate action on this request.\n\nThis is an automated message from the HRMS system.\n\nRegards,  \n{{ model_instance.employee_id.get_company }}</span></pre>",
+      "is_active": false,
+      "title": "Work Type Request Template",
+      "body": "<div style=\"font-family: 'Segoe UI', sans-serif; background-color: #f9f9f9; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);\">\n    <h2 style=\"color: #000000; text-align: center; font-size: 22px; margin-bottom: 25px;\">Work Type Change Request</h2>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      Dear {{ model_instance.employee_id.get_reporting_manager }},\n    </p>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      A new work type change request has been submitted by <strong>{{ model_instance.employee_id }}</strong>.\n    </p>\n\n    <div style=\"margin: 20px 0; padding: 15px; background: #f4f4f4; border-left: 4px solid hsl(8, 77%, 56%); border-radius: 6px;\">\n      <p style=\"margin: 6px 0;\"><strong>Current Work Type:</strong> {{ model_instance.previous_work_type_id }}</p>\n      <p style=\"margin: 6px 0;\"><strong>Requested Work Type:</strong> {{ model_instance.work_type_id }}</p>\n      <p style=\"margin: 6px 0;\"><strong>From:</strong> {{ model_instance.requested_date }}</p>\n      <p style=\"margin: 6px 0;\"><strong>Till:</strong> {{ model_instance.requested_till }}</p>\n      <p style=\"margin: 6px 0;\"><strong>Description:</strong> {{ model_instance.description }}</p>\n    </div>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      Please review and process this request from your HRMS dashboard.\n    </p>\n\n    <div style=\"text-align: center; margin-top: 25px;\">\n      <a href=\"{{ request.scheme }}://{{ request.get_host }}/employee/work-type-request-view/?id={{ model_instance.id }}\" style=\"display: inline-block; padding: 10px 20px; background-color: hsl(8, 77%, 56%); color: white; text-decoration: none; border-radius: 6px; font-weight: 500;\">\n         Review Request\n      </a>\n    </div>\n\n    <hr style=\"margin: 30px 0; border: none; border-top: 1px solid #eee;\">\n\n    <p style=\"font-size: 12px; color: #888; text-align: center; line-height: 1.5;\">\n      This is an automated message from the HRMS system.<br>\n      Regards, <strong>{{ model_instance.employee_id.get_company }}</strong>\n    </p>\n  </div>\n</div>",
+      "company_id": 1
+    }
+  },
+  {
+    "model": "base.horillamailtemplate",
+    "pk": 16,
+    "fields": {
+      "created_at": "2025-07-24T07:30:08.874Z",
+      "created_by": 1,
+      "modified_by": 1,
+      "is_active": false,
+      "title": "Shift Request Template",
+      "body": "<div style=\"font-family: 'Segoe UI', sans-serif; background-color: #f9f9f9; padding: 30px;\">\n  <div style=\"max-width: 600px; margin: auto; background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);\">\n    <h2 style=\"color: #000000; text-align: center; font-size: 22px; margin-bottom: 25px;\">Shift Change Request</h2>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      Dear {{ model_instance.employee_id.get_reporting_manager }},\n    </p>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      {{ model_instance.employee_id }} has submitted a shift change request. Please find the details below.\n    </p>\n\n    <div style=\"margin: 20px 0; padding: 15px; background: #f4f4f4; border-left: 4px solid hsl(8, 77%, 56%); border-radius: 6px;\">\n      <p style=\"margin: 6px 0;\"><strong>Previous Shift:</strong> {{ model_instance.previous_shift_id }}</p>\n      <p style=\"margin: 6px 0;\"><strong>Requested Shift:</strong> {{ model_instance.shift_id }}</p>\n      <p style=\"margin: 6px 0;\"><strong>Requested From:</strong> {{ model_instance.requested_date }}</p>\n      {% if model_instance.requested_till %}\n      <p style=\"margin: 6px 0;\"><strong>Requested Till:</strong> {{ model_instance.requested_till }}</p>\n      {% endif %}\n      <p style=\"margin: 6px 0;\"><strong>Permanent Change:</strong> {% if model_instance.is_permanent_shift %}Yes{% else %}No{% endif %}</p>\n      {% if model_instance.reallocate_to %}\n      <p style=\"margin: 6px 0;\"><strong>Reallocate To:</strong> {{ model_instance.reallocate_to }}</p>\n      {% endif %}\n      {% if model_instance.description %}\n      <p style=\"margin: 6px 0;\"><strong>Description:</strong> {{ model_instance.description }}</p>\n      {% endif %}\n    </div>\n\n    <p style=\"font-size: 14px; color: #333; line-height: 1.6;\">\n      Please log in to the HRMS system to review and take necessary action on this request.\n    </p>\n\n    <div style=\"text-align: center; margin-top: 25px;\">\n      <a href=\"{{ request.scheme }}://{{ request.get_host }}/employee/shift-request-view/?id={{ model_instance.id }}\" style=\"display: inline-block; padding: 10px 20px; background-color: hsl(8, 77%, 56%); color: white; text-decoration: none; border-radius: 6px; font-weight: 500;\">\n         Review Request\n      </a>\n    </div>\n\n    <hr style=\"margin: 30px 0; border: none; border-top: 1px solid #eee;\">\n\n    <p style=\"font-size: 12px; color: #888; text-align: center; line-height: 1.5;\">\n      This is an automated message from the HRMS system.<br>\n      Regards, <strong>{% if model_instance.employee_id.get_company %}{{ model_instance.employee_id.get_company }}{% else %}HRMS{% endif %}</strong>\n    </p>\n  </div>\n</div>",
       "company_id": 1
     }
   }

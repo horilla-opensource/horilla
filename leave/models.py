@@ -157,38 +157,69 @@ WEEK_DAYS = [
 
 
 class LeaveType(HorillaModel):
-    icon = models.ImageField(null=True, blank=True, upload_to="leave/leave_icon")
-    name = models.CharField(max_length=30, null=False)
-    color = models.CharField(null=True, max_length=30)
-    payment = models.CharField(max_length=30, choices=PAYMENT, default="unpaid")
+    icon = models.ImageField(
+        null=True, blank=True, upload_to="leave/leave_icon", verbose_name=_("Icon")
+    )
+    name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
+    color = models.CharField(null=True, max_length=30, verbose_name=_("Color"))
+    payment = models.CharField(
+        max_length=30, choices=PAYMENT, default="unpaid", verbose_name=_("Is Paid")
+    )
     count = models.FloatField(null=True, default=1)
     period_in = models.CharField(max_length=30, choices=TIME_PERIOD, default="day")
-    limit_leave = models.BooleanField(default=True)
+    limit_leave = models.BooleanField(default=True, verbose_name=_("Limit Leave Days"))
     total_days = models.FloatField(null=True, default=1)
-    reset = models.BooleanField(default=False)
-    is_encashable = models.BooleanField(default=False, verbose_name=_("Is encashable"))
+    reset = models.BooleanField(default=False, verbose_name=_("Reset"))
+    is_encashable = models.BooleanField(default=False, verbose_name=_("Is Encashable"))
     reset_based = models.CharField(
         max_length=30,
         choices=RESET_BASED,
         blank=True,
         null=True,
+        verbose_name=_("Reset Period"),
     )
-    reset_month = models.CharField(max_length=30, choices=MONTHS, blank=True)
-    reset_day = models.CharField(max_length=30, choices=DAYS, null=True, blank=True)
+    reset_month = models.CharField(
+        max_length=30, choices=MONTHS, blank=True, verbose_name=_("Reset Month")
+    )
+    reset_day = models.CharField(
+        max_length=30, choices=DAYS, null=True, blank=True, verbose_name=_("Reset Day")
+    )
     reset_weekend = models.CharField(
-        max_length=10, null=True, blank=True, choices=WEEK_DAYS
+        max_length=10,
+        null=True,
+        blank=True,
+        choices=WEEK_DAYS,
+        verbose_name=_("Reset Weekday"),
     )
     carryforward_type = models.CharField(
-        max_length=30, choices=CARRYFORWARD_TYPE, default="no carryforward"
+        max_length=30,
+        choices=CARRYFORWARD_TYPE,
+        default="no carryforward",
+        verbose_name=_("Carryforward Type"),
     )
-    carryforward_max = models.FloatField(null=True, blank=True)
-    carryforward_expire_in = models.IntegerField(null=True, blank=True)
+    carryforward_max = models.FloatField(
+        null=True, blank=True, verbose_name=_("Carryforward Max")
+    )
+    carryforward_expire_in = models.IntegerField(
+        null=True, blank=True, verbose_name=_("Carryforward Expire In")
+    )
     carryforward_expire_period = models.CharField(
-        max_length=30, choices=TIME_PERIOD, null=True, blank=True
+        max_length=30,
+        choices=TIME_PERIOD,
+        null=True,
+        blank=True,
+        verbose_name=_("Carryforward Expire Period"),
     )
-    carryforward_expire_date = models.DateField(null=True, blank=True)
+    carryforward_expire_date = models.DateField(
+        null=True, blank=True, verbose_name=_("Carryforward Expire Date")
+    )
     require_approval = models.CharField(
-        max_length=30, choices=CHOICES, null=True, blank=True, default="yes"
+        max_length=30,
+        choices=CHOICES,
+        null=True,
+        blank=True,
+        default="yes",
+        verbose_name=_("Require Approval"),
     )
     require_attachment = models.CharField(
         max_length=30,
@@ -199,9 +230,14 @@ class LeaveType(HorillaModel):
         verbose_name=_("Require Attachment"),
     )
     exclude_company_leave = models.CharField(
-        max_length=30, choices=CHOICES, default="no"
+        max_length=30,
+        choices=CHOICES,
+        default="no",
+        verbose_name=_("Exclude Company Holidays"),
     )
-    exclude_holiday = models.CharField(max_length=30, choices=CHOICES, default="no")
+    exclude_holiday = models.CharField(
+        max_length=30, choices=CHOICES, default="no", verbose_name=_("Exclude Holidays")
+    )
     is_compensatory_leave = models.BooleanField(default=False)
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT

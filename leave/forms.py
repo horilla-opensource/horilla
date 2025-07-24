@@ -174,9 +174,11 @@ class UpdateLeaveTypeForm(ConditionForm):
     class Meta:
         model = LeaveType
         fields = "__all__"
-        exclude = ["period_in", "total_days", "is_active"]
+        exclude = ["is_active"]
         widgets = {
             "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
+            "period_in": forms.HiddenInput(),
+            "total_days": forms.HiddenInput(),
             "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
         }
 
