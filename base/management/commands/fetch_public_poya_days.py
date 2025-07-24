@@ -49,7 +49,8 @@ class Command(BaseCommand):
                             start_date=holiday_date,
                             end_date=holiday_date,
                             recurring=False,
-                            company_id=None
+                            company_id=None,
+                            is_poya_holiday=True,
                         )
                         count_created += 1
 
