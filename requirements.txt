@@ -45,7 +45,7 @@ pillow
 pycparser
 pyHanko
 pyhanko-certvalidator
-PyMuPDF== 1.24.5
+PyMuPDF
 pypdf
 pypng
 python-bidi
@@ -77,3 +77,4 @@ gunicorn
 psycopg2-binary
 whitenoise
 django-storages
+google-api-python-client>=2.0.0
