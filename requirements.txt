@@ -54,6 +54,7 @@ pytz
 PyYAML
 pyzk==0.9
 qrcode
+python-decouple==3.8
 reportlab==4.0.9
 requests
 responses
