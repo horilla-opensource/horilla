@@ -16,6 +16,8 @@ class BaseConfig(AppConfig):
     def ready(self) -> None:
         from base import signals
 
+        from base import scheduler
+        scheduler.start()
         super().ready()
         try:
             from base.models import EmployeeShiftDay
