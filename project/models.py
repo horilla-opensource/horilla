@@ -49,12 +49,12 @@ def validate_time_format(value):
 
 class Project(HorillaModel):
     PROJECT_STATUS = [
-        ("new", "New"),
-        ("in_progress", "In Progress"),
-        ("completed", "Completed"),
-        ("on_hold", "On Hold"),
-        ("cancelled", "Cancelled"),
-        ("expired", "Expired"),
+        ("new", _("New")),
+        ("in_progress", _("In Progress")),
+        ("completed", _("Completed")),
+        ("on_hold", _("On Hold")),
+        ("cancelled", _("Cancelled")),
+        ("expired", _("Expired")),
     ]
     title = models.CharField(max_length=200, unique=True, verbose_name=_("Name"))
     managers = models.ManyToManyField(
