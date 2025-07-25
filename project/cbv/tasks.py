@@ -31,6 +31,7 @@ from project.filters import TaskAllFilter
 from project.forms import TaskAllForm
 from project.methods import you_dont_have_permission
 from project.models import Project, ProjectStage, Task
+from employee.models import Employee
 from project.templatetags.taskfilters import task_crud_perm
 
 logger = logging.getLogger(__name__)
