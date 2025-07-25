@@ -950,7 +950,7 @@ def task_filter(request, project_id):
         # .distinct()
         # .order_by("sequence")
     )
-    previous_data = request.environ["QUERY_STRING"]
+    previous_data = request.META.get("QUERY_STRING", "")
     data_dict = parse_qs(previous_data)
     get_key_instances(Task, data_dict)
     if data_dict.get("project"):
