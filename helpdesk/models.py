@@ -204,6 +204,7 @@ class Comment(HorillaModel):
         Employee, on_delete=models.DO_NOTHING, related_name="employee_comment"
     )
     date = models.DateTimeField(auto_now_add=True)
+    xss_exempt_fields = ["comment"]  # 850
 
     def __str__(self):
         return self.comment
