@@ -217,6 +217,8 @@ class Attendance(HorillaModel):
         max_length=18, null=True, choices=status, default="update_request"
     )
     is_holiday = models.BooleanField(default=False)
+    is_poya_holiday = models.BooleanField(default=False)
+    is_mercantile_holday = models.BooleanField(default=False)
     requested_data = models.JSONField(null=True, editable=False)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -340,6 +342,12 @@ class Attendance(HorillaModel):
         if is_holiday(self.attendance_date) or is_company_leave(self.attendance_date):
             self.minimum_hour = "00:00"
             self.is_holiday = True
+            holiday_data  = is_holiday(self.attendance_date)
+            if holiday_data.is_mercantile_holday:
+                self.is_mercantile_holday = True
+            if holiday_data.is_poya_holiday:
+                self.is_poya_holiday = True
+
 
     def update_attendance_overtime(self):
         """
