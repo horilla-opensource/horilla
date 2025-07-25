@@ -439,63 +439,64 @@ if not any(
     cmd in sys.argv
     for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
 ):
-    scheduler = BackgroundScheduler()
-
-    # Add jobs with next_run_time set to the end of the previous job
-    try:
-        scheduler.add_job(rotate_shift, "interval", hours=4, id="job1")
-    except:
-        pass
-
-    try:
-        scheduler.add_job(
-            rotate_work_type,
-            "interval",
-            hours=4,
-            id="job2",
-        )
-    except:
-        pass
-
-    try:
-        scheduler.add_job(
-            undo_shift,
-            "interval",
-            hours=4,
-            id="job3",
-        )
-    except:
-        pass
-
-    try:
-        scheduler.add_job(
-            switch_shift,
-            "interval",
-            hours=4,
-            id="job4",
-        )
-    except:
-        pass
-
-    try:
-        scheduler.add_job(
-            undo_work_type,
-            "interval",
-            hours=4,
-            id="job6",
-        )
-    except:
-        pass
-
-    try:
-        scheduler.add_job(
-            switch_work_type,
-            "interval",
-            hours=4,
-            id="job5",
-        )
-    except:
-        pass
-
-    scheduler.add_job(recurring_holiday, "interval", hours=4)
-    scheduler.start()
+    # scheduler = BackgroundScheduler()
+    #
+    # # Add jobs with next_run_time set to the end of the previous job
+    # try:
+    #     scheduler.add_job(rotate_shift, "interval", hours=4, id="job1")
+    # except:
+    #     pass
+    #
+    # try:
+    #     scheduler.add_job(
+    #         rotate_work_type,
+    #         "interval",
+    #         hours=4,
+    #         id="job2",
+    #     )
+    # except:
+    #     pass
+    #
+    # try:
+    #     scheduler.add_job(
+    #         undo_shift,
+    #         "interval",
+    #         hours=4,
+    #         id="job3",
+    #     )
+    # except:
+    #     pass
+    #
+    # try:
+    #     scheduler.add_job(
+    #         switch_shift,
+    #         "interval",
+    #         hours=4,
+    #         id="job4",
+    #     )
+    # except:
+    #     pass
+    #
+    # try:
+    #     scheduler.add_job(
+    #         undo_work_type,
+    #         "interval",
+    #         hours=4,
+    #         id="job6",
+    #     )
+    # except:
+    #     pass
+    #
+    # try:
+    #     scheduler.add_job(
+    #         switch_work_type,
+    #         "interval",
+    #         hours=4,
+    #         id="job5",
+    #     )
+    # except:
+    #     pass
+    #
+    # scheduler.add_job(recurring_holiday, "interval", hours=4)
+    # scheduler.start()
+    print('scheduler stopped')
