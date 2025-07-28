@@ -1,0 +1,258 @@
+{% load static %}
+{% load i18n %}
+{% load horillafilters taskfilters %}
+
+{% if messages %}
+<div class="oh-alert-container" id='ohMessages'>
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% include "filter_tags.html" %}
+<div id="gridView">
+    <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-semibold">{% trans "List View" %}</h3>
+
+        {% if request.user|is_project_manager:stages.first.project %}
+        <button class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-get="{% url 'create-project-stage' project_id %}"
+            hx-target="#objectCreateModalTarget">
+            <img src="/static/horilla_theme/assets/img/icons/more.svg" alt="" width="13" class="filter brightness-0 invert">
+            {% trans "Stage" %}
+        </button>
+        {% endif %}
+    </div>
+
+    <div class="accordion-wrapper space-y-2" id="projectStages">
+        {% for stage in stages %}
+        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+            <button class="accordion-btn-pr w-full flex justify-between items-center px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">{{ stage.tasks.count }}</span>
+                    {{ stage.title }}
+                </div>
+
+                <div class="flex items-center gap-5">
+                    {% if request.user|is_project_manager:stage.project %}
+                    <span class="ml-2 px-4 py-2 bg-white rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300" data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                        hx-get="{% url 'create-stage-task' stage.id %}"
+                        hx-target="#genericModalBody"
+                        onclick="event.stopPropagation();">
+                        {% trans "Add Task" %}</span>
+                    <span>
+                        <div class="inline-block dropdown-wrapper text-md relative" onclick="event.stopPropagation(); this.querySelector('.dropdown-menu').classList.toggle('hidden');">
+                            <a class="cursor-pointer dropdown-toggle">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </a>
+                            <div class="dropdown-menu fixed right-[100px] min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200">
+                                <ul class="text-xs">
+                                    <li>
+                                        <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                           data-toggle="oh-modal-toggle" data-target="#TaskModal"
+                                           hx-get="{% url 'update-project-stage' stage.id %}"
+                                           hx-target="#TaskFormTarget">{% trans "Edit" %}</a>
+                                    </li>
+
+                                    <li>
+                                        <a
+                                            hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
+                                            hx-post="{% url 'delete-project-stage' stage.id %}?view=list"
+                                            hx-target="#deletemodal"
+                                            class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                            >
+                                            {% trans "Delete" %}
+                                        </a>
+                                      </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </span>
+                    <span class="icon text-xl font-bold" data-toggle="oh-modal-toggle">+</span>
+                    {% endif %}
+                </div>
+                <div id="taskCreateForm{{stage.id}}"
+                    class="oh-dropdown__menu oh-dropdown__menu--highlight oh-dropdown__menu--top-100 oh-dropdown__close-outside-click oh-dropdown__menu--right pt-2 pb-2 list-quick-add d-none"
+                    style="z-index: 15;">
+                </div>
+            </button>
+
+            <div class="accordion-panel-pr max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700">
+                <div class="py-3">
+                    {% if stage.tasks.exists %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="sticky top-0 bg-white text-left text-sm">
+                                <tr class="border-b border-[#ececec]">
+                                    {% comment %} <th class="p-3 w-30">
+                                        <input type="checkbox" class="w-4 h-4 text-primary-600">
+                                    </th> {% endcomment %}
+                                    <th class="p-3">{% trans "Tasks" %}</th>
+                                    <th class="p-3">{% trans "Task Managers" %}</th>
+                                    <th class="p-3">{% trans "End Date" %}</th>
+                                    <th class="p-3">{% trans "Status" %}</th>
+                                    <th class="p-3">{% trans "Stage" %}</th>
+                                    <th class="p-3">{% trans "Document" %}</th>
+                                    <th class="p-3">{% trans "Description" %}</th>
+                                    {% if request.user|is_project_manager:stage.project %}
+                                    <th class="p-3">{% trans "Actions" %}</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in stage.tasks.all %}
+                                {% if task in tasks %}
+                                <tr class="border-b border-[#f3f3f3]">
+                                    {% comment %} <td class="p-3"><input type="checkbox" class="w-4 h-4"></td> {% endcomment %}
+                                    <td class="p-3">{{ task.title }}</td>
+                                    <td class="p-3">{% for m in task.task_managers.all %}{{ m }}, {% endfor %}</td>
+                                    <td class="p-3">{{ task.end_date }}</td>
+                                    <td class="p-3">
+                                        <span class="px-2.5 py-1 bg-[#8b7a7a21]  rounded-sm text-xs w-24 inline-block">
+                                            {{ task.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td class="p-3 relative" x-data="{ open: false }">
+                                        <div class="oh-sticky-table__td oh-table-config__td" onclick='event.stopPropagation();'>
+                                            <select class="flex dropdown-toggle cursor-pointer px-2.5 py-1 bg-[#8b7a7a21] rounded-sm text-xs justify-between"
+                                                hx-get="{% url 'update-project-task-status' task.id %}?view=list"
+                                                hx-trigger="change" hx-swap="afterend" tabindex="-1" aria-hidden="true"
+                                                name="status">
+                                                {% for option in task.TASK_STATUS %}
+                                                <option value="{{option.0}}" {% if option.0 == task.status %}selected{% endif %}>
+                                                    {{option.1}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td class="p-3">
+                                        {% if task.document %}
+                                        <a href="{{ task.document.url }}" target="_blank" class="text-primary-600 underline">{% trans "View" %}</a>
+                                        {% else %}
+                                        {% trans "None" %}
+                                        {% endif %}
+                                    </td>
+                                    <td class="p-3">{{ task.description }}</td>
+                                    {% if request.user|is_project_manager:stage.project %}
+                                    <td class="p-3">
+                                        <div class="flex gap-1">
+                                            <button class="px-2 py-1 bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex justify-center items-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#TaskModal"
+                                                hx-get="{% url 'update-task' task.id %}?project_task=true"
+                                                hx-target="#TaskFormTarget">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </button>
+                                            <button class="px-2 py-1 bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex justify-center items-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                                hx-post="{% url 'delete-task' task.id %}?view=list"
+                                                {% comment %} hx-confirm="{% trans 'Do you really want to delete this task?' %}" {% endcomment %}
+                                                hx-target="#taskCreateForm{{stage.id}}">
+                                                <ion-icon name="trash-outline" role="img" class="md hydrated"
+                                                    aria-label="trash outline"></ion-icon>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center text-sm text-gray-500">{% trans "No tasks found in this stage." %}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+<div class="p-4 bg-white rounded-md mt-2 shadow-card mb-3 d-none">
+    <div id="deletemodal"></div>
+</div>
+
+
+
+
+
+    <!-- ACCORDION -->
+    <script>
+        document.querySelectorAll('.accordion-btn-pr').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const panel = btn.nextElementSibling;
+                const icon = btn.querySelector('.icon');
+                const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+
+                // Collapse all others (optional — comment this block if you want multiple open)
+                document.querySelectorAll('.accordion-panel-pr').forEach(p => {
+                    p.style.maxHeight = null;
+                    p.previousElementSibling.querySelector('.icon').textContent = '+';
+                    p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
+                    p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                });
+
+                // Toggle current
+                if (!isOpen) {
+                    panel.style.maxHeight = panel.scrollHeight + 'px';
+                    icon.textContent = '−';
+                    btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
+                    btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                } else {
+                    panel.style.maxHeight = null;
+                    icon.textContent = '+';
+                    btn.classList.remove("bg-[#e54f38]", "text-white");
+                    btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+                }
+            });
+        });
+    </script>
+
+    <!-- COLLAPSE -->
+    <script>
+        document.querySelectorAll('.btn-toggle').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                const targetSelector = button.getAttribute('data-target') || button.getAttribute('href');
+                const content = document.querySelector(targetSelector);
+
+                if (!content) return;
+
+                const expanded = button.getAttribute('aria-expanded') === 'true';
+
+                if (expanded) {
+                    // Collapse
+                    content.style.maxHeight = content.scrollHeight + 'px'; // Set current height before collapsing
+                    requestAnimationFrame(() => {
+                        content.style.maxHeight = '0';
+                    });
+                    button.setAttribute('aria-expanded', 'false');
+                } else {
+                    // Expand
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    button.setAttribute('aria-expanded', 'true');
+                }
+
+                content.classList.toggle('open');
+            });
+        });
+
+        // Reset max-height after transition
+        document.querySelectorAll('.collapse-content').forEach(content => {
+            content.addEventListener('transitionend', () => {
+                if (content.classList.contains('open')) {
+                    content.style.maxHeight = 'none';
+                }
+            });
+        });
+
+    </script>
+

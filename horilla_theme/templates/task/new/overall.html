@@ -1,8 +1,435 @@
 {% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %} {% load horillafilters %}
 <div class="h-screen overflow-hidden overflow-y-auto">
-    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+    <main >
         {% include 'task/new/task_navbar.html' %}
     </main>
+    {% include "generic/components.html" %}
+    <div class="oh-wrapper">
+        {% include "cbv/projects/project_details.html" %}
+
+      <div id="viewContainer" class="bg-white p-3 rounded-md shadow-card" >
+          {% if view_type == 'list' %}
+          {% include 'task/new/task_list_view.html' %}
+          {% else %}
+          {% include 'task/new/task_kanban_view.html' %}
+          {% endif %}
+      </div>
+    </div>
 
 </div>
-    {% endblock content %}
+
+<div class="oh-modal" id="TaskModal" role="dialog" aria-labelledby="TaskModal" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px" id="TaskFormTarget"></div>
+</div>
+
+<div class="oh-modal" id="TaskUpdateModal" role="dialog" aria-labelledby="TaskUpdateModal" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px" id="TaskUpdateTarget"></div>
+</div>
+
+<div class="oh-modal" id="ProjectStageModal" role="dialog" aria-labelledby="TaskTimesheetModal" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width:550px" id="ProjectStageFormTarget"></div>
+</div>
+
+<div class="oh-modal" id="TaskTimesheetModal" role="dialog" aria-labelledby="TaskTimesheetModal" aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width:1350px" id="TaskTimesheetTarget"></div>
+</div>
+
+<div class="oh-modal {{request.GET.active}}" id="TimesheetUpdateModal" role="dialog" aria-labelledby="TaskUpdateModal"
+    aria-hidden="true">
+    <div class="oh-modal__dialog" style="max-width: 550px" id="TimesheetUpdateTarget"></div>
+</div>
+
+<div class="oh-modal" id="addTimesheetModal" role="dialog" aria-labelledby="addTimesheetModal" aria-hidden="true"
+    style="z-index: 1022;">
+    <div class="oh-modal__dialog" id="addTimesheetModalBody">
+        <!-- Modal hx content goes here -->
+    </div>
+</div>
+
+
+<!-- Script to load components and all notifications -->
+<script>
+    async function loadComponent(elementId, path, callback) {
+        try {
+            const response = await fetch(path);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+
+            if (typeof callback === "function") {
+                callback(); // Run script after component loads
+            }
+        } catch (error) {
+            console.error("Error loading component:", error);
+        }
+    }
+
+    function initSidebarToggle() {
+        // Reusable Sidebar Toggle
+        document.querySelectorAll(".toggleSidemenu").forEach((button) => {
+            button.addEventListener("click", () => {
+                const sidebarId = button.getAttribute("data-sidebar");
+                const sidebar = document.getElementById(sidebarId);
+                if (sidebar) {
+                    sidebar.classList.toggle("active");
+                    document.body.classList.toggle("overflow-hidden");
+                }
+            });
+        });
+
+        document.querySelectorAll(".closeSidemenu").forEach((button) => {
+            button.addEventListener("click", () => {
+                const sidebarId = button.getAttribute("data-sidebar");
+                const sidebar = document.getElementById(sidebarId);
+                if (sidebar) {
+                    sidebar.classList.remove("active");
+                    document.body.classList.remove("overflow-hidden");
+                }
+            });
+        });
+    }
+</script>
+
+<!-- kanban and list view -->
+<script>
+    const tableBtn = document.getElementById("tableBtn");
+    const kanbanBtn = document.getElementById("kanbanBtn");
+    const tableView = document.getElementById("tableview");
+    const kanbanView = document.getElementById("kanbanview");
+
+    tableBtn.addEventListener("click", () => {
+        tableView.classList.remove("hidden");
+        kanbanView.classList.add("hidden");
+    });
+
+    kanbanBtn.addEventListener("click", () => {
+        kanbanView.classList.remove("hidden");
+        tableView.classList.add("hidden");
+    });
+</script>
+
+<!-- KANBAN CARD SWAP FUNCTION (TASKS) -->
+<script>
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        const taskId = ev.dataTransfer.getData("text");
+        const taskElement = document.getElementById(taskId);
+        const targetBlock = ev.target.closest(".kanban-block");
+
+        if (!targetBlock || !taskElement) return;
+
+        // Move DOM element
+        targetBlock.appendChild(taskElement);
+
+        const newStageId = targetBlock.dataset.stageId;  // assuming you have data-stage-id="{{ stage.id }}" in HTML
+        const oldStageId = taskElement.dataset.oldStageId; // we'll save this on drag start
+        const taskCountElementOld = document.querySelector(`[data-stage-id="${oldStageId}"] .task-count`);
+        const taskCountElementNew = targetBlock.querySelector(".task-count");
+
+        // update counts
+        if (taskCountElementOld) {
+        taskCountElementOld.innerText = parseInt(taskCountElementOld.innerText) - 1;
+        }
+        if (taskCountElementNew) {
+        taskCountElementNew.innerText = parseInt(taskCountElementNew.innerText) + 1;
+        }
+
+        // Build new sequence inside this stage
+        const sequence = {};
+        targetBlock.querySelectorAll(".task").forEach((el, index) => {
+        sequence[el.dataset.taskId] = index;
+        });
+
+        // Send AJAX request
+        fetch('/project/drag-and-drop-task', {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+            updated_task_id: taskId,
+            updated_stage_id: newStageId,
+            previous_task_id: taskId,
+            previous_stage_id: oldStageId,
+            sequence: JSON.stringify(sequence)
+        })
+        }).then(res => res.json())
+        .then(data => {
+            if (data.change === true) {
+            document.getElementById("reloadMessagesButton")?.click();
+            }
+        });
+
+        // Save the new oldStageId for future drag
+        taskElement.dataset.oldStageId = newStageId;
+    }
+
+    // Attach listeners
+    document.querySelectorAll(".kanban-block").forEach((block) => {
+        block.addEventListener("dragover", allowDrop);
+        block.addEventListener("drop", drop);
+        block.addEventListener("dragenter", ev => block.classList.add("highlight"));
+        block.addEventListener("dragleave", ev => block.classList.remove("highlight"));
+    });
+
+    // On drag start, set oldStageId in dataset
+    document.querySelectorAll(".task").forEach((taskEl) => {
+        taskEl.addEventListener("dragstart", () => {
+        const parentStage = taskEl.closest(".kanban-block");
+        if (parentStage) {
+            taskEl.dataset.oldStageId = parentStage.dataset.stageId;
+        }
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+            }
+        }
+        }
+        return cookieValue;
+    }
+</script>
+
+
+<!-- KANBAN COLUMN SWAP FUNCTION (STAGES) -->
+<script>
+    var draggedColumn = null;
+
+    function columnDragStart(e) {
+        draggedColumn = e.target.closest(".kanban-block");
+        e.dataTransfer.effectAllowed = "move";
+        setTimeout(() => draggedColumn.classList.add("opacity-50"), 0);
+    }
+
+    function columnDragEnd(e) {
+        if (draggedColumn) {
+            draggedColumn.classList.remove("opacity-50");
+            draggedColumn = null;
+        }
+    }
+
+    document.querySelectorAll(".kanban-block").forEach((block) => {
+        block.addEventListener("dragover", function (e) {
+            if (draggedColumn) e.preventDefault();
+        });
+
+        block.addEventListener("dragenter", function (e) {
+            if (draggedColumn && block !== draggedColumn) {
+                block.classList.add("swap-highlight");
+            }
+        });
+
+        block.addEventListener("dragleave", function (e) {
+            block.classList.remove("swap-highlight");
+        });
+
+        block.addEventListener("drop", function (e) {
+            if (!draggedColumn || draggedColumn === block) return;
+
+            block.classList.remove("swap-highlight");
+
+            const parent = block.parentNode;
+            const allBlocks = Array.from(parent.children);
+            const draggedIndex = allBlocks.indexOf(draggedColumn);
+            const targetIndex = allBlocks.indexOf(block);
+
+            if (draggedIndex < targetIndex) {
+                parent.insertBefore(draggedColumn, block.nextSibling);
+            } else {
+                parent.insertBefore(draggedColumn, block);
+            }
+
+            // 🔥 AJAX to save new order
+            const new_stage_seq = {};
+            parent.querySelectorAll('.kanban-block').forEach((el, i) => {
+                const stageId = el.getAttribute('data-stage-id');
+                if (stageId) new_stage_seq[stageId] = i;
+            });
+
+            // Send AJAX only if there are at least 2 stages
+            if (Object.keys(new_stage_seq).length > 1) {
+                fetch('/project/drag-and-drop-stage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: new URLSearchParams({
+                        sequence: JSON.stringify(new_stage_seq),
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.change) {
+                        document.querySelector('#reloadMessagesButton')?.click();
+                    }
+                })
+                .catch(error => console.error('Stage reorder error:', error));
+            }
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+
+<!-- list grid show hide  -->
+<script>
+    const tabs = document.querySelectorAll('.tab-btn');
+    const views = {
+        listBtn: document.getElementById("listView"),
+        gridBtn: document.getElementById("gridView"),
+    };
+
+    tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+            // Remove active class from all tabs
+            tabs.forEach((btn) =>
+                btn.classList.remove("border-primary-600")
+            );
+
+            // Add active to the clicked one
+            tab.classList.add("border-primary-600");
+
+            // Show related view
+            for (const key in views) {
+                views[key].classList.add("hidden");
+            }
+            views[tab.id].classList.remove("hidden");
+        });
+    });
+
+    // Set default active tab
+    {% comment %} document.getElementById("listBtn").click(); {% endcomment %}
+</script>
+
+<!-- ACCORDION -->
+<script>
+    document.querySelectorAll('.accordion-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const panel = btn.nextElementSibling;
+            const icon = btn.querySelector('.icon');
+            const isOpen = panel.style.maxHeight && panel.style.maxHeight !== "0px";
+
+            // Collapse all others (optional — comment this block if you want multiple open)
+            document.querySelectorAll('.accordion-panel').forEach(p => {
+                p.style.maxHeight = null;
+                p.previousElementSibling.querySelector('.icon').textContent = '+';
+                p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
+                p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+            });
+
+            // Toggle current
+            if (!isOpen) {
+                panel.style.maxHeight = panel.scrollHeight + 'px';
+                icon.textContent = '−';
+                btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
+                btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+            } else {
+                panel.style.maxHeight = null;
+                icon.textContent = '+';
+                btn.classList.remove("bg-[#e54f38]", "text-white");
+                btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+            }
+        });
+    });
+</script>
+
+<!-- FOLDING KANBAN -->
+<script>
+    document.querySelectorAll(".folderBtn").forEach(button => {
+        button.addEventListener("click", () => {
+            const kanbanBlock = button.closest(".kanban-block");
+            const wrapper = kanbanBlock?.parentElement;
+
+            // Toggle compact class on the clicked kanban block
+            kanbanBlock?.classList.toggle("compact");
+
+            if (!wrapper) return;
+
+            // Add .compact-mode class only once
+            if (!wrapper.classList.contains("compact-mode")) {
+                wrapper.classList.add("compact-mode");
+            }
+
+            // If no blocks have 'compact' class, remove 'compact-mode'
+            const anyCompact = wrapper.querySelectorAll(".kanban-block.compact").length > 0;
+            if (!anyCompact) {
+                wrapper.classList.remove("compact-mode");
+            }
+        });
+    });
+</script>
+
+<!-- COLLAPSE -->
+<script>
+    document.querySelectorAll('.btn-toggle').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            const targetSelector = button.getAttribute('data-target') || button.getAttribute('href');
+            const content = document.querySelector(targetSelector);
+
+            if (!content) return;
+
+            const expanded = button.getAttribute('aria-expanded') === 'true';
+
+            if (expanded) {
+                // Collapse
+                content.style.maxHeight = content.scrollHeight + 'px'; // Set current height before collapsing
+                requestAnimationFrame(() => {
+                    content.style.maxHeight = '0';
+                });
+                button.setAttribute('aria-expanded', 'false');
+            } else {
+                // Expand
+                content.style.maxHeight = content.scrollHeight + 'px';
+                button.setAttribute('aria-expanded', 'true');
+            }
+
+            content.classList.toggle('open');
+        });
+    });
+
+    // Reset max-height after transition
+    document.querySelectorAll('.collapse-content').forEach(content => {
+        content.addEventListener('transitionend', () => {
+            if (content.classList.contains('open')) {
+                content.style.maxHeight = 'none';
+            }
+        });
+    });
+</script>
+
+
+{% endblock content %}
