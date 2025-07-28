@@ -1,0 +1,473 @@
+{% load i18n %}
+{% load static %}
+
+{% if messages %}
+<div class="oh-alert-container">
+    {% for message in messages %}
+    <div class="oh-alert oh-alert--animated {{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% include "filter_tags.html" %}
+
+{% if stages %}
+<div id="listView">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-semibold">{% trans "Kanban View" %}</h3>
+    <button class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300" data-toggle="oh-modal-toggle"
+        data-target="#objectCreateModal" hx-get="{% url 'create-project-stage' project_id %}"
+        hx-target="#objectCreateModalTarget">
+        <img src="/static/horilla_theme/assets/img/icons/more.svg" alt="" width="13" class="filter brightness-0 invert">
+        {% trans "Stage" %}
+    </button>
+  </div>
+
+  <!-- Scroll Container -->
+  <div class="oh-kanban overflow-x-auto overflow-y-hidden">
+    <!-- Grid of Stages -->
+    <div class="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4" id="projectStages">
+      {% for stage in stages %}
+      <div class=" oh-kanban__section stage kanban-block w-full relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_240px)]"
+           ondrop="drop(event)" ondragover="allowDrop(event)" id="projectStage{{stage.id}}"
+           data-stage-id="{{stage.id}}" data-sequence="{{stage.sequence}}" data-project-id="{{project.id}}">
+        
+        <!-- Stage Header -->
+        <div class="kanban-head flex items-center justify-between sticky top-0 bg-[#e9edf0] z-10 py-2 cursor-move column-drag-handle"
+             draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)" >
+          <div class="relative">
+            <h5 class="text-center {% cycle 'bg-[#f39022]' 'bg-[#8b5cf6]' 'bg-[#22c55e]' 'bg-[#3b82f6]' 'bg-[#e11d48]' 'bg-[#f59e0b]' 'bg-[#10b981]' %}
+                px-3 py-1.5 rounded-2xl text-sm font-medium text-white flex items-center gap-2 ps-2">
+              {{ stage.title }}
+              <span class="w-6 h-6 bg-white rounded-full text-[#f39022] flex items-center justify-center text-xs task-count">
+                {% comment %} {{ forloop.counter|add:"0"|slice:"-2" }} {% endcomment %}{{ stage.tasks.all|length}}
+              </span>
+            </h5>
+          </div>
+          <div class="flex items-center gap-4">
+            <button class="folderBtn"><i class="fa-regular fa-folder text-lg"></i></button>
+
+            <button class="btn-toggle text-left flex items-center gap-2"
+                    title="{% trans 'Add task' %}" hx-get="{% url 'quick-create-task' stage.id %}"
+                    data-target="#col{{ stage.id }}"
+                    hx-target="#taskCreateForm{{stage.id}}">
+              <i class="fa-regular fa-square-plus text-lg"></i>
+            </button>
+          
+
+            <div class="relative" x-data="{ open: false }">
+              <!-- Trigger -->
+              <a @click="open = !open" class="cursor-pointer"><i class="fa-solid fa-ellipsis-vertical text-black"></i></a>
+            
+              <!-- Dropdown Menu -->
+              <div
+                x-show="open"
+                @click.away="open = false"
+                x-transition
+                class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50"
+                style="cursor: pointer;"
+              >
+                <ul class="text-xs">
+                  <li>
+                    <a
+                      hx-get="{% url 'update-project-stage' stage.id %}"
+                      hx-target="#TaskFormTarget"
+                      class="w-full text-left px-3 py-1 hover:text-primary-600 block"
+                      data-toggle="oh-modal-toggle"
+                      data-target="#TaskModal"
+                    >
+                      {% trans "Edit" %}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
+                      hx-post="{% url 'delete-project-stage' stage.id %}?view=card"
+                      hx-target="#projectStage{{stage.id}}"
+                      class="w-full text-left px-3 py-1 hover:text-primary-600 block"
+                    >
+                      {% trans "Delete" %}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+
+            
+          </div>
+        </div>
+
+
+        <!-- Add Task Form (Initially Collapsed) -->
+        <div id="col{{ stage.id }}" class="collapse-content overflow-hidden transition-[max-height] duration-500 ease-in-out max-h-0 myform">
+          <div class="p-4 bg-white rounded-md mt-2 shadow-card mb-3">
+            <div id="taskCreateForm{{stage.id}}"></div>
+          </div>
+        </div>
+
+        <div>
+          <!-- Tasks -->
+          {% for task in stage.tasks.all|dictsort:"sequence" %}
+          {% if task in tasks %}
+          <div class="task-card task" data-task-id="{{task.id}}" id="{{task.id}}" draggable="true" ondragstart="drag(event)">
+            <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
+              
+              <!-- Task Options -->            
+              <div class="absolute inline-block right-5 top-5" x-data="{ open: false }" @click.outside="open = false" style="cursor: pointer;">
+                <a @click="open = !open" class="cursor-pointer">
+                  <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+                </a>
+                <div
+                  x-show="open"
+                  x-transition
+                  class="absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 z-50 text-xs"
+                  style="display: none;"
+                >
+                  <ul>
+                    <li class="mb-1">
+                      <a hx-get="{% url 'update-task' task.id %}?project_task=true"
+                        hx-target="#TaskFormTarget"
+                        class="w-full text-left px-3 py-1 hover:text-primary-600"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#TaskModal">
+                        {% trans "Edit" %}
+                      </a>
+                    </li>
+                    <li>
+                      <a hx-confirm="{% trans 'Do you really want to delete this task?' %}"
+                        hx-post="{% url 'delete-task' task.id %}?view=card"
+                        hx-target="#taskCreateForm{{stage.id}}"
+                        class="w-full text-left px-3 py-1 hover:text-primary-600">
+                        {% trans "Delete" %}
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              
+              <div id="taskCreateForm{{stage.id}}"
+                  class="oh-dropdown__menu oh-dropdown__menu--highlight oh-dropdown__menu--top-100 oh-dropdown__close-outside-click oh-dropdown__menu--right pt-2 pb-2 list-quick-add d-none"
+                  style="z-index: 15;">
+              </div>
+
+              <!-- Task Content -->
+              <div class="flex items-center gap-5 mb-3 pb-3 border-b border-b-[#565e6c13]">
+                <img src="{{ task.get_avatar }}" class="w-6 h-6 rounded-full" alt="{{ task }}" width="30" />
+                <p class="mb-1">{{ task }}</p>
+              </div>
+
+              <!-- Task Metadata -->
+              <div class="flex gap-2 items-center relative">
+                <span class="font-medium text-xs text-[#565E6C] w-14">{% trans "End Date" %}</span>
+                <p class="text-xs font-semibold flex items-center gap-2">: <span>{{ task.end_date }}</span></p>
+
+                  <!-- Dropdown Button -->
+                  <div x-data="{ open: false }" class="absolute right-0 -top-1 z-50">
+                    <button @click="open = !open" @click.away="open = false"
+                            class="text-primary-600 focus:outline-none">
+                      <i class="fa-regular fa-square-caret-down text-primary-600"></i>
+                    </button>
+                
+                    <!-- Dropdown Content -->
+                    <div x-show="open"
+                        x-transition
+                        class="absolute right-0 mt-1 min-w-[200px] bg-white rounded-md shadow-lg py-2 z-50"
+                        style="display: none;">
+                      <ul class="text-xs text-gray-800">
+                        <li class="px-4 py-1 hover:bg-gray-100">
+                          <strong>{% trans "Managers" %}:</strong>
+                          {% for manager in task.task_managers.all %}
+                            {{ manager }}{% if not forloop.last %}, {% endif %}
+                          {% endfor %}
+                        </li>
+                        <li class="px-4 py-1 hover:bg-gray-100">
+                          <strong>{% trans "Status" %}:</strong>
+                          <span class="inline-block bg-gray-100 text-gray-700 rounded px-2 py-0.5 text-xs">
+                            {{ task.get_status_display }}
+                          </span>
+                        </li>
+                        <!-- Add more details if needed -->
+                      </ul>
+                    </div>
+                  </div>
+                              
+              </div>
+
+            </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+    <!-- FOLDING KANBAN -->
+    <script>
+      document.querySelectorAll(".folderBtn").forEach(button => {
+          button.addEventListener("click", () => {
+              const kanbanBlock = button.closest(".kanban-block");
+              const wrapper = kanbanBlock?.parentElement;
+
+              // Toggle compact class on the clicked kanban block
+              kanbanBlock?.classList.toggle("compact");
+
+              if (!wrapper) return;
+
+              // Add .compact-mode class only once
+              if (!wrapper.classList.contains("compact-mode")) {
+                  wrapper.classList.add("compact-mode");
+              }
+
+              // If no blocks have 'compact' class, remove 'compact-mode'
+              const anyCompact = wrapper.querySelectorAll(".kanban-block.compact").length > 0;
+              if (!anyCompact) {
+                  wrapper.classList.remove("compact-mode");
+              }
+          });
+      });
+  </script>
+
+    <!-- COLLAPSE -->
+    <script>
+      document.querySelectorAll('.btn-toggle').forEach(button => {
+          button.addEventListener('click', (e) => {
+              e.preventDefault();
+
+              const targetSelector = button.getAttribute('data-target') || button.getAttribute('href');
+              const content = document.querySelector(targetSelector);
+
+              if (!content) return;
+
+              const expanded = button.getAttribute('aria-expanded') === 'true';
+
+              if (expanded) {
+                  // Collapse
+                  content.style.maxHeight = content.scrollHeight + 'px'; // Set current height before collapsing
+                  requestAnimationFrame(() => {
+                      content.style.maxHeight = '0';
+                  });
+                  button.setAttribute('aria-expanded', 'false');
+              } else {
+                  // Expand
+                  content.style.maxHeight = content.scrollHeight + 'px';
+                  button.setAttribute('aria-expanded', 'true');
+              }
+
+              content.classList.toggle('open');
+          });
+      });
+
+      // Reset max-height after transition
+      document.querySelectorAll('.collapse-content').forEach(content => {
+          content.addEventListener('transitionend', () => {
+              if (content.classList.contains('open')) {
+                  content.style.maxHeight = 'none';
+              }
+          });
+      });
+  </script>
+
+    <!-- KANBAN CARD SWAP FUNCTION (TASKS) -->
+    <script>
+      function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+      }
+    
+      function allowDrop(ev) {
+        ev.preventDefault();
+      }
+    
+      function drop(ev) {
+        ev.preventDefault();
+        const taskId = ev.dataTransfer.getData("text");
+        const taskElement = document.getElementById(taskId);
+        const targetBlock = ev.target.closest(".kanban-block");
+    
+        if (!targetBlock || !taskElement) return;
+    
+        // Move DOM element
+        targetBlock.appendChild(taskElement);
+    
+        const newStageId = targetBlock.dataset.stageId;  // assuming you have data-stage-id="{{ stage.id }}" in HTML
+        const oldStageId = taskElement.dataset.oldStageId; // we'll save this on drag start
+        const taskCountElementOld = document.querySelector(`[data-stage-id="${oldStageId}"] .task-count`);
+        const taskCountElementNew = targetBlock.querySelector(".task-count");
+    
+        // update counts
+        if (taskCountElementOld) {
+          taskCountElementOld.innerText = parseInt(taskCountElementOld.innerText) - 1;
+        }
+        if (taskCountElementNew) {
+          taskCountElementNew.innerText = parseInt(taskCountElementNew.innerText) + 1;
+        }
+    
+        // Build new sequence inside this stage
+        const sequence = {};
+        targetBlock.querySelectorAll(".task").forEach((el, index) => {
+          sequence[el.dataset.taskId] = index;
+        });
+    
+        // Send AJAX request
+        fetch('/project/drag-and-drop-task', {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            updated_task_id: taskId,
+            updated_stage_id: newStageId,
+            previous_task_id: taskId,
+            previous_stage_id: oldStageId,
+            sequence: JSON.stringify(sequence)
+          })
+        }).then(res => res.json())
+          .then(data => {
+            if (data.change === true) {
+              document.getElementById("reloadMessagesButton")?.click();
+            }
+          });
+    
+        // Save the new oldStageId for future drag
+        taskElement.dataset.oldStageId = newStageId;
+      }
+    
+      // Attach listeners
+      document.querySelectorAll(".kanban-block").forEach((block) => {
+        block.addEventListener("dragover", allowDrop);
+        block.addEventListener("drop", drop);
+        block.addEventListener("dragenter", ev => block.classList.add("highlight"));
+        block.addEventListener("dragleave", ev => block.classList.remove("highlight"));
+      });
+    
+      // On drag start, set oldStageId in dataset
+      document.querySelectorAll(".task").forEach((taskEl) => {
+        taskEl.addEventListener("dragstart", () => {
+          const parentStage = taskEl.closest(".kanban-block");
+          if (parentStage) {
+            taskEl.dataset.oldStageId = parentStage.dataset.stageId;
+          }
+        });
+      });
+    
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+    </script>
+    
+
+    <!-- KANBAN COLUMN SWAP FUNCTION (STAGES) -->
+    <script>
+      var draggedColumn = null;
+  
+      function columnDragStart(e) {
+          draggedColumn = e.target.closest(".kanban-block");
+          e.dataTransfer.effectAllowed = "move";
+          setTimeout(() => draggedColumn.classList.add("opacity-50"), 0);
+      }
+  
+      function columnDragEnd(e) {
+          if (draggedColumn) {
+              draggedColumn.classList.remove("opacity-50");
+              draggedColumn = null;
+          }
+      }
+  
+      document.querySelectorAll(".kanban-block").forEach((block) => {
+          block.addEventListener("dragover", function (e) {
+              if (draggedColumn) e.preventDefault();
+          });
+  
+          block.addEventListener("dragenter", function (e) {
+              if (draggedColumn && block !== draggedColumn) {
+                  block.classList.add("swap-highlight");
+              }
+          });
+  
+          block.addEventListener("dragleave", function (e) {
+              block.classList.remove("swap-highlight");
+          });
+  
+          block.addEventListener("drop", function (e) {
+              if (!draggedColumn || draggedColumn === block) return;
+  
+              block.classList.remove("swap-highlight");
+  
+              const parent = block.parentNode;
+              const allBlocks = Array.from(parent.children);
+              const draggedIndex = allBlocks.indexOf(draggedColumn);
+              const targetIndex = allBlocks.indexOf(block);
+  
+              if (draggedIndex < targetIndex) {
+                  parent.insertBefore(draggedColumn, block.nextSibling);
+              } else {
+                  parent.insertBefore(draggedColumn, block);
+              }
+  
+              // 🔥 AJAX to save new order
+              const new_stage_seq = {};
+              parent.querySelectorAll('.kanban-block').forEach((el, i) => {
+                  const stageId = el.getAttribute('data-stage-id');
+                  if (stageId) new_stage_seq[stageId] = i;
+              });
+  
+              // Send AJAX only if there are at least 2 stages
+              if (Object.keys(new_stage_seq).length > 1) {
+                  fetch('/project/drag-and-drop-stage', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/x-www-form-urlencoded',
+                          'X-CSRFToken': getCookie('csrftoken'),
+                      },
+                      body: new URLSearchParams({
+                          sequence: JSON.stringify(new_stage_seq),
+                      }),
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                      if (data.change) {
+                          document.querySelector('#reloadMessagesButton')?.click();
+                      }
+                  })
+                  .catch(error => console.error('Stage reorder error:', error));
+              }
+          });
+      });
+  
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+  </script>
