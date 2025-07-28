@@ -1,3 +1,5 @@
+var lastSequence = null;
+
 function getCookie(name) {
   let cookieValue = null;
   if (document.cookie && document.cookie !== "") {
@@ -49,14 +51,25 @@ function stageSequenceGet(stage) {
   $.each(stageContainers, function (index, element) {
     sequence[$(element).attr("data-stage-id")] = index + 1;
   });
+  if (JSON.stringify(lastSequence) === JSON.stringify(sequence)) {
+    return
+  }
+  lastSequence = sequence
+
   $.ajax({
     type: "POST",
     url: "/recruitment/stage-sequence-update",
     data: {
       csrfmiddlewaretoken: getCookie("csrftoken"),
       sequence: JSON.stringify(sequence),
+      order: JSON.stringify(sequence),
     },
     success: function (response) {
+        Toast.fire({
+            icon: "success",
+            title: "Stage sequence updated",
+            position: "top-end",
+        });
       // count_element();
     },
   });

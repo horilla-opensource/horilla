@@ -7,7 +7,7 @@ import json
 import logging
 import traceback
 from typing import Any
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlencode
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -1553,6 +1553,7 @@ class HorillaTabView(TemplateView):
 
     view_id: str = get_short_uuid(3, "htv")
     template_name = "generic/horilla_tabs.html"
+    show_filter_tags = False
 
     tabs: list = []
 
@@ -1573,6 +1574,7 @@ class HorillaTabView(TemplateView):
         super().__init__(**kwargs)
         request = getattr(_thread_locals, "request", None)
         self.request = request
+        self.query_params = {}
         # update_initial_cache(request, CACHE, HorillaTabView)
 
     def get_context_data(self, **kwargs):
@@ -1583,6 +1585,14 @@ class HorillaTabView(TemplateView):
             ).first()
             if active_tab:
                 context["active_target"] = active_tab.tab_target
+
+        for tab in self.tabs:
+            base_url = tab.get("url")
+            query_params = {**self.request.GET.dict()}
+            query_params.update(self.query_params)
+
+            tab["url"] = f"{base_url}?{urlencode(query_params)}"
+
         context["tabs"] = self.tabs
         context["view_id"] = self.view_id
 

@@ -1,0 +1,516 @@
+{% load static i18n recruitmentfilters %}
+<style>
+	.folded {
+		width: 70px;
+		transition: all 0.5s ease-in-out;
+	}
+	.folded .kanban-head {
+		border: none;
+	}
+
+	.folded .oh-kanban__section-body {
+		display: none;
+		opacity: 0;
+		transform: scaleY(0);
+		transition: all 0.5s ease-in-out;
+	}
+
+	.folded .kanban-title {
+		transform: rotate(90deg) translateX(0);
+		transform-origin: top left;
+		position: absolute;
+		top: 40px;
+		left: 40px;
+		width: max-content;
+		transition: transform 0.5s ease-in-out;
+	}
+
+	.folded .folderBtn {
+		transform: rotate(180deg);
+		transition: transform 0.5s ease-in-out;
+	}
+	.folded .oh-kanban__button-contaner > :not(.folderBtn) {
+		display: none;
+	}
+</style>
+
+<div class="flex gap-4 flex-nowrap overflow-auto">
+	{% for stage in stages %}
+
+	<button
+		hidden
+		class="reload-badge"
+		hx-get='{% url "get-stage-count" %}?stage_id={{stage.id}}'
+		hx-target="#stageCount{{stage.id}}"
+		id="reloadBadge{{stage.id}}"
+	>
+		{{stage}}
+	</button>
+	{% comment %}
+	<div id="selectedCandidateRecords{{ stage.id }}" data-ids="[]"></div>
+	{% endcomment %}
+	<div
+		class="kanban-block relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_240px)] w-[400px] transition-[width] duration-500 ease-in-out flex-shrink-0 oh-kanban__section pipeline_item candidate-table"
+		data-container="candidate"
+		id="kanban{{stage.id}}"
+		data-stage-id="{{stage.id}}"
+		data-sequence="{{stage.sequence}}"
+		data-recruitment-id="{{rec.id}}"
+	>
+		<div class="oh-kanban__section-head sticky top-0 z-[9] stage">
+			<div
+				class="kanban-head flex items-center justify-between bg-[#e9edf090] backdrop-blur-sm py-2 cursor-move column-drag-handle oh-tabs__movable-header"
+			>
+				<div class="flex gap-2 items-center">
+					<span
+						class="folderBtn fold-icon-animation transition-transform duration-500 ease-in-out"
+						role="button"
+						onclick="event.stopPropagation();toggleFold($(this));"
+					>
+						<i class="fa-solid fa-angles-left text-lg"></i>
+					</span>
+					<div class="relative kanban-title duration-500 ease-in-out">
+						<h5
+							class="text-center px-3 py-1.5 rounded-2xl text-sm font-medium text-[white] flex items-center gap-2 ps-2 {% cycle 'bg-[#f39022]' 'bg-[#22c55e]' 'bg-[#3b82f6]' 'bg-[#e11d48]' 'bg-[#8b5cf6]' 'bg-[#10b981]' 'bg-[#f59e0b]' %}"
+						>
+							<span
+								class="w-6 h-6 bg-white rounded-full text-[#f39022] flex items-center justify-center text-xs"
+								data-rec-stage-badge="{{rec.id}}"
+								id="stageCount{{stage.id}}"
+							>
+								{{stage.candidate_set.all|length}}
+							</span>
+							{{stage.stage}}
+						</h5>
+					</div>
+				</div>
+
+				<div class="flex items-center gap-4 oh-kanban__button-contaner">
+					<span
+						class="btn-toggle text-left flex items-center gap-2"
+						hx-target="#genericModalBody"
+						hx-get="{% url 'add-candidate-to-stage'%}?stage_id={{ stage.id }}"
+						data-toggle="oh-modal-toggle"
+						data-target="#genericModal"
+						role="button"
+						title="Add Candidate"
+					>
+						<i class="fa-regular fa-square-plus text-lg"></i>
+					</span>
+					<div class="inline-block dropdown-wrapper">
+						<a class="cursor-pointer dropdown-toggle">
+							<i
+								class="fa-solid fa-ellipsis-vertical text-black"
+							></i>
+						</a>
+						<!-- Dropdown Content -->
+						<div
+							class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200"
+						>
+							<ul class="text-xs">
+								{% if perms.recruitment.change_stage or request.user|recruitment_manages:rec or request.user.employee_get in stage.stage_managers.all %}
+								<li>
+									<button
+										class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+										hx-target="#genericModalBody"
+										hx-get="{% url 'stage-update-pipeline' stage.id %}"
+										data-toggle="oh-modal-toggle"
+										data-target="#genericModal"
+										title="Edit Stage"
+									>
+										{% trans "Edit" %}
+									</button>
+								</li>
+								{% endif %}
+                                {% if perms.recruitment.delete_stage %}
+								<li>
+									<span
+										class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+										data-toggle="oh-modal-toggle"
+										data-target="#deleteConfirmation"
+										hx-get="{% url 'generic-delete' %}?model=recruitment.Stage&pk={{stage.pk}}"
+										hx-target="#deleteConfirmationBody"
+									>
+										{% trans "Delete" %}
+									</span>
+								</li>
+								{% endif %}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div
+			class="oh-kanban__section-body ui-sortable candidate-container hx-sortable min-h-[calc(100%_-_100px)]"
+			data-stage-id="{{stage.id}}"
+			data-recruitment-id="{{rec.id}}"
+			hx-get="{% url 'candidate-stage-component' %}?stage_id={{stage.id}}&view=card"
+			hx-trigger="load"
+			id="kanbanCandidates{{stage.id}}"
+		>
+			<div
+				class="animated-background"
+				ondrop="event.stopPropagation()"
+				ondrag="event.stopPropagation()"
+			></div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+
+<script>
+	$(document).on("htmx:afterSettle", function (event) {
+		$(document).off("click.dropdown");
+		$(".dropdown-toggle").off("click.dropdown");
+
+		$(".dropdown-toggle").on("click.dropdown", function (event) {
+			event.stopPropagation();
+
+			const dropdownMenu = $(this).next(".dropdown-menu");
+			const isVisible = !dropdownMenu.hasClass("hidden");
+
+			$(".dropdown-menu").addClass("hidden");
+
+			if (!isVisible) {
+				dropdownMenu.removeClass("hidden");
+			}
+		});
+
+		$(document).on("click.dropdown", function () {
+			$(".dropdown-menu").addClass("hidden");
+		});
+	});
+</script>
+
+<script>
+	function initializeSortable() {
+		$(".pipeline_item")
+			.parent()
+			.sortable({
+				handle: ".oh-kanban__section-head",
+				connectWith: ".pipeline_item",
+				placeholder: "stage-placeholder",
+				stop: function (event, ui) {},
+			})
+			.disableSelection();
+	}
+
+	$(document).ready(function () {
+		initializeSortable();
+
+		function isNextStage(currentStageId, targetStageId, parsedStageOrder) {
+			var currentStageIndex = parsedStageOrder.findIndex(
+				(stage) => stage.id == currentStageId
+			);
+			var targetStageIndex = parsedStageOrder.findIndex(
+				(stage) => stage.id == targetStageId
+			);
+			return (
+				targetStageIndex === currentStageIndex + 1 ||
+				currentStageIndex === targetStageIndex
+			);
+		}
+
+		htmx.onLoad(function (content) {
+			var sortables = content.querySelectorAll(".hx-sortable");
+
+			for (var i = 0; i < sortables.length; i++) {
+				var sortable = sortables[i];
+
+				$(sortable).sortable({
+					connectWith: ".hx-sortable",
+					items: "> :not(.htmx-indicator)",
+					ghostClass: "blue-background-class",
+					placeholder: "sortable-placeholder",
+					forcePlaceholderSize: true,
+					helper: "clone",
+					appendTo: "body",
+					zIndex: 9999,
+					helper: function (event, ui) {
+						var helper = ui.clone();
+						helper.css({
+							width: "360px",
+							"max-width": "360px",
+							"min-width": "360px",
+							"box-sizing": "border-box",
+						});
+						return helper;
+					},
+
+					start: function (event, ui) {
+						var row = $(ui.item);
+						window.candidateCurrentStage = parseInt(
+							row
+								.closest(".candidate-table")
+								.attr("data-stage-id")
+						);
+						ui.item.data("origin-parent", ui.item.parent());
+						ui.item.data("origin-index", ui.item.index());
+					},
+
+					stop: function (event, ui) {
+						var row = $(ui.item);
+						var candidateId = row.attr("data-candidate-id");
+						var newStageId = parseInt(
+							row
+								.closest(".candidate-table")
+								.attr("data-stage-id")
+						);
+						var targetStageId = parseInt(
+							row
+								.closest(".candidate-table")
+								.attr("data-stage-id")
+						);
+						var originalStageId = window.candidateCurrentStage;
+
+						var stageOrderJson = row.attr("data-stage_order");
+
+						if (stageOrderJson) {
+							var parsedStageOrder = JSON.parse(stageOrderJson);
+							var preStage = parsedStageOrder.find(
+								(stage) => stage.id == originalStageId
+							);
+							var currentStage = parsedStageOrder.find(
+								(stage) => stage.id == targetStageId
+							);
+
+							if (
+								!isNextStage(
+									originalStageId,
+									targetStageId,
+									parsedStageOrder
+								)
+							) {
+								if (
+									sessionStorage.getItem(
+										"showRecuitmentKanbanConfirmation"
+									) !== "false"
+								) {
+									Swal.fire({
+										title: "Confirm Stage Change",
+										html: `
+                                            <p class="mb-2">The candidate is being moved from ${preStage.stage} to the ${currentStage.stage} stage. Do you want to proceed?</p>
+                                            <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
+                                        `,
+										icon: "warning",
+										showCancelButton: true,
+										cancelButtonColor: "#d33",
+										confirmButtonColor: "#008000",
+										confirmButtonText: "Confirm",
+										preConfirm: () => {
+											const doNotShowAgain =
+												Swal.getPopup().querySelector(
+													"#doNotShowAgain"
+												).checked;
+											if (doNotShowAgain) {
+												sessionStorage.setItem(
+													"showRecuitmentKanbanConfirmation",
+													"false"
+												);
+											}
+										},
+									}).then((result) => {
+										if (result.isConfirmed) {
+											handleValidDrop(
+												targetStageId,
+												candidateId,
+												row,
+												sortable
+											);
+											handleSortableUpdate(
+												event,
+												ui,
+												$(this)
+											);
+										} else {
+											const originParent =
+												ui.item.data("origin-parent");
+											const originIndex =
+												ui.item.data("origin-index");
+
+											if (
+												originParent &&
+												originIndex !== undefined
+											) {
+												const currentItem =
+													ui.item.detach();
+												const children =
+													originParent.children();
+
+												if (
+													originIndex >=
+													children.length
+												) {
+													originParent.append(
+														currentItem
+													);
+												} else {
+													currentItem.insertBefore(
+														children.eq(originIndex)
+													);
+												}
+
+												originParent.sortable(
+													"refresh"
+												);
+											}
+										}
+									});
+
+									return;
+								}
+							}
+						}
+
+						handleValidDrop(
+							targetStageId,
+							candidateId,
+							row,
+							sortable
+						);
+						handleSortableUpdate(event, ui, $(this));
+					},
+				});
+			}
+		});
+
+		function handleValidDrop(stageId, candidateId, row, sortable) {
+			if (stageId != window.candidateCurrentStage) {
+				var container = row.closest(".candidate-table");
+				var array = container.find(
+					"input[type=text][name=order]:hidden"
+				);
+				var values = [];
+
+				for (let index = 0; index < array.length; index++) {
+					values.push($(array[index]).val());
+				}
+
+				$.ajax({
+					type: "get",
+					url: "{% url 'update-candidate-stage-and-sequence' %}",
+					traditional: true,
+					data: {
+						stage_id: stageId,
+						candidate_id: candidateId,
+						order: values,
+					},
+					success: function (response) {
+						row.find('[name="stage_id"]').val(stageId);
+						Toast.fire({
+							icon: "success",
+							title: '{% trans "Sequence updated" %}',
+							position: "top-end",
+						});
+
+						if (response.message) {
+							Swal.fire({
+								title: response.message,
+								text: `Total vacancy is ${response.vacancy}.`,
+								icon: "info",
+								confirmButtonText: "Ok",
+							});
+						}
+					},
+					error: function () {
+						Toast.fire({
+							icon: "error",
+							title: '{% trans "Something went wrong" %}',
+							position: "top-end",
+						});
+					},
+				});
+			}
+		}
+
+		function handleSortableUpdate(event, ui, container) {
+			var array = container.find("input[type=text][name=order]:hidden");
+			var stageSelect = $(ui.item).find("[name=stage_id]");
+			var stageId = container.attr("data-stage-id");
+
+			if (stageId != stageSelect.val()) {
+				stageSelect.val(stageId);
+				var stageTitle = $(
+					`[name=stage_id] option[value=${stageId}]:first`
+				).html();
+				stageSelect
+					.next()
+					.find(".select2-selection__rendered")
+					.html(stageTitle);
+			}
+
+			var values = [];
+			for (let index = 0; index < array.length; index++) {
+				values.push($(array[index]).val());
+			}
+
+			$.ajax({
+				type: "get",
+				url: "{% url 'update-candidate-sequence' %}",
+				traditional: true,
+				data: {
+					order: values,
+					stage_id: stageId,
+				},
+				success: function () {
+					$(".reload-badge").click();
+					$(".stage-badges").removeAttr("title");
+				},
+			});
+		}
+	});
+
+	$(document).on("htmx:beforeRequest", function (event) {
+		var target = event.target;
+
+		isDrag = $(event.target).attr("data-drag-htmx");
+		if (isDrag == "true") {
+			$.ajax({
+				type: "get",
+				url: "{% url 'update-candidate-sequence' %}",
+				traditional: true,
+				data: {
+					order: values,
+				},
+				success: function (response) {},
+			});
+		}
+	});
+
+	var toggleFold = (el) => {
+		console.log(el.closest(".stage"));
+		el.closest(".kanban-block").toggleClass("folded");
+	};
+</script>
+
+{% comment %}
+<script>
+	function executeScripts(container) {
+		const scripts = container.querySelectorAll("script");
+		scripts.forEach((script) => {
+			const newScript = document.createElement("script");
+			newScript.src = script.src;
+			newScript.textContent = script.textContent;
+			document.body.appendChild(newScript);
+		});
+	}
+
+	document.addEventListener("htmx:afterSettle", function (event) {
+		if (event.detail.target.querySelectorAll(".pipeline_item").length > 0) {
+			initializeSortable();
+		}
+		executeScripts(event.detail.target);
+	});
+
+	initialAvtiveTab = $(".oh-tabs__content--active").length;
+	if (!initialAvtiveTab) {
+		$(".oh-tabs__tab:first").click();
+	}
+</script>
+{% endcomment %} {% comment %}
+<script src="{% static 'pipeline/search.js' %}"></script>
+<script src="{% static 'pipeline/load.js' %}"></script>
+<script src="{% static 'pipeline/badge.js' %}"></script>
+{% endcomment %}
+<script src="{% static 'pipeline/pipelineDrag.js' %}"></script>
