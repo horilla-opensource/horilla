@@ -308,6 +308,23 @@
     border: 1px solid hsl(213, 22%, 84%);
 }
 
+.sortable-placeholder {
+  background-color: #e5e7eb;
+  border: 2px dashed #fc8578;
+  height: 100px;
+  margin: 0.5rem 0;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+.stage-placeholder {
+  background-color: #e5e7eb;
+  border: 2px dashed #fc8578;
+  margin: 0.5rem 0;
+  border-radius: 0.5rem;
+  width: 50px;
+}
+
 .row {
     --bs-gutter-x: 1.5rem;
     --bs-gutter-y: 0;

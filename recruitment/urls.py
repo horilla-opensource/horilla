@@ -944,6 +944,11 @@ urlpatterns = [
         pipeline.RecruitmentTabView.as_view(),
         name="cbv-pipeline-tab",
     ),
+    path(
+        "cbv-pipeline-tab-list/",
+        pipeline.RecruitmentTabView.as_view(),
+        name="cbv-pipeline-tab-list",
+    ),
     path("cbv-pipeline-nav/", pipeline.PipelineNav.as_view(), name="cbv-pipeline-nav"),
     path(
         "get-stages/<int:rec_id>/",

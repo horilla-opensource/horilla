@@ -50,10 +50,12 @@ class RecruitmentTabView(HorillaTabView):
     """
 
     filter_class = filters.RecruitmentFilter
+    show_filter_tags = True
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         recruitments = self.filter_class(self.request.GET).qs.filter(is_active=True)
+        view_type = "list" if "tab-list" in self.request.path else ""
         CACHE.set(
             self.request.session.session_key + "pipeline",
             {
@@ -76,7 +78,11 @@ class RecruitmentTabView(HorillaTabView):
             stage_manage_perm = stage_manages(self.request.user, rec)
             tab = {}
             tab["title"] = rec
-            tab["url"] = reverse("get-stages-recruitment", kwargs={"rec_id": rec.pk})
+            tab["url"] = (
+                reverse("get-stages-recruitment", kwargs={"rec_id": rec.pk})
+                + f"?view={view_type}"
+            )
+            self.query_params["view"] = view_type
             tab["badge_label"] = _("Stages")
             tab["actions"] = []
             if rec_manager_perm or change_perm:
@@ -174,6 +180,11 @@ class RecruitmentTabView(HorillaTabView):
             if stage_manage_perm or view_perm:
                 self.tabs.append(tab)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -186,8 +197,16 @@ class GetStages(TemplateView):
 
     filter_class = filters.StageFilter
 
-    template_name = "cbv/pipeline/stages.html"
+    template_name = "pipeline/kanban_components/kanban_stage_components.html"
     stages = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        from horilla.horilla_middlewares import _thread_locals
+
+        request = _thread_locals.request
+        if request.GET.get("view") == "list":
+            self.template_name = "cbv/pipeline/stages.html"
 
     def get(self, request, *args, **kwargs):
         """
@@ -226,20 +245,23 @@ class CandidateList(HorillaListView):
     quick_export = False
     next_prev = False
     show_filter_tags = False
+    records_per_page = True
+    records_count_in_tab = False
+
     custom_empty_template = "cbv/pipeline/empty.html"
     header_attrs = {
         "action": """
-        style="width:413px;"
-""",
+            style="width:413px;"
+        """,
         "mobile": """
-        style="width:100px;"
-""",
+            style="width:100px;"
+        """,
         "Stage": """
-        style="width:100px;"
-""",
+            style="width:100px;"
+        """,
         "get_interview_count": """
-        style="width:200px;"
-""",
+            style="width:200px;"
+        """,
     }
     columns = [
         ("Name", "candidate_name", "get_avatar"),
@@ -352,7 +374,6 @@ class CandidateList(HorillaListView):
                 """,
         },
     ]
-    records_count_in_tab = False
 
     def get_bulk_form(self):
         form = super().get_bulk_form()
@@ -377,8 +398,6 @@ class CandidateList(HorillaListView):
                 in first_cand_in_stage.recruitment_id.recruitment_managers.all()
             )
         )
-
-    records_per_page = 10
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -433,6 +452,25 @@ class PipelineNav(HorillaNavView):
                                 """
         else:
             self.create_attrs = None
+
+        self.view_types = [
+            {
+                "type": "list",
+                "icon": "list-outline",
+                "url": f'{reverse_lazy("cbv-pipeline-tab-list")}',
+                "attrs": f"""
+                    title ='List'
+                """,
+            },
+            {
+                "type": "card",
+                "icon": "grid-outline",
+                "url": f'{reverse_lazy("cbv-pipeline-tab")}',
+                "attrs": f"""
+                    title ='Card'
+                """,
+            },
+        ]
 
     def get_context_data(self, **kwargs):
         """

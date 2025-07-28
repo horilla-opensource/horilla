@@ -8,6 +8,21 @@ $(function () {
     });
 });
 
+Toast = Swal.mixin({
+    toast: true,
+    icon: "success",
+    title: "General Title",
+    animation: true,
+    position: "top-right",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener("mouseenter", Swal.stopTimer);
+        toast.addEventListener("mouseleave", Swal.resumeTimer);
+    },
+});
+
 async function loadComponent(elementId, path) {
     try {
         const response = await fetch(path);
@@ -578,7 +593,7 @@ document.querySelectorAll('.accordion-btn').forEach((btn) => {
         // Toggle current
         if (!isOpen) {
             panel.style.maxHeight = panel.scrollHeight + 'px';
-            icon.textContent = '−';
+            icon.textContent = '-';
             btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
             btn.classList.add("bg-[#e54f38]", "text-white");
         } else {

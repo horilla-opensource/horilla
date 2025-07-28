@@ -17,7 +17,7 @@
               }"
               class="px-2 py-1 oh-tabs__tab rounded-md text-xs flex items-center gap-2 transition duration-300"
               data-tab-index="{{ forloop.counter0 }}"
-              hx-get="{{ tab.url }}?{{ request.GET.urlencode }}"
+              hx-get="{{ tab.url }}"
               hx-target="#{{ view_id }}{{ forloop.counter }}"
               hx-trigger="click"
               hx-swap="innerHTML"
