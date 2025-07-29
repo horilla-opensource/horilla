@@ -34,7 +34,7 @@
       <div class=" oh-kanban__section stage kanban-block w-full relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_240px)]"
            ondrop="drop(event)" ondragover="allowDrop(event)" id="projectStage{{stage.id}}"
            data-stage-id="{{stage.id}}" data-sequence="{{stage.sequence}}" data-project-id="{{project.id}}">
-        
+
         <!-- Stage Header -->
         <div class="kanban-head flex items-center justify-between sticky top-0 bg-[#e9edf0] z-10 py-2 cursor-move column-drag-handle"
              draggable="true" ondragstart="columnDragStart(event)" ondragend="columnDragEnd(event)" >
@@ -56,12 +56,12 @@
                     hx-target="#taskCreateForm{{stage.id}}">
               <i class="fa-regular fa-square-plus text-lg"></i>
             </button>
-          
+
 
             <div class="relative" x-data="{ open: false }">
               <!-- Trigger -->
               <a @click="open = !open" class="cursor-pointer"><i class="fa-solid fa-ellipsis-vertical text-black"></i></a>
-            
+
               <!-- Dropdown Menu -->
               <div
                 x-show="open"
@@ -95,9 +95,9 @@
                 </ul>
               </div>
             </div>
-            
 
-            
+
+
           </div>
         </div>
 
@@ -115,8 +115,8 @@
           {% if task in tasks %}
           <div class="task-card task" data-task-id="{{task.id}}" id="{{task.id}}" draggable="true" ondragstart="drag(event)">
             <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
-              
-              <!-- Task Options -->            
+
+              <!-- Task Options -->
               <div class="absolute inline-block right-5 top-5" x-data="{ open: false }" @click.outside="open = false" style="cursor: pointer;">
                 <a @click="open = !open" class="cursor-pointer">
                   <i class="fa-solid fa-ellipsis-vertical text-black"></i>
@@ -149,7 +149,7 @@
                 </div>
               </div>
 
-              
+
               <div id="taskCreateForm{{stage.id}}"
                   class="oh-dropdown__menu oh-dropdown__menu--highlight oh-dropdown__menu--top-100 oh-dropdown__close-outside-click oh-dropdown__menu--right pt-2 pb-2 list-quick-add d-none"
                   style="z-index: 15;">
@@ -172,7 +172,7 @@
                             class="text-primary-600 focus:outline-none">
                       <i class="fa-regular fa-square-caret-down text-primary-600"></i>
                     </button>
-                
+
                     <!-- Dropdown Content -->
                     <div x-show="open"
                         x-transition
@@ -195,7 +195,7 @@
                       </ul>
                     </div>
                   </div>
-                              
+
               </div>
 
             </div>
@@ -282,27 +282,27 @@
       function drag(ev) {
         ev.dataTransfer.setData("text", ev.target.id);
       }
-    
+
       function allowDrop(ev) {
         ev.preventDefault();
       }
-    
+
       function drop(ev) {
         ev.preventDefault();
         const taskId = ev.dataTransfer.getData("text");
         const taskElement = document.getElementById(taskId);
         const targetBlock = ev.target.closest(".kanban-block");
-    
+
         if (!targetBlock || !taskElement) return;
-    
+
         // Move DOM element
         targetBlock.appendChild(taskElement);
-    
+
         const newStageId = targetBlock.dataset.stageId;  // assuming you have data-stage-id="{{ stage.id }}" in HTML
         const oldStageId = taskElement.dataset.oldStageId; // we'll save this on drag start
         const taskCountElementOld = document.querySelector(`[data-stage-id="${oldStageId}"] .task-count`);
         const taskCountElementNew = targetBlock.querySelector(".task-count");
-    
+
         // update counts
         if (taskCountElementOld) {
           taskCountElementOld.innerText = parseInt(taskCountElementOld.innerText) - 1;
@@ -310,13 +310,13 @@
         if (taskCountElementNew) {
           taskCountElementNew.innerText = parseInt(taskCountElementNew.innerText) + 1;
         }
-    
+
         // Build new sequence inside this stage
         const sequence = {};
         targetBlock.querySelectorAll(".task").forEach((el, index) => {
           sequence[el.dataset.taskId] = index;
         });
-    
+
         // Send AJAX request
         fetch('/project/drag-and-drop-task', {
           method: "POST",
@@ -337,11 +337,11 @@
               document.getElementById("reloadMessagesButton")?.click();
             }
           });
-    
+
         // Save the new oldStageId for future drag
         taskElement.dataset.oldStageId = newStageId;
       }
-    
+
       // Attach listeners
       document.querySelectorAll(".kanban-block").forEach((block) => {
         block.addEventListener("dragover", allowDrop);
@@ -349,7 +349,7 @@
         block.addEventListener("dragenter", ev => block.classList.add("highlight"));
         block.addEventListener("dragleave", ev => block.classList.remove("highlight"));
       });
-    
+
       // On drag start, set oldStageId in dataset
       document.querySelectorAll(".task").forEach((taskEl) => {
         taskEl.addEventListener("dragstart", () => {
@@ -359,7 +359,7 @@
           }
         });
       });
-    
+
       function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== "") {
@@ -376,63 +376,63 @@
         return cookieValue;
       }
     </script>
-    
+
 
     <!-- KANBAN COLUMN SWAP FUNCTION (STAGES) -->
     <script>
       var draggedColumn = null;
-  
+
       function columnDragStart(e) {
           draggedColumn = e.target.closest(".kanban-block");
           e.dataTransfer.effectAllowed = "move";
           setTimeout(() => draggedColumn.classList.add("opacity-50"), 0);
       }
-  
+
       function columnDragEnd(e) {
           if (draggedColumn) {
               draggedColumn.classList.remove("opacity-50");
               draggedColumn = null;
           }
       }
-  
+
       document.querySelectorAll(".kanban-block").forEach((block) => {
           block.addEventListener("dragover", function (e) {
               if (draggedColumn) e.preventDefault();
           });
-  
+
           block.addEventListener("dragenter", function (e) {
               if (draggedColumn && block !== draggedColumn) {
                   block.classList.add("swap-highlight");
               }
           });
-  
+
           block.addEventListener("dragleave", function (e) {
               block.classList.remove("swap-highlight");
           });
-  
+
           block.addEventListener("drop", function (e) {
               if (!draggedColumn || draggedColumn === block) return;
-  
+
               block.classList.remove("swap-highlight");
-  
+
               const parent = block.parentNode;
               const allBlocks = Array.from(parent.children);
               const draggedIndex = allBlocks.indexOf(draggedColumn);
               const targetIndex = allBlocks.indexOf(block);
-  
+
               if (draggedIndex < targetIndex) {
                   parent.insertBefore(draggedColumn, block.nextSibling);
               } else {
                   parent.insertBefore(draggedColumn, block);
               }
-  
+
               // 🔥 AJAX to save new order
               const new_stage_seq = {};
               parent.querySelectorAll('.kanban-block').forEach((el, i) => {
                   const stageId = el.getAttribute('data-stage-id');
                   if (stageId) new_stage_seq[stageId] = i;
               });
-  
+
               // Send AJAX only if there are at least 2 stages
               if (Object.keys(new_stage_seq).length > 1) {
                   fetch('/project/drag-and-drop-stage', {
@@ -455,7 +455,7 @@
               }
           });
       });
-  
+
       function getCookie(name) {
           let cookieValue = null;
           if (document.cookie && document.cookie !== '') {
