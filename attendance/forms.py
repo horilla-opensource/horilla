@@ -96,8 +96,8 @@ class AttendanceUpdateForm(BaseModelForm):
             "attendance_overtime",
             "is_active",
             "is_holiday",
-            "is_poya_holiday",
-            "is_mercantile_holday"
+            # "is_poya_holiday",
+            # "is_mercantile_holday"   -- testing
         ]
         model = Attendance
         widgets = {
@@ -237,8 +237,8 @@ class AttendanceForm(BaseModelForm):
             "attendance_overtime",
             "is_active",
             "is_holiday",
-            "is_poya_holiday",
-            "is_mercantile_holday"
+            # "is_poya_holiday",
+            # "is_mercantile_holday"   -- testing
         ]
         widgets = {
             "attendance_clock_in": DateTimeInput(attrs={"type": "time"}),
