@@ -54,6 +54,12 @@ class BiometricDevices(HorillaModel):
         ("dahua", _("Dahua Biometric")),
         ("etimeoffice", _("e-Time Office")),
     ]
+    BIO_DEVICE_DIRECTION = [
+        ("in", _("In Device")),
+        ("out", _("Out Device")),
+        ("alternate", _("Alternate In/Out Device")),
+        ("system", _("System Direction(In/Out) Device")),
+    ]
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     name = models.CharField(max_length=100, verbose_name=_("Name"))
     machine_type = models.CharField(
@@ -96,6 +102,12 @@ class BiometricDevices(HorillaModel):
     )
     last_fetch_date = models.DateField(null=True, blank=True)
     last_fetch_time = models.TimeField(null=True, blank=True)
+    device_direction = models.CharField(
+        max_length=50,
+        choices=BIO_DEVICE_DIRECTION,
+        default="system",
+        verbose_name=_("Device Direction"),
+    )
     company_id = models.ForeignKey(
         Company,
         null=True,

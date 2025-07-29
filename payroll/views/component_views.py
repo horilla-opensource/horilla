@@ -303,8 +303,9 @@ def allowances_deductions_tab(request, emp_id):
                     ):
                         applicable = False
                         break
-            if applicable:
+            if applicable and allowance not in employee_allowances:
                 employee_allowances.append(allowance)
+
         employee_allowances = [
             allowance
             for allowance in employee_allowances

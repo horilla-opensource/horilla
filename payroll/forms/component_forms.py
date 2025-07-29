@@ -785,7 +785,7 @@ class MultipleFileField(forms.FileField):
 
 class ReimbursementForm(ModelForm):
     """
-    ReimbursementForm
+    Optimized Reimbursement / Encashment Form
     """
 
     verbose_name = "Reimbursement / Encashment"
@@ -795,103 +795,114 @@ class ReimbursementForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
-    if apps.is_installed("leave"):
-
-        def get_encashable_leaves(self, employee):
-            LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
-            leaves = LeaveType.objects.filter(
-                employee_available_leave__employee_id=employee,
-                employee_available_leave__total_leave_days__gte=1,
-                is_encashable=True,
-            )
-            return leaves
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        exclude_fields = []
+        self.request = getattr(horilla_middlewares._thread_locals, "request", None)
+        self.employee = self.get_employee()  # 819
+
         if not self.instance.pk:
             self.initial["allowance_on"] = str(datetime.date.today())
 
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if request:
-            employee = (
-                request.user.employee_get
-                if self.instance.pk is None
-                else self.instance.employee_id
-            )
-        self.initial["employee_id"] = employee.id
-        if apps.is_installed("leave"):
-            AvailableLeave = get_horilla_model_class(
-                app_label="leave", model="availableleave"
-            )
+        self.initial["employee_id"] = self.employee.id if self.employee else None
 
-            assigned_leaves = self.get_encashable_leaves(employee)
-            self.assigned_leaves = AvailableLeave.objects.filter(
-                leave_type_id__in=assigned_leaves, employee_id=employee
-            )
-            self.fields["leave_type_id"].queryset = assigned_leaves
-            self.fields["leave_type_id"].empty_label = None
-            self.fields["employee_id"].empty_label = None
+        self.configure_fields()
 
-        type_attr = self.fields["type"].widget.attrs
-        type_attr["onchange"] = "toggleReimbursmentType($(this))"
-        self.fields["type"].widget.attrs.update(type_attr)
+    def get_employee(self):
+        """Resolves employee either from form data or request."""
+        employee_qs = self.fields["employee_id"].queryset
+        employee_id = self.data.get("employee_id") if self.data else None
 
-        employee_attr = self.fields["employee_id"].widget.attrs
-        employee_attr["onchange"] = "getAssignedLeave($(this))"
-        self.fields["employee_id"].widget.attrs.update(employee_attr)
+        if employee_id and (emp := employee_qs.filter(id=employee_id).first()):
+            return emp
+
+        if self.request and (emp := self.request.user.employee_get):
+            if not self.instance.pk and emp in employee_qs:
+                return emp
+            if self.instance.pk and emp.id == self.instance.employee_id:
+                return emp
+
+        return employee_qs.first()
+
+    def get_encashable_leaves(self, employee):
+        LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
+        return LeaveType.objects.filter(
+            employee_available_leave__employee_id=employee,
+            employee_available_leave__total_leave_days__gte=1,
+            is_encashable=True,
+        )
+
+    def configure_fields(self):
+        exclude_fields = []
+
+        if self.request and not self.request.user.has_perm("payroll.add_reimbursement"):
+            exclude_fields.append("employee_id")
+
+        self.setup_leave_fields()
+
+        self.fields["type"].widget.attrs["onchange"] = "toggleReimbursmentType($(this))"
+        self.fields["employee_id"].widget.attrs[
+            "onchange"
+        ] = "getAssignedLeave($(this))"
 
         self.fields["allowance_on"].widget = forms.DateInput(
             attrs={"type": "date", "class": "oh-input w-100"}
         )
-        self.fields["attachment"] = MultipleFileField(label="Attachements")
+
+        self.fields["attachment"] = MultipleFileField(label="Attachments")
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
-        # deleting fields based on type
-        type = None
-        if self.data and not self.instance.pk:
-            type = self.data["type"]
-        elif self.instance is not None:
-            type = self.instance.type
-        if not request.user.has_perm("payroll.add_reimbursement"):
-            exclude_fields.append("employee_id")
-
-        if type == "reimbursement" and self.instance.pk:
-            exclude_fields = exclude_fields + [
-                "leave_type_id",
-                "cfd_to_encash",
-                "ad_to_encash",
-                "bonus_to_encash",
-            ]
-        elif (
-            self.instance.pk
-            and type == "leave_encashment"
-            or self.data.get("type") == "leave_encashment"
-        ):
-            exclude_fields = exclude_fields + [
-                "attachment",
-                "amount",
-                "bonus_to_encash",
-            ]
-        elif (
-            self.instance.pk
-            and type == "bonus_encashment"
-            or self.data.get("type") == "bonus_encashment"
-        ):
-            exclude_fields = exclude_fields + [
-                "attachment",
-                "amount",
-                "leave_type_id",
-                "cfd_to_encash",
-                "ad_to_encash",
-            ]
-        if self.instance.pk:
-            exclude_fields = exclude_fields + ["type", "employee_id"]
+        self.exclude_fields_by_type(exclude_fields)
 
         for field in exclude_fields:
-            if field in self.fields:
-                del self.fields[field]
+            self.fields.pop(field, None)
+
+    def setup_leave_fields(self):
+        """Setup leave-related fields only if leave app is installed."""
+        if not apps.is_installed("leave") or not self.employee:
+            return
+
+        AvailableLeave = get_horilla_model_class(
+            app_label="leave", model="availableleave"
+        )
+        assigned_leaves = self.get_encashable_leaves(self.employee)
+
+        self.assigned_leaves = AvailableLeave.objects.filter(
+            leave_type_id__in=assigned_leaves, employee_id=self.employee
+        )
+        self.fields["leave_type_id"].queryset = assigned_leaves
+        self.fields["leave_type_id"].empty_label = None
+        self.fields["employee_id"].empty_label = None
+
+    def exclude_fields_by_type(self, exclude_fields):
+        """Determine which fields to exclude based on type."""
+        type = (
+            self.data.get("type")
+            if self.data
+            else self.instance.type if self.instance else None
+        )
+        is_edit = self.instance and self.instance.pk
+
+        if type == "reimbursement" and is_edit:
+            exclude_fields += [
+                "leave_type_id",
+                "cfd_to_encash",
+                "ad_to_encash",
+                "bonus_to_encash",
+            ]
+        elif type == "leave_encashment" and (is_edit or self.data):
+            exclude_fields += ["attachment", "amount", "bonus_to_encash"]
+        elif type == "bonus_encashment" and (is_edit or self.data):
+            exclude_fields += [
+                "attachment",
+                "amount",
+                "leave_type_id",
+                "cfd_to_encash",
+                "ad_to_encash",
+            ]
+
+        if is_edit:
+            exclude_fields += ["type", "employee_id"]
 
     def as_p(self):
         """

@@ -332,36 +332,50 @@ class COSECBioAttendanceThread(Thread):
 @permission_required("biometric.view_biometricdevices")
 def biometric_devices_view(request):
     """
-    Renders a page displaying a list of active biometric devices.
+    Renders and filters the list of biometric devices based on query parameters.
 
-    Parameters:
-    - request: The HTTP request object.
-
-    Returns:
-    - HttpResponse: The rendered HTML page displaying the list of biometric devices.
+    Handles both initial page load and HTMX-based filter/search requests.
 
     Template:
     - "biometric/view_biometric_devices.html"
 
     Context:
     - biometric_form (BiometricDeviceForm): Form for adding new biometric devices.
-    - devices (QuerySet): Queryset of active biometric devices, ordered by creation date.
-    - f (BiometricDeviceFilter): Form for filtering biometric devices.
-
+    - devices (QuerySet): Filtered and paginated queryset of biometric devices.
+    - f (BiometricDeviceFilter): Filter form.
+    - pd (str): URL-encoded query params for HTMX push.
+    - filter_dict (dict): Parsed filter query params.
     """
-    biometric_form = BiometricDeviceForm()
-    filter_form = BiometricDeviceFilter()
-    biometric_devices = BiometricDevices.objects.filter(is_active=True).order_by(
-        "-created_at"
-    )
+    previous_data = request.GET.urlencode()
+    is_active = request.GET.get("is_active")
+
+    # Apply filters
+    filter_form = BiometricDeviceFilter(request.GET)
+    biometric_devices = filter_form.qs.order_by("-created_at")
+
+    # Default to is_active=True if not specified or "unknown"
+    if not is_active or is_active == "unknown":
+        biometric_devices = biometric_devices.filter(is_active=True)
+
+    # Paginate
     biometric_devices = paginator_qry(biometric_devices, request.GET.get("page"))
-    template = "biometric/view_biometric_devices.html"
-    context = {
-        "biometric_form": biometric_form,
-        "devices": biometric_devices,
-        "f": filter_form,
-    }
-    return render(request, template, context)
+
+    # Parse filters for reuse
+    data_dict = parse_qs(previous_data)
+    get_key_instances(BiometricDevices, data_dict)
+
+    # Render
+    return render(
+        request,
+        "biometric/view_biometric_devices.html",
+        {
+            "biometric_form": BiometricDeviceForm(),
+            "devices": biometric_devices,
+            "f": filter_form,
+            "pd": previous_data,
+            "filter_dict": data_dict,
+        },
+    )
 
 
 @login_required
@@ -528,7 +542,7 @@ def biometric_device_unschedule(request, device_id):
     device.is_scheduler = False
     device.save()
     messages.success(request, _("Biometric device unscheduled successfully"))
-    return redirect(f"/biometric/search-devices?{previous_data}")
+    return redirect(f"/biometric/view-biometric-devices/?{previous_data}")
 
 
 @login_required
@@ -545,7 +559,10 @@ def biometric_device_add(request):
     Returns:
     - HttpResponse: Renders the 'add_biometric_device.html' template with the biometric device form.
     """
-    previous_data = unquote(request.GET.urlencode())[len("pd=") :]
+    previous_data = unquote(request.GET.urlencode())
+    previous_data = (
+        previous_data[3:] if previous_data.startswith("pd=") else previous_data
+    )
     biometric_form = BiometricDeviceForm()
     if request.method == "POST":
         biometric_form = BiometricDeviceForm(request.POST)
@@ -554,7 +571,7 @@ def biometric_device_add(request):
             messages.success(request, _("Biometric device added successfully."))
             biometric_form = BiometricDeviceForm()
     context = {"biometric_form": biometric_form, "pd": previous_data}
-    return render(request, "biometric/add_biometric_device.html", context)
+    return render(request, "biometric/biometric_device_form.html", context)
 
 
 @login_required
@@ -576,7 +593,7 @@ def biometric_device_edit(request, device_id):
     device = BiometricDevices.find(device_id)
     if not device:
         messages.error(request, _("Biometric device not found."))
-        return render(request, "biometric/edit_biometric_device.html")
+        return render(request, "biometric/biometric_device_form.html")
     biometric_form = BiometricDeviceForm(instance=device)
     if request.method == "POST":
         biometric_form = BiometricDeviceForm(request.POST, instance=device)
@@ -587,7 +604,7 @@ def biometric_device_edit(request, device_id):
         "biometric_form": biometric_form,
         "device_id": device_id,
     }
-    return render(request, "biometric/edit_biometric_device.html", context)
+    return render(request, "biometric/biometric_device_form.html", context)
 
 
 @login_required
@@ -602,12 +619,12 @@ def biometric_device_archive(request, device_id):
     device_obj = BiometricDevices.find(device_id)
     if not device_obj:
         messages.error(request, _("Biometric device not found."))
-        return redirect(f"/biometric/search-devices?{previous_data}")
+        return redirect(f"/biometric/view-biometric-devices/?{previous_data}")
     device_obj.is_active = not device_obj.is_active
     device_obj.save()
     message = _("archived") if not device_obj.is_active else _("un-archived")
     messages.success(request, _("Device is %(message)s") % {"message": message})
-    return redirect(f"/biometric/search-devices?{previous_data}")
+    return redirect(f"/biometric/view-biometric-devices/?{previous_data}")
 
 
 @login_required
@@ -623,7 +640,7 @@ def biometric_device_delete(request, device_id):
     - device_id (uuid): The ID of the biometric device to be deleted.
 
     Returns:
-    - HttpResponseRedirect: Redirects to the 'search-devices' page after deleting the
+    - HttpResponseRedirect: Redirects to the 'view-biometric-devices' page after deleting the
                             biometric device.
 
     """
@@ -631,45 +648,10 @@ def biometric_device_delete(request, device_id):
     device_obj = BiometricDevices.find(device_id)
     if not device_obj:
         messages.error(request, _("Biometric device not found."))
-        return redirect(f"/biometric/search-devices?{previous_data}")
+        return redirect(f"/biometric/view-biometric-devices/?{previous_data}")
     device_obj.delete()
     messages.success(request, _("Biometric device deleted successfully."))
-    return redirect(f"/biometric/search-devices?{previous_data}")
-
-
-@login_required
-@install_required
-@hx_request_required
-@permission_required("biometric.view_biometricdevices")
-def search_devices(request):
-    """
-    This method is used to search biometric device model and return matching objects
-    """
-    previous_data = request.GET.urlencode()
-    search = request.GET.get("search")
-    is_active = request.GET.get("is_active")
-    if search is None:
-        search = ""
-    devices = BiometricDeviceFilter(request.GET).qs.order_by("-created_at")
-    if not is_active or is_active == "unknown":
-        devices = devices.filter(is_active=True)
-    data_dict = []
-    data_dict = parse_qs(previous_data)
-    get_key_instances(BiometricDevices, data_dict)
-    template = "biometric/card_biometric_devices.html"
-    if request.GET.get("view") == "list":
-        template = "biometric/list_biometric_devices.html"
-
-    devices = paginator_qry(devices, request.GET.get("page"))
-    return render(
-        request,
-        template,
-        {
-            "devices": devices,
-            "pd": previous_data,
-            "filter_dict": data_dict,
-        },
-    )
+    return redirect(f"/biometric/view-biometric-devices/?{previous_data}")
 
 
 def render_connection_response(title, text, icon):
@@ -911,7 +893,7 @@ def biometric_device_bulk_fetch_logs(request):
         )
         return HttpResponse(script)
 
-    attendance_count, error_message = zk_biometric_attendance_bulk_logs(zk_devices)
+    attendance_count, error_message = zk_biometric_attendance_logs(zk_devices)
     if isinstance(attendance_count, int):
         script = render_connection_response(
             _("Logs Fetched Successfully"),
@@ -2163,91 +2145,28 @@ def biometric_device_live(request):
     return HttpResponse(script)
 
 
-def zk_biometric_attendance_logs(device):
+def zk_biometric_attendance_logs(device_or_devices):
     """
-    Retrieve attendance records from a ZK biometric device and update the clock-in/clock-out status.
+    Retrieve and process attendance logs from one or more ZKTeco biometric devices.
 
-    :param device_id: The ID of the ZK biometric device.
+    Handles scenarios where the same user_id may exist across multiple devices for the same employee.
+
+    :param device_or_devices: A single BiometricDevice instance or a queryset/list of them.
+    :return: Tuple (number_of_attendance_processed, error_message or None)
     """
-    port_no = device.port
-    machine_ip = device.machine_ip
-    conn = None
-    zk_device = ZK(
-        machine_ip,
-        port=port_no,
-        timeout=5,
-        password=int(device.zk_password),
-        force_udp=False,
-        ommit_ping=False,
-    )
-    try:
-        conn = zk_device.connect()
-        conn.enable_device()
-        attendances = conn.get_attendance()
-        last_attendance_datetime = attendances[-1].timestamp
-        if device.last_fetch_date and device.last_fetch_time:
-            filtered_attendances = [
-                attendance
-                for attendance in attendances
-                if (attendance.timestamp.date() > device.last_fetch_date)
-                or (
-                    attendance.timestamp.date() == device.last_fetch_date
-                    and attendance.timestamp.time() > device.last_fetch_time
-                )
-            ]
-        else:
-            filtered_attendances = attendances
-        device.last_fetch_date = last_attendance_datetime.date()
-        device.last_fetch_time = last_attendance_datetime.time()
-        device.save()
-        bio_id_map = {
-            bio.user_id: bio
-            for bio in BiometricEmployees.objects.filter(device_id=device)
-        }
-        for attendance in filtered_attendances:
-            user_id = attendance.user_id
-            punch_code = attendance.punch
-            date_time = django_timezone.make_aware(attendance.timestamp)
-            date = date_time.date()
-            time = date_time.time()
-            bio_id = bio_id_map.get(user_id)
-            if bio_id:
-                request_data = Request(
-                    user=bio_id.employee_id.employee_user_id,
-                    date=date,
-                    time=time,
-                    datetime=date_time,
-                )
+    if hasattr(device_or_devices, "__iter__") and not isinstance(
+        device_or_devices, dict
+    ):
+        devices = list(device_or_devices)
+    else:
+        devices = [device_or_devices]
 
-                if punch_code in {0, 3, 4}:
-                    try:
-                        clock_in(request_data)
-                    except Exception as error:
-                        logger.error("Got an error : ", error)
-                elif punch_code in {1, 2, 5}:
-                    try:
-                        clock_out(request_data)
-                    except Exception as error:
-                        logger.error("Got an error : ", error)
-                else:
-                    pass
-        return len(filtered_attendances), None
-    except zk_exception.ZKErrorResponse as e:
-        return "error", str(e)
-    except Exception as e:
-        logger.error("ZKTeco connection error", exc_info=True)
-        return "error", str(e)
-    finally:
-        if conn:
-            conn.disconnect()
-
-
-def zk_biometric_attendance_bulk_logs(devices):
     errors = []
     combined_attendances = []
+    patch_direction = {"in": 0, "out": 1}
 
     bio_id_map = {
-        bio.user_id: bio
+        (bio.device_id_id, bio.user_id): bio
         for bio in BiometricEmployees.objects.filter(device_id__in=devices)
     }
 
@@ -2286,13 +2205,17 @@ def zk_biometric_attendance_bulk_logs(devices):
             else:
                 filtered = attendances
 
-            # Track for final device update
+            # Update last fetch markers
             device.last_fetch_date = last_attendance_datetime.date()
             device.last_fetch_time = last_attendance_datetime.time()
             device.save()
-
             for attendance in filtered:
-                attendance.device = device  # Attach device info for later processing
+                attendance.device = device  # Attach device info
+                attendance.punch = (
+                    patch_direction[device.device_direction]
+                    if device.device_direction in patch_direction
+                    else attendance.punch
+                )  # Update punch code based on device direction
                 combined_attendances.append(attendance)
 
         except zk_exception.ZKErrorResponse as e:
@@ -2304,7 +2227,7 @@ def zk_biometric_attendance_bulk_logs(devices):
             if conn:
                 conn.disconnect()
 
-    # Process all combined attendances (after sorting based on timestamp)
+    # Sort all filtered attendances by time
     combined_attendances.sort(key=lambda a: a.timestamp)
 
     for attendance in combined_attendances:
@@ -2313,7 +2236,8 @@ def zk_biometric_attendance_bulk_logs(devices):
         date_time = django_timezone.make_aware(attendance.timestamp)
         date = date_time.date()
         time = date_time.time()
-        bio_id = bio_id_map.get(user_id)
+        device_id = attendance.device.id
+        bio_id = bio_id_map.get((device_id, user_id))
         if bio_id:
             request_data = Request(
                 user=bio_id.employee_id.employee_user_id,
@@ -2326,9 +2250,10 @@ def zk_biometric_attendance_bulk_logs(devices):
                     clock_in(request_data)
                 elif punch_code in {1, 2, 5}:
                     clock_out(request_data)
-            except Exception as error:
+            except Exception:
                 logger.error(
-                    f"[Device: {attendance.device.name}] Punch error", exc_info=True
+                    f"[Device: {attendance.device.name}] Punch processing error",
+                    exc_info=True,
                 )
 
     return len(combined_attendances), "; ".join(errors) if errors else None

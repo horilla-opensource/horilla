@@ -468,6 +468,7 @@ def get_mail_preview(request):
             candidate_obj = Candidate.objects.get(id=candidate_id)
             context = {
                 "instance": candidate_obj,
+                "model_instance": candidate_obj,
                 "self": request.user.employee_get,
                 "request": request,
             }
