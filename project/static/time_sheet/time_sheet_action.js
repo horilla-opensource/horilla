@@ -169,4 +169,18 @@ $("#deleteTimeSheet").click(function (e) {
          });
        }
      });
-   };
+  };
+
+// debounce timesheet search requests
+document.addEventListener('DOMContentLoaded', function () {
+  var input = document.getElementById('filter-time-sheet');
+  if (input) {
+    var timer;
+    input.addEventListener('input', function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        htmx.trigger(input, 'delayed-search');
+      }, 2000);
+    });
+  }
+});

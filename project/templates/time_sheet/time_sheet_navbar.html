@@ -35,7 +35,8 @@
           name="search"
           placeholder="{% trans 'Search' %}"
           hx-get="{% url 'filter-time-sheet' %}"
-          hx-trigger="keyup changed delay:500ms, search"
+          hx-trigger="delayed-search"
+          hx-on-htmx-before-request="htmxLoadIndicator(this);"
           hx-target="#TimeSheetList"
           hx-swap="innerHTML"
         />

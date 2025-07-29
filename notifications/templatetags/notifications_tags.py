@@ -48,7 +48,7 @@ def has_notification(user):
 def register_notify_callbacks(
     badge_class="live_notify_badge",  # pylint: disable=too-many-arguments,missing-docstring
     menu_class="live_notify_list",
-    refresh_period=15,
+    refresh_period=60,
     callbacks="",
     api_name="list",
     fetch=5,
