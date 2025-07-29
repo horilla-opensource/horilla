@@ -139,11 +139,12 @@ class GeoFencingEmployeeLocationCheckAPIView(APIView):
 class GeoFencingSetUpPermissionCheck(APIView):
     permission_classes = [IsAuthenticated]
 
+    @method_decorator(
+        permission_required("geofencing.view_geofencing", raise_exception=True),
+        name="dispatch",
+    )
     def get(self, request):
-        geo_fencing = GeoFencingSetupGetPostAPIView()
-        if geo_fencing.get(request).status_code == 200:
-            return Response(status=200)
-        return Response(status=400)
+        return Response(status=200)
 
 
 def get_company(request):
