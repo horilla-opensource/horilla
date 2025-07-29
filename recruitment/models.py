@@ -8,21 +8,16 @@ This module is used to register models for recruitment app
 import json
 import os
 import re
-from datetime import date
 from uuid import uuid4
 
 import django
 import requests
 from django import forms
-from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models.signals import m2m_changed, post_save
-from django.dispatch import receiver
-from django.http import JsonResponse
-from django.urls import reverse_lazy
+from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -346,6 +341,16 @@ class Stage(HorillaModel):
         }
 
 
+def candidate_upload_path(instance, filename):
+    """
+    Generates a unique file path for candidate profile & resume uploads.
+    """
+    ext = filename.split(".")[-1]
+    name_slug = slugify(instance.name) or "candidate"
+    unique_filename = f"{name_slug}-{uuid4().hex[:8]}.{ext}"
+    return f"recruitment/{name_slug}/{unique_filename}"
+
+
 class Candidate(HorillaModel):
     """
     Candidate model
@@ -365,7 +370,7 @@ class Candidate(HorillaModel):
         ("other", _("Other")),
     ]
     name = models.CharField(max_length=100, null=True, verbose_name=_("Name"))
-    profile = models.ImageField(upload_to=candidate_photo_upload_path, null=True)
+    profile = models.ImageField(upload_to=candidate_upload_path, null=True)  # 853
     portfolio = models.URLField(max_length=200, blank=True)
     recruitment_id = models.ForeignKey(
         Recruitment,
@@ -408,7 +413,7 @@ class Candidate(HorillaModel):
         verbose_name=_("Mobile"),
     )
     resume = models.FileField(
-        upload_to="recruitment/resume",
+        upload_to=candidate_upload_path,  # 853
         validators=[
             validate_pdf,
         ],
@@ -566,7 +571,8 @@ class Candidate(HorillaModel):
 
     def get_interview(self):
         """
-        This method is used to get the interview dates and times for the candidate for the mail templates
+        This method is used to get the interview dates and times
+        for the candidate for the mail templates
         """
 
         interviews = InterviewSchedule.objects.filter(candidate_id=self.id)
