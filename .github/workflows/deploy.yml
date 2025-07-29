@@ -1,0 +1,57 @@
+name: Horilla EC2 Deploy
+
+on:
+  push:
+    branches:
+      - up/bhathiya 
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH access
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy Horilla App
+        run: |
+          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+          set -e
+
+          sudo apt update && sudo apt upgrade -y
+
+          if [ ! -d "horilla-hrm" ]; then
+            git clone https://github.com/wireappsltd/horilla-hrm.git
+          fi
+          cd horilla-hrm
+
+          git reset --hard
+          git clean -fd
+          git pull origin $(git rev-parse --abbrev-ref HEAD)
+
+          fuser -k 8000/tcp || echo "No process on 8000"
+
+          if [ ! -d "venv" ]; then
+            python3 -m venv venv
+          fi
+          source venv/bin/activate
+
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+          python manage.py makemigrations
+          python manage.py migrate
+          python manage.py compilemessages
+
+          nohup python3 manage.py runserver 0.0.0.0:8000 > nohup.out 2>&1 &
+
+          echo "✅ Horilla successfully deployed!"
+          EOF
