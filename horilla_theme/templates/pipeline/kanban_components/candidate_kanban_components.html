@@ -11,7 +11,7 @@
         onclick="window.location.href = `{% url 'candidate-view-individual' cand.id %}`"
     >
         <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
-            <div class="absolute inline-block dropdown-wrapper right-5 top-5 w-3" role="button" 
+            <div class="absolute inline-block dropdown-wrapper right-5 top-5 w-3" role="button"
                 onclick="event.stopPropagation()"
             >
                 <a class="cursor-pointer dropdown-toggle">
@@ -76,7 +76,7 @@
                                 </li>
                             {% endif %}
                         {% endif %}
-                        {% if "onboarding"|app_installed %} 
+                        {% if "onboarding"|app_installed %}
                             {% if perms.recruitment.add_rejectedcandidate or request.user.employee_get in stage.stage_managers.all %}
                             <li class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300">
                                 <a

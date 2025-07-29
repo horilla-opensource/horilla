@@ -5,7 +5,7 @@
 <div class="bg-white p-3 rounded-md shadow-card mb-5">
   <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-5 border-b border-dark-50 pb-3">
     <h3 class="text-sm font-semibold">{{ project }}</h3>
-  
+
     <div class="flex items-center gap-3">
       {% if perms.pms.change_project or request.user|is_project_manager_or_member:project %}
       <div class="relative dropdown-wrapper">
@@ -25,7 +25,7 @@
       {% else %}
       <div class="text-xs font-medium">{{ project.get_status_display }}</div>
       {% endif %}
-  
+
       {% if perms.project.change_project %}
       <a
         onclick="event.preventDefault();event.stopPropagation()"
@@ -40,7 +40,7 @@
       {% endif %}
     </div>
   </div>
-  
+
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
     <div class="mb-2 flex gap-5 items-center">
