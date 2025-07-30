@@ -50,7 +50,6 @@ class RecruitmentTabView(HorillaTabView):
     """
 
     filter_class = filters.RecruitmentFilter
-    show_filter_tags = True
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -91,12 +90,12 @@ class RecruitmentTabView(HorillaTabView):
                         {
                             "action": _("Add Stage"),
                             "attrs": f"""
-                                        data-toggle="oh-modal-toggle"
-                                        data-target="#genericModal"
-                                        hx-get="{reverse('rec-stage-create')}?recruitment_id={rec.pk}"
-                                        hx-target="#genericModalBody"
-                                        style="cursor: pointer;"
-                                        """,
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                hx-get="{reverse('rec-stage-create')}?recruitment_id={rec.pk}"
+                                hx-target="#genericModalBody"
+                                style="cursor: pointer;"
+                            """,
                         },
                     )
 
@@ -118,12 +117,12 @@ class RecruitmentTabView(HorillaTabView):
                         {
                             "action": _("Edit"),
                             "attrs": f"""
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#genericModal"
-                                    hx-get="{reverse("recruitment-update-pipeline", kwargs={"pk": rec.pk})}"
-                                    hx-target="#genericModalBody"
-                                    style="cursor: pointer;"
-                                    """,
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                hx-get="{reverse("recruitment-update-pipeline", kwargs={"pk": rec.pk})}"
+                                hx-target="#genericModalBody"
+                                style="cursor: pointer;"
+                            """,
                         },
                     )
 
@@ -132,12 +131,12 @@ class RecruitmentTabView(HorillaTabView):
                         {
                             "action": _("Resume Shortlisting"),
                             "attrs": f"""
-                                    data-toggle="oh-modal-toggle"
-                                    data-target="#bulkResumeUpload"
-                                    hx-get="{reverse('view-bulk-resume')}?rec_id={rec.pk}"
-                                    hx-target="#bulkResumeUploadBody"
-                                    style="cursor: pointer;"
-                                    """,
+                                data-toggle="oh-modal-toggle"
+                                data-target="#bulkResumeUpload"
+                                hx-get="{reverse('view-bulk-resume')}?rec_id={rec.pk}"
+                                hx-target="#bulkResumeUploadBody"
+                                style="cursor: pointer;"
+                            """,
                         },
                     )
 
@@ -147,10 +146,10 @@ class RecruitmentTabView(HorillaTabView):
                             {
                                 "action": _("Reopen"),
                                 "attrs": f"""
-                                            href="{reverse("recruitment-reopen-pipeline", kwargs={"rec_id": rec.pk})}"
-                                            style="cursor: pointer;"
-                                            onclick="return confirm('Are you sure you want to reopen this recruitment?');"
-                                            """,
+                                    href="{reverse("recruitment-reopen-pipeline", kwargs={"rec_id": rec.pk})}"
+                                    style="cursor: pointer;"
+                                    onclick="return confirm('Are you sure you want to reopen this recruitment?');"
+                                """,
                             },
                         )
                     else:
@@ -158,10 +157,10 @@ class RecruitmentTabView(HorillaTabView):
                             {
                                 "action": _("Close"),
                                 "attrs": f"""
-                                        href="{reverse("recruitment-close-pipeline", kwargs={"rec_id": rec.pk})}"
-                                        style="cursor: pointer;"
-                                        onclick="return confirm('Are you sure you want to close this recruitment?');"
-                                        """,
+                                    href="{reverse("recruitment-close-pipeline", kwargs={"rec_id": rec.pk})}"
+                                    style="cursor: pointer;"
+                                    onclick="return confirm('Are you sure you want to close this recruitment?');"
+                                """,
                             },
                         )
                 if delete_perm:
@@ -169,12 +168,12 @@ class RecruitmentTabView(HorillaTabView):
                         {
                             "action": _("Delete"),
                             "attrs": f"""
-                                        data-toggle="oh-modal-toggle"
-                                        data-target="#deleteConfirmation"
-                                        hx-get="{reverse('generic-delete')}?model=recruitment.Recruitment&pk={rec.pk}"
-                                        hx-target="#deleteConfirmationBody"
-                                        style="cursor: pointer;"
-                                        """,
+                                data-toggle="oh-modal-toggle"
+                                data-target="#deleteConfirmation"
+                                hx-get="{reverse('generic-delete')}?model=recruitment.Recruitment&pk={rec.pk}"
+                                hx-target="#deleteConfirmationBody"
+                                style="cursor: pointer;"
+                            """,
                         }
                     )
             if stage_manage_perm or view_perm:
@@ -182,6 +181,7 @@ class RecruitmentTabView(HorillaTabView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["show_filter_tags"] = True
 
         return context
 
@@ -244,24 +244,16 @@ class CandidateList(HorillaListView):
     filter_selected = False
     quick_export = False
     next_prev = False
-    show_filter_tags = False
-    records_per_page = True
+    show_filter_tags = True
+    records_per_page = 10
     records_count_in_tab = False
 
     custom_empty_template = "cbv/pipeline/empty.html"
     header_attrs = {
-        "action": """
-            style="width:413px;"
-        """,
-        "mobile": """
-            style="width:100px;"
-        """,
-        "Stage": """
-            style="width:100px;"
-        """,
-        "get_interview_count": """
-            style="width:200px;"
-        """,
+        "action": """ style="width:400px;" """,
+        "mobile": """ style="width:100px;" """,
+        "Stage": """ style="width:100px;" """,
+        "get_interview_count": """ style="width:200px;" """,
     }
     columns = [
         ("Name", "candidate_name", "get_avatar"),
@@ -286,92 +278,92 @@ class CandidateList(HorillaListView):
     ]
 
     row_attrs = """
-                hx-get='{get_details_candidate}'
-                data-toggle="oh-modal-toggle"
-                data-target="#genericModal"
-                hx-target="#genericModalBody"
-                """
+        hx-get='{get_details_candidate}'
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        hx-target="#genericModalBody"
+    """
 
     header_attrs = {
         "option": """
-    style="width:280px !important"
-    """
+            style="width:280px !important"
+        """
     }
     actions = [
         {
             "action": _("Schedule Interview"),
             "icon": "time-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    hx-get = "{get_schedule_interview}"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#genericModal"
-                    hx-target="#genericModalBody"
-                """,
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                hx-get = "{get_schedule_interview}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+            """,
         },
         {
             "action": _("Send Mail"),
             "icon": "mail-open-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    hx-get = "{get_send_mail}"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#objectDetailsModal"
-                    hx-target="#objectDetailsModalTarget"
-                """,
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                hx-get = "{get_send_mail}"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModal"
+                hx-target="#objectDetailsModalTarget"
+            """,
         },
         {
             "action": _("Add to Skill Zone"),
             "icon": "heart-circle-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 disabled"
-                    data-toggle="oh-modal-toggle"
-                    hx-get="{get_skill_zone_url}"
-                    data-target="#genericModal"
-                    hx-target="#genericModalBody"
-                """,
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 disabled"
+                data-toggle="oh-modal-toggle"
+                hx-get="{get_skill_zone_url}"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+            """,
         },
         {
             "action": _("Reject Candidate"),
             "icon": "thumbs-down-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    data-toggle="oh-modal-toggle"
-                    hx-get="{get_rejected_candidate_url}"
-                    {rejected_candidate_class}
-                    data-target="#genericModal"
-                    hx-target="#genericModalBody"
-                """,
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                data-toggle="oh-modal-toggle"
+                hx-get="{get_rejected_candidate_url}"
+                {rejected_candidate_class}
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+            """,
         },
         {
             "action": _("View Note"),
             "icon": "newspaper-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-activity-sidebar__open"
-                    hx-get="{get_view_note_url}"
-                    data-target="#activitySidebar"
-                    hx-target="#activitySidebar"
-                    onclick="$('#activitySidebar').addClass('oh-activity-sidebar--show')"
-                """,
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 oh-activity-sidebar__open"
+                hx-get="{get_view_note_url}"
+                data-target="#activitySidebar"
+                hx-target="#activitySidebar"
+                onclick="$('#activitySidebar').addClass('oh-activity-sidebar--show')"
+            """,
         },
         {
             "action": _("Document Request"),
             "icon": "document-attach-outline",
             "attrs": """
-                     hx-get="{get_document_request}"
-                    data-target="#genericModal"
-                    hx-target="#genericModalBody"
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    data-toggle="oh-modal-toggle"
-                """,
+                hx-get="{get_document_request}"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                data-toggle="oh-modal-toggle"
+            """,
         },
         {
             "action": _("Resume"),
             "icon": "document-outline",
             "attrs": """
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-                    href="{get_resume_url}" target="_blank"
-                """,
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                href="{get_resume_url}" target="_blank"
+            """,
         },
     ]
 
@@ -424,6 +416,10 @@ class CandidateList(HorillaListView):
         return self.queryset
 
 
+class CandidateCard(CandidateList):
+    template_name = "pipeline/kanban_components/candidate_kanban_components.html"
+
+
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
     manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
@@ -445,11 +441,11 @@ class PipelineNav(HorillaNavView):
         super().__init__(**kwargs)
         if self.request.user.has_perm("recruitment.add_recruitment"):
             self.create_attrs = f"""
-                                hx-get="{reverse_lazy('recruitment-create')}?{urlencode({'pipeline': 'true'})}"
-                                hx-target="#genericModalBody"
-                                data-target="#genericModal"
-                                data-toggle="oh-modal-toggle"
-                                """
+                hx-get="{reverse_lazy('recruitment-create')}?{urlencode({'pipeline': 'true'})}"
+                hx-target="#genericModalBody"
+                data-target="#genericModal"
+                data-toggle="oh-modal-toggle"
+            """
         else:
             self.create_attrs = None
 

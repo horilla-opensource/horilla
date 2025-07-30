@@ -1,5 +1,5 @@
 {% load i18n static recruitmentfilters horillafilters %}
-{% for cand in candidates %}
+{% for cand in queryset %}
     <div class="task-card"
         data-candidate-id="{{cand.id}}"
         data-recruitment-id ="{{rec.id}}"
@@ -220,11 +220,12 @@
             </div>
         </div>
     </div>
-    {% if forloop.last and candidates.has_next %}
+
+    {% if forloop.last and queryset.has_next %}
         <div id ="pagination-container-{{cand.stage_id.id}}" >
             <div
                 class="htmx-sentinel"
-                hx-get="{% url 'candidate-stage-component' %}?stage_id={{cand.stage_id.id}}&view=card&candidate_page={{ candidates.next_page_number }}"
+                hx-get="{% url 'candidate-card-cbv' cand.stage_id.id %}?page={{ queryset.next_page_number }}"
                 hx-trigger="intersect once"
                 hx-swap="outerHTML"
                 hx-target="#pagination-container-{{cand.stage_id.id}}"
