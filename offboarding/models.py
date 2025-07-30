@@ -14,7 +14,7 @@ from employee.models import Employee
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from notifications.signals import notify
 
@@ -111,7 +111,7 @@ class OffboardingStageMultipleFile(HorillaModel):
     OffboardingStageMultipleFile
     """
 
-    attachment = models.FileField(upload_to="offboarding/attachments")
+    attachment = models.FileField(upload_to=upload_path)
 
 
 class OffboardingEmployee(HorillaModel):

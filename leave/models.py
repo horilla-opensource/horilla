@@ -26,7 +26,7 @@ from base.models import (
 )
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import horilla_middlewares
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.methods import (
@@ -158,7 +158,7 @@ WEEK_DAYS = [
 
 class LeaveType(HorillaModel):
     icon = models.ImageField(
-        null=True, blank=True, upload_to="leave/leave_icon", verbose_name=_("Icon")
+        null=True, blank=True, upload_to=upload_path, verbose_name=_("Icon")
     )
     name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
     color = models.CharField(null=True, max_length=30, verbose_name=_("Color"))
@@ -652,7 +652,7 @@ class LeaveRequest(HorillaModel):
     attachment = models.FileField(
         null=True,
         blank=True,
-        upload_to="leave/leave_attachment",
+        upload_to=upload_path,
         verbose_name=_("Attachment"),
     )
     status = models.CharField(
@@ -1195,7 +1195,7 @@ class LeaveRequest(HorillaModel):
 
 
 class LeaverequestFile(models.Model):
-    file = models.FileField(upload_to="leave/request_files")
+    file = models.FileField(upload_to=upload_path)
 
 
 class LeaverequestComment(HorillaModel):
@@ -1227,7 +1227,7 @@ class LeaveAllocationRequest(HorillaModel):
     attachment = models.FileField(
         null=True,
         blank=True,
-        upload_to="leave/leave_attachment",
+        upload_to=upload_path,
         verbose_name=_("Attachment"),
     )
     status = models.CharField(

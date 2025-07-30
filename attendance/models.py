@@ -32,7 +32,7 @@ from base.methods import is_company_leave, is_holiday
 from base.models import Company, EmployeeShift, EmployeeShiftDay, WorkType
 from employee.models import Employee
 from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # to skip the migration issue with the old migrations
@@ -575,7 +575,7 @@ class Attendance(HorillaModel):
 
 
 class AttendanceRequestFile(HorillaModel):
-    file = models.FileField(upload_to="attendance/request_files")
+    file = models.FileField(upload_to=upload_path)
 
 
 class AttendanceRequestComment(HorillaModel):

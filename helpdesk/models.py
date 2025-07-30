@@ -11,7 +11,7 @@ from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, Department, JobPosition, Tags
 from employee.models import Employee
 from horilla import horilla_middlewares
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
@@ -211,7 +211,7 @@ class Comment(HorillaModel):
 
 
 class Attachment(HorillaModel):
-    file = models.FileField(upload_to="Tickets/Attachment")
+    file = models.FileField(upload_to=upload_path)
     description = models.CharField(max_length=100, blank=True, null=True)
     format = models.CharField(max_length=50, blank=True, null=True)
     ticket = models.ForeignKey(

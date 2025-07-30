@@ -23,7 +23,7 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, JobPosition
 from employee.models import Employee
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
@@ -370,7 +370,7 @@ class Candidate(HorillaModel):
         ("other", _("Other")),
     ]
     name = models.CharField(max_length=100, null=True, verbose_name=_("Name"))
-    profile = models.ImageField(upload_to=candidate_upload_path, null=True)  # 853
+    profile = models.ImageField(upload_to=upload_path, null=True)  # 853
     portfolio = models.URLField(max_length=200, blank=True)
     recruitment_id = models.ForeignKey(
         Recruitment,
@@ -413,7 +413,7 @@ class Candidate(HorillaModel):
         verbose_name=_("Mobile"),
     )
     resume = models.FileField(
-        upload_to=candidate_upload_path,  # 853
+        upload_to=upload_path,  # 853
         validators=[
             validate_pdf,
         ],
@@ -709,7 +709,7 @@ class RejectedCandidate(HorillaModel):
 
 
 class StageFiles(HorillaModel):
-    files = models.FileField(upload_to="recruitment/stageFiles", blank=True, null=True)
+    files = models.FileField(upload_to=upload_path, blank=True, null=True)
 
     def __str__(self):
         return self.files.name.split("/")[-1]
@@ -837,9 +837,7 @@ class RecruitmentSurveyAnswer(HorillaModel):
         null=True,
     )
     answer_json = models.JSONField()
-    attachment = models.FileField(
-        upload_to="recruitment_attachment", null=True, blank=True
-    )
+    attachment = models.FileField(upload_to=upload_path, null=True, blank=True)
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
     @property
@@ -1000,7 +998,7 @@ class InterviewSchedule(HorillaModel):
 
 class Resume(models.Model):
     file = models.FileField(
-        upload_to="recruitment/resume",
+        upload_to=upload_path,
         validators=[
             validate_pdf,
         ],
@@ -1054,7 +1052,7 @@ class CandidateDocument(HorillaModel):
     document_request_id = models.ForeignKey(
         CandidateDocumentRequest, on_delete=models.PROTECT, null=True
     )
-    document = models.FileField(upload_to="candidate/documents", null=True)
+    document = models.FileField(upload_to=upload_path, null=True)
     status = models.CharField(choices=STATUS, max_length=10, default="requested")
     reject_reason = models.TextField(blank=True, null=True, max_length=255)
 
