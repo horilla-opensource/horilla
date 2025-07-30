@@ -145,7 +145,7 @@
 			class="oh-kanban__section-body ui-sortable candidate-container hx-sortable min-h-[calc(100%_-_100px)]"
 			data-stage-id="{{stage.id}}"
 			data-recruitment-id="{{rec.id}}"
-			hx-get="{% url 'candidate-stage-component' %}?stage_id={{stage.id}}&view=card"
+			hx-get="{% url 'candidate-card-cbv' stage.id %}"
 			hx-trigger="load"
 			id="kanbanCandidates{{stage.id}}"
 		>

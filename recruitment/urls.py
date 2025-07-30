@@ -966,6 +966,11 @@ urlpatterns = [
         name="candidate-lists-cbv",
     ),
     path(
+        "candidate-card-cbv/<int:stage_id>",
+        pipeline.CandidateCard.as_view(),
+        name="candidate-card-cbv",
+    ),
+    path(
         "cbv-change-stage/<int:pk>/",
         pipeline.ChangeStage.as_view(),
         name="cbv-change-stage",
