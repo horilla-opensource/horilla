@@ -143,7 +143,7 @@ class TimeSheetList(HorillaListView):
                 | Q(project_id__managers=employee)
                 | Q(employee_id=employee)
             ).distinct()
-        return queryset
+        return queryset.order_by("-date")
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
