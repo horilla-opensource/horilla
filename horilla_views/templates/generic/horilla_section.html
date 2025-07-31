@@ -21,6 +21,7 @@
 >
 </div>
 
+{% if nav_url %}
 <div
   hx-get="{{nav_url}}?{{request.GET.urlencode}}"
   hx-trigger="load"
@@ -31,7 +32,9 @@
    >
    </div>
 </div>
+{% endif %}
 
+{% if view_url %}
 <div
   class="oh-wrapper"
   hx-get="{{view_url}}?{{request.GET.urlencode}}"
@@ -44,6 +47,7 @@
    >
    </div>
 </div>
+{% endif %}
 
 
 {% endblock content %}
