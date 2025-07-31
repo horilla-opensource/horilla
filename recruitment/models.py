@@ -1085,11 +1085,17 @@ class CandidateDocument(HorillaModel):
 
 
 class LinkedInAccount(HorillaModel):
-    username = models.CharField(max_length=250, verbose_name="Username")
+    username = models.CharField(max_length=250, verbose_name=_("App Name"))
     email = models.EmailField(max_length=254, verbose_name=_("Email"))
-    api_token = models.CharField(max_length=500, verbose_name="API Token")
+    api_token = models.CharField(max_length=500, verbose_name=_("API Token"))
     sub_id = models.CharField(max_length=250, unique=True)
-    company_id = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    company_id = models.ForeignKey(
+        Company, on_delete=models.CASCADE, null=True, verbose_name=_("Company")
+    )
+
+    class Meta:
+        verbose_name = _("LinkedIn Account")
+        verbose_name_plural = _("LinkedIn Accounts")
 
     def __str__(self):
         return str(self.username)
