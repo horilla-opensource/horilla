@@ -52,6 +52,7 @@ function highlightRow(checkbox) {
   }
 
   function toggleHighlight(ids) {
+    if (!ids.length > 0) return;
     $.each(ids, function (indexInArray, id) {
       setTimeout(() => {
         $(`#${id}`)

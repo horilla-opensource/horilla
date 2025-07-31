@@ -94,6 +94,7 @@
 
 <script>
   function toggleHighlight(checkbox) {
+    if (!checkbox.legth > 0) return;
     const row = checkbox.closest("tr");
     if (checkbox.checked) {
       row.classList.add("highlight");
