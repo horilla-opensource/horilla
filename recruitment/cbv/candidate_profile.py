@@ -158,7 +158,7 @@ CandidateProfileView.add_tab(
             "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
         {
-            "title": "Sheduled Interviews",
+            "title": "Scheduled Interviews",
             "view": views.candidate_interview_tab,
             "accessibility": "recruitment.cbv.accessibility.empl_scheduled_interview_accessibility",
         },
