@@ -107,9 +107,6 @@
 
 <script>
     $(document).ready(function () {
-        $("select").on("select2:select", function (e) {
-            $(this).closest("select")[0].dispatchEvent(new Event("change"));
-        });
 
         // Get the include_all checkbox and the fields to toggle
         var includeAllCheckbox = document.getElementById('{{ form.include_all.id_for_label }}');

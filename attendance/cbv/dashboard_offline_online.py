@@ -54,7 +54,7 @@ class DashboardOfflineEmployees(HorillaListView):
         style="width:80px !important;"
         """,
     }
-    records_per_page = 5
+    records_per_page = 7
     show_toggle_form = False
     bulk_select_option = False
 
@@ -85,7 +85,7 @@ class DashboardOnlineEmployees(HorillaListView):
         return queryset
 
     columns = [
-        ("Employee", "get_full_name", "get_avatar"),
+        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
         ("Work Status", "get_custom_forecasted_info_col"),
     ]
 

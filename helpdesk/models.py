@@ -10,8 +10,9 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company, Department, JobPosition, Tags
 from employee.models import Employee
+from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
@@ -421,13 +422,14 @@ class Comment(HorillaModel):
         Employee, on_delete=models.DO_NOTHING, related_name="employee_comment"
     )
     date = models.DateTimeField(auto_now_add=True)
+    xss_exempt_fields = ["comment"]  # 850
 
     def __str__(self):
         return self.comment
 
 
 class Attachment(HorillaModel):
-    file = models.FileField(upload_to="Tickets/Attachment")
+    file = models.FileField(upload_to=upload_path)
     description = models.CharField(max_length=100, blank=True, null=True)
     format = models.CharField(max_length=50, blank=True, null=True)
     ticket = models.ForeignKey(
@@ -459,7 +461,7 @@ class Attachment(HorillaModel):
     def save(self, *args, **kwargs):
         self.get_file_format()
 
-        super().save(*args, **kwargs)
+        super().save(self, *args, **kwargs)
 
     def __str__(self):
         return os.path.basename(self.file.name)
@@ -468,9 +470,31 @@ class Attachment(HorillaModel):
 class FAQCategory(HorillaModel):
     title = models.CharField(max_length=30)
     description = models.TextField(blank=True, null=True, max_length=255)
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        editable=False,
+        verbose_name=_("Company"),
+        on_delete=models.CASCADE,
+    )
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
+
+        super().save()
 
     class Meta:
         verbose_name = _("FAQ Category")
@@ -485,10 +509,23 @@ class FAQ(HorillaModel):
     company_id = models.ForeignKey(
         Company, null=True, editable=False, on_delete=models.PROTECT
     )
-    objects = HorillaCompanyManager(related_company_field="company_id")
+    objects = HorillaCompanyManager()
 
     def __str__(self):
         return self.question
+
+    def save(self, *args, **kwargs):
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
+
+        super().save()
 
     class Meta:
         verbose_name = _("FAQ")

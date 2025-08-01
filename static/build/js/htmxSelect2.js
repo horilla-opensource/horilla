@@ -4000,22 +4000,28 @@
 staticUrl = $("#statiUrl").attr("data-url");
 
 $(document).ready(function () {
-    $(".oh-select").select2({
-        width: '100%'
+    $(".oh-select").each(function () {
+        if ($(this).hasClass("select2-hidden-accessible")) {
+            $(this).select2("destroy");
+        }
+        $(this).select2({ width: '100%' });
     });
-    $("select").on("select2:select", function (e) {
-        $(this).closest("select")[0].dispatchEvent(new Event("change"));
-    });
-})
 
-$(document).on("htmx:afterSettle", function (event, data) {
-    var response = event.detail.xhr.response;
-    target = $(event.target);
-    target.find(".oh-select").select2({ width: '100%' });
     $("select").on("select2:select", function (e) {
-        $(this).closest("select")[0].dispatchEvent(new Event("change"));
+        $(this)[0].dispatchEvent(new Event("change"));
     });
 });
+
+
+$(document).on("htmx:afterSettle", function (event) {
+    var target = $(event.target);
+    target.find(".oh-select").select2({ width: '100%' });
+
+    target.find("select").off("select2:select").on("select2:select", function (e) {
+        this.dispatchEvent(new Event("change"));
+    });
+});
+
 
 // Helper function to hash data using SHA-256
 async function hashData(data) {
@@ -4110,28 +4116,27 @@ function loadScripts(installedApps) {
 
 $(document).on("htmx:afterSettle", function (e) {
     var targetId = e.detail.target.id;
-    var $target = $(e.detail.target);
     if (targetId == "") {
         targetId = "someDemoId"
     }
-    $target.find(`.oh-accordion-header`).on("click", function (e) {
+    $(`#${targetId} .oh-accordion-header`).on("click", function (e) {
         e.preventDefault();
         $(this).parent().toggleClass("oh-accordion--show");
     });
 
-    $target.find(` .oh-table__toggle-parent`).on("click", function () {
+    $(`#${targetId} .oh-table__toggle-parent`).on("click", function () {
         $(this)
             .parent()
             .find(".oh-table__toggle-child")
             .toggleClass("oh-table__toggle-child--show");
     });
 
-    //   $target.find(` .oh-accordion-meta__header`).on("click", function () {
+    //   $(`#${targetId} .oh-accordion-meta__header`).on("click", function () {
     //     $(this).toggleClass("oh-accordion-meta__header--show");
     //     $(this).next().toggleClass("d-none");
     //   });
 
-    $target.find(` .oh-permission-table--toggle`).on("click", function (e) {
+    $(`#${targetId} .oh-permission-table--toggle`).on("click", function (e) {
         e.stopPropagation();
         let clickedEl = $(e.target).closest(".oh-permission-table--toggle");
         let parentRow = clickedEl.parents(".oh-permission-table__tr");
@@ -4163,33 +4168,33 @@ $(document).on("htmx:afterSettle", function (e) {
         }
     });
 
-    $target.find(` [data-toggle='oh-modal-toggle']`).on("click", function () {
+    $(`#${targetId} [data-toggle='oh-modal-toggle']`).on("click", function () {
         let modalId = $(this).attr("data-target");
         $(`${modalId}`).addClass("oh-modal--show");
     });
-    $target.find(` .oh-modal__close, .oh-modal__cancel`).on(
+    $(`#${targetId} .oh-modal__close, .oh-modal__cancel`).on(
         "click",
         function () {
             $(".oh-modal--show").removeClass("oh-modal--show");
         }
     );
 
-    $target.find(` .oh-activity-sidebar__open`).on("click", function () {
+    $(`#${targetId} .oh-activity-sidebar__open`).on("click", function () {
         let sideBarId = $(this).attr("data-target");
         $(`${sideBarId}`).addClass("oh-activity-sidebar--show");
     });
 
-    $target.find(` .oh-activity-sidebar__open`).on("click", function () {
+    $(`#${targetId} .oh-activity-sidebar__open`).on("click", function () {
         $(".oh-modal--show").removeClass("oh-activity-sidebar__close");
     });
 
-    $target.find(` .oh-accordion-meta__header`).on("click", function () {
+    $(`#${targetId} .oh-accordion-meta__header`).on("click", function () {
         target = $(this).attr("data-target");
         $(this).toggleClass("oh-accordion-meta__header--show");
         $(target).toggleClass("d-none");
     });
 
-    $target.find(` .oh-accordion-meta__item`).on('click', function (e) {
+    $(`#${targetId} .oh-accordion-meta__item`).on('click', function (e) {
         e.preventDefault;
         e.stopPropagation;
         let clickedEl = $(e.target).closest(".oh-accordion-meta__header");
@@ -4205,11 +4210,11 @@ $(document).on("htmx:afterSettle", function (e) {
         }
     });
 
-    $target.find(` .oh-sticky-table__tr.oh-table__toggle-parent`).on("click", function (e) {
+    $(`#${targetId} .oh-sticky-table__tr.oh-table__toggle-parent`).on("click", function (e) {
         $(this).parent().find(".oh-table__toggle-child").toggleClass("oh-table__toggle-child--show")
     })
 
-    $target.find(` [data-toggle-count]`).click(function (e) {
+    $(`#${targetId} [data-toggle-count]`).click(function (e) {
         e.preventDefault();
         span = $(this).parent().find(".count-span").toggle()
     });

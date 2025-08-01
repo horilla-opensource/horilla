@@ -259,9 +259,8 @@ class WorkTypeDetailView(HorillaDetailedView):
         (_("Previous Work Type"), "previous_work_type_id"),
         (_("Requested Date"), "requested_date"),
         (_("Requested Till"), "requested_till"),
-        (_("Status"), "request_status"),
-        (_("Is Permanent Work Type"), "is_permanent_work_type_display"),
         (_("Description"), "description"),
+        (_("Is Permanent Work Type"), "is_permanent_work_type_display"),
     ]
 
     action_method = "confirmation"

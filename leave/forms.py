@@ -52,7 +52,9 @@ class ConditionForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             widget = field.widget
             if isinstance(widget, (forms.Select,)):
-                field.widget.attrs["class"] = "oh-select"
+                field.widget.attrs["style"] = (
+                    "width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
+                )
             elif isinstance(widget, (forms.DateInput)):
                 field.widget.attrs.update({"class": "oh-input w-100"})
                 field.initial = date.today()
@@ -175,9 +177,11 @@ class UpdateLeaveTypeForm(ConditionForm):
     class Meta:
         model = LeaveType
         fields = "__all__"
-        exclude = ["period_in", "total_days", "is_active"]
+        exclude = ["is_active"]
         widgets = {
             "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
+            "period_in": forms.HiddenInput(),
+            "total_days": forms.HiddenInput(),
             "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
         }
 
@@ -273,6 +277,23 @@ class LeaveRequestUpdationForm(BaseModelForm):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
+        leave_request = self.instance
+        employee = leave_request.employee_id
+        leave_type = leave_request.leave_type_id
+
+        if employee:
+            available_leaves = employee.available_leave.all()
+            assigned_leave_types = LeaveType.objects.filter(
+                id__in=available_leaves.values_list("leave_type_id", flat=True)
+            )
+
+            if leave_type and leave_type.id not in assigned_leave_types.values_list(
+                "id", flat=True
+            ):
+                assigned_leave_types |= LeaveType.objects.filter(id=leave_type.id)
+
+            self.fields["leave_type_id"].queryset = assigned_leave_types
+
         self.fields["leave_type_id"].widget.attrs.update(
             {
                 "hx-include": "#leaveRequestUpdateForm",

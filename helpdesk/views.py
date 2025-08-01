@@ -1056,7 +1056,7 @@ def ticket_change_raised_on(request, ticket_id):
             if form.is_valid():
                 form.save()
                 messages.success(request, _("Responsibility updated for the Ticket"))
-                return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+                return redirect(ticket_detail, ticket_id=ticket_id)
         return render(
             request,
             "helpdesk/ticket/forms/change_raised_on.html",
@@ -1251,7 +1251,7 @@ def comment_create(request, ticket_id):
                         )
                         a_form.save()
             messages.success(request, _("A new comment has been created."))
-            return redirect(ticket_detail, ticket_id=ticket_id)
+    return redirect(ticket_detail, ticket_id=ticket_id)
 
 
 @login_required
@@ -1862,25 +1862,4 @@ def load_faqs(request):
             "faqs": processed_faqs,
             "catagories": category_lookup,
         },
-    )
-
-
-@login_required
-@hx_request_required
-def ticket_file_upload(request, id):
-    """
-    This function is used to upload files to the ticket.
-    """
-    ticket = Ticket.objects.get(id=id)
-    if request.method == "POST":
-        files = request.FILES.getlist("file")
-        for file in files:
-            a_form = AttachmentForm({"file": file, "ticket": ticket, "comment": None})
-            a_form.save()
-        messages.success(request, _("File(s) uploaded successfully."))
-
-    return render(
-        request,
-        "helpdesk/ticket/ticket_detail.html",
-        {"ticket": ticket, "attachments": ticket.ticket_attachment.all()},
     )

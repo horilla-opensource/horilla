@@ -37,7 +37,7 @@ from employee.methods.duration_methods import format_time, strtime_seconds
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel, has_xss
+from horilla.models import HorillaModel, has_xss, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
@@ -82,9 +82,7 @@ class Employee(models.Model):
     employee_last_name = models.CharField(
         max_length=200, null=True, blank=True, verbose_name=_("Last Name")
     )
-    employee_profile = models.ImageField(
-        upload_to="employee/profile", null=True, blank=True
-    )
+    employee_profile = models.ImageField(upload_to=upload_path, null=True, blank=True)
     email = models.EmailField(max_length=254, unique=True)
     phone = models.CharField(
         max_length=25,
@@ -961,7 +959,7 @@ class EmployeeBankDetails(HorillaModel):
 
 
 class NoteFiles(HorillaModel):
-    files = models.FileField(upload_to="employee/NoteFiles", blank=True, null=True)
+    files = models.FileField(upload_to=upload_path, blank=True, null=True)
     objects = models.Manager()
 
     def __str__(self):
@@ -996,7 +994,7 @@ class PolicyMultipleFile(HorillaModel):
     PoliciesMultipleFile model
     """
 
-    attachment = models.FileField(upload_to="employee/policies")
+    attachment = models.FileField(upload_to=upload_path)
 
 
 class Policy(HorillaModel):
@@ -1162,9 +1160,7 @@ class DisciplinaryAction(HorillaModel):
         validators=[validate_time_format],
     )
     start_date = models.DateField(null=True)
-    attachment = models.FileField(
-        upload_to="employee/discipline", null=True, blank=True
-    )
+    attachment = models.FileField(upload_to=upload_path, null=True, blank=True)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
 
     def __str__(self) -> str:

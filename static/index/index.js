@@ -209,6 +209,8 @@ function toggleReimbursmentType(element) {
             .parent().parent()
             .hide()
             .attr("required", false);
+        // #819
+        $("#objectCreateModalTarget [name=employee_id]").trigger("change");
     } else if (element.val() == "bonus_encashment") {
         $("#genericModalBody [name=attachment]").parent().hide();
         $("#genericModalBody [name=attachment]").attr("required", false);
@@ -238,6 +240,43 @@ function toggleReimbursmentType(element) {
     }
 }
 
+function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
+    var count = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]").length;
+    id = targetElement.attr("id");
+    if (id) {
+        id = id.split("count_")[1];
+    }
+    if (count) {
+        targetElement.html(count);
+        targetElement.parent().removeClass("d-none");
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).removeClass(
+            "d-none"
+        );
+    } else {
+        targetElement.parent().addClass("d-none");
+        $(`#unselect_${id}, #export_${id}, #bulk_udate_${id}`).addClass(
+            "d-none"
+        );
+    }
+}
+
+function removeHighlight() {
+    setTimeout(function () {
+        $(".toggle-highlight").removeClass("toggle-highlight");
+    }, 200);
+}
+
+function removeId(element, storeKey = "selectedInstances") {
+    id = element.val();
+    viewId = element.attr("data-view-id");
+    ids = JSON.parse($(`#${storeKey}`).attr("data-ids") || "[]");
+    let elementToRemove = 5;
+    if (ids[ids.length - 1] === id) {
+        ids.pop();
+    }
+    ids = JSON.stringify(ids);
+    $(`#${storeKey}`).attr("data-ids", ids);
+}
 function bulkStageUpdate(canIds, stageId, preStageId) {
     $.ajax({
         type: "POST",
@@ -337,15 +376,13 @@ function htmxLoadIndicator(e) {
 
     if (table.length) {
         table.addClass("is-loading");
-        table.find("th, td").addClass('animate-pulse');
+        table.find("th, td").empty();
     }
     if (card.length) {
         card.addClass("is-loading");
-        card.addClass("animate-pulse");
     }
     if (kanban.length) {
         kanban.addClass("is-loading");
-        kanban.addClass("animate-pulse");
     }
     if (!table.length && !card.length && !kanban.length) {
         $(target).html(`<div class="animated-background"></div>`);
@@ -392,6 +429,28 @@ function handleHtmxTarget(event, path, verb) {
         hxTarget = event.target;
     }
     return hxTarget;
+}
+
+function hxConfirm(element, messageText) {
+    Swal.fire({
+        html: messageText,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        reverseButtons: true,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            htmx.trigger(element, 'confirmed');
+        }
+        else {
+            element.checked = false
+            return false
+        }
+
+    });
 }
 
 function handleDownloadAndRefresh(event, url) {

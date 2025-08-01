@@ -38,7 +38,7 @@ class MailAutomation(HorillaModel):
     ]
 
     title = models.CharField(max_length=256, unique=True)
-    method_title = models.CharField(max_length=50, editable=False)
+    method_title = models.CharField(max_length=100, editable=False)
     model = models.CharField(max_length=100, choices=MODEL_CHOICES, null=False)
     mail_to = models.TextField(verbose_name="Mail to/Notify to")
     mail_details = models.CharField(
@@ -63,7 +63,7 @@ class MailAutomation(HorillaModel):
         default="email",
         max_length=50,
         choices=SEND_OPTIONS,
-        verbose_name=_("Choose Delivery Channel"),
+        verbose_name=_("Choose Delivary Channel"),
     )
     template_attachments = models.ManyToManyField(
         HorillaMailTemplate,
@@ -121,16 +121,6 @@ class MailAutomation(HorillaModel):
         employees = self.also_sent_to.all()
         return render_template(
             "horilla_automations/mail_cc.html", {"employees": employees}
-        )
-
-    def detail_actions(self):
-        """
-        This method for get custom column for actions.
-        """
-
-        return render_template(
-            path="horilla_automations/detail_action.html",
-            context={"instance": self},
         )
 
     def detailed_url(self):

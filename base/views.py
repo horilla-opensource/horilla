@@ -12,7 +12,6 @@ import threading
 import uuid
 from datetime import datetime, timedelta
 from email.mime.image import MIMEImage
-from itertools import count
 from os import path
 from urllib.parse import parse_qs, unquote, urlencode, urlparse
 
@@ -932,11 +931,6 @@ def home(request):
     today_weekday = today.weekday()
     first_day_of_week = today - timedelta(days=today_weekday)
     last_day_of_week = first_day_of_week + timedelta(days=6)
-    leaves = 0
-    if apps.is_installed("leave"):
-        from leave.models import LeaveRequest
-
-        leaves = LeaveRequest.employees_on_leave_today(status="approved").count()
 
     employee_charts = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
@@ -957,7 +951,6 @@ def home(request):
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
         "charts": employee_charts.charts,
         "is_birthday": is_birthday,
-        "leave_today": leaves,
     }
 
     return render(request, "index.html", context)
@@ -7656,8 +7649,27 @@ def delete_penalities(request, penalty_id):
     )
 
 
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.tokens import UntypedToken
+
+
+def is_jwt_token_valid(auth_header):
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None  # No token
+
+    token = auth_header.split("Bearer ")[1].strip()
+    try:
+        UntypedToken(token)  # Will raise if invalid
+        validated_token = JWTAuthentication().get_validated_token(token)
+        user = JWTAuthentication().get_user(validated_token)
+        return user
+    except (InvalidToken, TokenError):
+        return None
+
+
 def protected_media(request, path):
-    page_urls = [
+    public_pages = [
         "/login",
         "/forgot-password",
         "/change-username",
@@ -7667,21 +7679,26 @@ def protected_media(request, path):
         "/recruitment/open-recruitments",
         "/recruitment/candidate-self-status-tracking",
     ]
-
     exempted_folders = ["base/icon/"]
 
     media_path = os.path.join(settings.MEDIA_ROOT, path)
     if not os.path.exists(media_path):
         raise Http404("File not found")
 
-    referer = urlparse(request.META.get("HTTP_REFERER", ""))
-    referer_path = referer.path
+    referer_path = urlparse(request.META.get("HTTP_REFERER", "")).path
 
-    if referer_path not in page_urls and not any(
-        path.startswith(folder) for folder in exempted_folders
+    # Try Bearer token auth
+    jwt_user = is_jwt_token_valid(request.META.get("HTTP_AUTHORIZATION", ""))
+
+    # Access control logic
+    if referer_path not in public_pages and not any(
+        path.startswith(f) for f in exempted_folders
     ):
-        if not request.user.is_authenticated:
-            messages.error(request, "You must be logged in to access this file.")
+        if not request.user.is_authenticated and not jwt_user:
+            messages.error(
+                request,
+                "You must be logged in or provide a valid token to access this file.",
+            )
             return redirect("login")
 
     return FileResponse(open(media_path, "rb"))

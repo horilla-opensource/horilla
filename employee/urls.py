@@ -322,17 +322,6 @@ urlpatterns = [
         views.employee_select_filter,
         name="employee-select-filter",
     ),
-    path("work-tab", employees.WorkTab.as_view(), name="work-tab"),
-    path(
-        "employee-work-tab",
-        employees.TabEmployeeWorkList.as_view(),
-        name="employee-work-tab",
-    ),
-    path(
-        "employee-work-detailed/<int:pk>/",
-        employees.EmployeeWorkDetails.as_view(),
-        name="employee-work-detailed",
-    ),
     # path("not-in-yet/", not_in_out_dashboard.not_in_yet, name="not-in-yet"),
     # path("not-out-yet/", not_in_out_dashboard.not_out_yet, name="not-out-yet"),
     path(
@@ -439,11 +428,6 @@ urlpatterns = [
         "document-request-create",
         document_request.DocumentRequestCreateForm.as_view(),
         name="document-request-create",
-    ),
-    path(
-        "document-request-nav-cbv/",
-        document_request.DocumentRequestNav.as_view(),
-        name="document-request-nav-cbv",
     ),
     # path(
     #     "document-request-create",

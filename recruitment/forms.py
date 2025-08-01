@@ -859,7 +859,9 @@ class QuestionForm(ModelForm):
 
         if instance:
             self.fields["recruitment"].initial = instance.recruitment_ids.all()
-        self.fields["type"].widget.attrs.update({"class": " w-100 oh-select"})
+        self.fields["type"].widget.attrs.update(
+            {"class": " w-100", "style": "border:solid 1px #6c757d52;height:50px;"}
+        )
         for key, value in self.data.items():
             if key.startswith("options"):
                 self.option_count += 1

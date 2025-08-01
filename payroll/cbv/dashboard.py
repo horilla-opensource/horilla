@@ -14,7 +14,7 @@ from base.filters import DepartmentViewFilter
 from base.models import Department
 from horilla_views.generic.cbv.views import HorillaListView
 from payroll.filters import ContractFilter
-from payroll.models.models import Contract, Payslip
+from payroll.models.models import Contract
 
 
 class DashboardDepartmentPayslip(HorillaListView):
@@ -29,7 +29,7 @@ class DashboardDepartmentPayslip(HorillaListView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("dashboard-department-chart-list")
+        self.search_url = reverse("dashboard-department-chart")
         self.view_id = "dashboadDepartment"
 
     def get_queryset(self):

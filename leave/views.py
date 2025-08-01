@@ -402,16 +402,19 @@ def leave_request_creation(request, type_id=None, emp_id=None):
     form = LeaveRequestCreationForm()
     if request:
         employee_qs = form.fields["employee_id"].queryset
-        employee = (
+        post_emp_id = request.POST.get("employee_id")
+        employee = employee_qs.filter(id=post_emp_id).first() or (
             request.user.employee_get
             if request.user.employee_get in employee_qs
             else employee_qs.first()
         )
 
         if employee:
-            assigned_leave_types = LeaveType.objects.filter(
-                id__in=employee.available_leave.values_list("leave_type_id", flat=True)
+            leave_type_ids = employee.available_leave.values_list(
+                "leave_type_id", flat=True
             )
+            assigned_leave_types = LeaveType.objects.filter(id__in=leave_type_ids)
+
             form.fields["leave_type_id"].queryset = assigned_leave_types
 
     if type_id and emp_id:
@@ -894,30 +897,8 @@ def leave_request_filter(request):
 def leave_request_update(request, id):
     """
     function used to update leave request.
-
-    Parameters:
-    request (HttpRequest): The HTTP request object.
-    id : leave request id
-
-    Returns:
-    GET : return leave request update template
-    POST : return leave request view
     """
     leave_request = LeaveRequest.objects.get(id=id)
-    leave_type_id = leave_request.leave_type_id
-    employee = leave_request.employee_id
-    form = LeaveRequestUpdationForm(instance=leave_request)
-    if employee:
-        available_leaves = employee.available_leave.all()
-        assigned_leave_types = LeaveType.objects.filter(
-            id__in=available_leaves.values_list("leave_type_id", flat=True)
-        )
-        if leave_type_id not in assigned_leave_types.values_list("id", flat=True):
-            assigned_leave_types = assigned_leave_types | LeaveType.objects.filter(
-                id=leave_type_id.id
-            )
-        form.fields["leave_type_id"].queryset = assigned_leave_types
-    form = choosesubordinates(request, form, "leave.add_leaverequest")
     if request.method == "POST":
         form = LeaveRequestUpdationForm(
             request.POST, request.FILES, instance=leave_request
@@ -951,6 +932,9 @@ def leave_request_update(request, id):
                     response.content.decode("utf-8")
                     + "<script>location.reload();</script>"
                 )
+    else:
+        form = LeaveRequestUpdationForm(instance=leave_request)
+        form = choosesubordinates(request, form, "leave.add_leaverequest")
 
     return render(
         request,

@@ -105,16 +105,16 @@ def update_filing_status(request, filing_status_id):
 @login_required
 @hx_request_required
 @permission_required("payroll.delete_filingstatus")
-def filing_status_delete(request, pk):
+def filing_status_delete(request, filing_status_id):
     """
     Delete a filing status.
 
-    This view deletes a filing status with the given `pk` from the
+    This view deletes a filing status with the given `filing_status_id` from the
     database and redirects to the filing status view.
 
     """
     try:
-        filing_status = FilingStatus.find(pk)
+        filing_status = FilingStatus.find(filing_status_id)
         if filing_status:
             try:
                 filing_status.delete()
@@ -153,7 +153,7 @@ def filing_status_search(request):
     data_dict = parse_qs(previous_data)
     get_key_instances(FilingStatus, data_dict)
     context = {
-        "object_list": status,
+        "status": status,
         "pd": previous_data,
         "filter_dict": data_dict,
     }
@@ -163,23 +163,25 @@ def filing_status_search(request):
 @login_required
 @hx_request_required
 @permission_required("payroll.view_taxbracket")
-def tax_bracket_list(request, pk):
+def tax_bracket_list(request, filing_status_id):
     """
     Display a list of tax brackets for a specific filing status.
 
-    This view retrieves all tax brackets associated with the given `pk`
+    This view retrieves all tax brackets associated with the given `filing_status_id`
     and renders them in the "tax_bracket_view.html" template.
 
     Args:
         request: The HTTP request object.
-        pk: The ID of the filing status for which to display tax brackets.
+        filing_status_id: The ID of the filing status for which to display tax brackets.
 
     Returns:
         The rendered "tax_bracket_view.html" template with the tax brackets for the
         specified filing status.
     """
-    filing_status = FilingStatus.objects.get(id=pk)
-    tax_brackets = filing_status.tax_brackets.all().order_by("max_income")
+    filing_status = FilingStatus.objects.get(id=filing_status_id)
+    tax_brackets = TaxBracket.objects.filter(
+        filing_status_id=filing_status_id
+    ).order_by("max_income")
     context = {"tax_brackets": tax_brackets, "filing_status": filing_status}
     return render(request, "payroll/tax/tax_bracket_view.html", context)
 
@@ -258,16 +260,16 @@ def update_tax_bracket(request, tax_bracket_id):
 @login_required
 @hx_request_required
 @permission_required("payroll.delete_taxbracket")
-def delete_tax_bracket(request, pk):
+def delete_tax_bracket(request, tax_bracket_id):
     """
     Delete an existing tax bracket record.
 
     Retrieve the tax bracket with the specified ID and delete it from the database.
     Then, redirect to the tax-bracket-create page.
 
-    :param pk: The ID of the tax bracket to delete.
+    :param tax_bracket_id: The ID of the tax bracket to delete.
     """
-    tax_bracket = TaxBracket.find(pk)
+    tax_bracket = TaxBracket.find(tax_bracket_id)
     filing_status_id = (
         tax_bracket.filing_status_id.id
         if tax_bracket and tax_bracket.delete()

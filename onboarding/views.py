@@ -461,7 +461,7 @@ def candidate_delete(request, obj_id):
 
     Parameters:
     request (HttpRequest): The HTTP request object.
-    obj_id : recruitment id
+    obj_id : candidate id
 
     Returns:
     GET : return candidate view
@@ -827,7 +827,7 @@ def onboarding_view(request):
     filter_obj = RecruitmentFilter(request.GET)
     # is active filteration not providing on pipeline
     recruitments = filter_obj.qs
-    if not request.user.has_perm("onboarding.view_candidatestage"):
+    if not request.user.has_perm("onboarding.view_onboardingstage"):
         recruitments = recruitments.filter(
             is_active=True, recruitment_managers__in=[request.user.employee_get]
         ) | recruitments.filter(
