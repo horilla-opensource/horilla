@@ -187,11 +187,8 @@ class TasksNavBar(HorillaNavView):
         managers = [
             manager for project in projects for manager in project.managers.all()
         ]
-        members = [member for project in projects for member in project.members.all()]
         self.search_url = reverse("tasks-list-view")
-        if employee in managers + members or self.request.user.has_perm(
-            "project.add_task"
-        ):
+        if employee in managers or self.request.user.has_perm("project.add_task"):
             self.create_attrs = f"""
                                     onclick = "event.stopPropagation();"
                                     data-toggle="oh-modal-toggle"
@@ -271,35 +268,36 @@ class TaskCreateForm(HorillaFormView):
         project_id = self.kwargs.get("project_id")
         stage_id = self.kwargs.get("stage_id")
         task_id = self.kwargs.get("pk")
-        try:
-            if project_id:
-                project = Project.objects.filter(id=project_id).first()
-            elif stage_id:
-                project = ProjectStage.objects.filter(id=stage_id).first().project
-            elif task_id:
-                task = Task.objects.filter(id=task_id).first()
-                project = task.project
-            elif not task_id:
+        # try:
+        if project_id:
+            project = Project.objects.filter(id=project_id).first()
+        elif stage_id:
+            project = ProjectStage.objects.filter(id=stage_id).first().project
+        elif task_id:
+            task = Task.objects.filter(id=task_id).first()
+            project = task.project
+        elif not task_id:
+            return super().get(request, *args, pk=pk, **kwargs)
+        if (
+            request.user.employee_get in project.managers.all()
+            or request.user.is_superuser
+            or request.user.has_perm("project.add_task")
+        ):
+            self.dynamic_create_fields = [
+                ("project", DynamicProjectCreationFormView),
+                ("stage", StageDynamicCreateForm),
+            ]
+            return super().get(request, *args, pk=pk, **kwargs)
+        elif task_id:
+            if request.user.employee_get in task.task_managers.all():
                 return super().get(request, *args, pk=pk, **kwargs)
-            if (
-                request.user.employee_get in project.managers.all()
-                or request.user.is_superuser
-            ):
-                self.dynamic_create_fields = [
-                    ("project", DynamicProjectCreationFormView),
-                    ("stage", StageDynamicCreateForm),
-                ]
-                return super().get(request, *args, pk=pk, **kwargs)
-            elif task_id:
-                if request.user.employee_get in task.task_managers.all():
-                    return super().get(request, *args, pk=pk, **kwargs)
 
-            else:
-                return you_dont_have_permission(request)
-        except Exception as e:
-            logger.error(e)
-            messages.error(request, _("Something went wrong!"))
-            return HttpResponse("<script>window.location.reload()</script>")
+        else:
+            return you_dont_have_permission(request)
+        # except Exception as e:
+        #     logger.error(e)
+        #     messages.error(request, _("Something went wrong!"))
+        #     return HttpResponse("<script>window.location.reload()</script>")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

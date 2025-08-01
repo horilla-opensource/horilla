@@ -1,21 +1,16 @@
 import operator
 import re
 from datetime import date, datetime, timezone
-from typing import Iterable
 
 from dateutil.relativedelta import relativedelta
-from django import forms
 from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Value
 from django.db.models.functions import Concat
-from django.db.models.signals import post_delete, post_save, pre_save
-from django.http import JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
-from django.utils.timesince import timesince
 from django.utils.translation import gettext_lazy as _
 
 from base.horilla_company_manager import HorillaCompanyManager
@@ -25,7 +20,6 @@ from horilla.horilla_middlewares import _thread_locals
 from horilla.models import HorillaModel
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
-from horilla_automations.methods.methods import get_model_class
 from horilla_views.cbv_methods import render_template
 
 """Objectives and key result section"""
@@ -230,7 +224,7 @@ class Objective(HorillaModel):
         on_delete=models.CASCADE,
     )
     self_employee_progress_update = models.BooleanField(default=True)
-    objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+    objects = HorillaCompanyManager()
 
     class Meta:
         """
@@ -338,6 +332,19 @@ class Objective(HorillaModel):
         """
         url = reverse_lazy("objective-detailed-view", kwargs={"obj_id": self.pk})
         return url
+
+    def save(self, *args, **kwargs):
+        request = getattr(_thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
+
+        super().save()
 
 
 class EmployeeObjective(HorillaModel):
@@ -1393,6 +1400,15 @@ class Meetings(HorillaModel):
     )
     response = models.TextField(null=True, blank=True)
     show_response = models.BooleanField(default=False, editable=False)
+    company_id = models.ForeignKey(
+        Company,
+        null=True,
+        blank=True,
+        editable=False,
+        verbose_name=_("Company"),
+        on_delete=models.CASCADE,
+    )
+    objects = HorillaCompanyManager()
 
     class Meta:
         verbose_name = _("Meetings")
@@ -1534,6 +1550,19 @@ class Meetings(HorillaModel):
         """
         url = f"https://ui-avatars.com/api/?name={self.title}&background=random"
         return url
+
+    def save(self, *args, **kwargs):
+        request = getattr(_thread_locals, "request", None)
+        selected_company = request.session.get("selected_company")
+        if (
+            not self.id
+            and not self.company_id
+            and selected_company
+            and selected_company != "all"
+        ):
+            self.company_id = Company.find(selected_company)
+
+        super().save()
 
 
 class MeetingsAnswer(models.Model):

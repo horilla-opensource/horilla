@@ -43,18 +43,14 @@
             <!-- Country -->
             <div class="oh-input-group mb-2">
                 <label for="{{ form.country.id_for_label }}" class="mb-1">{{ form.country.label }}</label>
-                <select name="country" id="{{ form.country.id_for_label }}" class="oh-select oh-select-2">
-                    <option value="{{ form.instance.country }}" selected>{{ form.instance.country }}</option>
-                </select>
+                <select name="country" id="{{ form.country.id_for_label }}" required class="oh-select oh-select-2" data-selected="{{ form.country.value|default:'' }}"></select>
                 {{ form.country.errors }}
             </div>
 
             <!-- State -->
             <div class="oh-input-group mb-2">
                 <label for="{{ form.state.id_for_label }}" class="mb-1">{{ form.state.label }}</label>
-                <select name="state" id="{{ form.state.id_for_label }}" class="oh-select oh-select-2">
-                    <option value="{{ form.instance.state }}" selected>{{ form.instance.state }}</option>
-                </select>
+                <select name="state" id="{{ form.state.id_for_label }}" required class="oh-select oh-select-2" data-selected="{{ form.state.value|default:'' }}"></select>
                 {{ form.state.errors }}
             </div>
 
@@ -84,7 +80,3 @@
         </div>
     </form>
 </div>
-
-<script>
-    {% include 'country.js' %}
-</script>

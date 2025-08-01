@@ -6,12 +6,18 @@ from horilla.horilla_middlewares import _thread_locals
 
 def record_queryset_paginator(request, queryset, page_name, records_per_page=10):
     """
-    This method is used to return the paginator entries
+    Returns paginated results with safe ordering.
     """
+    # 803
+    if not queryset.ordered:
+        if hasattr(queryset.model, "created_at"):
+            queryset = queryset.order_by("-created_at")
+        else:
+            queryset = queryset.order_by("-id")
+
     page = request.GET.get(page_name)
-    queryset = Paginator(queryset, records_per_page)
-    queryset = queryset.get_page(page)
-    return queryset
+    paginator = Paginator(queryset, records_per_page)
+    return paginator.get_page(page)
 
 
 def generate_groups(request, groupers, queryset, page_name, group_field, is_fk_field):

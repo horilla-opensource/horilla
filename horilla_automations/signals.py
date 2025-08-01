@@ -361,171 +361,159 @@ def send_mail(request, automation, instance):
 
     mail_template = automation.mail_template
     employees = []
-    raw_emails = []
+    to_emails = []
+
+    if instance.pk:
+        # refreshing instance due to m2m fields are not loading here some times
+        time.sleep(0.1)
+        instance = instance._meta.model.objects.get(pk=instance.pk)
+
+    pk_or_text = getattribute(instance, automation.mail_details)
+    model_class = get_model_class(automation.model)
+    model_class = get_related_field_model(model_class, automation.mail_details)
+    context_instance = None
+    if isinstance(pk_or_text, int):
+        context_instance = model_class.objects.filter(pk=pk_or_text).first()
+
+    for mapping in eval_validate(automation.mail_to):
+        result = getattribute(instance, mapping)
+        if isinstance(result, list):
+            to_emails.extend(result)
+        else:
+            to_emails.append(result)
+
+    to_emails = list(filter(None, set(to_emails)))
+
+    employees = Employee.objects.filter(
+        models.Q(email__in=to_emails)
+        | models.Q(employee_work_info__email__in=to_emails)
+    ).select_related("employee_work_info")
+
+    employees = list(employees)
     try:
-        if instance.pk:
-            # refreshing instance due to m2m fields are not loading here some times
-            time.sleep(0.1)
-            instance = instance._meta.model.objects.get(pk=instance.pk)
-
-        pk_or_text = getattribute(instance, automation.mail_details)
-        model_class = get_model_class(automation.model)
-        model_class = get_related_field_model(model_class, automation.mail_details)
-        context_instance = None
-        if isinstance(pk_or_text, int):
-            context_instance = model_class.objects.filter(pk=pk_or_text).first()
-
-        for mapping in eval_validate(automation.mail_to):
-            result = getattribute(instance, mapping)
-            if isinstance(result, list):
-                raw_emails.extend(result)
-            else:
-                raw_emails.append(result)
-
-        raw_emails = list(filter(None, set(raw_emails)))
-
-        employees = Employee.objects.filter(
-            models.Q(email__in=raw_emails)
-            | models.Q(employee_work_info__email__in=raw_emails)
-        ).select_related("employee_work_info")
-
-        employees = list(employees)
-        try:
-            also_sent_to = automation.also_sent_to.select_related(
-                "employee_work_info"
-            ).all()
-            if also_sent_to.exists():
-                employees.extend(emp for emp in also_sent_to if emp)
-        except Exception as e:
-            logger.error(e)
-
-        email_backend = ConfiguredEmailBackend()
-        display_email_name = email_backend.dynamic_from_email_with_display_name
-        if request:
-            try:
-                display_email_name = f"{request.user.employee_get.get_full_name()} <{request.user.employee_get.email}>"
-                from_email = display_email_name
-                reply_to = [display_email_name]
-            except:
-                logger.error(Exception)
-
-        if pk_or_text and request and raw_emails:
-            attachments = []
-            try:
-                sender: Employee = request.user.employee_get
-            except:
-                sender = None
-            if context_instance:
-
-                # Prevent same person notification on automation
-                user_ids = [
-                    emp.employee_user_id
-                    for emp in employees
-                    if sender.employee_user_id.pk != emp.employee_user_id.pk
-                ]
-                emails = [
-                    str(emp.get_mail())
-                    for emp in employees
-                    if emp and emp.get_mail()
-                    if emp.get_mail() != sender.get_mail()
-                ]
-
-                to = emails[:1]
-                cc = emails[1:]
-                if template_attachments := automation.template_attachments.all():
-                    for template_attachment in template_attachments:
-                        template_bdy = template.Template(template_attachment.body)
-                        context = template.Context(
-                            {
-                                "instance": context_instance,
-                                "self": sender,
-                                "model_instance": instance,
-                                "request": request,
-                            }
-                        )
-                        render_bdy = template_bdy.render(context)
-                        attachments.append(
-                            (
-                                "Document",
-                                generate_pdf(
-                                    render_bdy, {}, path=False, title="Document"
-                                ).content,
-                                "application/pdf",
-                            )
-                        )
-
-                template_bdy = template.Template(mail_template.body)
-            else:
-                template_bdy = template.Template(pk_or_text)
-            context = template.Context(
-                {
-                    "instance": context_instance,
-                    "self": sender,
-                    "model_instance": instance,
-                    "request": request,
-                }
-            )
-            render_bdy = template_bdy.render(context)
-
-            title_template = template.Template(automation.title)
-            title_context = template.Context(
-                {"instance": instance, "self": sender, "request": request}
-            )
-            render_title = title_template.render(title_context)
-            soup = BeautifulSoup(render_bdy, "html.parser")
-            plain_text = soup.get_text(separator="\n")
-
-            email = EmailMessage(
-                subject=render_title,
-                body=render_bdy,
-                to=to,
-                cc=cc,
-                from_email=from_email,
-                reply_to=reply_to,
-            )
-            email.content_subtype = "html"
-
-            email.attachments = attachments
-
-            def _send_mail(email):
-                try:
-                    email.send()
-                    logger.info(
-                        f"Automation <Mail> {automation.title} is triggered by {request.user.employee_get}"
-                    )
-                except Exception as e:
-                    logger.error(e)
-
-            def _send_notification(text):
-
-                notify.send(
-                    sender,
-                    recipient=[
-                        user
-                        for user in user_ids
-                        if sender.employee_user_id.pk != user.pk
-                    ],
-                    verb=f"{text}",
-                    icon="person-remove",
-                    redirect="",
-                )
-                logger.info(
-                    f"Automation <Notification> {automation.title} is triggered by {request.user.employee_get}"
-                )
-
-            if automation.delivary_channel != "notification":
-                thread = threading.Thread(
-                    target=lambda: _send_mail(email),
-                )
-                thread.start()
-
-            if automation.delivary_channel != "email":
-                thread = threading.Thread(
-                    target=lambda: _send_notification(plain_text),
-                )
-                thread.start()
-            logger.info(
-                f"Automation Triggered | {automation.get_delivary_channel_display()} | {automation}"
-            )
+        also_sent_to = automation.also_sent_to.select_related(
+            "employee_work_info"
+        ).all()
+        if also_sent_to.exists():
+            employees.extend(emp for emp in also_sent_to if emp)
     except Exception as e:
-        logger.error(f"Error in Automation | {e}")
+        logger.error(e)
+
+    cc_emails = [str(emp.get_mail()) for emp in also_sent_to if emp and emp.get_mail()]
+    user_ids = [emp.employee_user_id for emp in employees]
+
+    to = to_emails
+    cc = cc_emails
+
+    email_backend = ConfiguredEmailBackend()
+    default_email = email_backend.dynamic_from_email_with_display_name
+
+    from_email = default_email
+    reply_to = [default_email]
+
+    if request and hasattr(request, "user") and hasattr(request.user, "employee_get"):
+        try:
+            user = request.user.employee_get
+            display_email_name = f"{user.get_full_name()} <{user.email}>"
+            from_email = display_email_name
+            reply_to = [display_email_name]
+        except Exception as e:
+            logger.error(f"Error generating user-based email display name: {e}")
+
+    if pk_or_text and request and to_emails:
+        attachments = []
+        try:
+            sender = request.user.employee_get
+        except:
+            sender = None
+        if context_instance:
+            if template_attachments := automation.template_attachments.all():
+                for template_attachment in template_attachments:
+                    template_bdy = template.Template(template_attachment.body)
+                    context = template.Context(
+                        {
+                            "instance": context_instance,
+                            "self": sender,
+                            "model_instance": instance,
+                            "request": request,
+                        }
+                    )
+                    render_bdy = template_bdy.render(context)
+                    attachments.append(
+                        (
+                            "Document",
+                            generate_pdf(
+                                render_bdy, {}, path=False, title="Document"
+                            ).content,
+                            "application/pdf",
+                        )
+                    )
+
+            template_bdy = template.Template(mail_template.body)
+        else:
+            template_bdy = template.Template(pk_or_text)
+        context = template.Context(
+            {
+                "instance": context_instance,
+                "self": sender,
+                "model_instance": instance,
+                "request": request,
+            }
+        )
+        render_bdy = template_bdy.render(context)
+
+        title_template = template.Template(automation.title)
+        title_context = template.Context(
+            {"instance": instance, "self": sender, "request": request}
+        )
+        render_title = title_template.render(title_context)
+        soup = BeautifulSoup(render_bdy, "html.parser")
+        plain_text = soup.get_text(separator="\n")
+
+        email = EmailMessage(
+            subject=render_title,
+            body=render_bdy,
+            to=to,
+            cc=cc,
+            from_email=from_email,
+            reply_to=reply_to,
+        )
+        email.content_subtype = "html"
+
+        email.attachments = attachments
+
+        def _send_mail(email):
+            try:
+                email.send()
+                logger.info(
+                    f"Automation <Mail> {automation.title} is triggered by {request.user.employee_get}"
+                )
+            except Exception as e:
+                logger.error(e)
+
+        def _send_notification(text):
+            notify.send(
+                sender,
+                recipient=user_ids,
+                verb=f"{text}",
+                icon="person-remove",
+                redirect="",
+            )
+            logger.info(
+                f"Automation <Notification> {automation.title} is triggered by {request.user.employee_get}"
+            )
+
+        if automation.delivery_channel != "notification":
+            thread = threading.Thread(
+                target=lambda: _send_mail(email),
+            )
+            thread.start()
+
+        if automation.delivery_channel != "email":
+            thread = threading.Thread(
+                target=lambda: _send_notification(plain_text),
+            )
+            thread.start()
+        logger.info(
+            f"Automation Triggered | {automation.get_delivery_channel_display()} | {automation}"
+        )

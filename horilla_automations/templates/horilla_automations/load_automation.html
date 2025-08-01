@@ -6,7 +6,7 @@
     </button>
 </div>
 <div class="oh-modal__dialog-body">
-    <div class="oh-card">
+    <div class="oh-card" style="overflow-y: auto;max-height: 70vh;">
         <form hx-post="{{request.path}}" hx-target="#genericModalBody">
             {% csrf_token %}
             <div

@@ -36,7 +36,7 @@ from employee.models import Employee
 
 # Create your models here.
 from horilla.methods import get_horilla_model_class
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
 
@@ -853,7 +853,7 @@ class Attendance(HorillaModel):
 
 
 class AttendanceRequestFile(HorillaModel):
-    file = models.FileField(upload_to="attendance/request_files")
+    file = models.FileField(upload_to=upload_path)
 
 
 class AttendanceRequestComment(HorillaModel):
@@ -1437,7 +1437,7 @@ class WorkRecords(models.Model):
     ]
 
     record_name = models.CharField(max_length=250, null=True, blank=True)
-    work_record_type = models.CharField(max_length=5, null=True, choices=choices)
+    work_record_type = models.CharField(max_length=10, null=True, choices=choices)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name=_("Employee")
     )
@@ -1449,8 +1449,8 @@ class WorkRecords(models.Model):
             validate_time_format,
         ],
         default="00:00",
-        max_length=5,
-    )
+        max_length=10,
+    )  # 841
     min_hour = models.CharField(
         null=True,
         blank=True,
@@ -1458,7 +1458,7 @@ class WorkRecords(models.Model):
             validate_time_format,
         ],
         default="00:00",
-        max_length=5,
+        max_length=10,
     )
     at_work_second = models.IntegerField(null=True, blank=True, default=0)
     min_hour_second = models.IntegerField(null=True, blank=True, default=0)

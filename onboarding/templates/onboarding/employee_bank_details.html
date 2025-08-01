@@ -101,8 +101,7 @@
                             <div class="col-sm-12 col-md-12 col-lg-12 ">
                                 <div class="oh-input-group">
                                   <label for="" class="oh-label">{% trans "Country *" %}</label>
-                                  <select name="country" id="id_country" class="oh-select oh-select-2">
-
+                                  <select name="country" id="id_country" class="oh-select oh-select-2" data-selected="{{ form.country.value|default:'' }}">
                                   </select>
                                   {{form.country.errors}}
                                 </div>
@@ -110,8 +109,7 @@
                               <div class="col-sm-12 col-md-12 col-lg-12 ">
                                 <div class="oh-input-group">
                                   <label for="" class="oh-label">{% trans "State *" %}</label>
-                                  <select name="state" id="id_state" class="oh-select oh-select-2">
-
+                                  <select name="state" id="id_state" class="oh-select oh-select-2" data-selected="{{ form.state.value|default:'' }}">
                                   </select>
                                   {{form.state.errors}}
                                 </div>
@@ -156,9 +154,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-    <script>
-        {% include 'country.js' %}
-    </script>
+    <script src="{% static '/index/country.js' %}"></script>
     <script>
         $(document).ready(function() {
             $('input[required], select[required], textarea[required]').each(function() {

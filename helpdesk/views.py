@@ -1251,7 +1251,7 @@ def comment_create(request, ticket_id):
                         )
                         a_form.save()
             messages.success(request, _("A new comment has been created."))
-            return redirect(ticket_detail, ticket_id=ticket_id)
+    return redirect(ticket_detail, ticket_id=ticket_id)
 
 
 @login_required

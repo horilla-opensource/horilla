@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _trans
+from django.utils.translation import gettext_lazy as _
 
 from horilla.decorators import login_required, permission_required
 from horilla_views.generic.cbv import views
@@ -52,7 +52,7 @@ class LinkedInSettingNavView(views.HorillaNavView):
             data-target="#genericModal"
         """
 
-    nav_title = _trans("LinkedIn Accounts")
+    nav_title = _("LinkedIn Accounts")
     search_url = reverse_lazy("linkedin-setting-list")
     search_swap_target = "#listContainer"
 
@@ -68,7 +68,7 @@ class LinkedInAccountFormView(views.HorillaFormView):
 
     form_class = LinkedInAccountForm
     model = models.LinkedInAccount
-    new_display_title = _trans("Create LinkedIn Account")
+    new_display_title = _("Create") + " " + model._meta.verbose_name
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -78,6 +78,10 @@ class LinkedInAccountFormView(views.HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        if self.form.instance.pk:
+            self.form_class.verbose_name = (
+                _("Update") + " " + self.model._meta.verbose_name
+            )
         return context
 
     def form_invalid(self, form: Any) -> HttpResponse:
@@ -96,7 +100,7 @@ class LinkedInAccountFormView(views.HorillaFormView):
                 message = "LinkedIn account updated."
             form.save()
 
-            messages.success(self.request, _trans(message))
+            messages.success(self.request, _(message))
             return self.HttpResponse()
 
         return super().form_valid(form)
@@ -117,8 +121,8 @@ class LinkedInSettingListView(views.HorillaListView):
     action_method = "action_template"
 
     columns = [
-        ("Username", "username"),
-        ("Email", "email"),
-        ("Company", "company_id"),
+        "username",
+        "email",
+        "company_id",
         ("Is Active", "is_active_toggle"),
     ]

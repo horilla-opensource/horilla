@@ -1,7 +1,8 @@
 function getCSRFToken() {
     return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-  }
-function deleteItem(url,message) {
+}
+// #846
+function deleteItem(url, message) {
     Swal.fire({
         text: message,
         icon: "question",

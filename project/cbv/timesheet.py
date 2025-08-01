@@ -258,7 +258,8 @@ class TaskTimeSheet(TimeSheetList):
         if employee_id:
             employee = Employee.objects.filter(id=employee_id).first()
             if (
-                not employee in task.task_managers.all()
+                employee
+                and not employee in task.task_managers.all()
                 and not employee in task.project.managers.all()
                 and not employee.employee_user_id.is_superuser
             ):

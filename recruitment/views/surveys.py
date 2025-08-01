@@ -338,7 +338,6 @@ def application_form(request):
     """
     This method renders candidate form to create candidate
     """
-    form = ApplicationForm()
     recruitment = None
     recruitment_id = request.GET.get("recruitmentId")
     resume_id = request.GET.get("resumeId")
@@ -357,12 +356,7 @@ def application_form(request):
         messages.error(request, _("Invalid Recruitment ID"))
         return redirect("open-recruitments")
 
-    if resume_obj:
-        initial_data = {"resume": resume_obj.file.url if resume_obj else None}
-        form = ApplicationForm(initial=initial_data)
-
     if request.POST:
-
         if "resume" not in request.FILES and resume_id:
             if resume_obj and resume_obj.file:
                 file_content = resume_obj.file.read()
@@ -382,26 +376,6 @@ def application_form(request):
                 candidate_obj.stage_id = stages.order_by("sequence").first()
             messages.success(request, _("Application saved."))
 
-            resume = request.FILES.get("resume")
-            if resume:
-                resume_path = f"recruitment/resume/{resume.name}"
-                attachment_dir = os.path.dirname(default_storage.path(resume_path))
-                if not os.path.exists(attachment_dir):
-                    os.makedirs(attachment_dir)
-                with default_storage.open(resume_path, "wb+") as destination:
-                    for chunk in resume.chunks():
-                        destination.write(chunk)
-
-                candidate_obj.resume = resume_path
-            try:
-                profile = request.FILES["profile"] if request.FILES["profile"] else None
-                profile_path = f"recruitment/profile/{candidate_obj.name.replace(' ', '_')}_{profile.name}_{uuid4()}"
-                with default_storage.open(profile_path, "wb+") as destination:
-                    for chunk in profile.chunks():
-                        destination.write(chunk)
-                candidate_obj.profile = profile_path
-            except:
-                pass
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )
@@ -428,6 +402,11 @@ def application_form(request):
         form.fields["job_position_id"].queryset = (
             form.instance.recruitment_id.open_positions.all()
         )
+    else:
+        # 811
+        initial_data = {"resume": resume_obj.file.url} if resume_obj else {}
+        form = ApplicationForm(initial=initial_data)
+
     return render(
         request,
         "candidate/application_form.html",

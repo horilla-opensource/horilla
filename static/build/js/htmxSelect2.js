@@ -3999,17 +3999,29 @@
 });
 staticUrl = $("#statiUrl").attr("data-url");
 
-$(document).on("htmx:afterRequest", function (event, data) {
-    var response = event.detail.xhr.response;
-    var target = $(event.detail.elt.getAttribute("hx-target"));
-    target.find(".oh-select").select2();
+$(document).ready(function () {
+    $(".oh-select").each(function () {
+        if ($(this).hasClass("select2-hidden-accessible")) {
+            $(this).select2("destroy");
+        }
+        $(this).select2({ width: '100%' });
+    });
+
+    $("select").on("select2:select", function (e) {
+        $(this)[0].dispatchEvent(new Event("change"));
+    });
 });
 
-$(document).on("htmx:afterSettle", function (event, data) {
-    var response = event.detail.xhr.response;
-    target = $(event.target);
-    target.find(".oh-select").select2();
+
+$(document).on("htmx:afterSettle", function (event) {
+    var target = $(event.target);
+    target.find(".oh-select").select2({ width: '100%' });
+
+    target.find("select").off("select2:select").on("select2:select", function (e) {
+        this.dispatchEvent(new Event("change"));
+    });
 });
+
 
 // Helper function to hash data using SHA-256
 async function hashData(data) {

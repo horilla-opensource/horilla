@@ -13,7 +13,7 @@
 {% endif %}
 {% include "filter_tags.html" %}
 <div id="projectStages" class="oh-card" style="margin-top: 5px">
-    {% if request.user|is_project_manager:stages.first.project or request.user.is_superuser %}
+    {% if request.user|is_project_manager:stages.first.project %}
     <div class="oh-kanban__add-container mb-2">
         <button class="oh-btn oh-btn--x-small oh-kanban__add-section mr-2" data-toggle="oh-modal-toggle"
             data-target="#objectCreateModal" hx-get="{% url 'create-project-stage' project_id %}"
@@ -43,7 +43,7 @@
 
                     </div>
                     <div class="oh-btn-group ml-3">
-                        {% if request.user|is_project_manager:stage.project or request.user.is_superuser %}
+                        {% if request.user|is_project_manager:stage.project %}
                             <div class="mr-2" onclick="event.stopPropagation();">
                                 <a class="oh-btn oh-btn--secondary oh-btn--shadow"
                                     data-toggle = "oh-modal-toggle" data-target="#genericModal"
@@ -110,7 +110,7 @@
                                         <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
                                         <div class="oh-sticky-table__th">{% trans "Document" %}</div>
                                         <div class="oh-sticky-table__th">{% trans "Description" %}</div>
-                                        {% if request.user|is_project_manager:stage.project or request.user.is_superuser %}
+                                        {% if request.user|is_project_manager:stage.project %}
                                             <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                                         {% endif %}
                                     </div>
@@ -160,7 +160,7 @@
                                         {% endif %}
                                     </div>
                                     <div class="oh-sticky-table__td">{{task.description}}</div>
-                                    {% if request.user|is_project_manager:stage.project or request.user.is_superuser %}
+                                    {% if request.user|is_project_manager:stage.project %}
                                         <div class="oh-sticky-table__td">
                                             <div class="oh-btn-group"
                                                 onclick="event.preventDefault();event.stopPropagation()"
