@@ -118,7 +118,7 @@ from horilla.decorators import (
 from horilla.filters import HorillaPaginator
 from horilla.group_by import group_by_queryset
 from horilla.horilla_settings import HORILLA_DATE_FORMATS
-from horilla.methods import get_horilla_model_class
+from horilla.methods import dynamic_attr, get_horilla_model_class
 from horilla_audit.models import AccountBlockUnblock, HistoryTrackingFields
 from horilla_documents.forms import (
     DocumentForm,
@@ -208,6 +208,18 @@ def employee_profile(request):
     This method is used to view own profile of employee.
     """
     employee = request.user.employee_get
+    selected_company = request.session.get("selected_company")
+    if selected_company != "all":
+        company_id = getattr(
+            getattr(getattr(employee, "employee_work_info", None), "company_id", None),
+            "id",
+            None,
+        )
+
+        if str(company_id) != str(selected_company):
+            messages.error(request, "Employee is not working in the selected company.")
+            return redirect("employee-view")
+
     today = datetime.today()
     now = timezone.now()
     return render(
@@ -298,17 +310,22 @@ def employee_view_individual(request, obj_id, **kwargs):
     """
     This method is used to view profile of an employee.
     """
-    # employee = Employee.objects.get(id=obj_id)
-    # employee_leaves = (
-    #     employee.available_leave.all() if apps.is_installed("leave") else None
-    # )
-    # enabled_block_unblock = (
-    #     AccountBlockUnblock.objects.exists()
-    #     and AccountBlockUnblock.objects.first().is_enabled
-    # )
-    # # Retrieve the filtered employees from the session
-    # filtered_employee_ids = request.session.get("filtered_employees", [])
-    # filtered_employees = Employee.objects.filter(id__in=filtered_employee_ids)
+    try:
+        employee = Employee.objects.get(id=obj_id)
+    except ObjectDoesNotExist:
+        try:
+            employee = Employee.objects.entire().get(id=obj_id)
+            company = getattr(
+                getattr(employee, "employee_work_info", None), "company_id", None
+            )
+            company_id = getattr(company, "pk", None)
+            if company_id != request.session["selected_company"]:
+                messages.error(
+                    request, "Employee is not working in the selected company."
+                )
+                return redirect("employee-view")
+        except Exception as e:
+            return render(request, "404.html", status=404)
 
     # request_ids_str = json.dumps(
     #     [

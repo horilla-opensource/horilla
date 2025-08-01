@@ -7,7 +7,7 @@ import json
 import logging
 import traceback
 from typing import Any
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlencode
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -42,11 +42,9 @@ from horilla_views.cbv_methods import (  # update_initial_cache,
     get_verbose_name_from_field_path,
     hx_request_required,
     paginator_qry,
-    resolve_foreign_keys,
     sortby,
     split_by_import_reference,
     structured,
-    update_related,
     update_saved_filter_cache,
 )
 from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm
@@ -165,39 +163,58 @@ class HorillaListView(ListView):
         if not self.view_id:
             self.view_id = get_short_uuid(4)
         super().__init__(**kwargs)
-        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
 
+        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         request = getattr(_thread_locals, "request", None)
         self.request = request
-        # # update_initial_cache(request, CACHE, HorillaListView)
 
-        # hidden columns configuration
-        existing_instance = models.ToggleColumn.objects.filter(
-            user_id=request.user, path=request.path_info
-        ).first()
+        self.visible_column = list(self.columns)
 
-        hidden_fields = (
-            [] if not existing_instance else existing_instance.excluded_columns
+        hidden_fields = []
+        existing_instance = None
+        if request:
+            existing_instance = models.ToggleColumn.objects.filter(
+                user_id=request.user, path=request.path_info
+            ).first()
+            if existing_instance:
+                hidden_fields = existing_instance.excluded_columns
+
+        if not self.default_columns:
+            self.default_columns = self.columns
+
+        self.toggle_form = ToggleColumnForm(
+            self.columns, self.default_columns, hidden_fields
         )
 
-        self.visible_column = self.columns.copy()
+        # Remove hidden columns from visible_column
+        hidden_field_names = (
+            {
+                col[1] if isinstance(col, tuple) else col
+                for col in self.columns
+                if col[1] in hidden_fields
+            }
+            if existing_instance
+            else {col[1] for col in self.columns if col not in self.default_columns}
+        )
+        self.visible_column = [
+            col
+            for col in self.visible_column
+            if (col[1] if isinstance(col, tuple) else col) not in hidden_field_names
+        ]
 
-        if not existing_instance:
-            if not self.default_columns:
-                self.default_columns = self.columns
-            self.toggle_form = ToggleColumnForm(
-                self.columns, self.default_columns, hidden_fields
-            )
-            for column in self.columns:
-                if column not in self.default_columns:
-                    self.visible_column.remove(column)
-        else:
-            self.toggle_form = ToggleColumnForm(
-                self.columns, self.default_columns, hidden_fields
-            )
-            for column in self.columns:
-                if column[1] in hidden_fields:
-                    self.visible_column.remove(column)
+        # Add verbose names to fields if possible
+        updated_column = []
+        get_field = self.model()._meta.get_field
+        for col in self.visible_column:
+            if isinstance(col, str):
+                try:
+                    updated_column.append((get_field(col).verbose_name, col))
+                except FieldDoesNotExist:
+                    updated_column.append(col)
+            else:
+                updated_column.append(col)
+
+        self.visible_column = updated_column
 
     def bulk_update_accessibility(self) -> bool:
         """
@@ -1486,31 +1503,18 @@ class HorillaDetailedView(DetailView):
 
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
-        instance_ids = self.request.session.get(self.ordered_ids_key, [])
-        if not context.get("object", False):
+        obj = context.get("object")
+
+        if not obj:
             return context
 
-        pk = context["object"].pk
-        # if instance_ids:
-        #     context["object"].ordered_ids = instance_ids
-        context["instance"] = context["object"]
+        pk = obj.pk
+        instance_ids = self.request.session.get(self.ordered_ids_key, [])
+        url_info = resolve(self.request.path)
+        url_name = url_info.url_name
+        key = next(iter(url_info.kwargs), "pk")
 
-        url = resolve(self.request.path)
-        key = list(url.kwargs.keys())[0]
-
-        url_name = url.url_name
-
-        previous_id, next_id = closest_numbers(instance_ids, pk)
-
-        next_url = reverse(url_name, kwargs={key: next_id})
-        previous_url = reverse(url_name, kwargs={key: previous_id})
-        if instance_ids:
-            context["instance_ids"] = str(instance_ids)
-            context["ids_key"] = self.ids_key
-
-            context["next_url"] = next_url
-            context["previous_url"] = previous_url
-
+        context["instance"] = obj
         context["title"] = self.title
         context["header"] = self.header
         context["body"] = self.body
@@ -1518,9 +1522,23 @@ class HorillaDetailedView(DetailView):
         context["action_method"] = self.action_method
         context["cols"] = self.cols
 
-        # CACHE.get(self.request.session.session_key + "cbv")[
-        #     HorillaDetailedView
-        # ] = context
+        if instance_ids:
+            prev_id, next_id = closest_numbers(instance_ids, pk)
+            context.update(
+                {
+                    "instance_ids": str(instance_ids),
+                    "ids_key": self.ids_key,
+                    "next_url": reverse(url_name, kwargs={key: next_id}),
+                    "previous_url": reverse(url_name, kwargs={key: prev_id}),
+                }
+            )
+
+            # Filter out instance_ids key from GET params
+            get_params = self.request.GET.copy()
+            get_params.pop(self.ids_key, None)
+            context["extra_query"] = get_params.urlencode()
+        else:
+            context["extra_query"] = ""
 
         return context
 
@@ -1533,6 +1551,7 @@ class HorillaTabView(TemplateView):
 
     view_id: str = get_short_uuid(3, "htv")
     template_name = "generic/horilla_tabs.html"
+    show_filter_tags = False
 
     tabs: list = []
 
@@ -1553,6 +1572,7 @@ class HorillaTabView(TemplateView):
         super().__init__(**kwargs)
         request = getattr(_thread_locals, "request", None)
         self.request = request
+        self.query_params = {}
         # update_initial_cache(request, CACHE, HorillaTabView)
 
     def get_context_data(self, **kwargs):
@@ -1563,6 +1583,14 @@ class HorillaTabView(TemplateView):
             ).first()
             if active_tab:
                 context["active_target"] = active_tab.tab_target
+
+        for tab in self.tabs:
+            base_url = tab.get("url")
+            query_params = {**self.request.GET.dict()}
+            query_params.update(self.query_params)
+
+            tab["url"] = f"{base_url}?{urlencode(query_params)}"
+
         context["tabs"] = self.tabs
         context["view_id"] = self.view_id
 

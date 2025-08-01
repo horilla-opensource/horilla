@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import QueryDict
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from geopy.distance import geodesic
@@ -26,14 +26,9 @@ class GeoFencingSetupGetPostAPIView(APIView):
         name="dispatch",
     )
     def get(self, request):
-        if request.user.is_superuser:
-            location = GeoFencing.objects.all()
-        else:
-            company = request.user.employee_get.get_company()
-            location = company.geo_fencing.all()
-        paginator = PageNumberPagination()
-        page = paginator.paginate_queryset(location, request)
-        serializer = GeoFencingSetupSerializer(page, many=True)
+        company = request.user.employee_get.get_company()
+        location = get_object_or_404(GeoFencing, pk=company.id)
+        serializer = GeoFencingSetupSerializer(location)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @method_decorator(
@@ -144,11 +139,12 @@ class GeoFencingEmployeeLocationCheckAPIView(APIView):
 class GeoFencingSetUpPermissionCheck(APIView):
     permission_classes = [IsAuthenticated]
 
+    @method_decorator(
+        permission_required("geofencing.view_geofencing", raise_exception=True),
+        name="dispatch",
+    )
     def get(self, request):
-        geo_fencing = GeoFencingSetupGetPostAPIView()
-        if geo_fencing.get(request).status_code == 200:
-            return Response(status=200)
-        return Response(status=400)
+        return Response(status=200)
 
 
 def get_company(request):

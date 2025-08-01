@@ -3,16 +3,13 @@ This module is used to register django models
 """
 
 import ipaddress
-from datetime import date, datetime, timedelta
-from typing import Iterable
+from datetime import date, datetime
 
 import django
 from django.apps import apps
-from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.models import AbstractUser, User
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.core.files.storage import default_storage
 from django.db import models
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
@@ -24,7 +21,7 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
 
@@ -87,7 +84,7 @@ class Company(HorillaModel):
     city = models.CharField(max_length=50)
     zip = models.CharField(max_length=20)
     icon = models.FileField(
-        upload_to="base/icon",
+        upload_to=upload_path,
         null=True,
     )
     objects = models.Manager()
@@ -1267,7 +1264,7 @@ class RotatingShiftAssign(HorillaModel):
 
 
 class BaserequestFile(models.Model):
-    file = models.FileField(upload_to="base/request_files")
+    file = models.FileField(upload_to=upload_path)
     objects = models.Manager()
 
 
@@ -1831,6 +1828,7 @@ class HorillaMailTemplate(HorillaModel):
         verbose_name=_("Company"),
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
+    xss_exempt_fields = ["body"]
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -2233,7 +2231,7 @@ class Attachment(models.Model):
     Attachment model for multiple attachments in announcements.
     """
 
-    file = models.FileField(upload_to="attachments/")
+    file = models.FileField(upload_to=upload_path)
 
     def __str__(self):
         return self.file.name
@@ -2286,6 +2284,10 @@ class Announcement(HorillaModel):
         Employee, related_name="announcement_filtered_employees", editable=False
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
+
+    xss_exempt_fields = [
+        "description",
+    ]
 
     class Meta:
         verbose_name = _("Announcement")

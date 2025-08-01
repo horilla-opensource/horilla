@@ -731,7 +731,7 @@ def task_view(request, project_id, **kwargs):
     stages = ProjectStage.objects.filter(project=project).order_by("sequence")
     tasks = Task.objects.filter(project=project)
     form.form.fields["stage"].queryset = ProjectStage.objects.filter(project=project.id)
-    if request.GET.get("view") == "list":
+    if request.GET.get("view") == "list" or request.GET.get("view") == None:
         view_type = "list"
     context = {
         "view_type": view_type,
@@ -940,7 +940,11 @@ def task_filter(request, project_id):
     For filtering task
     """
     templete = "task/new/task_kanban_view.html"
-    if request.GET.get("view") == "list":
+    if (
+        request.GET.get("view") == "list"
+        or request.GET.get("view") == None
+        or request.GET.get("view") == ""
+    ):
         templete = "task/new/task_list_view.html"
     tasks = TaskFilter(request.GET).qs.filter(project_id=project_id)
     stages = (
@@ -1141,11 +1145,14 @@ def task_all_create(request):
 @login_required
 def update_project_task_status(request, task_id):
     status = request.GET.get("status")
-
     task = get_object_or_404(Task, id=task_id)
+
+    if task.end_date and task.end_date < date.today():
+        messages.warning(request, _("Cannot update status. Task has already expired."))
+        return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
+
     task.status = status
     task.save()
-
     messages.success(request, _("Task status has been updated successfully"))
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
@@ -1333,6 +1340,8 @@ def delete_project_stage(request, stage_id):
     For delete project stage
     """
     view_type = request.GET.get("view")
+    if view_type == None:
+        view_type = "list"
     stage = ProjectStage.objects.get(id=stage_id)
     tasks = Task.objects.filter(stage=stage)
     project_id = stage.project.id
