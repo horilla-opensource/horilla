@@ -379,9 +379,8 @@ class ShiftRequestDetailview(HorillaDetailedView):
         (_("Previous Shift"), "previous_shift_id"),
         (_("Requested Date"), "requested_date"),
         (_("Requested Till"), "requested_till"),
-        (_("Is permenent shift"), "is_permanent"),
-        (_("Status"), "request_status"),
         (_("Description"), "description"),
+        (_("Is permenent shift"), "is_permanent"),
     ]
 
     def __init__(self, **kwargs: Any) -> None:

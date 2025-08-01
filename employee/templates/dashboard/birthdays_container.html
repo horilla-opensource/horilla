@@ -13,7 +13,7 @@
                     <span class="oh-dashboard__event-main">{{birthday.name}}</span>
                     <span class="oh-dashboard__event-date">{{birthday.dob}}, {{birthday.daysUntilBirthday}}</span>
                     <span class="oh-dashboard__event-date"
-                        style="font-size:10px;">{{birthday.job_position}}, {{birthday.department}}</span>
+                        style="font-size:10px;">{{birthday.job_position}}{% if birthday.job_position and birthday.department %}, {% endif %}{{birthday.department}}</span>
                 </div>
             </div>
         {% endfor %}

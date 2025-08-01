@@ -42,11 +42,9 @@ from horilla_views.cbv_methods import (  # update_initial_cache,
     get_verbose_name_from_field_path,
     hx_request_required,
     paginator_qry,
-    resolve_foreign_keys,
     sortby,
     split_by_import_reference,
     structured,
-    update_related,
     update_saved_filter_cache,
 )
 from horilla_views.forms import DynamicBulkUpdateForm, ToggleColumnForm

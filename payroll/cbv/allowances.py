@@ -62,16 +62,16 @@ class AllowanceListView(HorillaListView):
             self.action_method = None
 
     columns = [
-        "title",
+        (_("Allowance"), "title"),
         (_("Specific Employees"), "get_specific_employees"),
         (_("Excluded Employees"), "get_exclude_employees"),
-        "is_taxable",
-        "is_condition_based",
+        (_("Is Taxable"), "get_is_taxable_display"),
+        (_("Is Condition Based"), "get_is_condition_based"),
         (_("Condition"), "condition_based_display"),
-        "is_fixed",
-        "amount",
-        "get_based_on_display",
-        "rate",
+        (_("Is Fixed"), "get_is_fixed"),
+        (_("Amount"), "amount"),
+        (_("Based On"), "get_based_on_display"),
+        (_("Rate"), "rate"),
     ]
 
     sortby_mapping = [
@@ -196,6 +196,7 @@ class AllowanceNavView(HorillaNavView):
             },
         ]
 
+    nav_title = _("Allowances")
     filter_instance = AllowanceFilter()
     filter_body_template = "cbv/allowances/allowance_filter.html"
     filter_form_context_name = "form"
@@ -324,7 +325,7 @@ class AllowanceDetailView(HorillaDetailedView):
     }
 
     body = [
-        "is_taxable",
+        (_("Taxable"), "get_is_taxable_display"),
         (_("One Time Allowance"), "one_time_date_display"),
         (_("Condition Based"), "condition_based_display"),
         (_("Amount"), "based_on_amount"),

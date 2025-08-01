@@ -259,7 +259,7 @@ urlpatterns = [
         cbvs.BulkFeedbackFormView.as_view(),
         name="bulk-feedback-create",
     ),
-    # path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
+    path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
     path("feedback-delete/<int:id>", views.feedback_delete, name="feedback-delete"),
     path("feedback-archive/<int:id>", views.feedback_archive, name="feedback-archive"),
     path("get-collegues", views.get_collegues, name="get-collegues"),
@@ -459,15 +459,15 @@ urlpatterns = [
         views.view_single_anonymous_feedback,
         name="single-anonymous-feedback-view",
     ),
+    # path(
+    #     "view-employee-objective/<int:emp_obj_id>/",
+    #     views.view_employee_objective,
+    #     name="view-employee-objective",
+    # ),
     path(
-        "view-employee-objective/<int:emp_obj_id>/",
-        views.view_employee_objective,
-        name="view-employee-objective",
-    ),
-    path(
-        "view-employee-objective-detail/<int:pk>/",
+        "view-employee-objective/<int:pk>/",
         objectives.EmployeeObjectiveDetailView.as_view(),
-        name="view-employee-objective-detail",
+        name="view-employee-objective",
     ),
     # path(
     #     "create-employee-objective/",

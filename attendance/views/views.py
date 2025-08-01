@@ -287,7 +287,10 @@ def attendance_import(request):
     """
     if request.method == "POST":
         file = request.FILES["attendance_import"]
-        data_frame = pd.read_excel(file)
+        file_extension = file.name.split(".")[-1].lower()
+        data_frame = (
+            pd.read_csv(file) if file_extension == "csv" else pd.read_excel(file)
+        )
         attendance_dicts = data_frame.to_dict("records")
         attendance_import = process_attendance_data(attendance_dicts)
         path_info = None
@@ -2395,11 +2398,9 @@ def delete_comment_file(request):
 def work_records(request):
     today = date.today()
     previous_data = request.GET.urlencode()
-    employee_filter_form = EmployeeFilter(request.GET or None)
     context = {
         "current_date": today,
         "pd": previous_data,
-        "f": employee_filter_form,
     }
     return render(
         request, "attendance/work_record/work_record_view.html", context=context

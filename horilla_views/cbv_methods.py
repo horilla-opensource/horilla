@@ -13,7 +13,7 @@ from venv import logger
 from django import forms, template
 from django.contrib import messages
 from django.core.cache import cache as CACHE
-from django.core.paginator import Page, Paginator
+from django.core.paginator import Paginator
 from django.db import models
 from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.related_descriptors import (

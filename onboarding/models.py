@@ -119,7 +119,7 @@ class OnboardingTask(HorillaModel):
 
 class OnboardingCandidate(Candidate):
     class Meta:
-        proxy = True  # 808
+        proxy = True
         verbose_name = _("Onboarding Candidate")
         verbose_name_plural = _("Onboarding Candidates")
         app_label = "onboarding"

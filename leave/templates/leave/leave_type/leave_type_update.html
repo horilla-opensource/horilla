@@ -1,503 +1,501 @@
-{% extends 'index.html' %} {% load static %} {% load i18n %} {% block content %}
+{% extends 'index.html' %}
+{% load static %}
+{% load i18n %}
+{% block content %}
 {% if form.errors %}
-<!-- form errors  -->
-<div class="oh-wrapper">
-  <div class="oh-alert-container">
-    {% for error in form.non_field_errors %}
-    <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
-    {% endfor %}
-  </div>
-</div>
+    <div class="oh-wrapper">
+        <div class="oh-alert-container">
+            {% for error in form.non_field_errors %}
+                <div class="oh-alert oh-alert--animated oh-alert--danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+    </div>
 {% endif %}
 
-<section class="oh-wrapper oh-main__topbar" x-data="{searchShow: false}">
-
-</section>
-
 <div class="oh-wrapper d-flex justify-content-center">
-  <div class="oh-onboarding-card">
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      <div class="oh-onboarding-card__address-group">
-        <h2 class="oh-onboarding-card__section-title">
-          {% trans "Update Leave Type" %}
-        </h2>
-        <div class="row">
-          <div class="col-sm-12 col-md-12 ">
-              <div class="oh-input-group">
-                  <label for="" class="oh-label">{% trans "Name" %}</label>
-                  {{form.name}}
-                  {{form.name.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-                  <label for="" class="oh-label">{% trans "Icon" %}</label><br/>
-                  {{form.icon}}
-                  {{form.icon.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group">
-                  <label for="" class="oh-label">{% trans "Color" %}</label>
-                  {{form.color}}
-                  {{form.color.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-12">
-              <div class="oh-input-group">
-                  <label for="" class="oh-label">{% trans "Is Paid" %}</label>
-                  {{form.payment}}
-                  {{form.payment.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-6">
-              <div class="oh-input-group oh-label__info justify-content-between">
-                  <div class="d-flex align-items-center">
-                      <label for="id_reset" class="oh-label">{% trans "Limit Leave Days" %}</label>
-                      <span class=" oh-info me-3" title="{% trans "Do you want to limit leave days for this leave type?" %}"></span>
-                  </div>
-                  <div class="oh-switch p-3 ">
-                      {{form.limit_leave}}
-                      {{form.limit_leave.errors}}
-                  </div>
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-12 totalDaysContainer">
-              <div class="oh-input-group">
-                  <label for="" class="oh-label">{% trans "Total Days" %}</label>
-                  {{form.count}}
-                  {{form.count.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-4">
-              <div class="oh-input-group">
-                  {% comment %} <label for="" class="oh-label">{% trans "Period In" %}</label> {% endcomment %}
-                  {{form.period_in}}
-                  {{form.period_in.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-4">
-              <div class="oh-input-group">
-                  {% comment %} <label for="" class="oh-label">{% trans "Total Days" %}</label> {% endcomment %}
-                  {{form.total_days}}
-                  {{form.total_days.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-6 resetContainer">
-              <div class="oh-input-group oh-label__info justify-content-between">
-                <div class="d-flex align-items-center">
-                    <label for="id_reset" class="oh-label">{% trans "Reset" %}</label>
-                    <span class=" oh-info me-3" title="{% trans "Do you need to reset leaves based on conditions?" %}"></span>
-                  </div>
-                  <div class="oh-switch p-3 ">
-                      {{form.reset}}
-                      {{form.reset.errors}}
-                  </div>
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 ">
-              <div >
-                  <div class="oh-input-group oh-label__info">
-                      <label for="id_reset_based" class="oh-label">{% trans "Reset Period" %}</label>
-                      <span id="reset_based_id" class=" oh-info me-3"title="{% trans "The time period for the leave to reset." %}"></span>
-                  </div>
-                          {{ form.reset_based }}
-                          {{ form.reset_based.errors }}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 ">
-              <div class="oh-input-group">
-                  <label for="id_reset_month" class="oh-label">{% trans "Reset Month" %}</label>
-                  {{form.reset_month}}
-                  {{form.reset_month.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 ">
-              <div class="oh-input-group">
-                  <label for="id_reset_day" class="oh-label">{% trans "Reset Day" %}</label>
-                  {{form.reset_day}}
-                  {{form.reset_day.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 ">
-              <div class="oh-input-group">
-                  <label for="id_reset_weekend" class="oh-label">{% trans "Reset Weekday" %}</label>
-                  {{form.reset_weekend}}
-                  {{form.reset_weekend.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 ">
-              <div>
-                  <div class="oh-input-group oh-label__info">
-                      <label for="" class="oh-label">{% trans "Carryforward Type" %}</label>
-                      <span class=" oh-info me-3" title="{% trans 'The conditions for carrying forward the balance of leave.' %}"></span>
-                  </div>
-                      {{form.carryforward_type}}
-                      {{form.carryforward_type.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 ">
-              <div>
-                  <div class="oh-input-group oh-label__info">
-                      <label for="id_carryforward_max" class="oh-label">{% trans "Carryforward Max" %}</label>
-                      <span class=" oh-info me-3" id="carry_max_help" title="{% trans "The maximum number of leave that can be carried forward." %}"></span>
-                  </div>
-                      {{form.carryforward_max}}
-                      {{form.carryforward_max.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12">
-              <div>
-                  <div class="oh-input-group oh-label__info">
-                      <label for="id_carryforward_expire_in" class="oh-label">{% trans "Carryforward Expire In" %}</label>
-                      <span class=" oh-info me-3" id="expire_in_help" title="{% trans 'The count of carryforward expire period' %}"></span>
-                  </div>
-                      {{form.carryforward_expire_in}}
-                      {{form.carryforward_expire_in.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12">
-              <div>
-                  <div class="oh-input-group oh-label__info">
-                      <label for="id_carryforward_expire_period" class="oh-label">{% trans "Carryforward Expire Period" %}</label>
-                      <span class=" oh-info me-3" id="expire_period_help" title="{% trans 'The time period for the expiration of carryforward leave.' %}"></span>
-                  </div>
-                  {{form.carryforward_expire_period}}
-                  {{form.carryforward_expire_period.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12">
-              <div>
-                  <div class="oh-input-group oh-label__info">
-                      <label for="id_carryforward_expire_date" class="oh-label">{% trans "Carryforward Expire Date" %}</label>
-                      <span class=" oh-info me-3" title="{% trans 'The date on which carryforward leave resets to 0. After this reset, the date will be updated to the next expiration period.' %}"></span>
-                  </div>
-                      {{form.carryforward_expire_date}}
-                      {{form.carryforward_expire_date.errors}}
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12  col-lg-6">
-              <div class="oh-input-group oh-label__info justify-content-between">
-                  <div class="d-flex align-items-center">
-                    <label for="" class="oh-label ">{% trans "Require Approval" %}</label>
-                    <span class=" oh-info me-3" title="{% trans "Do you need approval for leave from the authority?" %}"></span>
-                  </div>
-                  <div class="oh-switch p-3 ">
-                      <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_approval" checked>
-                      {{form.require_approval.errors}}
-                  </div>
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12  col-lg-6">
-              <div class="oh-input-group oh-label__info justify-content-between">
-                  <div class="d-flex align-items-center">
-                    <label for="" class="oh-label">{% trans "Require Attachment" %}</label>
-                    <span class=" oh-info me-3" title="{% trans "Do you need to attach a document for leave?" %}"></span>
-                  </div>
-                  <div class="oh-switch p-3 ">
-                      <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_attachment">
-                      {{form.require_attachment.errors}}
-                  </div>
-                </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group oh-label__info justify-content-between">
-                  <div class="d-flex align-items-center">
-                    <label for="" class="oh-label">{% trans "Exclude Company Holidays" %}</label>
-                    <span class=" oh-info me-3" title="{% trans "Do you need to exclude company holidays from the requested leave days?" %}"></span>
-                  </div>
-                  <div class="oh-switch p-3 ">
-                      <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_exclude_comp_leave">
-                      {{form.exclude_company_leave.errors}}
-                  </div>
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
-              <div class="oh-input-group oh-label__info justify-content-between">
-                  <div class="d-flex align-items-center">
-                    <label for="" class="oh-label">{% trans "Exclude Holidays" %}</label>
-                    <span class=" oh-info me-3" title="{% trans "Do you need to exclude public holidays from the requested leave days?" %}"></span>
-                  </div>
-                  <div class="oh-switch p-3 ">
-                      <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_exclude_public_leave">
-                      {{form.exclude_holiday.errors}}
-                  </div>
-              </div>
-          </div>
-          <div class="col-sm-12 col-md-12 col-lg-6">
-            <div class="oh-input-group oh-label__info justify-content-between">
-                <div class="d-flex align-items-center">
-                  <label for="" class="oh-label">{% trans "Is Encashable" %}</label>
-                  <span class=" oh-info me-3" title="{% trans "Do you need to encash pending leave days?" %}"></span>
-                </div>
-                <div class="oh-switch p-3 ">
-                    {{form.is_encashable}}
-                    {{form.is_encashable.errors}}
+    <div class="oh-onboarding-card">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="oh-onboarding-card__address-group">
+                <h2 class="oh-onboarding-card__section-title">{% trans "Update Leave Type" %}</h2>
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="{{form.name.id_for_label}}" class="oh-label">{{ form.name.label }}</label>
+                            {{ form.name }}
+                            {{ form.name.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{{ form.icon.label }}</label><br />
+                            {{ form.icon }}
+                            {{ form.icon.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{{ form.color.label }}</label>
+                            {{ form.color }}
+                            {{ form.color.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{{ form.payment.label }}</label>
+                            {{ form.payment }}
+                            {{ form.payment.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6">
+                        <div class="oh-input-group oh-label__info justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <label for="id_reset" class="oh-label">{{ form.limit_leave.label }}</label>
+                                <span class=" oh-info me-3" title="{% trans 'Do you want to limit leave days for this leave type?' %}"></span>
+                            </div>
+                            <div class="oh-switch p-3 ">
+                                {{ form.limit_leave }}
+                                {{ form.limit_leave.errors }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12 totalDaysContainer">
+                        <div class="oh-input-group">
+                            <label for="" class="oh-label">{% trans "Total Days" %}</label>
+                            {{ form.count }}
+                            {{ form.count.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-4">
+                        <div class="oh-input-group">
+                            {% comment %} <label for="" class="oh-label">{% trans "Period In" %}</label> {% endcomment %}
+                            {{ form.period_in }}
+                            {{ form.period_in.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-4">
+                        <div class="oh-input-group">
+                            {% comment %} <label for="" class="oh-label">{% trans "Total Days" %}</label> {% endcomment %}
+                            {{ form.total_days }}
+                            {{ form.total_days.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-6 resetContainer">
+                        <div class="oh-input-group oh-label__info justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <label for="id_reset" class="oh-label">{{ form.reset.label }}</label>
+                                <span class=" oh-info me-3" title="{% trans 'Do you need to reset leaves based on conditions?' %}"></span>
+                            </div>
+                            <div class="oh-switch p-3 ">
+                                {{ form.reset }}
+                                {{ form.reset.errors }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_reset_based" class="oh-label">{{ form.reset_based.label }}</label>
+                                <span id="reset_based_id" class=" oh-info me-3" title="{% trans 'The time period for the leave to reset.' %}"></span>
+                            </div>
+                            {{ form.reset_based  }}
+                            {{ form.reset_based.errors  }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="id_reset_month" class="oh-label">{{ form.reset_month.label }}</label>
+                            {{ form.reset_month }}
+                            {{ form.reset_month.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="id_reset_day" class="oh-label">{{ form.reset_day.label }}</label>
+                            {{ form.reset_day }}
+                            {{ form.reset_day.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div class="oh-input-group">
+                            <label for="id_reset_weekend" class="oh-label">{{ form.reset_weekend.label }}</label>
+                            {{ form.reset_weekend }}
+                            {{ form.reset_weekend.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="" class="oh-label">{{ form.carryforward_type.label }}</label>
+                                <span class=" oh-info me-3"
+                                    title="{% trans 'The conditions for carrying forward the balance of leave.' %}"></span>
+                            </div>
+                            {{ form.carryforward_type }}
+                            {{ form.carryforward_type.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 ">
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_carryforward_max" class="oh-label">{{ form.carryforward_max.label }}</label>
+                                <span class=" oh-info me-3" id="carry_max_help" title="{% trans 'The maximum number of leave that can be carried forward.' %}"></span>
+                            </div>
+                            {{ form.carryforward_max }}
+                            {{ form.carryforward_max.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12">
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_carryforward_expire_in" class="oh-label">{{ form.carryforward_expire_in.label }}</label>
+                                <span class=" oh-info me-3" id="expire_in_help"
+                                    title="{% trans 'The count of carryforward expire period' %}"></span>
+                            </div>
+                            {{ form.carryforward_expire_in }}
+                            {{ form.carryforward_expire_in.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12">
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_carryforward_expire_period" class="oh-label">{{ form.carryforward_expire_period.label }}</label>
+                                <span class=" oh-info me-3" id="expire_period_help"
+                                    title="{% trans 'The time period for the expiration of carryforward leave.' %}"></span>
+                            </div>
+                            {{ form.carryforward_expire_period }}
+                            {{ form.carryforward_expire_period.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12">
+                        <div>
+                            <div class="oh-input-group oh-label__info">
+                                <label for="id_carryforward_expire_date" class="oh-label">{{ form.carryforward_expire_date.label }}</label>
+                                <span class=" oh-info me-3"
+                                    title="{% trans 'The date on which carryforward leave resets to 0. After this reset, the date will be updated to the next expiration period.' %}"></span>
+                            </div>
+                            {{ form.carryforward_expire_date }}
+                            {{ form.carryforward_expire_date.errors }}
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12  col-lg-6">
+                        <div class="oh-input-group oh-label__info justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <label for="" class="oh-label ">{{ form.require_approval.label }}</label>
+                                <span class=" oh-info me-3" title="{% trans 'Do you need approval for leave from the authority?' %}"></span>
+                            </div>
+                            <div class="oh-switch p-3 ">
+                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_approval" checked>
+                                {{ form.require_approval.errors }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12  col-lg-6">
+                        <div class="oh-input-group oh-label__info justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <label for="" class="oh-label">{{ form.require_attachment.label }}</label>
+                                <span class=" oh-info me-3" title="{% trans 'Do you need to attach a document for leave?' %}"></span>
+                            </div>
+                            <div class="oh-switch p-3 ">
+                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_attachment">
+                                {{ form.require_attachment.errors }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group oh-label__info justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <label for="" class="oh-label">{{ form.exclude_company_leave.label }}</label>
+                                <span class=" oh-info me-3" title="{% trans 'Do you need to exclude company holidays from the requested leave days?' %}"></span>
+                            </div>
+                            <div class="oh-switch p-3 ">
+                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_exclude_comp_leave">
+                                {{ form.exclude_company_leave.errors }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group oh-label__info justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <label for="" class="oh-label">{{ form.exclude_holiday.label }}</label>
+                                <span class=" oh-info me-3" title="{% trans 'Do you need to exclude public holidays from the requested leave days?' %}"></span>
+                            </div>
+                            <div class="oh-switch p-3 ">
+                                <input type="checkbox" class="oh-switch__checkbox yesOrNo" id="id_exclude_public_leave">
+                                {{ form.exclude_holiday.errors }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="oh-input-group oh-label__info justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <label for="" class="oh-label">{{ form.is_encashable.label }}</label>
+                                <span class=" oh-info me-3" title="{% trans 'Do you need to encash pending leave days?' %}"></span>
+                            </div>
+                            <div class="oh-switch p-3 ">
+                                {{ form.is_encashable }}
+                                {{ form.is_encashable.errors }}
+                            </div>
+                        </div>
+                    </div>
+                    <div hidden>{{ form.require_approval }}</div>
+                    <div hidden>{{ form.require_attachment }}</div>
+                    <div hidden>{{ form.exclude_company_leave }}</div>
+                    <div hidden>{{ form.exclude_holiday }}</div>
                 </div>
             </div>
-          </div>
-          <div hidden>{{form.require_approval}}</div>
-          <div hidden>{{form.require_attachment}}</div>
-          <div hidden>{{form.exclude_company_leave}}</div>
-          <div hidden>{{form.exclude_holiday}}</div>
-      </div>
-      </div>
 
-      <button
-        type="submit"
-        class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
-        role="button"
-      >
-        {% trans "Update" %}
-      </button>
-    </form>
-  </div>
+            <button type="submit"
+                class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                role="button">
+                {% trans "Update" %}
+            </button>
+        </form>
+    </div>
 </div>
 
 <script>
-  $(document).ready(function () {
-    var icon = $("#id_icon");
-    icon.show();
-    var reset = $("#id_reset");
-    var reset_based_label = $("label[for='id_reset_based']").closest(".oh-input-group");
-    var reset_based = $("#id_reset_based");
-    var reset_based_span = $("#reset_based_id").closest(".oh-input-group");
-    var reset_month_label = $("label[for='id_reset_month']").closest(".oh-input-group");
-    var reset_month = $("#id_reset_month");
-    var reset_day_label = $("label[for='id_reset_day']").closest(".oh-input-group");
-    var reset_day = $("#id_reset_day");
-    var reset_weekend = $("#id_reset_weekend");
-    var reset_weekend_label = $("label[for='id_reset_weekend']").closest(".oh-input-group");
-    var carryforward_type = $("#id_carryforward_type");
-    var carryforward_max_label = $("label[for='id_carryforward_max']").closest(".oh-input-group");
-    var carryforward_max = $("#id_carryforward_max");
-    var carryforward_expire_in_label = $(
-      "label[for='id_carryforward_expire_in']"
-    ).closest(".oh-input-group");
-    var carryforward_expire_in = $("#id_carryforward_expire_in");
-    var carryforward_expire_period_label = $(
-      "label[for='id_carryforward_expire_period']"
-    ).closest(".oh-input-group");
-    var carryforward_expire_period = $("#id_carryforward_expire_period");
-    var totalDaysContainer = $(".totalDaysContainer");
-    var resetContainer = $(".resetContainer");
-    var totalDays = $("#id_total_days");
-    var limitLeave = $("#id_limit_leave");
-    var carryforward_expire_date_label = $("label[for='id_carryforward_expire_date']").closest(".oh-input-group");
-    var carryforward_expire_date = $("#id_carryforward_expire_date");
+    $(document).ready(function () {
+        var icon = $("#id_icon");
+        icon.show();
+        var reset = $("#id_reset");
+        var reset_based_label = $("label[for='id_reset_based']").closest(".oh-input-group");
+        var reset_based = $("#id_reset_based");
+        var reset_based_span = $("#reset_based_id").closest(".oh-input-group");
+        var reset_month_label = $("label[for='id_reset_month']").closest(".oh-input-group");
+        var reset_month = $("#id_reset_month");
+        var reset_day_label = $("label[for='id_reset_day']").closest(".oh-input-group");
+        var reset_day = $("#id_reset_day");
+        var reset_weekend = $("#id_reset_weekend");
+        var reset_weekend_label = $("label[for='id_reset_weekend']").closest(".oh-input-group");
+        var carryforward_type = $("#id_carryforward_type");
+        var carryforward_max_label = $("label[for='id_carryforward_max']").closest(".oh-input-group");
+        var carryforward_max = $("#id_carryforward_max");
+        var carryforward_expire_in_label = $(
+            "label[for='id_carryforward_expire_in']"
+        ).closest(".oh-input-group");
+        var carryforward_expire_in = $("#id_carryforward_expire_in");
+        var carryforward_expire_period_label = $(
+            "label[for='id_carryforward_expire_period']"
+        ).closest(".oh-input-group");
+        var carryforward_expire_period = $("#id_carryforward_expire_period");
+        var totalDaysContainer = $(".totalDaysContainer");
+        var resetContainer = $(".resetContainer");
+        var totalDays = $("#id_total_days");
+        var limitLeave = $("#id_limit_leave");
+        var carryforward_expire_date_label = $("label[for='id_carryforward_expire_date']").closest(".oh-input-group");
+        var carryforward_expire_date = $("#id_carryforward_expire_date");
 
-    var hiddenLabelsFields = $("[data-hidden]");
-    for (let index = 0; index < hiddenLabelsFields.length; index++) {
-      const element = hiddenLabelsFields[index];
-      var id = $(element).attr("id");
-      var label = $('label[for="' + id + '"]');
-      label.closest(".oh-input-group").hide();
-    }
-    //check initial state
+        var hiddenLabelsFields = $("[data-hidden]");
+        for (let index = 0; index < hiddenLabelsFields.length; index++) {
+            const element = hiddenLabelsFields[index];
+            var id = $(element).attr("id");
+            var label = $('label[for="' + id + '"]');
+            label.closest(".oh-input-group").hide();
+        }
+        //check initial state
 
-    if  ($(reset).is(':checked')){
-      reset_based_span.show()
-    }
-    else{
-      reset_based_span.hide()
+        if ($(reset).is(':checked')) {
+            reset_based_span.show()
+        }
+        else {
+            reset_based_span.hide()
+        }
+
+        if ($(limitLeave).is(':checked')) {
+            totalDaysContainer.show();
+            resetContainer.show();
+        } else {
+            totalDaysContainer.hide();
+            resetContainer.hide();
+            $("#id_count").val(0);
+        }
+
+        limitLeave.change(function () {
+            (this.checked) ? (totalDaysContainer.show(), resetContainer.show()) : (totalDaysContainer.hide(), resetContainer.hide(), $("#id_count").val(0))
+        })
+
+        // Check value of reset change field and trigger action
+        reset.change(function () {
+            this.checked
+                ? (reset_based.show().prop("required", true), reset_based_label.show(), reset_based_span.show())
+                : (reset_based_label.hide(),
+                    reset_based_span.hide(),
+                    reset_based.hide().prop("required", false),
+                    reset_based.val(""));
+            reset_based.is(":hidden")
+                ? (reset_month_label.hide(),
+                    reset_month.hide().prop("required", false),
+                    reset_month.val(""),
+                    reset_day_label.hide(),
+                    reset_based_label.hide(),
+                    reset_day.val(""),
+                    reset_day.hide().prop("required", false),
+                    reset_weekend_label.hide(),
+                    reset_weekend.hide().prop("required", false),
+                    reset_weekend.val(""))
+                : "";
+        });
+
+        // Check value of boolean change field and trigger action
+        reset_based.change(function (e) {
+            var value = $(this).val();
+            if (value == "weekly") {
+                reset_weekend.show().prop("required", true);
+                reset_weekend_label.show();
+                reset_month.hide().prop("required", false);
+                reset_month_label.hide();
+                reset_month.val("");
+                reset_day.hide().prop("required", false);
+                reset_day_label.hide();
+                reset_day.val("");
+            } else {
+                reset_weekend_label.hide();
+                reset_weekend.hide().prop("required", false);
+                reset_weekend.val("");
+            }
+            if (value == "yearly") {
+                reset_weekend_label.hide();
+                reset_weekend.hide().prop("required", false);
+                reset_weekend.val("");
+                reset_month_label.show();
+                reset_month.show().prop("required", true);
+                reset_day.show().prop("required", true);
+                reset_day_label.show();
+            }
+            if (value == "monthly") {
+                reset_day.show().prop("required", true);
+                reset_day_label.show();
+                reset_month.hide().prop("required", false);
+                reset_month_label.hide();
+                reset_month.val("");
+            }
+            if (value == "") {
+                reset_month.hide().prop("required", false);
+                reset_month_label.hide();
+                reset_month.val("");
+                reset_day.hide().prop("required", false);
+                reset_day_label.hide();
+                reset_day.val("");
+            }
+        });
+        if (carryforward_max.val() == "") {
+            $('#carry_max_help').hide()
+        }
+        if (carryforward_expire_period.val() == "") {
+            $('#expire_period_help').hide()
+        }
+        if (carryforward_expire_in.val() == "") {
+            $('#expire_in_help').hide()
+        }
+
+        carryforward_type.change(function () {
+            this.value == "carryforward" || this.value == "carryforward expire"
+                ? (carryforward_max_label.show(), $('#carry_max_help').show(),
+                    carryforward_max.show().prop("required", true))
+                : (carryforward_max_label.hide(), $('#carry_max_help').hide(),
+                    carryforward_max.hide().prop("required", false),
+                    carryforward_max.val(""));
+            this.value == "carryforward expire"
+                ? (carryforward_expire_in_label.show(),
+                    $('#expire_period_help').show(),
+                    $('#expire_in_help').show(),
+                    carryforward_expire_in.show().prop("required", true),
+                    carryforward_expire_period_label.show(),
+                    carryforward_expire_period.show().prop("required", true),
+                    carryforward_expire_date_label.closest("div").show(),
+                    carryforward_expire_date.show().prop("required", true))
+                : (carryforward_expire_in_label.closest("div").hide(),
+                    $('#expire_period_help').hide(),
+                    $('#expire_in_help').hide(),
+                    $('#carry_max_help').hide(),
+                    carryforward_expire_in.hide().prop("required", false),
+                    carryforward_expire_in.val(""),
+                    carryforward_expire_period_label.hide(),
+                    carryforward_expire_period.hide().prop("required", false),
+                    carryforward_expire_period.val(""),
+                    carryforward_expire_date_label.closest("div").hide(),
+                    carryforward_expire_date.hide().prop("required", false),
+                    carryforward_expire_date.val("")
+                );
+        });
+
+        // leave total days calculation
+        $("#id_period_in, #id_count").change(function () {
+            const month = 30;
+            const year = 365;
+            const day = 1;
+            var totalDays = 0;
+            var unit = $("#id_period_in").val();
+            var count = $("#id_count").val();
+
+            if (unit == "day") {
+                totalDays = day * count;
+            } else if (unit == "month") {
+                totalDays = month * count;
+            } else if (unit == "year") {
+                totalDays = year * count;
+            }
+            $("#id_total_days").val(totalDays);
+        });
+
+        //check the yes or no fields
+        if ($('#id_require_approval').val() == 'no') {
+            $('#id_approval').prop('checked', false);
+        }
+        else {
+            $('#id_approval').prop('checked', true);
+        }
+        if ($('#id_require_attachment').val() == 'no') {
+            $('#id_attachment').prop('checked', false);
+        }
+        else {
+            $('#id_attachment').prop('checked', true);
+        }
+        if ($('#id_exclude_company_leave').val() == 'no') {
+            $('#id_exclude_comp_leave').prop('checked', false);
+        }
+        else {
+            $('#id_exclude_comp_leave').prop('checked', true);
+        }
+        if ($('#id_exclude_holiday').val() == 'no') {
+            $('#id_exclude_public_leave').prop('checked', false);
+        }
+        else {
+            $('#id_exclude_public_leave').prop('checked', true);
+        }
+    });
+    function checkYesOrNoFields() {
+
+        if ($('#id_approval').is(":checked")) {
+            $('#id_require_approval').val('yes');
+        }
+        else {
+            $('#id_require_approval').val('no');
+        }
+        if ($('#id_attachment').is(":checked")) {
+            $('#id_require_attachment').val('yes');
+        }
+        else {
+            $('#id_require_attachment').val('no');
+        }
+        if ($('#id_exclude_comp_leave').is(":checked")) {
+            $('#id_exclude_company_leave').val('yes');
+        }
+        else {
+            $('#id_exclude_company_leave').val('no')
+        }
+        if ($('#id_exclude_public_leave').is(":checked")) {
+            $('#id_exclude_holiday').val('yes');
+        }
+        else {
+            $('#id_exclude_holiday').val('no');
+        }
+
     }
 
-    if ($(limitLeave).is(':checked')){
-        totalDaysContainer.show();
-        resetContainer.show();
-    } else {
-        totalDaysContainer.hide();
-        resetContainer.hide();
-        $("#id_count").val(0);
-    }
-
-    limitLeave.change(function (){
-      (this.checked) ? (totalDaysContainer.show(), resetContainer.show()) : (totalDaysContainer.hide(), resetContainer.hide(), $("#id_count").val(0))
+    $('.yesOrNo').change(function () {
+        checkYesOrNoFields()
     })
-
-    // Check value of reset change field and trigger action
-    reset.change(function () {
-      this.checked
-        ? (reset_based.show().prop("required", true), reset_based_label.show(),reset_based_span.show())
-        : (reset_based_label.hide(),
-          reset_based_span.hide(),
-          reset_based.hide().prop("required", false),
-          reset_based.val(""));
-      reset_based.is(":hidden")
-        ? (reset_month_label.hide(),
-          reset_month.hide().prop("required", false),
-          reset_month.val(""),
-          reset_day_label.hide(),
-          reset_based_label.hide(),
-          reset_day.val(""),
-          reset_day.hide().prop("required", false),
-          reset_weekend_label.hide(),
-          reset_weekend.hide().prop("required", false),
-          reset_weekend.val(""))
-        : "";
-    });
-
-    // Check value of boolean change field and trigger action
-    reset_based.change(function (e) {
-      var value = $(this).val();
-      if (value == "weekly") {
-        reset_weekend.show().prop("required", true);
-        reset_weekend_label.show();
-        reset_month.hide().prop("required", false);
-        reset_month_label.hide();
-        reset_month.val("");
-        reset_day.hide().prop("required", false);
-        reset_day_label.hide();
-        reset_day.val("");
-      } else {
-        reset_weekend_label.hide();
-        reset_weekend.hide().prop("required", false);
-        reset_weekend.val("");
-      }
-      if (value == "yearly") {
-        reset_weekend_label.hide();
-        reset_weekend.hide().prop("required", false);
-        reset_weekend.val("");
-        reset_month_label.show();
-        reset_month.show().prop("required", true);
-        reset_day.show().prop("required", true);
-        reset_day_label.show();
-      }
-      if (value == "monthly") {
-        reset_day.show().prop("required", true);
-        reset_day_label.show();
-        reset_month.hide().prop("required", false);
-        reset_month_label.hide();
-        reset_month.val("");
-      }
-      if (value == "") {
-        reset_month.hide().prop("required", false);
-        reset_month_label.hide();
-        reset_month.val("");
-        reset_day.hide().prop("required", false);
-        reset_day_label.hide();
-        reset_day.val("");
-      }
-    });
-    if (carryforward_max.val() == "")  {
-      $('#carry_max_help').hide()
-    }
-    if (carryforward_expire_period.val() == "")  {
-      $('#expire_period_help').hide()
-    }
-    if (carryforward_expire_in.val() == "")  {
-      $('#expire_in_help').hide()
-    }
-
-    carryforward_type.change(function () {
-      this.value == "carryforward" || this.value == "carryforward expire"
-        ? (carryforward_max_label.show(),$('#carry_max_help').show(),
-          carryforward_max.show().prop("required", true))
-        : (carryforward_max_label.hide(),$('#carry_max_help').hide(),
-          carryforward_max.hide().prop("required", false),
-          carryforward_max.val(""));
-      this.value == "carryforward expire"
-        ? (carryforward_expire_in_label.show(),
-          $('#expire_period_help').show(),
-          $('#expire_in_help').show(),
-          carryforward_expire_in.show().prop("required", true),
-          carryforward_expire_period_label.show(),
-          carryforward_expire_period.show().prop("required", true),
-          carryforward_expire_date_label.closest("div").show(),
-          carryforward_expire_date.show().prop("required", true))
-        : (carryforward_expire_in_label.closest("div").hide(),
-          $('#expire_period_help').hide(),
-          $('#expire_in_help').hide(),
-          $('#carry_max_help').hide(),
-          carryforward_expire_in.hide().prop("required", false),
-          carryforward_expire_in.val(""),
-          carryforward_expire_period_label.hide(),
-          carryforward_expire_period.hide().prop("required", false),
-          carryforward_expire_period.val(""),
-          carryforward_expire_date_label.closest("div").hide(),
-          carryforward_expire_date.hide().prop("required", false),
-          carryforward_expire_date.val("")
-          );
-    });
-
-    // leave total days calculation
-    $("#id_period_in, #id_count").change(function () {
-      const month = 30;
-      const year = 365;
-      const day = 1;
-      var totalDays = 0;
-      var unit = $("#id_period_in").val();
-      var count = $("#id_count").val();
-
-      if (unit == "day") {
-        totalDays = day * count;
-      } else if (unit == "month") {
-        totalDays = month * count;
-      } else if (unit == "year") {
-        totalDays = year * count;
-      }
-      $("#id_total_days").val(totalDays);
-    });
-
-    //check the yes or no fields
-    if ($('#id_require_approval').val() == 'no') {
-      $('#id_approval').prop('checked', false);
-    }
-    else{
-      $('#id_approval').prop('checked', true);
-    }
-    if ($('#id_require_attachment').val() == 'no') {
-      $('#id_attachment').prop('checked', false);
-    }
-    else{
-      $('#id_attachment').prop('checked', true);
-    }
-    if ($('#id_exclude_company_leave').val() == 'no') {
-      $('#id_exclude_comp_leave').prop('checked', false);
-    }
-    else{
-      $('#id_exclude_comp_leave').prop('checked', true);
-    }
-    if ($('#id_exclude_holiday').val() == 'no') {
-      $('#id_exclude_public_leave').prop('checked', false);
-    }
-    else{
-      $('#id_exclude_public_leave').prop('checked', true);
-    }
-  });
-  function checkYesOrNoFields(){
-
-    if ($('#id_approval').is(":checked")) {
-        $('#id_require_approval').val('yes');
-    }
-    else{
-        $('#id_require_approval').val('no') ;
-    }
-    if ($('#id_attachment').is(":checked")) {
-        $('#id_require_attachment').val('yes');
-    }
-    else{
-        $('#id_require_attachment').val('no');
-    }
-    if ($('#id_exclude_comp_leave').is(":checked")) {
-        $('#id_exclude_company_leave').val('yes');
-    }
-    else{
-        $('#id_exclude_company_leave').val('no')
-    }
-    if ($('#id_exclude_public_leave').is(":checked")) {
-        $('#id_exclude_holiday').val('yes');
-    }
-    else{
-        $('#id_exclude_holiday').val('no');
-    }
-
-}
-
-$('.yesOrNo').change(function(){
-    checkYesOrNoFields()
-})
 </script>
 
 {% endblock %}

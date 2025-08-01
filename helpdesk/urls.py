@@ -246,9 +246,4 @@ urlpatterns = [
         name="delete-ticket-document",
     ),
     path("load-faqs/", views.load_faqs, name="load-faqs"),
-    path(
-        "ticket-file-upload/<int:id>/",
-        views.ticket_file_upload,
-        name="ticket-file-upload",
-    ),
 ]

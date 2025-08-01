@@ -1,0 +1,19 @@
+{% load i18n %}
+{% include 'generic/horilla_detailed_view.html'%}
+
+{% if messages %}
+<div class="oh-wrapper">
+  {% for message in messages %}
+  <div class="oh-alert-container">
+    <div class="oh-alert oh-alert--animated {{message.tags}}">
+      {{ message }}
+    </div>
+  </div>
+  
+{%if message.tags == "oh-alert--success" %}
+ <span class="oh-span__class" hx-trigger="load" hx-get="{%url 'asset-list' cat_id=instance.asset_category_id.id %}?{{pd}}"
+  hx-target="#assetCategory{{instance.asset_category_id.id}}"></span> 
+  {% endif %} 
+  {% endfor %}
+</div>
+{% endif %}

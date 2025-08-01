@@ -55,13 +55,13 @@ class ContractsList(HorillaListView):
     filter_class = ContractFilter
 
     columns = [
-        "contract_name",
-        "employee_id",
-        "contract_start_date",
-        "contract_end_date",
-        "get_wage_type_display",
-        "wage",
-        "filing_status",
+        (_("Contract"), "contract_name"),
+        (_("Employee"), "employee_id"),
+        (_("Start Date"), "contract_start_date"),
+        (_("End Date"), "contract_end_date"),
+        (_("Wage Type"), "get_wage_type_display"),
+        (_("Basic Salary"), "wage"),
+        (_("Filing Status"), "filing_status"),
         (_("Status"), "status_col"),
     ]
 
@@ -139,50 +139,6 @@ class ContractsList(HorillaListView):
 
 
 @method_decorator(login_required, name="dispatch")
-class ContractsTabList(HorillaListView):
-    """
-    List view for self contracts
-    """
-
-    model = Contract
-    filter_class = ContractFilter
-    # bulk_select_option = False
-    filter_selected = False
-    show_filter_tags = False
-    row_attrs = """
-                hx-get='{contracts_detail}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
-
-    columns = [
-        "contract_name",
-        "contract_start_date",
-        "contract_end_date",
-        "get_wage_type_display",
-        "wage",
-        "filing_status",
-        (_("Status"), "status_col"),
-    ]
-
-    def get_queryset(self):
-        """
-        Get Queryset
-        """
-        if self.request.user.has_perm("employee.view_employee"):
-            return (
-                super()
-                .get_queryset()
-                .filter(employee_id__id=self.request.GET.get("pk"))
-            )
-
-        return self.model.objects.filter(
-            employee_id__employee_user_id=self.request.user.id
-        )
-
-
-@method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required(perm="payroll.view_contract"), name="dispatch")
 class ContractsNav(HorillaNavView):
     """
@@ -218,6 +174,7 @@ class ContractsNav(HorillaNavView):
             },
         ]
 
+    nav_title = _("Contracts")
     filter_body_template = "cbv/contracts/filter.html"
     filter_instance = ContractFilter()
     filter_form_context_name = "form"
@@ -278,6 +235,7 @@ class ContractsDetailView(HorillaDetailedView):
         return context
 
     model = Contract
+    # title = _("Details")
 
     header = {
         "title": "employee_id__get_full_name",
@@ -286,22 +244,22 @@ class ContractsDetailView(HorillaDetailedView):
     }
 
     body = [
-        "contract_start_date",
-        "contract_end_date",
-        "get_wage_type_display",
-        "get_pay_frequency_display",
-        "wage",
-        "filing_status",
-        "department",
-        "job_position",
-        "job_role",
-        "shift",
-        "work_type",
-        "deduct_leave_from_basic_pay",
-        "get_status_display",
+        (_("Start Date"), "contract_start_date"),
+        (_("End Date"), "contract_end_date"),
+        (_("Wage Type"), "get_wage_type_display"),
+        (_("Basic Salary"), "wage"),
+        (_("Deduct From Basic Pay"), "deduct_leave_from_basic_pay_col"),
+        (_("Department"), "department"),
+        (_("Job Position"), "job_position"),
+        (_("Job Role"), "job_role"),
+        (_("Shift"), "shift"),
+        (_("Work Type"), "work_type"),
+        (_("Filing Status"), "filing_status"),
+        (_("Pay Frequency"), "get_pay_frequency_display"),
+        (_("Status"), "get_status_display"),
         (_("Calculate Leave Amount"), "cal_leave_amount", True),
         (_("Note"), "note_col", True),
-        (_("Document"), "document_col", True),
+        (_("Document"), "edocument_col", True),
     ]
 
     action_method = "detail_action"

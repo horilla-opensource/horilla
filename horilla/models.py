@@ -9,6 +9,7 @@ information, audit logging, and active/inactive status management.
 """
 
 import re
+from uuid import uuid4
 
 from auditlog.models import AuditlogHistoryField
 from auditlog.registry import auditlog
@@ -17,6 +18,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.fields.files import FieldFile
 from django.urls import reverse
+from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
 from horilla.horilla_middlewares import _thread_locals
@@ -43,6 +45,33 @@ def has_xss(value):
         return False
     xss_pattern = re.compile(r"<.*?script.*?>|javascript:|on\w+=", re.IGNORECASE)
     return bool(xss_pattern.search(value))
+
+
+def upload_path(instance, filename):
+    """
+    Generates a unique file path for uploads in the format:
+    app_label/model_name/field_name/originalfilename-uuid.ext
+    """
+    ext = filename.split(".")[-1]
+    base_name = ".".join(filename.split(".")[:-1]) or "file"
+    unique_name = f"{slugify(base_name)}-{uuid4().hex[:8]}.{ext}"
+
+    # Try to find which field is uploading this file
+    field_name = next(
+        (
+            k
+            for k, v in instance.__dict__.items()
+            if hasattr(v, "name") and v.name == filename
+        ),
+        None,
+    )
+
+    app_label = instance._meta.app_label
+    model_name = instance._meta.model_name
+
+    if field_name:
+        return f"{app_label}/{model_name}/{field_name}/{unique_name}"
+    return f"{app_label}/{model_name}/{unique_name}"
 
 
 class HorillaModel(models.Model):
@@ -91,7 +120,7 @@ class HorillaModel(models.Model):
         Override the save method to automatically set the created_by and
         modified_by fields based on the current request user.
         """
-        self.full_clean()
+        # self.full_clean()
 
         request = getattr(_thread_locals, "request", None)
 

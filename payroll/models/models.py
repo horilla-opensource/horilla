@@ -34,7 +34,7 @@ from employee.methods.duration_methods import strtime_seconds
 from employee.models import BonusPoint, Employee, EmployeeWorkInformation
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
 
@@ -115,30 +115,6 @@ class FilingStatus(HorillaModel):
 
     def __str__(self) -> str:
         return str(self.filing_status)
-
-    def get_panel_hx_url(self):
-        """
-        This method to get update url
-        """
-        url = reverse_lazy("tax-bracket-list", kwargs={"pk": self.pk})
-        return url
-
-    def add_panel_hx_url(self):
-        url = reverse_lazy("tax-bracket-create", kwargs={"pk": self.pk})
-        return url
-
-    def get_update_url(self):
-        url = reverse_lazy("filing-status-update", kwargs={"pk": self.pk})
-        return url
-
-    def get_delete_url(self):
-        url = reverse_lazy("filing-status-delete", kwargs={"pk": self.pk})
-        return url
-
-    def dropdown_actions(self):
-        return render_template(
-            "payroll/tax/filing_status_actions.html", {"instance": self}
-        )
 
     class Meta:
         ordering = ["-id"]
@@ -271,7 +247,7 @@ class Contract(HorillaModel):
         validators=[min_zero],
         verbose_name=_("Notice Period"),
     )
-    contract_document = models.FileField(upload_to="uploads/", null=True, blank=True)
+    contract_document = models.FileField(upload_to=upload_path, null=True, blank=True)
     deduct_leave_from_basic_pay = models.BooleanField(
         default=True,
         verbose_name=_("Deduct From Basic Pay"),
@@ -300,6 +276,24 @@ class Contract(HorillaModel):
     )
 
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
+
+    def get_wage_type_display(self):
+        """
+        Display wage type
+        """
+        return dict(self.WAGE_CHOICES).get(self.wage_type)
+
+    def get_pay_frequency_display(self):
+        """
+        Display pay frequency
+        """
+        return dict(self.PAY_FREQUENCY_CHOICES).get(self.pay_frequency)
+
+    def get_status_display(self):
+        """
+        Display status
+        """
+        return dict(self.CONTRACT_STATUS_CHOICES).get(self.contract_status)
 
     def status_col(self):
         """
@@ -371,6 +365,15 @@ class Contract(HorillaModel):
         url = reverse("contracts-detail-view", kwargs={"pk": self.pk})
 
         return url
+
+    def deduct_leave_from_basic_pay_col(self):
+        """
+        Deduct leave from basic pay column
+        """
+        if self.deduct_leave_from_basic_pay:
+            return "Yes"
+        else:
+            return "No"
 
     def __str__(self) -> str:
         return f"{self.contract_name} -{self.contract_start_date} - {self.contract_end_date}"
@@ -476,8 +479,6 @@ class Contract(HorillaModel):
         Meta class to add additional options
         """
 
-        verbose_name = _("Contract")
-        verbose_name_plural = _("Contracts")
         unique_together = ["employee_id", "contract_start_date", "contract_end_date"]
 
 
@@ -836,11 +837,7 @@ class Allowance(HorillaModel):
         ("basic_pay", _("Basic Pay")),
     ]
     title = models.CharField(
-        max_length=255,
-        null=False,
-        blank=False,
-        help_text=_("Title of the allowance"),
-        verbose_name=_("Allowance"),
+        max_length=255, null=False, blank=False, help_text=_("Title of the allowance")
     )
     one_time_date = models.DateField(
         null=True,
@@ -875,7 +872,6 @@ class Allowance(HorillaModel):
     is_taxable = models.BooleanField(
         default=True,
         help_text=_("This field is used to calculate the taxable allowances"),
-        verbose_name=_("Is Taxable"),
     )
     is_condition_based = models.BooleanField(
         default=False,
@@ -883,7 +879,6 @@ class Allowance(HorillaModel):
             "This field is used to target allowance \
         to the specific employees when the condition satisfies with the employee's information"
         ),
-        verbose_name=_("Is Condition Based"),
     )
     # If condition based
     field = models.CharField(
@@ -904,16 +899,13 @@ class Allowance(HorillaModel):
     )
 
     is_fixed = models.BooleanField(
-        default=True,
-        help_text=_("To specify, the allowance is fixed or not"),
-        verbose_name=_("Is Fixed"),
+        default=True, help_text=_("To specify, the allowance is fixed or not")
     )
     amount = models.FloatField(
         null=True,
         blank=True,
         validators=[min_zero],
         help_text=_("Fixed amount for this allowance"),
-        verbose_name=_("Amount"),
     )
     # If is fixed is false
     based_on = models.CharField(
@@ -925,7 +917,6 @@ class Allowance(HorillaModel):
         help_text=_(
             "If the allowance is not fixed then specifies how the allowance provided"
         ),
-        verbose_name=_("Based On"),
     )
     rate = models.FloatField(
         null=True,
@@ -934,7 +925,6 @@ class Allowance(HorillaModel):
             rate_validator,
         ],
         help_text=_("The percentage of based on"),
-        verbose_name=_("Rate"),
     )
     # If based on attendance
     per_attendance_fixed_amount = models.FloatField(
@@ -1073,7 +1063,6 @@ class Allowance(HorillaModel):
             "work_type_per_attendance_amount",
         ]
         verbose_name = _("Allowance")
-        verbose_name_plural = _("Allowances")
 
     def get_specific_employees(self):
         """
@@ -1090,6 +1079,30 @@ class Allowance(HorillaModel):
         """
 
         return ", ".join([str(employee) for employee in self.exclude_employees.all()])
+
+    def get_is_taxable_display(self):
+        """
+        method to return is taxable or not
+        """
+        return "Yes" if self.is_taxable else "No"
+
+    def get_is_condition_based(self):
+        """
+        method to return is condition based or not
+        """
+        return "Yes" if self.is_condition_based else "No"
+
+    def get_is_fixed(self):
+        """
+        method to return is fixed
+        """
+        return "Yes" if self.is_fixed else "No"
+
+    def get_based_on_display(self):
+        """
+        method to return get based on field
+        """
+        return dict(self.based_on_choice).get(self.based_on)
 
     def allowance_detail_view(self):
         """
@@ -1331,11 +1344,7 @@ class Deduction(HorillaModel):
         ("max_amount", _("Provide max amount")),
     ]
 
-    title = models.CharField(
-        max_length=255,
-        help_text=_("Title of the deduction"),
-        verbose_name=_("Deduction"),
-    )
+    title = models.CharField(max_length=255, help_text=_("Title of the deduction"))
     one_time_date = models.DateField(
         null=True,
         blank=True,
@@ -1378,7 +1387,6 @@ class Deduction(HorillaModel):
             "To find taxable gross, \
             taxable_gross = (basic_pay + taxable_deduction)-pre_tax_deductions "
         ),
-        verbose_name=_("Is Pretax"),
     )
 
     is_condition_based = models.BooleanField(
@@ -1387,7 +1395,6 @@ class Deduction(HorillaModel):
             "This field is used to target deduction \
         to the specific employees when the condition satisfies with the employee's information"
         ),
-        verbose_name=_("Is Condition Based"),
     )
     # If condition based then must fill field, value, and condition,
     field = models.CharField(
@@ -1426,7 +1433,6 @@ class Deduction(HorillaModel):
     is_fixed = models.BooleanField(
         default=True,
         help_text=_("To specify, the deduction is fixed or not"),
-        verbose_name=_("Is Fixed"),
     )
     # If fixed amount then fill amount
     amount = models.FloatField(
@@ -1434,7 +1440,6 @@ class Deduction(HorillaModel):
         blank=True,
         validators=[min_zero],
         help_text=_("Fixed amount for this deduction"),
-        verbose_name=_("Amount"),
     )
     based_on = models.CharField(
         max_length=255,
@@ -1444,7 +1449,6 @@ class Deduction(HorillaModel):
         help_text=_(
             "If the deduction is not fixed then specifies how the deduction provided"
         ),
-        verbose_name=_("Based On"),
     )
     rate = models.FloatField(
         null=True,
@@ -1453,7 +1457,7 @@ class Deduction(HorillaModel):
         validators=[
             rate_validator,
         ],
-        verbose_name=_("Employee Rate"),
+        verbose_name=_("Employee rate"),
         help_text=_("The percentage of based on"),
     )
 
@@ -1517,10 +1521,6 @@ class Deduction(HorillaModel):
         MultipleCondition, blank=True, editable=False
     )
 
-    class Meta:
-        verbose_name = _("Deduction")
-        verbose_name_plural = _("Deductions")
-
     def installment_payslip(self):
         """
         Method to retrieve the payslip associated with this installment.
@@ -1555,7 +1555,7 @@ class Deduction(HorillaModel):
         """
         return dict(CONDITION_CHOICE).get(self.condition)
 
-    def condition_based_col(self):
+    def condition_bsed_col(self):
         """
         Condition based column
         """
@@ -1775,26 +1775,22 @@ class Payslip(HorillaModel):
         ("paid", _("Paid")),
     ]
     group_name = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name=_("Batch")
+        max_length=50, null=True, blank=True, verbose_name=_("Batch name")
     )
     reference = models.CharField(max_length=255, unique=False, null=True, blank=True)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
     )
-    start_date = models.DateField(verbose_name=_("Start date"))
-    end_date = models.DateField(verbose_name=_("End Date"))
+    start_date = models.DateField()
+    end_date = models.DateField()
     pay_head_data = models.JSONField()
     contract_wage = models.FloatField(null=True, default=0)
     basic_pay = models.FloatField(null=True, default=0)
-    gross_pay = models.FloatField(null=True, default=0, verbose_name=_("Gross Pay"))
-    deduction = models.FloatField(null=True, default=0, verbose_name=_("Deduction"))
-    net_pay = models.FloatField(null=True, default=0, verbose_name=_("Net Pay"))
+    gross_pay = models.FloatField(null=True, default=0)
+    deduction = models.FloatField(null=True, default=0)
+    net_pay = models.FloatField(null=True, default=0)
     status = models.CharField(
-        max_length=20,
-        null=True,
-        default="draft",
-        choices=status_choices,
-        verbose_name=_("Status"),
+        max_length=20, null=True, default="draft", choices=status_choices
     )
     sent_to_employee = models.BooleanField(null=True, default=False)
     objects = HorillaCompanyManager("employee_id__employee_work_info__company_id")
@@ -1952,8 +1948,6 @@ class Payslip(HorillaModel):
         ordering = [
             "-end_date",
         ]
-        verbose_name = _("Payslip")
-        verbose_name_plural = _("Payslips")
 
 
 class LoanAccount(HorillaModel):
@@ -2138,7 +2132,7 @@ class ReimbursementMultipleAttachment(models.Model):
     ReimbursementMultipleAttachement Model
     """
 
-    attachment = models.FileField(upload_to="payroll/reimbursements")
+    attachment = models.FileField(upload_to=upload_path)
     objects = models.Manager()
 
 
@@ -2168,7 +2162,7 @@ class Reimbursement(HorillaModel):
         Employee, on_delete=models.PROTECT, verbose_name="Employee"
     )
     allowance_on = models.DateField()
-    attachment = models.FileField(upload_to="payroll/reimbursements", null=True)
+    attachment = models.FileField(upload_to=upload_path, null=True)
     other_attachments = models.ManyToManyField(
         ReimbursementMultipleAttachment, blank=True, editable=False
     )
@@ -2195,13 +2189,9 @@ class Reimbursement(HorillaModel):
         help_text=_("Bonus points to encash"),
         verbose_name=_("Bonus points"),
     )
-    amount = models.FloatField(default=0, verbose_name=_("Amount"))
+    amount = models.FloatField(default=0)
     status = models.CharField(
-        max_length=10,
-        choices=status_types,
-        default="requested",
-        editable=False,
-        verbose_name=_("Status"),
+        max_length=10, choices=status_types, default="requested", editable=False
     )
     approved_by = models.ForeignKey(
         Employee,
@@ -2210,9 +2200,7 @@ class Reimbursement(HorillaModel):
         related_name="approved_by",
         editable=False,
     )
-    description = models.TextField(
-        null=True, max_length=255, verbose_name=_("Description")
-    )
+    description = models.TextField(null=True, max_length=255)
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
@@ -2359,6 +2347,12 @@ class Reimbursement(HorillaModel):
     def __str__(self):
         return f"{self.title}"
 
+    def get_status_display(self):
+        """
+        Display status types
+        """
+        return dict(self.status_types).get(self.status)
+
     def comment_col(self):
         """
         This method for get custom coloumn .
@@ -2442,7 +2436,7 @@ class Reimbursement(HorillaModel):
 
 
 class ReimbursementFile(models.Model):
-    file = models.FileField(upload_to="payroll/request_files")
+    file = models.FileField(upload_to=upload_path)
     objects = models.Manager()
 
 

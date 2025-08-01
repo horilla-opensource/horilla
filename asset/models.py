@@ -14,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
 from employee.models import Employee
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_views.cbv_methods import render_template
 
 
@@ -104,12 +104,6 @@ class AssetLot(HorillaModel):
             context={"instance": self},
         )
 
-    def detail_actions(self):
-        return render_template(
-            path="cbv/asset_batch_no/detail_actions.html",
-            context={"instance": self},
-        )
-
     def get_update_url(self):
         """
         This method to get update url
@@ -183,10 +177,11 @@ class Asset(HorillaModel):
     def __str__(self):
         return f"{self.asset_name}-{self.asset_tracking_id}"
 
-    def action_column(self):
-        return render_template(
-            path="asset/action_column.html", context={"instance": self}
-        )
+    def get_status_display(self):
+        """
+        Display status
+        """
+        return dict(self.ASSET_STATUS).get(self.asset_status)
 
     def detail_view_action(self):
         """
@@ -194,13 +189,9 @@ class Asset(HorillaModel):
         """
 
         return render_template(
-            path="cbv/asset/detail_action.html",
+            path="cbv/asset_category/detail_view_action.html",
             context={"instance": self},
         )
-
-    def asset_detail(self):
-        url = reverse_lazy("asset-information", kwargs={"pk": self.pk})
-        return url
 
     def get_update_url(self):
         """
@@ -273,9 +264,7 @@ class AssetDocuments(HorillaModel):
     asset_report = models.ForeignKey(
         "AssetReport", related_name="documents", on_delete=models.CASCADE
     )
-    file = models.FileField(
-        upload_to="asset/asset_report/documents/", blank=True, null=True
-    )
+    file = models.FileField(upload_to=upload_path, blank=True, null=True)
     objects = models.Manager()
 
     class Meta:
@@ -294,7 +283,7 @@ class ReturnImages(HorillaModel):
     - image: A FileField for uploading the image file (optional).
     """
 
-    image = models.FileField(upload_to="asset/return_images/", blank=True, null=True)
+    image = models.FileField(upload_to=upload_path, blank=True, null=True)
 
 
 class AssetAssignment(HorillaModel):
@@ -514,31 +503,6 @@ class AssetAssignment(HorillaModel):
             color_class=color_class,
             date_col=date_col,
         )
-
-    def get_asset_of_offboarding_employee(self):
-        url = f"{reverse('asset-request-allocation-view')}?assigned_to_employee_id={self.assigned_to_employee_id.id}"
-        return url
-
-    def get_send_mail_employee_link(self):
-        if not self.assigned_to_employee_id:
-            return ""
-        url = reverse(
-            "send-mail-employee", kwargs={"emp_id": self.assigned_to_employee_id.id}
-        )
-        title = _("Send Mail")
-        html = f"""
-        <a
-            onclick="event.stopPropagation()"
-            hx-get="{url}"
-            data-toggle="oh-modal-toggle"
-            data-target="#sendMailModal"
-            title="{title}"
-            hx-target="#mail-content"
-        >
-            <ion-icon name="mail-outline"></ion-icon>
-        </a>
-        """
-        return format_html(html)
 
 
 class AssetRequest(HorillaModel):

@@ -793,7 +793,7 @@ class MultipleFileField(forms.FileField):
 
 class ReimbursementForm(ModelForm):
     """
-    ReimbursementForm
+    Optimized Reimbursement / Encashment Form
     """
 
     cols = {"description": 12}
@@ -805,107 +805,114 @@ class ReimbursementForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
 
-    if apps.is_installed("leave"):
-
-        def get_encashable_leaves(self, employee):
-            LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
-            leaves = LeaveType.objects.filter(
-                employee_available_leave__employee_id=employee,
-                employee_available_leave__total_leave_days__gte=1,
-                is_encashable=True,
-            )
-            return leaves
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        exclude_fields = []
+        self.request = getattr(horilla_middlewares._thread_locals, "request", None)
+        self.employee = self.get_employee()  # 819
+
         if not self.instance.pk:
             self.initial["allowance_on"] = str(datetime.date.today())
 
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if request:
-            employee = (
-                request.user.employee_get
-                if self.instance.pk is None
-                else self.instance.employee_id
-            )
-        self.initial["employee_id"] = employee.id
-        if apps.is_installed("leave"):
-            AvailableLeave = get_horilla_model_class(
-                app_label="leave", model="availableleave"
-            )
+        self.initial["employee_id"] = self.employee.id if self.employee else None
 
-            assigned_leaves = self.get_encashable_leaves(employee)
-            self.assigned_leaves = AvailableLeave.objects.filter(
-                leave_type_id__in=assigned_leaves, employee_id=employee
-            )
-            self.fields["leave_type_id"].queryset = assigned_leaves
-            self.fields["leave_type_id"].empty_label = None
-            self.fields["employee_id"].empty_label = None
+        self.configure_fields()
 
-        type_attr = self.fields["type"].widget.attrs
-        type_attr["onchange"] = "toggleReimbursmentType($(this))"
-        self.fields["type"].widget.attrs.update(type_attr)
+    def get_employee(self):
+        """Resolves employee either from form data or request."""
+        if hasattr(self.instance, "employee_id") and self.instance.employee_id:
+            return self.instance.employee_id
 
-        employee_attr = self.fields["employee_id"].widget.attrs
-        employee_attr["onchange"] = "getAssignedLeave($(this))"
-        self.fields["employee_id"].widget.attrs.update(employee_attr)
+        employee_qs = self.fields["employee_id"].queryset
+        employee_id = self.data.get("employee_id") if self.data else None
+
+        if employee_id and (emp := employee_qs.filter(id=employee_id).first()):
+            return emp
+
+        if self.request and (emp := self.request.user.employee_get):
+            if not self.instance.pk and emp in employee_qs:
+                return emp
+            if self.instance.pk and emp.id == self.instance.employee_id:
+                return emp
+
+        return employee_qs.first()
+
+    def get_encashable_leaves(self, employee):
+        LeaveType = get_horilla_model_class(app_label="leave", model="leavetype")
+        return LeaveType.objects.filter(
+            employee_available_leave__employee_id=employee,
+            employee_available_leave__total_leave_days__gte=1,
+            is_encashable=True,
+        )
+
+    def configure_fields(self):
+        exclude_fields = []
+
+        if self.request and not self.request.user.has_perm("payroll.add_reimbursement"):
+            exclude_fields.append("employee_id")
+
+        self.setup_leave_fields()
+
+        self.fields["type"].widget.attrs["onchange"] = "toggleReimbursmentType($(this))"
+        self.fields["employee_id"].widget.attrs[
+            "onchange"
+        ] = "getAssignedLeave($(this))"
 
         self.fields["allowance_on"].widget = forms.DateInput(
             attrs={"type": "date", "class": "oh-input w-100"}
         )
-        self.fields["attachment"] = MultipleFileField(label="Attachements")
+
+        self.fields["attachment"] = MultipleFileField(label="Attachments")
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
-        # deleting fields based on type
-        type = None
-        if self.data and not self.instance.pk:
-            type = self.data["type"]
-        elif self.instance is not None:
-            type = self.instance.type
-        if not request.user.has_perm("payroll.add_reimbursement"):
-            exclude_fields.append("employee_id")
-
-        if (
-            type == "reimbursement"
-            and self.instance.pk
-            or self.data.get("type") == "reimbursement"
-        ):
-            exclude_fields = exclude_fields + [
-                "leave_type_id",
-                "cfd_to_encash",
-                "ad_to_encash",
-                "bonus_to_encash",
-            ]
-        elif (
-            self.instance.pk
-            and type == "leave_encashment"
-            or self.data.get("type") == "leave_encashment"
-        ):
-            exclude_fields = exclude_fields + [
-                "attachment",
-                "amount",
-                "bonus_to_encash",
-            ]
-        elif (
-            self.instance.pk
-            and type == "bonus_encashment"
-            or self.data.get("type") == "bonus_encashment"
-        ):
-            exclude_fields = exclude_fields + [
-                "attachment",
-                "amount",
-                "leave_type_id",
-                "cfd_to_encash",
-                "ad_to_encash",
-            ]
-        if self.instance.pk:
-            exclude_fields = exclude_fields + ["type", "employee_id"]
+        # self.exclude_fields_by_type(exclude_fields)
 
         for field in exclude_fields:
-            if field in self.fields:
-                del self.fields[field]
+            self.fields.pop(field, None)
+
+    def setup_leave_fields(self):
+        """Setup leave-related fields only if leave app is installed."""
+        if not apps.is_installed("leave") or not self.employee:
+            return
+
+        AvailableLeave = get_horilla_model_class(
+            app_label="leave", model="availableleave"
+        )
+        assigned_leaves = self.get_encashable_leaves(self.employee)
+
+        self.assigned_leaves = AvailableLeave.objects.filter(
+            leave_type_id__in=assigned_leaves, employee_id=self.employee
+        )
+        self.fields["leave_type_id"].queryset = assigned_leaves
+        self.fields["leave_type_id"].empty_label = None
+        self.fields["employee_id"].empty_label = None
+
+    def exclude_fields_by_type(self, exclude_fields):
+        """Determine which fields to exclude based on type."""
+        type = (
+            self.data.get("type")
+            if self.data
+            else self.instance.type if self.instance else None
+        )
+        is_edit = self.instance and self.instance.pk
+
+        if type == "reimbursement" and is_edit:
+            exclude_fields += [
+                "leave_type_id",
+                "cfd_to_encash",
+                "ad_to_encash",
+                "bonus_to_encash",
+            ]
+        elif type == "leave_encashment" and (is_edit or self.data):
+            exclude_fields += ["attachment", "amount", "bonus_to_encash"]
+        elif type == "bonus_encashment" and (is_edit or self.data):
+            exclude_fields += [
+                "attachment",
+                "amount",
+                "leave_type_id",
+                "cfd_to_encash",
+                "ad_to_encash",
+            ]
 
     def as_p(self):
         """
@@ -917,69 +924,81 @@ class ReimbursementForm(ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        if self.instance.pk:
-            employee_id = self.instance.employee_id
-            type = self.instance.type
 
-        else:
-            employee_id = request.user.employee_get
-            type = cleaned_data["type"]
+        type_ = cleaned_data.get("type")
+        employee = cleaned_data.get("employee_id")
 
-        available_points = BonusPoint.objects.filter(employee_id=employee_id).first()
-        if type == "bonus_encashment":
-            if self.instance.pk:
-                bonus_to_encash = self.instance.bonus_to_encash
-            else:
-                bonus_to_encash = cleaned_data["bonus_to_encash"]
+        if not type_ or not employee:
+            return cleaned_data
 
-            if available_points.points < bonus_to_encash:
-                raise forms.ValidationError(
-                    {"bonus_to_encash": "Not enough bonus points to redeem"}
-                )
-            if bonus_to_encash <= 0:
-                raise forms.ValidationError(
-                    {"bonus_to_encash": "Points must be greater than zero to redeem."}
-                )
-        if type == "leave_encashment":
-            if self.instance.pk:
-                leave_type_id = self.instance.leave_type_id
-                cfd_to_encash = self.instance.cfd_to_encash
-                ad_to_encash = self.instance.ad_to_encash
+        if type_ == "bonus_encashment":
+            bonus_to_encash = (
+                self.instance.bonus_to_encash
+                if self.instance.pk
+                else cleaned_data.get("bonus_to_encash")
+            )
+            available_points = BonusPoint.objects.filter(employee_id=employee).first()
+
+            if bonus_to_encash is not None:
+                if bonus_to_encash <= 0:
+                    self.add_error(
+                        "bonus_to_encash", "Points must be greater than zero to redeem."
+                    )
+                elif not available_points or available_points.points < bonus_to_encash:
+                    self.add_error(
+                        "bonus_to_encash", "Not enough bonus points to redeem"
+                    )
+
+        elif type_ == "leave_encashment":
+            leave_type = (
+                self.instance.leave_type_id
+                if self.instance.pk
+                else cleaned_data.get("leave_type_id")
+            )
+            cfd_to_encash = (
+                self.instance.cfd_to_encash
+                if self.instance.pk
+                else cleaned_data.get("cfd_to_encash", 0)
+            )
+            ad_to_encash = (
+                self.instance.ad_to_encash
+                if self.instance.pk
+                else cleaned_data.get("ad_to_encash", 0)
+            )
+
+            if not leave_type:
+                self.add_error("leave_type_id", "This field is required")
             else:
-                leave_type_id = cleaned_data["leave_type_id"]
-                cfd_to_encash = cleaned_data["cfd_to_encash"]
-                ad_to_encash = cleaned_data["ad_to_encash"]
-            encashable_leaves = self.get_encashable_leaves(employee_id)
-            if leave_type_id is None:
-                raise forms.ValidationError({"leave_type_id": "This field is required"})
-            elif leave_type_id not in encashable_leaves:
-                raise forms.ValidationError(
-                    {"leave_type_id": "This leave type is not encashable"}
-                )
-            else:
-                AvailableLeave = get_horilla_model_class(
-                    app_label="leave", model="availableleave"
-                )
-                available_leave = AvailableLeave.objects.filter(
-                    leave_type_id=leave_type_id, employee_id=employee_id
-                ).first()
-                if cfd_to_encash < 0:
-                    raise forms.ValidationError(
-                        {"cfd_to_encash": _("Value can't be negative.")}
-                    )
-                if ad_to_encash < 0:
-                    raise forms.ValidationError(
-                        {"ad_to_encash": _("Value can't be negative.")}
-                    )
-                if cfd_to_encash > available_leave.carryforward_days:
-                    raise forms.ValidationError(
-                        {"cfd_to_encash": _("Not enough carryforward days to redeem")}
-                    )
-                if ad_to_encash > available_leave.available_days:
-                    raise forms.ValidationError(
-                        {"ad_to_encash": _("Not enough available days to redeem")}
-                    )
+                encashable = self.get_encashable_leaves(employee)
+                if leave_type not in encashable:
+                    self.add_error("leave_type_id", "This leave type is not encashable")
+                else:
+                    AvailableLeave = get_horilla_model_class("leave", "availableleave")
+                    available_leave = AvailableLeave.objects.filter(
+                        leave_type_id=leave_type, employee_id=employee
+                    ).first()
+
+                    if available_leave:
+                        if cfd_to_encash < 0:
+                            self.add_error(
+                                "cfd_to_encash", _("Value can't be negative.")
+                            )
+                        elif cfd_to_encash > available_leave.carryforward_days:
+                            self.add_error(
+                                "cfd_to_encash",
+                                _("Not enough carryforward days to redeem"),
+                            )
+
+                        if ad_to_encash < 0:
+                            self.add_error(
+                                "ad_to_encash", _("Value can't be negative.")
+                            )
+                        elif ad_to_encash > available_leave.available_days:
+                            self.add_error(
+                                "ad_to_encash", _("Not enough available days to redeem")
+                            )
+
+        return cleaned_data
 
     def save(self, commit: bool = True) -> Any:
         multiple_attachment_ids = []

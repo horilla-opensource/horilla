@@ -104,15 +104,15 @@ urlpatterns = [
         views.payslip_details,
         name="dashboard-payslip-details",
     ),
+    # path(
+    #     "dashboard-department-chart",
+    #     views.dashboard_department_chart,
+    #     name="dashboard-department-chart",
+    # ),
     path(
         "dashboard-department-chart",
-        views.dashboard_department_chart,
-        name="dashboard-department-chart",
-    ),
-    path(
-        "dashboard-department-chart-list",
         dashboard.DashboardDepartmentPayslip.as_view(),
-        name="dashboard-department-chart-list",
+        name="dashboard-department-chart",
     ),
     # path(
     #     "dashboard-contract-ending",
@@ -251,5 +251,4 @@ urlpatterns = [
         payslip_automation.DeleteAutoPayslipView.as_view(),
         name="pay-slip-automation-delete",
     ),
-    path("contract-tab", contracts.ContractsTabList.as_view(), name="contract-tab"),
 ]

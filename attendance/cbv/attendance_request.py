@@ -319,16 +319,16 @@ class AttendanceListTabDetailView(HorillaDetailedView):
         (_("Min Hour"), "minimum_hour"),
         (_("At Work"), "attendance_worked_hour"),
         (_("Overtime"), "attendance_overtime"),
-        (_("Activities"), "attendance_detail_activity_col"),
+        (_("Activities"), "attendance_detail_activity_col", True),
     ]
 
     actions = [
         {
-            "action": _("Edit Request"),
-            "icon": "edit.svg",
+            "action": _("Edit"),
+            "icon": "create-outline",
             "attrs": """
                     onclick="event.stopPropagation();"
-                    class="w-50 px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center justify-center gap-2 hover:bg-primary-800 transition duration-300"
+                    class="oh-btn oh-btn--info w-100"
                     data-toggle="oh-modal-toggle"
                     data-target="#genericModalEdit"
                     hx-get="{change_attendance}?all_attendance=true"
