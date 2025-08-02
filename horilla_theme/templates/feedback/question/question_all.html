@@ -12,7 +12,7 @@
         z-index: 100;
         overflow-y: auto;
     }
-    
+
     .oh-modal__dialog {
         position: relative;
         margin: 1rem auto;
@@ -22,29 +22,29 @@
         border-radius: 0.5rem;
         box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
-    
+
     .oh-modal__dialog-header {
         position: relative;
         padding: 1.5rem;
         border-bottom: 1px solid #e5e7eb;
     }
-    
+
     .oh-modal__dialog-body {
         padding: 1.5rem;
     }
-    
+
     .oh-modal__dialog-footer {
         padding: 1rem 1.5rem;
         border-top: 1px solid #e5e7eb;
     }
-    
+
     .oh-modal__close {
         background: none;
         border: none;
         cursor: pointer;
         padding: 0.5rem;
     }
-    
+
     /* Transition styles */
     [x-transition] {
         transition: all 0.3s ease;
@@ -55,13 +55,13 @@
     <div class="col-12 col-sm-12 col-md-12 col-lg-12">
         <div class="oh-card p-0" x-data="{showQuestions: true}">
             <div class="oh-card__header mb-0 p-4">
-                <a href="#" class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300" 
+                <a href="#" class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300"
                     x-show="showQuestions" @click="showQuestions = false"
                     style="width: fit-content;">
                     <ion-icon class="me-2" name="eye-off-outline"></ion-icon>
                     {% trans "Hide Questions" %}
                 </a>
-                <a href="#" class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300" 
+                <a href="#" class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex w-28 justify-center items-center gap-2 hover:bg-primary-800 transition duration-300"
                     x-show="!showQuestions" @click="showQuestions = true"
                     style="width: fit-content;">
                     <ion-icon class="me-2" name="eye-outline"></ion-icon>
@@ -86,11 +86,11 @@
                                     <td class="text-sm text-left p-3 text-[#666]">
                                         {{ form.instance.get_question_type_display }}
                                     </td>
-                                    
+
                                     <!-- Question and Options -->
                                     <td class="text-sm text-left p-3 text-[#666]">
                                         <div class="font-medium mb-2">{{ form.instance.question }}</div>
-                                        
+
                                         {% if form.instance.question_type == "4" %}  <!-- Multiple choice -->
                                             <div x-data="{showOptions: false}">
                                                 <a href="#" class="px-3 py-1 bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer w-fit"
@@ -123,7 +123,7 @@
                                             </div>
                                         {% endif %}
                                     </td>
-                                    
+
                                     <!-- Actions -->
                                     <td class="stickyright text-sm text-center p-3 text-[#666]">
                                         <div class="flex justify-center gap-1">
@@ -163,7 +163,7 @@
                                 class="oh-modal fixed inset-0 z-[100] overflow-y-auto"
                                 :class="{ 'flex items-center justify-center': open, 'hidden': !open }"
                                 x-transition>
-                                    
+
                                     <div x-show="open"
                                         x-transition:enter="ease-out duration-300"
                                         x-transition:enter-start="opacity-0"
@@ -198,7 +198,7 @@
                                         <div class="oh-modal__dialog-body px-4 pb-4 sm:p-6 sm:pt-0" style="border: 1px solid #e5e7eb;padding: 18px;border-radius: 8px;">
                                             <form action="{% url 'question-update' temp_id=question_template.id q_id=form.instance.id %}" method="post">
                                                 {% csrf_token %}
-                                                
+
                                                 <div class="mb-4">
                                                     <label class="oh-label flex">
                                                         {% trans "Question Type" %}
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
 $(document).ready(function () {
     $(".oh-select--qa-change").select2();
 });
-    
+
 </script>
 
 <script>
@@ -283,11 +283,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('[id^="questionEditModal"]').forEach(modal => {
         const questionType = modal.querySelector('select[name="question_type"]');
         const optionsSection = modal.querySelector('#questionOptionsSection');
-        
+
         if (questionType && optionsSection) {
             // Initial state
             optionsSection.style.display = questionType.value === '4' ? 'block' : 'none';
-            
+
             // Change handler
             questionType.addEventListener('change', function() {
                 optionsSection.style.display = this.value === '4' ? 'block' : 'none';

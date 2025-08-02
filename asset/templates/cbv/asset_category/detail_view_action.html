@@ -9,11 +9,11 @@
       {{ message }}
     </div>
   </div>
-  
+
 {%if message.tags == "oh-alert--success" %}
  <span class="oh-span__class" hx-trigger="load" hx-get="{%url 'asset-list' cat_id=instance.asset_category_id.id %}?{{pd}}"
-  hx-target="#assetCategory{{instance.asset_category_id.id}}"></span> 
-  {% endif %} 
+  hx-target="#assetCategory{{instance.asset_category_id.id}}"></span>
+  {% endif %}
   {% endfor %}
 </div>
 {% endif %}
