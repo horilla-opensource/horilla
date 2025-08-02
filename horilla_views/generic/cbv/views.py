@@ -1896,6 +1896,7 @@ class HorillaFormView(FormView):
         context["form_class_path"] = self.form_class_path
         context["view_id"] = self.view_id
         context["hx_confirm"] = self.hx_confirm
+        context["hx_target"] = self.request.META.get("HTTP_HX_TARGET", "this")
         pk = None
         if self.form.instance:
             pk = self.form.instance.pk
