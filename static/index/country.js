@@ -687,52 +687,56 @@ s_a[252] =
     "Bulawayo|Harare|ManicalandMashonaland Central|Mashonaland East|Mashonaland West|Masvingo|Matabeleland North|Matabeleland South|Midlands";
 
 function populateStates(countryElementId, stateElementId) {
-    var selectedCountryIndex = document.getElementById(countryElementId).selectedIndex;
-    var stateElement = document.getElementById(stateElementId);
-    var selectedState = stateElement?.dataset.selected;
+    var countryEl = document.getElementById(countryElementId);
+    var stateEl = document.getElementById(stateElementId);
 
-    stateElement.length = 0;
-    stateElement.options[0] = new Option("Select State", "");
-    stateElement.selectedIndex = 0;
+    if (!countryEl || !stateEl) return;  // Prevents null access
+    var selectedCountryIndex = countryEl.selectedIndex;
+    var selectedState = stateEl.getAttribute('data-selected') || '';
+
+    stateEl.length = 0;
+    stateEl.options[0] = new Option("Select State", "");
+    stateEl.selectedIndex = 0;
 
     if (s_a[selectedCountryIndex]) {
-        state_arr = s_a[selectedCountryIndex].split("|");
+        var state_arr = s_a[selectedCountryIndex].split("|");
         for (var i = 0; i < state_arr.length; i++) {
             let stateValue = state_arr[i].replace(/'/g, '`');
             let option = new Option(state_arr[i], stateValue);
             if (selectedState && selectedState === stateValue) {
                 option.selected = true;
             }
-            stateElement.options[stateElement.length] = option;
+            stateEl.options[stateEl.length] = option;
         }
     }
 }
 
 
 function populateCountries(countryElementId, stateElementId) {
-    var countryElement = document.getElementById(countryElementId);
-    var selectedCountry = countryElement?.dataset.selected;
-    if (countryElement) {
-        countryElement.length = 0;
-        countryElement.options[0] = new Option("Select Country", "");
+    var countryEl = document.getElementById(countryElementId);
+    var stateEl = document.getElementById(stateElementId);
 
-        for (var i = 0; i < country_arr.length; i++) {
-            let country = country_arr[i].replace(/'/g, '`');
-            let option = new Option(country_arr[i], country);
-            if (selectedCountry && selectedCountry === country) {
-                option.selected = true;
-            }
-            countryElement.options[countryElement.length] = option;
+    if (!countryEl) return;
+
+    var selectedCountry = countryEl.getAttribute('data-selected') || '';
+    countryEl.length = 0;
+    countryEl.options[0] = new Option("Select Country", "");
+
+    for (var i = 0; i < country_arr.length; i++) {
+        let country = country_arr[i].replace(/'/g, '`');
+        let option = new Option(country_arr[i], country);
+        if (selectedCountry && selectedCountry === country) {
+            option.selected = true;
         }
+        countryEl.options[countryEl.length] = option;
+    }
 
-        // trigger state population if needed
-        if (stateElementId) {
-            populateStates(countryElementId, stateElementId); // populate on load
+    if (stateEl) {
+        populateStates(countryElementId, stateElementId);
 
-            countryElement.onchange = function () {
-                populateStates(countryElementId, stateElementId);
-            };
-        }
+        countryEl.onchange = function () {
+            populateStates(countryElementId, stateElementId);
+        };
     }
 }
 
