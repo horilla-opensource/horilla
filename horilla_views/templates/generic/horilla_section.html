@@ -2,7 +2,7 @@
 {% block content %}
 {% load static %}
 
-{% for path in style_path %}
+{% for path in style_static_paths %}
 <link rel="stylesheet" href="{{path}}"/>
 {% endfor %}
 {% for path in script_static_paths %}
