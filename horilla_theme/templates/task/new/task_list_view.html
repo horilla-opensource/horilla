@@ -148,13 +148,13 @@
                                                 hx-target="#TaskFormTarget">
                                                 <i class="fa-solid fa-pen-to-square"></i>
                                             </button>
-                                            <button class="px-2 py-1 bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex justify-center items-center hover:bg-primary-600 hover:text-white transition duration-300"
+
+                                            <a class="cursor-pointer px-2 py-1 bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex justify-center items-center hover:bg-primary-600 hover:text-white transition duration-300"
+                                                hx-confirm="{% trans 'Do you really want to delete this task?' %}"
                                                 hx-post="{% url 'delete-task' task.id %}?view=list"
-                                                {% comment %} hx-confirm="{% trans 'Do you really want to delete this task?' %}" {% endcomment %}
                                                 hx-target="#taskCreateForm{{stage.id}}">
-                                                <ion-icon name="trash-outline" role="img" class="md hydrated"
-                                                    aria-label="trash outline"></ion-icon>
-                                            </button>
+                                                <i class="fa-solid fa-trash"></i>
+                                            </a>
                                         </div>
                                     </td>
                                     {% endif %}
