@@ -1568,6 +1568,7 @@ def view_reimbursement(request):
     reimbursements = requests.filter(type="reimbursement")
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
+    medical_encashments = requests.filter(type="medical_encashment")
     data_dict = {"status": ["requested"]}
     view = request.GET.get("view")
     template = "payroll/reimbursement/view_reimbursement.html"
@@ -1583,6 +1584,9 @@ def view_reimbursement(request):
             ),
             "bonus_encashments": paginator_qry(
                 bonus_encashment, request.GET.get("bpage")
+            ),
+            "medical_encashments": paginator_qry(
+                medical_encashments, request.GET.get("mpage")
             ),
             "f": filter_object,
             "pd": request.GET.urlencode(),
@@ -1629,6 +1633,7 @@ def search_reimbursement(request):
     reimbursements = requests.filter(type="reimbursement")
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
+    medical_encashments = requests.filter(type="medical_encashment")
     reimbursements_ids = json.dumps(list(reimbursements.values_list("id", flat=True)))
     leave_encashments_ids = json.dumps(
         list(leave_encashments.values_list("id", flat=True))
@@ -1636,9 +1641,13 @@ def search_reimbursement(request):
     bonus_encashment_ids = json.dumps(
         list(bonus_encashment.values_list("id", flat=True))
     )
+    medical_encashments_ids = json.dumps(
+        list(medical_encashments.values_list("id", flat=True))
+    )
     reimbursements = sortby(request, reimbursements, "sortby")
     leave_encashments = sortby(request, leave_encashments, "sortby")
     bonus_encashment = sortby(request, bonus_encashment, "sortby")
+    medical_encashments = sortby(request, medical_encashments, "sortby")
     view = request.GET.get("view")
     template = "payroll/reimbursement/request_cards.html"
     if view == "list":
@@ -1657,11 +1666,15 @@ def search_reimbursement(request):
             "bonus_encashments": paginator_qry(
                 bonus_encashment, request.GET.get("bpage")
             ),
+            "medical_encashments": paginator_qry(
+                medical_encashments, request.GET.get("mpage")
+            ),
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
             "reimbursements_ids": reimbursements_ids,
             "leave_encashments_ids": leave_encashments_ids,
             "bonus_encashment_ids": bonus_encashment_ids,
+            'medical_encashments_ids': medical_encashments_ids
         },
     )
 
@@ -1713,9 +1726,11 @@ def approve_reimbursements(request):
         for reimbursement in reimbursements:
             if reimbursement.type == "leave_encashment":
                 reimbursement.amount = amount
+            if reimbursement.type == "medical_encashment":
+                reimbursement.amount = amount
             elif reimbursement.type == "bonus_encashment":
                 reimbursement.amount = amount
-
+            
             emp = reimbursement.employee_id
             reimbursement.status = status
             reimbursement.save()
