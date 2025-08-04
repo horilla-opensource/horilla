@@ -12,7 +12,7 @@
         role="button"
         id = "addmangerButton"
         style="color: green"
-        >{% trans "Add more managers.." %}</button>
+        >{% trans "Add more managers.. 321" %}</button>
 </div>
 
 <script>
@@ -22,9 +22,6 @@
         $('#addmangerButton').trigger('click');
     });
 
-        $("select").on("select2:select", function (e) {
-            $(this).closest("select")[0].dispatchEvent(new Event("change"));
-          });
 
         var managersCount = {{ managers_count }};
 

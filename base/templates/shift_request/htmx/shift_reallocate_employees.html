@@ -8,11 +8,3 @@
 <div id ="dynamic_field_task_id">
 {{form.reallocate_to}}
 </div>
-<script>
-  $(document).ready(function () {
-
-      $("select").on("select2:select", function (e) {
-          $(this).closest("select")[0].dispatchEvent(new Event("change"));
-      });
-  });
-</script>

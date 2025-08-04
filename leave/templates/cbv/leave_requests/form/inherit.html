@@ -4,13 +4,6 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        $("select").on("select2:select", function (e) {
-           $(".leave-message").hide();
-            $(this).closest("select")[0].dispatchEvent(new Event("change"));
-        });
-    });
-
         $("#createTitle").on("htmx:beforeSwap",function(e){
             $('.available-leave-count').remove();
         });

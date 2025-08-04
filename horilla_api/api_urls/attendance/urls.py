@@ -55,4 +55,6 @@ urlpatterns = [
     path("offline-employee-mail-send", OfflineEmployeeMailsend.as_view()),
     path("converted-mail-template", ConvertedMailTemplateConvert.as_view()),
     path("mail-templates", MailTemplateView.as_view()),
+    path("my-attendance/", UserAttendanceView.as_view()),
+    path("attendance-type-check/", AttendanceTypeAccessCheck.as_view()),
 ]

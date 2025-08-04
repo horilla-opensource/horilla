@@ -8,11 +8,3 @@
 <div id ="dynamic_field_job_role_id">
 {{form.job_role_id}}
 </div>
-<script>
-  $(document).ready(function () {
-
-      $("select").on("select2:select", function (e) {
-          $(this).closest("select")[0].dispatchEvent(new Event("change"));
-      });
-  });
-</script>
