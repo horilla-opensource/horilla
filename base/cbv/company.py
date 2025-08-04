@@ -66,8 +66,7 @@ class CompanyListView(HorillaListView):
 
     model = Company
     filter_class = CompanyFilter
-
-    bulk_template = "cbv/settings/company_bulk_update.html"
+    selected_instances_key_id = "selectedInstance"
     bulk_update_fields = ["country", "state", "city", "zip"]
 
     def get_bulk_form(self):
@@ -161,7 +160,6 @@ class CompanyCreateForm(HorillaFormView):
 
     model = Company
     form_class = CompanyForm
-    template_name = "cbv/settings/company_inherit.html"
     new_display_title = _("Create Company")
 
     def get_form(self, form_class=None):

@@ -750,5 +750,3 @@ document.addEventListener("DOMContentLoaded", function () {
 document.body.addEventListener("htmx:afterSettle", function (event) {
     initCountryStateDropdowns();
 });
-
-

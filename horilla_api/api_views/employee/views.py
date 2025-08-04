@@ -93,49 +93,61 @@ class EmployeeTypeAPIView(APIView):
 class EmployeeAPIView(APIView):
     """
     Handles CRUD operations for employees.
-
-    Methods:
-        get(request, pk=None):
-            - Retrieves a single employee by pk if provided.
-            - Retrieves and filters all employees if pk is not provided.
-
-        post(request):
-            - Creates a new employee if the user has the 'employee.change_employee' permission.
-
-        put(request, pk):
-            - Updates an existing employee if the user is the employee, a manager, or has 'employee.change_employee' permission.
-
-        delete(request, pk):
-            - Deletes an employee if the user has the 'employee.delete_employee' permission.
     """
 
     filter_backends = [DjangoFilterBackend]
     filterset_class = EmployeeFilter
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk=None):
-        if pk:
-            try:
-                employee = Employee.objects.get(pk=pk)
-            except Employee.DoesNotExist:
-                return Response(
-                    {"error": "Employee does not exist"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+    def get(self, request, pk):
+        user = request.user
+        try:
+            employee = Employee.objects.only(
+                "id",
+                "employee_first_name",
+                "employee_last_name",  # include only needed fields
+            ).get(pk=pk)
+        except Employee.DoesNotExist:
+            return Response(
+                {"error": "Employee does not exist"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        # If user has global view permission
+        if user.has_perm("employee.view_employee"):
             serializer = EmployeeSerializer(employee)
             return Response(serializer.data)
-        paginator = PageNumberPagination()
-        employees_queryset = Employee.objects.all()
-        employees_filter_queryset = self.filterset_class(
-            request.GET, queryset=employees_queryset
-        ).qs
-        field_name = request.GET.get("groupby_field", None)
-        if field_name:
-            url = request.build_absolute_uri()
-            return groupby_queryset(request, url, field_name, employees_filter_queryset)
-        page = paginator.paginate_queryset(employees_filter_queryset, request)
-        serializer = EmployeeSerializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+
+        # If employee is in user's subordinates
+        subordinates = user.employee_get.get_subordinate_employees()
+        if subordinates.filter(pk=pk).exists():
+            serializer = EmployeeSerializer(employee)
+            return Response(serializer.data)
+
+        # If requesting own data
+        if employee.pk == user.employee_get.id:
+            serializer = EmployeeSerializer(employee)
+            return Response(serializer.data)
+
+        return Response(
+            {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+        )
+
+        # paginator = PageNumberPagination()
+        # if request.user.has_perm('employee.view_employee'):
+        #     employees_queryset = Employee.objects.all()
+        # elif request.user.employee_get.get_subordinate_employees():
+        #     employees_queryset = request.user.employee_get.get_subordinate_employees()
+        # else:
+        #     employees_queryset = [request.user.employee_get]
+        # employees_filter_queryset = self.filterset_class(
+        #     request.GET, queryset=employees_queryset).qs
+        # field_name = request.GET.get("groupby_field", None)
+        # if field_name:
+        #     url = request.build_absolute_uri()
+        #     return groupby_queryset(request, url, field_name, employees_filter_queryset)
+        # page = paginator.paginate_queryset(employees_filter_queryset, request)
+        # serializer = EmployeeSerializer(page, many=True)
+        # return paginator.get_paginated_response(serializer.data)
 
     @method_decorator(permission_required("employee.add_employee"))
     def post(self, request):
@@ -176,27 +188,42 @@ class EmployeeAPIView(APIView):
 class EmployeeListAPIView(APIView):
     """
     Retrieves a paginated list of employees with optional search functionality.
-
-    Methods:
-        get(request):
-            - Returns a paginated list of employees.
-            - Optionally filters employees based on a search query in the first or last name.
     """
 
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        paginator = PageNumberPagination()
-        paginator.page_size = 13
-        search = request.query_params.get("search", None)
+        user = request.user
+        search = request.query_params.get("search")
+
+        # Start with a base queryset with only required fields
+        employees_queryset = Employee.objects.only(
+            "id", "employee_first_name", "employee_last_name"
+        )
+
+        # Permission-based filtering
+        if user.has_perm("employee.view_employee"):
+            pass  # employees_queryset is already all employees
+        else:
+            subordinate_qs = user.employee_get.get_subordinate_employees()
+            if subordinate_qs.exists():
+                employees_queryset = subordinate_qs.only(
+                    "id", "employee_first_name", "employee_last_name"
+                )
+            else:
+                employees_queryset = employees_queryset.filter(id=user.employee_get.id)
+
+        # Apply search filter if provided
         if search:
-            employees_queryset = Employee.objects.filter(
+            employees_queryset = employees_queryset.filter(
                 Q(employee_first_name__icontains=search)
                 | Q(employee_last_name__icontains=search)
             )
-        else:
-            employees_queryset = Employee.objects.all()
+
+        # Paginate
+        paginator = PageNumberPagination()
         page = paginator.paginate_queryset(employees_queryset, request)
+
         serializer = EmployeeListSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
 
@@ -386,14 +413,14 @@ class EmployeeWorkInfoImportView(APIView):
 
 class EmployeeBulkUpdateView(APIView):
     """
-        Endpoint for bulk updating employee and work information.
+    Endpoint for bulk updating employee and work information.
 
-        Permissions:
-            - Requires authentication and "change_employee" permission.
-    0
-        Methods:
-            put(request):
-                - Updates multiple employees and their work information.
+    Permissions:
+        - Requires authentication and "change_employee" permission.
+
+    Methods:
+        put(request):
+            - Updates multiple employees and their work information.
     """
 
     permission_classes = [IsAuthenticated]
