@@ -960,9 +960,7 @@ class LeaveRequest(HorillaModel):
         available_leave = AvailableLeave.objects.get(
             employee_id=self.employee_id, leave_type_id=leave_type
         )
-        total_leave_days = (
-            available_leave.available_days + available_leave.carryforward_days
-        )
+
         requested_days = calculate_requested_days(
             self.start_date,
             self.end_date,
@@ -983,19 +981,19 @@ class LeaveRequest(HorillaModel):
             unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
 
         forcated_days = available_leave.forcasted_leaves(self.start_date)
-        total_leave_days = (
-            available_leave.leave_type_id.carryforward_max
-            if available_leave.leave_type_id.carryforward_type
-            in ["carryforward", "carryforward expire"]
-            and available_leave.leave_type_id.carryforward_max < total_leave_days
-            else total_leave_days
-        )
-        if (
-            available_leave.leave_type_id.carryforward_type == "no carryforward"
-            and available_leave.carryforward_days
-        ):
-            total_leave_days = total_leave_days - available_leave.carryforward_days
-        total_leave_days += forcated_days
+
+        available_days = available_leave.available_days or 0
+        carryforward_days = available_leave.carryforward_days or 0
+        carryforward_max = available_leave.leave_type_id.carryforward_max or 0
+        carryforward_type = available_leave.leave_type_id.carryforward_type
+
+        if carryforward_type in ["carryforward", "carryforward expire"]:
+            carryforward_days = min(carryforward_days, carryforward_max)
+        elif carryforward_type == "no carryforward":
+            carryforward_days = 0
+
+        total_leave_days = available_days + carryforward_days + forcated_days
+
         if not effective_requested_days <= total_leave_days:
             raise ValidationError(
                 _("Does not have sufficient leave balance for the requested dates.")
