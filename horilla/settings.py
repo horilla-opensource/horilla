@@ -45,9 +45,6 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 # Application definition
 
-THEME_APP = "horilla_theme"
-
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -60,7 +57,6 @@ INSTALLED_APPS = [
     "corsheaders",
     "simple_history",
     "django_filters",
-    THEME_APP,
     "base",
     "employee",
     "recruitment",
@@ -100,21 +96,13 @@ TEMPLATES = [
         "DIRS": [
             BASE_DIR / "templates",
         ],
-        "APP_DIRS": False,
+        "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-            ],
-            "loaders": [
-                (
-                    "django.template.loaders.filesystem.Loader",
-                    [BASE_DIR / THEME_APP / "templates"],
-                ),
-                "django.template.loaders.app_directories.Loader",
-                ("django.template.loaders.filesystem.Loader", [BASE_DIR / "templates"]),
             ],
         },
     },
@@ -218,11 +206,13 @@ LANGUAGES = (
     ("en", "English (US)"),
     ("de", "Deutsche"),
     ("es", "Español"),
-    ("fr", "France"),
+    ("fr", "Français"),
     ("ar", "عربى"),
     ("pt-br", "Português (Brasil)"),
     ("zh-hans", "Simplified Chinese"),
+    ("zh-hant", "Traditional Chinese"),
 )
+
 
 LOCALE_PATHS = [
     join(BASE_DIR, "horilla", "locale"),
@@ -241,3 +231,42 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+# Production settings
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
+# LDAP Configuration
+# import ldap
+# from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+
+AUTH_LDAP_SERVER_URI = "ldap://127.0.0.1:389"  # Replace with your LDAP server address
+
+# Bind credentials, if required
+AUTH_LDAP_BIND_DN = "cn=admin,dc=horilla,dc=com"  # Replace with your bind DN
+AUTH_LDAP_BIND_PASSWORD = "your_password"  # Replace with your LDAP bind password
+
+# Define the search base and user lookup
+# AUTH_LDAP_USER_SEARCH = LDAPSearch("ou=users,dc=horilla,dc=com", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+
+# Map LDAP fields to Django user fields
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail",
+}
+
+AUTHENTICATION_BACKENDS = [
+    #    "django_auth_ldap.backend.LDAPBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
