@@ -7,6 +7,7 @@ from django.db.models import Case, CharField, F, Value, When
 from django.http import QueryDict
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
+from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -38,6 +39,7 @@ from ...api_serializers.attendance.serializers import (
     AttendanceRequestSerializer,
     AttendanceSerializer,
     MailTemplateSerializer,
+    UserAttendanceListSerializer,
 )
 
 # Create your views here.
@@ -65,7 +67,6 @@ class ClockInAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        print("========", request.user.employee_get.check_online())
         if not request.user.employee_get.check_online():
             try:
                 if request.user.employee_get.get_company().geo_fencing.start:
@@ -158,7 +159,6 @@ class ClockOutAPIView(APIView):
         except:
             pass
         if request.user.employee_get.check_online():
-            print("----------------")
             current_date = date.today()
             current_time = datetime.now().time()
             current_datetime = datetime.now()
@@ -722,6 +722,7 @@ class OfflineEmployeesCountView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @method_decorator(permission_required("employee.view_employee"))
     def get(self, request):
         count = (
             EmployeeFilter({"not_in_yet": date.today()})
@@ -742,6 +743,7 @@ class OfflineEmployeesListView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    @method_decorator(permission_required("employee.view_employee"))
     def get(self, request):
         queryset = (
             EmployeeFilter({"not_in_yet": date.today()})
@@ -972,3 +974,46 @@ class OfflineEmployeeMailsend(APIView):
                 return Response(f"Email not set for {employee.get_full_name()}")
         except Exception as e:
             return Response("Something went wrong")
+
+
+class UserAttendanceView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserAttendanceListSerializer
+
+    def get(self, request):
+        employee_id = request.user.employee_get.id
+
+        attendance_queryset = Attendance.objects.filter(
+            employee_id=employee_id
+        ).order_by("-id")
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 20
+        page = paginator.paginate_queryset(attendance_queryset, request)
+
+        serializer = self.serializer_class(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+
+class AttendanceTypeAccessCheck(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        employee_id = user.employee_get.id
+
+        if user.has_perm("attendance.view_attendance"):
+            return Response(status=200)
+
+        is_manager = (
+            EmployeeWorkInformation.objects.filter(reporting_manager_id=employee_id)
+            .only("id")
+            .exists()
+        )
+
+        if is_manager:
+            return Response(status=200)
+
+        return Response(
+            {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+        )
