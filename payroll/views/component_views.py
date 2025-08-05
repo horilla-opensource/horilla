@@ -1569,6 +1569,22 @@ def view_reimbursement(request):
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
     medical_encashments = requests.filter(type="medical_encashment")
+    employees = Employee.objects.all()
+    if not request.user.has_perm("payroll.view_reimbursement"):
+        employees = employees.filter(id=request.user.employee_get.id)
+    medical_groups = []
+    for emp in employees:
+        emp_claims = medical_encashments.filter(employee_id=emp)
+        total = emp_claims.aggregate(total=Sum("amount"))
+        total_amount = total.get("total") or 0
+        medical_groups.append(
+            {
+                "employee": emp,
+                "claims": list(emp_claims),
+                "total": total_amount,
+                "remaining": 100000 - total_amount,
+            }
+        )
     data_dict = {"status": ["requested"]}
     view = request.GET.get("view")
     template = "payroll/reimbursement/view_reimbursement.html"
@@ -1588,6 +1604,7 @@ def view_reimbursement(request):
             "medical_encashments": paginator_qry(
                 medical_encashments, request.GET.get("mpage")
             ),
+            "medical_groups": medical_groups,
             "f": filter_object,
             "pd": request.GET.urlencode(),
             "filter_dict": data_dict,
@@ -1634,6 +1651,22 @@ def search_reimbursement(request):
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
     medical_encashments = requests.filter(type="medical_encashment")
+    employees = Employee.objects.all()
+    if not request.user.has_perm("payroll.view_reimbursement"):
+        employees = employees.filter(id=request.user.employee_get.id)
+    medical_groups = []
+    for emp in employees:
+        emp_claims = medical_encashments.filter(employee_id=emp)
+        total = emp_claims.aggregate(total=Sum("amount"))
+        total_amount = total.get("total") or 0
+        medical_groups.append(
+            {
+                "employee": emp,
+                "claims": list(emp_claims),
+                "total": total_amount,
+                "remaining": 100000 - total_amount,
+            }
+        )
     reimbursements_ids = json.dumps(list(reimbursements.values_list("id", flat=True)))
     leave_encashments_ids = json.dumps(
         list(leave_encashments.values_list("id", flat=True))
@@ -1669,6 +1702,7 @@ def search_reimbursement(request):
             "medical_encashments": paginator_qry(
                 medical_encashments, request.GET.get("mpage")
             ),
+            "medical_groups": medical_groups,
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
             "reimbursements_ids": reimbursements_ids,
