@@ -1057,6 +1057,7 @@
                                             {% trans "Remaining Balance" %}: {{ item.remaining }}
                                         </div>
                                     </div>
+
                                 </div>
                             </span>
                             <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
@@ -1065,7 +1066,9 @@
                                 </button>
                             </div>
                         </div>
+
                         <div class="oh-accordion-meta__body d-none">
+
                             {% if item.claims %}
                                 <div class="oh-sticky-table">
                                     <div class="oh-sticky-table__table">
@@ -1077,7 +1080,9 @@
                                                 <div class="oh-sticky-table__th">{% trans "Attachment" %}</div>
                                                 <div class="oh-sticky-table__th">{% trans "Claim Submission Date" %}</div>
                                                 <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
+
                                                 <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+
                                                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                                             </div>
                                         </div>
@@ -1094,6 +1099,7 @@
                                                 </div>
                                                 <div class="oh-sticky-table__td dateformat_changer">{{ claim.created_at|date:"F j, Y" }}</div>
                                                 <div class="oh-sticky-table__td">{{ claim.amount }}</div>
+
                                                 <div class="oh-sticky-table__td">{{ claim.get_status_display }}</div>
                                                 <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                                     <div class="oh-btn-group">
@@ -1127,6 +1133,7 @@
                                                                 <input type="submit" hidden id="medicalAction{{ claim.id }}Button" />
                                                             </form>
                                                         {% endif %}
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -1143,6 +1150,7 @@
                         </div>
                     </div>
                     {% endfor %}
+
                 </div>
                 <div class="oh-pagination">
                     <span class="oh-pagination__page">{% trans 'Page'  %} {{ medical_encashments.number }} {% trans 'of' %} {{ medical_encashments.paginator.num_pages }}.</span>
@@ -1163,6 +1171,7 @@
                             {% endif %}
                         </ul>
                     </nav>
+
                 </div>
             {% else %}
                 <div class="oh-empty">

@@ -1,0 +1,54 @@
+{% load i18n %}
+<div class="row mb-4">
+  <div class="col-md-4 mb-2">
+    <div class="oh-card text-center p-3">
+      <h4 class="mb-1">{% trans "Total Medical Limit" %}</h4>
+      <p class="mb-0">PKR {{ total_limit|floatformat:0 }}</p>
+    </div>
+  </div>
+  <div class="col-md-4 mb-2">
+    <div class="oh-card text-center p-3">
+      <h4 class="mb-1">{% trans "Availed Amount" %}</h4>
+      <p class="mb-0">PKR {{ availed|floatformat:0 }}</p>
+    </div>
+  </div>
+  <div class="col-md-4 mb-2">
+    <div class="oh-card text-center p-3">
+      <h4 class="mb-1">{% trans "Remaining Amount" %}</h4>
+      <p class="mb-0">PKR {{ remaining|floatformat:0 }}</p>
+    </div>
+  </div>
+</div>
+
+{% if claims %}
+  {% for claim in claims %}
+    <div class="oh-accordion">
+      <div class="oh-accordion-header d-flex justify-content-between">
+        <span>{{ claim.instance.title }}</span>
+        <span class="dateformat_changer">{{ claim.instance.allowance_on }}</span>
+        <span>PKR {{ claim.instance.amount|floatformat:0 }}</span>
+      </div>
+      <div class="oh-accordion-body">
+        {% if claim.instance.description %}
+        <p title="{{ claim.instance.description }}">
+          {{ claim.instance.description|truncatechars:100 }}
+        </p>
+        {% endif %}
+        {% if claim.instance.attachment %}
+        <p>
+          <a href="{{ claim.instance.attachment.url }}" download title="{% trans 'Download attachment' %}">
+            <ion-icon name="download-outline"></ion-icon>
+          </a>
+        </p>
+        {% endif %}
+        <p>{% trans 'Submission Date' %}: <span class="dateformat_changer">{{ claim.instance.created_at }}</span></p>
+        <p>{% trans 'Cumulative Total' %}: PKR {{ claim.cumulative|floatformat:0 }}</p>
+        <p>{% trans 'Remaining Balance' %}: PKR {{ claim.remaining|floatformat:0 }}</p>
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <div class="oh-empty">
+    <p class="oh-empty__subtitle">{% trans "No claims submitted yet." %}</p>
+  </div>
+{% endif %}
