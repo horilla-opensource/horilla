@@ -1582,6 +1582,7 @@ class Reimbursement(HorillaModel):
     reimbursement_types = [
         ("reimbursement", _("Reimbursement")),
         ("bonus_encashment", _("Bonus Point Encashment")),
+        ("medical_encashment", _("Medical Encashment")),
     ]
 
     if apps.is_installed("leave"):
@@ -1594,7 +1595,7 @@ class Reimbursement(HorillaModel):
     ]
     title = models.CharField(max_length=50)
     type = models.CharField(
-        choices=reimbursement_types, max_length=16, default="reimbursement"
+        choices=reimbursement_types, max_length=20, default="reimbursement"
     )
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name="Employee"
@@ -1666,6 +1667,8 @@ class Reimbursement(HorillaModel):
             self.employee_id = request.user.employee_get
         if self.type == "reimbursement" and self.attachment is None:
             raise ValidationError({"attachment": "This field is required"})
+        if self.type == "medical_encashment" and self.attachment is None:
+            raise ValidationError({"attachment": "This field is required"})
         if self.type == "leave_encashment" and self.leave_type_id is None:
             raise ValidationError({"leave_type_id": "This field is required"})
         if self.type == "leave_encashment":
@@ -1686,6 +1689,8 @@ class Reimbursement(HorillaModel):
             if self.status == "approved" and self.allowance_id is None:
                 if self.type == "reimbursement":
                     proceed = True
+                if self.type == "medical_encashment":
+                    proceed = True    
                 elif self.type == "bonus_encashment":
                     proceed = False
                     bonus_points = BonusPoint.objects.get(employee_id=self.employee_id)
@@ -1734,19 +1739,34 @@ class Reimbursement(HorillaModel):
                                 )
 
                 if proceed:
-                    reimbursement = Allowance()
-                    reimbursement.one_time_date = self.allowance_on
-                    reimbursement.title = self.title
-                    reimbursement.only_show_under_employee = True
-                    reimbursement.include_active_employees = False
-                    reimbursement.amount = self.amount
-                    reimbursement.save()
-                    reimbursement.include_active_employees = False
-                    reimbursement.specific_employees.add(self.employee_id)
-                    reimbursement.save()
-                    self.allowance_id = reimbursement
-                    if request:
-                        self.approved_by = request.user.employee_get
+                    if self.type == "reimbursement":
+                        reimbursement = Allowance()
+                        reimbursement.one_time_date = self.allowance_on
+                        reimbursement.title = self.title
+                        reimbursement.only_show_under_employee = True
+                        reimbursement.include_active_employees = False
+                        reimbursement.amount = self.amount
+                        reimbursement.save()
+                        reimbursement.include_active_employees = False
+                        reimbursement.specific_employees.add(self.employee_id)
+                        reimbursement.save()
+                        self.allowance_id = reimbursement
+                        if request:
+                            self.approved_by = request.user.employee_get
+                    elif self.type == "medical_encashment":
+                        medical_encashment = Allowance()
+                        medical_encashment.one_time_date = self.allowance_on
+                        medical_encashment.title = self.title
+                        medical_encashment.only_show_under_employee = True
+                        medical_encashment.include_active_employees = False
+                        medical_encashment.amount = self.amount
+                        medical_encashment.save()
+                        medical_encashment.include_active_employees = False
+                        medical_encashment.specific_employees.add(self.employee_id)
+                        medical_encashment.save()
+                        self.allowance_id = medical_encashment
+                        if request: 
+                            self.approved_by = request.user.employee_get
                 else:
                     self.status = "requested"
                 super().save(*args, **kwargs)

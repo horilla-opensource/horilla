@@ -890,6 +890,13 @@ class ReimbursementForm(ModelForm):
                 "ad_to_encash",
                 "bonus_to_encash",
             ]
+        if type == "medical_encashment" and is_edit:
+            exclude_fields += [
+                "leave_type_id",
+                "cfd_to_encash",
+                "ad_to_encash",
+                "bonus_to_encash",
+            ]
         elif type == "leave_encashment" and (is_edit or self.data):
             exclude_fields += ["attachment", "amount", "bonus_to_encash"]
         elif type == "bonus_encashment" and (is_edit or self.data):

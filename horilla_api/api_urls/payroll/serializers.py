@@ -235,6 +235,11 @@ class ReimbursementSerializer(serializers.ModelSerializer):
             exclude_fields.extend(
                 ["leave_type_id", "cfd_to_encash", "ad_to_encash", "bonus_to_encash"]
             )
+        if instance_type == "medical_encashment":
+            exclude_fields.extend(
+                ["leave_type_id", "cfd_to_encash", "ad_to_encash", "bonus_to_encash"]
+            )
+            
         elif instance_type == "leave_encashment":
             exclude_fields.extend(["attachment", "amount", "bonus_to_encash"])
         elif instance_type == "bonus_encashment":

@@ -1037,7 +1037,7 @@
 
         <!-- start of Medical Encashments-->
         <div class="oh-tabs__content" id="medical_encashment_tab">
-            {% if medical_encashment %}
+            {% if medical_encashments %}
                 <!-- start of column toggle button-->
                 <div class="oh-table_sticky--wrapper">
                     <div class="oh-sticky-dropdown--header">
@@ -1045,7 +1045,7 @@
                             <button class="oh-sticky-dropdown_btn " @click="open = !open"><ion-icon name="ellipsis-vertical-sharp"
                                 role="img" class="md hydrated" aria-label="ellipsis vertical sharp"></ion-icon></button>
                             <div class="oh-dropdown__menu oh-sticky-table_dropdown" x-show="open" @click.outside="open = false">
-                                <ul class="oh-dropdown__items" id="ReimbursementCells">
+                                <ul class="oh-dropdown__items" id="MedicalEncashmentCells">
                                 </ul>
                             </div>
                         </div>
@@ -1102,9 +1102,9 @@
                                 </div>
                             </div>
                             <div class="oh-sticky-table__tbody">
-                                {% for req in medical_encashment %}
+                                {% for req in medical_encashments %}
                                 <div class="oh-sticky-table__tr" id="requestCard{{ req.id }}"
-                                    hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{medical_encashment_ids}}"
+                                    hx-get="{% url 'reimbursement-individual-view' req.id %}?instances_ids={{medical_encashments_ids}}"
                                     hx-target="#objectDetailsModalTarget"
                                     data-target="#objectDetailsModal"  data-toggle="oh-modal-toggle"
                                 >
@@ -1265,7 +1265,7 @@
                                 class="oh-pagination__page"
                                 data-toggle="modal"
                                 data-target="#addEmployeeModal"
-                                >{% trans 'Page'  %} {{ medical_encashment.number }} {% trans 'of' %} {{ medical_encashment.paginator.num_pages }}.</span
+                                >{% trans 'Page'  %} {{ medical_encashments.number }} {% trans 'of' %} {{ medical_encashments.paginator.num_pages }}.</span
                             >
 
                             <nav class="oh-pagination__nav">
@@ -1284,18 +1284,18 @@
                                         min="1"
                                     />
                                     <span class="oh-pagination__label"
-                                        >{% trans 'of' %} {{ medical_encashment.paginator.num_pages }}</span
+                                        >{% trans 'of' %} {{ medical_encashments.paginator.num_pages }}</span
                                     >
                                 </div>
 
                                 <ul class="oh-pagination__items">
-                                    {% if medical_encashment.has_previous %}
+                                    {% if medical_encashments.has_previous %}
                                     <li
                                         class="oh-pagination__item oh-pagination__item--wide"
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage=1"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage=1"
                                             class="oh-pagination__link"
                                             >{% trans 'First' %}</a
                                         >
@@ -1305,18 +1305,18 @@
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ medical_encashment.previous_page_number }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage={{ medical_encashments.previous_page_number }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Previous' %}</a
                                         >
                                     </li>
-                                    {% endif %} {% if medical_encashment.has_next %}
+                                    {% endif %} {% if medical_encashments.has_next %}
                                     <li
                                         class="oh-pagination__item oh-pagination__item--wide"
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ medical_encashment.next_page_number }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage={{ medical_encashments.next_page_number }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Next' %}</a
                                         >
@@ -1326,7 +1326,7 @@
                                     >
                                         <a
                                             hx-target="#reimbursementContainer"
-                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&rpage={{ medical_encashment.paginator.num_pages }}"
+                                            hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage={{ medical_encashments.paginator.num_pages }}"
                                             class="oh-pagination__link"
                                             >{% trans 'Last' %}</a
                                         >
