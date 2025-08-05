@@ -110,9 +110,9 @@ urlpatterns = [
     #     name="dashboard-department-chart",
     # ),
     path(
-        "dashboard-department-chart",
+        "dashboard-department-chart-list",
         dashboard.DashboardDepartmentPayslip.as_view(),
-        name="dashboard-department-chart",
+        name="dashboard-department-chart-list",
     ),
     # path(
     #     "dashboard-contract-ending",
