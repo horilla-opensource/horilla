@@ -247,7 +247,7 @@
 								>
 							</li>
 
-							{% if "payroll"|app_installed %}
+					{% if "payroll"|app_installed %}
                                                         <li data-cell-index="10" data-cell-title="{% trans 'Bonus Points' %}" class="oh-general__tab">
                                                                 <a
                                                                 hx-get="{% url 'bonus-points-tab' employee.id %}"

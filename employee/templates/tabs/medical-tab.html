@@ -1,54 +1,81 @@
 {% load i18n %}
-<div class="row mb-4">
-  <div class="col-md-4 mb-2">
-    <div class="oh-card text-center p-3">
-      <h4 class="mb-1">{% trans "Total Medical Limit" %}</h4>
-      <p class="mb-0">PKR {{ total_limit|floatformat:0 }}</p>
+
+<!-- ✅ Bootstrap 5 CDN Links (Only for this file) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- ✅ Summary Cards -->
+<div class="row g-4 mb-5">
+  <div class="col-md-4">
+    <div class="card text-center shadow-sm border-0">
+      <div class="card-body">
+        <h6 class="text-muted mb-2">{% trans "Total Medical Limit" %}</h6>
+        <h5 class="fw-bold text-primary">PKR {{ total_limit|floatformat:0 }}</h5>
+      </div>
     </div>
   </div>
-  <div class="col-md-4 mb-2">
-    <div class="oh-card text-center p-3">
-      <h4 class="mb-1">{% trans "Availed Amount" %}</h4>
-      <p class="mb-0">PKR {{ availed|floatformat:0 }}</p>
+  <div class="col-md-4">
+    <div class="card text-center shadow-sm border-0">
+      <div class="card-body">
+        <h6 class="text-muted mb-2">{% trans "Availed Amount" %}</h6>
+        <h5 class="fw-bold text-danger">PKR {{ availed|floatformat:0 }}</h5>
+      </div>
     </div>
   </div>
-  <div class="col-md-4 mb-2">
-    <div class="oh-card text-center p-3">
-      <h4 class="mb-1">{% trans "Remaining Amount" %}</h4>
-      <p class="mb-0">PKR {{ remaining|floatformat:0 }}</p>
+  <div class="col-md-4">
+    <div class="card text-center shadow-sm border-0">
+      <div class="card-body">
+        <h6 class="text-muted mb-2">{% trans "Remaining Amount" %}</h6>
+        <h5 class="fw-bold text-success">PKR {{ remaining|floatformat:0 }}</h5>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- ✅ Claims Accordion -->
 {% if claims %}
-  {% for claim in claims %}
-    <div class="oh-accordion">
-      <div class="oh-accordion-header d-flex justify-content-between">
-        <span>{{ claim.instance.title }}</span>
-        <span class="dateformat_changer">{{ claim.instance.allowance_on }}</span>
-        <span>PKR {{ claim.instance.amount|floatformat:0 }}</span>
+  <div class="accordion" id="claimsAccordion">
+    {% for claim in claims %}
+      <div class="accordion-item mb-3 shadow-sm border rounded">
+        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+          <button class="accordion-button collapsed d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+            <div class="me-auto">
+              <strong>{{ claim.instance.title }}</strong>
+              <span class="badge bg-light text-muted ms-2">{{ claim.instance.allowance_on }}</span>
+            </div>
+            <span class="text-primary fw-semibold">PKR {{ claim.instance.amount|floatformat:0 }}</span>
+          </button>
+        </h2>
+        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#claimsAccordion">
+          <div class="accordion-body">
+            {% if claim.instance.description %}
+              <p class="mb-2" title="{{ claim.instance.description }}">
+                {{ claim.instance.description|truncatechars:100 }}
+              </p>
+            {% endif %}
+
+            {% if claim.instance.attachment %}
+              <p class="mb-2">
+                <a href="{{ claim.instance.attachment.url }}" class="btn btn-outline-primary btn-sm" download>
+                  <i class="bi bi-download"></i> {% trans "Download attachment" %}
+                </a>
+              </p>
+            {% endif %}
+
+            <ul class="list-unstyled small text-muted mb-0">
+              <li><strong>{% trans 'Submission Date' %}:</strong> <span class="dateformat_changer">{{ claim.instance.allowance_on }}</span></li>
+              <li><strong>{% trans 'Cumulative Total' %}:</strong> PKR {{ claim.cumulative|floatformat:0 }}</li>
+              <li><strong>{% trans 'Remaining Balance' %}:</strong> PKR {{ claim.remaining|floatformat:0 }}</li>
+            </ul>
+          </div>
+        </div>
       </div>
-      <div class="oh-accordion-body">
-        {% if claim.instance.description %}
-        <p title="{{ claim.instance.description }}">
-          {{ claim.instance.description|truncatechars:100 }}
-        </p>
-        {% endif %}
-        {% if claim.instance.attachment %}
-        <p>
-          <a href="{{ claim.instance.attachment.url }}" download title="{% trans 'Download attachment' %}">
-            <ion-icon name="download-outline"></ion-icon>
-          </a>
-        </p>
-        {% endif %}
-        <p>{% trans 'Submission Date' %}: <span class="dateformat_changer">{{ claim.instance.created_at }}</span></p>
-        <p>{% trans 'Cumulative Total' %}: PKR {{ claim.cumulative|floatformat:0 }}</p>
-        <p>{% trans 'Remaining Balance' %}: PKR {{ claim.remaining|floatformat:0 }}</p>
-      </div>
-    </div>
-  {% endfor %}
+    {% endfor %}
+  </div>
 {% else %}
-  <div class="oh-empty">
-    <p class="oh-empty__subtitle">{% trans "No claims submitted yet." %}</p>
+  <div class="alert alert-info text-center mt-5" role="alert">
+    <i class="bi bi-info-circle-fill me-2"></i>
+    {% trans "No claims submitted yet." %}
   </div>
 {% endif %}

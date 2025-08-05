@@ -1757,7 +1757,6 @@ def medical_tab(request, emp_id):
     }
     return render(request, "tabs/medical-tab.html", context)
 
-
 @login_required
 def get_assigned_leaves(request):
     """
