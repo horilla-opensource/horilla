@@ -1712,6 +1712,51 @@ def search_reimbursement(request):
         },
     )
 
+@login_required
+@hx_request_required
+def medical_tab(request, emp_id):
+    """Display medical reimbursement summary and claims for an employee."""
+    employee = Employee.objects.get(id=emp_id)
+    if (
+        request.user.employee_get != employee
+        and not request.user.has_perm("payroll.view_reimbursement")
+    ):
+        return HttpResponse(status=403)
+
+    claims_qs = (
+        Reimbursement.objects.filter(
+            employee_id=employee, type="medical_encashment"
+        ).order_by("created_at")
+    )
+
+    total_limit = 100000
+    availed = (
+        claims_qs.filter(status="approved").aggregate(total=Sum("amount"))["total"]
+        or 0
+    )
+    remaining = total_limit - availed
+
+    cumulative = 0
+    claims = []
+    for claim in claims_qs:
+        cumulative += claim.amount
+        claims.append(
+            {
+                "instance": claim,
+                "cumulative": cumulative,
+                "remaining": total_limit - cumulative,
+            }
+        )
+
+    context = {
+        "employee": employee,
+        "total_limit": total_limit,
+        "availed": availed,
+        "remaining": remaining,
+        "claims": claims,
+    }
+    return render(request, "tabs/medical-tab.html", context)
+
 
 @login_required
 def get_assigned_leaves(request):
