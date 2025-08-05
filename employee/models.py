@@ -115,6 +115,37 @@ class Employee(models.Model):
         related_company_field="employee_work_info__company_id"
     )
 
+    nic = models.CharField(
+        max_length=20,
+        null=True,
+        blank=True,
+        verbose_name=_("NIC"),
+        help_text=_("National Identity Card Number")
+    )
+    epf_no = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        verbose_name=_("EPF Number"),
+        help_text=_("Employee Provident Fund Number")
+    )
+    epf_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name=_("EPF Amount"),
+        help_text=_("Monthly EPF contribution amount")
+    )
+    etf_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name=_("ETF Amount"),
+        help_text=_("Monthly ETF contribution amount")
+    )
+
     def clean_fields(self, exclude=None):
         errors = {}
 

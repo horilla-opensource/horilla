@@ -2451,12 +2451,25 @@ def employee_export(_):
     """
     # Get the list of field names for your model
     field_names = [f.name for f in Employee._meta.get_fields() if not f.auto_created]
-    field_names.remove("employee_user_id")
-    field_names.remove("employee_profile")
-    field_names.remove("additional_info")
-    field_names.remove("is_from_onboarding")
-    field_names.remove("is_directly_converted")
-    field_names.remove("is_active")
+    # Remove fields that shouldn't be exported
+    fields_to_remove = [
+        "employee_user_id",
+        "employee_profile",
+        "additional_info",
+        "is_from_onboarding",
+        "is_directly_converted",
+        "is_active",
+    ]
+    # Ensure we don't try to remove fields that don't exist
+    for field in fields_to_remove:
+        if field in field_names:
+            field_names.remove(field)
+    
+    # Explicitly include the new fields in case they were removed above
+    new_fields = ["nic", "epf_no", "epf_amount", "etf_amount"]
+    for field in new_fields:
+        if field not in field_names:
+            field_names.append(field)
 
     # Get the existing employee data and convert it to a DataFrame
     employee_data = Employee.objects.values_list(*field_names)

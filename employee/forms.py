@@ -465,6 +465,10 @@ class EmployeeBankDetailsUpdateForm(ModelForm):
 
 excel_columns = [
     ("badge_id", trans("Badge ID")),
+    ("nic", trans("NIC")),
+    ("epf_no", trans("EPF No")),
+    ("epf_amount", trans("EPF Amount")),
+    ("etf_amount", trans("ETF Amount")),
     ("employee_first_name", trans("First Name")),
     ("employee_last_name", trans("Last Name")),
     ("email", trans("Email")),
@@ -515,6 +519,10 @@ fields_to_remove = [
     "email",
     "phone",
     "employee_bank_details__account_number",
+    "nic",
+    "epf_no",
+    "epf_amount",
+    "etf_amount",
 ]
 
 
@@ -542,6 +550,10 @@ class EmployeeExportExcelForm(forms.Form):
             "employee_work_info__salary_hour",
             "employee_work_info__contract_end_date",
             "employee_work_info__company_id",
+            "nic",
+            "epf_no",
+            "epf_amount",
+            "etf_amount",
         ],
     )
 
