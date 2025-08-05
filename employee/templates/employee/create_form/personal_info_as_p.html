@@ -3,7 +3,21 @@
 
   <div class="row">
     {% for field in form %}
-      {% if field.label != "Employee profile" and field.label != 'Country' and field.label != 'State' and field.label != 'Address' and field.label != 'Badge id' %}
+      {% if field.name in 'nic,epf_no,epf_amount,etf_amount' %}
+        <div class="col-lg-6">
+          <div class="oh-input__group">
+            <label
+              class="oh-label {% if field.field.required %}required-star{% endif %}"
+              for="id_{{ field.name }}"
+              title="{{ field.help_text|safe }}"
+            >
+              {% trans field.label %}
+            </label>
+            {{ field|add_class:'form-control' }}
+            {{ field.errors }}
+          </div>
+        </div>
+      {% elif field.label != "Employee profile" and field.label != 'Country' and field.label != 'State' and field.label != 'Address' and field.label != 'Badge id' %}
         <div class="col-lg-6">
           <div class="oh-input__group">
             <label

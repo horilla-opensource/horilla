@@ -13,24 +13,68 @@
             {% csrf_token %}
             <div class="oh-dropdown__filter-body">
                 <div class="oh-accordion">
-                    <div class="oh-accordion-header">{% trans "Excel columns" %}</div>
+                    <div class="oh-accordion-header">{% trans "Select Columns to Export" %}</div>
                     <div class="oh-accordion-body">
-                        <div class="row">
-                            <div class="col-sm-12 col-md-12 col-lg-6">
+                        <div class="row mb-3">
+                            <div class="col-12">
                                 <div class="oh-input-group">
-                                    <label class="oh-label">
-                                        <input type="checkbox" id="select-all-fields" /> {% trans "Select All" %}
+                                    <label class="oh-label d-flex align-items-center">
+                                        <input type="checkbox" id="select-all-fields" class="me-2" /> 
+                                        <span class="fw-bold">{% trans "Select All Columns" %}</span>
                                     </label>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
-                            {% for field in export_form.selected_fields %}
-                            <div class="col-sm-12 col-md-12 col-lg-4">
-                                <div class="oh-input-group">
-                                    <label class="oh-label"> {{ field }} </label>
-                                </div>
+                            <div class="col-12">
+                                <h6 class="mb-3">{% trans "Basic Information" %}</h6>
                             </div>
+                            {% for field in export_form.selected_fields %}
+                                {% if field.data.value in "badge_id,employee_first_name,employee_last_name,email,phone,gender,dob,country,state,city,address,zip,marital_status,children,is_active,emergency_contact,emergency_contact_name,emergency_contact_relation,nic,epf_no,epf_amount,etf_amount" %}
+                                <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label d-flex align-items-center">
+                                            <input type="checkbox" name="selected_fields" value="{{ field.data.value }}" 
+                                                {% if field.data.selected %}checked{% endif %} class="me-2" />
+                                            {{ field.data.label }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <div class="col-12 mt-4">
+                                <h6 class="mb-3">{% trans "Work Information" %}</h6>
+                            </div>
+                            {% for field in export_form.selected_fields %}
+                                {% if 'employee_work_info__' in field.data.value %}
+                                <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label d-flex align-items-center">
+                                            <input type="checkbox" name="selected_fields" value="{{ field.data.value }}" 
+                                                {% if field.data.selected %}checked{% endif %} class="me-2" />
+                                            {{ field.data.label }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <div class="col-12 mt-4">
+                                <h6 class="mb-3">{% trans "Bank Information" %}</h6>
+                            </div>
+                            {% for field in export_form.selected_fields %}
+                                {% if 'employee_bank_details__' in field.data.value %}
+                                <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+                                    <div class="oh-input-group">
+                                        <label class="oh-label d-flex align-items-center">
+                                            <input type="checkbox" name="selected_fields" value="{{ field.data.value }}" 
+                                                {% if field.data.selected %}checked{% endif %} class="me-2" />
+                                            {{ field.data.label }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endif %}
                             {% endfor %}
                         </div>
                     </div>

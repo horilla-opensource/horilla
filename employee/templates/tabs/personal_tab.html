@@ -100,6 +100,50 @@
 
 					<li class="oh-profile__card-info-item">
 						<span class="oh-profile__info-label mb-1">
+							<ion-icon name="card-outline"></ion-icon>
+							<span>{% trans "NIC" %}</span>
+						</span>
+						<span class="oh-profile__info-value">{{employee.nic|default:_("None")}}</span>
+					</li>
+
+					<li class="oh-profile__card-info-item">
+						<span class="oh-profile__info-label mb-1">
+							<ion-icon name="document-text-outline"></ion-icon>
+							<span>{% trans "EPF Number" %}</span>
+						</span>
+						<span class="oh-profile__info-value">{{employee.epf_no|default:_("None")}}</span>
+					</li>
+
+					<li class="oh-profile__card-info-item">
+						<span class="oh-profile__info-label mb-1">
+							<ion-icon name="cash-outline"></ion-icon>
+							<span>{% trans "EPF Amount" %}</span>
+						</span>
+						<span class="oh-profile__info-value">
+							{% if employee.epf_amount %}
+								{{ employee.epf_amount }} {{ request.user.employee_get.currency }}
+							{% else %}
+								{% trans "None" %}
+							{% endif %}
+						</span>
+					</li>
+
+					<li class="oh-profile__card-info-item">
+						<span class="oh-profile__info-label mb-1">
+							<ion-icon name="wallet-outline"></ion-icon>
+							<span>{% trans "ETF Amount" %}</span>
+						</span>
+						<span class="oh-profile__info-value">
+							{% if employee.etf_amount %}
+								{{ employee.etf_amount }} {{ request.user.employee_get.currency }}
+							{% else %}
+								{% trans "None" %}
+							{% endif %}
+						</span>
+					</li>
+
+					<li class="oh-profile__card-info-item">
+						<span class="oh-profile__info-label mb-1">
 							<ion-icon name="people-circle-outline"></ion-icon>
 							<span>{% trans "Emergency Contact Name" %}</span>
 						</span>
