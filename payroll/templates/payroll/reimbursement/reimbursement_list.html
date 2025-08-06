@@ -1041,7 +1041,9 @@
                 <div class="oh-accordion-meta">
                     {% for item in medical_groups %}
                     <div class="oh-accordion-meta__item">
-                        <div class="oh-accordion-meta__header" onclick="$(this).toggleClass('oh-accordion-meta__header--show');$(this).next().toggleClass('d-none');">
+
+                        <div class="oh-accordion-meta__header">
+
                             <span class="oh-accordion-meta__title pt-3 pb-3 w-100">
                                 <div class="d-flex justify-content-between align-items-center w-100">
                                     <div class="oh-profile oh-profile--md">
@@ -1060,8 +1062,9 @@
 
                                 </div>
                             </span>
-                            <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
-                                <button class="oh-btn oh-stop-prop oh-accordion-meta__btn">
+                            <div class="oh-accordion-meta__actions">
+                                <button class="oh-btn oh-accordion-meta__btn">
+
                                     <ion-icon class="ms-2 oh-accordion-meta__btn-icon" name="add-outline"></ion-icon>
                                 </button>
                             </div>
@@ -1147,10 +1150,10 @@
                             {% else %}
                                 <p>{% trans "No claims exist" %}</p>
                             {% endif %}
+
                         </div>
                     </div>
                     {% endfor %}
-
                 </div>
                 <div class="oh-pagination">
                     <span class="oh-pagination__page">{% trans 'Page'  %} {{ medical_encashments.number }} {% trans 'of' %} {{ medical_encashments.paginator.num_pages }}.</span>
@@ -1160,6 +1163,7 @@
                             <input type="number" name="mpage" class="oh-pagination__input" value="{{ medical_encashments.number }}" hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementContainer" min="1" />
                             <span class="oh-pagination__label">{% trans 'of' %} {{ medical_encashments.paginator.num_pages }}</span>
                         </div>
+
                         <ul class="oh-pagination__items">
                             {% if medical_encashments.has_previous %}
                                 <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage=1" class="oh-pagination__link">{% trans 'First' %}</a></li>
@@ -1259,6 +1263,32 @@
             $("#BonusEncashmentCells").find("[type=checkbox]").prop("checked",true)
         }
         $("[type=checkbox]").change()
+
+
+        document.querySelectorAll('.oh-accordion-meta__header').forEach(function(header){
+            header.addEventListener('click', function(){
+                header.classList.toggle('oh-accordion-meta__header--show');
+                const body = header.nextElementSibling;
+                if(body){
+                    body.classList.toggle('d-none');
+                }
+                const icon = header.querySelector('.oh-accordion-meta__btn-icon');
+                if(icon){
+                    icon.name = body.classList.contains('d-none') ? 'add-outline' : 'remove-outline';
+                }
+            });
+        });
+
+        document.querySelectorAll('.oh-accordion-meta__btn').forEach(function(btn){
+            btn.addEventListener('click', function(e){
+                e.preventDefault();
+                const header = btn.closest('.oh-accordion-meta__header');
+                if(header){
+                    header.click();
+                }
+            });
+        });
+
 
             </script>
 </div>
