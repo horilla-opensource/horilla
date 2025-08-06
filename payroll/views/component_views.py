@@ -1561,7 +1561,7 @@ def view_reimbursement(request):
     if request.GET:
         filter_object = ReimbursementFilter(request.GET)
     else:
-        filter_object = ReimbursementFilter({"status": "requested"})
+        filter_object = ReimbursementFilter()
     requests = filter_own_records(
         request, filter_object.qs, "payroll.view_reimbursement"
     )
@@ -1569,7 +1569,38 @@ def view_reimbursement(request):
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
     medical_encashments = requests.filter(type="medical_encashment")
-    data_dict = {"status": ["requested"]}
+    employees = Employee.objects.all()
+    if not request.user.has_perm("payroll.view_reimbursement"):
+        employees = employees.filter(id=request.user.employee_get.id)
+
+    # calculate fiscal year range starting from July 1
+    today = date.today()
+    if today.month >= 7:
+        start = date(today.year, 7, 1)
+        end = date(today.year + 1, 7, 1)
+    else:
+        start = date(today.year - 1, 7, 1)
+        end = date(today.year, 7, 1)
+
+    medical_groups = []
+    for emp in employees:
+        emp_claims = medical_encashments.filter(employee_id=emp)
+        approved_total = (
+            emp_claims.filter(status="approved", allowance_on__gte=start, allowance_on__lt=end)
+            .aggregate(total=Sum("amount"))
+            .get("total")
+            or 0
+        )
+        medical_groups.append(
+            {
+                "employee": emp,
+                "claims": list(emp_claims),
+                "total": approved_total,
+                "remaining": max(0, 100000 - approved_total),
+                "count": emp_claims.count(),
+            }
+        )
+    data_dict = {}
     view = request.GET.get("view")
     template = "payroll/reimbursement/view_reimbursement.html"
 
@@ -1588,6 +1619,7 @@ def view_reimbursement(request):
             "medical_encashments": paginator_qry(
                 medical_encashments, request.GET.get("mpage")
             ),
+            "medical_groups": medical_groups,
             "f": filter_object,
             "pd": request.GET.urlencode(),
             "filter_dict": data_dict,
@@ -1634,6 +1666,36 @@ def search_reimbursement(request):
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
     medical_encashments = requests.filter(type="medical_encashment")
+    employees = Employee.objects.all()
+    if not request.user.has_perm("payroll.view_reimbursement"):
+        employees = employees.filter(id=request.user.employee_get.id)
+
+    today = date.today()
+    if today.month >= 7:
+        start = date(today.year, 7, 1)
+        end = date(today.year + 1, 7, 1)
+    else:
+        start = date(today.year - 1, 7, 1)
+        end = date(today.year, 7, 1)
+
+    medical_groups = []
+    for emp in employees:
+        emp_claims = medical_encashments.filter(employee_id=emp)
+        approved_total = (
+            emp_claims.filter(status="approved", allowance_on__gte=start, allowance_on__lt=end)
+            .aggregate(total=Sum("amount"))
+            .get("total")
+            or 0
+        )
+        medical_groups.append(
+            {
+                "employee": emp,
+                "claims": list(emp_claims),
+                "total": approved_total,
+                "remaining": max(0, 100000 - approved_total),
+                "count": emp_claims.count(),
+            }
+        )
     reimbursements_ids = json.dumps(list(reimbursements.values_list("id", flat=True)))
     leave_encashments_ids = json.dumps(
         list(leave_encashments.values_list("id", flat=True))
@@ -1669,6 +1731,7 @@ def search_reimbursement(request):
             "medical_encashments": paginator_qry(
                 medical_encashments, request.GET.get("mpage")
             ),
+            "medical_groups": medical_groups,
             "filter_dict": data_dict,
             "pd": request.GET.urlencode(),
             "reimbursements_ids": reimbursements_ids,
