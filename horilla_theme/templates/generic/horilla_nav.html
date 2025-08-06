@@ -14,7 +14,11 @@
                     <input type="text"
                         class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                         name="search" aria-label="Search Input" placeholder="Search" autocomplete="false" autofocus="true"
-                        onkeyup="$(this).closest('form').find('#applyFilter').click();" {{search_input_attrs|safe}} />
+                        hx-trigger="keyup delay:500ms"
+                        hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}"
+                        {% comment %} onkeyup="$(this).closest('form').find('#applyFilter').click();" {% endcomment %}
+                        {{search_input_attrs|safe}}
+                    />
                     <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
                     {% comment %} {% if search_in %}
                     <input type="text" hidden name="search_field">
@@ -149,6 +153,8 @@
         {% endif %}
     </div>
 </div>
+<div id="filterTagContainerSectionNav"  class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>
+
 <script>
     $(document).ready(function () {
         $("#filterForm").on("htmx:configRequest", function (event) {
@@ -173,4 +179,3 @@
         });
     });
 </script>
-<div id="filterTagContainerSectionNav"  class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"></div>
