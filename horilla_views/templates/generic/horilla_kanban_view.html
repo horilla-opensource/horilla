@@ -1,0 +1,445 @@
+{% load i18n static generic_template_filters horillafilters %}
+
+<div id="{{ view_id|safe }}" class="hlv-container">
+    <div
+        class="oh-modal"
+        id="bulkUpdateModal{{view_id|safe}}"
+        role="dialog"
+        aria-labelledby="bulkUpdateModal{{view_id|safe}}"
+        aria-hidden="true"
+    >
+        <div
+            class="oh-modal__dialog"
+            id="bulkUpdateModalBody{{view_id|safe}}"
+        ></div>
+    </div>
+    <script>
+        if (!$(".HTV").length) {
+            reloadMessage(null);
+        }
+    </script>
+    <button
+        class="reload-record"
+        id="{{view_id|safe}}Reload"
+        hidden
+        hx-get="{{request.path}}?{{request.GET.urlencode}}"
+        hx-target="#{{view_id|safe}}"
+        hx-swap="outerHTML"
+        hx-on:click="htmxLoadIndicator(this);"
+    ></button>
+
+    {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %} 
+
+    <div id="helperContainer" class="hidden" data-model = "{{ app_label }}.{{ model_name }}" data-group-key = "{{view.group_key}}" > </div>
+    <div class="flex gap-4 flex-nowrap overflow-auto">
+        {% for key, group in grouped_items.items %}
+
+        <div
+            class="kanban-block relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_300px)] w-[350px] transition-[width] duration-500 ease-in-out flex-shrink-0 oh-kanban__section pipeline_item"
+            id="kanban{{key}}"
+            data-group-id="{{key}}"
+        >
+
+            <button
+                hidden
+                class="reload-badge"
+                hx-get="{% url 'get-kanban-card-count' %}?model={{app_label}}.{{model_name}}&group_key={{view.group_key}}&group_id={{key}}"
+                hx-target="#groupCount{{key}}"
+                hx-swap="innerHTML"
+            >
+            </button>
+            <div class="oh-kanban__section-head sticky top-0 z-[9]">
+                <div
+                    class="kanban-head flex items-center justify-between bg-[#e9edf090] backdrop-blur-sm py-2 cursor-move column-drag-handle oh-tabs__movable-header"
+                >
+                    <div class="flex gap-2 items-center">
+                        <span
+                            class="fold-icon-animation transition-transform duration-500 ease-in-out"
+                            role="button"
+                            onclick="event.stopPropagation();toggleFold($(this));"
+                        >
+                            <i class="fa-solid fa-angles-left text-lg"></i>
+                        </span>
+                        <div class="relative kanban-title duration-500 ease-in-out">
+                            <h5
+                                class="text-center px-3 py-1.5 rounded-2xl text-sm font-medium text-[white] flex items-center gap-2 ps-2 {% cycle 'bg-[#f39022]' 'bg-[#22c55e]' 'bg-[#3b82f6]' 'bg-[#e11d48]' 'bg-[#8b5cf6]' 'bg-[#10b981]' 'bg-[#f59e0b]' %}"
+                            >
+                                <span
+                                    class="w-6 h-6 bg-white rounded-full text-[#f39022] flex items-center justify-center text-xs fade-me-out"
+                                    data-rec-stage-badge="{{rec.id}}"
+                                    id="groupCount{{key}}"
+                                >
+                                    {{group.total_count}}
+                                </span>
+                                {{group.label}}
+                            </h5>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 oh-kanban__button-contaner">
+                        {% if view.group_actions %}
+                            <div class="inline-block dropdown-wrapper ml-3" role="button">
+                                <a class="cursor-pointer dropdown-toggle">
+                                    <i
+                                        class="fa-solid fa-ellipsis-vertical text-black"
+                                    ></i>
+                                </a>
+                                <!-- Dropdown Content -->
+                                <div
+                                    class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50"
+                                >
+                                    <ul class="text-xs">
+                                        {% for action in view.group_actions %}
+                                            {% if action.accessibility|accessibility:group %}
+                                                <li>
+                                                    <p
+                                                        class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
+                                                    >
+                                                        <a {{action.attrs|format:group.label|safe}}>{{group|getattribute:action.action|default:action.action}}</a>
+                                                    </p>
+                                                </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div
+                class="oh-kanban__section-body ui-sortable candidate-container hx-sortable min-h-[calc(100%_-_100px)]"
+                id="kanbanCandidates{{key}}"
+                data-group-id="{{key}}"
+            >
+                {% include "generic/pipeline/kanban_items.html" %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+	$(document).on("htmx:afterSettle", function (event) {
+		$(document).off("click.dropdown");
+		$(".dropdown-toggle").off("click.dropdown");
+
+		$(".dropdown-toggle").on("click.dropdown", function (event) {
+			event.stopPropagation();
+
+			const dropdownMenu = $(this).next(".dropdown-menu");
+			const isVisible = !dropdownMenu.hasClass("hidden");
+
+			$(".dropdown-menu").addClass("hidden");
+
+			if (!isVisible) {
+				dropdownMenu.removeClass("hidden");
+			}
+		});
+
+		$(document).on("click.dropdown", function () {
+			$(".dropdown-menu").addClass("hidden");
+		});
+	});
+
+    var tabId = $("#{{view_id}}").closest(".oh-tabs__content:visible").attr("id");
+    var badge = $(`#badge-${tabId}`);
+    var count = "{{grouped_items.items|length}}";
+    var label = badge.attr("data-badge-label") || "";
+    var title = count + " " + label;
+    badge.html(count);
+    badge.attr("title", title);
+</script>
+
+<script>
+	function initializeSortable() {
+		$(".pipeline_item")
+			.parent()
+			.sortable({
+				handle: ".oh-kanban__section-head",
+				connectWith: ".pipeline_item",
+				placeholder: "group-placeholder",
+				stop: function (event, ui) {},
+			})
+			.disableSelection();
+	}
+
+	$(document).ready(function () {
+		initializeSortable();
+
+		function isNextStage(currentStageId, targetStageId, parsedStageOrder) {
+			var currentStageIndex = parsedStageOrder.findIndex(
+				(stage) => stage.id == currentStageId
+			);
+			var targetStageIndex = parsedStageOrder.findIndex(
+				(stage) => stage.id == targetStageId
+			);
+			return (
+				targetStageIndex === currentStageIndex + 1 ||
+				currentStageIndex === targetStageIndex
+			);
+		}
+
+		htmx.onLoad(function (content) {
+			var sortables = content.querySelectorAll(".hx-sortable");
+
+			for (var i = 0; i < sortables.length; i++) {
+				var sortable = sortables[i];
+
+				$(sortable).sortable({
+					connectWith: ".hx-sortable",
+					items: "> :not(.htmx-indicator)",
+					ghostClass: "blue-background-class",
+					placeholder: "sortable-placeholder",
+					forcePlaceholderSize: true,
+					helper: "clone",
+					appendTo: "body",
+					zIndex: 9999,
+					helper: function (event, ui) {
+						var helper = ui.clone();
+						helper.css({
+							width: "360px",
+							"max-width": "360px",
+							"min-width": "360px",
+							"box-sizing": "border-box",
+						});
+						return helper;
+					},
+
+					start: function (event, ui) {
+						var row = $(ui.item);
+						window.candidateCurrentStage = parseInt(
+							row
+								.closest(".pipeline_item")
+								.attr("data-group-id")
+						);
+						ui.item.data("origin-parent", ui.item.parent());
+						ui.item.data("origin-index", ui.item.index());
+					},
+
+					stop: function (event, ui) {
+						var row = $(ui.item);
+						var candidateId = row.data("instanceId");
+						var newStageId = parseInt(
+							row
+								.closest(".pipeline_item")
+								.attr("data-group-id")
+						);
+						var targetStageId = parseInt(
+							row
+								.closest(".pipeline_item")
+								.attr("data-group-id")
+						);
+						var originalStageId = window.candidateCurrentStage;
+
+						var stageOrderJson = row.data("groupOrder");
+
+						if (stageOrderJson) {
+							var parsedStageOrder = stageOrderJson;
+							var preStage = parsedStageOrder.find(
+								(stage) => stage.id == originalStageId
+							);
+							var currentStage = parsedStageOrder.find(
+								(stage) => stage.id == targetStageId
+							);
+
+							if (
+								!isNextStage(
+									originalStageId,
+									targetStageId,
+									parsedStageOrder
+								)
+							) {
+								if (
+									sessionStorage.getItem(
+										"showRecuitmentKanbanConfirmation"
+									) !== "false"
+								) {
+									Swal.fire({
+										title: "Confirm Stage Change",
+										html: `
+                                            <p class="mb-2">The candidate is being moved from ${preStage.stage} to the ${currentStage.stage} stage. Do you want to proceed?</p>
+                                            <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
+                                        `,
+										icon: "warning",
+										showCancelButton: true,
+										cancelButtonColor: "#d33",
+										confirmButtonColor: "#008000",
+										confirmButtonText: "Confirm",
+										preConfirm: () => {
+											const doNotShowAgain =
+												Swal.getPopup().querySelector(
+													"#doNotShowAgain"
+												).checked;
+											if (doNotShowAgain) {
+												sessionStorage.setItem(
+													"showRecuitmentKanbanConfirmation",
+													"false"
+												);
+											}
+										},
+									}).then((result) => {
+										if (result.isConfirmed) {
+											handleValidDrop(
+												targetStageId,
+												candidateId,
+												row,
+												sortable
+											);
+											handleSortableUpdate(
+												event,
+												ui,
+												$(this)
+											);
+										} else {
+											const originParent =
+												ui.item.data("origin-parent");
+											const originIndex =
+												ui.item.data("origin-index");
+
+											if (
+												originParent &&
+												originIndex !== undefined
+											) {
+												const currentItem =
+													ui.item.detach();
+												const children =
+													originParent.children();
+
+												if (
+													originIndex >=
+													children.length
+												) {
+													originParent.append(
+														currentItem
+													);
+												} else {
+													currentItem.insertBefore(
+														children.eq(originIndex)
+													);
+												}
+
+												originParent.sortable(
+													"refresh"
+												);
+											}
+										}
+									});
+
+									return;
+								}
+							}
+						}
+
+						handleValidDrop(
+							targetStageId,
+							candidateId,
+							row,
+							sortable
+						);
+						handleSortableUpdate(event, ui, $(this));
+					},
+				});
+			}
+		});
+
+        function handleValidDrop(groupId, objectId, row) {
+            if (groupId != window.candidateCurrentStage) {
+                const container = row.closest(".pipeline_item");
+
+                const model = $("#helperContainer").data("model");         // e.g., "recruitment.Candidate"
+                const groupKey = $("#helperContainer").data("groupKey");   // e.g., "stage_id"
+
+                const array = container.find("input[type=text][name=order]:hidden");
+                const order = array.map(function () {
+                    return $(this).val();
+                }).get();
+
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'update-kanban-item-group' %}",
+                    traditional: true,
+                    data: {
+                        model: model,
+                        groupKey: groupKey,
+                        groupId: groupId,
+                        objectId: objectId,
+                        order: order,
+                    },
+                    success: function (response) {
+                        row.find(`[name="group_id"]`).val(groupId);
+
+                        Toast.fire({
+                            icon: "success",
+                            title: "Stage updated",
+                            position: "top-end",
+                        });
+
+                        if (response.message) {
+                            Swal.fire({
+                                title: response.message,
+                                text: `Total vacancy is ${response.vacancy}.`,
+                                icon: "info",
+                                confirmButtonText: "Ok",
+                            });
+                        }
+                    },
+                    error: function () {
+                        Toast.fire({
+                            icon: "error",
+                            title: "Failed to update sequence: " + xhr.responseJSON?.error || "Unknown error",
+                            position: "top-end",
+                        });
+                    },
+                });
+            }
+        }
+
+        function handleSortableUpdate(event, ui, container) {
+            const array = container.find("input[type=text][name=order]:hidden");
+            const groupId = $(ui.item).data("group");
+            const modelName = $("#helperContainer").data("model");
+            const groupKey = $("#helperContainer").data("groupKey");
+
+            const values = [];
+            for (let i = 0; i < array.length; i++) {
+                values.push($(array[i]).val());
+            }
+
+            $.ajax({
+                type: "get",
+                url: "{% url 'update-kanban-sequence' %}",
+                traditional: true,
+                data: {
+                    order: values,
+                    model: modelName,
+                    groupId: groupId,
+                    groupKey: groupKey,
+                },
+                success: function () {
+                    $(".reload-badge").click();
+
+                    Toast.fire({
+                        icon: "success",
+                        title: '{% trans "Sequence updated" %}',
+                        position: "top-end",
+                    });
+                },
+                error: function (xhr) {
+                    Toast.fire({
+                        icon: "error",
+                        title: "Failed to update sequence: " + xhr.responseJSON?.error || "Unknown error",
+                        position: "top-end",
+                    });
+                }
+            });
+        }
+	});
+
+	var toggleFold = (el) => {
+		el.closest(".kanban-block").toggleClass("folded");
+	};
+
+</script>
+<script src="{% static 'pipeline/pipelineDrag.js' %}"></script>
+

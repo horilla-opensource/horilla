@@ -1653,7 +1653,7 @@ class HorillaCardView(ListView):
 
     def get_queryset(self):
         if not self.queryset:
-            queryset = super().get_queryset()
+            self.queryset = super().get_queryset()
             if self.filter_class:
                 query_dict = self.request.GET
                 if "filter_applied" in query_dict.keys():
@@ -1670,7 +1670,7 @@ class HorillaCardView(ListView):
                 self._saved_filters = query_dict
                 self.request.exclude_filter_form = True
                 self.queryset = self.filter_class(
-                    query_dict, queryset, request=self.request
+                    query_dict, queryset=self.queryset, request=self.request
                 ).qs
                 default_filter = models.SavedFilter.objects.filter(
                     path=self.request.path,

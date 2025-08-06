@@ -592,3 +592,147 @@ class HorillaDeleteConfirmationView(View):
         context = {}
         context["confirmation_target"] = self.confirmation_target
         return context
+
+
+def update_kanban_sequence(request):
+    """
+    generic method to update the 'sequence' in kanban view.
+
+    GET params:
+    - model: 'app_label.ModelName'
+    - order: list of IDs (in the desired order)
+    - groupKey: optional grouping field (e.g., stage_id)
+    - groupId: optional value of the grouping field
+    """
+
+    model_path = request.GET.get("model", "")
+    order_list = request.GET.getlist("order", [])
+    group_key = request.GET.get("groupKey")
+    group_id = request.GET.get("groupId")
+
+    if not model_path:
+        return JsonResponse({"error": "Missing 'model' or 'order'."}, status=400)
+    if not order_list:
+        return JsonResponse({})
+    try:
+        app_label, model_name = model_path.split(".")
+        model = apps.get_model(app_label, model_name)
+    except Exception:
+        return JsonResponse({"error": "Invalid model path."}, status=400)
+
+    if "sequence" not in [f.name for f in model._meta.fields]:
+        return JsonResponse(
+            {"error": "Model does not have a 'sequence' field."}, status=400
+        )
+
+    filters = {}
+    if group_key and group_id:
+        if not hasattr(model, group_key):
+            return JsonResponse(
+                {"error": f"Model does not have field '{group_key}'."}, status=400
+            )
+
+        field = model._meta.get_field(group_key)
+        if field.is_relation:
+            try:
+                group_instance = field.related_model.objects.get(pk=group_id)
+            except field.related_model.DoesNotExist:
+                return JsonResponse(
+                    {
+                        "error": f"{field.related_model.__name__} with ID {group_id} not found."
+                    },
+                    status=404,
+                )
+            filters[group_key] = group_instance
+        else:
+            filters[group_key] = group_id
+
+    objs = list(model.objects.filter(id__in=order_list, **filters))
+    obj_by_id = {str(obj.id): obj for obj in objs}
+
+    updated_objs = []
+    for index, obj_id in enumerate(order_list):
+        obj = obj_by_id.get(str(obj_id))
+        if obj:
+            obj.sequence = index
+            updated_objs.append(obj)
+
+    if updated_objs:
+        model.objects.bulk_update(updated_objs, ["sequence"])
+
+    return JsonResponse({"status": "success", "updated": len(updated_objs)})
+
+
+def update_kanban_item_group(request):
+    """
+    Generic method to update sequence and group kanban objects.
+
+    GET parameters:
+    - model: 'app_label.ModelName'
+    - groupKey: foreign key field on the model (e.g., 'stage_id')
+    - groupId: ID of the new group to assign
+    - objectId: ID of the object being moved
+    - order: ordered list of IDs to update sequence
+    """
+
+    model_path = request.GET.get("model")
+    group_key = request.GET.get("groupKey")
+    group_id = request.GET.get("groupId")
+    object_id = request.GET.get("objectId")
+    order_list = request.GET.getlist("order")
+
+    if not all([model_path, group_key, group_id, object_id, order_list]):
+        return JsonResponse({"error": "Missing required parameters"}, status=400)
+
+    try:
+        model = apps.get_model(*model_path.split("."))
+        group_field = model._meta.get_field(group_key)
+        group_model = group_field.related_model
+        group_instance = group_model.objects.get(id=group_id)
+
+        # Get all objects that match order_list
+        objects = list(model.objects.filter(id__in=order_list))
+        obj_map = {str(obj.id): obj for obj in objects}
+        updated = []
+
+        for index, obj_id in enumerate(order_list):
+            obj = obj_map.get(str(obj_id))
+            if not obj:
+                continue
+            setattr(obj, "sequence", index)
+            setattr(obj, group_key, group_instance)
+
+            # Special logic for "hired" if needed
+            if (
+                group_key == "stage_id"
+                and hasattr(obj, "hired")
+                and hasattr(group_instance, "stage_type")
+            ):
+                obj.hired = group_instance.stage_type == "hired"
+
+            updated.append(obj)
+
+        fields = ["sequence", group_key]
+        if any(hasattr(o, "hired") for o in updated):
+            fields.append("hired")
+
+        model.objects.bulk_update(updated, fields)
+
+        return JsonResponse({"status": "success", "updated": len(updated)})
+    except Exception as e:
+        return JsonResponse({"error": f"{e}"}, status=500)
+
+
+def get_kanban_card_count(request):
+    """
+    Generic method to get the count of kanban cards in each group.
+    """
+    model_path = request.GET.get("model")
+    group_id = request.GET.get("group_id")
+    group_key = request.GET.get("group_key")
+
+    model = apps.get_model(*model_path.split("."))
+    print(model.objects.filter(**{group_key: group_id}))
+    count = model.objects.filter(**{group_key: group_id}).count()
+
+    return HttpResponse(f"{count}")
