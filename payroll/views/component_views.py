@@ -1561,7 +1561,7 @@ def view_reimbursement(request):
     if request.GET:
         filter_object = ReimbursementFilter(request.GET)
     else:
-        filter_object = ReimbursementFilter()
+        filter_object = ReimbursementFilter({"status": "requested"})
     requests = filter_own_records(
         request, filter_object.qs, "payroll.view_reimbursement"
     )
@@ -1599,12 +1599,12 @@ def view_reimbursement(request):
                 "claims": list(emp_claims),
 
                 "total": approved_total,
-                "remaining": max(0, 100000 - approved_total),
+                "remaining": 100000 - approved_total,
                 "count": emp_claims.count(),
+
             }
         )
-    data_dict = {}
-
+    data_dict = {"status": ["requested"]}
     view = request.GET.get("view")
     template = "payroll/reimbursement/view_reimbursement.html"
 
@@ -1699,7 +1699,7 @@ def search_reimbursement(request):
                 "claims": list(emp_claims),
 
                 "total": approved_total,
-                "remaining": max(0, 100000 - approved_total),
+                "remaining": 100000 - approved_total,
                 "count": emp_claims.count(),
 
             }
