@@ -317,7 +317,7 @@
   width: 100%;
 }
 
-.stage-placeholder {
+.group-placeholder {
   background-color: #e5e7eb;
   border: 2px dashed #fc8578;
   margin: 0.5rem 0;
@@ -1715,6 +1715,41 @@
     .oh-kanban-card__subtitle {
         font-size: 0.7rem;
     }
+}
+
+/* Kanban folded styles */
+
+.folded {
+    width: 70px !important;
+    transition: all 0.5s ease-in-out;
+}
+.folded .kanban-head {
+    border: none;
+}
+
+.folded .oh-kanban__section-body {
+    display: none;
+    opacity: 0;
+    transform: scaleY(0);
+    transition: all 0.5s ease-in-out;
+}
+
+.folded .kanban-title {
+    transform: rotate(90deg) translateX(0);
+    transform-origin: top left;
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    width: max-content;
+    transition: transform 0.5s ease-in-out;
+}
+
+.folded .folderBtn {
+    transform: rotate(180deg);
+    transition: transform 0.5s ease-in-out;
+}
+.folded .oh-kanban__button-contaner > :not(.folderBtn) {
+    display: none;
 }
 
 .oh-dot {
