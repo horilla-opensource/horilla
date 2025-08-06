@@ -467,9 +467,6 @@ class Stage(HorillaModel):
     sequence = models.IntegerField(null=True, default=0)
     objects = HorillaCompanyManager(related_company_field="recruitment_id__company_id")
 
-    def __str__(self):
-        return f"{self.stage}"
-
     class Meta:
         """
         Meta class to add the additional info
@@ -570,6 +567,30 @@ class Stage(HorillaModel):
         ]
 
         return dict(stage_types).get(self.stage_type)
+
+    def get_stage_update_url(self):
+        """
+        This method to get update url
+        """
+        return reverse("stage-update-pipeline", kwargs={"pk": self.id})
+
+    def get_add_candidate_url(self):
+        """
+        This method to get add candidate url
+        """
+        return f'{reverse_lazy("add-candidate-to-stage")}?stage_id={self.id}'
+
+    def get_send_email_url(self):
+        """
+        This method to get send email url
+        """
+        return f'{reverse_lazy("send-mail")}?stage_id={self.id}'
+
+    def get_delete_url(self):
+        """
+        This method to get delete url
+        """
+        return f"{reverse_lazy('generic-delete')}?model=recruitment.Stage&pk={self.pk}"
 
 
 def candidate_upload_path(instance, filename):
@@ -1125,6 +1146,23 @@ class Candidate(HorillaModel):
             path="cbv/pipeline/interview_template.html",
             context={"instance": self, "interviews": interviews},
         )
+
+    def ordered_group_json(self):
+        """
+        This method is used to get the ordered stages in json format for the candidate
+        """
+
+        ordered_stages = self.recruitment_id.ordered_stages()
+        ordered_group_json = json.dumps(
+            [
+                {
+                    "id": s.id,
+                    "stage": s.stage,
+                }
+                for s in ordered_stages
+            ]
+        )
+        return ordered_group_json
 
     def save(self, *args, **kwargs):
         if self.stage_id is not None:

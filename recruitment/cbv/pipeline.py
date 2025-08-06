@@ -12,6 +12,7 @@ from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
 from horilla_views.cbv_methods import login_required
+from horilla_views.generic.cbv.pipeline import KanbanView
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
@@ -227,6 +228,7 @@ class GetStages(TemplateView):
         context = super().get_context_data(**kwargs)
         context["stages"] = self.stages
         context["view_id"] = get_short_uuid(6, "hsv")
+        context["rec_id"] = kwargs["rec_id"]
         return context
 
 
@@ -416,8 +418,185 @@ class CandidateList(HorillaListView):
         return self.queryset
 
 
-class CandidateCard(CandidateList):
-    template_name = "pipeline/kanban_components/candidate_kanban_components.html"
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
+)
+class CandidateCard(KanbanView):
+    model = models.Candidate
+    filter_class = filters.CandidateFilter
+    group_key = "stage_id"
+    records_per_page = 10
+    filter_keys_to_remove = ["rec_id"]
+
+    kanban_attrs = """
+            onclick="window.location.href = `{get_individual_url}`"
+            data-group-order='{ordered_group_json}'
+        """
+
+    details = {
+        "image_src": "{get_avatar}",
+        "title": "{get_full_name}",
+        "email": "{email}",
+        "position": "{job_position_id}",
+    }
+
+    group_actions = [
+        {
+            "action": _("Add Candidate"),
+            "accessibility": "recruitment.accessibility.add_candidate_accessibility",
+            "attrs": """
+                hx-target="#genericModalBody"
+                hx-get="{get_add_candidate_url}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+            """,
+        },
+        {
+            "action": _("Edit"),
+            "accessibility": "recruitment.accessibility.edit_stage_accessibility",
+            "attrs": """
+                hx-target="#genericModalBody"
+                hx-get="{get_stage_update_url}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+            """,
+        },
+        {
+            "action": _("Bulk Mail"),
+            "accessibility": "recruitment.accessibility.edit_stage_accessibility",
+            "attrs": """
+                hx-target="#objectCreateModalTarget"
+                hx-get="{get_send_email_url}"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+            """,
+        },
+        {
+            "action": _("Delete"),
+            "accessibility": "recruitment.accessibility.delete_stage_accessibility",
+            "attrs": """
+                hx-target="#deleteConfirmationBody"
+                hx-get="{get_delete_url}"
+                data-toggle="oh-modal-toggle"
+                data-target="#deleteConfirmation"
+            """,
+        },
+    ]
+
+    actions = [
+        {
+            "action": _("Schedule Interview"),
+            "attrs": """
+                hx-get = "{get_schedule_interview}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+            """,
+        },
+        {
+            "action": _("Send Mail"),
+            "attrs": """
+                hx-get = "{get_send_mail}"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModal"
+                hx-target="#objectDetailsModalTarget"
+            """,
+        },
+        {
+            "action": "Add to Skill Zone",
+            "accessibility": "recruitment.cbv.accessibility.add_skill_zone",
+            "attrs": """
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{get_add_to_skill}"
+                hx-target="#genericModalBody"
+                class="oh-dropdown__link"
+
+            """,
+        },
+        {
+            "action": "View candidate self tracking",
+            "accessibility": "recruitment.cbv.accessibility.check_candidate_self_tracking",
+            "attrs": """
+                href="{get_self_tracking_url}"
+                class="oh-dropdown__link"
+            """,
+        },
+        {
+            "action": "Request Document",
+            "accessibility": "recruitment.cbv.accessibility.request_document",
+            "attrs": """
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{get_document_request_doc}"
+                hx-target="#genericModalBody"
+                class="oh-dropdown__link"
+            """,
+        },
+        {
+            "action": "Add to Rejected",
+            "accessibility": "recruitment.cbv.accessibility.add_reject",
+            "attrs": """
+                hx-target="#genericModalBody"
+                hx-swap="innerHTML"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{get_add_to_reject}"
+                class="oh-dropdown__link"
+            """,
+        },
+        {
+            "action": "Edit Rejected Candidate",
+            "accessibility": "recruitment.cbv.accessibility.edit_reject",
+            "attrs": """
+                hx-target="#genericModalBody"
+                hx-swap="innerHTML"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{get_add_to_reject}"
+                class="oh-dropdown__link"
+            """,
+        },
+        {
+            "action": _("View Note"),
+            "attrs": """
+                hx-get="{get_view_note_url}"
+                data-target="#activitySidebar"
+                hx-target="#activitySidebar"
+                onclick="$('#activitySidebar').addClass('oh-activity-sidebar--show')"
+            """,
+        },
+        {
+            "action": _("Resume"),
+            "attrs": """
+                href="{get_resume_url}" target="_blank"
+            """,
+        },
+        {
+            "action": "archive_status",
+            "attrs": """
+                class="oh-dropdown__link"
+                onclick="archiveCandidate({get_archive_url});"
+            """,
+        },
+        {
+            "action": "Delete",
+            "attrs": """
+                class="oh-dropdown__link oh-dropdown__link--danger"
+                onclick="event.stopPropagation();
+                deleteCandidate('{get_delete_url}'); "
+            """,
+        },
+    ]
+
+    def get_related_groups(self, *args, **kwargs):
+        related_groups = super().get_related_groups(*args, **kwargs)
+        rec_id = self.request.GET.get("rec_id")
+        if rec_id:
+            related_groups = related_groups.filter(recruitment_id=rec_id)
+
+        return related_groups
 
 
 @method_decorator(login_required, name="dispatch")
