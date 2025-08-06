@@ -1041,7 +1041,9 @@
                 <div class="oh-accordion-meta">
                     {% for item in medical_groups %}
                     <div class="oh-accordion-meta__item">
+
                         <div class="oh-accordion-meta__header">
+
                             <span class="oh-accordion-meta__title pt-3 pb-3 w-100">
                                 <div class="d-flex justify-content-between align-items-center w-100">
                                     <div class="oh-profile oh-profile--md">
@@ -1057,15 +1059,19 @@
                                             {% trans "Remaining Balance" %}: {{ item.remaining }}
                                         </div>
                                     </div>
+
                                 </div>
                             </span>
                             <div class="oh-accordion-meta__actions">
                                 <button class="oh-btn oh-accordion-meta__btn">
+
                                     <ion-icon class="ms-2 oh-accordion-meta__btn-icon" name="add-outline"></ion-icon>
                                 </button>
                             </div>
                         </div>
+
                         <div class="oh-accordion-meta__body d-none">
+
                             {% if item.claims %}
                                 <div class="oh-sticky-table">
                                     <div class="oh-sticky-table__table">
@@ -1077,7 +1083,9 @@
                                                 <div class="oh-sticky-table__th">{% trans "Attachment" %}</div>
                                                 <div class="oh-sticky-table__th">{% trans "Claim Submission Date" %}</div>
                                                 <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
+
                                                 <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+
                                                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                                             </div>
                                         </div>
@@ -1094,6 +1102,7 @@
                                                 </div>
                                                 <div class="oh-sticky-table__td dateformat_changer">{{ claim.created_at|date:"F j, Y" }}</div>
                                                 <div class="oh-sticky-table__td">{{ claim.amount }}</div>
+
                                                 <div class="oh-sticky-table__td">{{ claim.get_status_display }}</div>
                                                 <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                                     <div class="oh-btn-group">
@@ -1127,6 +1136,7 @@
                                                                 <input type="submit" hidden id="medicalAction{{ claim.id }}Button" />
                                                             </form>
                                                         {% endif %}
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -1140,6 +1150,7 @@
                             {% else %}
                                 <p>{% trans "No claims exist" %}</p>
                             {% endif %}
+
                         </div>
                     </div>
                     {% endfor %}
@@ -1152,6 +1163,7 @@
                             <input type="number" name="mpage" class="oh-pagination__input" value="{{ medical_encashments.number }}" hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementContainer" min="1" />
                             <span class="oh-pagination__label">{% trans 'of' %} {{ medical_encashments.paginator.num_pages }}</span>
                         </div>
+
                         <ul class="oh-pagination__items">
                             {% if medical_encashments.has_previous %}
                                 <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage=1" class="oh-pagination__link">{% trans 'First' %}</a></li>
@@ -1163,6 +1175,7 @@
                             {% endif %}
                         </ul>
                     </nav>
+
                 </div>
             {% else %}
                 <div class="oh-empty">
@@ -1251,6 +1264,7 @@
         }
         $("[type=checkbox]").change()
 
+
         document.querySelectorAll('.oh-accordion-meta__header').forEach(function(header){
             header.addEventListener('click', function(){
                 header.classList.toggle('oh-accordion-meta__header--show');
@@ -1274,6 +1288,7 @@
                 }
             });
         });
+
 
             </script>
 </div>

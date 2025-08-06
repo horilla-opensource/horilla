@@ -1573,6 +1573,7 @@ def view_reimbursement(request):
     if not request.user.has_perm("payroll.view_reimbursement"):
         employees = employees.filter(id=request.user.employee_get.id)
 
+
     # calculate fiscal year range starting from July 1
     today = date.today()
     if today.month >= 7:
@@ -1591,16 +1592,19 @@ def view_reimbursement(request):
             .get("total")
             or 0
         )
+
         medical_groups.append(
             {
                 "employee": emp,
                 "claims": list(emp_claims),
+
                 "total": approved_total,
                 "remaining": max(0, 100000 - approved_total),
                 "count": emp_claims.count(),
             }
         )
     data_dict = {}
+
     view = request.GET.get("view")
     template = "payroll/reimbursement/view_reimbursement.html"
 
@@ -1670,6 +1674,7 @@ def search_reimbursement(request):
     if not request.user.has_perm("payroll.view_reimbursement"):
         employees = employees.filter(id=request.user.employee_get.id)
 
+
     today = date.today()
     if today.month >= 7:
         start = date(today.year, 7, 1)
@@ -1687,13 +1692,16 @@ def search_reimbursement(request):
             .get("total")
             or 0
         )
+
         medical_groups.append(
             {
                 "employee": emp,
                 "claims": list(emp_claims),
+
                 "total": approved_total,
                 "remaining": max(0, 100000 - approved_total),
                 "count": emp_claims.count(),
+
             }
         )
     reimbursements_ids = json.dumps(list(reimbursements.values_list("id", flat=True)))
@@ -1741,6 +1749,50 @@ def search_reimbursement(request):
         },
     )
 
+@login_required
+@hx_request_required
+def medical_tab(request, emp_id):
+    """Display medical reimbursement summary and claims for an employee."""
+    employee = Employee.objects.get(id=emp_id)
+    if (
+        request.user.employee_get != employee
+        and not request.user.has_perm("payroll.view_reimbursement")
+    ):
+        return HttpResponse(status=403)
+
+    claims_qs = (
+        Reimbursement.objects.filter(
+            employee_id=employee, type="medical_encashment"
+        ).order_by("created_at")
+    )
+
+    total_limit = 100000
+    availed = (
+        claims_qs.filter(status="approved").aggregate(total=Sum("amount"))["total"]
+        or 0
+    )
+    remaining = total_limit - availed
+
+    cumulative = 0
+    claims = []
+    for claim in claims_qs:
+        cumulative += claim.amount
+        claims.append(
+            {
+                "instance": claim,
+                "cumulative": cumulative,
+                "remaining": total_limit - cumulative,
+            }
+        )
+
+    context = {
+        "employee": employee,
+        "total_limit": total_limit,
+        "availed": availed,
+        "remaining": remaining,
+        "claims": claims,
+    }
+    return render(request, "tabs/medical-tab.html", context)
 
 @login_required
 def get_assigned_leaves(request):

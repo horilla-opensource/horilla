@@ -15,6 +15,12 @@ urlpatterns = [
         component_views.allowances_deductions_tab,
         name="allowances-deductions-tab",
     ),
+    
+    path(
+        "medical-tab/<int:emp_id>",
+        component_views.medical_tab,
+        name="medical-tab",
+    ),
     path("create-allowance", component_views.create_allowance, name="create-allowance"),
     path("view-allowance/", component_views.view_allowance, name="view-allowance"),
     path(
@@ -173,4 +179,7 @@ urlpatterns = [
         component_views.payslip_detailed_export,
         name="payslip-detailed-export",
     ),
+    
+    
+    
 ]
