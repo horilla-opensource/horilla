@@ -1049,9 +1049,15 @@
                                     </div>
                                     <span class="oh-profile__name oh-text--dark">{{ item.employee }}</span>
                                 </div>
-                                <div class="text-end">
-                                    {% trans "Total Claimed" %}: {{ item.total }}<br/>
-                                    {% trans "Remaining Balance" %}: {{ item.remaining }}
+                                <div class="d-flex align-items-center">
+                                    <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary me-3">{{ item.count }}</div>
+                                    <div class="text-end me-3">
+                                        {% trans "Total Claimed" %}: {{ item.total }}<br />
+                                        {% trans "Remaining Balance" %}: {{ item.remaining }}
+                                    </div>
+                                    <div class="dropdown-icon ms-2">
+                                        <i class="bi bi-chevron-down"></i>  <!-- Or any icon you use -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1067,6 +1073,7 @@
                                                 <div class="oh-sticky-table__th">{% trans "Attachment" %}</div>
                                                 <div class="oh-sticky-table__th">{% trans "Claim Submission Date" %}</div>
                                                 <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
+                                                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
                                                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                                             </div>
                                         </div>
@@ -1083,6 +1090,16 @@
                                                 </div>
                                                 <div class="oh-sticky-table__td dateformat_changer">{{ claim.created_at|date:"F j, Y" }}</div>
                                                 <div class="oh-sticky-table__td">{{ claim.amount }}</div>
+                                                    <div class="oh-sticky-table__td ">
+                                                        <span class="badge 
+                                                            {% if claim.status == 'approved' %}bg-success
+                                                            {% elif claim.status == 'requested' %}bg-warning text-dark
+                                                            {% elif claim.status == 'rejected' %}bg-danger
+                                                            {% endif %}">
+                                                            {{ claim.status|title }}
+                                                        </span>
+                                                    </div>
+
                                                 <div class="oh-sticky-table__td">
                                                     <div class="oh-btn-group">
                                                         <a hx-get="{% url 'create-reimbursement' %}?instance_id={{ claim.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--light-bkg" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>

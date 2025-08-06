@@ -1561,7 +1561,7 @@ def view_reimbursement(request):
     if request.GET:
         filter_object = ReimbursementFilter(request.GET)
     else:
-        filter_object = ReimbursementFilter({"status": "requested"})
+        filter_object = ReimbursementFilter() # {"status": "requested"}  for now show all will change later according to req
     requests = filter_own_records(
         request, filter_object.qs, "payroll.view_reimbursement"
     )
@@ -1654,17 +1654,36 @@ def search_reimbursement(request):
     employees = Employee.objects.all()
     if not request.user.has_perm("payroll.view_reimbursement"):
         employees = employees.filter(id=request.user.employee_get.id)
+      
+        # calculate fiscal year range starting from July 1
+    today = date.today()
+    if today.month >= 7:
+        start = date(today.year, 7, 1)
+        end = date(today.year + 1, 7, 1)
+    else:
+        start = date(today.year - 1, 7, 1)
+        end = date(today.year, 7, 1)
+        
+    
     medical_groups = []
     for emp in employees:
         emp_claims = medical_encashments.filter(employee_id=emp)
-        total = emp_claims.aggregate(total=Sum("amount"))
-        total_amount = total.get("total") or 0
+        approved_total = (
+            emp_claims.filter(status="approved", allowance_on__gte=start, allowance_on__lt=end)
+            .aggregate(total=Sum("amount"))
+            .get("total")
+            or 0
+        )
+
         medical_groups.append(
             {
                 "employee": emp,
                 "claims": list(emp_claims),
-                "total": total_amount,
-                "remaining": 100000 - total_amount,
+
+                "total": approved_total,
+                "remaining": 100000 - approved_total,
+                "count": emp_claims.count(),
+
             }
         )
     reimbursements_ids = json.dumps(list(reimbursements.values_list("id", flat=True)))
