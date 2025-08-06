@@ -1040,35 +1040,22 @@
             {% if medical_groups %}
                 <div class="oh-accordion-meta">
                     {% for item in medical_groups %}
-                    <div class="oh-accordion-meta__item">
-                        <div class="oh-accordion-meta__header" onclick="$(this).toggleClass('oh-accordion-meta__header--show');$(this).next().toggleClass('d-none');">
-                            <span class="oh-accordion-meta__title pt-3 pb-3 w-100">
-                                <div class="d-flex justify-content-between align-items-center w-100">
-                                    <div class="oh-profile oh-profile--md">
-                                        <div class="oh-profile__avatar mr-1">
-                                            <img src="{{ item.employee.get_avatar }}" class="oh-profile__image" alt="" />
-                                        </div>
-                                        <span class="oh-profile__name oh-text--dark">{{ item.employee }}</span>
+                    <div class="oh-accordion">
+                        <div class="oh-accordion-header">
+                            <div class="d-flex justify-content-between w-100">
+                                <div class="oh-profile oh-profile--md">
+                                    <div class="oh-profile__avatar mr-1">
+                                        <img src="{{ item.employee.get_avatar }}" class="oh-profile__image" alt="" />
                                     </div>
-                                    <div class="d-flex align-items-center">
-                                        <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary me-3">{{ item.count }}</div>
-                                        <div class="text-end">
-                                            {% trans "Total Claimed" %}: {{ item.total }}<br/>
-                                            {% trans "Remaining Balance" %}: {{ item.remaining }}
-                                        </div>
-                                    </div>
-
+                                    <span class="oh-profile__name oh-text--dark">{{ item.employee }}</span>
                                 </div>
-                            </span>
-                            <div class="oh-accordion-meta__actions" onclick="event.stopPropagation()">
-                                <button class="oh-btn oh-stop-prop oh-accordion-meta__btn">
-                                    <ion-icon class="ms-2 oh-accordion-meta__btn-icon" name="add-outline"></ion-icon>
-                                </button>
+                                <div class="text-end">
+                                    {% trans "Total Claimed" %}: {{ item.total }}<br/>
+                                    {% trans "Remaining Balance" %}: {{ item.remaining }}
+                                </div>
                             </div>
                         </div>
-
-                        <div class="oh-accordion-meta__body d-none">
-
+                        <div class="oh-accordion-body">
                             {% if item.claims %}
                                 <div class="oh-sticky-table">
                                     <div class="oh-sticky-table__table">
@@ -1080,9 +1067,6 @@
                                                 <div class="oh-sticky-table__th">{% trans "Attachment" %}</div>
                                                 <div class="oh-sticky-table__th">{% trans "Claim Submission Date" %}</div>
                                                 <div class="oh-sticky-table__th">{% trans "Amount" %}</div>
-
-                                                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
-
                                                 <div class="oh-sticky-table__th">{% trans "Actions" %}</div>
                                             </div>
                                         </div>
@@ -1099,41 +1083,10 @@
                                                 </div>
                                                 <div class="oh-sticky-table__td dateformat_changer">{{ claim.created_at|date:"F j, Y" }}</div>
                                                 <div class="oh-sticky-table__td">{{ claim.amount }}</div>
-
-                                                <div class="oh-sticky-table__td">{{ claim.get_status_display }}</div>
-                                                <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                                                <div class="oh-sticky-table__td">
                                                     <div class="oh-btn-group">
                                                         <a hx-get="{% url 'create-reimbursement' %}?instance_id={{ claim.id }}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--light-bkg" title="{% trans 'Edit' %}"><ion-icon name="create-outline"></ion-icon></a>
                                                         <a href="{% url 'delete-reimbursement' %}?ids={{claim.id}}" onclick="event.stopPropagation();return confirm('Do you want to delete this record?')" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg" title="{% trans 'Delete' %}"><ion-icon name="trash-outline"></ion-icon></a>
-                                                        {% if perms.payroll.change_reimbursement %}
-                                                            <form action="{% url 'approve-reimbursements' %}" id="medicalAction{{ claim.id }}">
-                                                                <div class="oh-btn-group">
-                                                                    {% if claim.status == 'requested' %}
-                                                                        <button type="button" onclick="reimbursementConfirm('Do You really want to approve the request?','#medicalAction{{ claim.id }}',true);$('#medicalAction{{ claim.id }} [name=status]').val('approved')" class='oh-btn oh-btn--success w-100' title="{% trans 'Approve' %}">
-                                                                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                                        </button>
-                                                                    {% else %}
-                                                                        <button class='oh-btn oh-btn--success w-100' disabled onclick="event.preventDefault();">
-                                                                            <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
-                                                                        </button>
-                                                                    {% endif %}
-                                                                    {% if claim.status != 'rejected' %}
-                                                                        <button type="button" onclick="$('#medicalAction{{ claim.id }} [name=amount]').attr('required',false);reimbursementConfirm('Do You really want to reject the request?','#medicalAction{{ claim.id }}');$('#medicalAction{{ claim.id }} [name=status]').val('canceled')" class="oh-btn oh-btn--danger w-100" title="{% trans 'Reject' %}">
-                                                                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                                                        </button>
-                                                                    {% else %}
-                                                                        <button class="oh-btn oh-btn--danger w-100" disabled onclick="event.preventDefault();">
-                                                                            <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
-                                                                        </button>
-                                                                    {% endif %}
-                                                                </div>
-                                                                <input type="hidden" name="ids" value="{{ claim.id }}" />
-                                                                <input type="hidden" name="status" />
-                                                                <input type="hidden" name="amount" value="{{ claim.amount }}" />
-                                                                <input type="submit" hidden id="medicalAction{{ claim.id }}Button" />
-                                                            </form>
-                                                        {% endif %}
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -1150,28 +1103,6 @@
                         </div>
                     </div>
                     {% endfor %}
-
-                </div>
-                <div class="oh-pagination">
-                    <span class="oh-pagination__page">{% trans 'Page'  %} {{ medical_encashments.number }} {% trans 'of' %} {{ medical_encashments.paginator.num_pages }}.</span>
-                    <nav class="oh-pagination__nav">
-                        <div class="oh-pagination__input-container me-3">
-                            <span class="oh-pagination__label me-1">{% trans 'Page' %}</span>
-                            <input type="number" name="mpage" class="oh-pagination__input" value="{{ medical_encashments.number }}" hx-get="{% url 'search-reimbursement' %}?{{ pd }}" hx-target="#reimbursementContainer" min="1" />
-                            <span class="oh-pagination__label">{% trans 'of' %} {{ medical_encashments.paginator.num_pages }}</span>
-                        </div>
-                        <ul class="oh-pagination__items">
-                            {% if medical_encashments.has_previous %}
-                                <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage=1" class="oh-pagination__link">{% trans 'First' %}</a></li>
-                                <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage={{ medical_encashments.previous_page_number }}" class="oh-pagination__link">{% trans 'Previous' %}</a></li>
-                            {% endif %}
-                            {% if medical_encashments.has_next %}
-                                <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage={{ medical_encashments.next_page_number }}" class="oh-pagination__link">{% trans 'Next' %}</a></li>
-                                <li class="oh-pagination__item oh-pagination__item--wide"><a hx-target="#reimbursementContainer" hx-get="{% url 'search-reimbursement' %}?{{ pd }}&mpage={{ medical_encashments.paginator.num_pages }}" class="oh-pagination__link">{% trans 'Last' %}</a></li>
-                            {% endif %}
-                        </ul>
-                    </nav>
-
                 </div>
             {% else %}
                 <div class="oh-empty">
