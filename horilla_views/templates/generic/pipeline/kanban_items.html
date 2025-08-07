@@ -8,7 +8,7 @@
 
         <input type="text" name="order" value="{{instance.id}}" hidden>
         <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
-            <div class="absolute inline-block dropdown-wrapper right-5 top-5 w-3" role="button" 
+            <div class="absolute inline-block dropdown-wrapper right-5 top-5 w-3" role="button"
                 onclick="event.stopPropagation()"
             >
                 <a class="cursor-pointer dropdown-toggle">
@@ -82,7 +82,7 @@
 
         </div>
     </div>
-    
+
     {% if forloop.last and group.page_obj.has_next %}
         <div id ="pagination-container-{{instance.stage_id.id}}" >
             <div

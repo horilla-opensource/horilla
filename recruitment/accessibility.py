@@ -14,8 +14,9 @@ def add_candidate_accessibility(
     """
     return (
         request.user.has_perm("recruitment.add_candidate")
-        or request.user.employee_get in instance.stage_managers.all
-        or request.user.employee_get in instance.recruitment_id.recruitment_managers.all
+        or request.user.employee_get in instance.stage_managers.all()
+        or request.user.employee_get
+        in instance.recruitment_id.recruitment_managers.all()
     )
 
 
@@ -28,7 +29,7 @@ def edit_stage_accessibility(
     return (
         request.user.has_perm("recruitment.change_stage")
         or recruitment_manages(request.user, instance.recruitment_id)
-        or request.user.employee_get in instance.stage_managers.all
+        or request.user.employee_get in instance.stage_managers.all()
     )
 
 
