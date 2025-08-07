@@ -8,30 +8,12 @@
   <div class="flex flex-wrap justify-between items-center mb-3">
     <h3 class="text-lg font-semibold">{{ project }}</h3>
       <div class="flex items-center flex-wrap gap-2">
-      {% if active_filters %}
-        <div class="flex flex-wrap items-center gap-2">
-            <span class="bg-primary-600 px-4 py-1.5 rounded-2xl text-white text-xs me-1">{% trans "Filters" %}</span> :
-            <ul class="usertablist ms-1 me-3 flex gap-1">
-                {% for filter in active_filters %}
-                <li class="border text-xs rounded-2xl border-[#d1d1d1] px-4 py-1.5">
-                <div>
-                    <span>{{ filter.label }}</span>
-                    <a href="{{ filter.remove_url }}" class="ms-2">
-                    <i class="fa-solid fa-xmark"></i>
-                    </a>
-                </div>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-      {% endif %}
-
       <div class="relative">
         <input type="text"
             name="search"
             placeholder="{% trans 'Search by Task Name...' %}"
             class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
-            onkeyup="$('#taskFilterButton').click()"
+            onkeyup="$('#applyFilter').click()"
             autocomplete="off"
             hx-target="#viewContainer"/>
         <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
@@ -39,12 +21,12 @@
 
       <input name="view" id="viewInput" hidden>
       <button type="button" id="listBtn"
-          onclick="$('#viewInput').val('list');$('#taskFilterButton').click()"
+          onclick="$('#viewInput').val('list');$('#applyFilter').click()"
           class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 text-primary-600">
           <ion-icon name="list-outline"></ion-icon>
       </button>
       <button type="button" id="gridBtn"
-          onclick="$('#viewInput').val('card');$('#taskFilterButton').click()"
+          onclick="$('#viewInput').val('card');$('#applyFilter').click()"
           class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 text-primary-600">
           <ion-icon name="grid-outline"></ion-icon>
       </button>
@@ -87,3 +69,8 @@
     id="TaskFormTarget"
   ></div>
 </div>
+
+<div
+  id="filterTagContainerSectionNav"
+  class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"
+></div>
