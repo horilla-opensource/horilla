@@ -27,11 +27,11 @@
   </div>
 
   <!-- Scroll Container -->
-  <div class="oh-kanban overflow-x-auto overflow-y-hidden">
+  <div class="oh-kanban overflow-x-auto whitespace-nowrap">
     <!-- Grid of Stages -->
-    <div class="grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4" id="projectStages">
+    <div class="inline-flex gap-4" id="projectStages">
       {% for stage in stages %}
-      <div class=" oh-kanban__section stage kanban-block w-full relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_240px)]"
+      <div class="oh-kanban__section stage kanban-block w-[350px] flex-shrink-0 relative p-2 pt-0 pb-0 bg-[#e9edf0] rounded-lg overflow-hidden overflow-y-auto h-[calc(100vh_-_240px)]"
            ondrop="drop(event)" ondragover="allowDrop(event)" id="projectStage{{stage.id}}"
            data-stage-id="{{stage.id}}" data-sequence="{{stage.sequence}}" data-project-id="{{project.id}}">
 
@@ -181,9 +181,9 @@
                       <ul class="text-xs text-gray-800">
                         <li class="px-4 py-1 hover:bg-gray-100">
                           <strong>{% trans "Managers" %}:</strong>
-                          {% for manager in task.task_managers.all %}
-                            {{ manager }}{% if not forloop.last %}, {% endif %}
-                          {% endfor %}
+                          <span style="display:inline-flex;">{% for manager in task.task_managers.all %}
+                            • {{ manager }}{% if not forloop.last %}<br> {% endif %}
+                          {% endfor %}</span>
                         </li>
                         <li class="px-4 py-1 hover:bg-gray-100">
                           <strong>{% trans "Status" %}:</strong>
@@ -210,6 +210,25 @@
   </div>
 </div>
 {% endif %}
+
+<script>
+  $(document).ready(function () {
+    $('.cancelForm').on('click', function (e) {
+      e.preventDefault();
+
+      console.log("Cancel clicked");
+
+      // Traverse up to the kanban block, then find the matching toggle button
+      const toggleBtn = $(this).closest('.kanban-block').find('.btn-toggle');
+
+      if (toggleBtn.length) {
+        toggleBtn.trigger('click');
+      } else {
+        console.log('Toggle button not found');
+      }
+    });
+  });
+</script>
 
     <!-- FOLDING KANBAN -->
     <script>

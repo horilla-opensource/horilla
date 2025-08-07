@@ -1,0 +1,64 @@
+{% load i18n %}
+<form class="oh-kanban__add-card-form flex flex-col gap-4"
+      hx-post="{% url 'quick-create-task' stage_id %}"
+      hx-target="#{{hx_target}}">
+
+    {% csrf_token %}
+
+    {% if form.errors %}
+        <ul class="errorlist nonfield">
+            {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Hidden Fields -->
+    {{ form.project }}
+    {{ form.stage }}
+    {{ form.end_date }}
+
+    <!-- Visible Fields -->
+    <div class="flex flex-col">
+        <label for="{{ form.title.id_for_label }}" class="text-sm font-medium mb-1">
+            {{ form.title.label }}
+        </label>
+        {{ form.title }}
+    </div>
+
+    <div class="flex flex-col">
+        <label for="{{ form.task_managers.id_for_label }}" class="text-sm font-medium mb-1">
+            {{ form.task_managers.label }}
+        </label>
+        {{ form.task_managers }}
+    </div>
+
+    <!-- Form Actions -->
+    <div class="d-flex align-items-center justify-content-end">
+        <a role="button"
+           class="cancelForm oh-btn oh-btn--light-dark-text oh-btn--x-small oh-kanban__add-card-cancel-btn me-2 mt-2">
+            {% trans "Cancel" %}
+        </a>
+        <button type="submit"
+                class="oh-btn oh-btn--secondary oh-btn--x-small mt-2">
+            {% trans "Add" %}
+        </button>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+      $('.cancelForm').on('click', function (e) {
+        e.preventDefault();
+  
+        const toggleBtn = $(this).closest('.kanban-block').find('.btn-toggle');
+  
+        if (toggleBtn.length) {
+          toggleBtn.trigger('click');
+        } else {
+          console.log('Toggle button not found');
+        }
+      });
+    });
+</script>
+  
