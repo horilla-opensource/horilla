@@ -1607,7 +1607,7 @@ class HorillaCardView(ListView):
 
     filter_class: FilterSet = None
 
-    view_id: str = get_short_uuid(4, prefix="hcv")
+    view_id: str = None
 
     template_name = "generic/horilla_card.html"
     context_object_name = "queryset"
@@ -1650,6 +1650,9 @@ class HorillaCardView(ListView):
         # update_initial_cache(request, CACHE, HorillaCardView)
         self._saved_filters = QueryDict()
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
+
+        if not self.view_id:
+            self.view_id = get_short_uuid(4, prefix="hcv")
 
     def get_queryset(self):
         if not self.queryset:

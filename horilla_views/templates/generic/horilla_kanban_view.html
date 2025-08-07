@@ -28,7 +28,7 @@
         hx-on:click="htmxLoadIndicator(this);"
     ></button>
 
-    {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %} 
+    {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
 
     <div id="helperContainer" class="hidden" data-model = "{{ app_label }}.{{ model_name }}" data-group-key = "{{view.group_key}}" > </div>
     <div class="flex gap-4 flex-nowrap overflow-auto">
@@ -442,4 +442,3 @@
 
 </script>
 <script src="{% static 'pipeline/pipelineDrag.js' %}"></script>
-
