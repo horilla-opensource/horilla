@@ -1629,9 +1629,12 @@ def create_reimbursement(request):
     if request.method == "POST":
         form = forms.ReimbursementForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
-            form.save()
+            instance, attachments = form.save()
             messages.success(request, "Reimbursement saved successfully")
             return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+        else:
+            print("Form errors:", form.errors)
+            # messages.error(request, "Reimbursement not saved successfully")
     else:
         form = forms.ReimbursementForm(instance=instance)
 
