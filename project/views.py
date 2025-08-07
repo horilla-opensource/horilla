@@ -725,13 +725,17 @@ def task_view(request, project_id, **kwargs):
     """
     For showing tasks
     """
-    form = TaskAllFilter()
+    form = TaskAllFilter().form
+    for field, value in form.fields.items():
+        if form.fields.get(field) and form.fields[field].widget.attrs.get("id"):
+            del form.fields[field].widget.attrs["id"]
+            form.fields[field].widget.attrs["class"] = "w-100 oh-select oh-select2"
     view_type = "card"
     project = Project.objects.get(id=project_id)
     stages = ProjectStage.objects.filter(project=project).order_by("sequence")
     tasks = Task.objects.filter(project=project)
-    form.form.fields["stage"].queryset = ProjectStage.objects.filter(project=project.id)
-    if request.GET.get("view") == "list":
+    form.fields["stage"].queryset = ProjectStage.objects.filter(project=project.id)
+    if request.GET.get("view") == "list" or request.GET.get("view") == None:
         view_type = "list"
     context = {
         "view_type": view_type,
@@ -740,7 +744,7 @@ def task_view(request, project_id, **kwargs):
         "project_id": project_id,
         "project": project,
         "today": datetime.datetime.today().date(),
-        "f": form,
+        "form": form,
     }
     return render(request, "task/new/overall.html", context)
 
@@ -940,7 +944,11 @@ def task_filter(request, project_id):
     For filtering task
     """
     templete = "task/new/task_kanban_view.html"
-    if request.GET.get("view") == "list":
+    if (
+        request.GET.get("view") == "list"
+        or request.GET.get("view") == None
+        or request.GET.get("view") == ""
+    ):
         templete = "task/new/task_list_view.html"
     tasks = TaskFilter(request.GET).qs.filter(project_id=project_id)
     stages = (
@@ -1336,6 +1344,8 @@ def delete_project_stage(request, stage_id):
     For delete project stage
     """
     view_type = request.GET.get("view")
+    if view_type == None:
+        view_type = "list"
     stage = ProjectStage.objects.get(id=stage_id)
     tasks = Task.objects.filter(stage=stage)
     project_id = stage.project.id

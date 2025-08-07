@@ -3,14 +3,6 @@
     title="{{ form.employee_id.help_text|safe }}">{% trans form.employee_id.label %}</label>
 {{form.employee_id}}
 <script>
-    $(document).ready(function () {
-
-        $("select").on("select2:select", function (e) {
-            $(this).closest("select")[0].dispatchEvent(new Event("change"));
-        });
-
-
-    });
     var task_id = "{{ task_id }}"
     if (task_id === "dynamic_create") {
         var project_id = "{{ project_id }}"
@@ -25,5 +17,4 @@
 
         $(buttonId).click();
     }
-
 </script>

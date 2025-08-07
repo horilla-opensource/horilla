@@ -20,7 +20,7 @@
             <ion-icon name="search-outline" class="oh-input-group__icon oh-input-group__icon--left"></ion-icon>
             <input type="text" class="oh-input oh-input__icon" aria-label="Search Input"
                 name="search" placeholder="{% trans 'Search' %}"
-                onkeyup="$('#taskFilterButton').click()"
+                onkeyup="$('#applyFilter').click()"
                 hx-target="#viewContainer" autocomplete="off" />
         </div>
         <input name='view' id="viewInput" hidden>
@@ -28,14 +28,14 @@
             <ul class="oh-view-types ml-2">
                 <li class="oh-view-type task-view-type" data-view="list">
                     <a
-                        onclick="$('#viewInput').val('list');$('#taskFilterButton').click()"
+                        onclick="$('#viewInput').val('list');$('#applyFilter').click()"
                          class="oh-btn oh-btn--view">
                         <ion-icon name="list-outline"></ion-icon>
                     </a>
                 </li>
                 <li class="oh-view-type task-view-type" data-view="card">
                     <a
-                        onclick="$('#viewInput').val('card');$('#taskFilterButton').click()"
+                        onclick="$('#viewInput').val('card');$('#applyFilter').click()"
                         class="oh-btn oh-btn--view">
                         <ion-icon name="grid-outline"></ion-icon>
                     </a>
