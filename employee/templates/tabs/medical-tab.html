@@ -6,9 +6,13 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
 <!-- ✅ Summary Cards -->
-<div class="row g-4 mb-5">
+
+
+
+<div class="row g-4 mb-5  ">
+    
   <div class="col-md-4">
-    <div class="card text-center shadow-sm border-0">
+    <div class="card text-center shadow-sm border-1">
       <div class="card-body">
         <h6 class="text-muted mb-2">{% trans "Total Medical Limit" %}</h6>
         <h5 class="fw-bold text-primary">PKR {{ total_limit|floatformat:0 }}</h5>
@@ -16,7 +20,7 @@
     </div>
   </div>
   <div class="col-md-4">
-    <div class="card text-center shadow-sm border-0">
+    <div class="card text-center shadow-sm border-1">
       <div class="card-body">
         <h6 class="text-muted mb-2">{% trans "Availed Amount" %}</h6>
         <h5 class="fw-bold text-danger">PKR {{ availed|floatformat:0 }}</h5>
@@ -24,7 +28,7 @@
     </div>
   </div>
   <div class="col-md-4">
-    <div class="card text-center shadow-sm border-0">
+    <div class="card text-center shadow-sm border-1">
       <div class="card-body">
         <h6 class="text-muted mb-2">{% trans "Remaining Amount" %}</h6>
         <h5 class="fw-bold text-success">PKR {{ remaining|floatformat:0 }}</h5>
@@ -37,16 +41,59 @@
 {% if claims %}
   <div class="accordion" id="claimsAccordion">
     {% for claim in claims %}
-      <div class="accordion-item mb-3 shadow-sm border rounded">
-        <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-          <button class="accordion-button collapsed d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
-            <div class="me-auto">
-              <strong>{{ claim.instance.title }}</strong>
-              <span class="badge bg-light text-muted ms-2">{{ claim.instance.allowance_on }}</span>
-            </div>
-            <span class="text-primary fw-semibold">PKR {{ claim.instance.amount|floatformat:0 }}</span>
-          </button>
-        </h2>
+      <div class="accordion-item mb-3 shadow-sm border rounded 
+  {% if claim.instance.status == 'approved' %}border-success 
+  {% elif claim.instance.status == 'rejected' %}border-danger 
+  {% elif claim.instance.status == 'requested' %}border-warning 
+  {% endif %}
+">
+<h2 class="accordion-header" id="heading{{ forloop.counter }}">
+  <button class="accordion-button collapsed py-3 px-4" type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapse{{ forloop.counter }}"
+          aria-expanded="false"
+          aria-controls="collapse{{ forloop.counter }}">
+
+    <div class="container-fluid">
+      <div class="row w-100 align-items-center">
+        <!-- Left: Title + Date -->
+        <div class="col-3 d-flex flex-column">
+          <strong class="text-truncate" style="max-width: 100%;">
+            {{ claim.instance.title }}
+          </strong>
+          
+        </div>
+
+                <!-- Middle: date -->
+        <div class="col-3 text-start">
+          <span class=" fw-semibold">
+            {{ claim.instance.allowance_on }}
+          </span>
+        </div>
+
+        <!-- Middle: Amount -->
+        <div class="col-3 text-start">
+          <span class=" fw-semibold">
+            PKR {{ claim.instance.amount|floatformat:0 }}
+          </span>
+        </div>
+
+        <!-- Right: Status badge -->
+        <div class="col-3 text-end">
+          <span class="badge
+            {% if claim.instance.status == 'approved' %}bg-success
+            {% elif claim.instance.status == 'rejected' %}bg-danger
+            {% elif claim.instance.status == 'requested' %}bg-warning text-dark
+            {% endif %}">
+            {{ claim.instance.status|capfirst }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </button>
+</h2>
+
         <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#claimsAccordion">
           <div class="accordion-body">
             {% if claim.instance.description %}

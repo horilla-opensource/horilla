@@ -157,87 +157,90 @@ function switchGeneralTab(e) {
 }
 
 function toggleReimbursmentType(element) {
-    if (element.val() == "reimbursement") {
+      if (
+        element.val() == "reimbursement" ||
+        element.val() == "medical_encashment"
+      ) {
         $("#objectCreateModalTarget [name=attachment]").parent().show();
         $("#objectCreateModalTarget [name=attachment]").attr("required", true);
         $("#objectCreateModalTarget [name=leave_type_id]")
-            .parent()
-            .hide()
-            .attr("required", false);
+          .parent()
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget [name=cfd_to_encash]")
-            .parent()
-            .hide()
-            .attr("required", false);
+          .parent()
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget [name=ad_to_encash]")
-            .parent()
-            .hide()
-            .attr("required", false);
+          .parent()
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget [name=amount]")
-            .parent()
-            .show()
-            .attr("required", true);
+          .parent()
+          .show()
+          .attr("required", true);
         $("#objectCreateModalTarget #availableTable")
-            .hide()
-            .attr("required", false);
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget [name=bonus_to_encash]")
-            .parent()
-            .hide()
-            .attr("required", false);
-    } else if (element.val() == "leave_encashment") {
+          .parent()
+          .hide()
+          .attr("required", false);
+      } else if (element.val() == "leave_encashment") {
         $("#objectCreateModalTarget [name=attachment]").parent().hide();
         $("#objectCreateModalTarget [name=attachment]").attr("required", false);
         $("#objectCreateModalTarget [name=leave_type_id]")
-            .parent()
-            .show()
-            .attr("required", true);
+          .parent()
+          .show()
+          .attr("required", true);
         $("#objectCreateModalTarget [name=cfd_to_encash]")
-            .parent()
-            .show()
-            .attr("required", true);
+          .parent()
+          .show()
+          .attr("required", true);
         $("#objectCreateModalTarget [name=ad_to_encash]")
-            .parent()
-            .show()
-            .attr("required", true);
+          .parent()
+          .show()
+          .attr("required", true);
         $("#objectCreateModalTarget [name=amount]")
-            .parent()
-            .hide()
-            .attr("required", false);
+          .parent()
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget #availableTable")
-            .show()
-            .attr("required", true);
+          .show()
+          .attr("required", true);
         $("#objectCreateModalTarget [name=bonus_to_encash]")
-            .parent()
-            .hide()
-            .attr("required", false);
+          .parent()
+          .hide()
+          .attr("required", false);
         // #819
         $("#objectCreateModalTarget [name=employee_id]").trigger("change");
-    } else if (element.val() == "bonus_encashment") {
+      } else if (element.val() == "bonus_encashment") {
         $("#objectCreateModalTarget [name=attachment]").parent().hide();
         $("#objectCreateModalTarget [name=attachment]").attr("required", false);
         $("#objectCreateModalTarget [name=leave_type_id]")
-            .parent()
-            .hide()
-            .attr("required", false);
+          .parent()
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget [name=cfd_to_encash]")
-            .parent()
-            .hide()
-            .attr("required", false);
+          .parent()
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget [name=ad_to_encash]")
-            .parent()
-            .hide()
-            .attr("required", false);
+          .parent()
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget [name=amount]")
-            .parent()
-            .hide()
-            .attr("required", false);
+          .parent()
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget #availableTable")
-            .hide()
-            .attr("required", false);
+          .hide()
+          .attr("required", false);
         $("#objectCreateModalTarget [name=bonus_to_encash]")
-            .parent()
-            .show()
-            .attr("required", true);
-    }
+          .parent()
+          .show()
+          .attr("required", true);
+      }
 }
 
 function reloadSelectedCount(targetElement, storeKey = "selectedInstances") {
