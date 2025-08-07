@@ -129,7 +129,7 @@
     // ==================== Reimbursement request ====================
 
     function toggleReimbursmentType(element) {
-        if (element.val() == 'reimbursement') {
+        if (element.val() == 'reimbursement' || element.val() == 'medical_encashment' ) {
           $('#reimbursementModalBody [name=attachment]').parent().show()
           $('#reimbursementModalBody [name=attachment]').attr("required",true)
 

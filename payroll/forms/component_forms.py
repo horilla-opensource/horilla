@@ -876,11 +876,10 @@ class ReimbursementForm(ModelForm):
 
     def exclude_fields_by_type(self, exclude_fields):
         """Determine which fields to exclude based on type."""
-        type = (
-            self.data.get("type")
-            if self.data
-            else self.instance.type if self.instance else None
-        )
+        type = self.data.get("type") if self.data else None
+        if not type and self.instance:
+            type = self.instance.type
+            
         is_edit = self.instance and self.instance.pk
 
         if type == "reimbursement" and is_edit:
@@ -890,7 +889,7 @@ class ReimbursementForm(ModelForm):
                 "ad_to_encash",
                 "bonus_to_encash",
             ]
-        if type == "medical_encashment" and is_edit:
+        elif type == "medical_encashment" and (is_edit or self.data):
             exclude_fields += [
                 "leave_type_id",
                 "cfd_to_encash",
@@ -922,10 +921,14 @@ class ReimbursementForm(ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        type_ = cleaned_data.get("type")
-        employee = cleaned_data.get("employee_id")
+        type_ = cleaned_data.get("type") or (
+            self.instance.type if self.instance else None
+        )
+        employee = cleaned_data.get("employee_id") or (
+            self.instance.employee_id if self.instance else None
+        )
         amount = cleaned_data.get("amount")
-        print("rweached ", type_)
+
         if not type_ or not employee:
             return cleaned_data
 
@@ -934,11 +937,11 @@ class ReimbursementForm(ModelForm):
                 self.add_error("amount", "Amount is required ")
             else:
                 if amount > 100000:
-                    print("amount greater")
+                
                     self.add_error("amount", "Amount cannot exceed PKR 100,000")
 
                 if amount <= 0:
-                    print("amount less")
+                    
                     self.add_error("amount", "Amount cannot be less than or equal to PKR 0")
 
                 approved_claims_total = (
