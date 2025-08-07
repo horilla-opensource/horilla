@@ -55,7 +55,7 @@ def is_project_manager_or_member(user, project):
 @register.filter(name="is_project_manager")
 def is_project_manager(user, project):
     """
-    This method will return true, if the user is superuser or manager of the project
+    This method will return true, if the user is manager of the project
     """
     if user.is_superuser:
         return True

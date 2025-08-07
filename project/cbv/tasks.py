@@ -379,7 +379,7 @@ class TaskCreateForm(HorillaFormView):
             messages.success(self.request, _(message))
             if stage_id or self.request.GET.get("project_task"):
                 return HttpResponse("<script>location.reload();</script>")
-            return self.HttpResponse("<script>$('#taskFilterButton').click();</script>")
+            return self.HttpResponse("<script>$('#applyFilter').click();</script>")
         return super().form_valid(form)
 
 

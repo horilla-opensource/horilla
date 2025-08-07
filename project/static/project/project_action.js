@@ -39,13 +39,14 @@ function getCookie(name) {
 }
 
 function getCurrentLanguageCode(callback) {
-    var languageCode = $("#main-section-data").attr("data-lang");
-    var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
-    if (allowedLanguageCodes.includes(languageCode)) {
-        callback(languageCode);
-    } else {
-        callback("en");
-    }
+    $.ajax({
+        type: "GET",
+        url: "/employee/get-language-code/",
+        success: function (response) {
+            var languageCode = response.language_code;
+            callback(languageCode); // Pass the language code to the callback
+        },
+    });
 }
 
 function validateProjectIds(event) {
