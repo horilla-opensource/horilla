@@ -1561,7 +1561,7 @@ def view_reimbursement(request):
     if request.GET:
         filter_object = ReimbursementFilter(request.GET)
     else:
-        filter_object = ReimbursementFilter() # {"status": "requested"}  for now show all will change later according to req
+        filter_object = ReimbursementFilter({"status": "requested"} ) #  for now show all will change later according to req
     requests = filter_own_records(
         request, filter_object.qs, "payroll.view_reimbursement"
     )
@@ -1832,6 +1832,41 @@ def approve_reimbursements(request):
                 reimbursement.amount = amount
             
             emp = reimbursement.employee_id
+            
+            # check if the employee is is_superuser as only he can approve or reject the reimbursement
+            
+            
+            
+            if reimbursement.type == "medical_encashment":
+                # Perform validation only if status is being approved
+                if status == "approved":
+
+                    approved_claims_total = (
+                        Reimbursement.objects.filter(
+                            employee_id=emp,
+                            type="medical_encashment",
+                            status="approved",
+                        )
+                        .exclude(id=reimbursement.id)
+                        .aggregate(total=Sum("amount"))["total"]
+                        or 0
+                    )
+
+                    if approved_claims_total >= 100000:
+                        messages.error(
+                            request,
+                            "No medical claim can be approved  once PKR 100,000 is fully used."
+                        )
+                        return redirect(view_reimbursement)
+
+                    if (approved_claims_total + amount) > 100000:
+                        messages.error(
+                            request,
+                            f"Total approved medical claims (including this one) cannot exceed PKR 100,000. "
+                            f"Currently approved: PKR {approved_claims_total:,}"
+                        )
+                        return redirect(view_reimbursement)
+                    
             reimbursement.status = status
             reimbursement.save()
             if reimbursement.status == "requested":
