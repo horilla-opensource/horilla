@@ -191,18 +191,6 @@ def _check_reporting_manager(request, *args, **kwargs):
 
 
 @login_required
-def get_language_code(request):
-    """
-    Retrieve the language code for the current request.
-
-    This view function extracts the LANGUAGE_CODE from the request object and
-    returns it as a JSON response. This function requires the user to be logged in.
-    """
-    language_code = request.LANGUAGE_CODE
-    return JsonResponse({"language_code": language_code})
-
-
-@login_required
 def employee_profile(request):
     """
     This method is used to view own profile of employee.
