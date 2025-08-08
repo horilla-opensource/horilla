@@ -17,13 +17,13 @@ function getCookie(name) {
 function getAssetImportTemplate() {
 	// Use SweetAlert for the confirmation dialog
 	Swal.fire({
-		text: gettext("Do you want to download the template?"),
+		text: i18nMessages.downloadTemplate,
 		icon: "question",
 		showCancelButton: true,
 		confirmButtonColor: "#008000",
 		cancelButtonColor: "#d33",
-		confirmButtonText: gettext("Confirm"),
-		cancelButtonText: gettext("Cancel"),
+		confirmButtonText: i18nMessages.confirm,
+		cancelButtonText: i18nMessages.cancel,
 	}).then(function (result) {
 		if (result.isConfirmed) {
 			$.ajax({

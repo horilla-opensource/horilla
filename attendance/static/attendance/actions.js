@@ -16,13 +16,12 @@ function makelatecomeListUnique(list) {
 function validateActivityIds(event) {
     event.preventDefault();
 
-    var textMessage = gettext("No rows are selected for deleting attendances.")
     var $selectedActivity = $("#selectedActivity");
     var idsRaw = $selectedActivity.attr("data-ids");
 
     if (!idsRaw) {
         Swal.fire({
-            text: textMessage,
+            text: i18nMessages.noRowsSelected,
             icon: "warning",
             confirmButtonText: i18nMessages.close,
         });
@@ -44,7 +43,7 @@ function validateActivityIds(event) {
 
     if (!Array.isArray(ids) || ids.length === 0) {
         Swal.fire({
-            text: textMessage,
+            text: i18nMessages.noRowsSelected,
             icon: "warning",
             confirmButtonText: i18nMessages.close,
         });
@@ -857,9 +856,8 @@ $("#exportAccounts").click(function (e) {
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
 
-    var confirmMessage = gettext("Do you want to download the excel file?")
     Swal.fire({
-        text: confirmMessage,
+        text: i18nMessages.downloadExcel,
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
@@ -903,9 +901,8 @@ $("#exportActivity").click(function (e) {
     ids.push($("#selectedActivity").attr("data-ids"));
     ids = JSON.parse($("#selectedActivity").attr("data-ids"));
 
-    var confirmMessage = gettext("Do you want to download the excel file?")
     Swal.fire({
-        text: confirmMessage,
+        text: i18nMessages.downloadExcel,
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
@@ -950,9 +947,8 @@ $("#exportLatecome").click(function (e) {
     ids.push($("#selectedLatecome").attr("data-ids"));
     ids = JSON.parse($("#selectedLatecome").attr("data-ids"));
 
-    var confirmMessage = gettext("Do you want to download the excel file?")
     Swal.fire({
-        text: confirmMessage,
+        text: i18nMessages.downloadExcel,
         icon: "question",
         showCancelButton: true,
         confirmButtonColor: "#008000",
@@ -996,18 +992,16 @@ $("#exportLatecome").click(function (e) {
 
 $("#bulkDelete").click(function (e) {
     e.preventDefault();
-    var confirmMessage = gettext("Do you really want to delete all the selected attendances?")
-    var textMessage = gettext("No rows are selected for deleting attendances.")
     var checkedRows = $(".attendance-checkbox").filter(":checked");
     if (checkedRows.length === 0) {
         Swal.fire({
-            text: textMessage,
+            text: i18nMessages.noRowsSelected,
             icon: "warning",
             confirmButtonText: i18nMessages.close,
         });
     } else {
         Swal.fire({
-            text: confirmMessage,
+            text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
             confirmButtonColor: "#008000",
@@ -1030,11 +1024,10 @@ $("#bulkDelete").click(function (e) {
 
 $("#attendanceAddToBatch").click(function (e) {
     e.preventDefault();
-    var textMessage = gettext("No rows are selected to be added to batch attendances.")
     var checkedRows = $(".attendance-checkbox").filter(":checked");
     if (checkedRows.length === 0) {
         Swal.fire({
-            text: textMessage,
+            text: i18nMessages.noRowsSelected,
             icon: "warning",
             confirmButtonText: i18nMessages.close,
         });
@@ -1051,21 +1044,18 @@ $("#attendanceAddToBatch").click(function (e) {
 
 $("#hourAccountbulkDelete").click(function (e) {
     e.preventDefault();
-
-    var confirmMessage = gettext("Do you really want to delete all the selected attendances?")
-    var textMessage = gettext("No rows are selected for deleting attendances.")
     ids = [];
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
     if (ids.length === 0) {
         Swal.fire({
-            text: textMessage,
+            text: i18nMessages.noRowsSelected,
             icon: "warning",
             confirmButtonText: i18nMessages.close,
         });
     } else {
         Swal.fire({
-            text: confirmMessage,
+            text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
             confirmButtonColor: "#008000",
@@ -1145,20 +1135,18 @@ cancelButtonText: i18nMessages.cancel,
     $("#lateComeBulkDelete").click(function (e) {
         e.preventDefault();
 
-        var confirmMessage = gettext("Do you really want to delete all the selected attendances?")
-        var textMessage = gettext("No rows are selected for deleting attendances.")
         ids = [];
         ids.push($("#selectedLatecome").attr("data-ids"));
         ids = JSON.parse($("#selectedLatecome").attr("data-ids"));
         if (ids.length === 0) {
             Swal.fire({
-                text: textMessage,
+                text: i18nMessages.noRowsSelected,
                 icon: "warning",
                 confirmButtonText: i18nMessages.close,
             });
         } else {
             Swal.fire({
-                text: confirmMessage,
+                text: i18nMessages.confirmBulkDelete,
                 icon: "error",
                 showCancelButton: true,
                 confirmButtonColor: "#008000",
@@ -1353,18 +1341,16 @@ function unselectAllReqAttendance() {
 $("#reqAttendanceBulkApprove").click(function (e) {
     e.preventDefault();
 
-    var confirmMessage = gettext("Do you really want to approve all the selected attendance requests?")
-    var textMessage = gettext("No rows are selected from Validate Attendances.")
     var checkedRows = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
     if (checkedRows.length === 0) {
         Swal.fire({
-            text: textMessage,
+            text: i18nMessages.noRowsSelected,
             icon: "warning",
             confirmButtonText: i18nMessages.close,
         });
     } else {
         Swal.fire({
-            text: confirmMessage,
+            text: i18nMessages.confirmBulkApprove,
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
@@ -1394,19 +1380,16 @@ $("#reqAttendanceBulkApprove").click(function (e) {
 
 $("#reqAttendanceBulkReject").click(function (e) {
     e.preventDefault();
-
-    var confirmMessage = gettext("Do you really want to reject all the selected attendance requests?")
-    var textMessage = gettext("No rows are selected from Validate Attendances.");
     var checkedRows = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
     if (checkedRows.length === 0) {
         Swal.fire({
-            text: textMessage,
+            text: i18nMessages.noRowsSelected,
             icon: "warning",
             confirmButtonText: i18nMessages.close,
         });
     } else {
         Swal.fire({
-            text: confirmMessage,
+            text: i18nMessages.confirmBulkReject,
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
@@ -1520,11 +1503,8 @@ $(".requested-attendance-row").change(function () {
 // ******************************************************************
 
 // Iterate through all elements with the 'dateformat_changer' class and format their content
-getCurrentLanguageCode(function (code) {
-    languageCode = code;
-});
 
-if (languageCode != 'de') {
+if (window.CURRENT_LANGUAGE != 'de') {
 
     $(".dateformat_changer").each(function (index, element) {
         var currentDate = $(element).text().trim();
@@ -1545,7 +1525,7 @@ if (languageCode != 'de') {
 
 for_mat = dateFormatter.dateFormat
 
-if (languageCode === 'de') {
+if (window.CURRENT_LANGUAGE === 'de') {
 
     if (["DD-MM-YYYY", "DD.MM.YYYY", "DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "YYYY/MM/DD", "MMM. D, YYYY", "D MMM. YYYY"].includes(for_mat)) {
 
@@ -1599,7 +1579,7 @@ if (languageCode === 'de') {
     else {
         $(".dateformat_changer").each(function (index, element) {
             var currentDate = $(element).text().trim();
-            if (["MMMM D, YYYY", "DD MMMM, YYYY"].includes(for_mat) & languageCode === 'de') {
+            if (["MMMM D, YYYY", "DD MMMM, YYYY"].includes(for_mat) & window.CURRENT_LANGUAGE === 'de') {
                 if (isNaN(currentDate)) {
                     $(element).text(currentDate);
                     return;

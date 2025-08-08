@@ -492,21 +492,17 @@
     ids = makeWorktypeListUnique(ids);
     selectedCount = ids.length;
 
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var message = rowMessages[languageCode];
-      $("#selectedWorktypes").attr("data-ids", JSON.stringify(ids));
-      if (selectedCount === 0) {
-        $("#selectedShowWorktypes").css("display", "none");
-        $("#exportWorktypes").css("display", "none");
-        $("#unselectAllWorktypes").css("display", "none");
-      } else {
-        $("#exportWorktypes").css("display", "inline-flex");
-        $("#unselectAllWorktypes").css("display", "inline-flex");
-        $("#selectedShowWorktypes").css("display", "inline-flex");
-        $("#selectedShowWorktypes").text(selectedCount + " - " + message);
-      }
-    });
+    $("#selectedWorktypes").attr("data-ids", JSON.stringify(ids));
+    if (selectedCount === 0) {
+      $("#selectedShowWorktypes").css("display", "none");
+      $("#exportWorktypes").css("display", "none");
+      $("#unselectAllWorktypes").css("display", "none");
+    } else {
+      $("#exportWorktypes").css("display", "inline-flex");
+      $("#unselectAllWorktypes").css("display", "inline-flex");
+      $("#selectedShowWorktypes").css("display", "inline-flex");
+      $("#selectedShowWorktypes").text(selectedCount + " - " + i18nMessages.selected);
+    }
   }
 
   $(document).ready(function () {

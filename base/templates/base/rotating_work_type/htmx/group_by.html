@@ -299,21 +299,17 @@
 		ids = makeRWorktypeListUnique(ids);
 		selectedCount = ids.length;
 
-		getCurrentLanguageCode(function (code) {
-			languageCode = code;
-			var message = rowMessages[languageCode];
-			$("#selectedRWorktypes").attr("data-ids", JSON.stringify(ids));
-			if (selectedCount === 0) {
-				$("#selectedShowRWorktypes").css("display", "none");
-				$("#exportRWorktypes").css("display", "none");
-				$("#unselectAllRWorktypes").css("display", "none");
-			} else {
-				$("#exportRWorktypes").css("display", "inline-flex");
-				$("#unselectAllRWorktypes").css("display", "inline-flex");
-				$("#selectedShowRWorktypes").css("display", "inline-flex");
-				$("#selectedShowRWorktypes").text(selectedCount + " - " + message);
-			}
-		});
+		$("#selectedRWorktypes").attr("data-ids", JSON.stringify(ids));
+		if (selectedCount === 0) {
+			$("#selectedShowRWorktypes").css("display", "none");
+			$("#exportRWorktypes").css("display", "none");
+			$("#unselectAllRWorktypes").css("display", "none");
+		} else {
+			$("#exportRWorktypes").css("display", "inline-flex");
+			$("#unselectAllRWorktypes").css("display", "inline-flex");
+			$("#selectedShowRWorktypes").css("display", "inline-flex");
+			$("#selectedShowRWorktypes").text(selectedCount + " - " + i18nMessages.selected);
+		}
 	}
 
 	$(document).ready(function () {

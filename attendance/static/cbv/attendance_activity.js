@@ -41,7 +41,7 @@ function deleteAttendanceNav() {
         });
     } else {
         Swal.fire({
-            text: gettext("Do you really want to delete all the selected attendances?"),
+            text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
             confirmButtonColor: "#008000",
@@ -161,7 +161,7 @@ function bulkDeleteAttendanceNav() {
         });
     } else {
         Swal.fire({
-            text: gettext("Do you really want to delete all the selected attendances?"),
+            text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
             confirmButtonColor: "#008000",

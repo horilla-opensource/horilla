@@ -385,45 +385,6 @@
 
 
 <script>
-  var archive_CanMessages = {
-    ar: "هل ترغب حقًا في أرشفة جميع المرشحين المحددين؟",
-    de: "Möchten Sie wirklich alle ausgewählten Kandidaten archivieren?",
-    es: "¿Realmente deseas archivar a todos los candidatos seleccionados?",
-    en: "Do you really want to archive all the selected candidates?",
-    fr: "Voulez-vous vraiment archiver tous les candidats sélectionnés?",
-  };
-
-  var unarchive_CanMessages = {
-    ar: "هل ترغب حقًا في إلغاء أرشفة جميع المرشحين المحددين؟",
-    de: "Möchten Sie wirklich alle ausgewählten Kandidaten aus der Archivierung nehmen?",
-    es: "¿Realmente deseas desarchivar a todos los candidatos seleccionados?",
-    en: "Do you really want to unarchive all the selected candidates?",
-    fr: "Voulez-vous vraiment désarchiver tous les candidats sélectionnés?",
-  };
-
-  var delete_CanMessages = {
-    ar: "هل ترغب حقًا في حذف جميع المرشحين المحددين؟",
-    de: "Möchten Sie wirklich alle ausgewählten Kandidaten löschen?",
-    es: "¿Realmente deseas eliminar a todos los candidatos seleccionados?",
-    en: "Do you really want to delete all the selected candidates?",
-    fr: "Voulez-vous vraiment supprimer tous les candidats sélectionnés?",
-  };
-
-  var noRowMessages = {
-    ar: "لم يتم تحديد أي صفوف.",
-    de: "Es wurden keine Zeilen ausgewählt.",
-    es: "No se han seleccionado filas.",
-    en: "No rows have been selected.",
-    fr: "Aucune ligne n'a été sélectionnée.",
-  };
-
-  var rowMessages = {
-    ar: " تم الاختيار",
-    de: " Ausgewählt",
-    es: " Seleccionado",
-    en: " Selected",
-    fr: " Sélectionné",
-  };
   function makeListUnique1(list) {
     return Array.from(new Set(list));
   }
@@ -491,43 +452,11 @@
   });
 
 
-  function getCurrentLanguageCode(callback) {
-    var languageCode = $("#main-section-data").attr("data-lang");
-    var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
-    if (allowedLanguageCodes.includes(languageCode)) {
-      callback(languageCode);
-    } else {
-      $.ajax({
-        type: "GET",
-        url: "/employee/get-language-code/",
-        success: function (response) {
-          var ajaxLanguageCode = response.language_code;
-          $("#main-section-data").attr("data-lang", ajaxLanguageCode);
-          callback(
-            allowedLanguageCodes.includes(ajaxLanguageCode)
-              ? ajaxLanguageCode
-              : "en"
-          );
-        },
-        error: function () {
-          callback("en");
-        },
-      });
-    }
-  }
-
   $(document).ready(function () {
-    var excelMessages = {
-      ar: "هل ترغب في تنزيل ملف Excel؟",
-      de: "Möchten Sie die Excel-Datei herunterladen?",
-      es: "¿Desea descargar el archivo de Excel?",
-      en: "Do you want to download the excel file?",
-      fr: "Voulez-vous télécharger le fichier Excel?",
-    };
     var ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
     var uniqueIds = makeListUnique1(ids);
     var selectedCount = uniqueIds.length;
-    var message1 = rowMessages[languageCode];
+
     $("#selectAllInstances").click(function () {
       $("#selectedInstances").attr("data-clicked", 1);
       var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
@@ -588,49 +517,44 @@
     });
     $("#exportCandidates").click(function (e) {
       var currentDate = new Date().toISOString().slice(0, 10);
-      var languageCode = null;
       ids = [];
       ids.push($("#selectedInstances").attr("data-ids"));
       ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-      getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = excelMessages[languageCode];
-        Swal.fire({
-          text: confirmMessage,
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonColor: "#008000",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Confirm",
-        }).then(function (result) {
-          if (result.isConfirmed) {
-            $.ajax({
-              type: "GET",
-              url: "/recruitment/candidate-info-export",
-              data: {
-                ids: JSON.stringify(ids),
-              },
-              dataType: "binary",
-              xhrFields: {
-                responseType: "blob",
-              },
-              success: function (response) {
-                const file = new Blob([response], {
-                  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                });
-                const url = URL.createObjectURL(file);
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = "Candidate_file_" + currentDate + ".xlsx";
-                document.body.appendChild(link);
-                link.click();
-              },
-              error: function (xhr, textStatus, errorThrown) {
-                console.error("Error downloading file:", errorThrown);
-              },
-            });
-          }
-        });
+      Swal.fire({
+        text: i18nMessages.downloadExcel,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Confirm",
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "GET",
+            url: "/recruitment/candidate-info-export",
+            data: {
+              ids: JSON.stringify(ids),
+            },
+            dataType: "binary",
+            xhrFields: {
+              responseType: "blob",
+            },
+            success: function (response) {
+              const file = new Blob([response], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+              });
+              const url = URL.createObjectURL(file);
+              const link = document.createElement("a");
+              link.href = url;
+              link.download = "Candidate_file_" + currentDate + ".xlsx";
+              document.body.appendChild(link);
+              link.click();
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.error("Error downloading file:", errorThrown);
+            },
+          });
+        }
       });
     });
   });

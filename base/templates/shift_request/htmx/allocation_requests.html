@@ -238,24 +238,22 @@ style="cursor: pointer;"
           ids.splice(index, 1);
         }
       }
-    });
+  });
 
-    ids = makeShiftListUnique(ids);
-    selectedCount = ids.length;
+  ids = makeShiftListUnique(ids);
+  selectedCount = ids.length;
 
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var message = rowMessages[languageCode];
-      $("#selectedShifts").attr("data-ids", JSON.stringify(ids));
-      if (selectedCount === 0) {
-        $("#selectedShowShifts").css("display", "none");
-        $("#exportShifts").css("display", "none");
-      } else {
-        $("#exportShifts").css("display", "inline-flex");
-        $("#selectedShowShifts").css("display", "inline-flex");
-        $("#selectedShowShifts").text(selectedCount + " - " + message);
-      }
-    });
+
+  $("#selectedShifts").attr("data-ids", JSON.stringify(ids));
+    if (selectedCount === 0) {
+      $("#selectedShowShifts").css("display", "none");
+      $("#exportShifts").css("display", "none");
+    } else {
+      $("#exportShifts").css("display", "inline-flex");
+      $("#selectedShowShifts").css("display", "inline-flex");
+      $("#selectedShowShifts").text(selectedCount + " - " + i18nMessages.selected);
+    }
+
   }
 
   $(document).ready(function () {
