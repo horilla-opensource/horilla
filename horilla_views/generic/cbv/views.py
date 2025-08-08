@@ -7,7 +7,7 @@ import json
 import logging
 import traceback
 from typing import Any
-from urllib.parse import parse_qs, urlencode
+from urllib.parse import parse_qs, parse_qsl, urlencode, urlparse, urlunparse
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -2159,7 +2159,6 @@ class HorillaNavView(TemplateView):
         context["group_by_fields"] = self.group_by_fields
         context["actions"] = self.actions
         context["filter_body_template"] = self.filter_body_template
-        context["view_types"] = self.view_types
         context["create_attrs"] = self.create_attrs
         context["search_in"] = self.search_in
         context["apply_first_filter"] = self.apply_first_filter
@@ -2177,6 +2176,32 @@ class HorillaNavView(TemplateView):
         context["active_view"] = models.ActiveView.objects.filter(
             path=self.request.path
         ).first()
+
+        extra_params = {
+            "referrer": self.request.META.get("HTTP_REFERER", ""),
+        }
+
+        # Update each view's URL with query parameters
+        for view in self.view_types:
+            parsed = urlparse(view.get("url", ""))
+
+            combined_query = dict(parse_qsl(parsed.query))
+            combined_query.update(self.request.GET)
+            combined_query.update(extra_params)
+
+            view["url"] = urlunparse(parsed._replace(query=urlencode(combined_query)))
+
+        context["view_types"] = self.view_types
+
+        # Update search URL with query parameters
+        parsed_search = urlparse(str(self.search_url))
+        parsed_search_url = dict(parse_qsl(parsed_search.query))
+        parsed_search_url.update(self.request.GET)
+        parsed_search_url.update(extra_params)
+
+        context["search_url"] = urlunparse(
+            parsed_search._replace(query=urlencode(parsed_search_url))
+        )
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaNavView] = context
         return context
 

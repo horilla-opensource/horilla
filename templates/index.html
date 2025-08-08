@@ -12,6 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <script>
+        window.CURRENT_LANGUAGE = "{{ LANGUAGE_CODE }}";
         var at_work_seconds = {{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}
         var run = 0
     </script>
@@ -221,6 +222,7 @@
         </div>
     </div>
 
+    <script src="{% url 'javascript-catalog' %}"></script>
     <!--htmx script -->
     <script src="{% static 'build/js/web.frontend.min.js' %}"></script>
     <script src="{% static 'htmx/htmx.min.js' %}"></script>
