@@ -1,0 +1,57 @@
+{% extends 'index.html' %}
+{% load i18n %}
+{% block content %}
+<div class="oh-wrapper">
+    {% include "cbv/projects/project_details.html" %}
+    <div class="d-flex mt-3 mb-3">
+        <div class="oh-card me-2"><strong>{% trans "Total Hours Logged" %}:</strong> {{ total_hours }}</div>
+        <div class="oh-card"><strong>{% trans "Total Tasks Created" %}:</strong> {{ total_tasks }}</div>
+    </div>
+    <form method="get" class="mb-3 d-flex align-items-end gap-2">
+        <input type="date" name="start" value="{{ start }}" class="oh-input"/>
+        <input type="date" name="end" value="{{ end }}" class="oh-input"/>
+        <select name="member" class="oh-select">
+            <option value="">{% trans "All Members" %}</option>
+            {% for emp in members %}
+            <option value="{{ emp.id }}" {% if member == emp.id|stringformat:'s' %}selected{% endif %}>{{ emp }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="oh-btn oh-btn--small">{% trans "Filter" %}</button>
+    </form>
+    {% if grouped_timesheets %}
+    <div class="accordion" id="tsAccordion">
+        {% for emp, items in grouped_timesheets.items %}
+        <div class="oh-card mb-2">
+            <div class="oh-card__header" data-bs-toggle="collapse" data-bs-target="#emp{{ forloop.counter }}">
+                {{ emp }}
+            </div>
+            <div id="emp{{ forloop.counter }}" class="collapse">
+                <table class="oh-table">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Task Name" %}</th>
+                            <th>{% trans "Date" %}</th>
+                            <th>{% trans "Hours Spent" %}</th>
+                            <th>{% trans "Status" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ts in items %}
+                        <tr>
+                            <td>{{ ts.task_name }}</td>
+                            <td>{{ ts.date }}</td>
+                            <td>{{ ts.time_spent }}</td>
+                            <td>{{ ts.get_status_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>{% trans "No result found for the selected date." %}</p>
+    {% endif %}
+</div>
+{% endblock %}

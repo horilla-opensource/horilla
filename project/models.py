@@ -534,13 +534,7 @@ class TimeSheet(HorillaModel):
         related_name="project_timesheet",
         verbose_name=_("Project"),
     )
-    task_id = models.ForeignKey(
-        Task,
-        on_delete=models.CASCADE,
-        null=True,
-        related_name="task_timesheet",
-        verbose_name=_("Task"),
-    )
+    task_name = models.CharField(max_length=255, verbose_name=_("Task"))
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
@@ -575,16 +569,7 @@ class TimeSheet(HorillaModel):
             )
         if self.employee_id:
             employee = self.employee_id
-            if self.task_id:
-                task = self.task_id
-                if (
-                    not employee in task.task_managers.all()
-                    and not employee in task.task_members.all()
-                    and not employee in task.project.managers.all()
-                    and not employee in task.project.members.all()
-                ):
-                    raise ValidationError(_("Employee not included in this task"))
-            elif self.project_id:
+            if self.project_id:
                 if (
                     not employee in self.project_id.managers.all()
                     and not employee in self.project_id.members.all()
@@ -594,7 +579,7 @@ class TimeSheet(HorillaModel):
                 raise ValidationError({"date": _("You cannot choose a future date.")})
 
     def __str__(self):
-        return f"{self.employee_id} {self.project_id} {self.task_id} {self.date} {self.time_spent}"
+        return f"{self.employee_id} {self.project_id} {self.task_name} {self.date} {self.time_spent}"
 
     def status_column(self):
         return dict(self.TIME_SHEET_STATUS).get(self.status)

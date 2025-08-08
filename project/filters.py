@@ -128,8 +128,8 @@ class TimeSheetFilter(HorillaFilterSet):
         ),
     )
 
-    task = django_filters.ModelChoiceFilter(
-        field_name="task_id", queryset=Task.objects.all()
+    task_name = django_filters.CharFilter(
+        field_name="task_name", lookup_expr="icontains"
     )
     search = django_filters.CharFilter(method="filter_by_employee")
 
@@ -142,7 +142,7 @@ class TimeSheetFilter(HorillaFilterSet):
         fields = [
             "employee_id",
             "project_id",
-            "task_id",
+            "task_name",
             "date",
             "status",
         ]
@@ -151,6 +151,8 @@ class TimeSheetFilter(HorillaFilterSet):
         super().__init__(*args, **kwargs)
         self.form.fields["start_from"].label = _("Start Date From")
         self.form.fields["end_till"].label = _("End Date Till")
+        if "task_name" in self.form.fields:
+            self.form.fields["task_name"].label = _("Task")
 
     def filter_by_employee(self, queryset, _, value):
         """
