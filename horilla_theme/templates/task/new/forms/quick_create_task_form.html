@@ -50,9 +50,9 @@
     $(document).ready(function () {
       $('.cancelForm').on('click', function (e) {
         e.preventDefault();
-  
+
         const toggleBtn = $(this).closest('.kanban-block').find('.btn-toggle');
-  
+
         if (toggleBtn.length) {
           toggleBtn.trigger('click');
         } else {
@@ -61,4 +61,3 @@
       });
     });
 </script>
-  
