@@ -691,148 +691,144 @@
 
 <script src="{% static '/base/actions.js' %}"></script>
 <script>
-  function addingShiftIds() {
+function addingShiftIds() {
     var ids = JSON.parse($("#selectedShifts").attr("data-ids") || "[]");
     var selectedCount = 0;
 
     $(".all-shift-requests-row").each(function () {
-      if ($(this).is(":checked")) {
-        ids.push(this.id);
-      } else {
-        var index = ids.indexOf(this.id);
-        if (index > -1) {
-          ids.splice(index, 1);
+        if ($(this).is(":checked")) {
+            ids.push(this.id);
+        } else {
+            var index = ids.indexOf(this.id);
+            if (index > -1) {
+                ids.splice(index, 1);
+            }
         }
-      }
     });
 
     ids = makeShiftListUnique(ids);
     selectedCount = ids.length;
-
-    getCurrentLanguageCode(function (code) {
-      languageCode = code;
-      var message = rowMessages[languageCode];
-      $("#selectedShifts").attr("data-ids", JSON.stringify(ids));
-      if (selectedCount === 0) {
+    $("#selectedShifts").attr("data-ids", JSON.stringify(ids));
+    if (selectedCount === 0) {
         $("#selectedShowShifts").css("display", "none");
         $("#exportShifts").css("display", "none");
         $("#unselectAllShifts").css("display", "none");
-      } else {
+    } else {
         $("#exportShifts").css("display", "inline-flex");
         $("#unselectAllShifts").css("display", "inline-flex");
         $("#selectedShowShifts").css("display", "inline-flex");
-        $("#selectedShowShifts").text(selectedCount + " - " + message);
-      }
-    });
-  }
+        $("#selectedShowShifts").text(selectedCount + " - " + i18nMessages.selected);
+    }
 
-  $(document).ready(function () {
+}
+
+$(document).ready(function () {
     $(".all-shift-requests-row").change(function () {
-      var parentTable = $(this).closest(".oh-sticky-table");
-      var body = parentTable.find(".oh-sticky-table__tbody");
-      var parentCheckbox = parentTable.find(".all-shift-requests");
-      parentCheckbox.prop(
-        "checked",
-        body.find(".all-shift-requests-row:checked").length ===
-          body.find(".all-shift-requests-row").length
-      );
-      addingShiftIds();
+        var parentTable = $(this).closest(".oh-sticky-table");
+        var body = parentTable.find(".oh-sticky-table__tbody");
+        var parentCheckbox = parentTable.find(".all-shift-requests");
+        parentCheckbox.prop(
+            "checked",
+            body.find(".all-shift-requests-row:checked").length ===
+            body.find(".all-shift-requests-row").length
+        );
+        addingShiftIds();
     });
     $(".all-shift-requests").change(function () {
-      addingShiftIds();
+        addingShiftIds();
     });
 
     tickShiftCheckboxes();
 
     $("#selectAllShifts").click(function () {
-      $("#selectedShifts").attr("data-clicked", 1);
-      $("#selectedShowShifts").removeAttr("style");
-      var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
+        $("#selectedShifts").attr("data-clicked", 1);
+        $("#selectedShowShifts").removeAttr("style");
+        var savedFilters = JSON.parse(localStorage.getItem("savedFilters"));
 
-      if (savedFilters && savedFilters["filterData"] !== null) {
-        var filter = savedFilters["filterData"];
-        $.ajax({
-          url: '{% url "shift-select-filter" %}',
-          data: { page: "all", filter: JSON.stringify(filter) },
-          type: "GET",
-          dataType: "json",
-          success: function (response) {
-            var employeeIds = response.employee_ids;
-            var selectedCount = employeeIds.length;
-            for (var i = 0; i < employeeIds.length; i++) {
-              var empId = employeeIds[i];
-              $("#" + empId).prop("checked", true);
-            }
-            $("#selectedShifts").attr("data-ids", JSON.stringify(employeeIds));
+        if (savedFilters && savedFilters["filterData"] !== null) {
+            var filter = savedFilters["filterData"];
+            $.ajax({
+                url: '{% url "shift-select-filter" %}',
+                data: { page: "all", filter: JSON.stringify(filter) },
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    var employeeIds = response.employee_ids;
+                    var selectedCount = employeeIds.length;
+                    for (var i = 0; i < employeeIds.length; i++) {
+                        var empId = employeeIds[i];
+                        $("#" + empId).prop("checked", true);
+                    }
+                    $("#selectedShifts").attr("data-ids", JSON.stringify(employeeIds));
 
-            count = makeShiftListUnique(employeeIds);
-            tickShiftCheckboxes(count);
-          },
-          error: function (xhr, status, error) {
-            console.error("Error:", error);
-          },
-        });
-      } else {
-        $.ajax({
-          url: '{% url "shift-select" %}',
-          data: { page: "all" },
-          type: "GET",
-          dataType: "json",
-          success: function (response) {
-            var employeeIds = response.employee_ids;
-            var selectedCount = employeeIds.length;
-            for (var i = 0; i < employeeIds.length; i++) {
-              var empId = employeeIds[i];
-              $("#" + empId).prop("checked", true);
-            }
-            var previousIds = $("#selectedShifts").attr("data-ids");
-            $("#selectedShifts").attr(
-              "data-ids",
-              JSON.stringify(
-                Array.from(
-                  new Set([...employeeIds, ...JSON.parse(previousIds)])
-                )
-              )
-            );
-            count = makeShiftListUnique(employeeIds);
-            tickShiftCheckboxes(count);
-          },
-          error: function (xhr, status, error) {
-            console.error("Error:", error);
-          },
-        });
-      }
+                    count = makeShiftListUnique(employeeIds);
+                    tickShiftCheckboxes(count);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                },
+            });
+        } else {
+            $.ajax({
+                url: '{% url "shift-select" %}',
+                data: { page: "all" },
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    var employeeIds = response.employee_ids;
+                    var selectedCount = employeeIds.length;
+                    for (var i = 0; i < employeeIds.length; i++) {
+                        var empId = employeeIds[i];
+                        $("#" + empId).prop("checked", true);
+                    }
+                    var previousIds = $("#selectedShifts").attr("data-ids");
+                    $("#selectedShifts").attr(
+                        "data-ids",
+                        JSON.stringify(
+                            Array.from(
+                                new Set([...employeeIds, ...JSON.parse(previousIds)])
+                            )
+                        )
+                    );
+                    count = makeShiftListUnique(employeeIds);
+                    tickShiftCheckboxes(count);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                },
+            });
+        }
     });
 
     $("#unselectAllShifts").click(function () {
-      $("#selectedShifts").attr("data-clicked", 0);
-      $.ajax({
-        url: '{% url "shift-select" %}',
-        data: { page: "all", filter: "{}" },
-        type: "GET",
-        dataType: "json",
-        success: function (response) {
-          var employeeIds = response.employee_ids;
-          for (var i = 0; i < employeeIds.length; i++) {
-            var empId = employeeIds[i];
-            $("#" + empId).prop("checked", false);
-            $(".all-shift-requests").prop("checked", false);
-          }
-          var ids = JSON.parse($("#selectedShifts").attr("data-ids") || "[]");
-          var uniqueIds = makeListUnique(ids);
-          toggleHighlight(uniqueIds);
-          $("#selectedShifts").attr("data-ids", JSON.stringify([]));
+        $("#selectedShifts").attr("data-clicked", 0);
+        $.ajax({
+            url: '{% url "shift-select" %}',
+            data: { page: "all", filter: "{}" },
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                var employeeIds = response.employee_ids;
+                for (var i = 0; i < employeeIds.length; i++) {
+                    var empId = employeeIds[i];
+                    $("#" + empId).prop("checked", false);
+                    $(".all-shift-requests").prop("checked", false);
+                }
+                var ids = JSON.parse($("#selectedShifts").attr("data-ids") || "[]");
+                var uniqueIds = makeListUnique(ids);
+                toggleHighlight(uniqueIds);
+                $("#selectedShifts").attr("data-ids", JSON.stringify([]));
 
-          count = [];
-          tickShiftCheckboxes(count);
-        },
-        error: function (xhr, status, error) {
-          console.error("Error:", error);
-        },
-      });
+                count = [];
+                tickShiftCheckboxes(count);
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+            },
+        });
     });
     $("#exportShifts").click(function (e) {
-      exportShiftRequests();
+        exportShiftRequests();
     });
-  });
+});
 </script>

@@ -56,7 +56,7 @@ class AllocationList(HorillaListView):
         self.search_url = reverse("list-asset")
 
     columns = [
-        (_("Asset"), "asset_id__asset_name", "get_avatar"),
+        (_("Asset"), "asset_id", "get_avatar"),
         (_("Category"), "asset_id__asset_category_id"),
         (_("Expiry Date"), "asset_id__expiry_date"),
     ]

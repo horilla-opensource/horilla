@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-08 12:06+0530\n"
+"POT-Creation-Date: 2025-08-08 12:10+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,94 +16,89 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: .\attendance\static\attendance\actions.js:37
 msgid "An unexpected error occurred. Please refresh the page."
-msgstr ""
-"Ein unerwarteter Fehler ist aufgetreten. Bitte aktualisieren Sie die Seite."
+msgstr "Une erreur inattendue s'est produite. Veuillez rafraîchir la page."
 
 #: .\attendance\static\attendance\actions.js:760
 #: .\attendance\static\cbv\attendance_activity.js:227
 msgid "Do you really want to validate all the selected attendances?"
-msgstr "Möchten Sie wirklich alle ausgewählten Anwesenheiten bestätigen?"
+msgstr "Voulez-vous vraiment valider toutes les présences sélectionnées ?"
 
 #: .\attendance\static\attendance\actions.js:761
 #: .\attendance\static\cbv\attendance\hour_account.js:151
 msgid "No rows are selected from Validate Attendances."
-msgstr "Es wurden keine Zeilen aus „Anwesenheiten validieren“ ausgewählt."
+msgstr "Aucune ligne n'est sélectionnée dans Valider les présences."
 
 #: .\attendance\static\attendance\actions.js:807
 #: .\attendance\static\cbv\attendance_activity.js:270
 msgid "Do you really want to approve OT for all the selected attendances?"
-msgstr ""
-"Möchten Sie wirklich für alle ausgewählten Anwesenheiten Überstunden "
-"genehmigen?"
+msgstr "Voulez-vous vraiment approuver les heures supplémentaires pour toutes les présences sélectionnées ?"
 
 #: .\attendance\static\attendance\actions.js:808
 #: .\attendance\static\cbv\attendance_activity.js:264
 msgid "No rows are selected from OT Attendances."
-msgstr "Es sind keine Zeilen aus den OT-Anwesenheiten ausgewählt."
+msgstr "Aucune ligne n'est sélectionnée dans les présences OT."
 
 #: .\attendance\static\cbv\attendance\hour_account.js:157
 msgid "Do you really want to reject all the selected attendance requests?"
-msgstr "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen ablehnen?"
+msgstr "Voulez-vous vraiment rejeter toutes les demandes de présence sélectionnées ?"
 
 #: .\attendance\static\cbv\attendance_activity.js:199
 msgid "Pending Attendance Update Request!"
-msgstr "Ausstehende Anfrage zur Anwesenheitsaktualisierung!"
+msgstr "Demande de mise à jour de la présence en attente !"
 
 #: .\attendance\static\cbv\attendance_activity.js:200
 msgid ""
 "An attendance request exists for updating this attendance prior to "
 "validation."
-msgstr ""
-"Zur Aktualisierung dieser Anwesenheit vor der Validierung liegt eine "
-"Anwesenheitsanfrage vor."
+msgstr "Une demande de présence existe pour mettre à jour cette présence avant validation."
 
 #: .\attendance\static\cbv\attendance_activity.js:202
 msgid "View Request"
-msgstr "Anfrage anzeigen"
+msgstr "Afficher la demande"
 
 #: .\employee\static\document\actions.js:2
 msgid "Some selected requests have already been approved."
-msgstr "Einige ausgewählte Anfragen wurden bereits genehmigt."
+msgstr "Certaines demandes sélectionnées ont déjà été approuvées."
 
 #: .\employee\static\document\actions.js:3
 msgid "Some selected requests have already been rejected."
-msgstr "Einige ausgewählte Anfragen wurden bereits abgelehnt."
+msgstr "Certaines demandes sélectionnées ont déjà été rejetées."
 
 #: .\leave\static\leave_request\action.js:209
 msgid "Do you wish to create a Leave Report?"
-msgstr "Möchten Sie einen Abwesenheitsbericht erstellen?"
+msgstr "Souhaitez-vous créer un rapport de congé ?"
 
 #: .\leave\static\leave_request\action.js:284
 msgid "Do you want to reject the selected leave requests?"
-msgstr "Möchten Sie die ausgewählten Urlaubsanträge ablehnen?"
+msgstr "Voulez-vous rejeter les demandes de congés sélectionnées ?"
 
 #: .\payroll\static\cbv\payslip.js:37
 msgid "Do you want to send the payslip by mail?"
-msgstr "Möchten Sie die Gehaltsabrechnung per Post versenden?"
+msgstr "Voulez-vous envoyer la fiche de paie par courrier ?"
 
 #: .\payroll\static\payroll\dashboard.js:55
 msgid "Name of Employees"
-msgstr "Name der Mitarbeiter"
+msgstr "Nom des employés"
 
 #: .\payroll\static\payroll\dashboard.js:66
 msgid "Amount"
-msgstr "Menge"
+msgstr "Montant"
 
 #: .\project\static\project\import.js:182
 msgid "Upload Completed!"
-msgstr "Hochladen abgeschlossen!"
+msgstr "Téléchargement terminé !"
 
 #: .\project\static\project\import.js:187
 msgid "Imported Successfully!"
-msgstr "Erfolgreich importiert!"
+msgstr "Importé avec succès !"
 
 #: .\project\static\project\import.js:217
 msgid "Please upload a file with the .xlsx extension only."
-msgstr "Bitte laden Sie nur eine Datei mit der Erweiterung .xlsx hoch."
+msgstr "Veuillez télécharger un fichier avec l'extension .xlsx uniquement."
 
 #: .\static\admin\js\SelectFilter2.js:38
 #, javascript-format
@@ -236,7 +231,7 @@ msgstr ""
 #: .\static\admin\js\admin\DateTimeShortcuts.js:176
 #: .\static\admin\js\admin\DateTimeShortcuts.js:334 .\static\index\index.js:5
 msgid "Cancel"
-msgstr "Stornieren"
+msgstr ""
 
 #: .\static\admin\js\admin\DateTimeShortcuts.js:239
 #: .\static\admin\js\admin\DateTimeShortcuts.js:319
@@ -516,53 +511,52 @@ msgstr ""
 
 #: .\static\build\vendor\ionicons\@stencil\core\dev-server\ws.js:1
 msgid "close"
-msgstr "schließen"
+msgstr ""
 
 #: .\static\index\index.js:3
 msgid "Confirm"
-msgstr "Bestätigen"
+msgstr "Confirmer"
 
 #: .\static\index\index.js:4
 msgid "Close"
-msgstr "Schließen"
+msgstr "Fermer"
 
 #: .\static\index\index.js:6
 msgid "Selected"
-msgstr "Ausgewählt"
+msgstr "Choisi"
 
 #: .\static\index\index.js:7
 msgid "Uploading..."
-msgstr "Hochladen..."
+msgstr "Téléchargement..."
 
 #: .\static\index\index.js:8
 msgid "No Records found"
-msgstr "Keine Datensätze gefunden"
+msgstr "Aucun enregistrement trouvé"
 
 #: .\static\index\index.js:9
 msgid "Do you want to download the excel file?"
-msgstr "Möchten Sie die Excel-Datei herunterladen?"
+msgstr "Voulez-vous télécharger le fichier Excel ?"
 
 #: .\static\index\index.js:10
 msgid "Do you want to download the template?"
-msgstr "Möchten Sie die Vorlage herunterladen?"
+msgstr "Voulez-vous télécharger le modèle ?"
 
 #: .\static\index\index.js:11
 msgid "No rows are selected from the records."
-msgstr "Aus den Datensätzen sind keine Zeilen ausgewählt."
+msgstr "Aucune ligne n'est sélectionnée dans les enregistrements."
 
 #: .\static\index\index.js:12
 msgid "Do you really want to delete all the selected records?"
-msgstr "Möchten Sie wirklich alle ausgewählten Datensätze löschen?"
+msgstr "Voulez-vous vraiment supprimer tous les enregistrements sélectionnés ?"
 
 #: .\static\index\index.js:13
 msgid "Do you really want to archive all the selected records?"
-msgstr "Möchten Sie wirklich alle ausgewählten Datensätze archivieren?"
+msgstr "Voulez-vous vraiment archiver tous les enregistrements sélectionnés ?"
 
 #: .\static\index\index.js:14 .\static\index\index.js:15
 msgid "Do you really want to approve all the selected requests?"
-msgstr "Möchten Sie wirklich alle ausgewählten Anfragen genehmigen?"
+msgstr "Voulez-vous vraiment approuver toutes les demandes sélectionnées ?"
 
 #: .\static\index\index.js:16
 msgid "Do you really want to unarchive all the selected records?"
-msgstr ""
-"Möchten Sie wirklich alle ausgewählten Datensätze aus dem Archiv entfernen?"
+msgstr "Voulez-vous vraiment désarchiver tous les enregistrements sélectionnés ?"

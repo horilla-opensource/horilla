@@ -215,7 +215,7 @@
                                 "Download error list & Skip Import",
                             denyButtonText:
                                 "Downlod error list & Continue Import",
-                            cancelButtonText: "Cancel",
+                            cancelButtonText: i18nMessages.cancel,
                             confirmButtonColor: "#d33",
                             denyButtonColor: "#008000",
                             customClass: {
@@ -296,40 +296,36 @@
 
     function template_download(e) {
         e.preventDefault();
-        var languageCode = null;
-        getCurrentLanguageCode(function (code) {
-            languageCode = code;
-            var confirmMessage = downloadMessages[languageCode];
-            Swal.fire({
-                text: confirmMessage,
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{% static 'import_templates/shift_schedule_template.csv' %}",
-                        method: "GET",
-                        xhrFields: {
-                            responseType: "blob",
-                        },
-                        success: function (data) {
-                            var blob = new Blob([data], { type: "text/csv" });
-                            var link = $("<a>")
-                                .attr("href", window.URL.createObjectURL(blob))
-                                .attr("download", "shift_schedule_template.csv")
-                                .appendTo("body");
-                            link[0].click();
-                            link.remove();
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("Failed to download file:", error);
-                        },
-                    });
-                }
-            });
+        Swal.fire({
+            text: i18nMessages.downloadTemplate,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{% static 'import_templates/shift_schedule_template.csv' %}",
+                    method: "GET",
+                    xhrFields: {
+                        responseType: "blob",
+                    },
+                    success: function (data) {
+                        var blob = new Blob([data], { type: "text/csv" });
+                        var link = $("<a>")
+                            .attr("href", window.URL.createObjectURL(blob))
+                            .attr("download", "shift_schedule_template.csv")
+                            .appendTo("body");
+                        link[0].click();
+                        link.remove();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Failed to download file:", error);
+                    },
+                });
+            }
         });
     }
 </script>

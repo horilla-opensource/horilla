@@ -20,13 +20,13 @@ function hourAccountbulkDelete() {
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
     if (ids.length === 0) {
         Swal.fire({
-            text: gettext("No rows are selected for deleting attendances."),
+            text: i18nMessages.noRowsSelected,
             icon: "warning",
             confirmButtonText: i18nMessages.close,
         });
     } else {
         Swal.fire({
-            text: gettext("Do you really want to delete all the selected attendances?"),
+            text: i18nMessages.confirmBulkDelete,
             icon: "error",
             showCancelButton: true,
             confirmButtonColor: "#008000",
@@ -112,7 +112,7 @@ function reqAttendanceBulkApprove() {
         });
     } else {
         Swal.fire({
-            text: gettext("Do you really want to approve all the selected attendance requests?"),
+            text: i18nMessages.confirmBulkApprove,
             icon: "info",
             showCancelButton: true,
             confirmButtonColor: "#008000",
