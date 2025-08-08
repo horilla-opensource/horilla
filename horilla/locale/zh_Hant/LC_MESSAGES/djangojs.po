@@ -1,0 +1,562 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-08 12:10+0530\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: .\attendance\static\attendance\actions.js:37
+msgid "An unexpected error occurred. Please refresh the page."
+msgstr ""
+
+#: .\attendance\static\attendance\actions.js:760
+#: .\attendance\static\cbv\attendance_activity.js:227
+msgid "Do you really want to validate all the selected attendances?"
+msgstr ""
+
+#: .\attendance\static\attendance\actions.js:761
+#: .\attendance\static\cbv\attendance\hour_account.js:151
+msgid "No rows are selected from Validate Attendances."
+msgstr ""
+
+#: .\attendance\static\attendance\actions.js:807
+#: .\attendance\static\cbv\attendance_activity.js:270
+msgid "Do you really want to approve OT for all the selected attendances?"
+msgstr ""
+
+#: .\attendance\static\attendance\actions.js:808
+#: .\attendance\static\cbv\attendance_activity.js:264
+msgid "No rows are selected from OT Attendances."
+msgstr ""
+
+#: .\attendance\static\cbv\attendance\hour_account.js:157
+msgid "Do you really want to reject all the selected attendance requests?"
+msgstr ""
+
+#: .\attendance\static\cbv\attendance_activity.js:199
+msgid "Pending Attendance Update Request!"
+msgstr ""
+
+#: .\attendance\static\cbv\attendance_activity.js:200
+msgid ""
+"An attendance request exists for updating this attendance prior to "
+"validation."
+msgstr ""
+
+#: .\attendance\static\cbv\attendance_activity.js:202
+msgid "View Request"
+msgstr ""
+
+#: .\employee\static\document\actions.js:2
+msgid "Some selected requests have already been approved."
+msgstr ""
+
+#: .\employee\static\document\actions.js:3
+msgid "Some selected requests have already been rejected."
+msgstr ""
+
+#: .\leave\static\leave_request\action.js:209
+msgid "Do you wish to create a Leave Report?"
+msgstr ""
+
+#: .\leave\static\leave_request\action.js:284
+msgid "Do you want to reject the selected leave requests?"
+msgstr ""
+
+#: .\payroll\static\cbv\payslip.js:37
+msgid "Do you want to send the payslip by mail?"
+msgstr ""
+
+#: .\payroll\static\payroll\dashboard.js:55
+msgid "Name of Employees"
+msgstr ""
+
+#: .\payroll\static\payroll\dashboard.js:66
+msgid "Amount"
+msgstr ""
+
+#: .\project\static\project\import.js:182
+msgid "Upload Completed!"
+msgstr ""
+
+#: .\project\static\project\import.js:187
+msgid "Imported Successfully!"
+msgstr ""
+
+#: .\project\static\project\import.js:217
+msgid "Please upload a file with the .xlsx extension only."
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:38
+#, javascript-format
+msgid "Available %s"
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:44
+#, javascript-format
+msgid ""
+"This is the list of available %s. You may choose some by selecting them in "
+"the box below and then clicking the \"Choose\" arrow between the two boxes."
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:60
+#, javascript-format
+msgid "Type into this box to filter down the list of available %s."
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:65
+msgid "Filter"
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:69
+msgid "Choose all"
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:69
+#, javascript-format
+msgid "Click to choose all %s at once."
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:75
+msgid "Choose"
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:77
+msgid "Remove"
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:83
+#, javascript-format
+msgid "Chosen %s"
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:89
+#, javascript-format
+msgid ""
+"This is the list of chosen %s. You may remove some by selecting them in the "
+"box below and then clicking the \"Remove\" arrow between the two boxes."
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:99
+msgid "Remove all"
+msgstr ""
+
+#: .\static\admin\js\SelectFilter2.js:99
+#, javascript-format
+msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+#: .\static\admin\js\actions.js:67
+msgid "%(sel)s of %(cnt)s selected"
+msgid_plural "%(sel)s of %(cnt)s selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\static\admin\js\actions.js:161
+msgid ""
+"You have unsaved changes on individual editable fields. If you run an "
+"action, your unsaved changes will be lost."
+msgstr ""
+
+#: .\static\admin\js\actions.js:174
+msgid ""
+"You have selected an action, but you haven’t saved your changes to "
+"individual fields yet. Please click OK to save. You’ll need to re-run the "
+"action."
+msgstr ""
+
+#: .\static\admin\js\actions.js:175
+msgid ""
+"You have selected an action, and you haven’t made any changes on individual "
+"fields. You’re probably looking for the Go button rather than the Save "
+"button."
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:13
+#: .\static\admin\js\admin\DateTimeShortcuts.js:111
+msgid "Now"
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:14
+msgid "Midnight"
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:15
+msgid "6 a.m."
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:16
+msgid "Noon"
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:17
+msgid "6 p.m."
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:78
+#, javascript-format
+msgid "Note: You are %s hour ahead of server time."
+msgid_plural "Note: You are %s hours ahead of server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:86
+#, javascript-format
+msgid "Note: You are %s hour behind server time."
+msgid_plural "Note: You are %s hours behind server time."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:129
+msgid "Choose a Time"
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:159
+msgid "Choose a time"
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:176
+#: .\static\admin\js\admin\DateTimeShortcuts.js:334 .\static\index\index.js:5
+msgid "Cancel"
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:239
+#: .\static\admin\js\admin\DateTimeShortcuts.js:319
+msgid "Today"
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:256
+msgid "Choose a Date"
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:313
+msgid "Yesterday"
+msgstr ""
+
+#: .\static\admin\js\admin\DateTimeShortcuts.js:325
+msgid "Tomorrow"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:11
+msgid "January"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:12
+msgid "February"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:13
+msgid "March"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:14
+msgid "April"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:15
+msgid "May"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:16
+msgid "June"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:17
+msgid "July"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:18
+msgid "August"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:19
+msgid "September"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:20
+msgid "October"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:21
+msgid "November"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:22
+msgid "December"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:25
+msgctxt "abbrev. month January"
+msgid "Jan"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:26
+msgctxt "abbrev. month February"
+msgid "Feb"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:27
+msgctxt "abbrev. month March"
+msgid "Mar"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:28
+msgctxt "abbrev. month April"
+msgid "Apr"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:29
+msgctxt "abbrev. month May"
+msgid "May"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:30
+msgctxt "abbrev. month June"
+msgid "Jun"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:31
+msgctxt "abbrev. month July"
+msgid "Jul"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:32
+msgctxt "abbrev. month August"
+msgid "Aug"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:33
+msgctxt "abbrev. month September"
+msgid "Sep"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:34
+msgctxt "abbrev. month October"
+msgid "Oct"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:35
+msgctxt "abbrev. month November"
+msgid "Nov"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:36
+msgctxt "abbrev. month December"
+msgid "Dec"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:39
+msgctxt "one letter Sunday"
+msgid "S"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:40
+msgctxt "one letter Monday"
+msgid "M"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:41
+msgctxt "one letter Tuesday"
+msgid "T"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:42
+msgctxt "one letter Wednesday"
+msgid "W"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:43
+msgctxt "one letter Thursday"
+msgid "T"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:44
+msgctxt "one letter Friday"
+msgid "F"
+msgstr ""
+
+#: .\static\admin\js\calendar.js:45
+msgctxt "one letter Saturday"
+msgid "S"
+msgstr ""
+
+#: .\static\admin\js\collapse.js:16 .\static\admin\js\collapse.js:34
+msgid "Show"
+msgstr ""
+
+#: .\static\admin\js\collapse.js:30
+msgid "Hide"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "visible"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "bgcolor"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "bordercolor"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "borderwidth"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "thickness"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "autorange"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "range"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "x"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "y"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "minor"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "label"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "arrowlen"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "source"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "target"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "value"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "line.color"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "line.width"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "hoverinfo"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "hovertemplate"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "color"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "hovercolor"
+msgstr ""
+
+#: .\static\build\js\pivottable_plot.min.js:8
+msgid "customdata"
+msgstr ""
+
+#: .\static\build\vendor\ionicons\@stencil\core\compiler\stencil.js:9890
+msgid "punc"
+msgstr ""
+
+#: .\static\build\vendor\ionicons\@stencil\core\compiler\stencil.js:9890
+msgid "name"
+msgstr ""
+
+#: .\static\build\vendor\ionicons\@stencil\core\compiler\stencil.js:9890
+msgid "keyword"
+msgstr ""
+
+#: .\static\build\vendor\ionicons\@stencil\core\compiler\stencil.js:9890
+msgid "arrow"
+msgstr ""
+
+#: .\static\build\vendor\ionicons\@stencil\core\compiler\stencil.js:9890
+msgid "operator"
+msgstr ""
+
+#: .\static\build\vendor\ionicons\@stencil\core\dev-server\ws.js:1
+msgid "close"
+msgstr ""
+
+#: .\static\index\index.js:3
+msgid "Confirm"
+msgstr ""
+
+#: .\static\index\index.js:4
+msgid "Close"
+msgstr ""
+
+#: .\static\index\index.js:6
+msgid "Selected"
+msgstr ""
+
+#: .\static\index\index.js:7
+msgid "Uploading..."
+msgstr ""
+
+#: .\static\index\index.js:8
+msgid "No Records found"
+msgstr ""
+
+#: .\static\index\index.js:9
+msgid "Do you want to download the excel file?"
+msgstr ""
+
+#: .\static\index\index.js:10
+msgid "Do you want to download the template?"
+msgstr ""
+
+#: .\static\index\index.js:11
+msgid "No rows are selected from the records."
+msgstr ""
+
+#: .\static\index\index.js:12
+msgid "Do you really want to delete all the selected records?"
+msgstr ""
+
+#: .\static\index\index.js:13
+msgid "Do you really want to archive all the selected records?"
+msgstr ""
+
+#: .\static\index\index.js:14 .\static\index\index.js:15
+msgid "Do you really want to approve all the selected requests?"
+msgstr ""
+
+#: .\static\index\index.js:16
+msgid "Do you really want to unarchive all the selected records?"
+msgstr ""

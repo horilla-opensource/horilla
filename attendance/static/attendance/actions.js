@@ -1,89 +1,3 @@
-var downloadMessages = {
-    ar: "هل ترغب في تنزيل القالب؟",
-    de: "Möchten Sie die Vorlage herunterladen?",
-    es: "¿Quieres descargar la plantilla?",
-    en: "Do you want to download the template?",
-    fr: "Voulez-vous télécharger le modèle ?",
-};
-var validateMessages = {
-    ar: "هل ترغب حقًا في التحقق من كل الحضور المحدد؟",
-    de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten überprüfen?",
-    es: "¿Realmente quieres validar todas las asistencias seleccionadas?",
-    en: "Do you really want to validate all the selected attendances?",
-    fr: "Voulez-vous vraiment valider toutes les présences sélectionnées?",
-};
-var overtimeMessages = {
-    ar: "هل ترغب حقًا في الموافقة على الساعات الإضافية لجميع الحضور المحدد؟",
-    de: "Möchten Sie wirklich die Überstunden für alle ausgewählten Anwesenheiten genehmigen?",
-    es: "¿Realmente quieres aprobar las horas extras para todas las asistencias seleccionadas?",
-    en: "Do you really want to approve OT for all the selected attendances?",
-    fr: "Voulez-vous vraiment approuver les heures supplémentaires pour toutes les présences sélectionnées?",
-};
-var deleteMessages = {
-    ar: "هل ترغب حقًا في حذف جميع الحضور المحددة؟",
-    de: "Möchten Sie wirklich alle ausgewählten Anwesenheiten löschen?",
-    es: "¿Realmente quieres eliminar todas las asistencias seleccionadas?",
-    en: "Do you really want to delete all the selected attendances?",
-    fr: "Voulez-vous vraiment supprimer toutes les présences sélectionnées?",
-};
-var noRowValidateMessages = {
-    ar: "لم يتم تحديد أي صفوف من فحص الحضور.",
-    de: "Im Feld „Anwesenheit validieren“ sind keine Zeilen ausgewählt.",
-    es: "No se selecciona ninguna fila de Validar asistencia.",
-    en: "No rows are selected from Validate Attendances.",
-    fr: "Aucune ligne n'est sélectionnée dans Valider la présence.",
-};
-var norowotMessages = {
-    ar: "لم يتم تحديد أي صفوف من حضور العمل الإضافي.",
-    de: "In der OT-Anwesenheit sind keine Zeilen ausgewählt.",
-    es: "No se seleccionan filas de Asistencias de OT.",
-    en: "No rows are selected from OT Attendances.",
-    fr: "Aucune ligne n'est sélectionnée dans les présences OT.",
-};
-var norowdeleteMessages = {
-    ar: "لم يتم تحديد أي صفوف لحذف الحضور.",
-    de: "Es sind keine Zeilen zum Löschen von Anwesenheiten ausgewählt.",
-    es: "No se seleccionan filas para eliminar asistencias.",
-    en: "No rows are selected for deleting attendances.",
-    fr: "Aucune ligne n'est sélectionnée pour la suppression des présences.",
-};
-var norowAddToBatchMessages = {
-    ar: "لم يتم تحديد أي صفوف لإضافتها إلى الحضور الجماعي.",
-    de: "Es wurden keine Zeilen zur Stapelteilnahme hinzugefügt.",
-    es: "No se han seleccionado filas para agregar a las asistencias por lotes.",
-    en: "No rows are selected to be added to batch attendances.",
-    fr: "Aucune ligne n'a été sélectionnée pour être ajoutée aux présences en lot.",
-};
-var rowMessages = {
-    ar: " تم الاختيار",
-    de: " Ausgewählt",
-    es: " Seleccionado",
-    en: " Selected",
-    fr: " Sélectionné",
-};
-var excelMessages = {
-    ar: "هل ترغب في تنزيل ملف Excel؟",
-    de: "Möchten Sie die Excel-Datei herunterladen?",
-    es: "¿Desea descargar el archivo de Excel?",
-    en: "Do you want to download the excel file?",
-    fr: "Voulez-vous télécharger le fichier Excel?",
-};
-var reqAttendanceApproveMessages = {
-    ar: "هل ترغب حقًا في الموافقة على جميع طلبات الحضور المحددة؟",
-    de: "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen genehmigen?",
-    es: "¿Realmente quieres aprobar todas las solicitudes de asistencia seleccionadas?",
-    en: "Do you really want to approve all the selected attendance requests?",
-    fr: "Voulez-vous vraiment approuver toutes les demandes de présence sélectionnées?",
-};
-
-var reqAttendanceRejectMessages = {
-    ar: "هل ترغب حقًا في رفض جميع طلبات الحضور المحددة؟",
-    de: "Möchten Sie wirklich alle ausgewählten Anwesenheitsanfragen ablehnen?",
-    es: "¿Realmente quieres rechazar todas las solicitudes de asistencia seleccionadas?",
-    en: "Do you really want to reject all the selected attendance requests?",
-    fr: "Voulez-vous vraiment rejeter toutes les demandes de présence sélectionnées?",
-};
-
 tickCheckboxes();
 function makeListUnique(list) {
     return Array.from(new Set(list));
@@ -99,77 +13,50 @@ function makelatecomeListUnique(list) {
     return Array.from(new Set(list));
 }
 
-function getCurrentLanguageCode(callback) {
-    var languageCode = $("#main-section-data").attr("data-lang");
-    var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
-    if (allowedLanguageCodes.includes(languageCode)) {
-        callback(languageCode);
-    } else {
-        $.ajax({
-            type: "GET",
-            url: "/employee/get-language-code/",
-            success: function (response) {
-                var ajaxLanguageCode = response.language_code;
-                $("#main-section-data").attr("data-lang", ajaxLanguageCode);
-                callback(
-                    allowedLanguageCodes.includes(ajaxLanguageCode)
-                        ? ajaxLanguageCode
-                        : "en"
-                );
-            },
-            error: function () {
-                callback("en");
-            },
-        });
-    }
-}
-
 function validateActivityIds(event) {
     event.preventDefault();
 
-    getCurrentLanguageCode(function (languageCode) {
-        var textMessage = norowdeleteMessages[languageCode];
-        var $selectedActivity = $("#selectedActivity");
-        var idsRaw = $selectedActivity.attr("data-ids");
+    var $selectedActivity = $("#selectedActivity");
+    var idsRaw = $selectedActivity.attr("data-ids");
 
-        if (!idsRaw) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-            return;
-        }
+    if (!idsRaw) {
+        Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+        return;
+    }
 
-        let ids;
-        try {
-            ids = JSON.parse(idsRaw);
-        } catch (e) {
-            console.error("Invalid JSON in data-ids:", e);
-            Swal.fire({
-                text: "An unexpected error occurred. Please refresh the page.",
-                icon: "error",
-                confirmButtonText: "Close",
-            });
-            return;
-        }
+    let ids;
+    try {
+        ids = JSON.parse(idsRaw);
+    } catch (e) {
+        console.error("Invalid JSON in data-ids:", e);
+        Swal.fire({
+            text: gettext("An unexpected error occurred. Please refresh the page."),
+            icon: "error",
+            confirmButtonText: i18nMessages.close,
+        });
+        return;
+    }
 
-        if (!Array.isArray(ids) || ids.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-            return;
-        }
+    if (!Array.isArray(ids) || ids.length === 0) {
+        Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+        return;
+    }
 
-        $("#bulkDeleteIds").val(idsRaw);
+    $("#bulkDeleteIds").val(idsRaw);
 
-        // Submit the form programmatically
-        document.getElementById('bulkDeleteForm').dispatchEvent(
-            new Event('submit', { bubbles: true, cancelable: true })
-        );
-    });
+    // Submit the form programmatically
+    document.getElementById('bulkDeleteForm').dispatchEvent(
+        new Event('submit', { bubbles: true, cancelable: true })
+    );
+
 }
 
 $(".all-hour-account").change(function (e) {
@@ -207,20 +94,18 @@ function tickCheckboxes() {
         $("#" + id).prop("checked", true);
     });
     var selectedCount = uniqueIds.length;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
-        if (selectedCount > 0) {
-            $("#unselectAllInstances").css("display", "inline-flex");
-            $("#exportAccounts").css("display", "inline-flex");
-            $("#selectedShow").css("display", "inline-flex");
-            $("#selectedShow").text(selectedCount + " -" + message);
-        } else {
-            $("#unselectAllInstances").css("display", "none");
-            $("#exportAccounts").css("display", "none");
-            $("#selectedShow").css("display", "none");
-        }
-    });
+    var message = i18nMessages.selected
+    if (selectedCount > 0) {
+        $("#unselectAllInstances").css("display", "inline-flex");
+        $("#exportAccounts").css("display", "inline-flex");
+        $("#selectedShow").css("display", "inline-flex");
+        $("#selectedShow").text(selectedCount + " -" + message);
+    } else {
+        $("#unselectAllInstances").css("display", "none");
+        $("#exportAccounts").css("display", "none");
+        $("#selectedShow").css("display", "none");
+    }
+
 }
 
 function tickactivityCheckboxes() {
@@ -236,20 +121,19 @@ function tickactivityCheckboxes() {
         $("#" + id).prop("checked", true);
     });
     var selectedCount = uniqueIds.length;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
-        if (selectedCount > 0) {
-            $("#unselectAllActivity").css("display", "inline-flex");
-            $("#exportActivity").css("display", "inline-flex");
-            $("#selectedShowActivity").css("display", "inline-flex");
-            $("#selectedShowActivity").text(selectedCount + " -" + message);
-        } else {
-            $("#unselectAllActivity").css("display", "none");
-            $("#exportActivity").css("display", "none");
-            $("#selectedShowActivity").css("display", "none");
-        }
-    });
+
+    var message = i18nMessages.selected
+    if (selectedCount > 0) {
+        $("#unselectAllActivity").css("display", "inline-flex");
+        $("#exportActivity").css("display", "inline-flex");
+        $("#selectedShowActivity").css("display", "inline-flex");
+        $("#selectedShowActivity").text(selectedCount + " -" + message);
+    } else {
+        $("#unselectAllActivity").css("display", "none");
+        $("#exportActivity").css("display", "none");
+        $("#selectedShowActivity").css("display", "none");
+    }
+
 }
 
 function ticklatecomeCheckboxes() {
@@ -264,20 +148,19 @@ function ticklatecomeCheckboxes() {
         $("#" + id).prop("checked", true);
     });
     var selectedCount = uniqueIds.length;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
-        if (selectedCount > 0) {
-            $("#unselectAllLatecome").css("display", "inline-flex");
-            $("#exportLatecome").css("display", "inline-flex");
-            $("#selectedShowLatecome").css("display", "inline-flex");
-            $("#selectedShowLatecome").text(selectedCount + " -" + message);
-        } else {
-            $("#selectedShowLatecome").css("display", "none");
-            $("#exportLatecome").css("display", "none");
-            $("#unselectAllLatecome").css("display", "none");
-        }
-    });
+
+    var message = i18nMessages.selected
+    if (selectedCount > 0) {
+        $("#unselectAllLatecome").css("display", "inline-flex");
+        $("#exportLatecome").css("display", "inline-flex");
+        $("#selectedShowLatecome").css("display", "inline-flex");
+        $("#selectedShowLatecome").text(selectedCount + " -" + message);
+    } else {
+        $("#selectedShowLatecome").css("display", "none");
+        $("#exportLatecome").css("display", "none");
+        $("#unselectAllLatecome").css("display", "none");
+    }
+
 }
 
 function selectAllHourAcconts() {
@@ -378,22 +261,21 @@ function addingHourAccountsIds() {
 
     ids = makeListUnique(ids);
     selectedCount = ids.length;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
-        $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
 
-        if (selectedCount === 0) {
-            $("#unselectAllInstances").css("display", "none");
-            $("#exportAccounts").css("display", "none");
-            $("#selectedShow").css("display", "none");
-        } else {
-            $("#unselectAllInstances").css("display", "inline-flex");
-            $("#exportAccounts").css("display", "inline-flex");
-            $("#selectedShow").css("display", "inline-flex");
-            $("#selectedShow").text(selectedCount + " - " + message);
-        }
-    });
+    var message = i18nMessages.selected
+    $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+
+    if (selectedCount === 0) {
+        $("#unselectAllInstances").css("display", "none");
+        $("#exportAccounts").css("display", "none");
+        $("#selectedShow").css("display", "none");
+    } else {
+        $("#unselectAllInstances").css("display", "inline-flex");
+        $("#exportAccounts").css("display", "inline-flex");
+        $("#selectedShow").css("display", "inline-flex");
+        $("#selectedShow").text(selectedCount + " - " + message);
+    }
+
 }
 
 function unselectAllHourAcconts() {
@@ -497,23 +379,21 @@ function addingActivityIds() {
     ids = makeactivityListUnique(ids);
     selectedCount = ids.length;
 
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
+    var message = i18nMessages.selected
 
-        $("#selectedActivity").attr("data-ids", JSON.stringify(ids));
+    $("#selectedActivity").attr("data-ids", JSON.stringify(ids));
 
-        if (selectedCount === 0) {
-            $("#unselectAllActivity").css("display", "none");
-            $("#exportActivity").css("display", "none");
-            $("#selectedShowActivity").css("display", "none");
-        } else {
-            $("#unselectAllActivity").css("display", "inline-flex");
-            $("#exportActivity").css("display", "inline-flex");
-            $("#selectedShowActivity").css("display", "inline-flex");
-            $("#selectedShowActivity").text(selectedCount + " - " + message);
-        }
-    });
+    if (selectedCount === 0) {
+        $("#unselectAllActivity").css("display", "none");
+        $("#exportActivity").css("display", "none");
+        $("#selectedShowActivity").css("display", "none");
+    } else {
+        $("#unselectAllActivity").css("display", "inline-flex");
+        $("#exportActivity").css("display", "inline-flex");
+        $("#selectedShowActivity").css("display", "inline-flex");
+        $("#selectedShowActivity").text(selectedCount + " - " + message);
+    }
+
 }
 
 function addinglatecomeIds() {
@@ -534,23 +414,22 @@ function addinglatecomeIds() {
     ids = makelatecomeListUnique(ids);
     selectedCount = ids.length;
 
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
 
-        $("#selectedLatecome").attr("data-ids", JSON.stringify(ids));
+    var message = i18nMessages.selected
 
-        if (selectedCount === 0) {
-            $("#selectedShowLatecome").css("display", "none");
-            $("#exportLatecome").css("display", "none");
-            $("#unselectAllLatecome").css("display", "none");
-        } else {
-            $("#exportLatecome").css("display", "inline-flex");
-            $("#unselectAllLatecome").css("display", "inline-flex");
-            $("#selectedShowLatecome").css("display", "inline-flex");
-            $("#selectedShowLatecome").text(selectedCount + " - " + message);
-        }
-    });
+    $("#selectedLatecome").attr("data-ids", JSON.stringify(ids));
+
+    if (selectedCount === 0) {
+        $("#selectedShowLatecome").css("display", "none");
+        $("#exportLatecome").css("display", "none");
+        $("#unselectAllLatecome").css("display", "none");
+    } else {
+        $("#exportLatecome").css("display", "inline-flex");
+        $("#unselectAllLatecome").css("display", "inline-flex");
+        $("#selectedShowLatecome").css("display", "inline-flex");
+        $("#selectedShowLatecome").text(selectedCount + " - " + message);
+    }
+
 }
 function selectAllActivity() {
     $("#selectedActivity").attr("data-clicked", 0);
@@ -668,43 +547,39 @@ function unselectAllActivity() {
 
 $(".attendance-info-import").click(function (e) {
     e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = downloadMessages[languageCode];
-        Swal.fire({
-            text: confirmMessage,
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-        }).then(function (result) {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: "GET",
-                    url: "/attendance/attendance-excel",
-                    dataType: "binary",
-                    xhrFields: {
-                        responseType: "blob",
-                    },
-                    success: function (response) {
-                        const file = new Blob([response], {
-                            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        });
-                        const url = URL.createObjectURL(file);
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.download = "attendance_excel.xlsx";
-                        document.body.appendChild(link);
-                        link.click();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.error("Error downloading file:", errorThrown);
-                    },
-                });
-            }
-        });
+    Swal.fire({
+        text: i18nMessages.downloadTemplate,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: i18nMessages.confirm,
+        cancelButtonText: i18nMessages.cancel,
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "GET",
+                url: "/attendance/attendance-excel",
+                dataType: "binary",
+                xhrFields: {
+                    responseType: "blob",
+                },
+                success: function (response) {
+                    const file = new Blob([response], {
+                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    });
+                    const url = URL.createObjectURL(file);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "attendance_excel.xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error downloading file:", errorThrown);
+                },
+            });
+        }
     });
 });
 
@@ -882,243 +757,232 @@ $(".all-attendance-activity").change(function (e) {
 
 $("#validateAttendances").click(function (e) {
     e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = validateMessages[languageCode];
-        var textMessage = noRowValidateMessages[languageCode];
-        var checkedRows = $(".validate-row").filter(":checked");
-        if (checkedRows.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            Swal.fire({
-                text: confirmMessage,
-                icon: "info",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    ids = [];
-                    checkedRows.each(function () {
-                        ids.push($(this).attr("id"));
-                    });
-                    $.ajax({
-                        type: "POST",
-                        url: "/attendance/validate-bulk-attendance",
-                        data: {
-                            csrfmiddlewaretoken: getCookie("csrftoken"),
-                            ids: JSON.stringify(ids),
-                        },
-                        success: function (response, textStatus, jqXHR) {
-                            if (jqXHR.status === 200) {
-                                location.reload();
-                            } else {
-                            }
-                        },
-                    });
-                }
-            });
-        }
-    });
+    var confirmMessage = gettext("Do you really want to validate all the selected attendances?")
+    var textMessage = gettext("No rows are selected from Validate Attendances.")
+    var checkedRows = $(".validate-row").filter(":checked");
+    if (checkedRows.length === 0) {
+        Swal.fire({
+            text: textMessage,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+    } else {
+        Swal.fire({
+            text: confirmMessage,
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                ids = [];
+                checkedRows.each(function () {
+                    ids.push($(this).attr("id"));
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "/attendance/validate-bulk-attendance",
+                    data: {
+                        csrfmiddlewaretoken: getCookie("csrftoken"),
+                        ids: JSON.stringify(ids),
+                    },
+                    success: function (response, textStatus, jqXHR) {
+                        if (jqXHR.status === 200) {
+                            location.reload();
+                        } else {
+                        }
+                    },
+                });
+            }
+        });
+    }
+
 });
 
 $("#approveOt").click(function (e) {
     e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = overtimeMessages[languageCode];
-        var textMessage = norowotMessages[languageCode];
-        var checkedRows = $(".ot-attendance-row").filter(":checked");
-        if (checkedRows.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            Swal.fire({
-                text: confirmMessage,
-                icon: "success",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    ids = [];
-                    checkedRows.each(function () {
-                        ids.push($(this).attr("id"));
-                    });
-                    $.ajax({
-                        type: "POST",
-                        url: "/attendance/approve-bulk-overtime",
-                        data: {
-                            csrfmiddlewaretoken: getCookie("csrftoken"),
-                            ids: JSON.stringify(ids),
-                        },
-                        success: function (response, textStatus, jqXHR) {
-                            if (jqXHR.status === 200) {
-                                location.reload();
-                            } else {
-                            }
-                        },
-                    });
-                }
-            });
-        }
-    });
+
+    var confirmMessage = gettext("Do you really want to approve OT for all the selected attendances?")
+    var textMessage = gettext("No rows are selected from OT Attendances.")
+    var checkedRows = $(".ot-attendance-row").filter(":checked");
+    if (checkedRows.length === 0) {
+        Swal.fire({
+            text: textMessage,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+    } else {
+        Swal.fire({
+            text: confirmMessage,
+            icon: "success",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                ids = [];
+                checkedRows.each(function () {
+                    ids.push($(this).attr("id"));
+                });
+                $.ajax({
+                    type: "POST",
+                    url: "/attendance/approve-bulk-overtime",
+                    data: {
+                        csrfmiddlewaretoken: getCookie("csrftoken"),
+                        ids: JSON.stringify(ids),
+                    },
+                    success: function (response, textStatus, jqXHR) {
+                        if (jqXHR.status === 200) {
+                            location.reload();
+                        } else {
+                        }
+                    },
+                });
+            }
+        });
+    }
+
 });
 
 // -------------------------------------------Data Export Handlers---------------------------------------------------------------
 
 $("#exportAccounts").click(function (e) {
     var currentDate = new Date().toISOString().slice(0, 10);
-    var languageCode = null;
     ids = [];
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = excelMessages[languageCode];
-        Swal.fire({
-            text: confirmMessage,
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-        }).then(function (result) {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: "GET",
-                    url: "/attendance/attendance-account-info-export",
-                    data: {
-                        ids: JSON.stringify(ids),
-                    },
-                    dataType: "binary",
-                    xhrFields: {
-                        responseType: "blob",
-                    },
-                    success: function (response) {
-                        const file = new Blob([response], {
-                            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        });
-                        const url = URL.createObjectURL(file);
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.download = "Hour_account" + currentDate + ".xlsx";
-                        document.body.appendChild(link);
-                        link.click();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.error("Error downloading file:", errorThrown);
-                    },
-                });
-            }
-        });
+
+    Swal.fire({
+        text: i18nMessages.downloadExcel,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: i18nMessages.confirm,
+        cancelButtonText: i18nMessages.cancel,
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "GET",
+                url: "/attendance/attendance-account-info-export",
+                data: {
+                    ids: JSON.stringify(ids),
+                },
+                dataType: "binary",
+                xhrFields: {
+                    responseType: "blob",
+                },
+                success: function (response) {
+                    const file = new Blob([response], {
+                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    });
+                    const url = URL.createObjectURL(file);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "Hour_account" + currentDate + ".xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error downloading file:", errorThrown);
+                },
+            });
+        }
     });
 });
 
 $("#exportActivity").click(function (e) {
     var currentDate = new Date().toISOString().slice(0, 10);
-    var languageCode = null;
     ids = [];
     ids.push($("#selectedActivity").attr("data-ids"));
     ids = JSON.parse($("#selectedActivity").attr("data-ids"));
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = excelMessages[languageCode];
-        Swal.fire({
-            text: confirmMessage,
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-        }).then(function (result) {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: "GET",
-                    url: "/attendance/attendance-activity-info-export",
-                    data: {
-                        ids: JSON.stringify(ids),
-                    },
-                    dataType: "binary",
-                    xhrFields: {
-                        responseType: "blob",
-                    },
-                    success: function (response) {
-                        const file = new Blob([response], {
-                            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        });
-                        const url = URL.createObjectURL(file);
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.download = "Attendance_activity" + currentDate + ".xlsx";
-                        document.body.appendChild(link);
-                        link.click();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.error("Error downloading file:", errorThrown);
-                    },
-                });
-            }
-        });
+
+    Swal.fire({
+        text: i18nMessages.downloadExcel,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: i18nMessages.confirm,
+        cancelButtonText: i18nMessages.cancel,
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "GET",
+                url: "/attendance/attendance-activity-info-export",
+                data: {
+                    ids: JSON.stringify(ids),
+                },
+                dataType: "binary",
+                xhrFields: {
+                    responseType: "blob",
+                },
+                success: function (response) {
+                    const file = new Blob([response], {
+                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    });
+                    const url = URL.createObjectURL(file);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "Attendance_activity" + currentDate + ".xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error downloading file:", errorThrown);
+                },
+            });
+        }
     });
 });
 
 $("#exportLatecome").click(function (e) {
     var currentDate = new Date().toISOString().slice(0, 10);
-    var languageCode = null;
+
     ids = [];
     ids.push($("#selectedLatecome").attr("data-ids"));
     ids = JSON.parse($("#selectedLatecome").attr("data-ids"));
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = excelMessages[languageCode];
-        Swal.fire({
-            text: confirmMessage,
-            icon: "question",
-            showCancelButton: true,
-            confirmButtonColor: "#008000",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Confirm",
-        }).then(function (result) {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: "GET",
-                    url: "/attendance/late-come-early-out-info-export",
-                    data: {
-                        ids: JSON.stringify(ids),
-                    },
-                    dataType: "binary",
-                    xhrFields: {
-                        responseType: "blob",
-                    },
-                    success: function (response) {
-                        const file = new Blob([response], {
-                            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        });
-                        const url = URL.createObjectURL(file);
-                        const link = document.createElement("a");
-                        link.href = url;
-                        link.download = "Late_come" + currentDate + ".xlsx";
-                        document.body.appendChild(link);
-                        link.click();
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.error("Error downloading file:", errorThrown);
-                    },
-                });
-            }
-        });
+
+    Swal.fire({
+        text: i18nMessages.downloadExcel,
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#008000",
+        cancelButtonColor: "#d33",
+        confirmButtonText: i18nMessages.confirm,
+        cancelButtonText: i18nMessages.cancel,
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "GET",
+                url: "/attendance/late-come-early-out-info-export",
+                data: {
+                    ids: JSON.stringify(ids),
+                },
+                dataType: "binary",
+                xhrFields: {
+                    responseType: "blob",
+                },
+                success: function (response) {
+                    const file = new Blob([response], {
+                        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    });
+                    const url = URL.createObjectURL(file);
+                    const link = document.createElement("a");
+                    link.href = url;
+                    link.download = "Late_come" + currentDate + ".xlsx";
+                    document.body.appendChild(link);
+                    link.click();
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                    console.error("Error downloading file:", errorThrown);
+                },
+            });
+        }
     });
 });
 
@@ -1128,121 +992,104 @@ $("#exportLatecome").click(function (e) {
 
 $("#bulkDelete").click(function (e) {
     e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = deleteMessages[languageCode];
-        var textMessage = norowdeleteMessages[languageCode];
-        var checkedRows = $(".attendance-checkbox").filter(":checked");
-        if (checkedRows.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            Swal.fire({
-                text: confirmMessage,
-                icon: "error",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    ids = [];
-                    checkedRows.each(function () {
-                        ids.push($(this).attr("id"));
-                    });
-                    var hxValue = JSON.stringify(ids);
-                    $("#bulkAttendanceDeleteSpan").attr("hx-vals", `{"ids":${hxValue}}`);
-                    $("#bulkAttendanceDeleteSpan").click();
-                }
-            });
-        }
-    });
+    var checkedRows = $(".attendance-checkbox").filter(":checked");
+    if (checkedRows.length === 0) {
+        Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+    } else {
+        Swal.fire({
+            text: i18nMessages.confirmBulkDelete,
+            icon: "error",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                ids = [];
+                checkedRows.each(function () {
+                    ids.push($(this).attr("id"));
+                });
+                var hxValue = JSON.stringify(ids);
+                $("#bulkAttendanceDeleteSpan").attr("hx-vals", `{"ids":${hxValue}}`);
+                $("#bulkAttendanceDeleteSpan").click();
+            }
+        });
+    }
 });
 
 $("#attendanceAddToBatch").click(function (e) {
     e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var textMessage = norowAddToBatchMessages[languageCode];
-        var checkedRows = $(".attendance-checkbox").filter(":checked");
-        if (checkedRows.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            ids = [];
-            checkedRows.each(function () {
-                ids.push($(this).attr("id"));
-            });
-            var hxValue = JSON.stringify(ids);
-            $("#attendanceAddToBatchButton").attr("hx-vals", `{"ids":${hxValue}}`);
-            $("#attendanceAddToBatchButton").click();
-        }
-    });
+    var checkedRows = $(".attendance-checkbox").filter(":checked");
+    if (checkedRows.length === 0) {
+        Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+    } else {
+        ids = [];
+        checkedRows.each(function () {
+            ids.push($(this).attr("id"));
+        });
+        var hxValue = JSON.stringify(ids);
+        $("#attendanceAddToBatchButton").attr("hx-vals", `{"ids":${hxValue}}`);
+        $("#attendanceAddToBatchButton").click();
+    }
 });
 
 $("#hourAccountbulkDelete").click(function (e) {
     e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = deleteMessages[languageCode];
-        var textMessage = norowdeleteMessages[languageCode];
-        ids = [];
-        ids.push($("#selectedInstances").attr("data-ids"));
-        ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-        if (ids.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            Swal.fire({
-                text: confirmMessage,
-                icon: "error",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    ids = [];
-                    ids.push($("#selectedInstances").attr("data-ids"));
-                    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-                    $.ajax({
-                        type: "POST",
-                        url: "/attendance/attendance-account-bulk-delete",
-                        data: {
-                            csrfmiddlewaretoken: getCookie("csrftoken"),
-                            ids: JSON.stringify(ids),
-                        },
-                        success: function (response, textStatus, jqXHR) {
-                            if (jqXHR.status === 200) {
-                                location.reload();
-                            }
-                        },
-                    });
-                }
-            });
-        }
-    });
+    ids = [];
+    ids.push($("#selectedInstances").attr("data-ids"));
+    ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+    if (ids.length === 0) {
+        Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+    } else {
+        Swal.fire({
+            text: i18nMessages.confirmBulkDelete,
+            icon: "error",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                ids = [];
+                ids.push($("#selectedInstances").attr("data-ids"));
+                ids = JSON.parse($("#selectedInstances").attr("data-ids"));
+                $.ajax({
+                    type: "POST",
+                    url: "/attendance/attendance-account-bulk-delete",
+                    data: {
+                        csrfmiddlewaretoken: getCookie("csrftoken"),
+                        ids: JSON.stringify(ids),
+                    },
+                    success: function (response, textStatus, jqXHR) {
+                        if (jqXHR.status === 200) {
+                            location.reload();
+                        }
+                    },
+                });
+            }
+        });
+    }
 });
 
 // $("#attendanceActivityDelete").click(function (e) {
 //     e.preventDefault();
-//     var languageCode = null;
-//     getCurrentLanguageCode(function (code) {
-//         languageCode = code;
-//         var confirmMessage = deleteMessages[languageCode];
-//         var textMessage = norowdeleteMessages[languageCode];
+//
+//         var confirmMessage = gettext("Do you really want to delete all the selected attendances?");
+//         var textMessage = gettext("No rows are selected for deleting attendances.");
 //         ids = [];
 //         ids.push($("#selectedActivity").attr("data-ids"));
 //         ids = JSON.parse($("#selectedActivity").attr("data-ids"));
@@ -1250,7 +1097,7 @@ $("#hourAccountbulkDelete").click(function (e) {
 //             Swal.fire({
 //                 text: textMessage,
 //                 icon: "warning",
-//                 confirmButtonText: "Close",
+//                 confirmButtonText: i18nMessages.close,
 //             });
 //         } else {
 //             Swal.fire({
@@ -1259,55 +1106,53 @@ $("#hourAccountbulkDelete").click(function (e) {
 //                 showCancelButton: true,
 //                 confirmButtonColor: "#008000",
 //                 cancelButtonColor: "#d33",
-//                 confirmButtonText: "Confirm",
-//             }).then(function (result) {
-//                 if (result.isConfirmed) {
-//                     ids = [];
-//                     ids.push($("#selectedActivity").attr("data-ids"));
-//                     ids = JSON.parse($("#selectedActivity").attr("data-ids"));
-//                     $.ajax({
-//                         type: "POST",
-//                         url: "/attendance/attendance-activity-bulk-delete",
-//                         data: {
-//                             csrfmiddlewaretoken: getCookie("csrftoken"),
-//                             ids: JSON.stringify(ids),
-//                         },
-//                         success: function (response, textStatus, jqXHR) {
-//                             if (jqXHR.status === 200) {
-//                                 location.reload();
-//                             }
-//                         },
-//                     });
-//                 }
-//             });
-//         }
-//     });
-// });
+//                 confirmButtonText: i18nMessages.confirm,
+cancelButtonText: i18nMessages.cancel,
+    //             }).then(function (result) {
+    //                 if (result.isConfirmed) {
+    //                     ids = [];
+    //                     ids.push($("#selectedActivity").attr("data-ids"));
+    //                     ids = JSON.parse($("#selectedActivity").attr("data-ids"));
+    //                     $.ajax({
+    //                         type: "POST",
+    //                         url: "/attendance/attendance-activity-bulk-delete",
+    //                         data: {
+    //                             csrfmiddlewaretoken: getCookie("csrftoken"),
+    //                             ids: JSON.stringify(ids),
+    //                         },
+    //                         success: function (response, textStatus, jqXHR) {
+    //                             if (jqXHR.status === 200) {
+    //                                 location.reload();
+    //                             }
+    //                         },
+    //                     });
+    //                 }
+    //             });
+    //         }
+    //
+    // });
 
-$("#lateComeBulkDelete").click(function (e) {
-    e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = deleteMessages[languageCode];
-        var textMessage = norowdeleteMessages[languageCode];
+    $("#lateComeBulkDelete").click(function (e) {
+        e.preventDefault();
+
         ids = [];
         ids.push($("#selectedLatecome").attr("data-ids"));
         ids = JSON.parse($("#selectedLatecome").attr("data-ids"));
         if (ids.length === 0) {
             Swal.fire({
-                text: textMessage,
+                text: i18nMessages.noRowsSelected,
                 icon: "warning",
-                confirmButtonText: "Close",
+                confirmButtonText: i18nMessages.close,
             });
         } else {
             Swal.fire({
-                text: confirmMessage,
+                text: i18nMessages.confirmBulkDelete,
                 icon: "error",
                 showCancelButton: true,
                 confirmButtonColor: "#008000",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
+                confirmButtonText: i18nMessages.confirm,
+                cancelButtonText: i18nMessages.cancel,
             }).then(function (result) {
                 if (result.isConfirmed) {
                     ids = [];
@@ -1330,7 +1175,6 @@ $("#lateComeBulkDelete").click(function (e) {
             });
         }
     });
-});
 
 
 // attendance requests select all functions
@@ -1348,17 +1192,16 @@ function requestedAttendanceTickCheckboxes() {
     });
 
     var selectedCount = uniqueIds.length;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
-        if (selectedCount > 0) {
-            $("#unselectAllInstances").css("display", "inline-flex");
-            $("#selectedShow").css("display", "inline-flex");
-            $("#selectedShow").text(selectedCount + " -" + message);
-        } else {
-            $("#selectedShow").css("display", "none");
-        }
-    });
+
+    var message = i18nMessages.selected
+    if (selectedCount > 0) {
+        $("#unselectAllInstances").css("display", "inline-flex");
+        $("#selectedShow").css("display", "inline-flex");
+        $("#selectedShow").text(selectedCount + " -" + message);
+    } else {
+        $("#selectedShow").css("display", "none");
+    }
+
 }
 
 function dictToQueryString(dict) {
@@ -1497,90 +1340,81 @@ function unselectAllReqAttendance() {
 
 $("#reqAttendanceBulkApprove").click(function (e) {
     e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = reqAttendanceApproveMessages[languageCode];
-        var textMessage = noRowValidateMessages[languageCode];
-        var checkedRows = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-        if (checkedRows.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            Swal.fire({
-                text: confirmMessage,
-                icon: "info",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-                    $.ajax({
-                        type: "POST",
-                        url: "/attendance/bulk-approve-attendance-request",
-                        data: {
-                            csrfmiddlewaretoken: getCookie("csrftoken"),
-                            ids: JSON.stringify(ids),
-                        },
-                        success: function (response, textStatus, jqXHR) {
-                            if (jqXHR.status === 200) {
-                                location.reload();
-                            }
-                        },
-                    });
-                }
-            });
-        }
-    });
+
+    var checkedRows = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    if (checkedRows.length === 0) {
+        Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+    } else {
+        Swal.fire({
+            text: i18nMessages.confirmBulkApprove,
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+                $.ajax({
+                    type: "POST",
+                    url: "/attendance/bulk-approve-attendance-request",
+                    data: {
+                        csrfmiddlewaretoken: getCookie("csrftoken"),
+                        ids: JSON.stringify(ids),
+                    },
+                    success: function (response, textStatus, jqXHR) {
+                        if (jqXHR.status === 200) {
+                            location.reload();
+                        }
+                    },
+                });
+            }
+        });
+    }
 });
 
 $("#reqAttendanceBulkReject").click(function (e) {
     e.preventDefault();
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = reqAttendanceRejectMessages[languageCode];
-        var textMessage = noRowValidateMessages[languageCode];
-        var checkedRows = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-        if (checkedRows.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            Swal.fire({
-                text: confirmMessage,
-                icon: "info",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
-                    $.ajax({
-                        type: "POST",
-                        url: "/attendance/bulk-reject-attendance-request",
-                        data: {
-                            csrfmiddlewaretoken: getCookie("csrftoken"),
-                            ids: JSON.stringify(ids),
-                        },
-                        success: function (response, textStatus, jqXHR) {
-                            if (jqXHR.status === 200) {
-                                location.reload();
-                            }
-                        },
-                    });
-                }
-            });
-        }
-    });
+    var checkedRows = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+    if (checkedRows.length === 0) {
+        Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+    } else {
+        Swal.fire({
+            text: i18nMessages.confirmBulkReject,
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                ids = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+                $.ajax({
+                    type: "POST",
+                    url: "/attendance/bulk-reject-attendance-request",
+                    data: {
+                        csrfmiddlewaretoken: getCookie("csrftoken"),
+                        ids: JSON.stringify(ids),
+                    },
+                    success: function (response, textStatus, jqXHR) {
+                        if (jqXHR.status === 200) {
+                            location.reload();
+                        }
+                    },
+                });
+            }
+        });
+    }
 });
 
 
@@ -1601,19 +1435,18 @@ function addingRequestAttendanceIds() {
     ids = makeListUnique(ids);
 
     selectedCount = ids.length;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
-        $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
-        if (selectedCount === 0) {
-            $("#unselectAllInstances").css("display", "none");
-            $("#selectedShow").css("display", "none");
-        } else {
-            $("#unselectAllInstances").css("display", "inline-flex");
-            $("#selectedShow").css("display", "inline-flex");
-            $("#selectedShow").text(selectedCount + " - " + message);
-        }
-    });
+
+    var message = i18nMessages.selected
+    $("#selectedInstances").attr("data-ids", JSON.stringify(ids));
+    if (selectedCount === 0) {
+        $("#unselectAllInstances").css("display", "none");
+        $("#selectedShow").css("display", "none");
+    } else {
+        $("#unselectAllInstances").css("display", "inline-flex");
+        $("#selectedShow").css("display", "inline-flex");
+        $("#selectedShow").text(selectedCount + " - " + message);
+    }
+
 }
 
 $(".requested-attendances-select-all").click(function (e) {
@@ -1670,11 +1503,8 @@ $(".requested-attendance-row").change(function () {
 // ******************************************************************
 
 // Iterate through all elements with the 'dateformat_changer' class and format their content
-getCurrentLanguageCode(function (code) {
-    languageCode = code;
-});
 
-if (languageCode != 'de') {
+if (window.CURRENT_LANGUAGE != 'de') {
 
     $(".dateformat_changer").each(function (index, element) {
         var currentDate = $(element).text().trim();
@@ -1695,7 +1525,7 @@ if (languageCode != 'de') {
 
 for_mat = dateFormatter.dateFormat
 
-if (languageCode === 'de') {
+if (window.CURRENT_LANGUAGE === 'de') {
 
     if (["DD-MM-YYYY", "DD.MM.YYYY", "DD/MM/YYYY", "MM/DD/YYYY", "YYYY-MM-DD", "YYYY/MM/DD", "MMM. D, YYYY", "D MMM. YYYY"].includes(for_mat)) {
 
@@ -1749,7 +1579,7 @@ if (languageCode === 'de') {
     else {
         $(".dateformat_changer").each(function (index, element) {
             var currentDate = $(element).text().trim();
-            if (["MMMM D, YYYY", "DD MMMM, YYYY"].includes(for_mat) & languageCode === 'de') {
+            if (["MMMM D, YYYY", "DD MMMM, YYYY"].includes(for_mat) & window.CURRENT_LANGUAGE === 'de') {
                 if (isNaN(currentDate)) {
                     $(element).text(currentDate);
                     return;

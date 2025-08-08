@@ -7,7 +7,7 @@ import json
 import logging
 import traceback
 from typing import Any
-from urllib.parse import parse_qs, urlencode
+from urllib.parse import parse_qs, parse_qsl, urlencode, urlparse, urlunparse
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -1607,7 +1607,7 @@ class HorillaCardView(ListView):
 
     filter_class: FilterSet = None
 
-    view_id: str = get_short_uuid(4, prefix="hcv")
+    view_id: str = None
 
     template_name = "generic/horilla_card.html"
     context_object_name = "queryset"
@@ -1651,9 +1651,12 @@ class HorillaCardView(ListView):
         self._saved_filters = QueryDict()
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
 
+        if not self.view_id:
+            self.view_id = get_short_uuid(4, prefix="hcv")
+
     def get_queryset(self):
         if not self.queryset:
-            queryset = super().get_queryset()
+            self.queryset = super().get_queryset()
             if self.filter_class:
                 query_dict = self.request.GET
                 if "filter_applied" in query_dict.keys():
@@ -1670,7 +1673,7 @@ class HorillaCardView(ListView):
                 self._saved_filters = query_dict
                 self.request.exclude_filter_form = True
                 self.queryset = self.filter_class(
-                    query_dict, queryset, request=self.request
+                    query_dict, queryset=self.queryset, request=self.request
                 ).qs
                 default_filter = models.SavedFilter.objects.filter(
                     path=self.request.path,
@@ -2156,7 +2159,6 @@ class HorillaNavView(TemplateView):
         context["group_by_fields"] = self.group_by_fields
         context["actions"] = self.actions
         context["filter_body_template"] = self.filter_body_template
-        context["view_types"] = self.view_types
         context["create_attrs"] = self.create_attrs
         context["search_in"] = self.search_in
         context["apply_first_filter"] = self.apply_first_filter
@@ -2174,6 +2176,32 @@ class HorillaNavView(TemplateView):
         context["active_view"] = models.ActiveView.objects.filter(
             path=self.request.path
         ).first()
+
+        extra_params = {
+            "referrer": self.request.META.get("HTTP_REFERER", ""),
+        }
+
+        # Update each view's URL with query parameters
+        for view in self.view_types:
+            parsed = urlparse(view.get("url", ""))
+
+            combined_query = dict(parse_qsl(parsed.query))
+            combined_query.update(self.request.GET)
+            combined_query.update(extra_params)
+
+            view["url"] = urlunparse(parsed._replace(query=urlencode(combined_query)))
+
+        context["view_types"] = self.view_types
+
+        # Update search URL with query parameters
+        parsed_search = urlparse(str(self.search_url))
+        parsed_search_url = dict(parse_qsl(parsed_search.query))
+        parsed_search_url.update(self.request.GET)
+        parsed_search_url.update(extra_params)
+
+        context["search_url"] = urlunparse(
+            parsed_search._replace(query=urlencode(parsed_search_url))
+        )
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaNavView] = context
         return context
 

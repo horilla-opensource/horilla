@@ -80,7 +80,6 @@ urlpatterns = [
         employee_tags.EmployeetagNavView.as_view(),
         name="employee-tag-navbar",
     ),
-    path("get-language-code/", views.get_language_code, name="get-language-code"),
     path("employee-profile/", views.employee_profile, name="employee-profile"),
     path(
         "employee-view/<int:obj_id>/",

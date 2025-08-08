@@ -11,37 +11,6 @@ class DateFormattingUtility {
     }
 
     getFormattedDate(date) {
-
-        // getCurrentLanguageCode(function (code) {
-        //     languageCode = code;
-        // });
-
-        // // console.log("CODE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-        // // console.log(languageCode)
-
-        // if (languageCode == 'en'){
-        //     // Set locale to English
-        //     moment.locale('en');
-        // }
-        // else if(languageCode == 'de'){
-        //     // Set locale to German
-        //     moment.locale('de');
-        // }
-        // else if(languageCode == 'es'){
-        //     // Set locale to Spanish
-        //     moment.locale('es');
-        // }
-        // else if(languageCode == 'fr'){
-        //     // Set locale to French
-        //     moment.locale('fr');
-        // }
-        // else if(languageCode == 'ar'){
-        //     // Set locale to Arabic
-        //     moment.locale('ar');
-        // }
-
-
-
         // var specificDate = date; // Your specific date in YYYY-MM-DD format
         // var now = moment(specificDate);
         // // console.log('LANGUAGAE DATE')

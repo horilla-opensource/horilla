@@ -1,52 +1,3 @@
-var rowMessages = {
-    ar: " تم الاختيار",
-    de: " Ausgewählt",
-    es: " Seleccionado",
-    en: " Selected",
-    fr: " Sélectionné",
-};
-
-var deleteDaysMessages = {
-    ar: "هل تريد حقًا حذف جميع العطل المحددة؟",
-    de: "Möchten Sie wirklich alle ausgewählten Feiertage löschen?",
-    es: "¿Realmente quieres eliminar todas las vacaciones seleccionadas?",
-    en: "Do you really want to delete all the selected restrict days?",
-    fr: "Voulez-vous vraiment supprimer toutes les vacances sélectionnées?",
-};
-
-var noRowsDeleteMessages = {
-    ar: "لم تتم تحديد صفوف لحذف العطلات.",
-    de: "Es wurden keine Zeilen zum Löschen von Feiertagen ausgewählt.",
-    es: "No se han seleccionado filas para eliminar las vacaciones.",
-    en: "No rows are selected for deleting restrict days.",
-    fr: "Aucune ligne n'a été sélectionnée pour supprimer les vacances.",
-};
-
-function getCurrentLanguageCode(callback) {
-    var languageCode = $("#main-section-data").attr("data-lang");
-    var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
-    if (allowedLanguageCodes.includes(languageCode)) {
-        callback(languageCode);
-    } else {
-        $.ajax({
-            type: "GET",
-            url: "/employee/get-language-code/",
-            success: function (response) {
-                var ajaxLanguageCode = response.language_code;
-                $("#main-section-data").attr("data-lang", ajaxLanguageCode);
-                callback(
-                    allowedLanguageCodes.includes(ajaxLanguageCode)
-                        ? ajaxLanguageCode
-                        : "en"
-                );
-            },
-            error: function () {
-                callback("en");
-            },
-        });
-    }
-}
-
 function makeDaysListUnique(list) {
     return Array.from(new Set(list));
 }
@@ -63,20 +14,17 @@ function tickRestrictDaysCheckboxes() {
         $("#" + id).prop("checked", true);
     });
     var selectedCount = uniqueIds.length;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
-        if (selectedCount > 0) {
-            $("#unselectAllRestrictDays").css("display", "inline-flex");
-            //   $("#exportRestrictDays").css("display", "inline-flex");
-            $("#showSelectedDays").css("display", "inline-flex");
-            $("#showSelectedDays").text(selectedCount + " -" + message);
-        } else {
-            $("#unselectAllRestrictDays").css("display", "none  ");
-            $("#showSelectedDays").css("display", "none");
-            //   $("#exportRestrictDays").css("display", "none");
-        }
-    });
+    if (selectedCount > 0) {
+        $("#unselectAllRestrictDays").css("display", "inline-flex");
+        //   $("#exportRestrictDays").css("display", "inline-flex");
+        $("#showSelectedDays").css("display", "inline-flex");
+        $("#showSelectedDays").text(selectedCount + " -" + i18nMessages.selected);
+    } else {
+        $("#unselectAllRestrictDays").css("display", "none  ");
+        $("#showSelectedDays").css("display", "none");
+        //   $("#exportRestrictDays").css("display", "none");
+    }
+
 }
 
 function addingRestrictDayIds() {
@@ -96,21 +44,18 @@ function addingRestrictDayIds() {
     ids = makeDaysListUnique(ids);
     toggleHighlight(ids);
     selectedCount = ids.length;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var message = rowMessages[languageCode];
-        $("#selectedRestrictDays").attr("data-ids", JSON.stringify(ids));
-        if (selectedCount === 0) {
-            $("#showSelectedDays").css("display", "none");
-            //   $("#exportRestrictDays").css("display", "none");
-            $("#unselectAllRestrictDays").css("display", "none");
-        } else {
-            $("#unselectAllRestrictDays").css("display", "inline-flex");
-            //   $("#exportRestrictDays").css("display", "inline-flex");
-            $("#showSelectedDays").css("display", "inline-flex");
-            $("#showSelectedDays").text(selectedCount + " - " + message);
-        }
-    });
+
+    $("#selectedRestrictDays").attr("data-ids", JSON.stringify(ids));
+    if (selectedCount === 0) {
+        $("#showSelectedDays").css("display", "none");
+        //   $("#exportRestrictDays").css("display", "none");
+        $("#unselectAllRestrictDays").css("display", "none");
+    } else {
+        $("#unselectAllRestrictDays").css("display", "inline-flex");
+        //   $("#exportRestrictDays").css("display", "inline-flex");
+        $("#showSelectedDays").css("display", "inline-flex");
+        $("#showSelectedDays").text(selectedCount + " - " + i18nMessages.selected);
+    }
 }
 function updateParentCheckbox() {
     var parentTable = $(this).closest(".oh-sticky-table");
@@ -235,72 +180,62 @@ function unselectAllRestrictDays() {
 }
 
 $("#bulkRestrictedDaysDelete").click(function (e) {
-    var languageCode = null;
-    getCurrentLanguageCode(function (code) {
-        languageCode = code;
-        var confirmMessage = deleteDaysMessages[languageCode];
-        var textMessage = noRowsDeleteMessages[languageCode];
-        try {
-            var ids = JSON.parse($("#selectedRestrictDays").attr("data-ids"));
-        } catch (e) {
+    try {
+        var ids = JSON.parse($("#selectedRestrictDays").attr("data-ids"));
+    } catch (e) {
 
-            var ids = [];
-        }
-        if (ids.length === 0) {
-            Swal.fire({
-                text: textMessage,
-                icon: "warning",
-                confirmButtonText: "Close",
-            });
-        } else {
-            Swal.fire({
-                text: confirmMessage,
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonColor: "#008000",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirm",
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    var hxVals = JSON.stringify(ids);
-                    $("#bulkDeleteSpan").attr("hx-vals", `{"ids":${hxVals}}`);
-                    $("#bulkDeleteSpan").click();
-                    $("#selectedRestrictDays").attr("data-ids", "");
-                }
-            });
-        }
-    });
+        var ids = [];
+    }
+    if (ids.length === 0) {
+        Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
+    } else {
+        Swal.fire({
+            text: i18nMessages.confirmBulkDelete,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                var hxVals = JSON.stringify(ids);
+                $("#bulkDeleteSpan").attr("hx-vals", `{"ids":${hxVals}}`);
+                $("#bulkDeleteSpan").click();
+                $("#selectedRestrictDays").attr("data-ids", "");
+            }
+        });
+    }
 });
 
 
 function bulkRestrictedDaysDelete() {
-  var languageCode = null;
-  getCurrentLanguageCode(function (code) {
-    languageCode = code;
-    var confirmMessage = deleteDaysMessages[languageCode];
-    var textMessage = noRowsDeleteMessages[languageCode];
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
     if (ids.length === 0) {
-      Swal.fire({
-        text: textMessage,
-        icon: "warning",
-        confirmButtonText: "Close",
-      });
+        Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+        });
     } else {
-      Swal.fire({
-        text: confirmMessage,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#008000",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Confirm",
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          var hxVals = JSON.stringify(ids);
-          $("#bulkDeleteSpan").attr("hx-vals", `{"ids":${hxVals}}`);
-          $("#bulkDeleteSpan").click();
-        }
-      });
+        Swal.fire({
+            text: i18nMessages.confirmBulkDelete,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#008000",
+            cancelButtonColor: "#d33",
+            confirmButtonText: i18nMessages.confirm,
+            cancelButtonText: i18nMessages.cancel,
+        }).then(function (result) {
+            if (result.isConfirmed) {
+                var hxVals = JSON.stringify(ids);
+                $("#bulkDeleteSpan").attr("hx-vals", `{"ids":${hxVals}}`);
+                $("#bulkDeleteSpan").click();
+            }
+        });
     }
-  });
 };

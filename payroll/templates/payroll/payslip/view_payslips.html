@@ -274,44 +274,6 @@
     <div id="messageContainer"></div>
 
     <script>
-      var no_rows_payslip_send = {
-        ar: "لم يتم اختيار أي صفوف لإرسال قسائم الرواتب.",
-        de: "Es wurden keine Zeilen zum Senden von Gehaltsabrechnungen ausgewählt.",
-        es: "No se han seleccionado filas para enviar las nóminas.",
-        en: "No rows are selected for sending payslips.",
-        fr: "Aucune ligne n'est sélectionnée pour l'envoi des bulletins de salaire.",
-      };
-      var mail_processing = {
-        ar: "معالجة البريد.",
-        de: "Mailverarbeitung.",
-        es: "Procesamiento de correo.",
-        en: "Mail processing.",
-        fr: "Traitement du courrier.",
-      };
-      function getCurrentLanguageCode(callback) {
-        var languageCode = $("#main-section-data").attr("data-lang");
-        var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
-        if (allowedLanguageCodes.includes(languageCode)) {
-          callback(languageCode);
-        } else {
-          $.ajax({
-            type: "GET",
-            url: "/employee/get-language-code/",
-            success: function (response) {
-              var ajaxLanguageCode = response.language_code;
-              $("#main-section-data").attr("data-lang", ajaxLanguageCode);
-              callback(
-                allowedLanguageCodes.includes(ajaxLanguageCode)
-                  ? ajaxLanguageCode
-                  : "en"
-              );
-            },
-            error: function () {
-              callback("en");
-            },
-          });
-        }
-      }
       function updateBulkStatus(element) {
         var status = element.val();
         var ids = [];
@@ -487,44 +449,39 @@
       }
       $("#payslipBulkSend").click(function (e) {
         e.preventDefault();
-        var languageCode = null;
-        getCurrentLanguageCode(function (code) {
-          languageCode = code;
-          var idsJson = $("#selectedPayslip").attr("data-ids");
-          var ids = JSON.parse(idsJson);
-          if (ids.length > 0) {
-            $.ajax({
-              type: "get",
-              url: `/payroll/send-slip`,
-              data: { id: ids },
-              traditional: true,
-              success: function (response) {
-                  var mailProcessingMessage = mail_processing[languageCode];
+        var idsJson = $("#selectedPayslip").attr("data-ids");
+        var ids = JSON.parse(idsJson);
+        if (ids.length > 0) {
+          $.ajax({
+            type: "get",
+            url: `/payroll/send-slip`,
+            data: { id: ids },
+            traditional: true,
+            success: function (response) {
+                var mailProcessingMessage = "Mail processing.";
 
-                $("#messages").html(
-                  $(`
-                <div class="oh-alert-container">
-                  <div class="oh-alert oh-alert--animated oh-alert--info">`
-                   + mailProcessingMessage +`
-                  </div>
+              $("#messages").html(
+                $(`
+              <div class="oh-alert-container">
+                <div class="oh-alert oh-alert--animated oh-alert--info">`
+                  + mailProcessingMessage +`
                 </div>
-                `)
-                );
-                $("#unselectAllPayslip").click();
-                $(".payslip-checkbox:checked").prop("checked", false).change();
-              },
-            });
-          }else{
-            var textMessage = no_rows_payslip_send[languageCode];
-            Swal.fire({
-              text: textMessage,
-              icon: "warning",
-              confirmButtonText: "Close",
-            });
-                $("#unselectAllPayslip").click();
-                $(".payslip-checkbox:checked").prop("checked", false).change();
-          }
-        });
+              </div>
+              `)
+              );
+              $("#unselectAllPayslip").click();
+              $(".payslip-checkbox:checked").prop("checked", false).change();
+            },
+          });
+        }else{
+          Swal.fire({
+            text: i18nMessages.noRowsSelected,
+            icon: "warning",
+            confirmButtonText: i18nMessages.close,
+          });
+              $("#unselectAllPayslip").click();
+              $(".payslip-checkbox:checked").prop("checked", false).change();
+        }
       });
     </script>
   </div>
