@@ -18,7 +18,7 @@
   <form autocomplete="off"
     id="filterForm"
     onsubmit="event.preventDefault()"
-    hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}"
+    hx-get="{{search_url}}"
     hx-replace-url="false"
     hx-target="{{search_swap_target}}"
     hx-on:submit="htmxLoadIndicator(this);"
@@ -90,7 +90,7 @@
           ></a>
           {% if active_view.type == type.type %}
           <script>
-            $("form#filterForm.oh-main__titlebar oh-main__titlebar--right").attr('hx-get','{{type.url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}');
+            $("form#filterForm.oh-main__titlebar oh-main__titlebar--right").attr('hx-get','{{type.url}}');
             $(".oh-view-types .oh-view-type[data-type={{type.type}}] a").addClass("oh-btn--view-active")
 
           </script>

@@ -1,11 +1,3 @@
-var downloadMessages = {
-	ar: "هل ترغب في تنزيل القالب؟",
-	de: "Möchten Sie die Vorlage herunterladen?",
-	es: "¿Quieres descargar la plantilla?",
-	en: "Do you want to download the template?",
-	fr: "Voulez-vous télécharger le modèle ?",
-};
-
 function getCookie(name) {
 	let cookieValue = null;
 	if (document.cookie && document.cookie !== "") {
@@ -22,71 +14,43 @@ function getCookie(name) {
 	return cookieValue;
 }
 
-function getCurrentLanguageCode(callback) {
-	var languageCode = $("#main-section-data").attr("data-lang");
-	var allowedLanguageCodes = ["ar", "de", "es", "en", "fr"];
-	if (allowedLanguageCodes.includes(languageCode)) {
-		callback(languageCode);
-	} else {
-		$.ajax({
-			type: "GET",
-			url: "/employee/get-language-code/",
-			success: function (response) {
-				var ajaxLanguageCode = response.language_code;
-				$("#main-section-data").attr("data-lang", ajaxLanguageCode);
-				callback(
-					allowedLanguageCodes.includes(ajaxLanguageCode)
-						? ajaxLanguageCode
-						: "en"
-				);
-			},
-			error: function () {
-				callback("en");
-			},
-		});
-	}
-}
-
 function getAssetImportTemplate() {
-	var languageCode = null;
-	getCurrentLanguageCode(function (code) {
-		languageCode = code;
-		var confirmMessage = downloadMessages[languageCode];
-		// Use SweetAlert for the confirmation dialog
-		Swal.fire({
-			text: confirmMessage,
-			icon: "question",
-			showCancelButton: true,
-			confirmButtonColor: "#008000",
-			cancelButtonColor: "#d33",
-			confirmButtonText: "Confirm",
-		}).then(function (result) {
-			if (result.isConfirmed) {
-				$.ajax({
-					type: "GET",
-					url: "/asset/asset-excel",
-					dataType: "binary",
-					xhrFields: {
-						responseType: "blob",
-					},
-					success: function (response) {
-						const file = new Blob([response], {
-							type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-						});
-						const url = URL.createObjectURL(file);
-						const link = document.createElement("a");
-						link.href = url;
-						link.download = "asset_excel.xlsx";
-						document.body.appendChild(link);
-						link.click();
-					},
-					error: function (xhr, textStatus, errorThrown) {
-						console.error("Error downloading file:", errorThrown);
-					},
-				});
-			}
-		});
+	// Use SweetAlert for the confirmation dialog
+	Swal.fire({
+		text: i18nMessages.downloadTemplate,
+		icon: "question",
+		showCancelButton: true,
+		confirmButtonColor: "#008000",
+		cancelButtonColor: "#d33",
+		confirmButtonText: i18nMessages.confirm,
+		cancelButtonText: i18nMessages.cancel,
+	}).then(function (result) {
+		if (result.isConfirmed) {
+			$.ajax({
+				type: "GET",
+				url: "/asset/asset-excel",
+				dataType: "binary",
+				xhrFields: {
+					responseType: "blob",
+				},
+				success: function (response) {
+					const file = new Blob([response], {
+						type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+					});
+					const url = URL.createObjectURL(file);
+					const link = document.createElement("a");
+					link.href = url;
+					link.download = "asset_excel.xlsx";
+					document.body.appendChild(link);
+					link.click();
+				},
+				error: function (xhr, textStatus, errorThrown) {
+					console.error("Error downloading file:", errorThrown);
+				},
+			});
+		}
 	});
+
 }
 
 $(document).ready(function () {

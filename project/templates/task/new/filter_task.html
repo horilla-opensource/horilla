@@ -1,34 +1,34 @@
 {% load i18n %} {% load basefilters %}
 <div class="oh-dropdown__filter-body">
     <div class="oh-accordion">
-        <div class="oh-accordion-header">{% trans "Task" %}</div>
+        <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Task" %}</div>
         <div class="oh-accordion-body">
             <div class="row">
             <input type="text" value="{{project_id}}" name="project" style="display:none;">
                 <div class="col-sm-6">
                     <div class="oh-input-group">
-                        <label class="oh-label" for="{{f.form.task_managers.id_for_label}}">{{f.form.task_managers.label}}</label>
-                        {{f.form.task_managers}}
+                        <label class="oh-label" for="{{form.task_managers.id_for_label}}">{{form.task_managers.label}}</label>
+                        {{form.task_managers}}
                     </div>
                     <div class="oh-input-group">
-                        <label class="oh-label" for="{{f.form.stage.id_for_label}}">{{f.form.stage.label}}</label>
-                        {{f.form.stage}}
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6">
-                    <div class="oh-input-group">
-                        <label class="oh-label" for="{{f.form.task_members.id_for_label}}">{{f.form.task_members.label}}</label>
-                        {{f.form.task_members}}
-                    </div>
-                    <div class="oh-input-group">
-                        <label class="oh-label" for="{{f.form.status.id_for_label}}">{{f.form.status.label}}</label>
-                        {{f.form.status}}
+                        <label class="oh-label" for="{{form.stage.id_for_label}}">{{form.stage.label}}</label>
+                        {{form.stage}}
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="oh-input-group">
-                        <label class="oh-label" for="{{f.form.end_till.id_for_label}}">{{f.form.end_till.label}}</label>
-                        {{f.form.end_till}}
+                        <label class="oh-label" for="{{form.task_members.id_for_label}}">{{form.task_members.label}}</label>
+                        {{form.task_members}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.status.id_for_label}}">{{form.status.label}}</label>
+                        {{form.status}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.end_till.id_for_label}}">{{form.end_till.label}}</label>
+                        {{form.end_till}}
                     </div>
                 </div>
 
@@ -38,7 +38,7 @@
 </div>
 <div class="oh-dropdown__filter-footer">
 <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
-id="taskFilterButton">
+        id="applyFilter">
     {% trans "Filter" %}
 </button>
 </div>

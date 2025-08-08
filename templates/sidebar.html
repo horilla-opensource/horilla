@@ -384,23 +384,6 @@ function initializeSummernote(candId,searchWords,) {
   }
 
   var message;
-  var languageCode = "en";
-  var emptyMessages = {
-    ar: "...لم يتم العثور على بيانات",
-    de: "Keine Daten gefunden...",
-    es: "No se encontraron datos...",
-    en: "No records available at the moment.",
-    fr: "Aucune donnée trouvée...",
-  };
-
-  $.ajax({
-    type: "GET",
-    url: "/employee/get-language-code/",
-    success: function (response) {
-      languageCode = response.language_code;
-      message = emptyMessages[languageCode];
-    },
-  });
 
   function emptyChart(chart, args, options) {
     flag = false;
@@ -425,7 +408,7 @@ function initializeSummernote(candId,searchWords,) {
 
       message = chart.data.message
         ? chart.data.message
-        : emptyMessages[languageCode];
+        : i18nMessages.emptyMessages;
 
       noDataImage.onload = () => {
         // Draw image first at center

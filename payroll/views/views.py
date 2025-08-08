@@ -71,13 +71,6 @@ status_choices = {
 }
 
 
-def get_language_code(request):
-    scale_x_text = _("Name of Employees")
-    scale_y_text = _("Amount")
-    response = {"scale_x_text": scale_x_text, "scale_y_text": scale_y_text}
-    return JsonResponse(response)
-
-
 @login_required
 @permission_required("payroll.add_contract")
 def contract_create(request):

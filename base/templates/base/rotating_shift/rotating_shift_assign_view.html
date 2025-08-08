@@ -267,22 +267,17 @@
 
         ids = makeRShiftListUnique(ids);
         selectedCount = ids.length;
-
-        getCurrentLanguageCode(function (code) {
-            languageCode = code;
-            var message = rowMessages[languageCode];
-            $("#selectedRShifts").attr("data-ids", JSON.stringify(ids));
-            if (selectedCount === 0) {
-                $("#selectedShowRShifts").css("display", "none");
-                $("#exportRShifts").css("display", "none");
-                $("#unselectAllRShifts").css("display", "none");
-            } else {
-                $("#exportRShifts").css("display", "inline-flex");
-                $("#unselectAllRShifts").css("display", "inline-flex");
-                $("#selectedShowRShifts").css("display", "inline-flex");
-                $("#selectedShowRShifts").text(selectedCount + " - " + message);
-            }
-        });
+        $("#selectedRShifts").attr("data-ids", JSON.stringify(ids));
+        if (selectedCount === 0) {
+            $("#selectedShowRShifts").css("display", "none");
+            $("#exportRShifts").css("display", "none");
+            $("#unselectAllRShifts").css("display", "none");
+        } else {
+            $("#exportRShifts").css("display", "inline-flex");
+            $("#unselectAllRShifts").css("display", "inline-flex");
+            $("#selectedShowRShifts").css("display", "inline-flex");
+            $("#selectedShowRShifts").text(selectedCount + " - " + i18nMessages.selected);
+        }
     }
 
     $(document).ready(function () {
