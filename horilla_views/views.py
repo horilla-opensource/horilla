@@ -1,4 +1,5 @@
 import importlib
+import json
 from collections import defaultdict
 
 from django import forms
@@ -606,9 +607,10 @@ def update_kanban_sequence(request):
     """
 
     model_path = request.GET.get("model", "")
-    order_list = request.GET.getlist("order", [])
+    order = request.GET.get("order")
     group_key = request.GET.get("groupKey")
     group_id = request.GET.get("groupId")
+    order_list = json.loads(order)
 
     if not model_path:
         return JsonResponse({"error": "Missing 'model' or 'order'."}, status=400)
@@ -621,9 +623,7 @@ def update_kanban_sequence(request):
         return JsonResponse({"error": "Invalid model path."}, status=400)
 
     if "sequence" not in [f.name for f in model._meta.fields]:
-        return JsonResponse(
-            {"error": "Model does not have a 'sequence' field."}, status=400
-        )
+        return JsonResponse({"info": "Model does not have a 'sequence' field."})
 
     filters = {}
     if group_key and group_id:
@@ -679,7 +679,8 @@ def update_kanban_item_group(request):
     group_key = request.GET.get("groupKey")
     group_id = request.GET.get("groupId")
     object_id = request.GET.get("objectId")
-    order_list = request.GET.getlist("order")
+    order = request.GET.get("order")
+    order_list = json.loads(order)
 
     if not all([model_path, group_key, group_id, object_id, order_list]):
         return JsonResponse({"error": "Missing required parameters"}, status=400)
@@ -694,12 +695,16 @@ def update_kanban_item_group(request):
         objects = list(model.objects.filter(id__in=order_list))
         obj_map = {str(obj.id): obj for obj in objects}
         updated = []
+        fields = []
 
         for index, obj_id in enumerate(order_list):
             obj = obj_map.get(str(obj_id))
             if not obj:
                 continue
-            setattr(obj, "sequence", index)
+            if hasattr(obj, "sequence"):
+                fields.append("sequence")
+                setattr(obj, "sequence", index)
+
             setattr(obj, group_key, group_instance)
 
             # Special logic for "hired" if needed
@@ -712,7 +717,7 @@ def update_kanban_item_group(request):
 
             updated.append(obj)
 
-        fields = ["sequence", group_key]
+        fields.append(group_key)
         if any(hasattr(o, "hired") for o in updated):
             fields.append("hired")
 
@@ -721,6 +726,37 @@ def update_kanban_item_group(request):
         return JsonResponse({"status": "success", "updated": len(updated)})
     except Exception as e:
         return JsonResponse({"error": f"{e}"}, status=500)
+
+
+def update_kanban_group_sequence(request):
+    """
+    Generic method to update the sequence of kanban groups.
+    """
+    model_path = request.GET.get("model")
+    group_key = request.GET.get("group_key")
+    sequence_raw = request.GET.get("sequence", "")
+    try:
+        sequence = json.loads(sequence_raw)
+    except json.JSONDecodeError:
+        sequence = []
+
+    model = apps.get_model(*model_path.split("."))
+    group_field = model._meta.get_field(group_key)
+    group_model = group_field.related_model
+
+    to_update = []
+    for index, group_id in enumerate(sequence):
+        instance = group_model(
+            pk=group_id,
+            sequence=index,
+        )
+        to_update.append(instance)
+
+    group_model.objects.bulk_update(to_update, fields=["sequence"])
+
+    return JsonResponse(
+        {"status": "success", "message": "Group sequence updated successfully."}
+    )
 
 
 def get_kanban_card_count(request):
@@ -732,7 +768,6 @@ def get_kanban_card_count(request):
     group_key = request.GET.get("group_key")
 
     model = apps.get_model(*model_path.split("."))
-    print(model.objects.filter(**{group_key: group_id}))
     count = model.objects.filter(**{group_key: group_id}).count()
 
     return HttpResponse(f"{count}")
