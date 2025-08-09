@@ -48,6 +48,11 @@ urlpatterns = [
         name="get-offboarding-stage",
     ),
     path(
+        "get-offboarding-kanban-stage/<int:pk>/",
+        exit_process.OffboardingKanbanView.as_view(),
+        name="get-offboarding-kanban-stage",
+    ),
+    path(
         "get-offboarding-employees-cbv",
         exit_process.OffboardingEmployeeList.as_view(),
         name="get-offboarding-employees-cbv",

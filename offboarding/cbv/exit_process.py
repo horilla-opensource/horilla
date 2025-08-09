@@ -15,6 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from base.context_processors import intial_notice_period
 from base.methods import eval_validate
 from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.generic.cbv.kanban import KanbanView
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -267,10 +268,11 @@ class OffboardingPipelineNav(HorillaNavView):
     Offboarding Pipeline Navigation View
     """
 
-    nav_title = "Pipeline"
+    nav_title = "Exit Process"
     search_swap_target = "#pipelineContainer"
     search_url = reverse_lazy("get-offboarding-tab")
     filter_body_template = "cbv/exit_process/pipeline_filter.html"
+    apply_first_filter = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -282,6 +284,25 @@ class OffboardingPipelineNav(HorillaNavView):
                 data-toggle="oh-modal-toggle"
                 data-target="#objectDetailsModal"
             """
+
+        self.view_types = [
+            {
+                "type": "list",
+                "icon": "list-outline",
+                "url": f'{reverse_lazy("get-offboarding-tab")}',
+                "attrs": f"""
+                    title ='List'
+                """,
+            },
+            {
+                "type": "card",
+                "icon": "grid-outline",
+                "url": f'{reverse_lazy("get-offboarding-tab")}?view=card',
+                "attrs": f"""
+                    title ='Card'
+                """,
+            },
+        ]
 
     def get_context_data(self, **kwargs):
 
@@ -299,18 +320,25 @@ class PipeLineTabView(HorillaTabView):
     Pipeline List View
     """
 
+    filter_class = PipelineFilter
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        offboardings = PipelineFilter(self.request.GET).qs.filter(is_active=True)
-
+        offboardings = self.filter_class(self.request.GET).qs.filter(is_active=True)
+        view_type = self.request.GET.get("view", "list")
         self.tabs = []
         for offboarding in offboardings:
             tab = {}
             tab["actions"] = []
             tab["title"] = offboarding.title
-            tab["url"] = reverse(
-                "get-offboarding-stage", kwargs={"offboarding_id": offboarding.pk}
-            )
+            url = reverse("get-offboarding-kanban-stage", kwargs={"pk": offboarding.pk})
+            if view_type == "list":
+                url = reverse(
+                    "get-offboarding-stage", kwargs={"offboarding_id": offboarding.pk}
+                )
+
+            tab["url"] = url
+
             tab["badge_label"] = _("Stages")
             if self.request.user.has_perm(
                 "offboarding.add_offboardingstage"
@@ -431,6 +459,41 @@ class OffboardingPipelineStage(Pipeline):
         queryset = super().get_queryset()
         self.queryset = queryset.order_by("sequence")
         return self.queryset
+
+
+class OffboardingKanbanView(KanbanView):
+    """
+    Offboarding Kanban View
+    """
+
+    model = OffboardingEmployee
+    filter_class = PipelineEmployeeFilter
+    group_key = "stage_id"
+    records_per_page = 10
+    show_kanban_confirmation = False
+
+    kanban_attrs = """
+        hx-get='{get_individual_url}'
+        hx-target='#genericModalBody'
+        data-toggle = 'oh-modal-toggle'
+        data-target="#genericModal"
+        data-group-order='{ordered_group_json}'
+    """
+
+    details = {
+        "image_src": "{employee_id__get_avatar}",
+        "title": "{employee_id__get_full_name}",
+        "Notice period start": "{notice_period_starts}",
+        "Notice period end": "{notice_period_ends}",
+    }
+
+    def get_related_groups(self, *args, **kwargs):
+        related_groups = super().get_related_groups(*args, **kwargs)
+        off_id = self.kwargs.get("pk")
+        if off_id:
+            related_groups = related_groups.filter(offboarding_id=off_id)
+
+        return related_groups
 
 
 @method_decorator(login_required, name="dispatch")

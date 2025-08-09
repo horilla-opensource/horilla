@@ -1,6 +1,55 @@
+{% extends "index.html" %}
+{% block content %}
 {% load static i18n %}
 
-{% include "generic/horilla_section.html" %}
+{% for path in style_static_paths %}
+<link rel="stylesheet" href="{{path}}"/>
+{% endfor %}
+{% for path in script_static_paths %}
+<script src="{% static path %}"></script>
+{% endfor %}
+
+
+{% include "generic/components.html" %}
+
+<div
+  class="oh-checkpoint-badge mb-2"
+  id="selectedInstances"
+  data-ids="[]"
+  data-clicked=""
+  style="display: none"
+>
+</div>
+
+{% if nav_url %}
+<div
+  hx-get="{{nav_url}}?{{request.GET.urlencode}}"
+  hx-trigger="load"
+>
+   <div
+     class="mt-5 oh-wrapper animated-background"
+     style="height:80px;"
+   >
+   </div>
+</div>
+{% endif %}
+
+{% if view_url %}
+<div
+  class="oh-wrapper"
+  id="{{view_container_id}}"
+>
+   <div
+     class="mt-4 animated-background"
+     style="height:600px;"
+   >
+   </div>
+</div>
+{% endif %}
+
+
+{% endblock content %}
+
 
 <div
     class="oh-modal"

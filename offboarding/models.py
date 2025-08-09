@@ -1,3 +1,4 @@
+import json
 from ast import literal_eval
 from collections.abc import Iterable
 from datetime import date, timedelta
@@ -270,6 +271,23 @@ class OffboardingEmployee(HorillaModel):
         value = super().__getattribute__(name)
 
         return value
+
+    def ordered_group_json(self):
+        """
+        This method is used to get ordered group json
+        """
+        Offboarding = self.stage_id.offboarding_id
+        offboarding_stages = Offboarding.offboardingstage_set.all().order_by("sequence")
+        ordered_group_json = json.dumps(
+            [
+                {
+                    "id": stage.id,
+                    "stage": stage.title,
+                }
+                for stage in offboarding_stages
+            ]
+        )
+        return ordered_group_json
 
 
 class ResignationLetter(HorillaModel):
