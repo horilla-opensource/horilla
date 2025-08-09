@@ -15,6 +15,7 @@ from uuid import uuid4
 import django
 import requests
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
@@ -1146,23 +1147,6 @@ class Candidate(HorillaModel):
             path="cbv/pipeline/interview_template.html",
             context={"instance": self, "interviews": interviews},
         )
-
-    def ordered_group_json(self):
-        """
-        This method is used to get the ordered stages in json format for the candidate
-        """
-
-        ordered_stages = self.recruitment_id.ordered_stages()
-        ordered_group_json = json.dumps(
-            [
-                {
-                    "id": s.id,
-                    "stage": s.stage,
-                }
-                for s in ordered_stages
-            ]
-        )
-        return ordered_group_json
 
     def save(self, *args, **kwargs):
         if self.stage_id is not None:
