@@ -57,4 +57,5 @@ urlpatterns = [
     path("mail-templates", MailTemplateView.as_view()),
     path("my-attendance/", UserAttendanceView.as_view()),
     path("attendance-type-check/", AttendanceTypeAccessCheck.as_view()),
+    path("my-attendance-detailed/<int:id>/", UserAttendanceDetailedView.as_view()),
 ]

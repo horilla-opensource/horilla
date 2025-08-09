@@ -11,9 +11,7 @@ ACCESSIBILITY_CACHE_USER_KEYS = {}
 
 
 def update_accessibility_cache(cache_key, request):
-    """
-    Cache for get all the queryset
-    """
+    """Cache for get all the queryset"""
     feature_accessible = {}
     for accessibility, _display in ACCESSBILITY_FEATURE:
         feature_accessible[accessibility] = check_is_accessible(
