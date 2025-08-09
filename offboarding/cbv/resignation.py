@@ -153,17 +153,18 @@ class ResinationLettersNav(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("list-resignation-request")
         self.create_attrs = f"""
-                            hx-get="{reverse_lazy("resignation-requests-create")}"
-                            hx-target="#genericModalBody"
-                            data-target="#genericModal"
-                            data-toggle="oh-modal-toggle"
-                            """
+            hx-get="{reverse_lazy("resignation-requests-create")}"
+            hx-target="#genericModalBody"
+            data-target="#genericModal"
+            data-toggle="oh-modal-toggle"
+        """
 
     nav_title = _("Resignations")
     filter_instance = LetterFilter()
     filter_form_context_name = "form"
     filter_body_template = "cbv/resignation/filter.html"
     search_swap_target = "#listContainer"
+    apply_first_filter = False
 
     group_by_fields = [
         ("employee_id", _("Employee")),
