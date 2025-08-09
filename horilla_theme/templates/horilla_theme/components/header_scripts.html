@@ -1,4 +1,10 @@
 {% load static %}
+
+<script>
+    window.CURRENT_LANGUAGE = "{{ LANGUAGE_CODE }}";
+    var at_work_seconds = {{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}
+    var run = 0
+</script>
 <script src="{% static '/jquery/ajax.js' %}"></script>
 <script src="{% static '/jquery/jquery.min.js' %}"></script>
 <script src="{% static '/jquery/jqueryui.js' %}"></script>
