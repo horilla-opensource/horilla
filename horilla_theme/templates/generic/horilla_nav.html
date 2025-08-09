@@ -4,7 +4,7 @@
     <div class="flex flex-wrap gap-1">
         {% if search_url %}
             <form autocomplete="off" id="filterForm" onsubmit="event.preventDefault()"
-                hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}"
+                hx-get="{{search_url}}"
                 hx-replace-url="false" hx-target="{{search_swap_target}}" hx-on:submit="htmxLoadIndicator(this);"
                 class="flex flex-wrap gap-1 navFilterForm">
 
@@ -14,9 +14,6 @@
                     <input type="text"
                         class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
                         name="search" aria-label="Search Input" placeholder="Search" autocomplete="false" autofocus="true"
-                        hx-trigger="keyup delay:500ms"
-                        hx-get="{{search_url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}"
-                        {% comment %} onkeyup="$(this).closest('form').find('#applyFilter').click();" {% endcomment %}
                         {{search_input_attrs|safe}}
                     />
                     <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
@@ -44,13 +41,13 @@
                                 hx-get="{% url 'active-hnv-view-type' %}?view={{type.type}}&path={{request.path}}"
                                 class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 nav-view-btn"
                                 onclick="
-                                    $(this).closest('form').attr('hx-get','{{type.url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}');
+                                    $(this).closest('form').attr('hx-get','{{type.url}}');
                                     $(this).closest('form').find('#applyFilter').click();
                                     ">
                                 <a {{type.attrs|safe}}> <ion-icon name="{{type.icon}}"></ion-icon></a>
                                 {% if active_view.type == type.type %}
                                     <script>
-                                        $("navFilterForm").attr('hx-get', '{{type.url}}?&referrer={{request.META.HTTP_REFERER}}&{{request.GET.urlencode}}');
+                                        $(".navFilterForm").attr('hx-get', '{{type.url}}');
                                         $(".nav-view-btn[data-type={{type.type}}]").addClass("oh-view-btn--active")
                                     </script>
                                 {% endif %}
@@ -171,6 +168,18 @@
             }
             {% endif %}
         }, 100);
+        $(document).ready(function () {
+
+        let debounceTimer;
+
+        $('#filterForm input[name="search"]').on('keyup', function () {
+            clearTimeout(debounceTimer);
+
+            debounceTimer = setTimeout(() => {
+            this.form.requestSubmit(); // Triggers HTMX handling via form's hx-get, etc.
+            }, 500);
+        });
+        });
 
         $(".nav-view-btn").click(function (e) {
             e.preventDefault();

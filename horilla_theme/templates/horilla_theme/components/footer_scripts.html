@@ -1,6 +1,8 @@
 {% load static i18n horillafilters %}
 {% comment %} <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> {% endcomment %}
 {% comment %} <script src="{% static 'build/js/web.frontend.min.js' %}"></script> {% endcomment %}
+<script src="{% url 'javascript-catalog' %}"></script>
+
 <script src="{% static 'htmx/htmx.min.js' %}"></script>
 <script>
   document.body.addEventListener('htmx:configRequest', (event) => {
