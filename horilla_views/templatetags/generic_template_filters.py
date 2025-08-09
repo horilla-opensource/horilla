@@ -46,7 +46,12 @@ time_format_mapping = {
 
 
 @register.filter(name="selected_format")
-def selected_format(date: datetime.date, company: object = None) -> str:
+def selected_format(date, company: object = None) -> str:
+    if not isinstance(date, (datetime.date, datetime.time)):
+        try:
+            date = datetime.datetime.fromisoformat(date)
+        except:
+            return date
     if company and (company.date_format or company.time_format):
         if isinstance(date, datetime.date):
             format = company.date_format if company.date_format else "MMM. D, YYYY"

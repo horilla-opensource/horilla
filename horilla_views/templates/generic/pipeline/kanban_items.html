@@ -6,7 +6,6 @@
         {{view.kanban_attrs|format:instance|safe}}
     >
 
-        <input type="text" name="order" value="{{instance.id}}" hidden>
         <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
             <div class="absolute inline-block dropdown-wrapper right-5 top-5 w-3" role="button"
                 onclick="event.stopPropagation()"
@@ -64,11 +63,11 @@
             {% for key, value in details.items %}
                 {% if key != "image_src" and key != "title" %}
                 <div class="flex gap-2 items-center relative mb-2">
-                    <span class="font-medium text-xs text-[#565E6C] w-14"
-                        >{{key|title}} </span
+                    <span class="font-medium text-xs text-[#565E6C]"
+                        >{{key|title}} : </span
                     >
                     <p class="text-xs font-semibold flex items-center gap-2">
-                        : <span>{{value|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</span>
+                        <span>{{value|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</span>
                     </p>
                 </div>
                 {% endif %}

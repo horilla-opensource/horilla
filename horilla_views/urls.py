@@ -65,4 +65,9 @@ urlpatterns = [
         views.get_kanban_card_count,
         name="get-kanban-card-count",
     ),
+    path(
+        "update-kanban-group-sequence/",
+        views.update_kanban_group_sequence,
+        name="update-kanban-group-sequence",
+    ),
 ]
