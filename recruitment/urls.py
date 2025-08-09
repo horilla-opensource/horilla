@@ -966,7 +966,7 @@ urlpatterns = [
         name="candidate-lists-cbv",
     ),
     path(
-        "candidate-card-cbv/",
+        "candidate-card-cbv/<int:pk>/",
         pipeline.CandidateCard.as_view(),
         name="candidate-card-cbv",
     ),

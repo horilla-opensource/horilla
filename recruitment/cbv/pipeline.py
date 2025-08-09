@@ -12,7 +12,7 @@ from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
 from horilla_views.cbv_methods import login_required
-from horilla_views.generic.cbv.pipeline import KanbanView
+from horilla_views.generic.cbv.kanban import KanbanView
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
@@ -55,7 +55,7 @@ class RecruitmentTabView(HorillaTabView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         recruitments = self.filter_class(self.request.GET).qs.filter(is_active=True)
-        view_type = "list" if "tab-list" in self.request.path else ""
+        view_type = self.request.GET.get("view", "card")
         CACHE.set(
             self.request.session.session_key + "pipeline",
             {
@@ -78,10 +78,15 @@ class RecruitmentTabView(HorillaTabView):
             stage_manage_perm = stage_manages(self.request.user, rec)
             tab = {}
             tab["title"] = rec
-            tab["url"] = (
-                reverse("get-stages-recruitment", kwargs={"rec_id": rec.pk})
-                + f"?view={view_type}"
-            )
+            url = reverse("candidate-card-cbv", kwargs={"pk": rec.pk})
+
+            if view_type == "list":
+                url = (
+                    reverse("get-stages-recruitment", kwargs={"rec_id": rec.pk})
+                    + f"?view={view_type}"
+                )
+            tab["url"] = url
+
             self.query_params["view"] = view_type
             tab["badge_label"] = _("Stages")
             tab["actions"] = []
@@ -198,16 +203,8 @@ class GetStages(TemplateView):
 
     filter_class = filters.StageFilter
 
-    template_name = "pipeline/kanban_components/kanban_stage_components.html"
+    template_name = "cbv/pipeline/stages.html"
     stages = None
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        from horilla.horilla_middlewares import _thread_locals
-
-        request = _thread_locals.request
-        if request.GET.get("view") == "list":
-            self.template_name = "cbv/pipeline/stages.html"
 
     def get(self, request, *args, **kwargs):
         """
@@ -431,7 +428,6 @@ class CandidateCard(KanbanView):
 
     kanban_attrs = """
             onclick="window.location.href = `{get_individual_url}`"
-            data-group-order='{ordered_group_json}'
         """
 
     details = {
@@ -592,7 +588,7 @@ class CandidateCard(KanbanView):
 
     def get_related_groups(self, *args, **kwargs):
         related_groups = super().get_related_groups(*args, **kwargs)
-        rec_id = self.request.GET.get("rec_id")
+        rec_id = self.kwargs.get("pk")
         if rec_id:
             related_groups = related_groups.filter(recruitment_id=rec_id)
 
@@ -632,7 +628,7 @@ class PipelineNav(HorillaNavView):
             {
                 "type": "list",
                 "icon": "list-outline",
-                "url": f'{reverse_lazy("cbv-pipeline-tab-list")}',
+                "url": f'{reverse_lazy("cbv-pipeline-tab")}?view=list',
                 "attrs": f"""
                     title ='List'
                 """,
@@ -640,7 +636,7 @@ class PipelineNav(HorillaNavView):
             {
                 "type": "card",
                 "icon": "grid-outline",
-                "url": f'{reverse_lazy("cbv-pipeline-tab")}',
+                "url": f'{reverse_lazy("cbv-pipeline-tab")}?view=card',
                 "attrs": f"""
                     title ='Card'
                 """,
