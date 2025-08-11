@@ -725,12 +725,15 @@ def project_archive(request, project_id):
 
 @login_required
 @project_update_permission()
-
 def task_view(request, project_id, **kwargs):
     """Project details with member wise timesheet breakdown."""
     project = Project.objects.get(id=project_id)
     members = (project.managers.all() | project.members.all()).distinct()
-    timesheets = TimeSheet.objects.filter(project_id=project)
+    timesheets = TimeSheet.objects.filter(project_id=project).order_by("-created_at")
+
+    if not request.user.is_superuser:
+        timesheets = timesheets.filter(employee_id=request.user.employee_get)
+        members = members.filter(id=request.user.employee_get.id)
 
     start = request.GET.get("start")
     end = request.GET.get("end")
@@ -756,6 +759,7 @@ def task_view(request, project_id, **kwargs):
     grouped_timesheets = [(emp, entries) for emp, entries in grouped.items()]
     total_hours = f"{total_minutes // 60:02d}:{total_minutes % 60:02d}"
 
+    
     context = {
         "project": project,
         "grouped_timesheets": grouped_timesheets,

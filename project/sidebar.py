@@ -31,11 +31,7 @@ SUBMENUS = [
         "redirect": reverse("project-view"),
         "accessibility": "project.sidebar.project_accessibility",
     },
-    {
-        "menu": trans("Tasks"),
-        "redirect": reverse("task-all"),
-        "accessibility": "project.sidebar.task_accessibility",
-    },
+   
     {
         "menu": trans("Timesheet"),
         "redirect": reverse("view-time-sheet"),
