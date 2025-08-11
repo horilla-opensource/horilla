@@ -131,12 +131,14 @@ class TimeSheetFilter(HorillaFilterSet):
     task_name = django_filters.CharFilter(
         field_name="task_name", lookup_expr="icontains"
     )
+
     search = django_filters.CharFilter(method="filter_by_employee")
 
     class Meta:
         """
         Meta class to add additional options
         """
+
 
         model = TimeSheet
         fields = [
@@ -153,6 +155,7 @@ class TimeSheetFilter(HorillaFilterSet):
         self.form.fields["end_till"].label = _("End Date Till")
         if "task_name" in self.form.fields:
             self.form.fields["task_name"].label = _("Task")
+
 
     def filter_by_employee(self, queryset, _, value):
         """

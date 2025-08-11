@@ -19,6 +19,7 @@
         <button type="submit" class="oh-btn oh-btn--small">{% trans "Filter" %}</button>
     </form>
     {% if grouped_timesheets %}
+
     <div class="oh-accordion-meta" id="tsAccordion">
         {% for emp, items in grouped_timesheets %}
         <div class="oh-accordion-meta__item">
@@ -48,6 +49,7 @@
                         {% endfor %}
                     </div>
                 </div>
+
             </div>
         </div>
         {% endfor %}

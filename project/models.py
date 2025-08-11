@@ -534,7 +534,9 @@ class TimeSheet(HorillaModel):
         related_name="project_timesheet",
         verbose_name=_("Project"),
     )
+
     task_name = models.CharField(max_length=255, verbose_name=_("Task"))
+
     employee_id = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,

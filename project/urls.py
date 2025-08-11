@@ -107,7 +107,9 @@ urlpatterns = [
     path("task-details/<int:task_id>/", views.task_details, name="task-details"),
     path("task-filter/<int:project_id>/", views.task_filter, name="task-filter"),
     path("task-stage-change", views.task_stage_change, name="task-stage-change"),
+
     path("drag-and-drop-task", views.drag_and_drop_task, name="drag-and-drop-task"),
+
     # Task-all
     path("task-all/", tasks.TasksTemplateView.as_view(), name="task-all"),
     path("tasks-list-view/", tasks.TaskListView.as_view(), name="tasks-list-view"),

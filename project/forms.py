@@ -224,6 +224,7 @@ class TimeSheetForm(ModelForm):
         Meta class to add the additional info
         """
 
+
         model = TimeSheet
         fields = "__all__"
         widgets = {
@@ -254,6 +255,7 @@ class TimeSheetForm(ModelForm):
 
 
 class ProjectStageForm(ModelForm):
+
     """
     Form for Project stage model
     """
@@ -267,8 +269,10 @@ class ProjectStageForm(ModelForm):
         Meta class to add the additional info
         """
 
+
         model = ProjectStage
         fields = "__all__"
         # exclude = ("project",)
 
         widgets = {"project": forms.HiddenInput()}
+
