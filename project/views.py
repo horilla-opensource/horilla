@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -21,6 +22,7 @@ from base.methods import filtersubordinates, get_key_instances
 from employee.models import Employee
 from horilla.decorators import hx_request_required, login_required, permission_required
 from project.models import TimeSheet
+
 from notifications.signals import notify
 from project.cbv.projects import DynamicProjectCreationFormView
 from project.cbv.tasks import DynamicTaskCreateFormView
@@ -723,6 +725,7 @@ def project_archive(request, project_id):
 
 @login_required
 @project_update_permission()
+
 def task_view(request, project_id, **kwargs):
     """Project details with member wise timesheet breakdown."""
     project = Project.objects.get(id=project_id)
@@ -750,11 +753,12 @@ def task_view(request, project_id, **kwargs):
             total_minutes += h * 60 + m
         except ValueError:
             pass
+    grouped_timesheets = [(emp, entries) for emp, entries in grouped.items()]
     total_hours = f"{total_minutes // 60:02d}:{total_minutes % 60:02d}"
 
     context = {
         "project": project,
-        "grouped_timesheets": grouped,
+        "grouped_timesheets": grouped_timesheets,
         "total_hours": total_hours,
         "total_tasks": timesheets.count(),
         "members": members,
@@ -763,6 +767,7 @@ def task_view(request, project_id, **kwargs):
         "member": member_id,
     }
     return render(request, "project/project_timesheet.html", context)
+
 
 
 @login_required
@@ -1518,6 +1523,7 @@ def time_sheet_initial(request):
 #     # if user_employee.id not in [member[1] for member in members]:
 #     #     members.append((user_employee.first_name, user_employee.id))
 
+
 #     return JsonResponse({'data': list(members)})
 
 
@@ -1577,6 +1583,7 @@ def time_sheet_project_creation(request):
     return render(
         request, "time_sheet/form_project_time_sheet.html", context={"form": form}
     )
+
 
 
 @login_required
@@ -1881,6 +1888,7 @@ def time_sheet_bulk_delete(request):
                 _("You cannot delete %(timesheet)s.") % {"timesheet": timesheet},
             )
     return JsonResponse({"message": "Success"})
+
 def get_members(request):
     project_id = request.GET.get("project_id")
     form = TimeSheetForm()
@@ -1902,3 +1910,4 @@ def get_members(request):
         },
     )
     return HttpResponse(employee_field_html)
+

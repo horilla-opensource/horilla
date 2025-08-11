@@ -19,33 +19,37 @@
         <button type="submit" class="oh-btn oh-btn--small">{% trans "Filter" %}</button>
     </form>
     {% if grouped_timesheets %}
-    <div class="accordion" id="tsAccordion">
-        {% for emp, items in grouped_timesheets.items %}
-        <div class="oh-card mb-2">
-            <div class="oh-card__header" data-bs-toggle="collapse" data-bs-target="#emp{{ forloop.counter }}">
-                {{ emp }}
+
+    <div class="oh-accordion-meta" id="tsAccordion">
+        {% for emp, items in grouped_timesheets %}
+        <div class="oh-accordion-meta__item">
+            <div class="oh-accordion-meta__header" data-bs-toggle="collapse" data-bs-target="#emp{{ forloop.counter }}">
+                <span class="oh-accordion-meta__title">{{ emp }}</span>
             </div>
-            <div id="emp{{ forloop.counter }}" class="collapse">
-                <table class="oh-table">
-                    <thead>
-                        <tr>
-                            <th>{% trans "Task Name" %}</th>
-                            <th>{% trans "Date" %}</th>
-                            <th>{% trans "Hours Spent" %}</th>
-                            <th>{% trans "Status" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <div id="emp{{ forloop.counter }}" class="oh-accordion-meta__body collapse">
+                <div class="oh-sticky-table">
+                    <div class="oh-sticky-table__table">
+                        <div class="oh-sticky-table__thead">
+                            <div class="oh-sticky-table__tr">
+                                <div class="oh-sticky-table__th">{% trans "Task Name" %}</div>
+                                <div class="oh-sticky-table__th">{% trans "Date" %}</div>
+                                <div class="oh-sticky-table__th">{% trans "Hours Spent" %}</div>
+                                <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+                            </div>
+                        </div>
                         {% for ts in items %}
-                        <tr>
-                            <td>{{ ts.task_name }}</td>
-                            <td>{{ ts.date }}</td>
-                            <td>{{ ts.time_spent }}</td>
-                            <td>{{ ts.get_status_display }}</td>
-                        </tr>
+                        <div class="oh-sticky-table__tbody">
+                            <div class="oh-sticky-table__tr">
+                                <div class="oh-sticky-table__td">{{ ts.task_name }}</div>
+                                <div class="oh-sticky-table__td">{{ ts.date }}</div>
+                                <div class="oh-sticky-table__td">{{ ts.time_spent }}</div>
+                                <div class="oh-sticky-table__td">{{ ts.get_status_display }}</div>
+                            </div>
+                        </div>
                         {% endfor %}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
+
             </div>
         </div>
         {% endfor %}
