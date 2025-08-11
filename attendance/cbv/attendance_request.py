@@ -401,6 +401,21 @@ class BulkAttendanceRequestFormView(HorillaFormView):
         self.form.fields["employee_id"].initial = self.request.user.employee_get.id
         return context
 
+    def post(self, request, *args, pk=None, **kwargs):
+        self.get_form()
+        form = self.form
+        form.instance.attendance_clock_in_date = self.request.POST.get("from_date")
+        form.instance.attendance_date = self.request.POST.get("from_date")
+        if form.is_valid():
+            if form.instance.pk:
+                message = _("New Attendance request updated")
+            else:
+                message = _("New Attendance request created")
+                instance = form.save(commit=False)
+            messages.success(self.request, message)
+            return self.HttpResponse()
+        return super().post(request, *args, pk=pk, **kwargs)
+
     def form_valid(self, form: BulkAttendanceRequestForm) -> HttpResponse:
         form.instance.attendance_clock_in_date = self.request.POST.get("from_date")
         form.instance.attendance_date = self.request.POST.get("from_date")
