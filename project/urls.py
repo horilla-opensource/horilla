@@ -107,22 +107,6 @@ urlpatterns = [
     path("task-details/<int:task_id>/", views.task_details, name="task-details"),
     path("task-filter/<int:project_id>/", views.task_filter, name="task-filter"),
     path("task-stage-change", views.task_stage_change, name="task-stage-change"),
-    # path("task-timesheet/<int:task_id>/", views.task_timesheet, name="task-timesheet"),
-    path(
-        "task-timesheet/<int:task_id>/",
-        timesheet.TaskTimeSheet.as_view(),
-        name="task-timesheet",
-    ),
-    # path(
-    #     "create-timesheet-task/<int:task_id>/",
-    #     views.create_timesheet_task,
-    #     name="create-timesheet-task",
-    # ),
-    path(
-        "update-timesheet-task/<int:timesheet_id>/",
-        views.update_timesheet_task,
-        name="update-timesheet-task",
-    ),
     path("drag-and-drop-task", views.drag_and_drop_task, name="drag-and-drop-task"),
     # Task-all
     path("task-all/", tasks.TasksTemplateView.as_view(), name="task-all"),
@@ -204,11 +188,6 @@ urlpatterns = [
     # path("view-time-sheet", views.time_sheet_view, name="view-time-sheet"),
     path("view-time-sheet/", timesheet.TimeSheetView.as_view(), name="view-time-sheet"),
     path("get-members-of-project/", views.get_members, name="get-members-of-project"),
-    path(
-        "get-tasks-of-project/",
-        views.get_tasks_in_timesheet,
-        name="get-tasks-of-project",
-    ),
     path(
         "time-sheet-nav/", timesheet.TimeSheetNavView.as_view(), name="time-sheet-nav"
     ),
