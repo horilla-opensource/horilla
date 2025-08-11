@@ -1,8 +1,17 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
-echo "Waiting for database to be ready..."
+echo "Creating migrations..."
 python3 manage.py makemigrations
-python3 manage.py migrate
+
+echo "Applying database migrations..."
+python3 manage.py migrate --noinput
+
+echo "Collecting static files..."
 python3 manage.py collectstatic --noinput
-python3 manage.py createhorillauser --first_name admin --last_name admin --username admin --password admin --email admin@example.com --phone 1234567890
-gunicorn --bind 0.0.0.0:8000 horilla.wsgi:application
+
+echo "Compiling translations..."
+python3 manage.py compilemessages || true
+
+echo "Starting Gunicorn..."
+exec gunicorn -c ./deploy/gunicorn.conf.py horilla.wsgi:application

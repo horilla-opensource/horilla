@@ -1,21 +1,23 @@
-name: horilla
+name: horilla-dev
 
 services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
-    restart: unless-stopped
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/horilla
+      DEBUG: "true"
       CREATE_SUPERUSER: "true"
+    volumes:
+      - ./:/app
+      - media:/app/media
     command: sh ./entrypoint.sh
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - media:/app/media
-      - staticfiles:/app/staticfiles
 
   db:
     image: postgres:16
@@ -25,8 +27,8 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       PGDATA: /var/lib/postgresql/data/pgdata
-    # Expose DB only within the compose network (no host port)
-    restart: unless-stopped
+    ports:
+      - "5432:5432"
     volumes:
       - horilla-data:/var/lib/postgresql/data
     healthcheck:
@@ -35,20 +37,6 @@ services:
       timeout: 5s
       retries: 5
 
-  nginx:
-    image: nginx:1.27-alpine
-    restart: unless-stopped
-    depends_on:
-      web:
-        condition: service_started
-    ports:
-      - "80:80"
-    volumes:
-      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - staticfiles:/staticfiles:ro
-      - media:/media:ro
-
 volumes:
   horilla-data:
   media:
-  staticfiles:
