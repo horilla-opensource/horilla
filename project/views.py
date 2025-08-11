@@ -750,11 +750,12 @@ def task_view(request, project_id, **kwargs):
             total_minutes += h * 60 + m
         except ValueError:
             pass
+    grouped_timesheets = [(emp, entries) for emp, entries in grouped.items()]
     total_hours = f"{total_minutes // 60:02d}:{total_minutes % 60:02d}"
 
     context = {
         "project": project,
-        "grouped_timesheets": grouped,
+        "grouped_timesheets": grouped_timesheets,
         "total_hours": total_hours,
         "total_tasks": timesheets.count(),
         "members": members,
