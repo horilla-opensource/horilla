@@ -39,6 +39,7 @@ from ...api_serializers.attendance.serializers import (
     AttendanceRequestSerializer,
     AttendanceSerializer,
     MailTemplateSerializer,
+    UserAttendanceDetailedSerializer,
     UserAttendanceListSerializer,
 )
 
@@ -722,35 +723,66 @@ class OfflineEmployeesCountView(APIView):
 
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(permission_required("employee.view_employee"))
     def get(self, request):
-        count = (
-            EmployeeFilter({"not_in_yet": date.today()})
-            .qs.exclude(employee_work_info__isnull=True)
-            .filter(is_active=True)
-            .count()
+        is_manager = (
+            EmployeeWorkInformation.objects.filter(
+                reporting_manager_id=request.user.employee_get
+            )
+            .only("id")
+            .exists()
         )
-        return Response({"count": count}, status=200)
+
+        if request.user.has_perm("employee.view_enployee") or is_manager:
+            count = (
+                EmployeeFilter({"not_in_yet": date.today()})
+                .qs.exclude(employee_work_info__isnull=True)
+                .filter(is_active=True)
+                .count()
+            )
+            return Response({"count": count}, status=200)
+        return Response(
+            {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+        )
 
 
 class OfflineEmployeesListView(APIView):
     """
-    Lists active employees who have not clocked in today, including their leave status.
-
-    Method:
-        get(request): Retrieves and paginates a list of employees not clocked in today with their leave status.
+    Li sts active employees who have not clocked in today, including their leave status.
     """
 
     permission_classes = [IsAuthenticated]
 
-    @method_decorator(permission_required("employee.view_employee"))
     def get(self, request):
-        queryset = (
-            EmployeeFilter({"not_in_yet": date.today()})
+        user = request.user
+        employee = getattr(user, "employee_get", None)
+        today = date.today()
+
+        # Manager access: get employees reporting to current user
+        managed_employee_ids = EmployeeWorkInformation.objects.filter(
+            reporting_manager_id=employee
+        ).values_list("employee_id", flat=True)
+
+        # Superusers or users with view permission see all employees
+        if user.has_perm("employee.view_employee"):
+            base_queryset = Employee.objects.all()
+        elif managed_employee_ids.exists():
+            base_queryset = Employee.objects.filter(id__in=managed_employee_ids)
+        else:
+            return Response(
+                {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Apply filtering for offline employees
+        filtered_qs = (
+            EmployeeFilter({"not_in_yet": today}, queryset=base_queryset)
             .qs.exclude(employee_work_info__isnull=True)
             .filter(is_active=True)
+            .select_related("employee_work_info")  # optimize joins
         )
-        leave_status = self.get_leave_status(queryset)
+
+        # Get leave status for the filtered employees
+        leave_status = self.get_leave_status(filtered_qs)
+
         pagenation = PageNumberPagination()
         page = pagenation.paginate_queryset(leave_status, request)
         return pagenation.get_paginated_response(page)
@@ -978,7 +1010,7 @@ class OfflineEmployeeMailsend(APIView):
 
 class UserAttendanceView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = UserAttendanceListSerializer
+    serializer_class = UserAttendanceDetailedSerializer
 
     def get(self, request):
         employee_id = request.user.employee_get.id
@@ -1014,6 +1046,19 @@ class AttendanceTypeAccessCheck(APIView):
         if is_manager:
             return Response(status=200)
 
+        return Response(
+            {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
+        )
+
+
+class UserAttendanceDetailedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        attendance = get_object_or_404(Attendance, pk=id)
+        if attendance.employee_id == request.user.employee_get:
+            serializer = UserAttendanceDetailedSerializer(attendance)
+            return Response(serializer.data, status=200)
         return Response(
             {"error": "Permission denied"}, status=status.HTTP_403_FORBIDDEN
         )

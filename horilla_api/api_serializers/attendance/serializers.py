@@ -222,3 +222,9 @@ class UserAttendanceListSerializer(serializers.ModelSerializer):
             "attendance_clock_out",
             "attendance_worked_hour",
         ]
+
+
+class UserAttendanceDetailedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = "__all__"
