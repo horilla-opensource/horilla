@@ -1164,8 +1164,6 @@ def employee_view(request):
 @login_required
 @permission_required("employee.change_employee")
 def view_employee_bulk_update(request):
-
-    print("HEREEEEEEEEEEEEEEEEEEEEE")
     if request.method == "POST":
         update_fields = request.POST.getlist("update_fields")
         bulk_employee_ids = request.POST.get("bulk_employee_ids")

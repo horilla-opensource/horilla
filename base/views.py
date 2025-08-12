@@ -7,7 +7,6 @@ This module is used to map url pattens with django views or methods
 import csv
 import json
 import os
-import random
 import threading
 import uuid
 from datetime import datetime, timedelta
@@ -26,7 +25,7 @@ from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
-from django.core.mail import EmailMessage, EmailMultiAlternatives, send_mail
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.core.management import call_command
 from django.core.validators import validate_ipv46_address
 from django.db.models import ProtectedError, Q
@@ -1370,7 +1369,16 @@ def object_duplicate(request, obj_id, **kwargs):
     model = kwargs["model"]
     form_class = kwargs["form"]
     template = kwargs["template"]
-    original_object = model.objects.get(id=obj_id)
+    try:
+        original_object = model.objects.get(id=obj_id)
+    except model.DoesNotExist:
+        messages.error(request, f"{model._meta.verbose_name} object does not exist.")
+        if request.headers.get("HX-Request"):
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+        else:
+            current_url = request.META.get("HTTP_REFERER", "/")
+            return HttpResponseRedirect(current_url)
+
     form = form_class(instance=original_object)
     search_words = (
         form.get_template_language() if hasattr(form, "get_template_language") else None
@@ -6694,7 +6702,7 @@ def action_type_create(request):
             form.save()
             form = ActiontypeForm()
             messages.success(request, _("Action has been created successfully!"))
-            if dynamic != "None":
+            if dynamic != None:
                 url = reverse("create-actions")
                 instance = Actiontype.objects.all().order_by("-id").first()
                 mutable_get = request.GET.copy()
