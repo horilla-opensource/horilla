@@ -33,18 +33,10 @@
 							</div>
 							<div class="oh-accordion-body">
 								<div class="row">
-									<div
-										class="col-sm-12 col-md-12 col-lg-6"
-									>
+									<div class="col-sm-12 col-md-12 col-lg-6">
 										<div class="oh-input-group">
-											<label
-												class="oh-label"
-												for="select-all-fields"
-											>
-												<input
-													type="checkbox"
-													id="select-all-fields"
-												/>
+											<label class="oh-label" for="select-all-fields">
+												<input type="checkbox" id="select-all-fields" class="oh-input oh-input--checkbox" />
 												{% trans "Select All" %}
 											</label>
 										</div>
@@ -52,12 +44,11 @@
 								</div>
 								<div class="row">
 									{% for field in export_column.selected_fields %}
-									<div
-										class="col-sm-12 col-md-12 col-lg-4"
-									>
+									<div class="col-sm-12 col-md-12 col-lg-4">
 										<div class="oh-input-group">
-											<label class="oh-label">
-												{{ field }}
+											<label class="oh-label d-flex align-items-center">
+												{{ field.tag }}
+												<span class="ml-2">{{ field.choice_label }}</span>
 											</label>
 										</div>
 									</div>
@@ -263,3 +254,22 @@
 		</div>
 	</div>
 </div>
+
+<script>
+  $(document).ready(function() {
+    // Select all checkboxes when "Select All" is clicked
+    $('#select-all-fields').change(function() {
+      $('input[name="selected_fields"]').prop('checked', $(this).prop('checked'));
+    });
+
+    // Check if all checkboxes are selected and update "Select All"
+    $('input[name="selected_fields"]').change(function() {
+      var allChecked = $('input[name="selected_fields"]:checked').length === $('input[name="selected_fields"]').length;
+      $('#select-all-fields').prop('checked', allChecked);
+    });
+
+    // Initialize "Select All" state
+    var allChecked = $('input[name="selected_fields"]:checked').length === $('input[name="selected_fields"]').length;
+    $('#select-all-fields').prop('checked', allChecked);
+  });
+</script>
