@@ -103,7 +103,7 @@ def pass_print(*args, **kwargs):
         local_vars = {}
         exec(code, {}, local_vars)
         try:
-            federal_tax = local_vars["calcluate_federal_tax"](yearly_income)
+            federal_tax = local_vars["calculate_federal_tax"](yearly_income)
         except Exception as e:
             logger.error(e)
 
