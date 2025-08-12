@@ -1242,7 +1242,7 @@ def view_employee_bulk_update(request):
                                         ):
                                             fields.append("job_position_id")
                                             widgets["job_position_id"] = Select(
-                                                attrs={"required": True}
+                                                attrs={"required": False}
                                             )
                                         if (
                                             not "employee_work_info__job_role_id"
@@ -1295,9 +1295,9 @@ def view_employee_bulk_update(request):
                         )
                     for field_name, field in self.fields.items():
 
-                        if (
-                            field_name in ["job_role_id"]
-                            and field_name == "job_role_id"
+                        if field_name in ["job_role_id", "job_position_id"] and (
+                            field_name == "job_role_id"
+                            or field_name == "job_position_id"
                         ):
                             field.required = False
                         else:
