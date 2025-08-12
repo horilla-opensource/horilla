@@ -497,6 +497,9 @@ excel_columns = [
     ("group_name", _("Batch")),
     ("start_date", _("Start Date")),
     ("end_date", _("End Date")),
+    ("paid_days", _("Paid Days")),
+    ("lop_days", _("LOP Days")),
+    ("lop_amount", _("LOP Amount")),
     ("contract_wage", _("Contract Wage")),
     ("basic_pay", _("Basic Pay")),
     ("gross_pay", _("Gross Pay")),
@@ -527,6 +530,9 @@ class PayslipExportColumnForm(forms.Form):
             "gross_pay",
             "net_pay",
             "status",
+            "paid_days",
+            "lop_days",
+            "lop_amount"
         ],
     )
 

@@ -317,38 +317,52 @@ def get_working_days(start_date, end_date):
         current += timedelta(days=1)
     return {'total_working_days': days}
 
-def months_between_range(wage, start_date, end_date):
+
+def months_between_range(wage, start_date, end_date, cycle_type="14to15"):
     """
-    Fixed version that ensures 'month_data' is always returned
-    with all required fields for Horilla
+    Returns month data for payroll cycles.
+
+    cycle_type:
+      - "14to15": from 14th current month to 15th next month
+      - "15to14": from 15th current month to 14th next month
     """
-    # Fixed payroll cycle (14th current to 15th next month)
-    cycle_start = date(start_date.year, start_date.month, 14)
-    cycle_end = date(
-        start_date.year if start_date.month != 12 else start_date.year + 1,
-        start_date.month + 1 if start_date.month != 12 else 1,
-        15
-    )
-    
+    year = start_date.year
+    month = start_date.month
+
+    if cycle_type == "14to15":
+        cycle_start = date(year, month, 14)
+        if month == 12:
+            cycle_end = date(year + 1, 1, 15)
+        else:
+            cycle_end = date(year, month + 1, 15)
+    elif cycle_type == "15to14":
+        cycle_start = date(year, month, 15)
+        if month == 12:
+            cycle_end = date(year + 1, 1, 14)
+        else:
+            cycle_end = date(year, month + 1, 14)
+    else:
+        raise ValueError("Invalid cycle_type. Use '14to15' or '15to14'")
+
     working_days_total = get_working_days(cycle_start, cycle_end)['total_working_days']
-    
-    # For full cycle (14th-15th)
+
+    # Check for full cycle
     if start_date == cycle_start and end_date == cycle_end:
         return [{
-            'month': start_date.month,
-            'year': start_date.year,
-            'start_date': start_date.strftime('%Y-%m-%d'),
-            'end_date': end_date.strftime('%Y-%m-%d'),
+            'month': cycle_start.month,
+            'year': cycle_start.year,
+            'start_date': cycle_start.strftime('%Y-%m-%d'),
+            'end_date': cycle_end.strftime('%Y-%m-%d'),
             'working_days_on_period': working_days_total,
             'working_days_on_month': working_days_total,
             'per_day_amount': wage / working_days_total if working_days_total else 0,
             'prorated_salary': wage,
             'fixed_month_salary': wage
         }]
-    
-    # For custom date ranges
+
+    # Custom date range case
     working_days_period = get_working_days(start_date, end_date)['total_working_days']
-    
+
     return [{
         'month': start_date.month,
         'year': start_date.year,
@@ -412,6 +426,7 @@ def compute_net_pay(
 def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
     """
     Fixed version that ensures all required fields are included
+    and unpaid leaves are calculated in actual days, not request count.
     """
     month_data = months_between_range(wage, start_date, end_date)
     if not month_data:
@@ -420,46 +435,50 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
             "loss_of_pay": 0,
             "paid_days": 0,
             "unpaid_days": 0,
-            "month_data": []  # Ensure month_data is always present
+            "month_data": []
         }
 
     payroll_data = month_data[0]
     basic_pay = payroll_data.get("prorated_salary", 0)
     working_days_period = payroll_data.get("working_days_on_period", 0)
-    
+
     # Leave calculations
     unpaid_leaves = 0
     if apps.is_installed("leave"):
-        unpaid_leaves = employee.leaverequest_set.filter(
+        unpaid_requests = employee.leaverequest_set.filter(
             Q(start_date__lte=end_date) & Q(end_date__gte=start_date),
             leave_type_id__payment="unpaid",
             status="approved"
-        ).count()
-    
-    paid_days = working_days_period - unpaid_leaves
-    
+        )
+
+        for req in unpaid_requests:
+            leave_start = max(req.start_date, start_date)
+            leave_end = min(req.end_date, end_date)
+            unpaid_leaves += (leave_end - leave_start).days + 1  # inclusive range
+
+    paid_days = max(0, working_days_period - unpaid_leaves)
+
     # Apply leave deductions
     contract = employee.contract_set.filter(contract_status="active").first()
     loss_of_pay = 0
-    
+
     if contract:
         if contract.calculate_daily_leave_amount:
             loss_of_pay = unpaid_leaves * payroll_data.get("per_day_amount", 0)
         else:
             loss_of_pay = unpaid_leaves * contract.deduction_for_one_leave_amount
-        
+
         if contract.deduct_leave_from_basic_pay:
             basic_pay = max(0, basic_pay - loss_of_pay)
 
     return {
         "basic_pay": round(float(basic_pay), 2),
         "loss_of_pay": round(float(loss_of_pay), 2),
-        "month_data": month_data,  # Ensure this is included
+        "month_data": month_data,
         "paid_days": paid_days,
         "unpaid_days": unpaid_leaves,
         "contract": contract
     }
-
 
 def compute_salary_on_period(employee, start_date, end_date, wage=None):
     """

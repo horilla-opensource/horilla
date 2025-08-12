@@ -1086,6 +1086,7 @@ def payslip_export(request):
     and generates an Excel file for download.
     """
     if request.META.get("HTTP_HX_REQUEST"):
+        # If this is an HTMX request, just render the export filter modal partial
         return render(
             request,
             "payroll/payslip/payslip_export_filter.html",
@@ -1101,63 +1102,85 @@ def payslip_export(request):
         "confirmed": _("Confirmed"),
         "paid": _("Paid"),
     }
-    selected_columns = []
-    payslips_data = {}
-    payslips = PayslipFilter(request.GET).qs
+
+    payslips = PayslipFilter(request.GET).qs.distinct()
     today_date = date.today().strftime("%Y-%m-%d")
     file_name = f"Payslip_excel_{today_date}.xlsx"
+
     selected_fields = request.GET.getlist("selected_fields")
     form = forms.PayslipExportColumnForm()
 
+    # If no fields selected, fallback to initial defaults
     if not selected_fields:
-        selected_fields = form.fields["selected_fields"].initial
+        selected_fields = form.fields["selected_fields"].initial or []
         ids = request.GET.get("ids")
-        id_list = json.loads(ids)
-        payslips = Payslip.objects.filter(id__in=id_list)
+        if ids:
+            id_list = json.loads(ids)
+            payslips = Payslip.objects.filter(id__in=id_list)
 
-    for field in forms.excel_columns:
-        value = field[0]
-        key = field[1]
-        if value in selected_fields:
-            selected_columns.append((value, key))
+    # Build list of (field_code, display_name) tuples for selected columns
+    selected_columns = [
+        (code, name) for code, name in forms.excel_columns if code in selected_fields
+    ]
 
-    for column_value, column_name in selected_columns:
-        nested_attributes = column_value.split("__")
-        payslips_data[column_name] = []
-        for payslip in payslips:
-            value = payslip
-            for attr in nested_attributes:
-                value = getattr(value, attr, None)
-                if value is None:
-                    break
-            data = str(value) if value is not None else ""
-            if column_name == "Status":
-                data = choices_mapping.get(value, "")
+    # Prepare data dict for DataFrame columns
+    payslips_data = {name: [] for _, name in selected_columns}
 
-            if type(value) == date:
-                date_format = request.user.employee_get.get_date_format()
-                start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
-
-                for format_name, format_string in HORILLA_DATE_FORMATS.items():
-                    if format_name == date_format:
-                        data = start_date.strftime(format_string)
+    # Loop through payslips and fill data for each selected column
+    for payslip in payslips:
+        # Compute payroll data once per payslip for efficiency
+        payroll_data = None
+        for column_code, column_name in selected_columns:
+            if column_code in ["paid_days", "lop_days", "lop_amount"]:
+                if payroll_data is None:
+                    payroll_data = payroll_calculation(
+                        payslip.employee_id, payslip.start_date, payslip.end_date
+                    )
+                if column_code == "paid_days":
+                    data = payroll_data.get("paid_days", "")
+                elif column_code == "lop_days":
+                    data = payroll_data.get("unpaid_days", "")
+                else:  # lop_amount
+                    data = payroll_data.get("loss_of_pay", "")
             else:
-                data = str(value) if value is not None else ""
+                # Nested attribute lookup for other fields
+                value = payslip
+                for attr in column_code.split("__"):
+                    value = getattr(value, attr, None)
+                    if value is None:
+                        break
+
+                if column_name == "Status":
+                    data = choices_mapping.get(value, "")
+                elif isinstance(value, date):
+                    date_format = request.user.employee_get.get_date_format()
+                    # Format date according to user preference
+                    for fmt_name, fmt_string in HORILLA_DATE_FORMATS.items():
+                        if fmt_name == date_format:
+                            data = value.strftime(fmt_string)
+                            break
+                    else:
+                        data = str(value)
+                else:
+                    data = str(value) if value is not None else ""
+
             payslips_data[column_name].append(data)
 
-    data_frame = pd.DataFrame(data=payslips_data)
+    # Create DataFrame and write to Excel in-memory
+    df = pd.DataFrame(payslips_data)
+
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response["Content-Disposition"] = f'attachment; filename="{file_name}"'
 
-    writer = pd.ExcelWriter(response, engine="xlsxwriter")
-    data_frame.style.applymap(lambda x: "text-align: center").to_excel(
-        writer, index=False, sheet_name="Sheet1"
-    )
-    worksheet = writer.sheets["Sheet1"]
-    worksheet.set_column("A:Z", 20)
-    writer.close()
+    with pd.ExcelWriter(response, engine="xlsxwriter") as writer:
+        df.to_excel(writer, index=False, sheet_name="Sheet1")
+        worksheet = writer.sheets["Sheet1"]
+        left_align_format = writer.book.add_format({'align': 'left', 'valign': 'vcenter'})
+        worksheet.set_column("A:Z", 20, left_align_format)
+
+
     return response
 
 
