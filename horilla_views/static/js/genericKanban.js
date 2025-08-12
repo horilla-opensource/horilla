@@ -274,7 +274,7 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 					Swal.fire({
 						title: "Confirm Stage Change",
 						html: `
-                            <p class="mb-2">The candidate is being moved from ${preStage.stage} 
+                            <p class="mb-2">The candidate is being moved from ${preStage.stage}
                             to the ${currentStage.stage} stage. Do you want to proceed?</p>
                             <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
                         `,
