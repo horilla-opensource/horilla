@@ -11,7 +11,7 @@ federal_tax.py
 YEARLY_TAXABLE_INCOME = 189000.52
 
 
-def calcluate_federal_tax(yearly_income: int, **kwargs) -> float:
+def calculate_federal_tax(yearly_income: int, **kwargs) -> float:
     """
     Federal Tax calculation method
 
@@ -95,7 +95,7 @@ def formated_result(brackets: dict, taxable_amount: float) -> None:
     print("----------------------------------------------------")
 
 
-month_taxable = calcluate_federal_tax(YEARLY_TAXABLE_INCOME)
+month_taxable = calculate_federal_tax(YEARLY_TAXABLE_INCOME)
 print("YEARLY TAXABLE AMOUNT", month_taxable)
 
 '''
