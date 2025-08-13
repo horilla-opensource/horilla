@@ -1,48 +1,48 @@
 function getToMail(element) {
-  model = element.val();
-  $.ajax({
-    type: "get",
-    url: "/get-to-mail-field",
-    data: {
-      model: model,
-    },
-    success: function (response) {
-      $(".dynamic-condition-row").remove();
-      select = $("#id_mail_to");
-      select.html("");
-      detailSelect = $("#id_mail_details");
-      detailSelect.html("");
-      mailTo = response.choices;
-      mailDetail = response.mail_details_choice;
+    model = element.val();
+    $.ajax({
+        type: "get",
+        url: "/get-to-mail-field",
+        data: {
+            model: model,
+        },
+        success: function (response) {
+            $(".dynamic-condition-row").remove();
+            select = $("#id_mail_to");
+            select.html("");
+            detailSelect = $("#id_mail_details");
+            detailSelect.html("");
+            mailTo = response.choices;
+            mailDetail = response.mail_details_choice;
 
-      for (let option = 0; option < mailTo.length; option++) {
-        const element = mailTo[option];
+            for (let option = 0; option < mailTo.length; option++) {
+                const element = mailTo[option];
 
-        var selected = option === 0; // Set the first option as selected
-        var newOption = new Option(element[1], element[0], selected, selected);
-        select.append(newOption);
-      }
-      for (let option = 0; option < mailDetail.length; option++) {
-        const element = mailDetail[option];
+                var selected = option === 0; // Set the first option as selected
+                var newOption = new Option(element[1], element[0], selected, selected);
+                select.append(newOption);
+            }
+            for (let option = 0; option < mailDetail.length; option++) {
+                const element = mailDetail[option];
 
-        var selected = option === 0; // Set the first option as selected
-        var newOption = new Option(element[1], element[0], selected, selected);
-        detailSelect.append(newOption);
-      }
-      select.trigger("change");
-      detailSelect.trigger("change");
+                var selected = option === 0; // Set the first option as selected
+                var newOption = new Option(element[1], element[0], selected, selected);
+                detailSelect.append(newOption);
+            }
+            select.trigger("change");
+            detailSelect.trigger("change");
 
-      table = $("#multipleConditionTable");
-      $("#multipleConditionTable select").select2("destroy");
+            table = $("#multipleConditionTable");
+            $("#multipleConditionTable select").select2("destroy");
 
-      totalRows = "C" + (table.find(".dynamic-condition-row").length + 1);
+            totalRows = "C" + (table.find(".dynamic-condition-row").length + 1);
 
-      fieldsChoices = [];
-      $.each(response.serialized_form, function (indexInArray, valueOfElement) {
-        fieldsChoices.push([valueOfElement["name"], valueOfElement["label"]]);
-      });
-      selectField = populateSelect(fieldsChoices, response);
-      tr = `
+            fieldsChoices = [];
+            $.each(response.serialized_form, function (indexInArray, valueOfElement) {
+                fieldsChoices.push([valueOfElement["name"], valueOfElement["label"]]);
+            });
+            selectField = populateSelect(fieldsChoices, response);
+            tr = `
       <tr class="dynamic-condition-row">
         <td class="sn">${totalRows}</td>
         <td id="conditionalField">
@@ -92,17 +92,17 @@ function getToMail(element) {
         </td>
       </tr>
     `;
-      table.find("tr:last").after(tr);
-      $("#conditionalField").append(selectField);
-      $("#multipleConditionTable select").select2();
-      selectField.trigger("change");
-      selectField.attr("name", "automation_multiple_condition");
-    },
-  });
+            table.find("tr:last").after(tr);
+            $("#conditionalField").append(selectField);
+            $("#multipleConditionTable select").select2();
+            selectField.trigger("change");
+            selectField.attr("name", "automation_multiple_condition");
+        },
+    });
 }
 
 function getHtml() {
-  var htmlCode = `
+    var htmlCode = `
     <form id ="multipleConditionForm">
       <table id="multipleConditionTable">
         <tr>
@@ -124,193 +124,191 @@ function getHtml() {
     $("#multipleConditionTable").closest("[contenteditable=true]").removeAttr("contenteditable");
     </script>
   `;
-  return $(htmlCode);
+    return $(htmlCode);
 }
 
 function populateSelect(data, response) {
-  const selectElement = $(
-    `<select class="w-100" onchange="updateValue($(this));addSelectedAttr(event)"></select>`
-  );
+    const selectElement = $(
+        `<select class="w-100" onchange="updateValue($(this));addSelectedAttr(event)"></select>`
+    );
 
-  data.forEach((item) => {
-    const $option = $("<option></option>");
-    $option.val(item[0]);
-    $option.text(item[1]);
-    selectElement.append($option);
-  });
-  return selectElement;
+    data.forEach((item) => {
+        const $option = $("<option></option>");
+        $option.val(item[0]);
+        $option.text(item[1]);
+        selectElement.append($option);
+    });
+    return selectElement;
 
 }
 
 function updateValue(element) {
-  console.log(">>>>>>>>>>>>>>>>>>>>>>")
-  json = element.closest('table').find('#conditionalField div[hidden]').text()
-  console.log(json)
+    json = element.closest('table').find('#conditionalField div[hidden]').text()
 
-  field = element.val();
-  // attr = json
-  //   .replace(/[\u0000-\u001F\u007F-\u009F]/g, "")
-  //   .replace(/\\n/g, "\\\\n")
-  //   .replace(/\\t/g, "\\\\t");
+    field = element.val();
+    // attr = json
+    //   .replace(/[\u0000-\u001F\u007F-\u009F]/g, "")
+    //   .replace(/\\n/g, "\\\\n")
+    //   .replace(/\\t/g, "\\\\t");
 
-  response = JSON.parse(json);
+    response = JSON.parse(json);
 
-  valueElement = createElement(field, response);
-  element.closest("tr").find(".condition-value-th").html("");
-  element.closest("tr").find(".condition-value-th").html(valueElement);
-  if (valueElement.is("select")) {
-    valueElement.select2();
-  }
+    valueElement = createElement(field, response);
+    element.closest("tr").find(".condition-value-th").html("");
+    element.closest("tr").find(".condition-value-th").html(valueElement);
+    if (valueElement.is("select")) {
+        valueElement.select2();
+    }
 }
 
 function createElement(field, serialized_form) {
-  let element;
-  fieldItem = {};
+    let element;
+    fieldItem = {};
 
-  $.each(serialized_form, function (indexInArray, valueOfElement) {
-    if (valueOfElement.name == field) {
-      fieldItem = valueOfElement;
-    }
-  });
-
-  switch (fieldItem.type) {
-    case "CheckboxInput":
-      element = document.createElement("input");
-      element.type = "checkbox";
-      element.checked = true;
-      element.onchange = function () {
-        if (this.checked) {
-          $(this).attr("checked", true);
-          $(this).val("on");
-        } else {
-          $(this).attr("checked", false);
-          $(this).val("off");
+    $.each(serialized_form, function (indexInArray, valueOfElement) {
+        if (valueOfElement.name == field) {
+            fieldItem = valueOfElement;
         }
-      };
-      element.name = "automation_multiple_condition";
-      element.className = "oh-switch__checkbox oh-switch__checkbox";
-      // Create the wrapping div
-      const wrapperDiv = document.createElement("div");
-      wrapperDiv.className = "oh-switch";
-      wrapperDiv.style.width = "30px";
-      // Append the checkbox input to the div
-      wrapperDiv.appendChild(element);
-      $(element).change();
-      element = wrapperDiv;
-      break;
+    });
 
-    case "Select":
-    case "SelectMultiple":
-      element = document.createElement("select");
-      if (fieldItem.type === "SelectMultiple") {
-        element.multiple = true;
-      }
-      element.onchange = function (event) {
-        addSelectedAttr(event);
-      };
-      fieldItem.options.forEach((optionValue) => {
-        if (optionValue.value) {
-          const option = document.createElement("option");
-          option.value = optionValue.value;
-          option.textContent = optionValue.label;
-          element.appendChild(option);
-        }
-      });
-      break;
+    switch (fieldItem.type) {
+        case "CheckboxInput":
+            element = document.createElement("input");
+            element.type = "checkbox";
+            element.checked = true;
+            element.onchange = function () {
+                if (this.checked) {
+                    $(this).attr("checked", true);
+                    $(this).val("on");
+                } else {
+                    $(this).attr("checked", false);
+                    $(this).val("off");
+                }
+            };
+            element.name = "automation_multiple_condition";
+            element.className = "oh-switch__checkbox oh-switch__checkbox";
+            // Create the wrapping div
+            const wrapperDiv = document.createElement("div");
+            wrapperDiv.className = "oh-switch";
+            wrapperDiv.style.width = "30px";
+            // Append the checkbox input to the div
+            wrapperDiv.appendChild(element);
+            $(element).change();
+            element = wrapperDiv;
+            break;
 
-    case "Textarea":
-      element = document.createElement("textarea");
-      element.style = `
+        case "Select":
+        case "SelectMultiple":
+            element = document.createElement("select");
+            if (fieldItem.type === "SelectMultiple") {
+                element.multiple = true;
+            }
+            element.onchange = function (event) {
+                addSelectedAttr(event);
+            };
+            fieldItem.options.forEach((optionValue) => {
+                if (optionValue.value) {
+                    const option = document.createElement("option");
+                    option.value = optionValue.value;
+                    option.textContent = optionValue.label;
+                    element.appendChild(option);
+                }
+            });
+            break;
+
+        case "Textarea":
+            element = document.createElement("textarea");
+            element.style = `
       height: 29px !important;
       margin-top: 5px;
       `;
-      element.className = "oh-input w-100";
-      if (fieldItem.max_length) {
-        element.maxLength = fieldItem.max_length;
-      }
-      element.onchange = function (event) {
-        $(this).html($(this).val());
-      };
-      break;
-    case "TextInput":
-      element = document.createElement("input");
-      element.type = "text";
-      element.style = `
+            element.className = "oh-input w-100";
+            if (fieldItem.max_length) {
+                element.maxLength = fieldItem.max_length;
+            }
+            element.onchange = function (event) {
+                $(this).html($(this).val());
+            };
+            break;
+        case "TextInput":
+            element = document.createElement("input");
+            element.type = "text";
+            element.style = `
       height: 30px !important;
       `;
-      element.className = "oh-input w-100";
-      if (fieldItem.max_length) {
-        element.maxLength = fieldItem.max_length;
-      }
-      element.onchange = function (event) {
-        $(this).attr("value", $(this).val());
-      };
-      break;
-    case "EmailInput":
-      element = document.createElement("input");
-      element.type = "email";
-      element.style = `
+            element.className = "oh-input w-100";
+            if (fieldItem.max_length) {
+                element.maxLength = fieldItem.max_length;
+            }
+            element.onchange = function (event) {
+                $(this).attr("value", $(this).val());
+            };
+            break;
+        case "EmailInput":
+            element = document.createElement("input");
+            element.type = "email";
+            element.style = `
       height: 30px !important;
       `;
-      element.className = "oh-input w-100";
-      if (fieldItem.max_length) {
-        element.maxLength = fieldItem.max_length;
-      }
-      element.onchange = function (event) {
-        $(this).attr("value", $(this).val());
-      };
-      break;
-    case "NumberInput":
-      element = document.createElement("input");
-      element.type = "number";
-      element.style = `
+            element.className = "oh-input w-100";
+            if (fieldItem.max_length) {
+                element.maxLength = fieldItem.max_length;
+            }
+            element.onchange = function (event) {
+                $(this).attr("value", $(this).val());
+            };
+            break;
+        case "NumberInput":
+            element = document.createElement("input");
+            element.type = "number";
+            element.style = `
       height: 30px !important;
       `;
-      element.className = "oh-input w-100";
-      if (fieldItem.max_length) {
-        element.maxLength = fieldItem.max_length;
-      }
-      element.onchange = function (event) {
-        $(this).attr("value", $(this).val());
-      };
-      break;
-    default:
-      element = document.createElement("input");
-      element.type = "text";
-      element.style = `
+            element.className = "oh-input w-100";
+            if (fieldItem.max_length) {
+                element.maxLength = fieldItem.max_length;
+            }
+            element.onchange = function (event) {
+                $(this).attr("value", $(this).val());
+            };
+            break;
+        default:
+            element = document.createElement("input");
+            element.type = "text";
+            element.style = `
       height: 30px !important;
       `;
-      element.className = "oh-input w-100";
-      if (fieldItem.max_length) {
-        element.maxLength = fieldItem.max_length;
-      }
-      element.onchange = function (event) {
-        $(this).attr("value", $(this).val());
-      };
-      break;
-  }
-  if (element) {
-    element.name = "automation_multiple_condition";
-    if (fieldItem.required) {
-      element.required = true;
+            element.className = "oh-input w-100";
+            if (fieldItem.max_length) {
+                element.maxLength = fieldItem.max_length;
+            }
+            element.onchange = function (event) {
+                $(this).attr("value", $(this).val());
+            };
+            break;
     }
+    if (element) {
+        element.name = "automation_multiple_condition";
+        if (fieldItem.required) {
+            element.required = true;
+        }
 
-    // Create label
-    const label = document.createElement("label");
-    label.textContent = fieldItem.label;
-    label.htmlFor = "automation_multiple_condition";
+        // Create label
+        const label = document.createElement("label");
+        label.textContent = fieldItem.label;
+        label.htmlFor = "automation_multiple_condition";
 
-    return $(element);
-  }
+        return $(element);
+    }
 }
 
 function addSelectedAttr(event) {
-  const options = Array.from(event.target.options);
-  options.forEach((option) => {
-    if (option.selected) {
-      option.setAttribute("selected", "selected");
-    } else {
-      option.removeAttribute("selected");
-    }
-  });
+    const options = Array.from(event.target.options);
+    options.forEach((option) => {
+        if (option.selected) {
+            option.setAttribute("selected", "selected");
+        } else {
+            option.removeAttribute("selected");
+        }
+    });
 }
