@@ -84,13 +84,16 @@ class AutomationForm(ModelForm):
         # --- Field: mail_template ---
         self.fields["mail_template"].empty_label = "----------"
 
-        # --- Instance condition fields ---
-        if self.instance.pk:
-            self.fields["condition"].initial = self.instance.condition_html
-            self.fields["condition_html"].initial = self.instance.condition_html
-            self.fields["condition_querystring"].initial = (
-                self.instance.condition_querystring
-            )
+        # --- Field: condition fields ---
+        self.fields["condition"].initial = getattr(
+            self.instance, "condition", None
+        ) or self.data.get("condition")
+        self.fields["condition_html"].initial = getattr(
+            self.instance, "condition_html", None
+        ) or self.data.get("condition_html")
+        self.fields["condition_querystring"].initial = getattr(
+            self.instance, "condition", None
+        ) or self.data.get("condition_html")
 
         # --- Apply option template name for all select fields ---
         for field in self.fields.values():
