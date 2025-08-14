@@ -118,6 +118,13 @@ class OnboardingTask(HorillaModel):
 
 
 class OnboardingCandidate(Candidate):
+
+    def get_detail_url_pipeline(self):
+        """
+        Get detail url pipeline
+        """
+        return reverse("onboarding-cand-detail-view", kwargs={"pk": self.pk})
+
     class Meta:
         proxy = True
         verbose_name = _("Onboarding Candidate")

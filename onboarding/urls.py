@@ -262,5 +262,10 @@ urlpatterns = [
         pipeline.CandidateList.as_view(),
         name="candidate-lists-cbv-onboarding",
     ),
+    path(
+        "candidate-card-cbv/<int:pk>",
+        pipeline.CandidateKanbanView.as_view(),
+        name="candidate-card-cbv-onboarding",
+    ),
     # path("cbv-change-stage/<int:pk>/",pipeline.ChangeStage.as_view(),name="cbv-change-stage")
 ]
