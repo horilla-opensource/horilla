@@ -480,12 +480,116 @@ class OffboardingKanbanView(KanbanView):
         data-group-order='{ordered_group_json}'
     """
 
+    group_actions = [
+        {
+            "action": "Add Employee",
+            "accessibility": "offboarding.cbv.accessibility.add_employee_accessibility",
+            "attrs": """
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-get="{get_add_employee_url}"
+                hx-target="#genericModalBody"
+                class="oh-dropdown__link"
+            """,
+        },
+        {
+            "action": "Edit",
+            "accessibility": "offboarding.cbv.accessibility.edit_stage_accessibility",
+            "attrs": """
+                hx-target="#genericModalBody"
+                hx-get="{get_update_url}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+            """,
+        },
+        {
+            "action": "Delete",
+            "accessibility": "offboarding.cbv.accessibility.delete_stage_accessibility",
+            "attrs": """
+                data-target="#deleteConfirmation"
+                data-toggle="oh-modal-toggle"
+                hx-get="{get_delete_url}"
+                hx-target="#deleteConfirmationBody"
+            """,
+        },
+    ]
+
     details = {
         "image_src": "{employee_id__get_avatar}",
         "title": "{employee_id__get_full_name}",
         "Notice period start": "{notice_period_starts}",
         "Notice period end": "{notice_period_ends}",
     }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        self.actions = [
+            {
+                "action": "Send Mail",
+                "accessibility": "offboarding.cbv.accessibility.add_employee_accessibility",
+                "attrs": """
+                    data-target="#sendMailModal"
+                    data-toggle="oh-modal-toggle"
+                    hx-get="{get_mail_send_url}"
+                    hx-target="#mail-content"
+                """,
+            },
+            {
+                "action": "Notes",
+                "attrs": """
+                    data-target="#genericSidebar"
+                    data-toggle="oh-modal-toggle"
+                    hx-get="{get_notes_url}"
+                    hx-target="#genericOffCanvas"
+                    onclick="$('#genericSidebar').addClass('oh-activity-sidebar--show')"
+                """,
+            },
+            {
+                "action": "get_archive_title",
+                "accessibility": "offboarding.cbv.accessibility.archive_employee_accessibility",
+                "attrs": """
+                    data-target="#objectDetailsModal"
+                    data-toggle="oh-modal-toggle"
+                    hx-get="{get_archive_url}"
+                    hx-target="#objectDetailsModalTarget"
+                """,
+            },
+            {
+                "action": "Edit",
+                "accessibility": "offboarding.cbv.accessibility.edit_employee_accessibility",
+                "attrs": """
+                    data-target="#objectDetailsModal"
+                    data-toggle="oh-modal-toggle"
+                    hx-get="{get_edit_url}"
+                    hx-target="#objectDetailsModalTarget"
+                """,
+            },
+            {
+                "action": "managing records",
+                "accessibility": "offboarding.cbv.accessibility.edit_employee_accessibility",
+                "attrs": """
+                    data-target="#objectDetailsModal"
+                    data-toggle="oh-modal-toggle"
+                    hx-get="{get_managing_record_url}"
+                    hx-target="#objectDetailsModalTarget"
+                """,
+            },
+        ]
+
+        if self.request.user.has_perm("offboarding.delete_offboardingemployee"):
+            self.actions.append(
+                {
+                    "action": "Delete",
+                    "accessibility": "offboarding.cbv.accessibility.add_employee_accessibility",
+                    "attrs": f"""
+                        hx-confirm="Do you want to delete this offboarding user?"
+                        hx-post="{{get_delete_url}}"
+                        hx-swap="none"
+                        hx-on-htmx-after-request = "$(`#{self.view_id}`).find('.reload-record').click()"
+                    """,
+                },
+            )
 
     def get_related_groups(self, *args, **kwargs):
         related_groups = super().get_related_groups(*args, **kwargs)
