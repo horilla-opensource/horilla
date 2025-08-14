@@ -1,6 +1,8 @@
-var modelName = $("#helperContainer").data("model");
-var groupKey = $("#helperContainer").data("groupKey");
-var appLabel = $("#helperContainer").data("appLabel");
+var modelName = $("#helperContainer").attr("data-model");
+var appLabel = $("#helperContainer").attr("data-app-label");
+var groupKey = $("#helperContainer").attr("data-group-key");
+var groupOrderBy = $("#helperContainer").attr("data-group-order-by");
+var instanceOrderBy = $("#helperContainer").attr("data-instance-order-by");
 var model = `${appLabel}.${modelName}`;
 var groupOrder = []
 var stageOrderJson = []
@@ -34,6 +36,7 @@ function groupSequenceGet(groupHead) {
 			"tab_id": groupHead.attr("data-tab-id"),
 			"model": model,
 			"group_key": groupKey,
+			"orderBy": groupOrderBy,
 		},
 		success: function (response) {
 			message = response.message || "Group sequence updated successfully.";
@@ -65,6 +68,7 @@ function handleValidDrop(groupId, objectId, row) {
 				groupId: groupId,
 				groupKey: groupKey,
 				objectId: objectId,
+				orderBy: instanceOrderBy,
 				order: JSON.stringify(values),
 			},
 			success: function (response) {
@@ -113,6 +117,7 @@ function handleSortableUpdate(event, ui, container) {
 			model: model,
 			groupId: groupId,
 			groupKey: groupKey,
+			orderBy: instanceOrderBy,
 			order: JSON.stringify(values),
 		},
 		success: function (response) {
@@ -129,7 +134,6 @@ function handleSortableUpdate(event, ui, container) {
 				});
 			}
 			else {
-				console.log("else");
 				Toast.fire({
 					icon: "success",
 					title: response.error,
