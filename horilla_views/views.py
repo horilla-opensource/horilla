@@ -8,6 +8,11 @@ from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
 from django.core.cache import cache as CACHE
 from django.db import router
+from django.db.models.fields.reverse_related import (
+    ManyToManyRel,
+    ManyToOneRel,
+    OneToOneRel,
+)
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
@@ -17,7 +22,13 @@ from django.views.decorators.csrf import csrf_protect
 from base.methods import eval_validate
 from horilla.signals import post_generic_delete, pre_generic_delete
 from horilla_views import models
-from horilla_views.cbv_methods import get_short_uuid, login_required, merge_dicts
+from horilla_views.cbv_methods import (
+    get_nested_field,
+    get_short_uuid,
+    login_required,
+    merge_dicts,
+    set_nested_attr,
+)
 from horilla_views.forms import SavedFilterForm
 from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
 
@@ -611,6 +622,7 @@ def update_kanban_sequence(request):
     group_key = request.GET.get("groupKey")
     group_id = request.GET.get("groupId")
     order_list = json.loads(order)
+    order_by = request.GET.get("orderBy")
 
     if not model_path:
         return JsonResponse({"error": "Missing 'model' or 'order'."}, status=400)
@@ -622,17 +634,17 @@ def update_kanban_sequence(request):
     except Exception:
         return JsonResponse({"error": "Invalid model path."}, status=400)
 
-    if "sequence" not in [f.name for f in model._meta.fields]:
-        return JsonResponse({"info": "Model does not have a 'sequence' field."})
+    if not get_nested_field(model, order_by):
+        return JsonResponse({"info": f"Model does not have a {order_by} field."})
 
     filters = {}
     if group_key and group_id:
-        if not hasattr(model, group_key):
+        if not get_nested_field(model, group_key):
             return JsonResponse(
                 {"error": f"Model does not have field '{group_key}'."}, status=400
             )
 
-        field = model._meta.get_field(group_key)
+        field = get_nested_field(model, group_key)
         if field.is_relation:
             try:
                 group_instance = field.related_model.objects.get(pk=group_id)
@@ -654,11 +666,11 @@ def update_kanban_sequence(request):
     for index, obj_id in enumerate(order_list):
         obj = obj_by_id.get(str(obj_id))
         if obj:
-            obj.sequence = index
+            set_nested_attr(obj, order_by, index)
             updated_objs.append(obj)
 
-    if updated_objs:
-        model.objects.bulk_update(updated_objs, ["sequence"])
+    if updated_objs and "__" not in order_by:
+        model.objects.bulk_update(updated_objs, [order_by])
 
     return JsonResponse({"status": "success", "updated": len(updated_objs)})
 
@@ -669,7 +681,7 @@ def update_kanban_item_group(request):
 
     GET parameters:
     - model: 'app_label.ModelName'
-    - groupKey: foreign key field on the model (e.g., 'stage_id')
+    - groupKey: foreign key field on the model (can be nested: 'stage__stage_id')
     - groupId: ID of the new group to assign
     - objectId: ID of the object being moved
     - order: ordered list of IDs to update sequence
@@ -680,6 +692,7 @@ def update_kanban_item_group(request):
     group_id = request.GET.get("groupId")
     object_id = request.GET.get("objectId")
     order = request.GET.get("order")
+    order_by = request.GET.get("orderBy")
     order_list = json.loads(order)
 
     if not all([model_path, group_key, group_id, object_id, order_list]):
@@ -687,45 +700,43 @@ def update_kanban_item_group(request):
 
     try:
         model = apps.get_model(*model_path.split("."))
-        group_field = model._meta.get_field(group_key)
+
+        # Get the group object from group_key
+        group_field = get_nested_field(model, group_key)
         group_model = group_field.related_model
         group_instance = group_model.objects.get(id=group_id)
 
-        # Get all objects that match order_list
+        # Fetch all objects in order_list
         objects = list(model.objects.filter(id__in=order_list))
         obj_map = {str(obj.id): obj for obj in objects}
         updated = []
-        fields = []
+        fields = set()
 
         for index, obj_id in enumerate(order_list):
             obj = obj_map.get(str(obj_id))
             if not obj:
                 continue
-            if hasattr(obj, "sequence"):
-                fields.append("sequence")
-                setattr(obj, "sequence", index)
 
-            setattr(obj, group_key, group_instance)
+            set_nested_attr(obj, order_by, index)
 
-            # Special logic for "hired" if needed
-            if (
-                group_key == "stage_id"
-                and hasattr(obj, "hired")
-                and hasattr(group_instance, "stage_type")
-            ):
-                obj.hired = group_instance.stage_type == "hired"
+            # If group_key is nested, set it properly
+            if "__" in group_key:
+                set_nested_attr(obj, group_key, group_instance)
+            else:
+                setattr(obj, group_key, group_instance)
 
             updated.append(obj)
 
-        fields.append(group_key)
-        if any(hasattr(o, "hired") for o in updated):
-            fields.append("hired")
+        if "__" not in group_key:
+            fields.add(group_key)
 
-        model.objects.bulk_update(updated, fields)
+        if fields:
+            model.objects.bulk_update(updated, list(fields))
 
         return JsonResponse({"status": "success", "updated": len(updated)})
+
     except Exception as e:
-        return JsonResponse({"error": f"{e}"}, status=500)
+        return JsonResponse({"error": str(e)}, status=500)
 
 
 def update_kanban_group_sequence(request):
@@ -735,13 +746,16 @@ def update_kanban_group_sequence(request):
     model_path = request.GET.get("model")
     group_key = request.GET.get("group_key")
     sequence_raw = request.GET.get("sequence", "")
+    order_by = request.GET.get("orderBy")
+
     try:
         sequence = json.loads(sequence_raw)
     except json.JSONDecodeError:
         sequence = []
 
     model = apps.get_model(*model_path.split("."))
-    group_field = model._meta.get_field(group_key)
+    group_field = get_nested_field(model, group_key)
+
     group_model = group_field.related_model
 
     to_update = []
@@ -752,7 +766,7 @@ def update_kanban_group_sequence(request):
         )
         to_update.append(instance)
 
-    group_model.objects.bulk_update(to_update, fields=["sequence"])
+    group_model.objects.bulk_update(to_update, fields=[order_by])
 
     return JsonResponse(
         {"status": "success", "message": "Group sequence updated successfully."}

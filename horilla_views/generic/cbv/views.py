@@ -2177,9 +2177,12 @@ class HorillaNavView(TemplateView):
             path=self.request.path
         ).first()
 
-        extra_params = {
-            "referrer": self.request.META.get("HTTP_REFERER", ""),
-        }
+        extra_params = {}
+
+        for key, val in self.request.GET.items():
+            extra_params[key] = val
+
+        extra_params["referrer"] = self.request.META.get("HTTP_REFERER", "")
 
         # Update each view's URL with query parameters
         for view in self.view_types:
@@ -2196,7 +2199,7 @@ class HorillaNavView(TemplateView):
         # Update search URL with query parameters
         parsed_search = urlparse(str(self.search_url))
         parsed_search_url = dict(parse_qsl(parsed_search.query))
-        parsed_search_url.update(self.request.GET)
+        # parsed_search_url.update(self.request.GET)
         parsed_search_url.update(extra_params)
 
         context["search_url"] = urlunparse(

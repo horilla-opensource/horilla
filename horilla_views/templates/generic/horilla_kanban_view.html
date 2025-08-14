@@ -36,6 +36,8 @@
         data-model = "{{ model_name }}"
         data-app-label="{{ app_label }}"
         data-group-key = "{{view.group_key}}"
+        data-instance-order-by = "{{view.instance_order_by}}"
+        data-group-order-by = "{{view.group_order_by}}"
     > </div>
 
     <div class="flex gap-4 flex-nowrap overflow-auto groupContainer">
@@ -80,7 +82,7 @@
                                     data-rec-stage-badge="{{rec.id}}"
                                     id="groupCount{{key}}"
                                 >
-                                    {{group.total_count}}
+                                    {{group.page_obj.object_list.count}}
                                 </span>
                                 {{group.label}}
                             </h5>
@@ -89,7 +91,7 @@
 
                     <div class="flex items-center gap-4 oh-kanban__button-contaner">
                         {% if view.group_actions %}
-                            <div class="inline-block dropdown-wrapper ml-3" role="button">
+                            <div class="inline-block dropdown-wrapper ml-3" role="button" title="{% trans 'Actions' %}" >
                                 <a class="cursor-pointer dropdown-toggle">
                                     <i
                                         class="fa-solid fa-ellipsis-vertical text-black"
