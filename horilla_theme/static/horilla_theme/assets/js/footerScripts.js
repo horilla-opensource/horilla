@@ -670,5 +670,5 @@ $(".oh-password-input--toggle").on("click", function (e) {
 
 $(document).on("click", ".oh-accordion-header", function(event) {
     event.stopImmediatePropagation();
-    $(this).parent().toggleClass("oh-accordion--show");
+    $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");
 });
