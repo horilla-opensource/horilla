@@ -107,7 +107,15 @@ def format(string: str, instance: object):
         attr_name: str = attr_placeholder
         attrs = attr_name.split("__")
         for attr in attrs:
-            value = getattr(instance, attr, "")
+            if (
+                attr.startswith("get_")
+                and attr.endswith("_display")
+                and callable(getattr(instance, attr, None))
+            ):  # 874
+                value = getattr(instance, attr)()
+            else:
+                value = getattr(instance, attr, "")
+
             if isinstance(value, types.MethodType):
                 value = value()
             instance = value
