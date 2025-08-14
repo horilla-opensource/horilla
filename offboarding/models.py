@@ -184,7 +184,7 @@ class OffboardingEmployee(HorillaModel):
 
     def get_individual_url(self):
         """
-        This method is used to get update url
+        This method is used to get individual view url
         """
         return f'{reverse_lazy("offboarding-individual-view", kwargs={"pk": self.pk})}'
 
@@ -288,6 +288,44 @@ class OffboardingEmployee(HorillaModel):
             ]
         )
         return ordered_group_json
+
+    def get_archive_title(self):
+        """
+        This method is used to get title for the archive in actions
+        """
+        return "Archive" if self.employee_id.is_active else "Un-Archive"
+
+    def get_mail_send_url(self):
+        """
+        This method is used to get the mail send url
+        """
+        return f'{reverse_lazy("send-mail-employee", kwargs={"emp_id": self.pk})}'
+
+    def get_notes_url(self):
+        """
+        This method is used to get the employee note view url
+        """
+        return (
+            f'{reverse_lazy("view-offboarding-note", kwargs={"employee_id": self.pk})}'
+        )
+
+    def get_archive_url(self):
+        """
+        This method is used to get the mail send url
+        """
+        return f'{reverse_lazy("employee-archive", kwargs={"obj_id": self.pk})}'
+
+    def get_edit_url(self):
+        """
+        This method is used to get the mail send url
+        """
+        return f'{reverse_lazy("add-employee", kwargs={"pk": self.pk})}?stage_id={self.stage_id.id}'
+
+    def get_managing_record_url(self):
+        """
+        This method is used to get the mail send url
+        """
+        return f'{reverse_lazy("get-manager-in")}?employee_id={self.employee_id.id}&offboarding=True'
 
 
 class ResignationLetter(HorillaModel):
