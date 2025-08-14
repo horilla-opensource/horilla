@@ -1883,6 +1883,10 @@
     margin-top: 1rem;
     margin-bottom: 1rem;
     box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: medium;
+    padding: inherit;
 }
 
 .oh-tabs__movable:first-child {
@@ -1894,7 +1898,8 @@
 }
 
 .oh-tabs__movable:hover .oh-tabs__movable-header {
-    background-color: hsl(0, 0%, 97.5%);
+    /* background-color: hsl(0, 0%, 97.5%); */
+    background-color: rgba(252,237,235,1);
 }
 
 .oh-tabs__movable-header {
@@ -1904,6 +1909,10 @@
     align-items: center;
     justify-content: space-between;
     cursor: move;
+    background-color: rgba(255, 245, 241, 1);
+    border-radius: inherit;
+    color: rgba(229, 79, 56, 1);
+
 }
 
 .oh-tabs__movable-header--w-80 {
@@ -2817,7 +2826,8 @@ ul.errorlist ul.errorlist li {
 }
 
 .oh-dropdown__menu {
-    z-index: 15
+    z-index: 15;
+    font-size: 12px;
 }
 
 .oh-sticky-table_dropdown {
@@ -2831,6 +2841,78 @@ ul.errorlist ul.errorlist li {
     justify-content: space-between;
     align-items: center;
     gap: 2rem;
+}
+
+.oh-empty {
+  width: 100%;
+  height: calc(100vh - 400px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.oh-empty__message {
+  font-size: 1rem;
+  color: hsl(0, 0%, 45%);
+  text-align: center;
+  max-width: 600px;
+}
+
+.oh-empty__title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.oh-empty__subtitle {
+  color: hsl(0, 0%, 45%);
+}
+
+.oh-404 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media screen and (max-width: 576px) {
+  .oh-404 {
+    width: 80%;
+  }
+}
+
+.oh-404__image {
+  width: 80px;
+  height: 80px;
+}
+
+.oh-404__title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+@media screen and (max-width: 576px) {
+  .oh-404__title {
+    font-size: 1.25rem;
+  }
+}
+
+.oh-404__subtitle {
+  color: hsl(0, 0%, 45%);
+  text-align: center;
+}
+
+@media screen and (max-width: 576px) {
+  .oh-404__subtitle {
+    font-size: 0.9rem;
+  }
 }
 
 .oh-activity-sidebar {
@@ -3539,7 +3621,7 @@ input[type=range]::-ms-fill-upper {
 }
 
 .swal2-actions {
-    direction: rtl;
+    direction: ltr;
 }
 .swal2-styled.swal2-confirm{
     background-color: rgb(0, 128, 0);
