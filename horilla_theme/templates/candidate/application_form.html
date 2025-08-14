@@ -4,17 +4,16 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="/static/horilla_theme/assets/js/tailwind.config.js"></script>
+    <link href="{% static 'horilla_theme/assets/css/tailwind.css' %}" rel="stylesheet">
     <link
         rel="apple-touch-icon"
         sizes="180x180"
         href="{% if white_label_company.icon %}{{white_label_company.icon.url}} {% else %}{% static 'favicons/apple-touch-icon.png' %}{% endif %}"
     />
     <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-/>
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <link
         rel="icon"
         type="image/png"
@@ -35,6 +34,7 @@
         rel="stylesheet"
         href="/static/horilla_theme/assets/css/v1_styles.css"
     />
+    <script src="{% static "horilla_theme/assets/js/tailwindcdn.js" %}"></script>
     <style>
         .overflow-y-auto {
             overflow-y: auto !important;
