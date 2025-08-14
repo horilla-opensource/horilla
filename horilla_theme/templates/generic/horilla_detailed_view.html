@@ -27,20 +27,32 @@
             </div>
         </div>
         {% endif %}
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5 mt-5">
             {% for col in body %}
                 {% if not col.2 %}
                     <div class="mb-2 flex gap-5 items-center">
-                        <span class="font-medium text-xs text-[#565E6C] w-32">{{ col.0 }} {{ col.2 }}</span>
+                        <span class="font-medium text-xs text-[#565E6C] w-32">
+                            {{ col.0 }} {{ col.2 }}
+                        </span>
                         <p class="text-xs font-semibold flex items-center gap-5">
-                            : <span>{{ object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}</span>
+                            : <span>
+                                {{ object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
+                            </span>
                         </p>
                     </div>
-                {% else %}
-                    {{object|getattribute:col.1|safe}}
                 {% endif %}
             {% endfor %}
         </div>
+
+        {% for col in body %}
+            {% if col.2 %}
+                <div>
+                    {{ object|getattribute:col.1|safe }}
+                </div>
+            {% endif %}
+        {% endfor %}
+
         <div class="m-3 " id="enlargeattachmentContainer"></div>
         <div class="flex flex-wrap justify-between gap-2 md:gap-1">
             {% if actions or action_method %}
