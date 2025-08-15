@@ -42,9 +42,42 @@
 										</div>
 									</div>
 								</div>
-								<div class="row">
+
+								<!-- Toggle options for Allowances and Deductions -->
+								<div class="row mb-3">
+									<div class="col-sm-12 col-md-6">
+										<div class="oh-input-group">
+											<label class="oh-label d-flex align-items-center">
+												<input
+													type="checkbox"
+													id="{{ export_column.show_allowances.id_for_label }}"
+													name="show_allowances"
+													class="oh-input oh-input--checkbox"
+													{% if export_column.show_allowances.value %}checked{% endif %}>
+												<span class="ml-2">{% trans "Show Allowances" %}</span>
+											</label>
+										</div>
+									</div>
+									<div class="col-sm-12 col-md-6">
+										<div class="oh-input-group">
+											<label class="oh-label d-flex align-items-center">
+												<input
+													type="checkbox"
+													id="{{ export_column.show_deductions.id_for_label }}"
+													name="show_deductions"
+													class="oh-input oh-input--checkbox"
+													{% if export_column.show_deductions.value %}checked{% endif %}>
+												<span class="ml-2">{% trans "Show Deductions" %}</span>
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<div class="row" id="export-columns-container">
 									{% for field in export_column.selected_fields %}
-									<div class="col-sm-12 col-md-12 col-lg-4">
+									{% with field_name=field.data.value.0|default:'' %}
+									<div class="col-sm-12 col-md-12 col-lg-4 column-option"
+									     data-type="{% if 'allowance_' in field_name %}allowance{% elif 'deduction_' in field_name %}deduction{% else %}standard{% endif %}">
 										<div class="oh-input-group">
 											<label class="oh-label d-flex align-items-center">
 												{{ field.tag }}
@@ -52,6 +85,7 @@
 											</label>
 										</div>
 									</div>
+									{% endwith %}
 									{% endfor %}
 								</div>
 							</div>
@@ -255,21 +289,64 @@
 	</div>
 </div>
 
+<style>
+  .column-option {
+    transition: all 0.3s ease;
+  }
+  .column-option.hidden {
+    display: none;
+  }
+  .toggle-allowances, .toggle-deductions {
+    margin-right: 8px;
+  }
+</style>
+
 <script>
   $(document).ready(function() {
-    // Select all checkboxes when "Select All" is clicked
+    function updateColumnVisibility() {
+        const showAllowances = $('#{{ export_column.show_allowances.id_for_label }}').is(':checked');
+        const showDeductions = $('#{{ export_column.show_deductions.id_for_label }}').is(':checked');
+
+        // Show/hide allowance columns
+        $('.column-option[data-type="allowance"]').toggle(showAllowances);
+
+        // Show/hide deduction columns
+        $('.column-option[data-type="deduction"]').toggle(showDeductions);
+
+        // Uncheck hidden columns
+        $('.column-option.hidden input[type="checkbox"]').prop('checked', false);
+
+        // Update Select All checkbox state
+        const visibleCheckboxes = $('.column-option:visible input[type="checkbox"]');
+        const checkedVisible = visibleCheckboxes.filter(':checked');
+        $('#select-all-fields').prop('checked', visibleCheckboxes.length === checkedVisible.length);
+    }
+
+    // Initialize visibility
+    updateColumnVisibility();
+
+    // Toggle change
+    $('#{{ export_column.show_allowances.id_for_label }}, #{{ export_column.show_deductions.id_for_label }}').change(updateColumnVisibility);
+
+    // Select All checkbox
     $('#select-all-fields').change(function() {
-      $('input[name="selected_fields"]').prop('checked', $(this).prop('checked'));
+        const checked = $(this).is(':checked');
+        $('.column-option:visible input[type="checkbox"]').prop('checked', checked);
     });
 
-    // Check if all checkboxes are selected and update "Select All"
-    $('input[name="selected_fields"]').change(function() {
-      var allChecked = $('input[name="selected_fields"]:checked').length === $('input[name="selected_fields"]').length;
-      $('#select-all-fields').prop('checked', allChecked);
+    // Individual checkbox change updates Select All
+    $(document).on('change', '.column-option input[type="checkbox"]', function() {
+        const visibleCheckboxes = $('.column-option:visible input[type="checkbox"]');
+        const checkedVisible = visibleCheckboxes.filter(':checked');
+        $('#select-all-fields').prop('checked', visibleCheckboxes.length === checkedVisible.length);
     });
 
-    // Initialize "Select All" state
-    var allChecked = $('input[name="selected_fields"]:checked').length === $('input[name="selected_fields"]').length;
-    $('#select-all-fields').prop('checked', allChecked);
-  });
+    // HTMX after request (if modal reloads content)
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.elt.id === 'payslipReportForm') {
+            $('#{{ export_column.show_allowances.id_for_label }}, #{{ export_column.show_deductions.id_for_label }}').off('change').on('change', updateColumnVisibility);
+            updateColumnVisibility();
+        }
+    });
+});
 </script>

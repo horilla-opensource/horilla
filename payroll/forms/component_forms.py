@@ -520,7 +520,12 @@ excel_columns = [
 class PayslipExportColumnForm(forms.Form):
     selected_fields = forms.MultipleChoiceField(
         choices=excel_columns,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'export-column-checkbox',
+            'hx-get': '.',  # This will refresh the form when checkboxes change
+            'hx-trigger': 'change',
+            'hx-target': '#export-columns-form',
+        }),
         initial=[
             "employee_id",
             "group_name",
@@ -535,7 +540,30 @@ class PayslipExportColumnForm(forms.Form):
             "lop_amount"
         ],
     )
-
+    
+    show_allowances = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Show Allowances"),
+        widget=forms.CheckboxInput(attrs={
+            'class': 'toggle-allowances',
+            'hx-get': '.',
+            'hx-trigger': 'change',
+            'hx-target': '#export-columns-form',
+        })
+    )
+    
+    show_deductions = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_("Show Deductions"),
+        widget=forms.CheckboxInput(attrs={
+            'class': 'toggle-deductions',
+            'hx-get': '.',
+            'hx-trigger': 'change',
+            'hx-target': '#export-columns-form',
+        })
+    )
 
 exclude_fields = ["id", "contract_document", "is_active", "note", "note", "created_at"]
 
