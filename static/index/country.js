@@ -125,6 +125,7 @@ var country_arr = new Array(
     "Kiribati",
     "Korea, North",
     "Korea, South",
+    "Kosovo",
     "Kuwait",
     "Kyrgyzstan",
     "Laos",
