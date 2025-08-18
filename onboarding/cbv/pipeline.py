@@ -15,6 +15,7 @@ from django.views.generic import TemplateView
 from base.methods import eval_validate
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import login_required, render_template
+from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -74,6 +75,25 @@ class PipelineNav(HorillaNavView):
         else:
             self.create_attrs = None
 
+        self.view_types = [
+            {
+                "type": "list",
+                "icon": "list-outline",
+                "url": f'{reverse_lazy("cbv-pipeline-tab-onboarding")}',
+                "attrs": f"""
+                    title ='List'
+                """,
+            },
+            {
+                "type": "card",
+                "icon": "grid-outline",
+                "url": f'{reverse_lazy("cbv-pipeline-tab-onboarding")}?view=card',
+                "attrs": f"""
+                    title ='Card'
+                """,
+            },
+        ]
+
     def get_context_data(self, **kwargs):
         """
         context data
@@ -100,13 +120,18 @@ class RecruitmentTabView(HorillaTabView):
         recruitments = onboarding_filters.RecruitmentFilter(self.request.GET).qs.filter(
             is_active=True
         )
+        view_type = self.request.GET.get("view", "list")
         self.tabs = []
         for rec in recruitments:
             tab = {}
             tab["title"] = rec
-            tab["url"] = reverse(
-                "get-stages-onboarding", kwargs={"recruitment_id": rec.pk}
-            )
+            url = reverse("candidate-card-cbv-onboarding", kwargs={"pk": rec.pk})
+            if view_type == "list":
+                url = reverse(
+                    "get-stages-onboarding", kwargs={"recruitment_id": rec.pk}
+                )
+            tab["url"] = url
+
             tab["badge_label"] = _("Stages")
             tab["actions"] = []
             if self.request.user.has_perm(
@@ -308,10 +333,12 @@ def task_fetch(self):
     task fetch
     """
     return f"""
-    <div id="selectedInstanceIds" data-ids="[]"></div>
-    <div style="width:220% !important;" hx-get="{reverse('get-cand-task',kwargs={"pk":self.pk})}?field=stage_id" hx-trigger="load">
-    </div>
-"""
+        <div id="selectedInstanceIds" data-ids="[]"></div>
+        <div
+            hx-get="{reverse('get-cand-task',kwargs={"pk":self.pk})}?field=stage_id"
+            hx-trigger="load"
+        ></div>
+    """
 
 
 recruitment_models.Candidate.task_fetch = task_fetch
@@ -605,6 +632,113 @@ class CandidateList(HorillaListView):
             self.queryset.values_list("candidate_id__pk", flat=True)
         )
         return context
+
+
+class CandidateKanbanView(HorillaKanbanView):
+    """
+    CandidateKanbanView
+    """
+
+    model = onboarding_models.OnboardingCandidate
+    group_key = "onboarding_stage__onboarding_stage_id"
+    records_per_page = 10
+    show_kanban_confirmation = False
+    filter_keys_to_remove = ["onboarding_stage_id", "rec_id", "recruitment_id"]
+    filter_class = onboarding_filters.PipelineCandidateFilter
+    instance_order_by = "onboarding_stage__sequence"
+
+    details = {
+        "image_src": "{get_avatar}",
+        "title": "{get_full_name}",
+        "Email": "{email}",
+        "Phone Number": "{phone}",
+    }
+
+    kanban_attrs = """
+        hx-get='{get_detail_url_pipeline}'
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        hx-target="#genericModalBody"
+    """
+
+    actions = [
+        {
+            "action": _("Allocations"),
+            "attrs": """
+                hx-get = "{onboarding_stage__allocation_path}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+            """,
+        },
+        {
+            "action": _("Send Mail"),
+            "attrs": """
+                hx-get = "{get_send_mail}"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectDetailsModal"
+                hx-target="#objectDetailsModalTarget"
+            """,
+        },
+        {
+            "action": _("View Note"),
+            "attrs": """
+                hx-get="{get_view_note_url}"
+                data-target="#activitySidebar"
+                hx-target="#activitySidebar"
+                onclick="$('#activitySidebar').addClass('oh-activity-sidebar--show')"
+            """,
+        },
+        {
+            "action": _("Document Request"),
+            "attrs": """
+                hx-get="{get_document_request}"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle"
+            """,
+        },
+    ]
+
+    group_actions = [
+        {
+            "action": "Edit",
+            "accessibility": "onboarding.cbv.accessibility.edit_stage_accessibility",
+            "attrs": """
+                hx-target="#genericModalBody"
+                hx-get="{edit_stage_path}"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+            """,
+        },
+        {
+            "action": "Bulk Mail",
+            "attrs": """
+                hx-target="#objectCreateModalTarget"
+                hx-get="{bulk_send_mail_path}"
+                data-toggle="oh-modal-toggle"
+                data-target="#objectCreateModal"
+            """,
+        },
+        {
+            "action": "Delete",
+            "accessibility": "onboarding.cbv.accessibility.delete_stage_accessibility",
+            "attrs": """
+                data-target="#deleteConfirmation"
+                data-toggle="oh-modal-toggle"
+                hx-get="{generic_delete_path}"
+                hx-target="#deleteConfirmationBody"
+            """,
+        },
+    ]
+
+    def get_related_groups(self, *args, **kwargs):
+        related_groups = super().get_related_groups(*args, **kwargs)
+        onboarding_id = self.kwargs.get("pk")
+        if onboarding_id:
+            related_groups = related_groups.filter(recruitment_id=onboarding_id)
+
+        return related_groups
 
 
 @method_decorator(login_required, name="dispatch")

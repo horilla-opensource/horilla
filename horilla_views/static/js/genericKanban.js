@@ -1,6 +1,8 @@
-var modelName = $("#helperContainer").data("model");
-var groupKey = $("#helperContainer").data("groupKey");
-var appLabel = $("#helperContainer").data("appLabel");
+var modelName = $("#helperContainer").attr("data-model");
+var appLabel = $("#helperContainer").attr("data-app-label");
+var groupKey = $("#helperContainer").attr("data-group-key");
+var groupOrderBy = $("#helperContainer").attr("data-group-order-by");
+var instanceOrderBy = $("#helperContainer").attr("data-instance-order-by");
 var model = `${appLabel}.${modelName}`;
 var groupOrder = []
 var stageOrderJson = []
@@ -34,6 +36,7 @@ function groupSequenceGet(groupHead) {
 			"tab_id": groupHead.attr("data-tab-id"),
 			"model": model,
 			"group_key": groupKey,
+			"orderBy": groupOrderBy,
 		},
 		success: function (response) {
 			message = response.message || "Group sequence updated successfully.";
@@ -65,6 +68,7 @@ function handleValidDrop(groupId, objectId, row) {
 				groupId: groupId,
 				groupKey: groupKey,
 				objectId: objectId,
+				orderBy: instanceOrderBy,
 				order: JSON.stringify(values),
 			},
 			success: function (response) {
@@ -113,6 +117,7 @@ function handleSortableUpdate(event, ui, container) {
 			model: model,
 			groupId: groupId,
 			groupKey: groupKey,
+			orderBy: instanceOrderBy,
 			order: JSON.stringify(values),
 		},
 		success: function (response) {
@@ -129,7 +134,6 @@ function handleSortableUpdate(event, ui, container) {
 				});
 			}
 			else {
-				console.log("else");
 				Toast.fire({
 					icon: "success",
 					title: response.error,
@@ -250,9 +254,14 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 
 		start: function (event, ui) {
 			var row = $(ui.item);
-			window.candidateCurrentStage = parseInt(
-				row.closest(stageSelector).attr("data-group-id")
-			);
+			var nodeId = row.closest(stageSelector).attr("data-group-id");
+			var currentStage = parseInt(nodeId);
+
+			if (isNaN(currentStage)) {
+				currentStage = nodeId
+			}
+
+			window.candidateCurrentStage = currentStage;
 			ui.item.data("origin-parent", ui.item.parent());
 			ui.item.data("origin-index", ui.item.index());
 		},
@@ -260,9 +269,13 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 		stop: function (event, ui) {
 			var row = $(ui.item);
 			var candidateId = row.data("instanceId");
-			var targetStageId = parseInt(
-				row.closest(stageSelector).attr("data-group-id")
-			);
+			var nodeId = row.closest(stageSelector).attr("data-group-id");
+			var targetStageId = parseInt(nodeId);
+
+			if (isNaN(currentStage)) {
+				targetStageId = nodeId
+			}
+
 			var originalStageId = window.candidateCurrentStage;
 
 			var parsedStageOrder = stageOrderJson;
@@ -274,7 +287,7 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 					Swal.fire({
 						title: "Confirm Stage Change",
 						html: `
-                            <p class="mb-2">The candidate is being moved from ${preStage.stage} 
+                            <p class="mb-2">The candidate is being moved from ${preStage.stage}
                             to the ${currentStage.stage} stage. Do you want to proceed?</p>
                             <label><input type="checkbox" id="doNotShowAgain"> Don't show this again in this session</label>
                         `,

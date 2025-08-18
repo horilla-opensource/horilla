@@ -12,7 +12,7 @@ from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
 from horilla_views.cbv_methods import login_required
-from horilla_views.generic.cbv.kanban import KanbanView
+from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
@@ -419,7 +419,7 @@ class CandidateList(HorillaListView):
 @method_decorator(
     manager_can_enter(perm="recruitment.view_recruitment"), name="dispatch"
 )
-class CandidateCard(KanbanView):
+class CandidateCard(HorillaKanbanView):
     model = models.Candidate
     filter_class = filters.CandidateFilter
     group_key = "stage_id"

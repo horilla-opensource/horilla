@@ -924,3 +924,40 @@ def assign_related(
                 instance = instances[0]
                 reverse_obj_dict.update({reverse_field: instance})
     return reverse_obj_dict
+
+
+def get_nested_field(model, lookup):
+    """
+    Get field from model by lookup
+    """
+
+    field = None
+    attrs = lookup.split("__")
+    try:
+        for attr in attrs:
+            field = model._meta.get_field(attr)
+
+            if isinstance(field, (OneToOneRel, ManyToOneRel, ManyToManyRel)):
+                model = field.related_model
+            elif hasattr(field, "related_model"):
+                model = field.related_model
+            else:
+                break
+
+    except Exception as e:
+        field = None
+
+    return field
+
+
+def set_nested_attr(obj, attr_path, value):
+    """
+    Set attribute on nested related model using __ lookup notation.
+    """
+
+    parts = attr_path.split("__")
+    for part in parts[:-1]:
+        obj = getattr(obj, part)
+
+    setattr(obj, parts[-1], value)
+    obj.save()

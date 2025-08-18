@@ -77,6 +77,7 @@ urlpatterns = [
     path("get-ticket-tabs", pipeline.TicketTabView.as_view(), name="get-ticket-tabs"),
     path("ticket-tab/", pipeline.TicketTabView.as_view(), name="ticket-tab"),
     path("ticket-tab-list/", pipeline.TicketListView.as_view(), name="ticket-tab-list"),
+    path("ticket-tab-card/", pipeline.TicketCardView.as_view(), name="ticket-tab-card"),
     # path("ticket-pipeline-view/", pipeline.TicketPipelineTabView.as_view(), name="ticket-pipeline-view"),
     path(
         "ticket-create",
@@ -246,4 +247,9 @@ urlpatterns = [
         name="delete-ticket-document",
     ),
     path("load-faqs/", views.load_faqs, name="load-faqs"),
+    path(
+        "ticket-file-upload/<int:id>/",
+        views.ticket_file_upload,
+        name="ticket-file-upload",
+    ),
 ]

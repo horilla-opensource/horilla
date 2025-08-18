@@ -60,3 +60,35 @@ def delete_stage_accessibility(
     """
     perm = request.user.has_perm("offboarding.delete_offboarding")
     return perm
+
+
+def archive_employee_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+):
+    stage_type = instance.stage_id.type
+    if stage_type == "archived" and add_employee_accessibility(request):
+        return True
+
+    return False
+
+
+def edit_employee_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+):
+    stage_type = instance.stage_id.type
+    if stage_type != "archived" and add_employee_accessibility(request):
+        return True
+
+    return False
+
+
+def managing_records_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+):
+    if (
+        instance.employee_id
+        and instance.employee_id.get_archive_condition()
+        and add_employee_accessibility(request)
+    ):
+        return True
+    return False

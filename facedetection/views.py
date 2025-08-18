@@ -30,13 +30,13 @@ class FaceDetectionConfigAPIView(APIView):
     def get_facedetection(self, request):
         company = self.get_company(request)
         try:
-            facedetection = FaceDetection.objects.get(company_id=company)
+            facedetection = FaceDetection.objects.get_or_create(company_id=company)
             return facedetection
         except Exception as e:
             raise serializers.ValidationError(e)
 
     def get(self, request):
-        serializer = FaceDetectionSerializer(self.get_facedetection(request))
+        serializer = FaceDetectionSerializer(self.get_facedetection(request)[0])
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @method_decorator(
@@ -60,10 +60,9 @@ class FaceDetectionConfigAPIView(APIView):
     )
     def put(self, request):
         data = request.data
-        if isinstance(data, QueryDict):
-            data = data.dict()
-        data["company_id"] = self.get_company(request).id
-        serializer = FaceDetectionSerializer(self.get_facedetection(request), data=data)
+        serializer = FaceDetectionSerializer(
+            self.get_facedetection(request)[0], data=data
+        )
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

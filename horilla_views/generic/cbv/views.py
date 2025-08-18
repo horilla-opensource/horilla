@@ -1584,12 +1584,19 @@ class HorillaTabView(TemplateView):
             if active_tab:
                 context["active_target"] = active_tab.tab_target
 
-        for tab in self.tabs:
-            base_url = tab.get("url")
-            query_params = {**self.request.GET.dict()}
-            query_params.update(self.query_params)
+        extra_params = {}
 
-            tab["url"] = f"{base_url}?{urlencode(query_params)}"
+        for key, val in self.request.GET.items():
+            extra_params[key] = val
+
+        extra_params["referrer"] = self.request.META.get("HTTP_REFERER", "")
+
+        for tab in self.tabs:
+            parsed = urlparse(tab.get("url", ""))
+            combined_query = dict(parse_qsl(parsed.query))
+            combined_query.update(extra_params)
+
+            tab["url"] = urlunparse(parsed._replace(query=urlencode(combined_query)))
 
         context["tabs"] = self.tabs
         context["view_id"] = self.view_id
@@ -2177,16 +2184,19 @@ class HorillaNavView(TemplateView):
             path=self.request.path
         ).first()
 
-        extra_params = {
-            "referrer": self.request.META.get("HTTP_REFERER", ""),
-        }
+        extra_params = {}
+
+        for key, val in self.request.GET.items():
+            extra_params[key] = val
+
+        extra_params["referrer"] = self.request.META.get("HTTP_REFERER", "")
 
         # Update each view's URL with query parameters
         for view in self.view_types:
             parsed = urlparse(view.get("url", ""))
 
             combined_query = dict(parse_qsl(parsed.query))
-            combined_query.update(self.request.GET)
+            # combined_query.update(self.request.GET)
             combined_query.update(extra_params)
 
             view["url"] = urlunparse(parsed._replace(query=urlencode(combined_query)))
@@ -2196,7 +2206,7 @@ class HorillaNavView(TemplateView):
         # Update search URL with query parameters
         parsed_search = urlparse(str(self.search_url))
         parsed_search_url = dict(parse_qsl(parsed_search.query))
-        parsed_search_url.update(self.request.GET)
+        # parsed_search_url.update(self.request.GET)
         parsed_search_url.update(extra_params)
 
         context["search_url"] = urlunparse(

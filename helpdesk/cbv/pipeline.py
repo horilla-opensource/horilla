@@ -5,6 +5,7 @@ from base.methods import is_reportingmanager
 from helpdesk.filter import TicketFilter, TicketReGroup
 from helpdesk.models import TICKET_STATUS, Ticket
 from horilla_views.cbv_methods import login_required
+from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaListView,
@@ -39,6 +40,7 @@ class TicketPipelineNav(HorillaNavView):
     filter_body_template = "cbv/pipeline/ticket_filter_form.html"
     filter_instance = TicketFilter()
     filter_form_context_name = "form"
+
     group_by_fields = [
         ("employee_id", "Owner"),
         ("ticket_type", "Ticket Type"),
@@ -48,6 +50,7 @@ class TicketPipelineNav(HorillaNavView):
         ("assigned_to", "Assigner"),
         ("employee_id__employee_work_info__company_id", "Company"),
     ]
+
     actions = [
         {
             "action": "Archive",
@@ -88,6 +91,25 @@ class TicketPipelineNav(HorillaNavView):
             data-target="#objectCreateModal"
         """
 
+        self.view_types = [
+            {
+                "type": "list",
+                "icon": "list-outline",
+                "url": f'{reverse_lazy("ticket-tab")}?view_type=list',
+                "attrs": f"""
+                    title ='List'
+                """,
+            },
+            {
+                "type": "card",
+                "icon": "grid-outline",
+                "url": f'{reverse_lazy("ticket-tab")}?view_type=card',
+                "attrs": f"""
+                    title ='Card'
+                """,
+            },
+        ]
+
 
 @method_decorator(login_required, name="dispatch")
 class TicketTabView(HorillaTabView):
@@ -98,16 +120,21 @@ class TicketTabView(HorillaTabView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        view_type = self.request.GET.get("view_type", "list")
+        url = reverse("ticket-tab-card")
+        if view_type == "list":
+            url = reverse("ticket-tab-list")
+
         self.tabs = [
             {
                 "title": "My Tickets",
                 # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=my_tickets&',
-                "url": f'{ reverse("ticket-tab-list")}?ticket_tab=my_tickets&',
+                "url": f"{url}?ticket_tab=my_tickets",
             },
             {
                 "title": "Suggested Tickets",
                 # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=suggested_tickets&',
-                "url": f'{ reverse("ticket-tab-list")}?ticket_tab=suggested_tickets&',
+                "url": f"{url}?ticket_tab=suggested_tickets",
             },
         ]
 
@@ -118,7 +145,7 @@ class TicketTabView(HorillaTabView):
                 {
                     "title": "All Tickets",
                     # "url":f'{ reverse("ticket-pipeline-view")}?ticket_tab=all_tickets&',
-                    "url": f'{ reverse("ticket-tab-list")}?ticket_tab=all_tickets&',
+                    "url": f"{url}?ticket_tab=all_tickets",
                 }
             )
 
@@ -167,6 +194,7 @@ class TicketListView(HorillaListView):
 
     model = Ticket
     filter_class = TicketFilter
+    filter_keys_to_remove = ["ticket_tab", "view_type"]
     # custom_empty_template = "cbv/pipeline/empty_list.html"
     bulk_update_fields = [
         "ticket_type",
@@ -197,6 +225,9 @@ class TicketListView(HorillaListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        if self.request.GET.get("is_active") != "false":
+            self.queryset = self.queryset.filter(is_active=True)
+
         ticket_tab = self.request.GET.get("ticket_tab", "my_tickets")
         if ticket_tab == "my_tickets":
             return queryset.filter(employee_id=self.request.user.employee_get)
@@ -227,3 +258,64 @@ class TicketListView(HorillaListView):
 
         elif ticket_tab == "all_tickets":
             return queryset.all()
+
+
+class TicketCardView(HorillaKanbanView):
+    model = Ticket
+    filter_class = TicketFilter
+    group_key = "status"
+    records_per_page = 10
+    show_kanban_confirmation = False
+    filter_keys_to_remove = ["ticket_tab", "view_type"]
+
+    details = {
+        "title": "{title} ({ticket_type__prefix}-{pk})",
+        "Owner": "{employee_id__get_full_name}",
+        "Priority": "{get_priority_stars}",
+    }
+
+    kanban_attrs = """
+        onclick="window.location.href = `{get_ticket_detail_url}`"
+    """
+
+    action_method = "kanban_action_method"
+
+    def get_queryset(self):
+        self.queryset = super().get_queryset()
+        if self.request.GET.get("is_active") != "false":
+            self.queryset = self.queryset.filter(is_active=True)
+
+        ticket_tab = self.request.GET.get("ticket_tab", "my_tickets")
+
+        if ticket_tab == "my_tickets":
+            self.queryset = self.queryset.filter(
+                employee_id=self.request.user.employee_get
+            )
+            return self.queryset
+
+        elif ticket_tab == "suggested_tickets":
+            employee = self.request.user.employee_get
+            qs_cpy = self.queryset
+            queryset = self.queryset.none()
+            if hasattr(employee, "employee_work_info"):
+                work_info = employee.employee_work_info
+                department = work_info.department_id
+                job_position = work_info.job_position_id
+
+                if department:
+                    queryset |= qs_cpy.filter(
+                        raised_on=department.id, assigning_type="department"
+                    )
+
+                if job_position:
+                    queryset |= qs_cpy.filter(
+                        raised_on=job_position.id, assigning_type="job_position"
+                    )
+
+            queryset |= qs_cpy.filter(
+                raised_on=employee.id, assigning_type="individual"
+            )
+            self.queryset = queryset.distinct()
+            return self.queryset
+
+        return self.queryset

@@ -1,0 +1,122 @@
+{% load i18n %}
+<div
+	class="oh-modal oh-modal--show"
+	role="dialog"
+	id="confirmModal"
+	aria-labelledby="confirmModalLabel"
+	aria-hidden="true"
+>
+	<div
+		class="oh-modal__dialog oh-modal__dialog--confirm"
+		style="max-width: 510px"
+	>
+		<p class="swal2-close"></p>
+		<ul class="swal2-progress-steps" style="display: none"></ul>
+		<div
+			class="swal2-icon swal2-warning swal2-icon-show"
+			style="display: flex"
+		>
+			<div class="swal2-icon-content">!</div>
+		</div>
+		<h2 class="swal2-title" id="swal2-title">{{title}}</h2>
+		<form
+			action="{% url 'replace-employee' employee.id %}?title={{title}}"
+			method="post"
+			id="replaceEmployeeForm"
+			data-id="{{employee.id}}"
+		>
+			{% csrf_token %}
+			<div
+				class="swal2-html-container"
+				id="swal2-html-container"
+				style="display: block"
+			>
+				{{employee}} {% trans "assigned as" %}.
+
+				<table class="w-full border-separate border-spacing-0 border border-[#e5e5e5] rounded-lg mt-5 overflow-hidden">
+					<thead class="sticky top-0 bg-white z-[1]">
+						<tr>
+							<th class="text-sm font-bold text-left p-3 border-b border-r border-[#e5e5e5]">
+								{% trans "Assigned As" %}
+							</th>
+							<th class="text-sm font-bold text-left p-3 border-b border-[#e5e5e5]">
+								{% trans "Replace Employee" %}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for related_model in related_models %}
+							<tr>
+								<td class="text-sm text-left p-3 text-[#666] font-semibold border-b border-r border-[#f3f3f3]">
+								{{ related_model.verbose_name }}
+								</td>
+								<td class="text-sm text-left p-3 text-[#666] border-b border-[#f3f3f3]">
+									<select
+										name="{{ related_model.field_name }}"
+										id="select{{ forloop.counter }}"
+										class="w-full oh-select oh-select-2 manager-select"
+										data-error="{{ related_model.field_name }}_error"
+									>
+										{% for option in employee_choices %}
+											<option value="{{ option.0 }}" {% if option.0 == employee.id %}selected{% endif %}>
+												{{ option.1 }}
+											</option>
+										{% endfor %}
+									</select>
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+
+				{% for model in related_models %}
+					<div
+						class="swal2-validation-message text-sm justify-start rounded-md"
+						id="{{model.field_name}}_error"
+						style="display: none;"
+					>
+						<p>{% trans "Replace" %} <span class="font-medium">{{employee.get_full_name}}</span> {% trans "from" %} <span class="font-medium">{{model.verbose_name}}</span></p>
+					</div>
+				{% endfor %}
+
+				<div class="swal2-actions" style="display: flex; direction:rtl;">
+					<div class="swal2-loader"></div>
+					<button
+						type="submit"
+						class="swal2-deny swal2-styled mb-4"
+						aria-label=""
+						style="display: inline-block; background-color: #008000"
+					>
+						{% trans "Submit" %}
+					</button>
+					<button
+						type="button"
+						class="swal2-confirm swal2-styled oh-modal__cancel mb-4"
+						aria-label=""
+						style="display: inline-block; background-color: #d33"
+					>
+						{% trans "Cancel" %}
+					</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+	$(document).ready(function (e) {
+		$("#replaceEmployeeForm").submit(function (e) {
+			var empId = $("#replaceEmployeeForm").attr("data-id");
+			$(".manager-select").each(function () {
+				var selectElement = $(this);
+				var managerId = selectElement.val();
+				var errorElementId = selectElement.data("error");
+				if (empId === managerId) {
+					$("#" + errorElementId).css("display", "flex");
+					event.preventDefault();
+				} else {
+					$("#" + errorElementId).css("display", "none");
+				}
+			});
+		});
+	});
+</script>
