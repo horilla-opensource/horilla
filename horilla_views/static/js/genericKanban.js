@@ -254,9 +254,14 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 
 		start: function (event, ui) {
 			var row = $(ui.item);
-			window.candidateCurrentStage = parseInt(
-				row.closest(stageSelector).attr("data-group-id")
-			);
+			var nodeId = row.closest(stageSelector).attr("data-group-id");
+			var currentStage = parseInt(nodeId);
+
+			if (isNaN(currentStage)) {
+				currentStage = nodeId
+			}
+
+			window.candidateCurrentStage = currentStage;
 			ui.item.data("origin-parent", ui.item.parent());
 			ui.item.data("origin-index", ui.item.index());
 		},
@@ -264,9 +269,13 @@ function initializeKanbanSortable(sectionSelector, stageSelector) {
 		stop: function (event, ui) {
 			var row = $(ui.item);
 			var candidateId = row.data("instanceId");
-			var targetStageId = parseInt(
-				row.closest(stageSelector).attr("data-group-id")
-			);
+			var nodeId = row.closest(stageSelector).attr("data-group-id");
+			var targetStageId = parseInt(nodeId);
+
+			if (isNaN(currentStage)) {
+				targetStageId = nodeId
+			}
+
 			var originalStageId = window.candidateCurrentStage;
 
 			var parsedStageOrder = stageOrderJson;

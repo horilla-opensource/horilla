@@ -1584,12 +1584,19 @@ class HorillaTabView(TemplateView):
             if active_tab:
                 context["active_target"] = active_tab.tab_target
 
-        for tab in self.tabs:
-            base_url = tab.get("url")
-            query_params = {**self.request.GET.dict()}
-            query_params.update(self.query_params)
+        extra_params = {}
 
-            tab["url"] = f"{base_url}?{urlencode(query_params)}"
+        for key, val in self.request.GET.items():
+            extra_params[key] = val
+
+        extra_params["referrer"] = self.request.META.get("HTTP_REFERER", "")
+
+        for tab in self.tabs:
+            parsed = urlparse(tab.get("url", ""))
+            combined_query = dict(parse_qsl(parsed.query))
+            combined_query.update(extra_params)
+
+            tab["url"] = urlunparse(parsed._replace(query=urlencode(combined_query)))
 
         context["tabs"] = self.tabs
         context["view_id"] = self.view_id
@@ -2189,7 +2196,7 @@ class HorillaNavView(TemplateView):
             parsed = urlparse(view.get("url", ""))
 
             combined_query = dict(parse_qsl(parsed.query))
-            combined_query.update(self.request.GET)
+            # combined_query.update(self.request.GET)
             combined_query.update(extra_params)
 
             view["url"] = urlunparse(parsed._replace(query=urlencode(combined_query)))

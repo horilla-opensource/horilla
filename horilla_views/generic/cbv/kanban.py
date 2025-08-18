@@ -9,7 +9,7 @@ from horilla_views.cbv_methods import get_nested_field
 from horilla_views.generic.cbv.views import HorillaCardView
 
 
-class KanbanView(HorillaCardView):
+class HorillaKanbanView(HorillaCardView):
     group_key: str = ""
     template_name: str = "generic/horilla_kanban_view.html"
     kanban_attrs: str = ""
@@ -20,6 +20,7 @@ class KanbanView(HorillaCardView):
     group_actions: list = []
     show_kanban_confirmation: bool = True
     folded_groups: list = []
+    action_method: str = """"""
 
     def get_related_groups(self, *args, **kwargs):
         field = get_nested_field(self.model, self.group_key)
