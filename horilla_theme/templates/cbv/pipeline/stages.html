@@ -30,7 +30,7 @@
                   {% endif %}
                   {% if perms.recruitment.delete_stage %}
                   <li class="oh-dropdown__item oh-dropdown__link--danger">
-                    
+
                     <a data-toggle="oh-modal-toggle"
                     data-target="#deleteConfirmation"
                     hx-get="{% url 'generic-delete' %}?model=recruitment.Stage&pk={{stage.pk}}"
@@ -38,16 +38,16 @@
                   </li>
                   {% endif %}
 
-                  
+
                 </ul>
               </div>
         </div>
       </div>
-      <div 
+      <div
       class="oh-tabs__movable-body position-relative"
       hx-get="{% url "candidate-lists-cbv" stage.pk stage.recruitment_id.pk %}?{{request.GET.urlencode}}"
       hx-trigger="load"
-      
+
       ></div>
     </div>
   </div>
@@ -62,4 +62,3 @@
     badge.attr("title", title);
   </script>
 </div>
-  

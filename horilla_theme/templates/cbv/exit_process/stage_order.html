@@ -50,7 +50,7 @@
                 $("#sortable li").each(function (index) {
                     order.push($(this).data("id"));
                 });
-    
+
                 $.ajax({
                     url: "{% url 'update-stage-sequence' offboarding.id %}",
                     method: "POST",

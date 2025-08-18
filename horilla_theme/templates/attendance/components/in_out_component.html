@@ -7,11 +7,11 @@
                 {% if request.user|is_clocked_in and get_forecasted_at_work.has_attendance %}
                     <button class="check checkout" hx-get="{% url 'clock-out' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'>
                         <span class="date">
-                            <i class="fa-solid fa-right-from-bracket pe-2"></i> {% if get_forecasted_at_work.has_attendance %} <div class="time-runner"></div> {% endif %}
+                            <i class="fa-solid fa-right-from-bracket pe-2"></i><div class="time-runner"></div>
                         </span>
                         <span class="con hr-Check-In-out-text">{% trans "Check Out" %}</span>
                     </button>
-                    <span class="at_work_seconds" data-at-work-seconds = "{{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}" data-run= "{{run|default:1}}" ></span>
+                    <span class="at_work_seconds" data-at-work-seconds = "{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}" data-run= "{{run|default:1}}" ></span>
 
                 {% else %}
                     <button class="check checkin" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'>
@@ -20,11 +20,11 @@
                         </span>
                         <span class="con">{% trans "Check In" %}</span>
                     </button>
-                    <span class="at_work_seconds" data-at-work-seconds = "{{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}" data-run= "{{run|default:0}}" ></span>
+                    <span class="at_work_seconds" data-at-work-seconds = "{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}" data-run= "{{run|default:0}}" ></span>
                     {% if enabled_timerunner %}
                         <script>
                             $(document).ready(function () {
-                            $('.at-work-seconds').html(secondsToDuration({{get_forecasted_at_work.forecasted_at_work_seconds}}))
+                                $('.at-work-seconds').html(secondsToDuration({{get_forecasted_at_work.forecasted_at_work_seconds}}))
                             });
                             run = 0
                         </script>
@@ -36,66 +36,39 @@
     {% endwith %}
 {% endif %}
 
+<script>
+    var at_work_seconds = $(".at_work_seconds").data("at-work-seconds");
+    var run = $(".at_work_seconds").data("run");
+    var whiteLabelCompany = $("#whiteLabelCompany").data("company");
 
-{% comment %} <script>
-
-var at_work_seconds = {{ request.user.employee_get.get_forecasted_at_work.forecasted_at_work_seconds }}
-var run = {{run|default:0}};
-
-// time-runner
-function secondsToDuration(seconds) {
-    var hours = Math.floor(seconds / 3600);
-    var minutes = Math.floor((seconds % 3600) / 60);
-    var remainingSeconds = Math.floor(seconds % 60);
-
-    // add leading zeros if necessary
-    var formattedHours = (hours < 10) ? "0" + hours : hours;
-    var formattedMinutes = (minutes < 10) ? "0" + minutes : minutes;
-    var formattedSeconds = (remainingSeconds < 10) ? "0" + remainingSeconds : remainingSeconds;
-
-    return formattedHours + ":" + formattedMinutes + ":" + formattedSeconds;
-}
-
-// accessing initial worked hours from the user
-$(".time-runner").not("title").html(secondsToDuration(at_work_seconds));
-$("title.time-runner").html("{{white_label_company_name}} | " + secondsToDuration(at_work_seconds));
-setInterval(() => {
-    if (run) {
-        at_work_seconds = parseInt(at_work_seconds) + 1
-        $("div.time-runner").html(secondsToDuration(at_work_seconds));
-        $("title").html("{{white_label_company_name}} | " + secondsToDuration(at_work_seconds));
-    }
-}, 1000);
-
-function switchTab(e) {
-    let parentContainerEl = e.target.closest(".oh-tabs");
-    let tabElement = e.target.closest(".oh-tabs__tab");
-    let targetSelector = e.target.dataset.target;
-    let targetEl = parentContainerEl
-        ? parentContainerEl.querySelector(targetSelector)
-        : null;
-
-    // Highlight active tabs
-    if (tabElement && !tabElement.classList.contains("oh-tabs__tab--active")) {
-        parentContainerEl
-            .querySelectorAll(".oh-tabs__tab--active")
-            .forEach(function (item) {
-                item.classList.remove("oh-tabs__tab--active");
-            });
-
-        if (!tabElement.classList.contains("oh-tabs__new-tab")) {
-            tabElement.classList.add("oh-tabs__tab--active");
+    // time-runner
+    function secondsToDuration(seconds) {
+        if (seconds < 0){
+            seconds = 0
         }
+        var hours = Math.floor(seconds / 3600);
+        var minutes = Math.floor((seconds % 3600) / 60);
+        var remainingSeconds = Math.floor(seconds % 60);
+
+        var formattedHours = (hours < 10) ? "0" + hours : hours;
+        var formattedMinutes = (minutes < 10) ? "0" + minutes : minutes;
+        var formattedSeconds = (remainingSeconds < 10) ? "0" + remainingSeconds : remainingSeconds;
+
+        return formattedHours + ":" + formattedMinutes + ":" + formattedSeconds;
     }
 
-    // Switch tabs
-    if (targetEl && !targetEl.classList.contains("oh-tabs__content--active")) {
-        parentContainerEl
-            .querySelectorAll(".oh-tabs__content--active")
-            .forEach(function (item) {
-                item.classList.remove("oh-tabs__content--active");
-            });
-        targetEl.classList.add("oh-tabs__content--active");
+    if (window.timeRunnerInterval) {
+        clearInterval(window.timeRunnerInterval);
     }
-}
-</script> {% endcomment %}
+
+    $(".time-runner").not("title").html(secondsToDuration(at_work_seconds));
+    $("title.time-runner").html(` ${whiteLabelCompany} | ` + secondsToDuration(at_work_seconds));
+
+    if (run) {
+        window.timeRunnerInterval = setInterval(() => {
+            at_work_seconds = parseInt(at_work_seconds) + 1;
+            $("div.time-runner").html(secondsToDuration(at_work_seconds));
+            $("title").html(` ${whiteLabelCompany} | ` + secondsToDuration(at_work_seconds));
+        }, 1000);
+    }
+</script>
