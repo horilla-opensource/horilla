@@ -94,7 +94,7 @@
   </button>
 </h2>
 
-        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#claimsAccordion">
+        <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}">
           <div class="accordion-body">
             {% if claim.instance.description %}
               <p class="mb-2" title="{{ claim.instance.description }}">

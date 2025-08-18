@@ -235,6 +235,7 @@ class TimeSheetForm(ModelForm):
         super(TimeSheetForm, self).__init__(*args, **kwargs)
         request = getattr(_thread_locals, "request", None)
         employee = request.user.employee_get
+        self.fields["description"].required = True
         hx_trigger_value = "change" if self.instance.id else "load,change"
         if not self.initial.get("project_id") == "dynamic_create":
             self.fields["project_id"].widget.attrs.update(

@@ -759,7 +759,7 @@ def task_view(request, project_id, **kwargs):
     grouped_timesheets = [(emp, entries) for emp, entries in grouped.items()]
     total_hours = f"{total_minutes // 60:02d}:{total_minutes % 60:02d}"
 
-    
+    today = date.today().strftime("%Y-%m-%d") 
     context = {
         "project": project,
         "grouped_timesheets": grouped_timesheets,
@@ -769,6 +769,7 @@ def task_view(request, project_id, **kwargs):
         "start": start,
         "end": end,
         "member": member_id,
+        "today": today,
     }
     return render(request, "project/project_timesheet.html", context)
 

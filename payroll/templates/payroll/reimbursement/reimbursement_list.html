@@ -38,12 +38,15 @@
 
 <div class="oh-tabs oh-wrapper">
     <ul class="oh-tabs__tablist">
-        <li class="oh-tabs__tab" data-target="#medical_encashment_tab">
-            {% trans "Medical" %}
-        </li>
+
         <li class="oh-tabs__tab" data-target="#reimbursement_tab">
             {% trans "Reimbursements" %}
         </li>
+
+        <li class="oh-tabs__tab" data-target="#medical_encashment_tab">
+            {% trans "Medical Encashments" %}
+        </li>
+        
         {% if "leave"|app_installed %}
         <li class="oh-tabs__tab" data-target="#leave_encashment_tab">
             {% trans "Leave Encashments" %}
