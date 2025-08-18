@@ -32,11 +32,10 @@
                     <div id="attendance-activity-container">
                         {% include "attendance/components/in_out_component.html" %}
                     </div>
-                    <script src="{% static 'horilla_theme/assets/js/timeRunner.js' %}"></script>
                 {% endif %}
             {% endif %}
             <button
-                class="hidden md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
+                class="md:block p-2 group text-primary-600 w-12 h-12 bg-primary-100 hover:bg-primary-600 rounded-full transition duration-300 flex items-center justify-center"
             >
                 <a href="{% url 'general-settings' %}">
                     <i

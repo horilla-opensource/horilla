@@ -4,6 +4,9 @@ var whiteLabelCompany = $("#whiteLabelCompany").data("company");
 
 // time-runner
 function secondsToDuration(seconds) {
+    if (seconds < 0){
+        seconds = 0
+    }
     var hours = Math.floor(seconds / 3600);
     var minutes = Math.floor((seconds % 3600) / 60);
     var remainingSeconds = Math.floor(seconds % 60);
