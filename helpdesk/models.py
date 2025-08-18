@@ -329,6 +329,20 @@ class Ticket(HorillaModel):
             {"ticket": self, "tab": tab_name, "claim_request": claim_request},
         )
 
+    def kanban_action_method(self):
+        """
+        This method is used to get the ticket kanban actions
+        """
+        request = getattr(_thread_locals, "request", None)
+        tab_name = request.GET.get("ticket_tab", "my_tickets")
+        claim_request = self.claimrequest_set.filter(
+            employee_id=request.user.employee_get
+        ).first()
+        return render_template(
+            "cbv/pipeline/kanban_action_method.html",
+            {"ticket": self, "tab": tab_name, "claim_request": claim_request},
+        )
+
     def get_status_col(self):
         """
         This method is used to get the status column
@@ -461,7 +475,7 @@ class Attachment(HorillaModel):
     def save(self, *args, **kwargs):
         self.get_file_format()
 
-        super().save(self, *args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return os.path.basename(self.file.name)
