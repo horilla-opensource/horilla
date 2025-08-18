@@ -15,7 +15,7 @@ from django.views.generic import TemplateView
 from base.methods import eval_validate
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import login_required, render_template
-from horilla_views.generic.cbv.kanban import KanbanView
+from horilla_views.generic.cbv.kanban import HorillaKanbanView
 from horilla_views.generic.cbv.pipeline import Pipeline
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -634,7 +634,7 @@ class CandidateList(HorillaListView):
         return context
 
 
-class CandidateKanbanView(KanbanView):
+class CandidateKanbanView(HorillaKanbanView):
     """
     CandidateKanbanView
     """
