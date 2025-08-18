@@ -495,6 +495,8 @@ class PayrollSettingsForm(ModelForm):
 excel_columns = [
     ("employee_id", _("Employee")),
     ("group_name", _("Batch")),
+    ("employee_id__epf_no", _("EPF Number")),
+    ("employee_id__employee_work_info__job_role_id", _("Job Role")),
     ("start_date", _("Start Date")),
     ("end_date", _("End Date")),
     ("paid_days", _("Paid Days")),
@@ -537,7 +539,10 @@ class PayslipExportColumnForm(forms.Form):
             "status",
             "paid_days",
             "lop_days",
-            "lop_amount"
+            "lop_amount",
+            "employee_id__epf_no",
+            "employee_id__employee_work_info__job_role_id"
+
         ],
     )
     
