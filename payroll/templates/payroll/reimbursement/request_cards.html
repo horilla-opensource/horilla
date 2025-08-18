@@ -369,7 +369,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    {% if req.status != "approved" %}
+                                    {% if request.user.is_authenticated and request.user.employee_get == req.employee_id %}
                                         {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
                                             <a
                                                 hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
