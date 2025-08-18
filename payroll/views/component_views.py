@@ -12,10 +12,11 @@ from itertools import groupby
 from urllib.parse import parse_qs
 
 import pandas as pd
+import xlsxwriter
 from django.apps import apps
 from django.contrib import messages
 from django.db.models import Sum
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, QueryDict, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.html import format_html
@@ -1086,7 +1087,6 @@ def payslip_export(request):
     and generates an Excel file for download.
     """
     if request.META.get("HTTP_HX_REQUEST"):
-        # If this is an HTMX request, just render the export filter modal partial
         return render(
             request,
             "payroll/payslip/payslip_export_filter.html",
@@ -1096,79 +1096,144 @@ def payslip_export(request):
             },
         )
 
-    choices_mapping = {
-        "draft": _("Draft"),
-        "review_ongoing": _("Review Ongoing"),
-        "confirmed": _("Confirmed"),
-        "paid": _("Paid"),
-    }
+    #Extract form data
+    show_allowances, show_deductions, selected_fields = get_export_form_data(request)
 
+    #Query payslips
     payslips = PayslipFilter(request.GET).qs.distinct()
+
+    #Get unique titles
+    deduction_titles, allowance_titles = get_unique_titles(payslips)
+
+    #Build final columns list
+    selected_columns = build_selected_columns(
+        selected_fields, allowance_titles, deduction_titles,
+        show_allowances, show_deductions
+    )
+
+    # Step 5: Build payslip data
+    payslips_data = generate_payslips_data(payslips, selected_columns, request)
+
+    #Write to Excel
     today_date = date.today().strftime("%Y-%m-%d")
     file_name = f"Payslip_excel_{today_date}.xlsx"
+    df = pd.DataFrame(payslips_data)
 
-    selected_fields = request.GET.getlist("selected_fields")
-    form = forms.PayslipExportColumnForm()
+    return write_excel_response(df, selected_columns, file_name)
 
-    # If no fields selected, fallback to initial defaults
-    if not selected_fields:
-        selected_fields = form.fields["selected_fields"].initial or []
-        ids = request.GET.get("ids")
-        if ids:
-            id_list = json.loads(ids)
-            payslips = Payslip.objects.filter(id__in=id_list)
 
-    # Build list of (field_code, display_name) tuples for selected columns
-    selected_columns = [
-        (code, name) for code, name in forms.excel_columns if code in selected_fields
-    ]
+def get_export_form_data(request):
+    form = forms.PayslipExportColumnForm(request.GET)
+    if form.is_valid():
+        show_allowances = form.cleaned_data.get("show_allowances", True)
+        show_deductions = form.cleaned_data.get("show_deductions", True)
+        selected_fields = form.cleaned_data.get(
+            "selected_fields", form.fields['selected_fields'].initial
+        )
+    else:
+        show_allowances = True
+        show_deductions = True
+        selected_fields = form.fields['selected_fields'].initial
+    return show_allowances, show_deductions, selected_fields
 
-    # Prepare data dict for DataFrame columns
-    payslips_data = {name: [] for _, name in selected_columns}
 
-    # Loop through payslips and fill data for each selected column
+def get_unique_titles(payslips):
+    deduction_titles = set()
+    allowance_titles = set()
     for payslip in payslips:
-        # Compute payroll data once per payslip for efficiency
+        pay_heads = payslip.pay_head_data or {}
+        for deduction in all_deductions(pay_heads):
+            if "title" in deduction:
+                deduction_titles.add(deduction["title"])
+        for allowance in all_allowances(pay_heads):
+            if "title" in allowance:
+                allowance_titles.add(allowance["title"])
+    return deduction_titles, allowance_titles
+
+
+def build_selected_columns(selected_fields, allowance_titles, deduction_titles,
+                           show_allowances, show_deductions):
+    selected_columns = [
+        (code, name) for code, name in forms.excel_columns
+        if code in selected_fields and
+           not code.startswith(('allowance_', 'deduction_'))
+    ]
+    if show_allowances:
+        for title in sorted(allowance_titles):
+            selected_columns.append((f"allowance_{title}", title))
+    if show_deductions:
+        for title in sorted(deduction_titles):
+            selected_columns.append((f"deduction_{title}", title))
+    return selected_columns
+
+
+def generate_payslips_data(payslips, selected_columns, request):
+    payslips_data = {name: [] for _, name in selected_columns}
+    choices_mapping = {
+        "draft": "Draft",
+        "review_ongoing": "Review Ongoing",
+        "confirmed": "Confirmed",
+        "paid": "Paid",
+    }
+
+    for payslip in payslips:
+        row_data = {}
+        pay_heads = payslip.pay_head_data or {}
+        deducts = all_deductions(pay_heads)
+        allows = all_allowances(pay_heads)
         payroll_data = None
+
         for column_code, column_name in selected_columns:
+            data = ""
+
             if column_code in ["paid_days", "lop_days", "lop_amount"]:
-                if payroll_data is None:
-                    payroll_data = payroll_calculation(
-                        payslip.employee_id, payslip.start_date, payslip.end_date
-                    )
-                if column_code == "paid_days":
-                    data = payroll_data.get("paid_days", "")
-                elif column_code == "lop_days":
-                    data = payroll_data.get("unpaid_days", "")
-                else:  # lop_amount
-                    data = payroll_data.get("loss_of_pay", "")
+                payroll_data = payroll_data or payroll_calculation(
+                    payslip.employee_id, payslip.start_date, payslip.end_date
+                )
+                data = {
+                    "paid_days": payroll_data.get("paid_days", 0),
+                    "lop_days": payroll_data.get("unpaid_days", 0),
+                    "lop_amount": payroll_data.get("loss_of_pay", 0),
+                }.get(column_code, 0)
+
+            elif column_code.startswith("deduction_"):
+                title = column_code.replace("deduction_", "")
+                data = next(
+                    (float(d.get("amount") or 0) for d in deducts if d.get("title") == title),
+                    0
+                )
+
+            elif column_code.startswith("allowance_"):
+                title = column_code.replace("allowance_", "")
+                data = next(
+                    (float(a.get("amount") or 0) for a in allows if a.get("title") == title),
+                    0
+                )
+
             else:
-                # Nested attribute lookup for other fields
                 value = payslip
                 for attr in column_code.split("__"):
                     value = getattr(value, attr, None)
                     if value is None:
                         break
-
                 if column_name == "Status":
                     data = choices_mapping.get(value, "")
                 elif isinstance(value, date):
                     date_format = request.user.employee_get.get_date_format()
-                    # Format date according to user preference
-                    for fmt_name, fmt_string in HORILLA_DATE_FORMATS.items():
-                        if fmt_name == date_format:
-                            data = value.strftime(fmt_string)
-                            break
-                    else:
-                        data = str(value)
+                    fmt_string = HORILLA_DATE_FORMATS.get(date_format, "%Y-%m-%d")
+                    data = value.strftime(fmt_string)
                 else:
                     data = str(value) if value is not None else ""
 
-            payslips_data[column_name].append(data)
+            row_data[column_name] = data
 
-    # Create DataFrame and write to Excel in-memory
-    df = pd.DataFrame(payslips_data)
+        for col_name in payslips_data:
+            payslips_data[col_name].append(row_data.get(col_name, ""))
 
+    return payslips_data
+
+
+def write_excel_response(df, selected_columns, file_name):
     response = HttpResponse(
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
@@ -1177,11 +1242,28 @@ def payslip_export(request):
     with pd.ExcelWriter(response, engine="xlsxwriter") as writer:
         df.to_excel(writer, index=False, sheet_name="Sheet1")
         worksheet = writer.sheets["Sheet1"]
-        left_align_format = writer.book.add_format({'align': 'left', 'valign': 'vcenter'})
-        worksheet.set_column("A:Z", 20, left_align_format)
 
+        default_format = writer.book.add_format({'align': 'left', 'valign': 'vcenter'})
+        red_format = writer.book.add_format({
+            'align': 'left', 'valign': 'vcenter', 'font_color': 'red'
+        })
+        green_format = writer.book.add_format({
+            'align': 'left', 'valign': 'vcenter', 'font_color': 'green'
+        })
+
+        for col_num, (column_code, _) in enumerate(selected_columns):
+            col_letter = xlsxwriter.utility.xl_col_to_name(col_num)
+            if column_code.startswith("deduction_"):
+                fmt = red_format
+            elif column_code.startswith("allowance_"):
+                fmt = green_format
+            else:
+                fmt = default_format
+            worksheet.set_column(f"{col_letter}:{col_letter}", 20, fmt)
 
     return response
+
+
 
 
 @login_required
@@ -1933,6 +2015,30 @@ def all_deductions(pay_head):
 
     return extracted_items
 
+def all_allowances(pay_head):
+    extracted_items = []
+
+
+    potential_lists = [
+        "basic_pay_allowances",
+        "gross_pay_allowances",
+        "pretax_allowances",
+        "post_tax_allowances",
+        "net_allowances",
+    ]
+
+    for list_name in potential_lists:
+        if list_name in pay_head:
+            for item in pay_head[list_name]:
+                if "allowance_id" in item:
+                    extracted_items.append(item)
+
+    if "allowances" in pay_head:
+        for item in pay_head["allowances"]:
+            if "allowance_id" in item and item not in extracted_items:
+                extracted_items.append(item)
+
+    return extracted_items
 
 @login_required
 def payslip_detailed_export_data(request):
