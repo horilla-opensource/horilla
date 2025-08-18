@@ -703,8 +703,12 @@ def update_kanban_item_group(request):
 
         # Get the group object from group_key
         group_field = get_nested_field(model, group_key)
-        group_model = group_field.related_model
-        group_instance = group_model.objects.get(id=group_id)
+        if hasattr(group_field, "related_model") and group_field.related_model:
+            group_model = group_field.related_model
+            group_instance = group_model.objects.get(id=group_id)
+        else:
+            # Not a ForeignKey → probably a CharField (choices) or something similar
+            group_instance = group_id
 
         # Fetch all objects in order_list
         objects = list(model.objects.filter(id__in=order_list))

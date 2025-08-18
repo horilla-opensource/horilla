@@ -7,6 +7,7 @@
     >
 
         <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
+            {% if actions or view.action_method %}
             <div class="absolute inline-block dropdown-wrapper right-5 top-5 w-3" role="button"
                 onclick="event.stopPropagation()"
                 title = "{% trans 'Actions' %}"
@@ -19,23 +20,28 @@
                     class="dropdown-menu absolute right-0 bg-[#f7f7f7] rounded-lg shadow-card py-2 hidden z-50 min-w-[170px]"
                 >
                     <ul class="text-xs ">
-                        {% for action in actions %}
-                            {% if action.accessibility|accessibility:instance %}
-                                <li>
-                                    <p
-                                        class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
-                                    >
-                                        <a {{action.attrs|format:instance|safe}}>{{instance|getattribute:action.action|default:action.action}}</a>
-                                    </p>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
+                        {% if not view.action_method %}
+                            {% for action in actions %}
+                                {% if action.accessibility|accessibility:instance %}
+                                    <li>
+                                        <p
+                                            class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
+                                        >
+                                            <a {{action.attrs|format:instance|safe}}>{{instance|getattribute:action.action|default:action.action}}</a>
+                                        </p>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            {{instance|getattribute:view.action_method|safe}}
+                        {% endif %}
                     </ul>
                 </div>
             </div>
+            {% endif %}
 
             <div
-                class="flex items-center gap-5 mb-3 pb-3 border-b border-b-[#565e6c13]"
+                class="flex items-center gap-5 mb-3 pb-1 border-b border-b-[#565e6c13]"
             >
                 {% if details.image_src %}
                     <div class="relative flex items-center w-max">
@@ -49,10 +55,10 @@
                 {% if details.title %}
                 <div>
                     <span
-                        class="block mb-1"
+                        class="block"
                         data-type="label"
                     >
-                        <h5 class="mb-1 font-medium text-sm">
+                        <h5 class="font-bold text-base">
                             {{details.title|format:instance}}
                         </h5>
                         <input name="group_id" id="" hidden />
