@@ -1614,8 +1614,8 @@ def asset_fine(request):
             instance.save()
             messages.success(request, _("Asset fine added"))
             return HttpResponse(
-                "<script>$('#assetFineModal').removeClass('oh-modal--show');$('#reloadMessagesButton').click();</script>"
-            )
+                "<script>$('#dynamicCreateModal').toggleClass('oh-modal_close--custom'); $('#reloadMessagesButton').click();</script>"
+            )  # 880
     return render(
         request,
         "payroll/asset_fine/form.html",
