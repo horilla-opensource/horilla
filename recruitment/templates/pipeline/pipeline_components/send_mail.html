@@ -1,13 +1,18 @@
 {% load i18n %}
-<button hidden id="previewHxButton" hx-post="{% url 'get-mail-preview' %}?candidate_id={{cand.id}}" hx-target="#preview"
-    hx-include="#writeField"
+<button hidden id="previewHxButton" hx-post="{% url 'get-mail-preview' %}?{% if cand %}candidate_id={{cand.id}}&{% endif %}" hx-target="#preview"
+    hx-include="#ack-form-{{cand.id}}"
     hx-on-htmx-before-request="if (!$('#template').val()) { event.preventDefault(); }">
 </button>
 <div id="ack-message-{{cand.id}}"></div>
 
 <div class="oh-modal__dialog-header">
     <span class="oh-modal__dialog-title" id="sendMailModalLabel">
-        <h5>{% trans 'Send Mail' %}</h5>
+        <h5>{% if cand %}
+                {% trans "Send Mail to" %} {{ cand.name }}
+            {% else %}
+                {% trans "Send Mail to Multiple Candidates" %}
+            {% endif %}
+        </h5>
     </span>
     <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline"></ion-icon></button>
 </div>
@@ -16,7 +21,10 @@
     <form onsubmit="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
         hx-post='{% url "send-acknowledgement" %}' hx-swap="none" class="oh-general__tab-target oh-profile-section"
         id='ack-form-{{cand.id}}' hx-target="#ack-message-{{cand.id}}" hx-encoding="multipart/form-data">
-        <input type="hidden" value="{{cand.id}}" name="id">
+        {% if cand %}
+            <input type="hidden" value="{{ cand.id }}" name="id">
+        {% endif %}
+
         <div class="modal-body">
             {% if cand %}
             <div class="oh-timeoff-modal__profile-content">
@@ -81,8 +89,8 @@
                     </span>
                 </div>
                 <div id="write" class="oh-tabs__view active">
-                    <textarea id="writeField" class="oh-input oh-input--textarea" hidden name="body" {% if not cand %}
-                        data-summernote {% endif %} required placeholder="Type something here..."></textarea>
+                    <textarea id="writeField" class="oh-input oh-input--textarea" hidden name="body"
+                        data-summernote required placeholder="Type something here..."></textarea>
                 </div>
                 <div id="preview" class="oh-tabs__view">
                     <textarea id="previewField" class="oh-input oh-input--textarea" placeholder="preview..."></textarea>
@@ -181,8 +189,8 @@
                 data: { "candidate_id": "{{cand.id}}" },
                 dataType: "Json",
                 success: function (response) {
-                    $(`#ack-form-{{cand.id}} [name="body"]`).html(response.body).change();
-                    $(`#ack-form-{{cand.id}} [class="note-editable"]`).html(response.body);
+                    $(`#objectCreateModalTarget [name="body"]`).html(response.body).change();
+                    $(`#objectCreateModalTarget [class="note-editable"]`).html(response.body);
                     $('#previewHxButton').click();
                 }
             });
@@ -205,5 +213,7 @@
     {% if form.instance.title %}
         setModalLabel("{{ form.instance.title|escapejs }}", "#viewTemplateModalLabel");
     {% endif %}
-    initializeSummernote({{ cand.id }}, {{ searchWords| safe }});
+    {% if cand %}
+        initializeSummernote({{ cand.id }}, {{ searchWords| safe }});
+    {% endif %}
 </script>
