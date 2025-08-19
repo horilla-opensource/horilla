@@ -49,7 +49,7 @@
         <span class="oh-kanban-card__title">{{time_sheet.employee_id}}</span>
         <span class="oh-kanban-card__subtitle">{{time_sheet.date}}</span><br>
         <span class="oh-kanban-card__subtitle"><b>{{time_sheet.project_id}}</b></span><br>
-        <span class="oh-kanban-card__subtitle"><b>{{time_sheet.task_id}}</b> | </span>
+        <span class="oh-kanban-card__subtitle"><b title="{{ time_sheet.task_id }}">{{ time_sheet.task_id|truncatechars:25 }}</b> | </span>
         <span class="oh-kanban-card__subtitle">{% trans "Time Spent" %} : <b>{{time_sheet.time_spent}}</b></span>
       </div>
     </a>

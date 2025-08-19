@@ -26,7 +26,7 @@
     <div class="oh-timeoff-modal__stats-container mt-3 mb-3">
         <div class="oh-timeoff-modal__stat">
             <span class="oh-timeoff-modal__stat-title">{% trans "Task" %}</span>
-            <span class="oh-timeoff-modal__stat-count">{{time_sheet.task_id}}</span>
+        <span class="oh-timeoff-modal__stat-count" title="{{ time_sheet.task_id }}">{{ time_sheet.task_id|truncatechars:25 }}</span>
         </div>
         <div class="oh-timeoff-modal__stat" style="margin-left: 20px;">
             <span class="oh-timeoff-modal__stat-title">{% trans "Date" %}</span>

@@ -50,6 +50,22 @@
     // Revert select field styling
     $("#id_employee_id").select2();
 
+
+        // Ensure long task names don't overflow
+    var $taskField = $("#id_task_id");
+    $taskField.css({
+      "max-width": "100%",
+      overflow: "hidden",
+      "text-overflow": "ellipsis",
+      "white-space": "nowrap",
+    });
+    function updateTaskTitle() {
+      var text = $taskField.find("option:selected").text();
+      $taskField.attr("title", text);
+    }
+    updateTaskTitle();
+    $taskField.on("change", updateTaskTitle);
+
     // Show the original select field
     function toggleFunction() {
       if ($("#id_calculate_daily_leave_amount").is(":checked")) {
