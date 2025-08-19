@@ -81,8 +81,11 @@ def getattribute(value, attr: str):
             value = result
         else:
             return getattr(value, attr, "")
-    if isinstance(result, bool):
-        return _("Yes") if result else _("No")
+
+    # Python code we need raw bool values, not "Yes"/"No"
+    # if isinstance(result, bool):
+    #     return _("Yes") if result else _("No")
+
     return result
 
 
