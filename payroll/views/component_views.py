@@ -1542,7 +1542,7 @@ def asset_fine(request):
             instance.save()
             messages.success(request, _("Asset fine added"))
             return HttpResponse(
-                "<script>$('#dynamicCreateModal').toggleClass('oh-modal_close--custom'); $('#reloadMessagesButton').click();</script>"
+                "<script>$('#dynamicCreateModal').toggleClass('oh-modal--show'); $('#reloadMessagesButton').click();</script>"
             )  # 880
     return render(
         request,
