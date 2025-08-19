@@ -136,6 +136,16 @@
 </script>
 <script src="{% static 'js/genericKanban.js' %}"></script>
 
+{% if not is_choice_group %}
+	<script>
+		$(document).ready(function () {
+			setTimeout(function() {
+				initializeSortable();
+			}, 50);
+		});
+	</script>
+{% endif %}
+
 <script>
 	$(document).on("htmx:afterSettle", function (event) {
 		$(document).off("click.dropdown");
