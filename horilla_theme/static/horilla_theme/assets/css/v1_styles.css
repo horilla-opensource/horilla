@@ -2198,18 +2198,18 @@ ul.errorlist ul.errorlist li {
 }
 
 /* LIST DESIGN */
-.mylist {
+.list-checked {
     display: flex;
     flex-flow: column;
 }
 
-.mylist li {
+.list-checked li {
     margin: 5px 0;
     position: relative;
     padding-left: 20px;
 }
 
-.mylist li:before {
+.list-checked li:before {
     content: "\f058";
     font-family: "Font Awesome 6 Free";
     font-weight: 600;
@@ -2384,11 +2384,19 @@ ul.errorlist ul.errorlist li {
     visibility: visible;
 }
 
+.oh-permission-table--toggle:hover .oh-permission-table__collapse {
+    visibility: visible;
+}
+
 .oh-permission-table__tr .oh-sticky-table__sd {
     width: 35%;
 }
 
 .oh-permission-count {
+    display: none;
+}
+
+.oh-permission-table--collapsed .oh-permission-count {
     width: 100%;
     display: flex;
     padding: 0.5rem 0rem;
