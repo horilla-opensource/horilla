@@ -65,14 +65,8 @@
       </div>
       {% endif %}
       <div class="oh-kanban-card__details">
-               {% with card_title=details.title|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id %}
-        <span class="oh-kanban-card__title" title="{{card_title}}">{{card_title|truncatechars:25|safe}}</span>
-        {% endwith %}
-        {% with card_subtitle=details.subtitle|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id %}
-        <div class="" style="display: grid;">
-          <span title="{{card_subtitle}}">{{card_subtitle|truncatechars:25|safe}}</span>
-        </div>
-        {% endwith %}
+        <span class="oh-kanban-card__title">{{details.title|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</span>
+        <div class="" style="display: grid;">{{details.subtitle|format:instance|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}</div>
       </div>
       {% if actions %}
       <div class="oh-kanban-card__dots" onclick="event.stopPropagation()">

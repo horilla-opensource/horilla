@@ -1767,7 +1767,7 @@ def medical_tab(request, emp_id):
     claims_qs = (
         Reimbursement.objects.filter(
             employee_id=employee, type="medical_encashment"
-        ).order_by("created_at")
+        ).order_by("-created_at")
     )
 
     total_limit = 100000
