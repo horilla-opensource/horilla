@@ -58,7 +58,7 @@
                             <h3 class="text-primary-600 font-semibold text-xs mb-1">
                                 {% trans "Changes" %}
                             </h3>
-                            <ul class="mylist">
+                            <ul class="list-checked">
                                 {% for change in history.changes %}
                                 <li class="text-xs">
                                     {{ history.pair.1|fk_history:change }} →
