@@ -20,7 +20,9 @@
                     class="dropdown-menu absolute right-0 bg-[#f7f7f7] rounded-lg shadow-card py-2 hidden z-50 min-w-[170px]"
                 >
                     <ul class="text-xs ">
-                        {% if not view.action_method %}
+                        {% if view.action_method %}
+                            {{instance|getattribute:view.action_method|safe}}
+                        {% else %}
                             {% for action in actions %}
                                 {% if action.accessibility|accessibility:instance %}
                                     <li>
@@ -32,8 +34,6 @@
                                     </li>
                                 {% endif %}
                             {% endfor %}
-                        {% else %}
-                            {{instance|getattribute:view.action_method|safe}}
                         {% endif %}
                     </ul>
                 </div>

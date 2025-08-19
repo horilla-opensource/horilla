@@ -152,8 +152,7 @@ function handleSortableUpdate(event, ui, container) {
 }
 
 function initializeSortable() {
-	$(".pipeline_item")
-		.parent()
+	$(".groupContainer")
 		.sortable({
 			handle: ".oh-kanban__section-head",
 			connectWith: ".pipeline_item",
@@ -232,7 +231,6 @@ function initializeSortable() {
 
 function initializeKanbanSortable(sectionSelector, stageSelector) {
 
-	// Initialize sortable
 	$(sectionSelector).sortable({
 		connectWith: sectionSelector,
 		items: "> :not(.htmx-indicator)",
@@ -339,7 +337,6 @@ function revertItemPosition(ui) {
 }
 
 $(document).ready(function () {
-	initializeSortable();
 
 	$(".pipeline_item").each(function () {
 		var stageId = parseInt($(this).attr("data-group-id"), 10);
