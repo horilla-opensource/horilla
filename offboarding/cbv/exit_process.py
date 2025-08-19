@@ -317,7 +317,7 @@ class OffboardingPipelineNav(HorillaNavView):
 @method_decorator(login_required, name="dispatch")
 class PipeLineTabView(HorillaTabView):
     """
-    Pipeline List View
+    Pipeline Tab View
     """
 
     filter_class = PipelineFilter
@@ -468,6 +468,7 @@ class OffboardingKanbanView(HorillaKanbanView):
 
     model = OffboardingEmployee
     filter_class = PipelineEmployeeFilter
+    group_filter_class = PipelineStageFilter
     group_key = "stage_id"
     records_per_page = 10
     show_kanban_confirmation = False
