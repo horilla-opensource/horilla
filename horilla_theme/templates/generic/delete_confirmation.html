@@ -1,0 +1,329 @@
+{% load static i18n generic_template_filters %}
+
+<style> 
+	.sidebarItemActive {
+		background: #fff5f1;
+		color: #e54f38;
+	}
+</style>
+
+<div class="oh-modal__dialog-header">
+	<span class="text-md font-semibold" id="deleteConfirmationLabel"
+		>{% trans "Delete Confirmation" %}</span
+	>
+	<button
+		class="oh-modal__close--custom"
+		onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+		aria-label="Close"
+	>
+		<ion-icon
+			name="close-outline"
+			role="img"
+			class="md hydrated"
+			aria-label="close outline"
+		></ion-icon>
+	</button>
+</div>
+
+<div
+	class="oh-modal__dialog-body oh-modal__dialog-relative rounded-lg shadow-card"
+>
+	<div
+		class="bg-white w-full transition-all duration-300"
+	>
+		<div class="py-5">
+			<div class="mb-5">
+				<div class="flex gap-1 flex-wrap">
+					<div class="relative inline-block dropdown-wrapper">
+						<button
+							class="tab-button px-4 py-2 bg-primary-300 text-primary-600 border border-primary-600 rounded-md text-sm flex items-center gap-2 hover:border-primary-600 transition duration-300"
+							data-action="general-tab"
+							data-target="#summary"
+						>
+							{% trans "Summary" %}
+						</button>
+					</div>
+
+					{% for key in model_map.keys %}
+						<div class="relative inline-block dropdown-wrapper">
+							<button
+								class="tab-button px-4 py-2 bg-primary-300 text-primary-600 border border-primary-600 rounded-md text-sm flex items-center gap-2 hover:border-primary-600 transition duration-300"
+								data-target="#{{key}}"
+							>
+								{{key}}
+							</button>
+						</div>
+					{% endfor %}
+
+				</div>
+
+				<div class="tab-content mt-4">
+					<div class="tab-pane hidden" id="summary">
+						<p class="text-sm mb-5">
+							{% trans "Deleting the record" %} 
+								'{{delete_object}}' 
+							{% trans "would require managing the following related objects:" %}
+						</p>
+						<div
+							class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-2 mb-5 h-[30vh] overflow-hidden overflow-y-auto lg:h-full"
+						>
+							<div class="border rounded-md border-[#ececec] p-3">
+								<h5
+									class="mb-2 text-center bg-primary-300 px-3 py-1.5 rounded-2xl text-sm font-medium text-primary-600 flex items-center gap-2 ps-2"
+								>
+									<span
+										class="w-6 h-6 bg-white rounded-full text-primary-600 flex items-center justify-center text-xs"
+									>
+										{{protected|length}}
+									</span>
+									{% trans "Protected Records" %}
+								</h5>
+								<ul class="list-checked text-sm ps-2">
+
+									{% for summary in protected_objects_count.items %}
+										<li
+											onclick="
+												{% if "-" not in summary.0 %}
+													$(`#{{summary.0|get_id|slice:":-1"}}_id`).click()
+												{% else %}
+													$(`#{{summary.0|get_id}}_id`).click()
+												{% endif %}
+											"
+											role="button"
+										>
+											{{summary.0|capfirst}} : {{summary.1|capfirst}}
+										</li>
+									{% endfor %}
+
+								</ul>
+							</div>
+							<div class="border rounded-md border-[#ececec] p-3">
+								<h5
+									class="mb-2 text-center bg-primary-300 px-3 py-1.5 rounded-2xl text-sm font-medium text-primary-600 flex items-center gap-2 ps-2"
+								>
+									<span
+										class="w-6 h-6 bg-white rounded-full text-primary-600 flex items-center justify-center text-xs"
+									>
+										{{model_count_sum}}
+									</span>
+									{% trans "Other Related Records" %}
+								</h5>
+								<ul class="list-checked text-sm ps-2">
+
+									{% for summary in related_objects_count.items %}
+										<li
+											onclick="
+												{% if '-' not in summary.0 %}
+													$(`#{{summary.0|get_id|slice:':-1'}}_id`).click()
+												{% else %}
+													$(`#{{summary.0|get_id}}_id`).click()
+												{% endif %}
+											"
+											role="button"
+										>
+											{{summary.0|capfirst}} : {{summary.1|capfirst}}
+										</li>
+									{% endfor %}
+
+								</ul>
+							</div>
+						</div>
+						<div>
+							<form hx-post="{% url "generic-delete" %}?{{request.GET.urlencode}}" hx-target="#deleteConfirmationBody">
+								<div class="flex flex-col justify-center gap-2 mb-5">
+									<div class="mb-2 flex items-center gap-2">
+										<input
+											type="checkbox"
+											id="action"
+											class="custom-checkbox text-xs w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+										/>
+										<label
+											for="action"
+											class="text-sm text-[#666] cursor-pointer"
+										>
+											{% trans "I have took manual action for the protected records" %}
+										</label>
+									</div>
+									<div class="mb-2 flex items-center gap-2">
+										<input
+											type="checkbox"
+											id="revert"
+											class="custom-checkbox text-xs w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+										/>
+										<label
+											for="revert"
+											class="text-sm text-[#666] cursor-pointer"
+										>
+											{% trans "I acknowledge, i wont be able to revert this" %}
+										</label>
+									</div>
+									<div class="flex items-center gap-2">
+										<input
+											type="checkbox"
+											id="confirm"
+											class="custom-checkbox text-xs w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
+										/>
+										<label
+											for="confirm"
+											class="text-sm text-[#666] cursor-pointer"
+										>
+											{% trans "Confirming to delete the related and protected records" %}
+										</label>
+									</div>
+									<div class="flex gap-1 justify-end">
+										<button
+											class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+											type= "submit"
+										>
+											{% trans "Delete" %}
+										</button>
+										<button
+											data-modal-close="deletemodal"
+											onclick = "event.preventDefault();$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+											class="px-4 py-2 border border-primary-600 text-primary-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-primary-800 transition duration-300"
+										>
+											{% trans "Cancel" %}
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+
+					{% for key in model_map.keys %}
+
+						<div class="tab-pane hidden" id="{{key}}">
+							<div class="grid grid-cols-12 gap-3">
+								<div
+									class="col-span-12 md:col-span-3 border rounded-md border-[#ececec] p-3 min-h-[20vh] sidebarItems"
+								>
+
+									{% with models_dict=model_map|get_item:key %}
+										{% for item in models_dict.items %}
+
+											<div
+												class="sidebarItem mb-[5px] hover:bg-[#fff5f1] hover:text-[#e54f38] cursor-pointer font-medium rounded-md w-full flex justify-between items-center px-4 py-2 bg-[#0000000c] text-[13px] transition-all"
+												id="{{item.0.verbose_name|lower}}item"
+												data-key = "#{{key}}"
+												onclick="handleSidebarItemClick(this)"
+											>
+												<div 
+													id="{{item.0.verbose_name|lower}}_id"
+												>
+													{{item.0.verbose_name}}
+												</div>
+
+												<button
+													hidden
+													hx-get="/{{dynamic_list_path|get_item:item.0.verbose_name}}"
+													hx-target="#dynamicRelatedLists{{key}}"
+												></button>
+
+												<div id="storedIds{{key}}{{item.0.verbose_name}}" data-ids="[]"></div>
+											</div>
+
+										{% endfor %}
+									{% endwith %}
+
+								</div>
+
+								<div
+									class="col-span-12 md:col-span-9 border rounded-md border-[#ececec] p-3 min-h-[20vh]"
+								>
+									<span class="text-base font-medium text-[#666]">{% trans "Action Required" %} ⚠️</span>
+									<div class="col-sm-12 col-md-12 col lg-12" id="dynamicRelatedLists{{key}}">
+
+									</div>
+								</div>
+							</div>
+						</div>
+
+					{% endfor %}
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+
+	function handleSidebarItemClick(elm) {
+		const $item = $(elm);
+		const key = $item.data("key");
+		const itemId = $item.attr("id");
+
+		$item.closest(".sidebarItems")
+			.find(".sidebarItemActive")
+			.removeClass("sidebarItemActive");
+		$item.addClass("sidebarItemActive");
+
+		const relatedTab = $(`[data-target='${key}']`)[0];
+		if (relatedTab) relatedTab.click();
+
+		const button = $item.find("button")[0];
+		if (button) button.click();
+
+		localStorage.setItem("DeletenavItem", `#${itemId}`);
+	}
+
+	function activateTab($btn) {
+		const $tabButtons = $(".tab-button");
+		const $tabPanes = $(".tab-pane");
+		const target = $btn.data("target");
+
+		$tabButtons.removeClass("active text-primary-600 border-primary-500");
+		$tabPanes.addClass("hidden");
+
+		$btn.addClass("active text-primary-600 border-primary-500");
+		$(target).removeClass("hidden");
+
+		if (target !== "#summary") {
+			const activeSidebar = $(`${target} .sidebarItemActive`)[0];
+			if (!activeSidebar) {
+				const firstSidebar = $(`${target} .sidebarItem`)[0];
+				if (firstSidebar) firstSidebar.click();
+			}
+		}
+
+		localStorage.setItem("deleteConfirmation", target);
+	}
+
+	function initTabs() {
+		const $tabButtons = $(".tab-button");
+
+		$tabButtons.on("click", function () {
+			activateTab($(this)); 
+		});
+
+	}
+
+	function restoreState() {
+		const savedTab = localStorage.getItem("deleteConfirmation");
+		const savedNav = localStorage.getItem("DeletenavItem");
+
+		if (savedTab && $(`#deleteConfirmationBody .tab-button[data-target='${savedTab}']`).length) {
+			const savedBtn = $(`#deleteConfirmationBody .tab-button[data-target='${savedTab}']`)[0];
+			if (savedBtn) activateTab($(savedBtn));
+
+			if (savedNav) {
+				setTimeout(() => {
+					const $nav = $(savedNav);
+					$nav.addClass("sidebarItemActive");
+					const navBtn = $nav.find("button")[0];
+					if (navBtn) navBtn.click();
+				}, 100);
+			}
+		}
+
+		if (!$("#deleteConfirmationBody .sidebarItemActive:first").length) {
+			const firstSidebar = $("#deleteConfirmationBody .sidebarItem")[0];
+			if (firstSidebar) firstSidebar.click();
+		}
+	}
+
+	$(document).ready(function () {
+		initTabs();
+		restoreState();
+	});
+</script>
