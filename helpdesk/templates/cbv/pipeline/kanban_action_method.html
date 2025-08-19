@@ -5,7 +5,7 @@
             <p
                 class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
             >
-                <a 
+                <a
                     hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
                     hx-target="#objectDetailsModalTarget"
                     data-toggle="oh-modal-toggle"
@@ -22,7 +22,7 @@
                     <p
                         class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
                     >
-                        <a 
+                        <a
                             href = "{% url 'claim-ticket' ticket.id %}"
                         >
                             {% trans "Claim" %}
@@ -38,7 +38,7 @@
         <p
             class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
         >
-            <a 
+            <a
                 hx-get = "{% url 'ticket-update' ticket.id %}"
                 hx-target="#objectCreateModalTarget"
                 data-toggle="oh-modal-toggle"
@@ -55,7 +55,7 @@
         <p
             class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
         >
-            <a 
+            <a
                 hx-get = "{% url 'ticket-archive' ticket.id %}"
                 hx-swap = "outerHTML"
                 {% if ticket.is_active %}
@@ -82,7 +82,7 @@
             <p
                 class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
             >
-                <a 
+                <a
                     href = "{% url 'ticket-delete' ticket.id %}"
                     onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}');"
                 >
