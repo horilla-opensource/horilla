@@ -14,6 +14,7 @@ from horilla.filters import HorillaFilterSet
 from onboarding.models import (
     CandidateStage,
     CandidateTask,
+    OnboardingCandidate,
     OnboardingStage,
     OnboardingTask,
 )
@@ -175,6 +176,106 @@ class PipelineCandidateFilter(FilterSet):
             queryset.filter(candidate_id__name__icontains=value)
             | queryset.filter(onboarding_stage_id__stage_title__icontains=value)
             | queryset.filter(candidate_id__recruitment_id__title__icontains=value)
+        )
+        return queryset.distinct()
+
+
+class KanbanCandidateFilter(FilterSet):
+    """
+    FilterSet class for Candidate model
+    """
+
+    search = django_filters.CharFilter(method="search_by_name", lookup_expr="icontains")
+    tasks = filters.ModelMultipleChoiceFilter(
+        field_name="candidate_task__onboarding_task_id",
+        queryset=OnboardingTask.objects.all(),
+    )
+    task_status = filters.ChoiceFilter(
+        field_name="candidate_task__onboarding_task_id__status",
+        choices=CandidateTask.choice,
+    )
+    candidate = django_filters.ModelMultipleChoiceFilter(
+        queryset=Candidate.objects.all(),
+        field_name="name",
+    )
+
+    start_date = django_filters.DateFilter(
+        field_name="recruitment_id__start_date",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    end_date = django_filters.DateFilter(
+        field_name="recruitment_id__end_date",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    scheduled_from = django_filters.DateFilter(
+        field_name="candidate_interview__interview_date",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    probation_end = django_filters.DateFilter(
+        field_name="probation_end",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    probation_end_till = django_filters.DateFilter(
+        field_name="probation_end",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    probation_end_from = django_filters.DateFilter(
+        field_name="probation_end",
+        lookup_expr="gte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    schedule_date = django_filters.DateFilter(
+        field_name="schedule_date",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    interview_date = django_filters.DateFilter(
+        field_name="candidate_interview__interview_date",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    scheduled_till = django_filters.DateFilter(
+        field_name="candidate_interview__interview_date",
+        lookup_expr="lte",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    recruitment = django_filters.CharFilter(
+        field_name="recruitment_id__title", lookup_expr="icontains"
+    )
+
+    portal_sent = django_filters.BooleanFilter(
+        field_name="onboarding_portal",
+        method="filter_mail_sent",
+        widget=django_filters.widgets.BooleanWidget(),
+    )
+    joining_set = django_filters.BooleanFilter(
+        field_name="joining_date",
+        method="filter_joining_set",
+        widget=django_filters.widgets.BooleanWidget(),
+    )
+
+    class Meta:
+        """
+        Meta class to add some additional options
+        """
+
+        model = OnboardingCandidate
+        fields = [
+            field.name
+            for field in OnboardingCandidate._meta.fields
+            if field.name not in ["profile", "resume"]
+        ]
+
+    def search_by_name(self, queryset, _, value):
+        """
+        Search by name
+        """
+        queryset = (
+            queryset.filter(name__icontains=value)
+            | queryset.filter(
+                onboarding_stage__onboarding_stage_id__stage_title__icontains=value
+            )
+            | queryset.filter(recruitment_id__title__icontains=value)
         )
         return queryset.distinct()
 

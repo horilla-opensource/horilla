@@ -644,7 +644,8 @@ class CandidateKanbanView(HorillaKanbanView):
     records_per_page = 10
     show_kanban_confirmation = False
     filter_keys_to_remove = ["onboarding_stage_id", "rec_id", "recruitment_id"]
-    filter_class = onboarding_filters.PipelineCandidateFilter
+    filter_class = onboarding_filters.KanbanCandidateFilter
+    group_filter_class = onboarding_filters.OnboardingStageFilter
     instance_order_by = "onboarding_stage__sequence"
 
     details = {
