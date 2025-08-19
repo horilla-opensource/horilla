@@ -125,6 +125,7 @@ country_arr = [
     "Kiribati",
     "Korea, North",
     "Korea, South",
+    "Kosovo",
     "Kuwait",
     "Kyrgyzstan",
     "Laos",
