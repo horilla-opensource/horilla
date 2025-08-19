@@ -422,6 +422,7 @@ class CandidateList(HorillaListView):
 class CandidateCard(HorillaKanbanView):
     model = models.Candidate
     filter_class = filters.CandidateFilter
+    group_filter_class = filters.StageFilter
     group_key = "stage_id"
     records_per_page = 10
     filter_keys_to_remove = ["rec_id"]
