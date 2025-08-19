@@ -56,9 +56,11 @@
                                 {% if not col.2 %}
                                     <div class="oh-timeoff-modal__stat">
                                         <span class="oh-timeoff-modal__stat-title">{{col.0}}</span>
-                                        <span class="oh-timeoff-modal__stat-count">
-                                            {{object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|safe}}
+                                        {% with value=object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id %}
+                                        <span class="oh-timeoff-modal__stat-count" title="{{value}}">
+                                            {{value|truncatechars:25|safe}}
                                         </span>
+                                        {% endwith %}
                                     </div>
                                 {% else %}
                                     {{object|getattribute:col.1|safe}}
