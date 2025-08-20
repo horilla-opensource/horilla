@@ -51,7 +51,7 @@
                   {% for key in import_help %}
                     <div>
                       <h3 class="text-sm font-semibold mb-1">{{ key }}</h3>
-                      <ul class="mylist text-sm">
+                      <ul class="list-checked text-sm">
                         {% for val in import_help|get_item:key %}
                           <li>{{ val }}</li>
                         {% endfor %}

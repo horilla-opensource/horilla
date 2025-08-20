@@ -8,6 +8,14 @@ $(function () {
     });
 });
 
+function onAllHtmxSettled(callback, delay = 500) {
+    let timer;
+    document.body.addEventListener("htmx:afterSettle", function () {
+        clearTimeout(timer);
+        timer = setTimeout(() => callback(), delay);
+    });
+}
+
 Toast = Swal.mixin({
     toast: true,
     icon: "success",
@@ -643,8 +651,7 @@ $(document).on("htmx:afterSettle", function (event) {
 
     if ($(".oh-permission-table--toggle").length > 0) {
         $(".oh-permission-table--toggle").each(function () {
-            const $this = $(this);
-            $this.closest("tr").addClass("oh-permission-table--collapsed")
+            $(this).closest("tr").addClass("oh-permission-table--collapsed")
         });
     }
 });
@@ -671,4 +678,12 @@ $(".oh-password-input--toggle").on("click", function (e) {
 $(document).on("click", ".oh-accordion-header", function(event) {
     event.stopImmediatePropagation();
     $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");
+});
+
+onAllHtmxSettled(function () {
+    $(".oh-permission-table--toggle:not(.oh-sticky-table__tr)").each(function () {
+        this.addEventListener("click", function (e) {
+            $(this).closest("tr").toggleClass("oh-permission-table--collapsed");
+        });
+    });
 });

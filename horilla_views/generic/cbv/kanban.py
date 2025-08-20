@@ -11,6 +11,7 @@ from horilla_views.generic.cbv.views import HorillaCardView
 
 class HorillaKanbanView(HorillaCardView):
     group_key: str = ""
+    group_filter_class = None
     template_name: str = "generic/horilla_kanban_view.html"
     kanban_attrs: str = ""
     instance_order_by: str = "sequence"
@@ -23,14 +24,7 @@ class HorillaKanbanView(HorillaCardView):
     action_method: str = """"""
 
     def get_related_groups(self, *args, **kwargs):
-        field = get_nested_field(self.model, self.group_key)
-
-        related_model = field.related_model
-        if self.group_order_by in [f.name for f in related_model._meta.fields]:
-            related_groups = related_model.objects.all().order_by(self.group_order_by)
-        else:
-            related_groups = related_model.objects.all().order_by("pk")
-
+        related_groups = self.group_filter_class(self.request.GET).qs
         return related_groups
 
     def get_context_data(self, **kwargs):
@@ -65,6 +59,7 @@ class HorillaKanbanView(HorillaCardView):
                     )()
                     for choice in field.choices
                 ]
+                context["is_choice_group"] = True
 
             else:
                 related_groups = []

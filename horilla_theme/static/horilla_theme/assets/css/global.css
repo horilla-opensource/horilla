@@ -56,18 +56,18 @@
 }
 
 /* LIST DESIGN */
-.mylist {
+.list-checked {
   display: flex;
   flex-flow: column;
 }
 
-.mylist li {
+.list-checked li {
   margin: 5px 0;
   position: relative;
   padding-left: 20px;
 }
 
-.mylist li:before {
+.list-checked li:before {
   content: "\f058";
   font-family: "Font Awesome 6 Free";
   font-weight: 600;

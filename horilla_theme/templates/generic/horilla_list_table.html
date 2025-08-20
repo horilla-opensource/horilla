@@ -256,7 +256,7 @@
                         </tbody>
                     </table>
                 </div>
-                {% if queryset.paginator.count %}
+                {% if queryset.has_previous or queryset.has_next %}
                     <div
                         class="flex justify-between items-center mt-4 w-full inset-0"
                     >
