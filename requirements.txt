@@ -79,3 +79,4 @@ psycopg2-binary
 whitenoise
 django-storages
 uvicorn
+boto3
