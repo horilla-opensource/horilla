@@ -79,34 +79,49 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<div class="oh-wrapper">
+<div class="oh-wrapper mb-5">
     {% include "cbv/projects/project_details.html" %}
-    <div class="d-flex mt-3 mb-3">
-        <div class="oh-card me-2"><strong>{% trans "Total Hours Logged" %}:</strong> {{ total_hours }}</div>
-        <div class="oh-card"><strong>{% trans "Total Tasks Created" %}:</strong> {{ total_tasks }}</div>
+
+    <div class= "mt-2 mb-3 border shadow-sm p-3">
+        <form method="get" class="mb-3 d-flex align-items-end gap-2">
+            <div class="oh-input-group">
+                <label for="start" class="oh-label">{% trans "From" %}</label>
+                <input type="date" id="start" name="start" value="{{ start }}" max="{{ today }}" class="oh-input"/>
+            </div>
+            <div class="oh-input-group">
+                <label for="end" class="oh-label">{% trans "To" %}</label>
+                <input type="date" id="end" name="end" value="{{ end }}" max="{{ today }}"  class="oh-input"/>
+            </div>
+            <select name="member" class="oh-select">
+                <option value="">{% trans "All Members" %}</option>
+                {% for emp in members %}
+                <option value="{{ emp.id }}" {% if member == emp.id|stringformat:'s' %}selected{% endif %}>{{ emp }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="oh-btn oh-btn--small">{% trans "Filter" %}</button>
+        </form>
+
+        <div class="row mt-5 mb-3 ">
+            <div class="col-md-6 mb-2">
+                <div class="card border shadow-sm p-3 h-100">
+                    <strong>{% trans "Total Hours Logged" %}:</strong> 
+                    <span class="text-primary h5">{{ total_hours }}</span>
+                </div>
+            </div>
+            <div class="col-md-6 mb-2">
+                <div class="card border shadow-sm p-3 h-100">
+                    <strong>{% trans "Total Tasks Created" %}:</strong> 
+                    <span class="text-success h5">{{ total_tasks }}</span>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <form method="get" class="mb-3 d-flex align-items-end gap-2">
-        <div class="oh-input-group">
-            <label for="start" class="oh-label">{% trans "From" %}</label>
-            <input type="date" id="start" name="start" value="{{ start }}" max="{{ today }}" class="oh-input"/>
-        </div>
-        <div class="oh-input-group">
-            <label for="end" class="oh-label">{% trans "To" %}</label>
-            <input type="date" id="end" name="end" value="{{ end }}" max="{{ today }}"  class="oh-input"/>
-        </div>
-        <select name="member" class="oh-select">
-            <option value="">{% trans "All Members" %}</option>
-            {% for emp in members %}
-            <option value="{{ emp.id }}" {% if member == emp.id|stringformat:'s' %}selected{% endif %}>{{ emp }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit" class="oh-btn oh-btn--small">{% trans "Filter" %}</button>
-    </form>
 
         {% comment %} # calculate total timesheet rows for each employee {% endcomment %}
     
     {% if grouped_timesheets %}
-    <div class="oh-accordion-meta" id="tsAccordion">
+    <div class="oh-accordion-meta" id="tsAccordion ">
         {% for emp, items in grouped_timesheets %}
         <div class="oh-accordion-meta__item">
             <div class="oh-accordion-meta__header" onclick="event.stopPropagation();$(this).toggleClass('oh-accordion-meta__header--show').next().toggleClass('d-none')">
