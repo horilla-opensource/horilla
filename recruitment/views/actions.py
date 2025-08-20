@@ -454,31 +454,47 @@ def get_template_hint(request, obj_id=None):
 @login_required
 def get_mail_preview(request):
     """
-    This method is used to return the mail template preview as an HTTP response.
+    Returns the mail template preview as HTML.
     """
     body = request.POST.get("body")
-    candidate_id = request.GET.get("candidate_id")
-
     if not body:
         return HttpResponse("No body provided", status=400)
 
-    template_bdy = template.Template(body)
-    context = {}
+    candidate_id = request.GET.get("candidate_id")
+    candidate_ids = request.POST.getlist("candidates")  # 875
 
-    if candidate_id:
-        try:
-            candidate_obj = Candidate.objects.get(id=candidate_id)
-            context = {
-                "instance": candidate_obj,
-                "model_instance": candidate_obj,
-                "self": request.user.employee_get,
-                "request": request,
-            }
-        except Candidate.DoesNotExist:
+    # Fetch one candidate for preview if provided
+    candidate_obj = None
+    if candidate_id or candidate_ids:
+        ids = [candidate_id] if candidate_id else candidate_ids
+        candidate_obj = Candidate.objects.filter(id__in=ids).first()
+        if not candidate_obj:
             return HttpResponse("Candidate not found", status=404)
 
-    rendered_body = template_bdy.render(template.Context(context)) or " "
+    # Build context
+    context = {
+        "instance": candidate_obj,
+        "model_instance": candidate_obj,
+        "self": getattr(request.user, "employee_get", None),
+        "request": request,
+    }
 
-    textarea_field = f'<div class="oh-input oh-input--textarea" style="border: solid .1px #dbd7d7;">{rendered_body}</div>'
+    # Render template
+    rendered_body = template.Template(body).render(template.Context(context)) or " "
+
+    # Add preview note if multiple candidates
+    if candidate_ids and len(candidate_ids) > 1 and candidate_obj:
+        rendered_body = (
+            f"<p style='color:gray; font-size:13px;'>"
+            f"Preview shown for {candidate_obj.name}. "
+            f"Mail will be personalized for {len(candidate_ids)} candidates."
+            f"</p>{rendered_body}"
+        )
+
+    # Wrap in styled div
+    textarea_field = (
+        f'<div class="oh-input oh-input--textarea" '
+        f'style="border: solid .1px #dbd7d7; padding:5px;">{rendered_body}</div>'
+    )
 
     return HttpResponse(textarea_field, content_type="text/html")
