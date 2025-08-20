@@ -28,14 +28,15 @@ class GeoFencing(models.Model):
         geolocator = Nominatim(
             user_agent="geo_checker_unique"
         )  # Unique user-agent is important
-        try:
-            location = geolocator.reverse(
-                (self.latitude, self.longitude), exactly_one=True
-            )
-            if not location:
-                raise ValidationError("Invalid location coordinates.")
-        except Exception as e:
-            raise ValidationError(f"Geolocation error: {e}")
+        if self.start:
+            try:
+                location = geolocator.reverse(
+                    (self.latitude, self.longitude), exactly_one=True
+                )
+                if not location:
+                    raise ValidationError("Invalid location coordinates.")
+            except Exception as e:
+                raise ValidationError(f"Geolocation error: {e}")
 
         return super().clean()
 

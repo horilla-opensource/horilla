@@ -27,7 +27,7 @@ class GeoFencingSetupGetPostAPIView(APIView):
     )
     def get(self, request):
         company = request.user.employee_get.get_company()
-        location = get_object_or_404(GeoFencing, pk=company.id)
+        location = get_object_or_404(GeoFencing, company_id=company.id)
         serializer = GeoFencingSetupSerializer(location)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -53,18 +53,12 @@ class GeoFencingSetupGetPostAPIView(APIView):
 class GeoFencingSetupPutDeleteAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get_location(self, pk):
-        try:
-            return GeoFencing.objects.get(pk=pk)
-        except Exception as e:
-            raise serializers.ValidationError(e)
-
     @method_decorator(
         permission_required("geofencing.change_geofencing", raise_exception=True),
         name="dispatch",
     )
     def put(self, request, pk):
-        location = self.get_location(pk)
+        location = get_object_or_404(GeoFencing, pk=pk)
         company = request.user.employee_get.get_company()
         if request.user.is_superuser or company == location.company_id:
             serializer = GeoFencingSetupSerializer(
@@ -81,7 +75,7 @@ class GeoFencingSetupPutDeleteAPIView(APIView):
         name="dispatch",
     )
     def delete(self, request, pk):
-        location = self.get_location(pk)
+        location = get_object_or_404(GeoFencing, pk=pk)
         company = request.user.employee_get.get_company()
         if request.user.is_superuser or company == location.company_id:
             location.delete()
