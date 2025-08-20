@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <label for="end" class="oh-label">{% trans "To" %}</label>
                 <input type="date" id="end" name="end" value="{{ end }}" max="{{ today }}"  class="oh-input"/>
             </div>
+
             <select name="member" class="oh-select" multiple>
                 {% for emp in members %}
                 <option value="{{ emp.id }}" {% if emp.id|stringformat:'s' in selected_members %}selected{% endif %}>{{ emp }}</option>
@@ -99,6 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </select>
             <button type="submit" class="oh-btn oh-btn--small oh-btn--success">{% trans "Filter" %}</button>
             <button type="submit" name="clear" value="1" class="oh-btn oh-btn--small oh-btn--secondary">{% trans "Clear" %}</button>
+
         </form>
 
         <div class="row mt-5 mb-3 ">
