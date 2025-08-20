@@ -1,7 +1,10 @@
 import importlib
+import io
 import json
+import re
 from collections import defaultdict
 
+from bs4 import BeautifulSoup
 from django import forms
 from django.apps import apps
 from django.contrib import messages
@@ -13,24 +16,31 @@ from django.db.models.fields.reverse_related import (
     ManyToOneRel,
     OneToOneRel,
 )
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
+from import_export import fields, resources
+from xhtml2pdf import pisa
 
 from base.methods import eval_validate
+from horilla.decorators import login_required as func_login_required
+from horilla.horilla_middlewares import _thread_locals
 from horilla.signals import post_generic_delete, pre_generic_delete
 from horilla_views import models
 from horilla_views.cbv_methods import (
+    export_xlsx,
     get_nested_field,
     get_short_uuid,
     login_required,
     merge_dicts,
+    render_to_string,
     set_nested_attr,
 )
 from horilla_views.forms import SavedFilterForm
 from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
+from horilla_views.templatetags.generic_template_filters import getattribute
 
 # Create your views here.
 
@@ -789,3 +799,227 @@ def get_kanban_card_count(request):
     count = model.objects.filter(**{group_key: group_id}).count()
 
     return HttpResponse(f"{count}")
+
+
+_getattibute = getattribute
+
+
+def sanitize_filename(filename):
+    return re.sub(r'[<>:"/\\|?*\[\]]+', "_", filename)[:200]  # limit to 200 chars
+
+
+def get_model_class(model_path):
+    """
+    method to return the model class from string 'app.models.Model'
+    """
+    module_name, class_name = model_path.rsplit(".", 1)
+    module = __import__(module_name, fromlist=[class_name])
+    model_class = getattr(module, class_name)
+    return model_class
+
+
+@func_login_required
+def export_data(request, *args, **kwargs):
+    """
+    Export list view visible columns
+    """
+    from horilla_views.generic.cbv.views import HorillaFormView
+
+    request = getattr(_thread_locals, "request", None)
+    ids = eval_validate(request.POST["ids"])
+    _columns = eval_validate(request.POST["columns"])
+    export_format = request.POST.get("format", "xlsx")
+
+    model: models.models.Model = get_model_class(model_path=request.GET["model"])
+
+    if not request.user.has_perm(
+        f"""{request.GET["model"].split(".")[0]}.view_{model.__name__}"""
+    ):
+        messages.info(f"You dont have view perm for model {model._meta.verbose_name}")
+        return HorillaFormView.HttpResponse()
+    queryset = model.objects.filter(id__in=ids)
+    export_fields = eval_validate(request.POST["export_fields"])
+    export_file_name = request.POST["export_file_name"]
+    export_file_name = sanitize_filename(export_file_name)
+
+    _model = model
+
+    class HorillaListViewResorce(resources.ModelResource):
+        """
+        Instant Resource class
+        """
+
+        id = fields.Field(column_name="ID")
+
+        class Meta:
+            """
+            Meta class for additional option
+            """
+
+            model = _model
+            fields = [field[1] for field in _columns]  # 773
+
+        def dehydrate_id(self, instance):
+            """
+            Dehydrate method for id field
+            """
+            return instance.pk
+
+        for field_tuple in _columns:
+            dynamic_fn_str = f"def dehydrate_{field_tuple[1]}(self, instance):return self.remove_extra_spaces(getattribute(instance, '{field_tuple[1]}'),{field_tuple})"
+            exec(dynamic_fn_str)
+            dynamic_fn = locals()[f"dehydrate_{field_tuple[1]}"]
+            locals()[field_tuple[1]] = fields.Field(column_name=field_tuple[0])
+
+        def remove_extra_spaces(self, text, field_tuple):
+            """
+            Clean the text:
+            - If it's a <select> element, extract the selected option's value.
+            - If it's an <input> or <textarea>, extract its 'value'.
+            - Otherwise, remove blank spaces, keep line breaks, and handle <li> tags.
+            """
+            soup = BeautifulSoup(str(text), "html.parser")
+
+            # Handle <select> tag
+            select_tag = soup.find("select")
+            if select_tag:
+                selected_option = select_tag.find("option", selected=True)
+                if selected_option:
+                    return selected_option["value"]
+                else:
+                    first_option = select_tag.find("option")
+                    return first_option["value"] if first_option else ""
+
+            # Handle <input> tag
+            input_tag = soup.find("input")
+            if input_tag:
+                return input_tag.get("value", "")
+
+            # Handle <textarea> tag
+            textarea_tag = soup.find("textarea")
+            if textarea_tag:
+                return textarea_tag.text.strip()
+
+            # Default: clean normal text and <li> handling
+            for li in soup.find_all("li"):
+                li.insert_before("\n")
+                li.unwrap()
+
+            text = soup.get_text()
+            lines = text.splitlines()
+            non_blank_lines = [line.strip() for line in lines if line.strip()]
+            cleaned_text = "\n".join(non_blank_lines)
+            return cleaned_text
+
+    book_resource = HorillaListViewResorce()
+
+    # Export the data using the resource
+    dataset = book_resource.export(queryset)
+
+    # excel_data = dataset.export("xls")
+
+    # Set the response headers
+    # file_name = self.export_file_name
+    # if not file_name:
+    #     file_name = "quick_export"
+    # response = HttpResponse(excel_data, content_type="application/vnd.ms-excel")
+    # response["Content-Disposition"] = f'attachment; filename="{file_name}.xls"'
+    # return response
+
+    json_data = json.loads(dataset.export("json"))
+    merged = []
+
+    for item in _columns:
+        # Check if item has exactly 2 elements
+        if len(item) == 2:
+            # Check if there's a matching (type, key) in export_fields (t, k, _)
+            match_found = any(
+                export_item[0] == item[0] and export_item[1] == item[1]
+                for export_item in export_fields
+            )
+
+            if match_found:
+                # Find the first matching metadata or use {} as fallback
+                try:
+                    metadata = next(
+                        (
+                            export_item[2]
+                            for export_item in export_fields
+                            if export_item[0] == item[0] and export_item[1] == item[1]
+                        ),
+                        {},
+                    )
+                except Exception as e:
+                    merged.append(item)
+                    continue
+
+                merged.append([*item, metadata])
+            else:
+                merged.append(item)
+        else:
+            merged.append(item)
+    columns = []
+    for column in merged:
+        if len(column) >= 3 and isinstance(column[2], dict):
+            column = (column[0], column[0], column[2])
+        elif len(column) >= 3:
+            column = (column[0], column[1])
+        columns.append(column)
+
+    if export_format == "json":
+        response = HttpResponse(
+            json.dumps(json_data, indent=4), content_type="application/json"
+        )
+        response["Content-Disposition"] = (
+            f'attachment; filename="{export_file_name}.json"'
+        )
+        return response
+    # CSV
+    elif export_format == "csv":
+        csv_data = dataset.export("csv")
+        response = HttpResponse(csv_data, content_type="text/csv")
+        response["Content-Disposition"] = (
+            f'attachment; filename="{export_file_name}.csv"'
+        )
+        return response
+    elif export_format == "pdf":
+
+        headers = dataset.headers
+        rows = dataset.dict
+
+        # Render to HTML using a template
+        html_string = render_to_string(
+            "generic/export_pdf.html",
+            {
+                "headers": headers,
+                "rows": rows,
+            },
+        )
+
+        # Convert HTML to PDF using xhtml2pdf
+        result = io.BytesIO()
+        pisa_status = pisa.CreatePDF(html_string, dest=result)
+
+        if pisa_status.err:
+            return HttpResponse("PDF generation failed", status=500)
+
+        # Return response
+        response = HttpResponse(result.getvalue(), content_type="application/pdf")
+        response["Content-Disposition"] = (
+            f'attachment; filename="{export_file_name}.pdf"'
+        )
+        return response
+    return export_xlsx(json_data, columns, file_name=export_file_name)
+
+
+class DynamicView(View):
+    """
+    DynamicView
+    """
+
+    def get(self, request, field, session_key):
+        if session_key != request.session.session_key:
+            return HttpResponseForbidden("Invalid session key.")
+
+        # Your logic here
+        return render(request, "dynamic.html", {"field": field})
