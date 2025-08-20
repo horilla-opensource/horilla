@@ -84,15 +84,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <div class= "mt-2 mb-3 border shadow-sm p-3">
         <form method="get" class="mb-3 d-flex align-items-end gap-2">
+            <h2 class="oh-label mx-2">{% trans "Start Date" %}</h2>
             <div class="oh-input-group">
-                <label for="start" class="oh-label">{% trans "From" %}</label>
+            
                 <input type="date" id="start" name="start" value="{{ start }}" max="{{ today }}" class="oh-input"/>
             </div>
+            <h5 class="oh-label mx-2">{% trans "Till Date" %}</h5>
             <div class="oh-input-group">
-                <label for="end" class="oh-label">{% trans "To" %}</label>
+                
                 <input type="date" id="end" name="end" value="{{ end }}" max="{{ today }}"  class="oh-input"/>
             </div>
+            <h5 class="oh-label">{% trans "Select Members" %}</h5>
             <select name="member" class="oh-select" multiple>
+                <option disabled  hidden>{% trans "Select Members" %}</option>
                 {% for emp in members %}
                 <option value="{{ emp.id }}" {% if emp.id|stringformat:'s' in selected_members %}selected{% endif %}>{{ emp }}</option>
                 {% endfor %}
