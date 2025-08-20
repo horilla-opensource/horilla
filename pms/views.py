@@ -1434,32 +1434,45 @@ def key_result_update(request, id):
 
 
 # feedback section
-def send_feedback_notifications(request, feedback):
-    # Send notification to employee
+def send_feedback_notifications(request, feedback):  # 881
+    """
+    Send feedback notifications to the employee and all requested employees.
+    """
+
+    redirect_url = f"{reverse('feedback-view')}?id={feedback.id}"
+
+    messages = {
+        "employee": {
+            "verb": "You have received feedback!",
+            "verb_ar": "لقد تلقيت ملاحظات!",
+            "verb_de": "Sie haben Feedback erhalten!",
+            "verb_es": "¡Has recibido retroalimentación!",
+            "verb_fr": "Vous avez reçu des commentaires !",
+        },
+        "requested": {
+            "verb": "You have been requested to provide feedback!",
+            "verb_ar": "لقد طُلب منك تقديم ملاحظات!",
+            "verb_de": "Sie wurden gebeten, Feedback zu geben!",
+            "verb_es": "Se le ha solicitado que proporcione comentarios.",
+            "verb_fr": "Il vous a été demandé de fournir des commentaires.",
+        },
+    }
+
     if feedback.employee_id:
-        employee = feedback.employee_id
         notify.send(
             request.user.employee_get,
-            recipient=employee.employee_user_id,
-            verb="You have received feedback!",
-            verb_ar="لقد تلقيت ملاحظات!",
-            verb_de="Sie haben Feedback erhalten!",
-            verb_es="¡Has recibido retroalimentación!",
-            verb_fr="Vous avez reçu des commentaires !",
-            redirect=reverse("feedback-detailed-view", kwargs={"id": feedback.id}),
+            recipient=feedback.employee_id.employee_user_id,
+            **messages["employee"],
+            redirect=redirect_url,
             icon="chatbox-ellipses",
         )
-    all_employees = feedback.requested_employees()
-    for employee in all_employees:
+
+    for employee in feedback.requested_employees():
         notify.send(
             request.user.employee_get,
             recipient=employee.employee_user_id,
-            verb="You have been requested to provide feedback!",
-            verb_ar="لقد طُلب منك تقديم ملاحظات!",
-            verb_de="Sie wurden gebeten, Feedback zu geben!",
-            verb_es="Se le ha solicitado que proporcione comentarios.",
-            verb_fr="Il vous a été demandé de fournir des commentaires.",
-            redirect=reverse("feedback-detailed-view", kwargs={"id": feedback.id}),
+            **messages["requested"],
+            redirect=redirect_url,
             icon="chatbox-ellipses",
         )
 
