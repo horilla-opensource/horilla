@@ -3044,7 +3044,12 @@ def widget_filter(request):
     """
     This method is used to return all the ids of the employees
     """
-    ids = EmployeeFilter(request.GET).qs.values_list("id", flat=True)
+    cleaned_get = request.GET.copy()
+    for key in list(cleaned_get.keys()):
+        # Remove keys with only empty string values
+        if all(not v.strip() for v in cleaned_get.getlist(key)):
+            del cleaned_get[key]
+    ids = EmployeeFilter(data=cleaned_get).qs.values_list("id", flat=True)
     return JsonResponse({"ids": list(ids)})
 
 

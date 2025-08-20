@@ -1168,9 +1168,10 @@ class HorillaListView(ListView):
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
         from horilla.urls import path, urlpatterns
 
-        self.export_path = f"export-list-view-{get_short_uuid(4)}/"
-
-        urlpatterns.append(path(self.export_path, self.export_data))
+        self.export_path = (
+            reverse("export-list", kwargs={"short_id": self.view_id})
+            + f"?model={self.model._meta.app_label}.models.{self.model.__name__}"
+        )
         context["export_path"] = self.export_path
 
         if self.import_fields:
@@ -1192,6 +1193,9 @@ class HorillaListView(ListView):
                     self.import_records,
                 )
             )
+
+            session_key = self.request.session.session_key
+
             context["get_import_sheet_path"] = get_import_sheet_path
             context["post_import_sheet_path"] = post_import_sheet_path
         context["import_fields"] = self.import_fields
