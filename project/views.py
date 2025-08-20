@@ -3,6 +3,7 @@ import datetime
 import json
 import logging
 from collections import defaultdict
+from datetime import date
 from urllib.parse import parse_qs, urlparse
 
 import pandas as pd
@@ -735,17 +736,18 @@ def task_view(request, project_id, **kwargs):
         timesheets = timesheets.filter(employee_id=request.user.employee_get)
         members = members.filter(id=request.user.employee_get.id)
 
+    if request.GET.get("clear"):
+        return redirect(request.path)
+
     start = request.GET.get("start")
     end = request.GET.get("end")
-    member_id = request.GET.get("member")
+    member_ids = [mid for mid in request.GET.getlist("member") if mid]
     if start:
         timesheets = timesheets.filter(date__gte=start)
     if end:
         timesheets = timesheets.filter(date__lte=end)
-    if member_id:
-        timesheets = timesheets.filter(employee_id_id=member_id)
-
-    from collections import defaultdict
+    if member_ids:
+        timesheets = timesheets.filter(employee_id_id__in=member_ids)
 
     grouped = defaultdict(list)
     total_minutes = 0
@@ -768,7 +770,7 @@ def task_view(request, project_id, **kwargs):
         "members": members,
         "start": start,
         "end": end,
-        "member": member_id,
+        "selected_members": member_ids,
         "today": today,
     }
     return render(request, "project/project_timesheet.html", context)
