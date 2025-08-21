@@ -65,7 +65,19 @@ def refresh_automations(request):
     """
     Method to  refresh automation signals
     """
-    REFRESH_METHODS["clear_connection"]()
-    REFRESH_METHODS["start_connection"]()
-    messages.success(request, "Automations refreshed")
+    refreshed = False
+
+    if REFRESH_METHODS.get("clear_connection"):
+        REFRESH_METHODS["clear_connection"]()
+        refreshed = True
+
+    if REFRESH_METHODS.get("start_connection"):
+        REFRESH_METHODS["start_connection"]()
+        refreshed = True
+
+    if refreshed:
+        messages.success(request, "Automations refreshed successfully.")
+    else:
+        messages.error(request, "Automation method not available to refresh.")
+
     return HorillaFormView.HttpResponse()
