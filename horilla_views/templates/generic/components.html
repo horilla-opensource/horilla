@@ -1,4 +1,29 @@
 {% load i18n %}
+
+<div
+	class="oh-modal"
+	id="allocationModal"
+	role="dialog"
+	aria-labelledby="allocationModal"
+>
+	<div class="oh-modal__dialog oh-modal__dialog-process max-w-[900px]">
+		<div class="oh-modal__dialog-header">
+			<span class="text-md font-semibold" id="addEmployeeModalLabel"
+				>{% trans "Allocation" %}</span
+			>
+			<button
+				class="oh-modal__close"
+				aria-label="Close"
+				onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+			>
+				<ion-icon name="close-outline"></ion-icon>
+			</button>
+		</div>
+
+		<div class="oh-modal__dialog-body" id="allocationModalBody"></div>
+	</div>
+</div>
+
 <div
 	style="z-index: 1022"
 	class="oh-modal"
@@ -27,30 +52,6 @@
 	<div class="oh-activity-sidebar__body" id="genericOffCanvas"></div>
 </div>
 
-<div
-	class="oh-modal"
-	id="allocationModal"
-	role="dialog"
-	aria-labelledby="allocationModal"
-	aria-hidden="true"
->
-	<div
-		class="oh-modal__dialog oh-modal__dialog--custom oh-modal__dialog-process"
-	>
-		<div class="oh-modal__dialog-header">
-			<span class="oh-modal__dialog-title" id="addEmployeeModalLabel"
-				>{% trans "Allocation" %}</span
-			>
-			<button class="oh-modal__close" aria-label="Close">
-				<ion-icon name="close-outline"></ion-icon>
-			</button>
-		</div>
-		<div
-			class="oh-modal__dialog-body oh-modal__dialog-body-process"
-			id="allocationModalBody"
-		></div>
-	</div>
-</div>
 
 <script>
 	$(document).on("htmx:afterOnLoad", function (event) {
