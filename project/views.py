@@ -730,7 +730,7 @@ def task_view(request, project_id, **kwargs):
     """Project details with member wise timesheet breakdown."""
     project = Project.objects.get(id=project_id)
     members = (project.managers.all() | project.members.all()).distinct()
-    timesheets = TimeSheet.objects.filter(project_id=project).order_by("-created_at")
+    timesheets = TimeSheet.objects.filter(project_id=project).order_by("-date")
 
     if not request.user.is_superuser:
         timesheets = timesheets.filter(employee_id=request.user.employee_get)

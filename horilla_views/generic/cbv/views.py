@@ -414,11 +414,13 @@ class HorillaListView(ListView):
                     request.GET, queryset=queryset.object_list.model.objects.all()
                 ).qs
             groups = group_by_queryset(
-                queryset, field, self._saved_filters.get("page"), "page"
+                queryset,
+                field,
+                self._saved_filters.get("page"),
+                "page",
+                self.records_per_page,
             )
-            context["groups"] = paginator_qry(
-                groups, self._saved_filters.get("page"), 10
-            )
+            context["groups"] = groups
 
             # for group in context["groups"]:
             #     for instance in group["list"]:

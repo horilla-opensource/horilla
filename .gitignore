@@ -153,3 +153,4 @@ whoosh_index/
 #PyCharm
 .idea/
 test.patch
+changes.patch
