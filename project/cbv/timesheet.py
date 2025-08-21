@@ -219,7 +219,7 @@ class TimeSheetList(HorillaListView):
         context = super().get_context_data(**kwargs)
         field = self._saved_filters.get("field") if hasattr(self, "_saved_filters") else None
         groups = context.get("groups")
-        if field == "employee_id" and groups:
+        if field == "employee_id" or field == "project_id" and groups:
             group_totals = {}
             for group in groups:
                 total_minutes = 0
