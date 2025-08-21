@@ -308,6 +308,10 @@
     border: 1px solid hsl(213, 22%, 84%);
 }
 
+input[type="file"] {
+    font-size: 0.75rem;
+}
+
 .sortable-placeholder {
   background-color: #e5e7eb;
   border: 2px dashed #fc8578;

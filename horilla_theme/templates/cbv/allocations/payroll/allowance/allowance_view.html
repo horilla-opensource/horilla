@@ -1,0 +1,56 @@
+{% load static i18n %}
+<div class="oh-inner-sidebar-content">
+	<div class="relative mb-3">
+		<input
+			type="text"
+			hx-get="{% url 'allocation-allowance-list' %}?instance_id={{ request.GET.instance_id }}"
+			hx-trigger="keyup changed delay:.100s"
+			hx-target="#typesContainer"
+			autocomplete="false"
+			name="search"
+			placeholder="Search"
+			class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+		/>
+		<i
+			class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"
+		></i>
+	</div>
+	<div class="mb-3" id="types">
+		<div id="selectedInstances" data-ids="[]" hidden></div>
+		<form
+			hx-post="{% url 'allocation-allowance-list' %}"
+			hx-target="#responseContainer"
+			id="idsForm"
+		>
+			<input type="text" name="ids" value="[]" hidden />
+			<input
+				type="text"
+				name="instance_id"
+				value="{{ request.GET.instance_id }}"
+				hidden
+			/>
+			<input type="submit" hidden />
+		</form>
+		<div
+			id="typesContainer"
+			hx-get="{% url 'allocation-allowance-list' %}?instance_id={{ request.GET.instance_id }}"
+			hx-trigger="load"
+		></div>
+	</div>
+	<div class="oh-modal__dialog-footer p-0">
+		<button
+			type="submit"
+			onclick="
+				ids = $('#selectedInstances').attr('data-ids')
+				$('.oh-inner-sidebar-content [name=ids]').val(ids);
+				$('#idsForm [type=submit]').click();
+			"
+			class="oh-btn oh-btn--secondary oh-btn--shadow"
+			id="addAllowanceButton"
+		>
+			{% trans "Add" %}
+		</button>
+	</div>
+</div>
+
+<div id="responseContainer" hidden></div>

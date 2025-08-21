@@ -1,0 +1,28 @@
+{% load static i18n %}
+<div id="{{ view_id }}">
+	<div class="flex overflow-x-auto gap-2 mb-3">
+        {% for deduction in assigned_deductions %}
+			<div class="flex-shrink-0 flex items-center gap-3 border border-dark-50 p-3 rounded-md">
+				<img src="{{deduction.get_avatar}}" class="w-11 h-11 rounded-full"/>
+
+				<div class="flex flex-col justify-center items-start h-full">
+					<h5 class="font-semibold text-sm">{{deduction}}</h5>
+					<p class="text-xs text-dark-200">{% trans "Amount" %}: {% if deduction.is_fixed %}{{deduction.amount}}{{currency}}{% else %}{{deduction.rate|default:"0"}}% of {{deduction.get_based_on_display}}{% endif %}</p>
+				</div>
+			</div>
+		{% endfor %}
+	</div>
+
+	{% if not request.GET.card_only %}
+		{% include 'generic/horilla_list_table.html' %}
+	{% elif not queryset.exists %}
+		<button
+			class="group px-4 py-2 border border-[green] text-[green] rounded-md text-xs font-medium flex items-center gap-2 hover:text-white hover:bg-[green] transition duration-300"
+			onclick="$('#deduction-id').click();"
+		>
+			<ion-icon name="close-circle-outline" class="group-hover:brightness-0 group-hover:invert text-base rotate-45"></ion-icon>
+
+			{% trans "Allocate" %}
+		</button>
+	{% endif %}
+</div>

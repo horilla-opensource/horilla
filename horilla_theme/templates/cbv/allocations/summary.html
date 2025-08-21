@@ -1,0 +1,115 @@
+{% load static i18n %}
+
+<div class="border-b border-dark-50 p-3 mb-3 shadow-card rounded-md">
+	<div class="flex flex-wrap items-center justify-between mb-5">
+		<h2 class="text-sm font-semibold">{% trans "Employee" %}</h2>
+
+		<div class="flex flex-wrap items-center gap-2">
+			<span class="text-xs font-medium"
+				>{% trans "Dashboard Access" %} :
+			</span>
+			<form
+				hx-post="{% url 'toggle-user-dashboard-access' %}?instance_id={{instance.pk}}"
+				hx-target="#responseContainer"
+			>
+				<label class="oh-switch">
+					<input
+						type="checkbox"
+						name="permissions"
+						class="oh-switch__checkbox"
+						onchange="$(this).closest('form').find('[type=submit]').click()"
+						{% if instance.employee_user_id.is_active %}
+							checked
+						{% endif %}
+					/>
+				</label>
+				<input type="submit" hidden />
+			</form>
+			<div id="responseContainer"></div>
+		</div>
+	</div>
+
+	<div class="text-xs text-dark-200 font-medium mb-1">
+		{% trans "Personal Info" %}
+	</div>
+	<div class="flex items-center gap-3 mb-2">
+		<div class="w-full bg-dark-50 rounded-full h-1.5">
+			<div
+				class="bg-primary-600 h-1.5 rounded-full"
+				style="width: {{personal_percentage}}%"
+			></div>
+		</div>
+		<span class="text-sm">{{personal_percentage|floatformat:2}}%</span>
+	</div>
+	<div class="text-xs text-dark-200 font-medium mb-1">
+		{% trans "Work Info" %}
+	</div>
+	<div class="flex items-center gap-3 mb-2">
+		<div class="w-full bg-dark-50 rounded-full h-1.5">
+			<div
+				class="bg-primary-600 h-1.5 rounded-full"
+				style="width: {{work_percentage}}%"
+			></div>
+		</div>
+		<span class="text-sm">{{work_percentage|floatformat:2}}%</span>
+	</div>
+	<div class="text-xs text-dark-200 font-medium mb-1">
+		{% trans "Bank Info" %}
+	</div>
+	<div class="flex items-center gap-3 mb-2">
+		<div class="w-full bg-dark-50 rounded-full h-1.5">
+			<div
+				class="bg-primary-600 h-1.5 rounded-full"
+				style="width: {{bank_percentage}}%"
+			></div>
+		</div>
+		<span class="text-sm">{{bank_percentage|floatformat:2}}%</span>
+	</div>
+</div>
+
+<div class="border-b border-dark-50 p-3 mb-3 shadow-card rounded-md">
+	<h2 class="text-sm font-semibold mb-4">{% trans "Leave Policy" %}</h2>
+
+	<div
+		hx-get="{% url 'allocation-leave-type-list' %}?instance_id={{instance.pk}}&card_only=true"
+		hx-trigger="load"
+	></div>
+</div>
+
+<div class="border-b border-dark-50 p-3 mb-3 shadow-card rounded-md">
+	<h2 class="text-sm font-semibold mb-4">{% trans "Assets" %}</h2>
+
+	<div
+		class=""
+		hx-get="{% url 'allocation-asset-list' %}?instance_id={{instance.pk}}&card_only=true"
+		hx-trigger="load"
+	></div>
+</div>
+
+<div class="border-b border-dark-50 p-3 mb-3 shadow-card rounded-md">
+	<h2 class="text-sm font-semibold mb-4">{% trans "Allowance" %}</h2>
+
+	<div
+		class="col-12 col-sm-12"
+		hx-get="{% url 'allocation-allowance-list' %}?instance_id={{instance.pk}}&card_only=true"
+		hx-trigger="load"
+	></div>
+</div>
+
+<div class="border-b border-dark-50 p-3 mb-3 shadow-card rounded-md">
+	<h2 class="text-sm font-semibold mb-4">{% trans "Deductions" %}</h2>
+
+	<div
+		class="col-12 col-sm-12"
+		hx-get="{% url 'allocation-deduction-list' %}?instance_id={{instance.pk}}&card_only=true"
+		hx-trigger="load"
+	></div>
+</div>
+<div class="flex gap-1 justify-end pt-0">
+	<button
+		class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+		type="submit"
+	>
+		{% trans "Next" %}
+	</button>
+</div>

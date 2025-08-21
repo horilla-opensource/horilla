@@ -1,0 +1,97 @@
+{% load i18n %}
+
+<div class="oh-inner-sidebar-content">
+	<div class="oh-inner-sidebar-content__header">
+		<ul class="flex justify-end gap-3">
+			<li
+				class="oh-general__tab-link inline-block text-sm font-semibold p-0 mb-2"
+				role="button"
+				hx-get="{% url 'personal-form' %}?{{request.GET.urlencode}}"
+				hx-target="#personalInfo"
+				data-url="{% url 'personal-form' %}"
+				data-action="general-tab"
+				data-target="#personalInfo"
+			>
+				{% trans "Personal Info" %}
+			</li>
+			<li
+				class="oh-general__tab-link inline-block text-sm font-semibold p-0 mb-2"
+				role="button"
+				hx-get="{% url 'work-form' %}?{{request.GET.urlencode}}"
+				hx-target="#workInfo"
+				data-url="{% url 'work-form' %}"
+				data-action="general-tab"
+				data-target="#workInfo"
+			>
+				{% trans "Work Info" %}
+			</li>
+			<li
+				class="oh-general__tab-link inline-block text-sm font-semibold p-0 mb-2"
+				role="button"
+				hx-get="{% url 'bank-form' %}?{{request.GET.urlencode}}"
+				hx-target="#bankInfo"
+				data-url="{% url 'bank-form' %}"
+				data-action="general-tab"
+				data-target="#bankInfo"
+			>
+				{% trans "Bank Info" %}
+			</li>
+		</ul>
+	</div>
+
+	<div class="oh-inner-sidebar-content__body">
+		<div
+			class="oh-general__tab-target oh-profile-section mb-4 d-none"
+			id="personalInfo"
+		></div>
+		<div
+			class="oh-general__tab-target oh-profile-section mb-4 d-none"
+			id="workInfo"
+		></div>
+		<div
+			class="oh-general__tab-target oh-profile-section mb-4 d-none"
+			id="bankInfo"
+		></div>
+
+		<div class="oh-modal__dialog-footer p-0">
+			<button
+				type="submit"
+				class="oh-btn oh-btn--secondary oh-btn--shadow"
+				onclick="$('.oh-general__tab-target.oh-profile-section').not('.d-none').find('form').find('input[type=submit]').click()"
+			>
+				{% trans "Save" %}
+			</button>
+		</div>
+	</div>
+
+</div>
+
+<script>
+	$(document).ready(function () {
+		setTimeout(() => {
+			$("[data-target = '#personalInfo']").click();
+		}, 100);
+
+		$(".oh-general__tab-link").on("click", function () {
+			target = $(this).attr("data-target");
+
+			$(this)
+				.closest("ul")
+				.find(".oh-general__tab-link--active")
+				.removeClass("oh-general__tab-link--active");
+
+			$(this).addClass("oh-general__tab-link--active");
+
+			$(this)
+				.closest(".oh-inner-sidebar-content")
+				.find(".oh-general__tab-target")
+				.addClass("d-none");
+
+			$(target).removeClass("d-none");
+		});
+
+		$(document).on("htmx:afterSettle", function() {
+			$("input[type='file']").closest("div").addClass("text-xs")
+		})
+	});
+</script>
