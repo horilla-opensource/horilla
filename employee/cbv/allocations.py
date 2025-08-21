@@ -1253,11 +1253,11 @@ class ToggleDashboardAccess(View):
         )
 
 
-AllocationView.menues.append(
-    {
-        "menu": _("Groups & Permissions"),
-        # you will get instance_id in url params
-        "url": reverse_lazy("allocation-user-group-view"),
-        "accessibility": "employee.cbv.allocations.is_any_recruitment_manager",
-    }
-)
+# AllocationView.menues.append(
+#     {
+#         "menu": _("Groups & Permissions"),
+#         # you will get instance_id in url params
+#         "url": reverse_lazy("allocation-user-group-view"),
+#         "accessibility": "employee.cbv.allocations.is_any_recruitment_manager",
+#     }
+# )
