@@ -505,7 +505,7 @@ def filter_pagination_asset_category(request):
     asset_categories = asset_category_paginator.get_page(page_number)
 
     data_dict = parse_qs(previous_data)
-    get_key_instances(AssetCategory, data_dict)
+    get_key_instances(Asset, data_dict)  # 882
 
     asset_creation_form = AssetForm()
     if data_dict.get("type"):
