@@ -1,0 +1,91 @@
+{% load static i18n generic_template_filters %}
+<style> 
+	.sidebarItemActive {
+		background: #fff5f1;
+		color: #e54f38;
+	}
+</style>
+
+<div
+	class="bg-white w-full rounded-lg"
+>
+	<div class="mb-5">
+		<div class="grid grid-cols-6 lg:grid-cols-12 gap-3">
+			<div
+				class="col-span-6 lg:col-span-4 border rounded-md border-[#ececec] p-3"
+			>
+				<div class="flex items-center gap-3 mb-5">
+					<div
+						class="relative flex items-center cursor-pointer w-max"
+					>
+						<img
+							src="{{instance.get_avatar}}"
+							alt=""
+							class="w-11 h-11 rounded-full"
+						/>
+						<span
+							class="absolute bottom-0 right-0 w-3 h-3 bg-[#ee0a0a] rounded-full border-2 border-white"
+							{% if instance.employee_user_id.is_active %}
+								title="Active"
+								style="background-color: yellowgreen;"
+							{% else %}
+								title="In-active"
+							{% endif %}
+							>
+						</span>
+					</div>
+
+					<div
+						class="flex flex-col justify-center items-start h-full"
+					>
+						<h5 class="font-semibold text-sm">
+							{{instance.get_full_name}}
+						</h5>
+						<p class="text-xs text-dark-200">
+							{{instance.employee_work_info.job_position_id.job_position}}
+						</p>
+					</div>
+				</div>
+				<div class="sidebarItems">
+					{% for menu in menues %}
+						{% if menu.accessibility is None or menu.accessibility|accessibility %}
+							<div
+								class="mb-[5px] hover:bg-[#fff5f1] hover:text-[#e54f38] cursor-pointer font-medium rounded-md w-full flex justify-between items-center px-4 py-2 bg-[#0000000c] text-[13px] transition-all sidebarItem"
+								hx-get="{{menu.url}}?instance_id={{instance.pk}}"
+								hx-target="#allocationContent"
+								onclick = "handleSidebarItemClick(this)"
+								id = "{{ menu.menu|lower|slugify }}-id"
+							>
+								{{menu.menu}}
+							</div>
+							{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+			<div
+				class="col-span-6 lg:col-span-8 border rounded-md border-[#ececec] p-3"
+				id="allocationContent"
+			>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	function handleSidebarItemClick(elm) {
+		const $item = $(elm);
+
+		$item.closest(".sidebarItems")
+			.find(".sidebarItemActive")
+			.removeClass("sidebarItemActive");
+		$item.addClass("sidebarItemActive");
+
+	}
+
+	$(document).ready(function () {
+		setTimeout(() => {
+			$(".sidebarItem:first ").click();
+		}, 100);
+	});
+</script>

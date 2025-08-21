@@ -1,0 +1,13 @@
+{% load i18n %} 
+
+{% if instance.asset_status != "Available" %}
+    <div class="d-flex align-items-center">
+        <span class="w-2 h-2 my-auto rounded-full bg-green-500 mr-2"> </span>
+        <span class="text-green-500">{% trans "Allocated" %} </span>
+    </div>
+{% else %}
+    <div class="d-flex align-items-center">
+        <span class="w-2 h-2 my-auto mr-2 rounded-full bg-blue-500"> </span>
+        <span class="text-blue-400">{% trans "Available" %} </span>
+    </div>
+{% endif %}
