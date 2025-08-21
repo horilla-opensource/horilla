@@ -53,18 +53,22 @@
           >
           <span class="oh-accordion-meta__title p-2">
             <span class="oh-accordion-meta__title pt-3 pb-3">
-              <div class="oh-tabs__input-badge-container">
-                <span
-                  class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
-                  title="{{group.list.paginator.count}} {% trans "Records" %}"
-                >
-                  {{group.list.paginator.count}}
-                </span>
-                {{group.grouper|capfirst}}
-              </div>
+                <div class="oh-tabs__input-badge-container">
+              
+                  <span
+                    class="oh-badge oh-badge--secondary oh-badge--small oh-badge--round mr-1"
+                    title="{{group.list.paginator.count}} {% trans "Records" %}"
+                  >
+                    {{group.list.paginator.count}}
+                  </span>
+                  {{group.grouper|capfirst}}
+                  {% if group_totals %}
+                  <span class=" mx-2 oh-badge oh-badge--omega oh-badge--small oh-badge--round mr-1"> Total Hours = {{ group_totals|get_item:group.grouper.id }}</span>
+                  {% endif %}
+                </div>
+              </span>
             </span>
-          </span>
-        </div>
+          </div>
         <div class="oh-accordion-meta__body d-none">
           <div class="table-wrapper">
             <table class="fixed-table">

@@ -7906,6 +7906,10 @@ body {
   background-color: hsl(8, 77%, 56%);
   color: hsl(0, 0%, 100%);
 }
+.oh-badge--omega {
+  background-color: hsl(281, 71%, 35%);
+  color: hsl(0, 0%, 100%);
+}
 
 .oh-badge--info {
   background-color: hsl(0, 0%, 27%);

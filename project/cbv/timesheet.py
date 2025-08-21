@@ -215,6 +215,24 @@ class TimeSheetList(HorillaListView):
 
     row_status_class = "status-{status}"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        field = self._saved_filters.get("field") if hasattr(self, "_saved_filters") else None
+        groups = context.get("groups")
+        if field == "employee_id" and groups:
+            group_totals = {}
+            for group in groups:
+                total_minutes = 0
+                for ts in group["list"].paginator.object_list:
+                    try:
+                        hrs, mins = map(int, str(ts.time_spent).split(":"))
+                        total_minutes += hrs * 60 + mins
+                    except (ValueError, AttributeError):
+                        continue
+                group_totals[group["grouper"].id] = f"{total_minutes // 60:02d}:{total_minutes % 60:02d}"
+            context["group_totals"] = group_totals
+        return context
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
