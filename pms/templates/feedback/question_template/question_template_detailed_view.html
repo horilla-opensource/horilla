@@ -30,7 +30,7 @@
                                     <div class="col-sm-12 col-md-12 col-lg-3">
                                         <label class="oh-label text-muted fw-bold fw-bold">{% trans "Question Type" %}
                                             </label>
-                                        {{form.question_type}}
+                                        {% render_field form.question_type class="oh-select oh-select2 w-100 custom-select2-height" %}
                                         {{form.question_type.errors}}
                                     </div>
                                     <div class="col-sm-12 col-md-12 col-lg-9" id="questionCreationFormCol">
@@ -120,6 +120,16 @@ $(document).ready(function () {
     });
 });
 </script>
+
+<style>
+/* Custom style for Select2 dropdown height */
+.custom-select2-height + .select2 .select2-selection--single {
+    height: 38px !important;
+    line-height: 38px !important;
+    padding-top: 8px;
+    font-size: 1.1rem;
+}
+</style>
 
 
 {% endblock %}

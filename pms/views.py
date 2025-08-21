@@ -1943,7 +1943,7 @@ def feedback_answer_post(request, id):
         for key_result in feedback.employee_key_results_id.all():
             if request.POST.get(f"key_result{key_result.id}"):
                 answer = request.POST.get(f"key_result{key_result.id}")
-                KeyResultFeedback.objects.get_or_create(
+                keyresult, create = KeyResultFeedback.objects.get_or_create(
                     answer={"answer": answer},
                     key_result_id=key_result,
                     feedback_id=feedback,
