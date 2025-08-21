@@ -88,8 +88,7 @@ if not any(
     cmd in sys.argv
     for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
 ):
-    # scheduler = BackgroundScheduler()
-    # scheduler.add_job(notify_expiring_assets, "interval", hours=4)
-    # scheduler.add_job(notify_expiring_documents, "interval", hours=4)
-    # scheduler.start()
-    print('scheduler stopped')
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(notify_expiring_assets, "interval", hours=4)
+    scheduler.add_job(notify_expiring_documents, "interval", hours=4)
+    scheduler.start()
