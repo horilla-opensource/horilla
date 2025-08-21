@@ -668,8 +668,8 @@ class CandidateKanbanView(HorillaKanbanView):
             "attrs": """
                 hx-get = "{onboarding_stage__allocation_path}"
                 data-toggle="oh-modal-toggle"
-                data-target="#genericModal"
-                hx-target="#genericModalBody"
+                data-target="#allocationModal"
+                hx-target="#allocationModalBody"
             """,
         },
         {
