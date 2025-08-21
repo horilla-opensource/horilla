@@ -40,10 +40,15 @@ class HorillaAutomationConfig(AppConfig):
         model_choices[:] = list(set(model_choices))  # Update in-place
 
         # Only start automation when running the server
-        if (
-            len(sys.argv) >= 2
-            and sys.argv[1] == "runserver"
-            and os.environ.get("RUN_MAIN") == "true"
+        if not any(
+            cmd in sys.argv
+            for cmd in [
+                "makemigrations",
+                "migrate",
+                "compilemessages",
+                "flush",
+                "shell",
+            ]
         ):
             from horilla_automations.signals import start_automation
 
