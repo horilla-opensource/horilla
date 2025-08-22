@@ -40,11 +40,16 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.html import strip_tags
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
+from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.tokens import UntypedToken
 
 from accessibility.accessibility import ACCESSBILITY_FEATURE
 from accessibility.models import DefaultAccessibility
@@ -144,6 +149,7 @@ from base.models import (
     EmployeeType,
     Holidays,
     HorillaMailTemplate,
+    IntegrationApps,
     JobPosition,
     JobRole,
     MultipleApprovalCondition,
@@ -7657,9 +7663,38 @@ def delete_penalities(request, penalty_id):
     )
 
 
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
-from rest_framework_simplejwt.tokens import UntypedToken
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required("horilla_meet.view_googlecloudcredential"), name="dispatch"
+)
+class EnableIntegrationsView(View):
+    """Handles enabling/disabling Google Meet integration dynamically."""
+
+    def post(self, request, *args, **kwargs):
+        """Handles POST request to enable/disable an integration app."""
+        app_label = request.GET.get("app_label")
+
+        if not app_label:
+            messages.error(request, "Missing app_label")
+            return HttpResponse("<script>window.location.reload()</script>")
+
+        enabled = request.POST.get("is_enabled") is not None
+        integration_app, created = IntegrationApps.objects.update_or_create(
+            app_label=app_label,
+            defaults={"is_enabled": enabled},
+        )
+        try:
+            app_config = apps.get_app_config(app_label)
+            app_verbose_name = app_config.verbose_name
+        except LookupError:
+            app_verbose_name = app_label
+
+        if enabled:
+            messages.success(request, f"{app_verbose_name} enabled")
+        else:
+            messages.error(request, f"{app_verbose_name} disabled")
+
+        return HttpResponse("<script>window.location.reload()</script>")
 
 
 def is_jwt_token_valid(auth_header):

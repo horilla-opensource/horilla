@@ -1683,6 +1683,11 @@ urlpatterns = [
         views.delete_penalities,
         name="delete-penalties",
     ),
+    path(
+        "enable-integration",
+        views.EnableIntegrationsView.as_view(),
+        name="enable-integration",
+    ),
 ]
 
 urlpatterns.append(
