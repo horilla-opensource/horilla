@@ -1,20 +1,12 @@
 """ Django notification urls file """
 
 # -*- coding: utf-8 -*-
-from distutils.version import (  # pylint: disable=no-name-in-module,import-error
-    StrictVersion,
-)
 
 from django import get_version
 from django.urls import path
+from django.urls import re_path as pattern
 
 from . import views
-
-if StrictVersion(get_version()) >= StrictVersion("2.0"):
-    from django.urls import re_path as pattern
-else:
-    from django.conf.urls import url as pattern
-
 
 urlpatterns = [
     pattern(r"^$", views.AllNotificationsList.as_view(), name="all"),
