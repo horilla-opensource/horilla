@@ -1,0 +1,28 @@
+{% load i18n %}
+
+<div data-cell-index="1">
+    {% for employee in instance.get_attendees %}
+    <div id="employeeContainer{{employee.id}}-{{instance.id}}">
+        <span class="oh-user-panel oh-collapse-panel" data-type="user">
+            <div class="oh-profile oh-profile--md">
+                <div class="oh-profile__avatar mr-1">
+                    <img
+                        src="https://ui-avatars.com/api/?name={{employee.get_full_name}}&background=random"
+                        class="oh-profile__image"
+                        alt=""
+                    />
+                </div>
+                <span
+                    class="oh-profile__name oh-text--dark"
+                    title="{{employee.get_full_name}}"
+                >
+                    {{employee.get_full_name|truncatechars:15}}
+                </span>
+            </div>
+        </span>
+    </div>
+    {% endfor %}
+    <span class="count-span"
+        >{{instance.attendees|length}} {% trans "Attendees" %}</span
+    >
+</div>

@@ -1,0 +1,39 @@
+{% load i18n widget_tweaks %}
+<style>
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        z-index: 9999;
+    }
+</style>
+{% include "generic/horilla_form.html" %} 
+
+<div id="loading-overlay" class="loading-overlay d-none">
+    <div
+        id="tripple-loader-contaner"
+        class="d-flex justify-content-center align-items-center tripple-loader-contaner--visible"
+        style="height: 90vh"
+    >
+        <div class="triple-spinner"></div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $("form").on("htmx:beforeRequest", function (event) {
+            $("#loading-overlay").removeClass("d-none");
+        });
+
+        $("form").on("htmx:afterSwap", function (event) {
+            $("#loading-overlay").addClass("d-none");
+        });
+
+        $("form").on("htmx:responseError", function () {
+            $("#loading-overlay").addClass("d-none");
+        });
+    })
+</script>
