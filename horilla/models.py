@@ -206,4 +206,8 @@ class HorillaModel(models.Model):
         return final_field.verbose_name
 
 
+class NoPermissionModel:
+    _no_permission_model = True
+
+
 auditlog.register(HorillaModel, serialize_data=True)
