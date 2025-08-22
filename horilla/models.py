@@ -39,12 +39,21 @@ def url(self: FieldFile):
 setattr(FieldFile, "url", url)
 
 
-def has_xss(value):
-    """Basic check for common XSS patterns."""
+def has_xss(value: str) -> bool:
+    """Detect common XSS attempts (script tags, event handlers, js URLs)."""
     if not isinstance(value, str):
         return False
-    xss_pattern = re.compile(r"<.*?script.*?>|javascript:|on\w+=", re.IGNORECASE)
-    return bool(xss_pattern.search(value))
+
+    xss_patterns = [
+        r"<\s*script.*?>.*?<\s*/\s*script\s*>",
+        r"javascript\s*:",
+        r"on\w+\s*=",
+        r"<\s*script.*?>.*?(eval|setTimeout|setInterval|new\s+Function|XMLHttpRequest|fetch|\$\s*\().*?<\s*/\s*script\s*>",
+        r"on\w+\s*=\s*['\"]?\s*(eval|setTimeout|setInterval|new\s+Function|XMLHttpRequest|fetch|\$\s*\()[^>]*",
+    ]
+
+    combined = re.compile("|".join(xss_patterns), re.IGNORECASE | re.DOTALL)
+    return bool(combined.search(value))
 
 
 def upload_path(instance, filename):
