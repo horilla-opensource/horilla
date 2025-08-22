@@ -1,0 +1,63 @@
+{% load i18n %} {% load static %}
+<section class="oh-wrapper mb-3 p-3">
+  <div class="flex flex-wrap justify-between items-center">
+    
+    <!-- Left Section -->
+    <div class="flex items-center gap-2">
+      <h5 class="font-semibold text-sm">{% trans "FAQ Categories" %}</h5>
+    </div>
+
+    <!-- Right Section -->
+    <div class="flex items-center flex-wrap gap-2">
+
+      <!-- Search Input -->
+      <div class="relative" :class="searchShow ? 'block' : 'hidden md:block'">
+        <input type="text"
+               name="search"
+               placeholder="{% trans 'Search in FAQs...' %}"
+               class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+               hx-get="{% url 'faq-search' %}?category=true"
+               hx-trigger="change"
+               hx-target="#faqCategoryList"/>
+          <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+      </div>
+
+      <!-- Actions Dropdown -->
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button class="px-5 py-2 h-full bg-[white]  rounded-md text-xs flex items-center gap-2  border border-primary-500 hover:border-primary-600 transition duration-300"
+                @click="open = !open"
+                onclick="event.preventDefault()">
+                <img src="{% static 'horilla_theme/assets/img/icons/setting-line.svg' %}" alt="" width="15" class="mt-[-1px]">
+          {% trans "Actions" %}
+        </button>
+        <div class="oh-dropdown__menu oh-dropdown__menu--right p-2"
+             x-show="open"
+             @click.outside="open = false"
+             style="display:none; min-width:150px;">
+          <a hx-get="{% url 'load-faqs' %}"
+             style="cursor:pointer;"
+             hx-target="#objectCreateModalTarget"
+             data-target="#objectCreateModal"
+             data-toggle="oh-modal-toggle"
+             class="px-4 py-1.5 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full">
+            {% trans "Load Faqs" %}
+          </a>
+        </div>
+      </div>
+
+      <!-- Create Button -->
+      {% if perms.helpdesk.add_faqcategory %}
+      <button type="button"
+              class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+              hx-get="{% url 'faq-category-create' %}"
+              hx-target="#objectCreateModalTarget"
+              data-toggle="oh-modal-toggle"
+              data-target="#objectCreateModal">
+            <img src="/static/horilla_theme/assets/img/icons/more.svg" alt="" width="13"
+              class="filter brightness-0 invert">
+        {% trans "Create" %}
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,78 @@
+{% load i18n %}
+<section class="oh-wrapper mb-3" x-data="{searchShow: false}">
+  <div class="flex flex-wrap justify-between items-center">
+
+    <!-- Left section -->
+    <div class="flex items-center gap-2">
+      <h5 class="font-semibold text-sm">{% trans "FAQs" %}</h5>
+    </div>
+
+    <!-- Right section -->
+    <div class="flex items-center flex-wrap gap-2">
+
+      <!-- Search Input -->
+      <div class="relative" :class="searchShow ? 'block' : 'hidden md:block'">
+        <input type="text"
+               name="search"
+               placeholder="{% trans 'Search' %}"
+               class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+               hx-get="{% url 'faq-search' %}?cat_id={{cat_id}}"
+               hx-trigger="keyup delay:500ms"
+               hx-target="#faqList" />
+        <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
+      </div>
+
+      <!-- Filter Dropdown -->
+      {% if faqs %}
+      <form method="post"
+            hx-get="{% url 'faq-filter' cat_id %}"
+            hx-target="#faqList"
+            id="filterForm"
+            class="m-0">
+        <div class="oh-dropdown" x-data="{open: false}">
+          <button class="px-4 py-2 bg-white rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+                  @click="open = !open"
+                  onclick="event.preventDefault()">
+            <ion-icon name="filter" class="text-sm"></ion-icon>
+            {% trans "Filter" %}
+          </button>
+          <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+               x-show="open"
+               @click.outside="open = false"
+               style="display:none; width: 280px;">
+            <div class="oh-accordion">
+              <div class="row">
+                <div class="col-12">
+                  <div class="oh-input-group">
+                    <label class="oh-label">{% trans "Tags" %}</label>
+                    {{ f.form.tags }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="oh-dropdown__filter-footer mt-3">
+              <button class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                      type="submit">
+                {% trans "Filter" %}
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+      {% endif %}
+
+      <!-- Create Button -->
+      {% if perms.helpdesk.add_faq %}
+      <button type="button"
+              class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+              hx-get="{% url 'faq-create' cat_id %}"
+              hx-target="#objectCreateModalTarget"
+              data-toggle="oh-modal-toggle"
+              data-target="#objectCreateModal">
+        <ion-icon name="add-outline" class="text-sm"></ion-icon>
+        {% trans "Create" %}
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</section>

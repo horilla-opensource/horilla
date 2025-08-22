@@ -602,13 +602,13 @@ document.querySelectorAll('.accordion-btn').forEach((btn) => {
         if (!isOpen) {
             panel.style.maxHeight = panel.scrollHeight + 'px';
             icon.textContent = '-';
-            btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
-            btn.classList.add("bg-[#e54f38]", "text-white");
+            // btn.classList.remove("bg-[#fff5f1]", "text-[#e54f38]");
+            // btn.classList.add("bg-[#e54f38]", "text-white");
         } else {
             panel.style.maxHeight = null;
             icon.textContent = '+';
-            btn.classList.remove("bg-[#e54f38]", "text-white");
-            btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
+            // btn.classList.remove("bg-[#e54f38]", "text-white");
+            // btn.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
         }
     });
 });
