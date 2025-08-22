@@ -51,6 +51,11 @@
             <a href="{% url 'restrict-view' %}" class="oh-sidebar__submenu-link">{% trans 'Restrict Leaves' %}</a>
           </li>
         {% endif %}
+        {% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
+          <li>
+            <a href="{% url 'gmeet-view' %}" class="oh-sidebar__submenu-link">{% trans 'Gmeet' %}</a>
+          </li>
+        {% endif %}
       </ul>
     </div>
   </button>

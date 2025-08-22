@@ -102,26 +102,6 @@
 									</a>
 								</li>
 								{% endif %}
-								{% if perms.horilla_backup.view_googledrivebackup %}
-								<li class="py-1">
-									<a
-										id="date"
-										href="{% url 'gdrive' %}"
-										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "Gdrive Backup" %}
-									</a>
-								</li>
-								{% endif %}
-								{% if "horilla_ldap"|app_installed %}
-								<li class="py-1">
-									<a
-										id="date"
-										href="{% url 'ldap-settings' %}"
-										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "LDAP Configuration" %}
-									</a>
-								</li>
-								{% endif %}
 							</ul>
 						</div>
 					</div>
@@ -235,14 +215,6 @@
 									>
 								</li>
 								{% endif %}
-								<li class="py-1">
-									<a
-										id="skills"
-										href="{% url 'linkedin-integration-setting' %}"
-										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "Linkedin Integration" %}
-									</a>
-								</li>
 							</ul>
 						</div>
 					</div>
@@ -614,27 +586,57 @@
 					>
 						<div class="py-3">
 							<ul>
-								{% if perms.whatsapp.add_whatsappcredentials %}
-
+								{% if perms.horilla_backup.view_googledrivebackup %}
+									<li class="py-1">
+										<a
+											id="date"
+											href="{% url 'gdrive' %}"
+											class="hover:text-primary-600 transition duration-300 text-[13px]"
+											>{% trans "Gdrive Backup" %}
+										</a>
+									</li>
+								{% endif %}
 								<li class="py-1">
 									<a
-										id="whatsapp_credentials"
-										href="#"
-										{% comment %} href="{% url 'whatsapp-credential-view' %}" {% endcomment %}
+										id="skills"
+										href="{% url 'linkedin-integration-setting' %}"
 										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "Whatsapp" %}</a
-									>
+										>{% trans "Linkedin" %}
+									</a>
 								</li>
+
+								{% if "horilla_ldap"|app_installed %}
+									<li class="py-1">
+										<a
+											id="date"
+											href="{% url 'ldap-settings' %}"
+											class="hover:text-primary-600 transition duration-300 text-[13px]"
+											>{% trans "LDAP" %}
+										</a>
+									</li>
 								{% endif %}
 
 								<li class="py-1">
 									<a
 										id="google_meet"
-										href="#"
+										href="{% url 'gmeet-setting' %}"
 										class="hover:text-primary-600 transition duration-300 text-[13px]"
 										>{% trans "Google Meet" %}</a
 									>
 								</li>
+
+								{% if perms.whatsapp.add_whatsappcredentials %}
+									<li class="py-1">
+										<a
+											id="whatsapp_credentials"
+											href="#"
+											{% comment %} href="{% url 'whatsapp-credential-view' %}" {% endcomment %}
+											class="hover:text-primary-600 transition duration-300 text-[13px]"
+											>{% trans "Whatsapp" %}</a
+										>
+									</li>
+								{% endif %}
+
 							</ul>
 						</div>
 					</div>

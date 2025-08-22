@@ -9,6 +9,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
+from base import apps
 from horilla import settings
 from horilla.settings import BASE_DIR, TEMPLATES
 
@@ -466,3 +467,36 @@ def apply_decorators(decorators):
         return wrapper
 
     return decorator
+
+
+@decorator_with_arguments
+def check_integration_enabled(func, app_name):
+    """
+    Decorator to check if the integration app is installed and enabled.
+    """
+    from base.models import IntegrationApps
+
+    @wraps(func)
+    def wrapper(request, *args, **kwargs):
+        if not IntegrationApps.objects.filter(
+            app_label=app_name, is_enabled=True
+        ).exists():
+            try:
+                app_config = apps.get_app_config(app_name)
+                app_verbose_name = app_config.verbose_name
+            except LookupError:
+                app_verbose_name = app_name
+
+            messages.error(request, f"Access to '{app_verbose_name}' is disabled.")
+
+            previous_url = request.META.get("HTTP_REFERER", "/")
+
+            if "HTTP_HX_REQUEST" in request.META:
+                return render(request, "decorator_404.html")
+
+            script = f'<script>window.location.href = "{previous_url}";</script>'
+            return HttpResponse(script)
+
+        return func(request, *args, **kwargs)
+
+    return wrapper

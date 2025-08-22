@@ -1,0 +1,53 @@
+{% load i18n %}
+{% load static %}
+<div class="oh-dropdown__filter-body">
+    <div class="oh-accordion">
+        <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Google meeting" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.employee_id.id_for_label}}">{% trans "Employee" %}</label>
+                        {{form.employee_id}}
+                      </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.start_time.id_for_label}}">{% trans "Start Time" %}</label>
+                        {{form.start_time}}
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.duration.id_for_label}}">{% trans "Duration" %}</label>
+                        {{form.duration}}
+                    </div>
+                    <div class="oh-input-group">
+                        <label class="oh-label" for="{{form.attendees.id_for_label}}">{% trans "Attendees" %}</label>
+                        {{form.attendees}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="oh-accordion" >
+        <div class="oh-accordion-header" onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">{% trans "Advanced" %}</div>
+        <div class="oh-accordion-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "From Date" %}</label>
+                        {{form.from_date}}
+                    </div>
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="oh-input-group">
+                        <label class="oh-label">{% trans "To Date" %}</label>
+                        {{form.to_date}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

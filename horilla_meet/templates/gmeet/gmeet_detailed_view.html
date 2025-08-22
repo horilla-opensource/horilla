@@ -1,0 +1,107 @@
+{% load generic_template_filters i18n %}
+<div class="oh-modal__dialog-header">
+    <span class="oh-modal__dialog-title" id="genericModalLabel">
+        {{title}}
+    </span>
+    <button class="oh-modal__close--custom" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+
+<div class="oh-modal__dialog-body oh-modal__dialog-relative pb-4" style="padding-bottom: 0px">
+    {% if instance_ids %}
+        <div class="oh-modal__dialog oh-modal__dialog--navigation m-0 p-0">
+            <button data-action="previous" hx-get="{{previous_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
+                hx-target="#genericModalBody" class="oh-modal__diaglog-nav oh-modal__nav-prev"
+                hx-on:click="htmxLoadIndicator(this);">
+                <ion-icon name="chevron-back-outline"></ion-icon>
+            </button>
+
+            <button data-action="next" hx-get="{{next_url}}?{{ids_key}}={{instance_id}}&{{request.GET.urlencode}}"
+                hx-target="#genericModalBody" class="oh-modal__diaglog-nav oh-modal__nav-next"
+                hx-on:click="htmxLoadIndicator(this);"
+                >
+                <ion-icon name="chevron-forward-outline"></ion-icon>
+            </button>
+        </div>
+    {% endif %}
+    <div id="detailViewContainer">
+        <div class="mb-3" id="detailViewCard">
+            <div class="oh-card oh-card--no-shadow oh-card__body">
+                    <a class="oh-timeoff-modal__profile-content" style="text-decoration: none"
+                        >
+                        <div class="oh-profile mb-3">
+                            <div class="oh-timeoff-modal__profile-info">
+                                <span class="oh-timeoff-modal__user fw-bold">
+                                    {{object.title}}
+                                </span>
+                                <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+                                    {{object.start_time}} - {{object.end_time}}
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                <div class="oh-modal__dialog-header oh-card__footer--border-top pb-0"
+                    style="padding-top: 5px; padding-rigth: 0px; padding-left: 0px">
+                    <div class="row">
+                        {% for col in body %}
+                            <div class="col-{% if cols|get_item:col.1 %}{{cols|get_item:col.1}}{% else %}6{% endif %} mt-3">
+                                {% if not col.2 %}
+                                    <div class="oh-timeoff-modal__stat">
+                                        <span class="oh-timeoff-modal__stat-title">{{col.0}}</span>
+                                        <span class="oh-timeoff-modal__stat-count">
+                                            {{object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id}}
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    {{object|getattribute:col.1|safe}}
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="col-12 mt-3">
+                            <div class="oh-timeoff-modal__stat">
+                                <span class="oh-timeoff-modal__stat-title">{% trans "Attendees" %}</span>
+                                <span class="oh-timeoff-modal__stat-count">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for attendee in object.get_attendees %}
+                                        <div class="d-flex align-items-center oh-timeoff-modal__stat-title bg-light rounded-pill px-2 py-1" title="{{attendee.get_mail}}">
+                                            <div class="oh-timeoff-modal__profile-info">
+                                                <img src="https://ui-avatars.com/api/?name={{attendee.get_full_name}}&background=random" style="width:25px" class="oh-profile__image me-2" />
+                                            </div>
+                                            <div class="ms-2 me-2 fw-medium">{{attendee.get_full_name}}</div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-3 " id="enlargeattachmentContainer"></div>
+                <div class="oh-modal__dialog-footer p-0">
+                    {% if actions or action_method %}
+                        {% if actions and not action_method %}
+                            <div class="oh-btn-group" style="width: 100%">
+                                {% for action in actions %}
+                                    <a {{action.attrs|format:object|safe}}>
+                                        <ion-icon name="{{action.icon}}"></ion-icon>
+                                        {{action.action}}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{object|getattribute:action_method|safe}}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#reloadMessagesButton").click();
+    var nextButtonClick = () => {
+        $('[data-action="next"]').click();
+    };
+</script>

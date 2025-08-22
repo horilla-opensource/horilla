@@ -1,25 +1,122 @@
-{% load i18n %}
+{% load i18n horillafilters %}
 <div class="oh-btn-group" onclick="event.stopPropagation()">
-
-    {% if perms.recruitment.change_interviewschedule or request.user.employee_get in instance.employee_id.all %}
-        <a
-        title="{% trans "Edit" %}" hx-get="{% url 'edit-interview' instance.id %}?view=true&instance_ids={{instance.ordered_ids}}"
-        data-target="#genericModal" hx-swap="innerHTML" hx-target="#genericModalBody"
-        data-toggle="oh-modal-toggle"  class="oh-btn oh-btn--light-bkg w-100"
-        ><ion-icon name="create-outline"></ion-icon></a>
-    {% endif %}
-
-    {% if perms.recruitment.delete_interviewschedule %}
-        <form
-            hx-post="{% url 'delete-interview' instance.id %}?view=true"
-            hx-target = "#interviewdelete"
-            hx-confirm="{% trans "Are you sure you want to delete this interview?" %}"
-            method="post"
-            style="display: contents;width:100%">
-            {% csrf_token %}
-            <button onclick="event.stopPropagation()" type="submit" class="oh-btn oh-btn--light-bkg oh-btn--danger-outline  w-100" title="{% trans 'Delete' %}">
-            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-            </button>
-        </form>
-    {% endif %}
+	{% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
+		{% if perms.recruitment.change_interviewschedule or request.user.employee_get in instance.employee_id.all %}
+			{% if instance.google_interviews.meeting.meet_url %}
+				<a
+					title="{% trans 'Join Meeting' %}"
+					href="{{instance.google_interviews.meeting.meet_url}}"
+					target="_blank"
+					class="oh-btn oh-btn--light-bkg w-100"
+					><ion-icon name="link-outline"></ion-icon
+				></a>
+			{% else %}
+				<a
+					title="{% trans 'Join Meeting' %}"
+					href="#"
+					class="oh-btn oh-btn--disabled oh-btn--light-bkg w-100"
+					><ion-icon name="link-outline"></ion-icon
+				></a>
+			{% endif %}
+		{% endif %}
+		{% if perms.horilla_meet.add_googlemeeting %}
+			{% if perms.recruitment.change_interviewschedule or request.user.employee_get in instance.employee_id.all %}
+				<a
+					title="{% trans 'Send Meeting Link' %}"
+					href="#"
+					data-id="{{instance.id}}"
+					data-date="{{instance.interview_date}}"
+					data-time="{{instance.interview_time}}"
+					data-employees="{{instance.employee_id.all|length}}"
+					class="oh-btn oh-btn--light-bkg w-100 createMeeting"
+					><ion-icon name="share-outline"></ion-icon
+				></a>
+			{% endif %}
+		{% endif %}
+	{% endif %}
+	{% if perms.recruitment.change_interviewschedule or request.user.employee_get in instance.employee_id.all %}
+		<a
+			title="{% trans 'Edit' %}"
+			hx-get="{% url 'edit-interview' instance.id %}?view=true&instance_ids={{instance.ordered_ids}}"
+			data-target="#genericModal"
+			hx-swap="innerHTML"
+			hx-target="#genericModalBody"
+			data-toggle="oh-modal-toggle"
+			class="oh-btn oh-btn--light-bkg w-100"
+			><ion-icon name="create-outline"></ion-icon
+		></a>
+	{% endif %}
+	{% if perms.recruitment.delete_interviewschedule %}
+		<form
+			hx-post="{% url 'delete-interview' instance.id %}?view=true"
+			hx-target="#interviewdelete"
+			hx-confirm="{% trans 'Are you sure you want to delete this interview?' %}"
+			method="post"
+			style="display: contents; width: 100%"
+		>
+			{% csrf_token %}
+			<button
+				onclick="event.stopPropagation()"
+				type="submit"
+				class="oh-btn oh-btn--light-bkg oh-btn--danger-outline w-100"
+				title="{% trans 'Delete' %}"
+			>
+				<ion-icon
+					name="trash-outline"
+					role="img"
+					class="md hydrated"
+					aria-label="trash outline"
+				></ion-icon>
+			</button>
+		</form>
+	{% endif %}
 </div>
+
+<script>
+	$(document).ready(function(){
+		{% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
+			$(".createMeeting").on("click", function(){
+				var interviewID = $(this).data("id");
+				var interviewDate = $(this).data("date");
+				var interviewTime = $(this).data("time");
+				var interviewCount = $(this).data("employees") + 1;
+				var credential = "{{request.user.employee_get.google_credential}}";
+
+				var confirmationMessage = `Are you sure you want to send the meeting link to the  ${interviewCount} participants?\n\nDate: ${interviewDate}\nTime: ${interviewTime}`;
+				confirmationMessage = confirmationMessage.replace(/\n/g, '<br />');
+
+				Swal.fire({
+					title: 'Are you sure?',
+					html: confirmationMessage,
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonText: 'Confirm',
+					cancelButtonColor: "#d33",
+					confirmButtonColor: "#008000",
+					cancelButtonText: 'Cancel'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						$("#loading-overlay").removeClass("d-none");
+						if (credential) {
+							var url = "{% url 'create-interview-google-meeting' %}";
+							$.ajax({
+								type: "GET",
+								url: url,
+								data: { id: interviewID },
+								success: function(response) {
+									window.location.reload();
+								},
+								error: function(error) {
+									console.log(error);
+								}
+							});
+						} else {
+							var url = "{% url 'create-google-meet' %}";
+							window.location.href = url;
+						}
+					}
+				});
+			})
+		{% endif %}
+	})
+</script>

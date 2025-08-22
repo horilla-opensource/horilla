@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n horillafilters %}
 <style>
     .oh-btn-group button {
         border-right: 1px solid hsl(213, 22%, 93%);
@@ -6,7 +6,38 @@
 </style>
 <div>
     <div class="oh-btn-group" onclick="event.stopPropagation()">
-
+        {% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
+            {% if instance.google_meeting.google_meeting.meet_url %}
+                <a class="oh-btn oh-btn--light-bkg w-100"
+                    href="{{instance.google_meeting.google_meeting.meet_url}}"
+                    target="_blank"
+                    title="{% trans 'Join Meeting' %}"
+                >
+                    <ion-icon name="link-outline"></ion-icon>
+                </a>
+            {% else %}
+                <a
+                    class="oh-btn oh-btn--light-bkg oh-btn--disabled w-100 text-decoration-none"
+                >
+                    <ion-icon name="link-outline"></ion-icon>
+                </a>
+            {% endif %}
+            {% if perms.horilla_meet.add_googlemeeting %}
+                {% if request.user.employee_get in instance.manager.all %}
+                    <a class="oh-btn oh-btn--light-bkg w-100 createMeeting"
+                        href="#"
+                        title="{% trans 'Send Meeting Link' %}"
+                        data-id = "{{instance.id}}"
+                        data-date="{{instance.date.date}}"
+                        data-time="{{ instance.date|time }}"
+                        data-employees = "{{instance.employee_id.all|length}}"
+                        data-manager = "{{instance.manager.all|length}}"
+                    >
+                        <ion-icon name="share-outline"></ion-icon>
+                    </a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
         {% if perms.pms.add_meetings or request.user.employee_get in instance.manager.all or request.user.employee_get in instance.answer_employees.all  %}
 
         <a
@@ -97,3 +128,51 @@
         {% endif %}
     </div>
 </div>
+<script>
+    $(document).ready(function(){
+        {% if "horilla_meet"|app_installed and "horilla_meet"|integration_installed %}
+            $(".createMeeting").on("click", function(){
+                var meetingID = $(this).data("id");
+                var meetingDate = $(this).data("date");
+                var meetingTime = $(this).data("time");
+                var meetingCount = $(this).data("employees") + $(this).data("manager");
+                var credential = "{{request.user.employee_get.google_credential}}";
+
+                var confirmationMessage = `Are you sure you want to send the meeting link to the  ${meetingCount} participants?\n\nDate: ${meetingDate}\nTime: ${meetingTime}`;
+                confirmationMessage = confirmationMessage.replace(/\n/g, '<br />');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    html: confirmationMessage,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm',
+                    cancelButtonColor: "#d33",
+                    confirmButtonColor: "#008000",
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $("#loading-overlay").removeClass("d-none");
+                        if (credential) {
+                            var url = "{% url 'create-pms-google-meeting' %}";
+                            $.ajax({
+                                type: "GET",
+                                url: url,
+                                data: { id: meetingID },
+                                success: function(response) {
+                                    window.location.reload();
+                                },
+                                error: function(error) {
+                                    console.log(error);
+                                }
+                            });
+                        } else {
+                            var url = "{% url 'create-google-meet' %}";
+                            window.location.href = url;
+                        }
+                    }
+                });
+            })
+        {% endif %}
+    })
+</script>
