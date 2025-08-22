@@ -1,0 +1,75 @@
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+
+<div id="faqContainer" class="bg-white rounded-md shadow-card p-3">
+    {% include 'helpdesk/faq/faq_category_nav.html'%}
+    <div class="oh-wrapper">
+        <div id="faqCategoryList">
+            {% if faq_categories %} 
+                {% include "helpdesk/faq/faq_category_list.html" %} 
+            {% else %}
+                <div class="oh-404">
+                    <img
+                        src="{% static 'images/ui/faq.png' %}"
+                        class="mb-4 oh-404__image"
+                        alt=""
+                    />
+                    <h3 style="font-size: 20px" class="oh-404__subtitle">
+                        {% trans "There are no FAQs at the moment." %}
+                    </h3>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div
+        class="oh-modal"
+        id="faqCategoryCreate"
+        role="dialog"
+        aria-labelledby="faqCategoryCreate"
+        aria-hidden="true"
+    ></div>
+    <div
+        class="oh-modal"
+        id="faqCreate"
+        role="dialog"
+        aria-labelledby="faqCreate"
+        aria-hidden="true"
+    ></div>
+</div>
+<script>
+    var get_faqs = () => {
+        var FAQList = {{ questions|safe }};
+        $(function () {
+            $("[name='search']").autocomplete({
+                source: FAQList,
+                appendTo:".oh-faq__input-search",
+                select: function (event, ui) {
+                    $(this).val(ui.item.value);
+                    $(this).blur();
+                },
+                open: function () {
+                    $(".ui-autocomplete").addClass("oh-autocomplete-suggestions");
+                    $(".ui-autocomplete li").addClass("autocomplete-suggestion");
+                }
+            });
+        });
+    };
+
+    $(document).ready(function () {
+        get_faqs();
+        let typingTimer;
+        var typingDelay = 1000;
+
+        $("[name='search']").on("input", function () {
+            clearTimeout(typingTimer);
+            typingTimer = setTimeout(() => {
+                this.dispatchEvent(new Event('change', { bubbles: true }));
+            }, typingDelay);
+        });
+    });
+
+    $(document).on("htmx:afterRequest", function (e) {
+        get_faqs();
+    });
+</script>
+{% endblock %}

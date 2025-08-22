@@ -1,0 +1,82 @@
+{% extends 'index.html' %} {% block content %} {% load static %} {% load i18n %}
+<div id="faqContainer" class="bg-white rounded-md shadow-card p-3">
+    {% include 'helpdesk/faq/faq_nav.html'%}
+    <div class="oh-wrapper">
+        <div id="faqList" class="accordion-wrapper space-y-2">{% include "helpdesk/faq/faq_list.html" %}</div>
+    </div>
+
+    <div
+        class="oh-modal"
+        id="faqCreate"
+        role="dialog"
+        aria-labelledby="faqCreate"
+        aria-hidden="true"
+    ></div>
+
+    <div id="addTagTargetModal">
+        <div id="addTagTarget"></div>
+    </div>
+
+    <div
+        class="oh-modal"
+        id="addTagModal"
+        role="dialog"
+        aria-labelledby="editDialogModal"
+        aria-hidden="true"
+        style="z-index: 1100"
+    >
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="editTitle">
+                    {% trans "Create Tag" %}
+                </h2>
+                <button
+                    class="oh-modal__close--custom"
+                    onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+                    aria-label="Close"
+                >
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="editTarget">
+                <form id="addTagForm">
+                    {% csrf_token %} {{create_tag_f.as_p}}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateTag(event) {
+        const selectedValues = Array.from(event.selectedOptions).map(
+            (option) => option.value
+        );
+        if (selectedValues.includes("create_new_tag")) {
+            $("#addTagModal").addClass("oh-modal--show");
+        }
+    }
+
+    $("#addTagForm").on("submit", function () {
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/helpdesk/ticket-create-tag",
+            data: $(this).serialize(),
+            success: function (response) {
+                var newOption = $("<option selected></option>")
+                    .val(response.tag_id)
+                    .text(response.title);
+
+                $("#id_tags option[value='create_new_tag']").before(newOption);
+                $("#id_tags option[value='create_new_tag']").prop(
+                    "selected",
+                    false
+                );
+                $("#addTagModal").removeClass("oh-modal--show");
+                $("#addTagForm").find('input[name="title"]').val("");
+            },
+        });
+    });
+</script>
+{% endblock %}
