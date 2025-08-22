@@ -2,7 +2,6 @@ import json
 import logging
 import os
 from datetime import datetime
-from distutils.util import strtobool
 from operator import itemgetter
 from urllib.parse import parse_qs
 
@@ -74,6 +73,10 @@ from notifications.signals import notify
 logger = logging.getLogger(__name__)
 
 # Create your views here.
+
+
+def strtobool(val):
+    return str(val).lower() in ("y", "yes", "t", "true", "on", "1")
 
 
 @login_required
