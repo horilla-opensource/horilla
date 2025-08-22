@@ -16,7 +16,7 @@ from django.template import TemplateSyntaxError
 from django.template.defaultfilters import register
 from django.utils.translation import gettext as _
 
-from base.models import Company, EmployeeShiftSchedule
+from base.models import Company, EmployeeShiftSchedule, IntegrationApps
 from employee.methods.duration_methods import strtime_seconds
 from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
@@ -250,6 +250,20 @@ def app_installed(app_name):
     Returns True if the app with the given name is installed, otherwise False.
     """
     return apps.is_installed(app_name)
+
+
+@register.filter(name="integration_installed")
+def is_integration_installed(app_name):
+    """
+    Custom function to check if an app is installed and enabled.
+    """
+
+    integrations = IntegrationApps.objects.values_list("app_label", flat=True)
+
+    if app_name not in integrations and not apps.is_installed(app_name):
+        return False
+
+    return IntegrationApps.objects.filter(app_label=app_name, is_enabled=True).exists()
 
 
 @register.filter(name="is_stagemanager")

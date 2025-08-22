@@ -2,7 +2,9 @@
 This module contains the configuration for the 'base' app.
 """
 
-from django.apps import AppConfig
+from django.apps import AppConfig, apps
+
+from horilla.horilla_settings import NO_PERMISSION_MODALS
 
 
 class BaseConfig(AppConfig):
@@ -17,6 +19,7 @@ class BaseConfig(AppConfig):
         from base import signals
 
         super().ready()
+        check_for_no_permissions_models()
         try:
             from base.models import EmployeeShiftDay
 
@@ -35,4 +38,14 @@ class BaseConfig(AppConfig):
                     [EmployeeShiftDay(day=day[0]) for day in days]
                 )
         except Exception as e:
-            pass
+            print(e)
+
+
+def check_for_no_permissions_models():
+
+    model_names = set()
+    for model in apps.get_models():
+        if getattr(model, "_no_permission_model", False):
+            model_names.add(model._meta.model_name)
+
+    NO_PERMISSION_MODALS.extend(list(model_names))

@@ -21,7 +21,8 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
-from horilla.models import HorillaModel, upload_path
+from horilla.methods import get_horilla_model_class
+from horilla.models import HorillaModel, NoPermissionModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from horilla_views.cbv_methods import render_template
 
@@ -2809,6 +2810,11 @@ class NotificationSound(models.Model):
         Employee, on_delete=models.CASCADE, related_name="notification_sound"
     )
     sound_enabled = models.BooleanField(default=False)
+
+
+class IntegrationApps(HorillaModel, NoPermissionModel):
+    app_label = models.CharField(max_length=255, unique=True)
+    is_enabled = models.BooleanField(default=False)
 
 
 @receiver(post_save, sender=PenaltyAccounts)
