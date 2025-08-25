@@ -29,7 +29,12 @@ def time_sheet_crud_perm(user, timesheet):
     """
     try:
         employee = user.employee_get
-        is_task_manager = employee in timesheet.task_id.task_managers.all()
+        is_task_manager = False
+        if hasattr(timesheet, "task_id") and timesheet.task_id:
+            try:
+                is_task_manager = employee in timesheet.task_id.task_managers.all()
+            except Exception:
+                is_task_manager = False
         is_project_manager = employee in timesheet.project_id.managers.all()
         is_own_timesheet = timesheet.employee_id == employee
 
