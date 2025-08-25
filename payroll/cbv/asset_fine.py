@@ -24,8 +24,21 @@ class AssetFineFormView(HorillaFormView):
     new_display_title = _("Asset Fine")
 
     def form_valid(self, form: AssetFineForm) -> HttpResponse:
+        if apps.is_installed("asset"):
+            Asset = get_horilla_model_class(app_label="asset", model="asset")
+        asset_id = self.request.GET["asset_id"]
+        employee_id = self.request.GET["employee_id"]
+        asset = Asset.objects.get(id=asset_id)
+        employee = Employee.objects.get(id=employee_id)
         if form.is_valid():
-            form.save()
+            instance = form.save(commit=False)
+            instance.employee_id = employee
+            instance.type = "fine"
+            instance.provided_date = datetime.date.today()
+            instance.asset_id = asset
+            instance.save()
             messages.success(self.request, "Asset fine added")
-            return HttpResponse("<script>$('#reloadMessagesButton').click()</script>")
+            return HttpResponse(
+                "<script>$('#dynamicCreateModal').toggleClass('oh-modal--show'); $('#reloadMessagesButton').click()</script>"
+            )
         return super().form_valid(form)

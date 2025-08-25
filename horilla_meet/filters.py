@@ -3,6 +3,7 @@ horilla_mail/filters.py
 """
 
 from django import forms
+
 from horilla.filters import HorillaFilterSet, django_filters
 from horilla_meet.models import GoogleMeeting
 

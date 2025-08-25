@@ -1,13 +1,13 @@
 from datetime import datetime
+
 from django.apps import apps
-from django.dispatch import receiver
 from django.db import models
-from django.db.models.signals import post_save, m2m_changed
+from django.db.models.signals import m2m_changed, post_save
+from django.dispatch import receiver
 
 from horilla.horilla_middlewares import _thread_locals
-from horilla_meet.models import GoogleMeeting
 from horilla_meet.methods import create_calendar_event, update_calendar_event
-
+from horilla_meet.models import GoogleMeeting
 
 
 @receiver(post_save, sender=GoogleMeeting)

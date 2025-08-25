@@ -1,4 +1,4 @@
-{% load i18n static %} 
+{% load i18n static %}
 {% include 'filter_tags.html' %}
 {% if faq_categories %}
 <div class="oh-faq-cards grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
@@ -6,7 +6,7 @@
     <div class="shadow-card p-5 bg-white rounded-md border border-dark-50" id="faqCategoryItem{{category.id}}">
         <div class="flex justify-between items-start mb-4">
             <h3 class="text-md font-semibold">{{ category.title }}</h3>
-            
+
             {% if perms.helpdesk.change_faqcategory or perms.helpdesk.delete_faqcategory %}
             <div class="relative inline-block dropdown-wrapper" x-data="{ open: false }">
                 <a class="cursor-pointer dropdown-toggle" @click="open = !open" @click.outside="open = false">
@@ -31,7 +31,7 @@
                                 >{% trans "Edit" %}</a
                             >
                         </li>
-                        {% endif %} 
+                        {% endif %}
                         {% if perms.helpdesk.delete_faqcategory %}
                         <li class="oh-dropdown__item">
                             <form
@@ -56,17 +56,17 @@
             </div>
             {% endif %}
         </div>
-    
+
         <p class="text-sm text-[#565E6C] mb-3">{{ category.description }}</p>
-    
-        <a 
+
+        <a
             href="{% url 'faq-view' category.id %}"
             class="px-5 py-2 group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
         >
             {% trans "View FAQs" %}
         </a>
     </div>
-    
+
     {% endfor %}
 </div>
 {% else %}

@@ -2,12 +2,12 @@ import uuid
 from datetime import timedelta
 
 from django.conf import settings
-
-from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 from horilla_meet.models import GoogleCredential
+
 
 def get_google_credentials(request):
     """Fetches and refreshes Google credentials for the logged-in user."""
@@ -108,12 +108,12 @@ def update_calendar_event(request, data, event_id=None):
         "timeZone": settings.TIME_ZONE,
     }
     event["end"] = {
-        "dateTime": (data["start_time"] + timedelta(minutes=data["duration"])).isoformat(),
+        "dateTime": (
+            data["start_time"] + timedelta(minutes=data["duration"])
+        ).isoformat(),
         "timeZone": settings.TIME_ZONE,
     }
-    event["attendees"] = [
-        {"email": attendee} for attendee in attendees
-    ]
+    event["attendees"] = [{"email": attendee} for attendee in attendees]
 
     try:
         updated_event = (
