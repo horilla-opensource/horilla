@@ -137,11 +137,12 @@ class TimeSheetList(HorillaListView):
         queryset = super().get_queryset()
         if not self.request.user.has_perm("project.view_timesheet"):
             employee = self.request.user.employee_get
-            queryset = queryset.filter(
-                Q(project_id__managers=employee)
-                | Q(project_id__members=employee)
-                | Q(employee_id=employee)
-            ).distinct()
+            if Project.objects.filter(managers=employee).exists():
+                queryset = queryset.filter(
+                    Q(project_id__managers=employee) | Q(employee_id=employee)
+                ).distinct()
+            else:
+                queryset = queryset.filter(employee_id=employee).distinct()
         return queryset.order_by("-date")
 
     def __init__(self, **kwargs: Any) -> None:

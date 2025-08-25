@@ -1753,11 +1753,17 @@ def time_sheet_initial(request):
     return JsonResponse({"data": list(tasks)})
 
 
+@login_required
 def personal_time_sheet(request):
     """
     This is an ajax method to return json response for generating bar charts to employees.
     """
     emp_id = request.GET["emp_id"]
+    if (
+        not request.user.has_perm("project.view_timesheet")
+        and request.user.employee_get.id != int(emp_id)
+    ):
+        return you_dont_have_permission(request)
     selected = request.GET["selected"]
     month_number = request.GET["month"]
     year = request.GET["year"]
@@ -1827,6 +1833,7 @@ def personal_time_sheet(request):
     return JsonResponse(response)
 
 
+@login_required
 def personal_time_sheet_view(request, emp_id):
     """
     Function for viewing the barcharts for timesheet of a specific employee.
@@ -1840,8 +1847,13 @@ def personal_time_sheet_view(request, emp_id):
     """
     try:
         Employee.objects.get(id=emp_id)
-    except:
+    except Exception:
         return render(request, "error.html")
+    if (
+        not request.user.has_perm("project.view_timesheet")
+        and request.user.employee_get.id != emp_id
+    ):
+        return you_dont_have_permission(request)
     emp_last_name = (
         Employee.objects.get(id=emp_id).employee_last_name
         if Employee.objects.get(id=emp_id).employee_last_name != None
@@ -1858,6 +1870,7 @@ def personal_time_sheet_view(request, emp_id):
     return render(request, "time_sheet/chart.html", context=context)
 
 
+@login_required
 def time_sheet_single_view(request, time_sheet_id):
     """
     Renders a single timesheet view page.
@@ -1871,6 +1884,13 @@ def time_sheet_single_view(request, time_sheet_id):
 
     """
     timesheet = TimeSheet.objects.get(id=time_sheet_id)
+    employee = request.user.employee_get
+    if (
+        not request.user.has_perm("project.view_timesheet")
+        and not timesheet.project_id.managers.filter(id=employee.id).exists()
+        and timesheet.employee_id != employee
+    ):
+        return you_dont_have_permission(request)
     context = {"time_sheet": timesheet}
     return render(request, "time_sheet/time_sheet_single_view.html", context)
 
