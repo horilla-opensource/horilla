@@ -142,7 +142,9 @@ if not any(
     cmd in sys.argv
     for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
 ):
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(expire_contract, "interval", hours=4)
-    scheduler.add_job(auto_payslip_generate, "interval", hours=3)
-    scheduler.start()
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(expire_contract, "interval", hours=4)
+    # scheduler.add_job(auto_payslip_generate, "interval", hours=3)
+    # scheduler.start()
+
+    print('scheduler stopped')

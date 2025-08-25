@@ -430,7 +430,8 @@ def biometric_device_schedule(request, device_id):
                         "interval",
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
-                    scheduler.start()
+                    # scheduler.start()
+                    print('scheduler stopped')
                     return HttpResponse("<script>window.location.reload()</script>")
                 except Exception as error:
                     logger.error("An error comes in biometric_device_schedule ", error)
@@ -461,7 +462,8 @@ def biometric_device_schedule(request, device_id):
                     "interval",
                     seconds=str_time_seconds(device.scheduler_duration),
                 )
-                scheduler.start()
+                # scheduler.start()
+                print('scheduler stopped')
                 return HttpResponse("<script>window.location.reload()</script>")
             elif device.machine_type == "dahua":
                 duration = request.POST.get("scheduler_duration")
@@ -475,7 +477,8 @@ def biometric_device_schedule(request, device_id):
                     "interval",
                     seconds=str_time_seconds(device.scheduler_duration),
                 )
-                scheduler.start()
+                # scheduler.start()
+                print('scheduler stopped')
                 return HttpResponse("<script>window.location.reload()</script>")
             elif device.machine_type == "cosec":
                 duration = request.POST.get("scheduler_duration")
@@ -493,7 +496,8 @@ def biometric_device_schedule(request, device_id):
                     "interval",
                     seconds=str_time_seconds(device.scheduler_duration),
                 )
-                scheduler.start()
+                # scheduler.start()
+                print('scheduler stopped')
                 return HttpResponse("<script>window.location.reload()</script>")
             elif device.machine_type == "etimeoffice":
                 duration = request.POST.get("scheduler_duration")
@@ -507,7 +511,8 @@ def biometric_device_schedule(request, device_id):
                     "interval",
                     seconds=str_time_seconds(device.scheduler_duration),
                 )
-                scheduler.start()
+                # scheduler.start()
+                print('scheduler stopped')
                 return HttpResponse("<script>window.location.reload()</script>")
             else:
                 return HttpResponse("<script>window.location.reload()</script>")
@@ -2586,7 +2591,8 @@ try:
                         "interval",
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
-                    scheduler.start()
+                    # scheduler.start()
+                    print('scheduler stopped')
                 elif device.machine_type == "zk":
                     scheduler = BackgroundScheduler()
                     scheduler.add_job(
@@ -2595,7 +2601,8 @@ try:
                         seconds=str_time_seconds(device.scheduler_duration),
                         id=f"biometric_{device.id}",
                     )
-                    scheduler.start()
+                    # scheduler.start()
+                    print('scheduler stopped')
                 elif device.machine_type == "dahua":
                     scheduler = BackgroundScheduler()
                     scheduler.add_job(
@@ -2603,7 +2610,8 @@ try:
                         "interval",
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
-                    scheduler.start()
+                    # scheduler.start()
+                    print('scheduler stopped')
 
                 elif device.machine_type == "cosec":
                     scheduler = BackgroundScheduler()
@@ -2612,7 +2620,8 @@ try:
                         "interval",
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
-                    scheduler.start()
+                    # scheduler.start()
+                    print('scheduler stopped')
 
                 elif device.machine_type == "etimeoffice":
                     scheduler = BackgroundScheduler()
@@ -2621,7 +2630,8 @@ try:
                         "interval",
                         seconds=str_time_seconds(device.scheduler_duration),
                     )
-                    scheduler.start()
+                    # scheduler.start()
+                    print('scheduler stopped')
                 else:
                     pass
 except:

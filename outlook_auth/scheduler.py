@@ -32,11 +32,13 @@ if not any(
     cmd in sys.argv
     for cmd in ["makemigrations", "migrate", "compilemessages", "flush", "shell"]
 ):
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(
-        refresh_outlook_auth_token,
-        "interval",
-        minutes=50,
-        id="refresh_outlook_auth_token",
-    )
-    scheduler.start()
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(
+    #     refresh_outlook_auth_token,
+    #     "interval",
+    #     minutes=50,
+    #     id="refresh_outlook_auth_token",
+    # )
+    # scheduler.start()
+
+    print('scheduler stopped')
