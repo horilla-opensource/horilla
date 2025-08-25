@@ -1,0 +1,241 @@
+{% load static %}
+{% load horillafilters %}
+{% include 'generic/components.html' %}
+
+<style>
+    .fab-container {
+        position: fixed;
+        left: 15px;
+        bottom: 40px;
+        z-index: 1000;
+    }
+
+    .fab {
+        width: 56px;
+        height: 56px;
+        background-color: #ff3b38;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5em;
+        box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.16), 0px 3px 10px rgba(0, 0, 0, 0.16);
+        user-select: none;
+        transition: all 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .fab:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2), 0px 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .fab::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        transform: scale(0);
+        transition: transform 200ms ease-out;
+    }
+
+    .fab:hover::before {
+        transform: scale(1);
+    }
+
+    .main-fab {
+        position: relative;
+        z-index: 2;
+    }
+
+    .main-fab .fab-icon {
+        transition: transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+
+    .inner-fabs {
+        position: absolute;
+        bottom: 5px;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        padding-left: 66px;
+    }
+
+    .inner-fab {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-20px) scale(0.8);
+        transition: all 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+        background-color: #6366f1;
+    }
+
+    .fab-container.show .inner-fab {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0) scale(1);
+    }
+
+    .fab-container.show .main-fab .fab-icon {
+        transform: rotate(135deg);
+    }
+
+    .inner-fab[data-delay="1"] { transition-delay: 50ms; }
+    .inner-fab[data-delay="2"] { transition-delay: 100ms; }
+    .inner-fab[data-delay="3"] { transition-delay: 150ms; }
+    .inner-fab[data-delay="4"] { transition-delay: 200ms; }
+    .inner-fab[data-delay="5"] { transition-delay: 250ms; }
+    .inner-fab[data-delay="6"] { transition-delay: 300ms; }
+    .inner-fab[data-delay="7"] { transition-delay: 350ms; }
+    .inner-fab[data-delay="8"] { transition-delay: 400ms; }
+    .inner-fab[data-delay="9"] { transition-delay: 450ms; }
+
+    .inner-fab:nth-of-type(1) { background-color: #10b981; }
+    .inner-fab:nth-of-type(2) { background-color: #f59e0b; }
+    .inner-fab:nth-of-type(3) { background-color: #8b5cf6; }
+    .inner-fab:nth-of-type(4) { background-color: #06b6d4; }
+    .inner-fab:nth-of-type(5) { background-color: #ef4444; }
+    .inner-fab:nth-of-type(6) { background-color: #84cc16; }
+    .inner-fab:nth-of-type(7) { background-color: #f97316; }
+    .inner-fab:nth-of-type(8) { background-color: #3b82f6; }
+    .inner-fab:nth-of-type(9) { background-color: #ec4899; }
+
+</style>
+
+<div class="fab-container" id="fabContainer">
+
+    <div class="inner-fabs">
+        <div class="fab inner-fab"
+             title="Dashboard Charts"
+             data-delay="1"
+             data-toggle="oh-modal-toggle"
+             data-target="#objectDetailsModal"
+             hx-get="{% url 'employee-chart-show' %}"
+             hx-target="#objectDetailsModalTarget">
+            <i class="material-icons">leaderboard</i>
+        </div>
+
+        {% if "helpdesk"|app_installed %}
+        <div class="fab inner-fab"
+             title="Create Ticket"
+             data-delay="2"
+             data-toggle="oh-modal-toggle"
+             data-target="#objectCreateModal"
+             hx-get="{% url 'ticket-create' %}"
+             hx-target="#objectCreateModalTarget">
+            <i class="material-icons">sell</i>
+        </div>
+        {% endif %}
+
+        {% if "asset"|app_installed %}
+        <div class="fab inner-fab"
+             title="Create Asset Request"
+             data-delay="3"
+             data-toggle="oh-modal-toggle"
+             data-target="#objectCreateModal"
+             hx-get="{% url 'asset-request-creation' %}"
+             hx-target="#objectCreateModalTarget">
+            <i class="material-icons">devices</i>
+        </div>
+        {% endif %}
+
+        {% if "payroll"|app_installed %}
+        <div class="fab inner-fab"
+             title="Create Reimbursement"
+             data-delay="4"
+             data-toggle="oh-modal-toggle"
+             data-target="#genericModal"
+             hx-get="{% url 'reimbursement-create' %}"
+             hx-target="#genericModalBody">
+            <i class="material-icons">paid</i>
+        </div>
+        {% endif %}
+
+        <div class="fab inner-fab"
+             title="Create Work Type Request"
+             data-delay="5"
+             data-toggle="oh-modal-toggle"
+             data-target="#objectCreateModal"
+             hx-get="{% url 'work-type-request' %}"
+             hx-target="#objectCreateModalTarget">
+            <i class="material-icons">work</i>
+        </div>
+
+        <div class="fab inner-fab"
+             title="Create Shift Request"
+             data-delay="6"
+             data-toggle="oh-modal-toggle"
+             data-target="#objectCreateModal"
+             hx-get="{% url 'shift-request' %}"
+             hx-target="#objectCreateModalTarget">
+            <i class="material-icons">history</i>
+        </div>
+
+        {% if "leave"|app_installed %}
+        <div class="fab inner-fab"
+             title="Create Leave Request"
+             data-delay="7"
+             data-toggle="oh-modal-toggle"
+             data-target="#genericModal"
+             {% if perms.leave.create_leaverequest %}
+                 hx-get="{% url 'request-creation' %}"
+             {% else %}
+                 hx-get="{% url 'leave-request-create' %}"
+             {% endif %}
+             hx-target="#genericModalBody">
+            <span class="material-symbols-outlined">calendar_add_on</span>
+        </div>
+        {% endif %}
+
+        {% if "attendance"|app_installed %}
+        <div class="fab inner-fab"
+             title="Create Attendance Request"
+             data-delay="8"
+             data-toggle="oh-modal-toggle"
+             data-target="#genericModal"
+             hx-get="{% url 'request-new-attendance' %}"
+             hx-target="#genericModalBody">
+            <span class="material-symbols-outlined">person_add</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Main FAB button -->
+    <div class="fab main-fab" title="Quick Actions">
+        <i class="material-icons fab-icon">add</i>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+
+        let fabContainer = $("#fabContainer");
+        let mainFab = fabContainer.find(".main-fab");
+
+        mainFab.on("click", function(e) {
+            fabContainer.toggleClass("show");
+        });
+
+        $(document).on("click", function(e) {
+            let target = $(e.target);
+            let isCloseButton = target.closest(".oh-modal__close, .oh-modal__close--custom").length > 0;
+
+            if (
+                !(target.closest('.fab-container').length || isCloseButton)
+            ) {
+                fabContainer.removeClass("show");
+            }
+        });
+    });
+</script>
