@@ -125,7 +125,8 @@ country_arr = [
     "Kiribati",
     "Korea, North",
     "Korea, South",
-    "Kuwait",
+    "Kosovo"
+	"Kuwait",
     "Kyrgyzstan",
     "Laos",
     "Latvia",
@@ -249,7 +250,6 @@ country_arr = [
     "West Bank",
     "Western Sahara",
     "Yemen",
-    "Yugoslavia",
     "Zambia",
     "Zimbabwe",
 ]
@@ -547,6 +547,9 @@ s_a.append(
 s_a.append(
     "Ch'ungch'ong-bukto|Ch'ungch'ong-namdo|Cheju-do|Cholla-bukto|Cholla-namdo|Inch'on-gwangyoksi|Kangwon-do|Kwangju-gwangyoksi|Kyonggi-do|Kyongsang-bukto|Kyongsang-namdo|Pusan-gwangyoksi|Soul-t'ukpyolsi|Taegu-gwangyoksi|Taejon-gwangyoksi|Ulsan-gwangyoksi"
 )
+s_a.append(
+    "Prishtinë|Mitrovicë|Pejë|Prizren|Ferizaj|Gjilan|Gjakovë"
+)
 s_a.append("Al 'Asimah|Al Ahmadi|Al Farwaniyah|Al Jahra'|Hawalli")
 s_a.append(
     "Batken Oblasty|Bishkek Shaary|Chuy Oblasty (Bishkek)|Jalal-Abad Oblasty|Naryn Oblasty|Osh Oblasty|Talas Oblasty|Ysyk-Kol Oblasty (Karakol)"
@@ -837,7 +840,6 @@ s_a.append("Western Sahara")
 s_a.append(
     "'Adan|'Ataq|Abyan|Al Bayda'|Al Hudaydah|Al Jawf|Al Mahrah|Al Mahwit|Dhamar|Hadhramawt|Hajjah|Ibb|Lahij|Ma'rib|Sa'dah|San'a'|Ta'izz"
 )
-s_a.append("Kosovo|Montenegro|Serbia|Vojvodina")
 s_a.append(
     "Central|Copperbelt|Eastern|Luapula|Lusaka|North-Western|Northern|Southern|Western"
 )
