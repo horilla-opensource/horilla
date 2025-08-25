@@ -1,20 +1,24 @@
 from typing import Any
 
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _trans
-from django.utils.decorators import method_decorator
+from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.contrib import messages
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _trans
 
-from horilla.decorators import login_required, permission_required, check_integration_enabled
+from horilla.decorators import (
+    check_integration_enabled,
+    login_required,
+    permission_required,
+)
 from horilla_meet.filters import GoogleMeetingFilter
 from horilla_meet.form import GoogleCloudCredentialForm, GoogleMeetingForm
 from horilla_meet.models import GoogleCloudCredential, GoogleCredential, GoogleMeeting
 from horilla_views.generic.cbv import views
 
-
 # -------------------------------------- Google Credentials --------------------------------
+
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
@@ -137,7 +141,7 @@ class GmeetCredentialListView(views.HorillaListView):
     header_attrs = {
         "action": "style='width:100px;'",
         "get_redirect_url": "style='width:300px !important;'",
-        }
+    }
 
 
 @method_decorator(login_required, name="dispatch")

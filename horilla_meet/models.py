@@ -2,19 +2,19 @@ from datetime import timedelta, timezone
 from itertools import chain
 
 from django.apps import apps
-from django.utils import timezone
 from django.db import models
 from django.db.models import Q
+from django.forms import ValidationError
+from django.urls import reverse_lazy
+from django.utils import timezone
+from google.oauth2.credentials import Credentials
+
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
-from google.oauth2.credentials import Credentials
-from django.urls import reverse_lazy
-from django.forms import ValidationError
-
 from employee.models import Employee
+from horilla.horilla_middlewares import _thread_locals
 from horilla.models import HorillaModel, NoPermissionModel
 from horilla_views.cbv_methods import render_template
-from horilla.horilla_middlewares import _thread_locals
 from recruitment.models import Candidate
 
 
@@ -274,7 +274,7 @@ class GoogleMeeting(HorillaModel):
         start_time = timezone.localtime(self.start_time)
 
         col = f"""
-            <span class="oh-hidden-item dateformat_changer" >{start_time.date()}</span>, 
+            <span class="oh-hidden-item dateformat_changer" >{start_time.date()}</span>,
             <span class="oh-hidden-item timeformat_changer" >{start_time.time()}</span>
         """
         return col

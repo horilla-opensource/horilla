@@ -1,15 +1,20 @@
 from datetime import datetime
-from django.shortcuts import redirect, get_object_or_404
+
+from django.apps import apps
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
-from django.apps import apps
-
-from horilla.decorators import check_integration_enabled, login_required, permission_required
-from horilla_meet.methods import get_google_credentials
-from horilla_meet.models import *
+from django.shortcuts import get_object_or_404, redirect
 from google_auth_oauthlib.flow import Flow
 from googleapiclient.discovery import build
+
 from base.backends import logger
+from horilla.decorators import (
+    check_integration_enabled,
+    login_required,
+    permission_required,
+)
+from horilla_meet.methods import get_google_credentials
+from horilla_meet.models import *
 
 
 @login_required
@@ -83,7 +88,7 @@ def google_auth_callback(request):
 
     credentials = flow.credentials
     GoogleCredential.from_google_credentials(request.user.employee_get, credentials)
-    messages.success(request,"Successfully authenticated with Google credentials.")
+    messages.success(request, "Successfully authenticated with Google credentials.")
 
     return redirect("gmeet-view")
 
@@ -188,9 +193,9 @@ if apps.is_installed("recruitment"):
                 )
 
             if created:
-                messages.success(request,"Meeting created successfully")
+                messages.success(request, "Meeting created successfully")
             else:
-                messages.success(request,"Meeting updated successfully")
+                messages.success(request, "Meeting updated successfully")
 
             return JsonResponse({"success": "true"})
 
@@ -220,9 +225,7 @@ if apps.is_installed("pms"):
         employees = meeting.employee_id.all() | meeting.manager.all()
         attendees = [employee.get_mail() for employee in employees]
 
-        pms_meeting_link = PmsMeetingLink.objects.filter(
-            meeting=meeting
-        ).first()
+        pms_meeting_link = PmsMeetingLink.objects.filter(meeting=meeting).first()
 
         if pms_meeting_link:
             meeting_id = pms_meeting_link.google_meeting.id
@@ -242,14 +245,12 @@ if apps.is_installed("pms"):
 
             Gmeeting.refresh_from_db()
             if not pms_meeting_link:
-                PmsMeetingLink.objects.create(
-                    meeting=meeting, google_meeting=Gmeeting
-                )
+                PmsMeetingLink.objects.create(meeting=meeting, google_meeting=Gmeeting)
 
             if created:
-                messages.success(request,"Meeting created successfully")
+                messages.success(request, "Meeting created successfully")
             else:
-                messages.success(request,"Meeting updated successfully")
+                messages.success(request, "Meeting updated successfully")
 
             return JsonResponse({"success": "true"})
 

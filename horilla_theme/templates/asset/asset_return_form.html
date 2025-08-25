@@ -1,0 +1,80 @@
+{% load i18n horillafilters %}
+
+<div class="oh-modal__dialog-header">
+	<span class="text-md font-semibold" id="deleteConfirmationLabel"
+		>{% trans "Asset Return" %}</span
+	>
+	<button
+		class="oh-modal__close--custom"
+		onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
+		aria-label="Close"
+	>
+		<ion-icon
+			name="close-outline"
+			role="img"
+			class="md hydrated"
+			aria-label="close outline"
+		></ion-icon>
+	</button>
+</div>
+
+<div class="oh-modal__dialog-body">
+
+    <form
+        hx-post="{% url 'asset-allocate-return' asset_id=asset_id %}"
+        hx-target="#genericModalBody"
+        hx-encoding="multipart/form-data"
+    >
+        {% csrf_token %}
+        <div class="border rounded-lg p-3">
+            <div class="oh-input__group mb-2">
+                <label class="text-sm font-medium" for="objective"
+                    >{% trans "Return Status" %}</label
+                >
+                {{asset_return_form.return_status}}
+            </div>
+            <div class="oh-input__group">
+                <label class="text-sm font-medium" for="objective"
+                    >{% trans "Return Date" %}</label
+                >
+                {{asset_return_form.return_date}}
+                {{asset_return_form.return_date.errors}}
+            </div>
+            <div class="oh-input__group">
+                <label class="text-sm font-medium" for="objective"
+                    >{% trans "Return Condition" %}</label
+                >
+                {{asset_return_form.return_condition}}
+            </div>
+            <div class="oh-input__group">
+                <label class="text-sm font-medium" for="objective"
+                    >{% trans "Return Condition Images" %}</label
+                >
+                <br />
+                {{asset_return_form.return_images}}
+            </div>
+            <div class="oh-modal__dialog-footer gap-2">
+                {% if "payroll"|app_installed %} 
+                    {% if perms.payroll.add_loanaccount %}
+                        <button
+                            class="oh-btn oh-btn--info oh-btn--shadow w-100"
+                            type="button"
+                            hx-get="{% url 'asset-fine' %}?employee_id={{asset_alocation.assigned_to_employee_id.id}}&asset_id={{asset_id}}"
+                            hx-target="#dynamicCreateModalTarget"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#dynamicCreateModal"
+                        >
+                            {% trans "Add Fine" %}
+                        </button>
+                    {% endif %}
+                {% endif %}
+                <button
+                    type="submit"
+                    class="oh-btn oh-btn--secondary oh-btn--shadow w-100"
+                >
+                    {% trans "Save" %}
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

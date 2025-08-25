@@ -1,6 +1,5 @@
-from django.apps import AppConfig
+from django.apps import AppConfig, apps
 from django.db import models
-from django.apps import apps
 
 
 class HorillaMeetConfig(AppConfig):
@@ -10,8 +9,9 @@ class HorillaMeetConfig(AppConfig):
 
     def ready(self):
         from django.urls import include, path
-        from horilla.urls import urlpatterns
+
         from horilla.horilla_settings import APPS
+        from horilla.urls import urlpatterns
         from horilla_meet import signals
 
         APPS.append("horilla_meet")

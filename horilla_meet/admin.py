@@ -1,4 +1,5 @@
 from django.contrib import admin
+
 from horilla_meet import models
 
 # Register your models here.
