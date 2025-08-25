@@ -54,19 +54,20 @@ if not any(
     """
     Initializes and starts background tasks using APScheduler when the server is running.
     """
-    scheduler = BackgroundScheduler(timezone=pytz.timezone(settings.TIME_ZONE))
-
-    scheduler.add_job(
-        create_work_record, "interval", minutes=30, misfire_grace_time=3600 * 3
-    )
-    scheduler.add_job(
-        create_work_record,
-        "cron",
-        hour=0,
-        minute=30,
-        misfire_grace_time=3600 * 9,
-        id="create_daily_work_record",
-        replace_existing=True,
-    )
-
-    scheduler.start()
+    # scheduler = BackgroundScheduler(timezone=pytz.timezone(settings.TIME_ZONE))
+    #
+    # scheduler.add_job(
+    #     create_work_record, "interval", minutes=30, misfire_grace_time=3600 * 3
+    # )
+    # scheduler.add_job(
+    #     create_work_record,
+    #     "cron",
+    #     hour=0,
+    #     minute=30,
+    #     misfire_grace_time=3600 * 9,
+    #     id="create_daily_work_record",
+    #     replace_existing=True,
+    # )
+    #
+    # scheduler.start()
+    print('scheduler stopped')
