@@ -18,6 +18,7 @@ class LoginAPIView(APIView):
                 face_detection = False
                 face_detection_image = None
                 geo_fencing = False
+                company_id = None
                 try:
                     face_detection = employee.get_company().face_detection.start
                 except:
