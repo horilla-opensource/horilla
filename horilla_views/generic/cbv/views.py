@@ -2207,15 +2207,17 @@ class HorillaNavView(TemplateView):
 
         context["view_types"] = self.view_types
 
-        # Update search URL with query parameters
-        parsed_search = urlparse(str(self.search_url))
-        parsed_search_url = dict(parse_qsl(parsed_search.query))
-        # parsed_search_url.update(self.request.GET)
-        parsed_search_url.update(extra_params)
+        if self.search_url:
+            # Update search URL with query parameters
+            parsed_search = urlparse(str(self.search_url))
+            parsed_search_url = dict(parse_qsl(parsed_search.query))
+            # parsed_search_url.update(self.request.GET)
+            parsed_search_url.update(extra_params)
 
-        context["search_url"] = urlunparse(
-            parsed_search._replace(query=urlencode(parsed_search_url))
-        )
+            context["search_url"] = urlunparse(
+                parsed_search._replace(query=urlencode(parsed_search_url))
+            )
+
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaNavView] = context
         return context
 
