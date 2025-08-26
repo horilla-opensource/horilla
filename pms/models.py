@@ -579,9 +579,6 @@ class Comment(models.Model):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
-    xss_exempt_fields = [
-        "comment",
-    ]
 
     def __str__(self):
         return f"{self.employee_id.employee_first_name} - {self.comment} "
