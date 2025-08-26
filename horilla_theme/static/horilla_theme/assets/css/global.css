@@ -1068,3 +1068,18 @@ input[type="checkbox"].custom-checkbox:hover {
   visibility: visible;
   transform: translateY(0);
 }
+
+.sha {
+  position: relative;
+}
+
+.sha::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: linear-gradient(360deg, #ffffff, transparent);
+}
