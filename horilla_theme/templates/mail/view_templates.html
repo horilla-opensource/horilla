@@ -1,0 +1,60 @@
+{% extends "index.html" %} 
+{% load i18n %} 
+{% block content %}
+
+<div hx-get="{% url 'view-mail-templates-nav' %}" hx-trigger="load"></div>
+
+<div class="oh-wrapper" id="listContainer">
+	<div
+		class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2"
+	>
+		{% for template in templates %}
+			<div class="shadow-card p-5 bg-white rounded-md border border-dark-50">
+				<div class="flex justify-between mb-4">
+					<h3 class="text-md font-semibold">{{ template.title }}</h3>
+					{% if perms.base.delete_horillamailtemplate %}
+						<div class="flex gap-3 items-center">
+							<a
+								class="cursor-pointer"
+								hx-get="{% url 'duplicate-mail-template' template.id %}"
+								hx-target="#objectCreateModalTarget"
+								data-toggle="oh-modal-toggle"
+								data-target="#objectCreateModal"
+								title="{% trans 'Duplicate' %}"
+							>
+								<i
+									class="fa-solid fa-clone text-sm text-[black] hover:text-[#504d4d] transition-all duration-300"
+								></i>
+							</a>
+							<a
+								class="cursor-pointer text-[red] text-sm hover:text-[#d10b0b] transition-all duration-300"
+								href="{% url 'delete-mail-template' %}?ids={{template.id}}"
+								onclick="return confirm('Do you want to delete this template?')"
+								title="{% trans 'Delete' %}"
+							>
+								<i class="fa-solid fa-trash"></i>
+							</a>
+						</div>
+					{% endif %}
+				</div>
+
+				<div class="h-80 overflow-hidden mb-3 sha">
+					<p class="text-sm text-[#565E6C] mb-3">
+						{{ template.body|safe }}
+					</p>
+				</div>
+
+				<button
+					class="px-5 py-2 group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
+					hx-get="{% url 'view-mail-template' template.id %}"
+					hx-target="#objectCreateModalTarget"
+					data-toggle="oh-modal-toggle"
+					data-target="#objectCreateModal"
+				>
+					{% trans "View Template" %}
+				</button>
+			</div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock %}
