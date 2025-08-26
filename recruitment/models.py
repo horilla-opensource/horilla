@@ -241,7 +241,6 @@ class Recruitment(HorillaModel):
         help_text=_("Resume not mandatory for candidate creation"),
         verbose_name=_("Optional Resume"),
     )
-    xss_exempt_fields = ["description"]  # 807
 
     class Meta:
         """
@@ -347,8 +346,7 @@ class Recruitment(HorillaModel):
             employee_names_string = "<br>".join(
                 [str(employee) for employee in employees]
             )
-            managers_title = _("Managers")
-            return f'<span class="oh-timeoff-modal__stat-title">{managers_title}</span><span class="oh-timeoff-modal__stat-count">{employee_names_string}</span>'
+            return f'<span class="oh-timeoff-modal__stat-count">{employee_names_string}</span>'
         else:
             return ""
 
@@ -386,8 +384,9 @@ class Recruitment(HorillaModel):
         jobs = self.open_positions.all()
         if jobs:
             jobs_names_string = "<br>".join([str(job) for job in jobs])
-            job_title = _("Open Jobs")
-            return f'<span class="oh-timeoff-modal__stat-title">{job_title}</span><span class="oh-timeoff-modal__stat-count">{jobs_names_string}</span>'
+            return (
+                f'<span class="oh-timeoff-modal__stat-count">{jobs_names_string}</span>'
+            )
         else:
             return ""
 
