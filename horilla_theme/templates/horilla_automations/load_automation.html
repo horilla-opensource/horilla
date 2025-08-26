@@ -1,0 +1,85 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+	<span class="text-md font-semibold">{% trans "Load Automations" %}</span>
+	<button class="oh-modal__close">
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
+</div>
+<div class="oh-modal__dialog-body">
+	<div
+		class="items-center justify-center z-50 flex bg-[#0000000f] w-full shadow-card"
+	>
+		<div class="bg-white w-full rounded-lg p-0 transition-all duration-300">
+			<form
+				hx-post="{{request.path}}"
+				hx-target="#objectCreateModalTarget"
+			>
+				{% csrf_token %}
+				<div class="space-y-2 mb-4">
+
+					<div class="py-3">
+						<div
+							class="grid grid-cols-1 lg:grid-cols-2 gap-3 p-2 h-60 overflow-hidden overflow-y-auto"
+						>
+							{% for automation in automations %}
+								<div
+									class="shadow-card p-5 bg-white rounded-md border border-dark-50"
+									>
+									<div class="h-40 overflow-hidden mb-3 sha">
+										<div class="flex justify-between">
+											<h3 class="text-md font-semibold mb-4">
+												{{automation.fields.title}}
+											</h3>
+											<input
+												type="checkbox"
+												name="{{automation.pk}}"
+												class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer custom-radio-checkmark"
+											/>
+										</div>
+										<div class="text-sm text-[#565E6C]">
+											{{automation.template_body|safe}}
+										</div>
+									</div>
+
+									<div class="flex gap-2">
+										{% if automation.fields.delivery_channel == 'email' %}
+											<a
+												href="#"
+												class="px-2 py-1 rounded-md bg-[#dc3545] text-[12px] text-white {% cycle 'bg-[#dc3545]' 'bg-[#3398db]' 'bg-[#faba39]' %}"
+												>{% trans "Email" %}</a
+											>
+										{% elif automation.fields.delivery_channel == 'notification' %}
+											<a
+												href="#"
+												class="px-2 py-1 rounded-md bg-[#dc3545] text-[12px] text-white {% cycle 'bg-[#dc3545]' 'bg-[#3398db]' 'bg-[#faba39]' %}"
+												>{% trans "Notification" %}</a
+											>
+										{% elif automation.fields.delivery_channel == 'both' %}
+											<a
+												href="#"
+												class="px-2 py-1 rounded-md bg-[#dc3545] text-[12px] text-white {% cycle 'bg-[#dc3545]' 'bg-[#3398db]' 'bg-[#faba39]' %}"
+												>{% trans "Email" %}</a
+											>
+											<a
+												href="#"
+												class="px-2 py-1 rounded-md bg-[#dc3545] text-[12px] text-white {% cycle 'bg-[#dc3545]' 'bg-[#3398db]' 'bg-[#faba39]' %}"
+												>{% trans "Notification" %}</a
+											>
+										{% endif %}
+									</div>
+								</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+				<div class="flex gap-1 justify-end">
+					<button
+						class="px-4 py-2 border border-primary-600 text-primary-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-primary-800 transition duration-300"
+					>
+						{% trans "Add" %}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
