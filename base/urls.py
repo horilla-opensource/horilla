@@ -312,6 +312,11 @@ urlpatterns = [
         name="view-mail-template",
     ),
     path(
+        "view-mail-templates-nav/",
+        mail_template.MailTemplateNavView.as_view(),
+        name="view-mail-templates-nav",
+    ),
+    path(
         "create-mail-template/",
         views.create_mail_templates,
         name="create-mail-template",

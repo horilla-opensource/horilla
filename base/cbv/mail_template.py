@@ -8,13 +8,14 @@ from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import MailTemplateForm
 from base.models import HorillaMailTemplate
 from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import HorillaFormView
+from horilla_views.generic.cbv.views import HorillaFormView, HorillaNavView
 
 
 @method_decorator(login_required, name="dispatch")
@@ -97,3 +98,21 @@ class MailTemplateDuplicateForm(HorillaFormView):
             form.save()
             return self.HttpResponse("<script>window.location.reload()</script>")
         return self.form_invalid(form)
+
+
+class MailTemplateNavView(HorillaNavView):
+    """
+    Mail Template Nav View
+    """
+
+    nav_title = _("Mail Templates")
+    search_url = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.create_attrs = f"""
+            hx-get="{reverse_lazy("create-mail-template")}"
+            data-toggle="oh-modal-toggle"
+            data-target="#objectCreateModal"
+            hx-target="#objectCreateModalTarget"
+        """
