@@ -1,0 +1,112 @@
+{% load i18n %}
+<div class="oh-modal__dialog-header">
+	<span class="text-md font-semibold">{% trans "Load FAQs" %}</span>
+	<button class="oh-modal__close">
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
+</div>
+<div class="oh-modal__dialog-body">
+	<div
+		class="items-center justify-center z-50 flex bg-[#0000000f] w-full shadow-card"
+	>
+		<div class="bg-white w-full rounded-lg p-0 transition-all duration-300">
+			<form
+				hx-post="{{request.path}}"
+				hx-target="#objectCreateModalTarget"
+			>
+				{% csrf_token %}
+				<div
+					class="oh-checkpoint-badge text-success mb-2 selectFaqs"
+					style="cursor: pointer"
+				>
+					{% trans "Select All Faqs" %}
+				</div>
+				<div
+					class="oh-checkpoint-badge text-secondary mb-2 unSelectFaqs"
+					style="cursor: pointer"
+				>
+					{% trans "Unselect All Faqs" %}
+				</div>
+				<div class="space-y-2 mb-4">
+					<!-- Accordion Item -->
+					{% for cat_id, category in catagories.items %}
+
+						<div
+							class="oh-accordion border border-primary-300 rounded-md"
+						>
+							<div
+								class="oh-accordion-header no-after w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all"
+							>
+								<span class="font-medium">{{category}}</span>
+								<div>
+									<span class="icon text-xl font-bold ps-3"
+										>+</span
+									>
+								</div>
+							</div>
+							<div
+								class="oh-accordion-body overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700"
+							>
+								<div class="py-3">
+									<span class="d-flex flex-row-reverse mb-2 me-3">
+										<input
+											type="checkbox"
+											title="{% trans 'Select All' %}"
+											class="custom-radio-checkmark my-2 selectAll"
+										/>
+									</span>
+
+									<div
+										class="grid grid-cols-1 lg:grid-cols-2 gap-3 p-2 h-60 overflow-hidden overflow-y-auto"
+									>
+										{% for faq in faqs %}
+											{% if faq.fields.category == cat_id %}
+												<div
+													class="shadow-card p-5 bg-white rounded-md border border-dark-50"
+												>
+													<div class="flex justify-between">
+														<h3
+															class="text-md font-semibold mb-4"
+														>
+															{{faq.fields.question}}
+														</h3>
+														<input
+															type="checkbox"
+															name="{{faq.pk}}"
+															value=""
+															class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer custom-radio-checkmark"
+														/>
+													</div>
+													<p
+														class="text-sm text-[#565E6C] mb-3 sha"
+													>
+														{{faq.fields.answer}}
+													</p>
+
+													{% for tag in faq.tags %}
+														<a
+															href=""
+															class="px-2 py-1 rounded-sm bg-[#dc3545] text-[12px] text-white {% cycle 'bg-[#dc3545]' 'bg-[#3398db]' 'bg-[#faba39]' %}"
+															>{{tag}}</a
+														>
+													{% endfor %}
+												</div>
+											{% endif %}
+										{% endfor %}
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+				<div class="flex gap-1 justify-end">
+					<button
+						class="px-4 py-2 border border-primary-600 text-primary-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-primary-800 transition duration-300"
+					>
+						{% trans "Add" %}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
