@@ -1672,8 +1672,11 @@ class ShiftRequest(HorillaModel):
         Detail view subtitle
         """
 
-        return f"""{self.employee_id.employee_work_info.department_id } /
-          { self.employee_id.employee_work_info.job_position_id}"""
+        try:
+            return f"""{self.employee_id.employee_work_info.department_id } /
+            { self.employee_id.employee_work_info.job_position_id}"""
+        except:
+            return None
 
     def clean(self):
 
