@@ -8,6 +8,7 @@ def get_horilla_model_class(app_label, model):
     except LookupError:
         return None
 
+
 Recruitment = get_horilla_model_class(app_label="recruitment", model="recruitment")
 
 
@@ -22,6 +23,7 @@ def tot_hires(self):
 
     return col
 
+
 def managers_detail(self):
     """
     manager in detail view
@@ -34,6 +36,7 @@ def managers_detail(self):
         )
 
     return employee_names_string
+
 
 def open_job_detail(self):
     """

@@ -371,6 +371,7 @@ urlpatterns = [
         policy_cbv.PolicyFormView.as_view(),
         name="create-policy",
     ),
+    path("policy-nav/", policy_cbv.PoliciesNav.as_view(), name="policy-nav"),
     path("view-policy", policies.view_policy, name="view-policy"),
     path(
         "add-attachment-policy", policies.add_attachment, name="add-attachment-policy"
