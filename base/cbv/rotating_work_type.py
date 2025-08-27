@@ -253,6 +253,12 @@ class RotatingWorkDetailView(HorillaDetailedView):
     ]
     action_method = "get_detail_view_actions"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        instance = context["object"]
+        instance.ordered_ids = context["instance_ids"]
+        return context
+
 
 @method_decorator(
     manager_can_enter("base.view_rotatingworktypeassign"), name="dispatch"
