@@ -1,4 +1,4 @@
-{% load i18n static %} 
+{% load i18n static %}
 {% include 'filter_tags.html' %}
 
 <style>
@@ -8,7 +8,7 @@
 </style>
     {% for faq in faqs %}
     <div class="accordion-item border border-primary-300 rounded-md" x-data="{open:false, menu:false}" id="faqItem{{faq.id}}">
-        
+
         <!-- Accordion Header -->
         <button
             class="accordion-btn w-full flex justify-between items-center px-4 py-2 text-sm transition-all bg-[#fff5f1] text-[#e54f38]"
@@ -95,7 +95,7 @@
                     </div>
                 </div>
 
-                
+
                 <span class="icon text-xl font-bold ps-3">+</span>
             </div>
         </button>
@@ -136,4 +136,3 @@
         });
     });
 </script>
-

@@ -1,0 +1,28 @@
+{% load i18n %} 
+
+{% if instance.completed %}
+    <div
+        class="flex items-center gap-2 w-full text-xs font-semibold text-green-600"
+    >
+        <i class="material-icons text-xs">check_circle</i>
+        <span>{% trans "Interview Completed" %}</span>
+    </div>
+{% elif instance.interview_date|date:"Y-m-d" < now|date:"Y-m-d" %}
+    <div class="flex items-center gap-2 w-full text-xs font-semibold text-red-600">
+        <i class="material-icons text-xs">dangerous</i>
+        <span>{% trans "Expired Interview" %}</span>
+    </div>
+{% elif instance.interview_date|date:"Y-m-d" == now|date:"Y-m-d" and not instance.completed %}
+    <div class="flex items-center gap-2 w-full text-xs font-semibold text-blue-600">
+        <i class="material-symbols-outlined text-xs">today</i>
+        <span>{% trans "Interview Today" %}</span>
+    </div>
+{% elif instance.interview_date|date:"Y-m-d" > now|date:"Y-m-d" %}
+    <div
+        class="flex items-center gap-2 w-full text-xs font-semibold text-orange-500"
+        title="{{instance.interview_date|timeuntil}}"
+    >
+        <i class="material-icons text-xs">schedule</i>
+        <span>{% trans "Upcoming Interview" %}</span>
+    </div>
+{% endif %}
