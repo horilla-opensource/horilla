@@ -6,6 +6,6 @@ class HorillaThemeConfig(AppConfig):
     name = "horilla_theme"
 
     def ready(self):
-        from . import forms
+        from . import forms, overrides
 
         return super().ready()
