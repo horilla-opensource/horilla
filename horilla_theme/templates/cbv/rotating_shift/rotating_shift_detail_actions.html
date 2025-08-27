@@ -1,4 +1,4 @@
-{% load basefilters%} {% load i18n %} 
+{% load basefilters%} {% load i18n %}
 {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
 <a
 	class="oh-btn oh-btn-group oh-btn--info"
@@ -22,13 +22,13 @@
 	hx-target="#genericModalBody"
 >
 		<ion-icon name="archive-outline" class="mr-2"> </ion-icon>
-		{% if instance.is_active %} 
-            {% trans "Archive" %} 
-        {% else %} 
-            {% trans "Un-archive" %} 
+		{% if instance.is_active %}
+            {% trans "Archive" %}
+        {% else %}
+            {% trans "Un-archive" %}
         {% endif %}
 </a>
-{% endif %} 
+{% endif %}
 {% if perms.base.delete_rotatingshiftassign or request.user|is_reportingmanager %}
 <a
 	class="oh-btn oh-btn-group oh-btn--secondary"

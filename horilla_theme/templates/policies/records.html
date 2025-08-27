@@ -1,0 +1,76 @@
+{% load i18n %}
+{% if policies %}
+	<div
+		class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-2"
+	>
+		{% for policy in policies %}
+		<div class="shadow-card p-5 bg-white rounded-md border border-dark-50">
+			<div class="flex justify-between mb-4">
+				<h3 class="text-md font-semibold">
+					{% if policy.is_visible_to_all %}
+						<span
+							class="inline-block w-2 h-2 rounded-full bg-green-500"
+						></span>
+					{% else %}
+						<span
+							class="inline-block w-2 h-2 rounded-full bg-red-500"
+						></span>
+					{% endif %} 
+
+					{{ policy.title }}
+				</h3>
+				{% if perms.base.delete_horillamailtemplate %}
+				<div class="flex gap-3 items-center">
+					<a
+						class="cursor-pointer"
+						hx-get="{% url 'create-policy' policy.id %}"
+						hx-target="#genericModalBody"
+						data-toggle="oh-modal-toggle"
+						data-target="#genericModal"
+						title="{% trans 'Edit' %}"
+					>
+						<ion-icon
+							name="create-outline"
+							role="img"
+							class="md hydrated"
+							aria-label="copy outline"
+						></ion-icon>
+					</a>
+					<a
+						class="cursor-pointer text-[red] text-sm hover:text-[#d10b0b] transition-all duration-300"
+						href="{% url 'delete-policies' %}?ids={{policy.id}}"
+						onclick="return confirm('Do you want to delete this policy?')"
+						title="{% trans 'Delete' %}"
+					>
+						<i class="fa-solid fa-trash"></i>
+					</a>
+				</div>
+				{% endif %}
+			</div>
+
+			<div class="h-80 overflow-hidden mb-3 border rounded-md p-4 sha">
+				<p class="text-sm text-[#565E6C] mb-3">{{ policy.body|safe }}</p>
+			</div>
+
+			<button
+				class="px-5 py-2 group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
+				hx-get="{% url 'view-policy' %}?instance_id={{ policy.id }}"
+				hx-target="#objectDetailsModalTarget"
+				data-toggle="oh-modal-toggle"
+				data-target="#objectDetailsModal"
+			>
+				{% trans "View Policy" %}
+			</button>
+		</div>
+		{% endfor %}
+	</div>
+{% else %}
+	<div class="oh-wrapper h-full" align="center" >
+		<div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+			<div class="flex flex-col items-center justify-center h-full">
+				<img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+				<p class="text-[#666] mb-5">{% trans "No records available at the moment" %}</p>
+			</div>
+		</div>
+	</div>
+{% endif %}

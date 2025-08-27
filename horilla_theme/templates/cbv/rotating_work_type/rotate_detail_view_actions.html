@@ -1,4 +1,4 @@
-{% load basefilters%} {% load i18n %} 
+{% load basefilters%} {% load i18n %}
 
 {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
     <a
@@ -24,13 +24,13 @@
         hx-target="#genericModalBody"
     >
         <ion-icon name="archive-outline"> </ion-icon>
-        {% if instance.is_active %} 
-            {% trans "Archive" %} 
-        {% else %} 
-            {% trans "Un-archive" %} 
+        {% if instance.is_active %}
+            {% trans "Archive" %}
+        {% else %}
+            {% trans "Un-archive" %}
         {% endif %}
     </a>
-{% endif %} 
+{% endif %}
 
 {% if perms.base.delete_rotatingshiftassign or request.user|is_reportingmanager %}
     <a
@@ -41,7 +41,7 @@
     >
         <ion-icon name="trash-outline"> </ion-icon>{% trans "Delete" %}
     </a>
-{% endif %} 
+{% endif %}
 
 {% if request.GET.deleted %}
 <script>

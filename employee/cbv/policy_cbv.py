@@ -5,13 +5,15 @@ Policy  forms
 from django import forms
 from django.contrib import messages
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from employee.filters import PolicyFilter
 from employee.forms import PolicyForm
 from employee.models import Policy
 from horilla_views.cbv_methods import login_required, permission_required
-from horilla_views.generic.cbv.views import HorillaFormView
+from horilla_views.generic.cbv.views import HorillaFormView, HorillaNavView
 
 
 class PolicyFormView(HorillaFormView):
@@ -39,3 +41,22 @@ class PolicyFormView(HorillaFormView):
             messages.success(self.request, _(message))
             return self.HttpResponse("<script>window.location.reload()</script>")
         return super().form_valid(form)
+
+
+class PoliciesNav(HorillaNavView):
+    """
+    Policies Nav
+    """
+
+    nav_title = _("Policies")
+    search_url = reverse_lazy("search-policies")
+    search_swap_target = "#policyContainer"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.create_attrs = f"""
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-get="{reverse_lazy('create-policy')}"
+            hx-target="#genericModalBody"
+        """

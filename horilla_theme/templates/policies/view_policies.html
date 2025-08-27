@@ -1,0 +1,8 @@
+{% extends 'index.html' %}
+{% load i18n  static %}
+
+{% block content %}
+    <div hx-get="{% url 'policy-nav' %}" hx-trigger="load"></div>
+
+    <div class="oh-wrapper" id="policyContainer"></div>
+{% endblock %}
