@@ -369,8 +369,8 @@ class RecruitmentDetailView(HorillaDetailedView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.body = [
-            ("Managers", "managers_detail", True),
-            ("Open Jobs", "open_job_detail", True),
+            ("Managers", "managers_detail"),
+            ("Open Jobs", "open_job_detail"),
             ("Vaccancy", "vacancy"),
             ("Total Hires", "tot_hires"),
             ("Start Date", "start_date"),
