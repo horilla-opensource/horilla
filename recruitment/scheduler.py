@@ -54,8 +54,10 @@ if not any(
     """
     Initializes and starts background tasks using APScheduler when the server is running.
     """
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(candidate_convert, "interval", minutes=5)
-    scheduler.add_job(recruitment_close, "interval", hours=1)
+    # scheduler = BackgroundScheduler()
+    # scheduler.add_job(candidate_convert, "interval", minutes=5)
+    # scheduler.add_job(recruitment_close, "interval", hours=1)
+    #
+    # scheduler.start()
 
-    scheduler.start()
+    print('scheduler stopped')
