@@ -1805,6 +1805,25 @@ class Reimbursement(HorillaModel):
     def __str__(self):
         return f"{self.title}"
 
+    def approval_progress(self):
+        approvals = self.reimbursementconditionapproval_set.all()
+        return approvals.filter(is_approved=True).count(), approvals.count()
+
+    def can_be_approved_by(self, employee):
+        approvals = self.reimbursementconditionapproval_set.order_by("sequence")
+        pending = approvals.filter(is_approved=False, is_rejected=False).first()
+        return pending and pending.manager_id == employee
+
+
+class ReimbursementConditionApproval(models.Model):
+    sequence = models.IntegerField()
+    is_approved = models.BooleanField(default=False)
+    is_rejected = models.BooleanField(default=False)
+    reimbursement_id = models.ForeignKey(
+        Reimbursement, on_delete=models.CASCADE
+    )
+    manager_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
+
 
 class ReimbursementFile(models.Model):
     file = models.FileField(upload_to="payroll/request_files")

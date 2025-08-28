@@ -16,6 +16,7 @@
     <div class="oh-sticky-table__thead">
       <div class="oh-sticky-table__tr">
         <div class="oh-sticky-table__th">{% trans "Department" %}</div>
+        <div class="oh-sticky-table__th">{% trans "Condition" %}</div>
         <div class="oh-sticky-table__th">{% trans "Condition Field" %}</div>
         <div class="oh-sticky-table__th">{% trans "Condition Operator" %}</div>
         <div class="oh-sticky-table__th">{% trans "Condition Value" %}</div>
@@ -29,7 +30,8 @@
     <div class="oh-sticky-table__tbody">
       {% for condition in conditions %}
         <div class="oh-sticky-table__tr" draggable="true">
-          <div class="oh-sticky-table__td">{{condition.department}}</div>
+          <div class="oh-sticky-table__td">{{condition.department.all|join:", "}}</div>
+          <div class="oh-sticky-table__td">{{ condition.get_condition_type_display }}</div>
           <div class="oh-sticky-table__td">
             {{condition.get_condition_field_display}}
           </div>

@@ -83,6 +83,7 @@ from payroll.models.models import (
     Payslip,
     Reimbursement,
     ReimbursementMultipleAttachment,
+    ReimbursementConditionApproval,
 )
 from payroll.threadings.mail import MailSendThread
 
@@ -1565,6 +1566,11 @@ def view_reimbursement(request):
     requests = filter_own_records(
         request, filter_object.qs, "payroll.view_reimbursement"
     )
+    if request.user.employee_get:
+        pending_ids = ReimbursementConditionApproval.objects.filter(
+            manager_id=request.user.employee_get
+        ).values_list("reimbursement_id", flat=True)
+        requests = (requests | Reimbursement.objects.filter(id__in=pending_ids)).distinct()
     reimbursements = requests.filter(type="reimbursement")
     leave_encashments = requests.filter(type="leave_encashment")
     bonus_encashment = requests.filter(type="bonus_encashment")
@@ -1829,9 +1835,7 @@ def get_assigned_leaves(request):
 @login_required
 @permission_required("payroll.change_reimbursement")
 def approve_reimbursements(request):
-    """
-    This method is used to approve or reject the reimbursement request
-    """
+    """Updated approval flow with multi-approver support"""
     ids = request.GET.getlist("ids")
     status = request.GET["status"]
     if status == "canceled":
@@ -1841,6 +1845,7 @@ def approve_reimbursements(request):
     )
     amount = max(0, amount)
     reimbursements = Reimbursement.objects.filter(id__in=ids)
+    current_emp = request.user.employee_get
     if status and len(status):
         for reimbursement in reimbursements:
             if reimbursement.type == "leave_encashment":
@@ -1849,17 +1854,32 @@ def approve_reimbursements(request):
                 reimbursement.amount = amount
             elif reimbursement.type == "bonus_encashment":
                 reimbursement.amount = amount
-            
-            emp = reimbursement.employee_id
-            
-            # check if the employee is is_superuser as only he can approve or reject the reimbursement
-            
-            
-            
-            if reimbursement.type == "medical_encashment":
-                # Perform validation only if status is being approved
-                if status == "approved":
 
+            emp = reimbursement.employee_id
+            approvals = ReimbursementConditionApproval.objects.filter(
+                reimbursement_id=reimbursement
+            )
+            if (
+                reimbursement.type == "medical_encashment" and approvals.exists()
+            ):
+                approval = approvals.filter(
+                    manager_id=current_emp,
+                    is_approved=False,
+                    is_rejected=False,
+                ).first()
+                if not approval:
+                    messages.error(
+                        request, _("You are not authorized to approve this request")
+                    )
+                    continue
+                if approvals.filter(
+                    sequence__lt=approval.sequence,
+                    is_approved=False,
+                    is_rejected=False,
+                ).exists():
+                    messages.error(request, _("Previous approvals are pending"))
+                    continue
+                if status == "approved":
                     approved_claims_total = (
                         Reimbursement.objects.filter(
                             employee_id=emp,
@@ -1870,22 +1890,63 @@ def approve_reimbursements(request):
                         .aggregate(total=Sum("amount"))["total"]
                         or 0
                     )
-
                     if approved_claims_total >= 100000:
                         messages.error(
                             request,
-                            "No medical claim can be approved  once PKR 100,000 is fully used."
+                            "No medical claim can be approved  once PKR 100,000 is fully used.",
                         )
-                        return redirect(view_reimbursement)
-
+                        continue
                     if (approved_claims_total + amount) > 100000:
                         messages.error(
                             request,
-                            f"Total approved medical claims (including this one) cannot exceed PKR 100,000. "
-                            f"Currently approved: PKR {approved_claims_total:,}"
+                            f"Total approved medical claims (including this one) cannot exceed PKR 100,000. Currently approved: PKR {approved_claims_total:,}"
                         )
-                        return redirect(view_reimbursement)
-                    
+                        continue
+                    approval.is_approved = True
+                    approval.save()
+                    if not approvals.filter(
+                        is_approved=False, is_rejected=False
+                    ).exists():
+                        reimbursement.status = "approved"
+                        reimbursement.approved_by = current_emp
+                        reimbursement.save()
+                        messages.success(
+                            request,
+                            _(f"Request {reimbursement.get_status_display()} successfully"),
+                        )
+                        notify.send(
+                            current_emp,
+                            recipient=emp.employee_user_id,
+                            verb="Your reimbursement request has been approved.",
+                            verb_ar="تمت الموافقة على طلب استرداد نفقاتك.",
+                            verb_de="Ihr Rückerstattungsantrag wurde genehmigt.",
+                            verb_es="Se ha aprobado tu solicitud de reembolso.",
+                            verb_fr="Votre demande de remboursement a été approuvée.",
+                            redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
+                            icon="checkmark",
+                        )
+                else:
+                    approval.is_rejected = True
+                    approval.save()
+                    reimbursement.status = "rejected"
+                    reimbursement.save()
+                    messages.success(
+                        request,
+                        _(f"Request {reimbursement.get_status_display()} successfully"),
+                    )
+                    notify.send(
+                        current_emp,
+                        recipient=emp.employee_user_id,
+                        verb="Your reimbursement request has been rejected.",
+                        verb_ar="تم رفض طلب استرداد النفقات الخاص بك.",
+                        verb_de="Ihr Erstattungsantrag wurde abgelehnt.",
+                        verb_es="Su solicitud de reembolso ha sido rechazada.",
+                        verb_fr="Votre demande de remboursement a été rejetée.",
+                        redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
+                        icon="checkmark",
+                    )
+                continue
+
             reimbursement.status = status
             reimbursement.save()
             if reimbursement.status == "requested":
@@ -1896,30 +1957,30 @@ def approve_reimbursements(request):
                     request,
                     _(f"Request {reimbursement.get_status_display()} successfully"),
                 )
-        if status == "rejected":
-            notify.send(
-                request.user.employee_get,
-                recipient=emp.employee_user_id,
-                verb="Your reimbursement request has been rejected.",
-                verb_ar="تم رفض طلب استرداد النفقات الخاص بك.",
-                verb_de="Ihr Erstattungsantrag wurde abgelehnt.",
-                verb_es="Su solicitud de reembolso ha sido rechazada.",
-                verb_fr="Votre demande de remboursement a été rejetée.",
-                redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
-                icon="checkmark",
-            )
-        else:
-            notify.send(
-                request.user.employee_get,
-                recipient=emp.employee_user_id,
-                verb="Your reimbursement request has been approved.",
-                verb_ar="تمت الموافقة على طلب استرداد نفقاتك.",
-                verb_de="Ihr Rückerstattungsantrag wurde genehmigt.",
-                verb_es="Se ha aprobado tu solicitud de reembolso.",
-                verb_fr="Votre demande de remboursement a été approuvée.",
-                redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
-                icon="checkmark",
-            )
+            if status == "rejected":
+                notify.send(
+                    request.user.employee_get,
+                    recipient=emp.employee_user_id,
+                    verb="Your reimbursement request has been rejected.",
+                    verb_ar="تم رفض طلب استرداد النفقات الخاص بك.",
+                    verb_de="Ihr Erstattungsantrag wurde abgelehnt.",
+                    verb_es="Su solicitud de reembolso ha sido rechazada.",
+                    verb_fr="Votre demande de remboursement a été rejetée.",
+                    redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
+                    icon="checkmark",
+                )
+            else:
+                notify.send(
+                    request.user.employee_get,
+                    recipient=emp.employee_user_id,
+                    verb="Your reimbursement request has been approved.",
+                    verb_ar="تمت الموافقة على طلب استرداد نفقاتك.",
+                    verb_de="Ihr Rückerstattungsantrag wurde genehmigt.",
+                    verb_es="Se ha aprobado tu solicitud de reembolso.",
+                    verb_fr="Votre demande de remboursement a été approuvée.",
+                    redirect=reverse("view-reimbursement") + f"?id={reimbursement.id}",
+                    icon="checkmark",
+                )
     return redirect(view_reimbursement)
 
 

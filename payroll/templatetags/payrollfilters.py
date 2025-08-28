@@ -16,3 +16,11 @@ def paid_amount(installment):
 def balance_amount(amount, installment):
     balance = amount - paid_amount(installment)
     return balance
+
+
+@register.filter
+def can_approve(reimbursement, employee):
+    """Return True if the employee can approve the reimbursement."""
+    if not employee:
+        return False
+    return reimbursement.can_be_approved_by(employee)
