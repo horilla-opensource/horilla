@@ -42,7 +42,7 @@ class AccessibilityFilter(HorillaFilterSet):
         lookup_expr="in",
         label=_("Employee"),
     )
-    exluded_employees = django_filters.ModelMultipleChoiceFilter(
+    excluded_employees = django_filters.ModelMultipleChoiceFilter(
         queryset=Employee.objects.all(),
         label=_("Exclude Employees"),
     )
@@ -86,25 +86,32 @@ class AccessibilityFilter(HorillaFilterSet):
         """
         or_conditions = []
 
-        # Get the filter fields from Meta class
         for field in self.Meta.fields:
             field_value = self.data.get(field)
             if field_value:
-                if isinstance(field_value, list) and len(field_value) == 1:
-                    field_value = field_value[0]
+                # Ensure field_value is always a list of strings (IDs)
+                if not isinstance(field_value, (list, tuple)):
+                    field_value = [field_value]
 
+                # Convert all to ints
+                try:
+                    field_value = [int(v) for v in field_value if v]
+                except ValueError:
+                    continue  # skip invalid values
+
+                # For related fields, use __in
                 if "__" in field:
-                    or_conditions.append(Q(**{f"{field}__id__in": [field_value]}))
+                    or_conditions.append(Q(**{f"{field}__id__in": field_value}))
                 else:
-                    if isinstance(field_value, list):
-                        or_conditions.append(Q(**{f"{field}__in": field_value}))
-                    else:
-                        or_conditions.append(Q(**{f"{field}__in": [field_value]}))
+                    or_conditions.append(Q(**{f"{field}__in": field_value}))
 
         if or_conditions:
             queryset = queryset.filter(reduce(lambda x, y: x | y, or_conditions))
 
-        excluded_employees = self.data.get("exluded_employees")
+        excluded_employees = self.data.get("excluded_employees")
         if excluded_employees:
+            if not isinstance(excluded_employees, (list, tuple)):
+                excluded_employees = [excluded_employees]
             queryset = queryset.exclude(pk__in=excluded_employees)
+
         return queryset
