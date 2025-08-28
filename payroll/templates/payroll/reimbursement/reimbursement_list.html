@@ -1,4 +1,6 @@
-{% load i18n %} {% load static horillafilters %}{% include "filter_tags.html" %}
+{% load i18n %}
+{% load static horillafilters payrollfilters %}
+{% include "filter_tags.html" %}
 <div class="d-flex flex-row-reverse oh-wrapper mb-2">
     <span
         class="me-3"
@@ -171,6 +173,11 @@
                                         </div>
                                         <div data-cell-index="4" class="oh-sticky-table__td">
                                         {{req.get_status_display}}
+                                        {% with progress=req.approval_progress %}
+                                            {% if progress.1 %}
+                                                ({{ progress.0 }}/{{ progress.1 }} {% trans "approved" %})
+                                            {% endif %}
+                                        {% endwith %}
                                         </div>
                                         <div data-cell-index="5" class="oh-sticky-table__td">
                                         {{req.description}}
@@ -185,7 +192,7 @@
                                         </div>
                                         <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                                             <div class="oh-btn-group"  >
-                                                {% if perms.payroll.change_reimbursement or request.user == req.employee_id.employee_user_id %}
+                                                {% if perms.payroll.change_reimbursement or request.user == req.employee_id.employee_user_id or req|can_approve:request.user.employee_get %}
                                                     {% if req.status == 'requested' %}
                                                         <a
                                                             onclick="event.stopPropagation()"
@@ -217,7 +224,7 @@
                                             </div>
                                         </div>
 
-                                        {% if perms.payroll.change_reimbursement %}
+                                        {% if req|can_approve:request.user.employee_get %}
                                             <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
                                                 <form
                                                     action="{% url 'approve-reimbursements' %}"
@@ -511,6 +518,11 @@
                                             </div>
                                             <div data-cell-index="17" class="oh-sticky-table__td">
                                                 {{req.get_status_display}}
+                                                {% with progress=req.approval_progress %}
+                                                    {% if progress.1 %}
+                                                        ({{ progress.0 }}/{{ progress.1 }} {% trans "approved" %})
+                                                    {% endif %}
+                                                {% endwith %}
                                             </div>
                                             <div data-cell-index="18" class="oh-sticky-table__td">
                                                 {{req.description}}
@@ -526,7 +538,7 @@
 
                                             <div class="oh-sticky-table__td" onclick="event.stopPropagation()" >
                                                 <div class="oh-btn-group" onclick="event.stopPropagation()">
-                                                    {% if perms.payroll.change_reimbursement or request.user == req.employee_id.employee_user_id %}
+                                                    {% if perms.payroll.change_reimbursement or request.user == req.employee_id.employee_user_id or req|can_approve:request.user.employee_get %}
                                                         {% if req.status == 'requested' %}
                                                             <a
                                                                 onclick="event.stopPropagation()"
@@ -557,7 +569,7 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                            {% if perms.payroll.change_reimbursement %}
+                                            {% if req|can_approve:request.user.employee_get %}
                                                 <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
                                                     <form
                                                         action="{% url 'approve-reimbursements' %}"
@@ -838,6 +850,11 @@
                                             </div>
                                             <div data-cell-index="25" class="oh-sticky-table__td">
                                                 {{req.get_status_display}}
+                                                {% with progress=req.approval_progress %}
+                                                    {% if progress.1 %}
+                                                        ({{ progress.0 }}/{{ progress.1 }} {% trans "approved" %})
+                                                    {% endif %}
+                                                {% endwith %}
                                             </div>
                                             <div data-cell-index="26" class="oh-sticky-table__td">
                                                 {{req.description}}
@@ -852,7 +869,7 @@
                                             </div>
                                             <div onclick="event.stopPropagation()" class="oh-sticky-table__td">
                                                 <div class="oh-btn-group">
-                                                    {% if perms.payroll.change_reimbursement or request.user == req.employee_id.employee_user_id %}
+                                                    {% if perms.payroll.change_reimbursement or request.user == req.employee_id.employee_user_id or req|can_approve:request.user.employee_get %}
                                                         {% if req.status == 'requested' %}
                                                             <a
                                                                 onclick="event.stopPropagation()"
@@ -883,7 +900,7 @@
                                                     {% endif %}
                                                 </div>
                                             </div>
-                                            {% if perms.payroll.change_reimbursement %}
+                                            {% if req|can_approve:request.user.employee_get %}
                                                 <div class="oh-sticky-table__td oh-sticky-table__right" onclick="event.stopPropagation()">
                                                     <form
                                                         action="{% url 'approve-reimbursements' %}"

@@ -36,7 +36,9 @@ from payroll.models.models import (
     PayslipAutoGenerate,
     Reimbursement,
     ReimbursementMultipleAttachment,
+    ReimbursementConditionApproval,
 )
+from base.models import MultipleApprovalCondition
 from payroll.widgets import component_widgets as widget
 
 logger = logging.getLogger(__name__)
@@ -1056,11 +1058,36 @@ class ReimbursementForm(ModelForm):
             instance.other_attachments.add(*multiple_attachment_ids)
 
         if is_new:
+            if instance.type == "medical_encashment":
+                department = instance.employee_id.employee_work_info.department_id
+                company = instance.employee_id.employee_work_info.company_id
+                condition = MultipleApprovalCondition.objects.filter(
+                    condition_type="medical_reimbursement",
+                    department=department,
+                    company_id=company,
+                ).first()
+                if condition:
+                    ReimbursementConditionApproval.objects.filter(
+                        reimbursement_id=instance
+                    ).delete()
+                    sequence = 0
+                    for manager in condition.approval_managers():
+                        if not isinstance(manager, Employee):
+                            manager = getattr(
+                                instance.employee_id.employee_work_info, manager
+                            )
+                        if manager:
+                            sequence += 1
+                            ReimbursementConditionApproval.objects.create(
+                                sequence=sequence,
+                                reimbursement_id=instance,
+                                manager_id=manager,
+                            )
             try:
                 manager = instance.employee_id.employee_work_info.reporting_manager_id
                 if manager and manager.employee_user_id:
                     notify.send(
-                        instance.employee_id,  # 816
+                        instance.employee_id,
                         recipient=manager.employee_user_id,
                         verb=f"You have a new reimbursement request to approve for {instance.employee_id}.",
                         verb_ar=f"لديك طلب استرداد نفقات جديد يتعين عليك الموافقة عليه لـ {instance.employee_id}.",
