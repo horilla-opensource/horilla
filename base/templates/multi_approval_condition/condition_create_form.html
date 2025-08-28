@@ -50,7 +50,9 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        {% if not form.condition_field.is_hidden or not form.condition_operator.is_hidden %}
+        <div class="row leave-field">
+            {% if not form.condition_field.is_hidden %}
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
                     <label class="oh-input__label" for="{{form.condition_field.id_for_label}}">
@@ -59,6 +61,8 @@
                     {{ form.condition_field }} {{ form.condition_field.errors }}
                 </div>
             </div>
+            {% endif %}
+            {% if not form.condition_operator.is_hidden %}
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
                     <label class="oh-input__label" for="{{ form.condition_operator.id_for_label }}">
@@ -67,8 +71,11 @@
                     {{ form.condition_operator }} {{ form.condition_operator.errors }}
                 </div>
             </div>
+            {% endif %}
         </div>
-        <div class="row">
+        {% endif %}
+        {% if not form.condition_value.is_hidden %}
+        <div class="row leave-field">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="conditionValueDiv">
                 <div class="oh-input__group">
                     <label class="oh-input__label" for="{{ form.condition_value.id_for_label }}">
@@ -78,6 +85,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
@@ -105,3 +113,68 @@
         </div>
     </form>
 </div>
+
+
+<script>
+(function () {
+  function initMultipleApprovalUI(root = document) {
+    // --- condition fields toggle ---
+    const typeSelect = root.getElementById('id_condition_type') || root.querySelector("select[name='condition_type']");
+    const leaveFields = root.querySelectorAll('.leave-field');
+
+    function toggleConditionFields() {
+      if (!typeSelect) return;
+      const hide = typeSelect.value === 'medical_reimbursement';
+      leaveFields.forEach(el => el.style.display = hide ? 'none' : '');
+    }
+    if (typeSelect) {
+      toggleConditionFields();
+      typeSelect.addEventListener('change', toggleConditionFields);
+    }
+
+    // --- all departments toggle ---
+    const allDepartmentsCheckbox = root.querySelector("input[name='all_departments']") || root.getElementById('id_all_departments');
+    const departmentSelect = root.querySelector("select[name='department']") || root.getElementById('id_department');
+
+    function clearSelect(select) {
+      if (!select) return;
+      if (select.multiple) {
+        Array.from(select.options).forEach(opt => opt.selected = false);
+      } else {
+        select.value = "";
+      }
+      // If using Select2/Choices/etc., sync plugin:
+      if (window.jQuery && window.jQuery(select).trigger) {
+        try { window.jQuery(select).trigger('change'); } catch (e) {}
+      }
+    }
+
+    function toggleDepartmentSelect() {
+      if (!departmentSelect) return;
+      if (allDepartmentsCheckbox && allDepartmentsCheckbox.checked) {
+        departmentSelect.disabled = true;   // disable only
+        clearSelect(departmentSelect);      // clear values so nothing submits
+      } else {
+        departmentSelect.disabled = false;  // enable again
+      }
+    }
+
+    if (allDepartmentsCheckbox) {
+      toggleDepartmentSelect();
+      allDepartmentsCheckbox.addEventListener('change', toggleDepartmentSelect);
+    }
+  }
+
+  // run on initial load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { initMultipleApprovalUI(); });
+  } else {
+    initMultipleApprovalUI();
+  }
+
+  // re-init when HTMX swaps content
+  document.body.addEventListener('htmx:afterSwap', function (evt) {
+    initMultipleApprovalUI(evt.detail && evt.detail.target ? evt.detail.target : document);
+  });
+})();
+</script>

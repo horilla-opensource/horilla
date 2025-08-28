@@ -58,7 +58,9 @@
         </div>
       </div>
     </div>
-    <div class="row">
+    {% if not form.condition_field.is_hidden or not form.condition_operator.is_hidden %}
+    <div class="row leave-field">
+      {% if not form.condition_field.is_hidden %}
       <div class="col-12 col-sm-12 col-md-6 col-lg-6">
         <div class="oh-input__group">
           <label
@@ -70,6 +72,8 @@
           {{ form.condition_field.errors }}
         </div>
       </div>
+      {% endif %}
+      {% if not form.condition_operator.is_hidden %}
       <div class="col-12 col-sm-12 col-md-6 col-lg-6">
         <div class="oh-input__group">
           <label
@@ -82,8 +86,11 @@
           {{ form.condition_operator.errors }}
         </div>
       </div>
+      {% endif %}
     </div>
-    <div class="row">
+    {% endif %}
+    {% if not form.condition_value.is_hidden %}
+    <div class="row leave-field">
       <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="conditionValueDiv">
         {% if condition.condition_operator == "range" %}
         <div class="row" id="conditionRangeValueRow">
@@ -126,6 +133,7 @@
         {% endif %}
       </div>
     </div>
+    {% endif %}
     <div class="row">
       <div class="col-12 col-sm-12 col-md-6 col-lg-6">
         <div class="oh-input__group">
@@ -189,7 +197,18 @@
   </form>
 </div>
 <script>
-  $(document).ready(function () {
+  function toggleConditionFields() {
+    const typeSelect = document.getElementById('id_condition_type');
+    const leaveFields = document.querySelectorAll('.leave-field');
+    if (!typeSelect) return;
+    const hide = typeSelect.value === 'medical_reimbursement';
+    leaveFields.forEach(function (el) {
+      el.style.display = hide ? 'none' : '';
+    });
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    toggleConditionFields();
+    document.getElementById('id_condition_type').addEventListener('change', toggleConditionFields);
     $("select").on("select2:select", function (e) {
       $(this).closest("select")[0].dispatchEvent(new Event("change"));
     });
