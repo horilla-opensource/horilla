@@ -828,7 +828,9 @@ class LeaveRequest(HorillaModel):
         applicable_condition = False
         if department_id != None and emp_comp_id != None:
             conditions = MultipleApprovalCondition.objects.filter(
-                department=department_id, company_id=emp_comp_id
+                condition_type="leave",
+                department__in=[department_id],
+                company_id=emp_comp_id,
             ).order_by("condition_value")
         if conditions != None:
             for condition in conditions:
