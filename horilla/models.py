@@ -40,16 +40,16 @@ setattr(FieldFile, "url", url)
 
 
 def has_xss(value: str) -> bool:
-    """Detect common XSS attempts (script tags, event handlers, js URLs)."""
+    """Detect common XSS attempts (scripts, event handlers, js URLs, active content)."""
     if not isinstance(value, str):
         return False
 
     xss_patterns = [
-        r"<\s*script.*?>.*?<\s*/\s*script\s*>",
-        r"javascript\s*:",
-        r"on\w+\s*=",
-        r"<\s*script.*?>.*?(eval|setTimeout|setInterval|new\s+Function|XMLHttpRequest|fetch|\$\s*\().*?<\s*/\s*script\s*>",
-        r"on\w+\s*=\s*['\"]?\s*(eval|setTimeout|setInterval|new\s+Function|XMLHttpRequest|fetch|\$\s*\()[^>]*",
+        r"<\s*script.*?>.*?<\s*/\s*script\s*>",  # <script> ... </script>
+        r"javascript\s*:",  # javascript: pseudo-protocol
+        r"on\w+\s*=",  # inline event handlers (onclick, onload, etc.)
+        r"<\s*(embed|object|iframe|svg|math|link|meta).*?>",  # dangerous active content
+        r"on\w+\s*=\s*['\"]?\s*(eval|setTimeout|setInterval|new\s+Function|XMLHttpRequest|fetch|\$\s*\()[^>]*",  # JS API abuse
     ]
 
     combined = re.compile("|".join(xss_patterns), re.IGNORECASE | re.DOTALL)
