@@ -1,4 +1,6 @@
-{% load i18n %} {% load static horillafilters %}{% include "filter_tags.html" %}
+{% load i18n %}
+{% load static horillafilters payrollfilters %}
+{% include "filter_tags.html" %}
 <div class="d-flex flex-row-reverse oh-wrapper">
     <span
         class="mb-3"
@@ -75,11 +77,16 @@
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
+                                        {% with progress=req.approval_progress %}
+                                            {% if progress.1 %}
+                                                ({{ progress.0 }}/{{ progress.1 }} {% trans "approved" %})
+                                            {% endif %}
+                                        {% endwith %}
                                     </div>
                                 </div>
                                 <div>
                                     {% if req.status != "approved" %}
-                                        {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
+                                        {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id or req|can_approve:request.user.employee_get %}
                                             <a
                                                 hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
                                                 hx-target="#objectCreateModalTarget"
@@ -176,7 +183,7 @@
                                 >
                                 {% endif %}
                             </span>
-                            {% if perms.payroll.change_reimbursement %}
+                            {% if req|can_approve:request.user.employee_get %}
                             <form action="{% url 'approve-reimbursements' %}">
                                 <input type="hidden" name="ids" value="{{ req.id }}" />
                                 <input type="hidden" name="status" />
@@ -366,11 +373,16 @@
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
+                                        {% with progress=req.approval_progress %}
+                                            {% if progress.1 %}
+                                                ({{ progress.0 }}/{{ progress.1 }} {% trans "approved" %})
+                                            {% endif %}
+                                        {% endwith %}
                                     </div>
                                 </div>
                                 <div>
                                     {% if request.user.is_authenticated and request.user.employee_get == req.employee_id %}
-                                        {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
+                                        {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id or req|can_approve:request.user.employee_get %}
                                             <a
                                                 hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
                                                 hx-target="#objectCreateModalTarget"
@@ -467,7 +479,7 @@
                                 >
                                 {% endif %}
                             </span>
-                            {% if perms.payroll.change_reimbursement %}
+                            {% if req|can_approve:request.user.employee_get %}
                             <form action="{% url 'approve-reimbursements' %}">
                                 <input type="hidden" name="ids" value="{{ req.id }}" />
                                 <input type="hidden" name="status" />
@@ -658,11 +670,16 @@
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
+                                        {% with progress=req.approval_progress %}
+                                            {% if progress.1 %}
+                                                ({{ progress.0 }}/{{ progress.1 }} {% trans "approved" %})
+                                            {% endif %}
+                                        {% endwith %}
                                     </div>
                                 </div>
                                 <div>
                                     {% if req.status != "approved" %}
-                                        {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id %}
+                                        {% if perms.payroll.change_reimbursement or request.user.employee_get == req.employee_id or req|can_approve:request.user.employee_get %}
                                             <a
                                                 hx-get="{% url 'create-reimbursement' %}?instance_id={{ req.id }}"
                                                 hx-target="#objectCreateModalTarget"
@@ -756,7 +773,7 @@
                                 >
                                 {% endif %}
                             </span>
-                            {% if perms.payroll.change_reimbursement %}
+                            {% if req|can_approve:request.user.employee_get %}
                             <form action="{% url 'approve-reimbursements' %}">
                                 <input type="hidden" name="ids" value="{{ req.id }}" />
                                 <input type="hidden" name="status" />
@@ -944,6 +961,11 @@
                                         {% if req.status == "approved" %}background:#9acd3245; {% elif req.status == "rejected" %}
                                         background:#ff45002e;{% endif %}">
                                         {{ req.get_status_display }}
+                                        {% with progress=req.approval_progress %}
+                                            {% if progress.1 %}
+                                                ({{ progress.0 }}/{{ progress.1 }} {% trans "approved" %})
+                                            {% endif %}
+                                        {% endwith %}
                                     </div>
                                 </div>
                                 <div>

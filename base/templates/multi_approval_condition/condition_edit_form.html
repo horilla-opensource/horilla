@@ -38,13 +38,27 @@
     <div class="row">
       <div class="col-12 col-sm-12 col-md-6 col-lg-6">
         <div class="oh-input__group">
+          <label class="oh-input__label" for="{{form.condition_type.id_for_label}}"
+            >{% trans "Condition" %}</label
+          >
+          {{ form.condition_type }}
+          {{ form.condition_type.errors }}
+        </div>
+      </div>
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="oh-input__group">
           <label class="oh-input__label" for="{{form.department.id_for_label}}"
             >{% trans "Department" %}</label
           >
           {{ form.department }}
           {{ form.department.errors }}
+          <div class="mt-2">
+            {{ form.all_departments }} {{ form.all_departments.label_tag }}
+          </div>
         </div>
       </div>
+    </div>
+    <div class="row">
       <div class="col-12 col-sm-12 col-md-6 col-lg-6">
         <div class="oh-input__group">
           <label
@@ -56,8 +70,6 @@
           {{ form.condition_field.errors }}
         </div>
       </div>
-    </div>
-    <div class="row">
       <div class="col-12 col-sm-12 col-md-6 col-lg-6">
         <div class="oh-input__group">
           <label
@@ -70,6 +82,8 @@
           {{ form.condition_operator.errors }}
         </div>
       </div>
+    </div>
+    <div class="row">
       <div class="col-12 col-sm-12 col-md-6 col-lg-6" id="conditionValueDiv">
         {% if condition.condition_operator == "range" %}
         <div class="row" id="conditionRangeValueRow">

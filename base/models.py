@@ -1273,6 +1273,12 @@ FIELD_CHOICE = [
     ("", "---------"),
     ("requested_days", _("Leave Requested Days")),
 ]
+
+
+APPROVAL_CONDITION_CHOICES = [
+    ("leave", _("Leave Request")),
+    ("medical_reimbursement", _("Medical Reimbursement")),
+]
 CONDITION_CHOICE = [
     ("equal", _("Equal (==)")),
     ("notequal", _("Not Equal (!=)")),
@@ -1286,10 +1292,18 @@ CONDITION_CHOICE = [
 
 
 class MultipleApprovalCondition(HorillaModel):
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    condition_type = models.CharField(
+        max_length=50,
+        choices=APPROVAL_CONDITION_CHOICES,
+        default="leave",
+        verbose_name=_("Condition"),
+    )
+    department = models.ManyToManyField(Department)
     condition_field = models.CharField(
         max_length=255,
         choices=FIELD_CHOICE,
+        null=True,
+        blank=True,
     )
     condition_operator = models.CharField(
         max_length=255, choices=CONDITION_CHOICE, null=True, blank=True
@@ -1325,19 +1339,7 @@ class MultipleApprovalCondition(HorillaModel):
         return f"{self.condition_field} {self.condition_operator}"
 
     def clean(self, *args, **kwargs):
-        if self.condition_value:
-            instance = MultipleApprovalCondition.objects.filter(
-                department=self.department,
-                condition_field=self.condition_field,
-                condition_operator=self.condition_operator,
-                condition_value=self.condition_value,
-                company_id=self.company_id,
-            ).exclude(id=self.pk)
-            if instance:
-                raise ValidationError(
-                    _("A condition with the provided fields already exists")
-                )
-        if self.condition_field == "requested_days":
+        if self.condition_type == "leave" and self.condition_field == "requested_days":
             if self.condition_operator != "range":
                 if not self.condition_value:
                     raise ValidationError(
@@ -1348,7 +1350,7 @@ class MultipleApprovalCondition(HorillaModel):
                         }
                     )
                 try:
-                    float_value = float(self.condition_value)
+                    float(self.condition_value)
                 except ValueError as e:
                     raise ValidationError(
                         {
@@ -1368,25 +1370,15 @@ class MultipleApprovalCondition(HorillaModel):
                     )
                 try:
                     start_value = float(self.condition_start_value)
-                except ValueError as e:
-                    raise ValidationError(
-                        {
-                            "condition_operator": _(
-                                "Please enter a valid numeric value for the starting value when the condition field is Leave Requested Days."
-                            )
-                        }
-                    )
-                try:
                     end_value = float(self.condition_end_value)
                 except ValueError as e:
                     raise ValidationError(
                         {
                             "condition_operator": _(
-                                "Please enter a valid numeric value for the ending value when the condition field is Leave Requested Days."
+                                "Please enter a valid numeric value for the condition range when the condition field is Leave Requested Days."
                             )
                         }
                     )
-
                 if start_value == end_value:
                     raise ValidationError(
                         {
