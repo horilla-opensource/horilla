@@ -15,24 +15,30 @@ from employee.models import Employee
 def _check_timesheet(employee: Employee, day: date):
     """Return timesheet comparison info for a given day.
 
-    Returns a dictionary with keys ``missing`` and ``mismatch`` along with
-    ``worked`` and ``logged`` seconds. If there is no attendance for the day
-    ``None`` is returned.
+    Always returns a dictionary with keys:
+      - ``missing``: True if no timesheet entries exist for the day
+      - ``mismatch``: True if logged < worked (when attendance exists)
+      - ``worked``: Worked seconds from attendance if available (else 0)
+      - ``logged``: Total logged seconds from timesheets (0 if none)
     """
+
+    sheets = TimeSheet.objects.filter(employee_id=employee, date=day)
+    logged = sum(strtime_seconds(ts.time_spent or "00:00") for ts in sheets)
 
     attendance = Attendance.objects.filter(
         employee_id=employee, attendance_date=day
     ).first()
-    if not attendance or not attendance.attendance_worked_hour:
-        return None
+    worked = 0
+    if attendance and attendance.attendance_worked_hour:
+        worked = strtime_seconds(attendance.attendance_worked_hour or "00:00")
 
-    worked = strtime_seconds(attendance.attendance_worked_hour or "00:00")
-    sheets = TimeSheet.objects.filter(employee_id=employee, date=day)
-    logged = sum(strtime_seconds(ts.time_spent or "00:00") for ts in sheets)
+    worked_hours = worked // 3600
+    logged_hours = logged // 3600
 
     info = {
         "missing": not sheets.exists(),
-        "mismatch": logged < worked,
+        # Compare by hours only; minutes difference within same hour is OK
+        "mismatch": worked > 0 and (logged_hours != worked_hours),
         "worked": worked,
         "logged": logged,
     }

@@ -73,9 +73,12 @@
         </div>
         <div class="ts-modal__body ts-modal__body--center">
           <div class="ts-modal__icon" aria-hidden="true">
-            <ion-icon name="time-outline"></ion-icon>
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
-          <p class="ts-modal__msg">{{ employee_reminders.0.message }}</p>
+          <p class="ts-modal__msg">{% if employee_reminders %}{{ employee_reminders.0.message }}{% else %}{{ manager_reminders.0.message }}{% endif %}</p>
           <a href="{{ timesheet_url }}" class="oh-btn oh-btn--primary" id="ts-modal-complete">{% trans "Complete Now" %}</a>
         </div>
       </div>
@@ -107,7 +110,8 @@
     .ts-modal__close { background: none; border: none; font-size: 22px; cursor: pointer; color: #374151; position: absolute; right: 8px; top: 8px; }
     .ts-modal__close:hover { color: #111827; }
     .ts-modal__body--center { display:flex; flex-direction:column; align-items:center; text-align:center; gap: 10px; }
-    .ts-modal__icon ion-icon { font-size: 64px; color: #2563eb; }
+    .ts-modal__icon { color: #dc2626; }
+    .ts-modal__icon svg { display:block; width:64px; height:64px; }
     .ts-modal__msg { margin: 0 0 4px; color: #111827; font-size: 1rem; }
     @keyframes ts-fade-in { from { opacity:0; transform: translate(-50%,-46%);} to { opacity:1; transform: translate(-50%,-50%);} }
     .ts-body-lock { overflow: hidden !important; }
