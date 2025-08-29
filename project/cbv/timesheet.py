@@ -143,6 +143,23 @@ class TimeSheetList(HorillaListView):
                 ).distinct()
             else:
                 queryset = queryset.filter(employee_id=employee).distinct()
+
+        # Apply default filter for the current month only when
+        # no explicit date filters are provided via query params.
+        params = self.request.GET or {}
+        if not (params.get("date") or params.get("start_from") or params.get("end_till")):
+            import calendar
+            from datetime import date as _date
+
+            today = _date.today()
+            first_day = _date(today.year, today.month, 1)
+            last_day = _date(
+                today.year,
+                today.month,
+                calendar.monthrange(today.year, today.month)[1],
+            )
+            queryset = queryset.filter(date__gte=first_day, date__lte=last_day)
+
         return queryset.order_by("-date")
 
     def __init__(self, **kwargs: Any) -> None:
@@ -308,6 +325,23 @@ class TimeSheetCardView(HorillaCardView):
                 | Q(project_id__members=employee)
                 | Q(employee_id=employee)
             ).distinct()
+
+        # Apply default filter for the current month only when
+        # no explicit date filters are provided via query params.
+        params = self.request.GET or {}
+        if not (params.get("date") or params.get("start_from") or params.get("end_till")):
+            import calendar
+            from datetime import date as _date
+
+            today = _date.today()
+            first_day = _date(today.year, today.month, 1)
+            last_day = _date(
+                today.year,
+                today.month,
+                calendar.monthrange(today.year, today.month)[1],
+            )
+            queryset = queryset.filter(date__gte=first_day, date__lte=last_day)
+
         return queryset
 
     def __init__(self, **kwargs: Any) -> None:
