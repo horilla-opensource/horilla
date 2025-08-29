@@ -1,0 +1,164 @@
+{% load i18n %} {% load horillafilters %} 
+{% if messages %}
+	<div class="oh-alert-container">
+		{% for message in messages %}
+		<div class="oh-alert oh-alert--animated {{message.tags}}">
+			{{ message }}
+		</div>
+		{% endfor %}
+	</div>
+	<script>
+		setTimeout(() => {
+			$(".oh-modal__close--custom").click();
+			const spanElement = document.querySelector(".oh-span__class");
+			if (spanElement) {
+				spanElement.click();
+			}
+		}, 1000);
+		$(document).ready(function () {
+			$(".reload-record").click();
+		});
+	</script>
+
+	{% if late_in_early_out_ids %}
+	<span
+		class="oh-span__class"
+		hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
+		hx-target="#report-container"
+	></span>
+	{% endif %} 
+{% endif %}
+
+<div class="oh-modal__dialog-header">
+	<button
+		type="button"
+		class="oh-modal__close--custom"
+		aria-label="Close"
+		onclick="$(this).parents().closest('.oh-modal--show').toggleClass('oh-modal--show')"
+		{% if late_in_early_out_ids %}
+            hx-get="{% url 'late-in-early-out-single-view' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}"
+            hx-target="#objectDetailsModalTarget"
+		{% else %}
+            hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
+            hx-target="#report-container"
+            hx-swap="innerHTML"
+		{% endif %}
+	>
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
+</div>
+
+<div class="oh-modal__dialog-body">
+	<div class="oh-timeoff-modal__profile-content">
+		<div class="flex items-center gap-5 mb-5">
+			<div>
+				<img
+					src="{{ instance.employee_id.get_avatar }}"
+					alt=""
+					class="w-[50px] h-[50px] rounded-full"
+				/>
+			</div>
+			<div>
+				<p class="mb-1 text-sm font-semibold">
+					{{ instance.employee_id.get_full_name }}
+				</p>
+				<p class="text-xs text-[#666]">
+					{{ instance.employee_id.get_department }} / 
+					{{ instance.employee_id.get_job_position }}
+				</p>
+			</div>
+		</div>
+	</div>
+
+	<form
+		hx-post="{% url 'cut-penalty' instance.id %}?{{pd}}&instances_ids={{late_in_early_out_ids}}"
+		hx-target="#penaltyModalBody"
+	>
+		{{ form.errors }}
+		<div class="">
+            <div class="oh-input__group mb-2">
+                <label class="text-xs font-medium" for="id_leave_type_id"
+                    >{% trans "Leave Type" %}</label
+                >
+                {{form.leave_type_id}}
+            </div>
+            <div class="oh-input__group">
+                <label class="text-xs font-medium" for="id_minus_leaves"
+                    >{% trans "Minius Leave" %}</label
+                >
+                {{form.minus_leaves}}
+            </div>
+            <div class="oh-input__group">
+                <label class="text-xs font-medium" for="id_deduct_from_carry_forward"
+                    >{% trans "Deduct From Carryforward" %}</label
+                >
+                {{form.deduct_from_carry_forward}}
+            </div>
+            <div class="oh-input__group">
+                <label class="text-xs font-medium" for="id_penalty_amount"
+                    >{% trans "Penalty Amount" %}</label
+                >
+                {{form.penalty_amount}}
+            </div>
+		</div>
+
+		<input type="submit" id="penaltyFormSubmit" hidden />
+	</form>
+
+	{% if "leave"|app_installed %}
+		<table class="fixed-table w-full">
+			<thead class="sticky top-0 bg-[white] z-[1]">
+				<tr class="border-b border-[#ececec]">
+					<th class="text-sm font-medium text-left p-3">
+						{% trans "Leave Type" %}
+					</th>
+					<th class="text-sm font-medium text-left p-3">
+						{% trans "Available Days" %}
+					</th>
+					<th class="text-sm font-medium text-left p-3">
+						{% trans "Carry Forward Days" %}
+					</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				{% for acc in available %}
+				<tr class="border-b border-[#f3f3f3]">
+					<td class="text-sm text-left p-3 text-[#666]">
+						{{ acc.leave_type_id }}
+					</td>
+					<td class="text-sm text-left p-3 text-[#666]">
+						{{ acc.available_days }}
+					</td>
+					<td class="text-sm text-left p-3 text-[#666]">
+						{{ acc.carryforward_days }}
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		<ol class="mt-3 list-decimal ml-5 text-xs">
+			<li class="italic text-gray-700">
+				{% trans "Leave type is optional when 'minus leave' is 0" %}
+			</li>
+			<li class="italic text-gray-700">
+				{% trans "Penalty amount will affect payslip on the date" %}
+			</li>
+			<li class="italic text-gray-700">
+				{% trans "By default minus leave will cut/deduct from available leaves" %}
+			</li>
+			<li class="italic text-gray-700">
+				{% trans "By enabling 'Deduct from carry forward' leave will cut/deduct from carry forward days" %}
+			</li>
+		</ol>
+	{% endif %}
+	<div class="d-flex flex-row-reverse">
+		<button
+			onclick="$('#penaltyFormSubmit').click()"
+			class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
+		>
+			{% trans "Save" %}
+		</button>
+	</div>
+</div>

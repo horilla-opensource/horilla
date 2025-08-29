@@ -1,4 +1,6 @@
 from django.apps import apps
+from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 
@@ -10,6 +12,9 @@ def get_horilla_model_class(app_label, model):
 
 
 Recruitment = get_horilla_model_class(app_label="recruitment", model="recruitment")
+AttendanceLateComeEarlyOut = get_horilla_model_class(
+    app_label="attendance", model="attendancelatecomeearlyOut"
+)
 
 
 def tot_hires(self):
@@ -51,6 +56,33 @@ def open_job_detail(self):
     return jobs_names_string
 
 
+def penalities_column(self):
+    """
+    Returns an HTML snippet showing penalty status with Tailwind styling.
+    """
+
+    penalties_count = self.get_penalties_count()
+
+    if penalties_count:
+        url = reverse("view-penalties") + f"?late_early_id={self.id}"
+        return format_html(
+            '<div class="bg-red-100/10 border-2 border-red-300 rounded-xl px-4 py-2 w-32 text-xs text-center text-red-700 font-semibold" '
+            'data-target="#penaltyViewModal" data-toggle="oh-modal-toggle" '
+            'onclick="event.stopPropagation();"'
+            'hx-get="{}" hx-target="#penaltyViewModalBody" align="center">'
+            "Penalties :{}</div>",
+            url,
+            penalties_count,
+        )
+    else:
+        return format_html(
+            '<div class="bg-green-100/10 border-2 border-green-300 rounded-xl px-4 py-2 w-32 text-xs text-center text-green-700 font-semibold">'
+            "No Penalties</div>"
+        )
+
+
 Recruitment.managers_detail = managers_detail
 Recruitment.open_job_detail = open_job_detail
 Recruitment.tot_hires = tot_hires
+
+AttendanceLateComeEarlyOut.penalities_column = penalities_column
