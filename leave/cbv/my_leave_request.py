@@ -231,15 +231,18 @@ class MyLeaveRequestDetailView(HorillaDetailedView):
         "subtitle": "my_leave_request_detail_subtitle",
         "avatar": "employee_id__get_avatar",
     }
+    # cols = {
+    #     "rejected_action" : 12,
+    #     "attachment_action" : 12
+    # }
     body = [
         ("Leave Type", "leave_type_id"),
         ("Days", "requested_days"),
         ("Start Date", "start_date"),
         ("End Date", "end_date"),
-        ("Status", "get_status"),
+        ("Status", "get_status_display"),
         ("Description", "description"),
         ("Reason for Rejection", "rejected_action", True),
-        ("Reason for Cancellation", "cancelled_action", True),
         ("View attachment", "attachment_action", True),
     ]
     action_method = "detail_leave_actions"
