@@ -3,6 +3,20 @@
     {% include "generic/horilla_nav.html" %}
 </div>
 <script>
-    $('#applyFilter').closest('form').find('[name=field]').val('employee_id');
-    $('#applyFilter').click();
+    (function() {
+        const $form = $('#applyFilter').closest('form');
+        // Prefill current month's start/end only if no date filters are set
+        const hasAnyDate = $form.find('[name=date]').val() || $form.find('[name=start_from]').val() || $form.find('[name=end_till]').val();
+        if (!hasAnyDate) {
+            const now = new Date();
+            const first = new Date(now.getFullYear(), now.getMonth(), 1);
+            const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            const pad = (n) => String(n).padStart(2, '0');
+            const fmt = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+            $form.find('[name=start_from]').val(fmt(first));
+            $form.find('[name=end_till]').val(fmt(last));
+        }
+        $form.find('[name=field]').val('employee_id');
+        $('#applyFilter').click();
+    })();
 </script>

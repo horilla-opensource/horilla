@@ -741,6 +741,14 @@ def task_view(request, project_id, **kwargs):
 
     start = request.GET.get("start")
     end = request.GET.get("end")
+    # Default to current month's range if no dates provided
+    if not start and not end:
+        today = date.today()
+        first_day = today.replace(day=1)
+        last_day_num = calendar.monthrange(today.year, today.month)[1]
+        last_day = today.replace(day=last_day_num)
+        start = first_day.strftime("%Y-%m-%d")
+        end = last_day.strftime("%Y-%m-%d")
     member_ids = [mid for mid in request.GET.getlist("member") if mid]
     if start:
         timesheets = timesheets.filter(date__gte=start)
