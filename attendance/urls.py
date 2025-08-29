@@ -252,6 +252,11 @@ urlpatterns = [
         name="dashboard-attendance",
     ),
     path(
+        "timesheet-reminders",
+        attendance.views.dashboard.timesheet_reminders,
+        name="timesheet-reminders",
+    ),
+    path(
         "request-attendance",
         attendance.views.requests.request_attendance,
         name="request-attendance",

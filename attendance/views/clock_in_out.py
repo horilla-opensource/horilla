@@ -23,6 +23,7 @@ from attendance.methods.utils import (
     shift_schedule_today,
     strtime_seconds,
 )
+from attendance.methods.timesheet import validate_previous_day_timesheet
 from attendance.models import (
     Attendance,
     AttendanceActivity,
@@ -292,6 +293,8 @@ def clock_in(request):
                 end_time=end_time_sec,
                 in_datetime=datetime_now,
             )
+            # Validate previous day's timesheet and trigger reminders
+            validate_previous_day_timesheet(employee, date_today)
             script = ""
             hidden_label = ""
             time_runner_enabled = timerunner_enabled(request)["enabled_timerunner"]
