@@ -8,7 +8,7 @@ from notifications.models import Notification
 
 from project.models import TimeSheet
 from attendance.models import Attendance
-from attendance.methods.utils import strtime_seconds
+from attendance.methods.utils import strtime_seconds, format_time
 from employee.models import Employee
 
 
@@ -65,14 +65,16 @@ def validate_previous_day_timesheet(employee: Employee, today: date):
         return
 
     message = None
+    day_name = day.strftime("%A")
+    day_str = day.strftime("%d %b %Y")
     if info["missing"]:
         message = _(
-            "You haven't filled your timesheet for yesterday. Please complete it now to ensure accurate record-keeping."
-        )
+            "You haven't filled your timesheet for {day_name}, {date}. Please complete it now to ensure accurate record-keeping."
+        ).format(day_name=day_name, date=day_str)
     elif info["mismatch"]:
         message = _(
-            "Your logged hours are less than your check-in/check-out duration for yesterday. Please update your timesheet."
-        )
+            "Your logged hours are less than your check-in/check-out duration for {day_name}, {date}. Please update your timesheet."
+        ).format(day_name=day_name, date=day_str)
     if not message:
         return
 
@@ -84,13 +86,16 @@ def validate_previous_day_timesheet(employee: Employee, today: date):
     manager = employee.get_reporting_manager()
     if manager:
         manager_msg = _(
-            "Employee {name} has not submitted their timesheet for yesterday. Please follow up."
-        ).format(name=str(employee))
+            "Employee {name} has not submitted their timesheet for {day_name}, {date}. Please follow up."
+        ).format(name=str(employee), day_name=day_name, date=day_str)
         _send_notification(employee, manager.employee_user_id, manager_msg, redirect_url)
 
 
 def get_employee_timesheet_reminders(employee: Employee):
-    """Return reminder messages for the logged-in employee and ensure notifications exist."""
+    """Return reminder messages for the logged-in employee and ensure notifications exist.
+
+    Each reminder item may include worked/logged in HH:MM for display.
+    """
 
     today = date.today()
     day = today - timedelta(days=1)
@@ -98,23 +103,36 @@ def get_employee_timesheet_reminders(employee: Employee):
     reminders = []
     if info:
         redirect_url = reverse("view-time-sheet")
+        day_name = day.strftime("%A")
+        day_str = day.strftime("%d %b %Y")
         if info["missing"]:
             msg = _(
-                "You haven't filled your timesheet for yesterday. Please complete it now to ensure accurate record-keeping."
-            )
-            reminders.append({"message": msg})
+                "You haven't filled your timesheet for {day_name}, {date}. Please complete it now to ensure accurate record-keeping."
+            ).format(day_name=day_name, date=day_str)
+            reminders.append({
+                "message": msg,
+                "missing": True,
+            })
             _send_notification(employee, employee.employee_user_id, msg, redirect_url)
         elif info["mismatch"]:
             msg = _(
-                "Your logged hours are less than your check-in/check-out duration for yesterday. Please update your timesheet."
-            )
-            reminders.append({"message": msg})
+                "Your logged hours are less than your check-in/check-out duration for {day_name}, {date}. Please update your timesheet."
+            ).format(day_name=day_name, date=day_str)
+            reminders.append({
+                "message": msg,
+                "mismatch": True,
+                "worked_hm": format_time(info["worked"]),
+                "logged_hm": format_time(info["logged"]),
+            })
             _send_notification(employee, employee.employee_user_id, msg, redirect_url)
     return reminders
 
 
 def get_manager_timesheet_reminders(manager: Employee):
-    """Return reminders for a manager about subordinates and ensure notifications exist."""
+    """Return reminders for a manager about subordinates and ensure notifications exist.
+
+    Each item contains message plus details: missing/mismatch and HH:MM values.
+    """
 
     today = date.today()
     day = today - timedelta(days=1)
@@ -125,10 +143,31 @@ def get_manager_timesheet_reminders(manager: Employee):
     for emp in subordinates:
         info = _check_timesheet(emp, day)
         if info and (info["missing"] or info["mismatch"]):
-            msg = _(
-                "Employee {name} has not submitted their timesheet for yesterday. Please follow up."
-            ).format(name=str(emp))
-            reminders.append({"message": msg})
-            _send_notification(emp, manager.employee_user_id, msg, reverse("view-time-sheet"))
+            redirect_url = reverse("view-time-sheet")
+            day_name = day.strftime("%A")
+            day_str = day.strftime("%d %b %Y")
+            if info["missing"]:
+                msg = _(
+                    "Employee {name} has not submitted the timesheet for {day_name}, {date}. Please follow up."
+                ).format(name=str(emp), day_name=day_name, date=day_str)
+                reminders.append({
+                    "employee_name": str(emp),
+                    "message": msg,
+                    "missing": True,
+                })
+                _send_notification(emp, manager.employee_user_id, msg, redirect_url)
+            elif info["mismatch"]:
+                worked_hm = format_time(info["worked"])
+                logged_hm = format_time(info["logged"])
+                msg = _(
+                    "Employee {name} has a timesheet discrepancy for {day_name}, {date}. Please follow up."
+                ).format(name=str(emp), day_name=day_name, date=day_str)
+                reminders.append({
+                    "employee_name": str(emp),
+                    "message": msg,
+                    "mismatch": True,
+                    "worked_hm": worked_hm,
+                    "logged_hm": logged_hm,
+                })
+                _send_notification(emp, manager.employee_user_id, msg, redirect_url)
     return reminders
-
