@@ -14,6 +14,7 @@ provide the main entry points for interacting with the application's functionali
 import contextlib
 import json
 import logging
+import os
 import random
 import secrets
 from urllib.parse import parse_qs
@@ -22,6 +23,7 @@ from django import template
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import Paginator
 from django.db.models import ProtectedError
@@ -52,6 +54,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset as general_group_by
+from horilla_documents.models import Document
 from notifications.signals import notify
 from onboarding.decorators import (
     all_manager_can_enter,
@@ -1088,22 +1091,39 @@ def employee_creation(request, token):
             employee_personal_info = form.save(commit=False)
             employee_personal_info.employee_user_id = user
             employee_personal_info.email = candidate.email
-            employee_personal_info.employee_profile = onboarding_portal.profile
+            if candidate.profile:  # 896
+                filename = os.path.basename(candidate.profile.name)
+                employee_personal_info.employee_profile.save(
+                    filename, ContentFile(candidate.profile.read()), save=False
+                )
+
             employee_personal_info.is_from_onboarding = True
             employee_personal_info.save()
-            job_position = onboarding_portal.candidate_id.job_position_id
-            existing_work_info = EmployeeWorkInformation.objects.filter(
+
+            EmployeeWorkInformation.objects.update_or_create(
                 employee_id=employee_personal_info,
-            ).first()
-            work_info = (
-                existing_work_info if existing_work_info else EmployeeWorkInformation()
+                defaults={
+                    "department_id": candidate.job_position_id.department_id,
+                    "job_position_id": candidate.job_position_id,
+                    "company_id": candidate.recruitment_id.company_id,
+                    "date_joining": candidate.joining_date,
+                    "email": candidate.email,
+                },
             )
-            work_info.employee_id = employee_personal_info
-            work_info.job_position_id = job_position
-            work_info.date_joining = candidate.joining_date
-            work_info.email = candidate.email
-            work_info.company_id = candidate.recruitment_id.company_id
-            work_info.save()
+
+            Document.objects.bulk_create(
+                [
+                    Document(
+                        title=doc.title,
+                        employee_id=employee_personal_info,
+                        document=doc.document,
+                        status=doc.status,
+                        reject_reason=doc.reject_reason,
+                    )
+                    for doc in candidate.candidatedocument_set.all()
+                ]
+            )
+
             onboarding_portal.count = 3
             onboarding_portal.save()
             messages.success(
