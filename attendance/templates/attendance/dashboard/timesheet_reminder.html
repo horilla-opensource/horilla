@@ -1,0 +1,109 @@
+{% load i18n %}
+
+
+
+{# On-page reminder section with message + button #}
+{% if employee_reminders or manager_reminders %}
+  <section class="ts-section" role="region" aria-label="{% trans 'Timesheet Reminder' %}">
+    <div class="ts-section__main">
+      <div class="ts-section__texts">
+        {% if employee_reminders %}
+          <p class="ts-section__lead">{{ employee_reminders.0.message }}</p>
+        {% endif %}
+        {% if manager_reminders %}
+          {% for rem in manager_reminders %}
+            <p class="ts-section__note">{{ rem.message }}</p>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <div class="ts-section__actions">
+        <a href="{{ timesheet_url }}" class="oh-btn oh-btn--primary">{% trans "Complete Now" %}</a>
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{# Modal: hard lock with backdrop, built and appended to body #}
+{% if employee_reminders %}
+  <template id="ts-modal-template">
+    <div class="ts-modal" id="timesheetReminderModal" role="dialog" aria-modal="true" aria-labelledby="ts-modal-title">
+      <div class="ts-modal__backdrop" id="ts-backdrop"></div>
+      <div class="ts-modal__dialog">
+        <button class="ts-modal__close" aria-label="Close" id="ts-modal-close">&times;</button>
+        <div class="ts-modal__header">
+          <span class="ts-modal__title" id="ts-modal-title">{% trans "Reminder: Action Required" %}</span>
+        </div>
+        <div class="ts-modal__body ts-modal__body--center">
+          <div class="ts-modal__icon" aria-hidden="true">
+            <ion-icon name="time-outline"></ion-icon>
+          </div>
+          <p class="ts-modal__msg">{{ employee_reminders.0.message }}</p>
+          <a href="{{ timesheet_url }}" class="oh-btn oh-btn--primary" id="ts-modal-complete">{% trans "Complete Now" %}</a>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <style>
+    /* Section */
+    .ts-section { margin: 8px 0 14px; }
+    .ts-section__main { display:flex; align-items:center; justify-content:space-between; gap: 12px; padding: 12px 16px; background:#f8fafc; border:1px solid #e5e7eb; border-radius:10px; }
+    .ts-section__texts { display:flex; flex-direction:column; gap:4px; }
+    .ts-section__lead { margin:0; font-weight:600; color:#0f172a; }
+    .ts-section__note { margin:0; color:#475569; font-size:.95rem; }
+    .ts-section__actions { flex-shrink:0; }
+
+    /* Modal */
+    .ts-modal__backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(3px); z-index: 2000; }
+    .ts-modal__dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 440px; max-width: 92vw; background: #fff; border-radius: 16px; padding: 18px 18px 22px; z-index: 2001; box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: ts-fade-in 180ms ease-out; }
+    .ts-modal__header { display: flex; align-items: center; justify-content: center; margin-bottom: 6px; }
+    .ts-modal__title { font-weight: 600; font-size: 1.05rem; }
+    .ts-modal__close { background: none; border: none; font-size: 22px; cursor: pointer; color: #374151; position: absolute; right: 8px; top: 8px; }
+    .ts-modal__close:hover { color: #111827; }
+    .ts-modal__body--center { display:flex; flex-direction:column; align-items:center; text-align:center; gap: 10px; }
+    .ts-modal__icon ion-icon { font-size: 64px; color: #2563eb; }
+    .ts-modal__msg { margin: 0 0 4px; color: #111827; font-size: 1rem; }
+    @keyframes ts-fade-in { from { opacity:0; transform: translate(-50%,-46%);} to { opacity:1; transform: translate(-50%,-50%);} }
+    .ts-body-lock { overflow: hidden !important; }
+  </style>
+
+  <script>
+    (function(){
+      const shownKey = 'timesheetReminderShown';
+
+      function showModalOnce(){
+        if (sessionStorage.getItem(shownKey) === '1') return; // already shown this session
+        if (document.getElementById('timesheetReminderModal')) return; // already present
+        const tpl = document.getElementById('ts-modal-template');
+        if (!tpl) return;
+        const node = tpl.content ? tpl.content.cloneNode(true) : null;
+        if (!node) return;
+        document.body.appendChild(node);
+        document.body.classList.add('ts-body-lock');
+
+        const modal = document.getElementById('timesheetReminderModal');
+        const closeBtn = document.getElementById('ts-modal-close');
+        const completeBtn = document.getElementById('ts-modal-complete');
+        const backdrop = document.getElementById('ts-backdrop');
+
+        function close(){
+          modal?.remove();
+          document.body.classList.remove('ts-body-lock');
+          sessionStorage.setItem(shownKey, '1');
+        }
+
+        closeBtn?.addEventListener('click', close);
+        backdrop?.addEventListener('click', close);
+        completeBtn?.addEventListener('click', ()=>{
+          sessionStorage.setItem(shownKey, '1');
+          document.body.classList.remove('ts-body-lock');
+        });
+      }
+
+      try {
+        showModalOnce();
+      } catch(e) { /* no-op */ }
+    })();
+  </script>
+{% endif %}
+

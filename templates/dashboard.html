@@ -121,7 +121,23 @@
     </div>
     <!-- end of back button -->
     <div class="oh-dashboard row" id="dashboard" style="padding-bottom: 3.5rem;">
-
+        {# Timesheet reminder injector (no visible card; loads once) #}
+        <div id="timesheetReminderInjector" hx-get="{% url 'timesheet-reminders' %}" hx-trigger="load once"
+             hx-on="htmx:afterSwap:
+               (function(){
+                 var shownKey='timesheetReminderShown';
+                 try{
+                   var tplModal=document.getElementById('ts-modal-template');
+                   if(tplModal && sessionStorage.getItem(shownKey)!=='1' && !document.getElementById('timesheetReminderModal')){
+                     var node = tplModal.content ? tplModal.content.cloneNode(true) : null; if(node){ document.body.appendChild(node); document.body.classList.add('ts-body-lock'); }
+                     var m=document.getElementById('timesheetReminderModal');
+                     var cb=document.getElementById('ts-modal-close'); var bb=document.getElementById('ts-backdrop'); var done=document.getElementById('ts-modal-complete');
+                     var close=function(){ if(m) m.remove(); document.body.classList.remove('ts-body-lock'); sessionStorage.setItem(shownKey,'1'); };
+                     if(cb) cb.addEventListener('click', close); if(bb) bb.addEventListener('click', close);
+                     if(done) done.addEventListener('click', function(){ sessionStorage.setItem(shownKey,'1'); document.body.classList.remove('ts-body-lock');});
+                   }
+                 }catch(e){}
+               })();"></div>
 
         <div class="oh-dashboard__left col-12 col-sm-12 col-md-12 col-lg-9">
             <div class="oh-dashboard__cards row">

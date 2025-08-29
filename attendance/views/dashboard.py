@@ -35,6 +35,12 @@ from employee.models import Employee
 from horilla import settings
 from horilla.decorators import hx_request_required, login_required
 from horilla.methods import get_horilla_model_class
+from django.urls import reverse
+
+from attendance.methods.timesheet import (
+    get_employee_timesheet_reminders,
+    get_manager_timesheet_reminders,
+)
 
 
 def find_on_time(request, today, week_day, department=None):
@@ -106,6 +112,25 @@ def dashboard(request):
             "expected_attendances": expected_attendances,
             "marked_attendances": marked_attendances,
             "marked_attendances_ratio": marked_attendances_ratio,
+        },
+    )
+
+
+@login_required
+@hx_request_required
+def timesheet_reminders(request):
+    """Render timesheet reminder section for dashboard."""
+
+    employee = request.user.employee_get
+    employee_reminders = get_employee_timesheet_reminders(employee)
+    manager_reminders = get_manager_timesheet_reminders(employee)
+    return render(
+        request,
+        "attendance/dashboard/timesheet_reminder.html",
+        {
+            "employee_reminders": employee_reminders,
+            "manager_reminders": manager_reminders,
+            "timesheet_url": reverse("view-time-sheet"),
         },
     )
 
