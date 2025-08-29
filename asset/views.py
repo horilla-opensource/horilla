@@ -162,9 +162,6 @@ def add_asset_report(request, asset_id=None):
                 for file in request.FILES.getlist("file"):
                     AssetDocuments.objects.create(asset_report=asset_report, file=file)
 
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-            # return HttpResponse("<script>window.location.reload()</script>")
-
     return render(
         request,
         "asset/asset_report_form.html",
