@@ -11,7 +11,7 @@
             </button>
         </div>
         {% if header %}
-        <div class="flex items-center gap-5 mb-5">
+        <div class="flex items-center gap-5 mb-5" {{header.attrs|format:object|safe}} >
             {% if header.avatar %}
             <div>
                 <img src="{{object|getattribute:header.avatar}}" alt="" class="w-[50px] h-[50px] rounded-full" />
@@ -28,12 +28,12 @@
         </div>
         {% endif %}
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-5 mt-5">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-5 mt-5">
             {% for col in body %}
                 {% if not col.2 %}
-                    <div class="mb-2 flex gap-5 items-center">
+                    <div class="col-span-1 md:col-span-{{ cols|get_item:col.1|default:6 }} mb-2 flex gap-5 items-center">
                         <span class="font-medium text-xs text-[#565E6C] w-32">
-                            {{ col.0 }} {{ col.2 }}
+                            {{ col.0 }}
                         </span>
                         <p class="text-xs font-semibold flex items-center gap-5">
                             : <span>
@@ -41,17 +41,21 @@
                             </span>
                         </p>
                     </div>
+                {% else %}
+                    <div class="col-span-1 md:col-span-{{ cols|get_item:col.1|default:6 }}">
+                        {{ object|getattribute:col.1|safe }}
+                    </div>
                 {% endif %}
             {% endfor %}
         </div>
 
-        {% for col in body %}
+        {% comment %} {% for col in body %}
             {% if col.2 %}
                 <div>
                     {{ object|getattribute:col.1|safe }}
                 </div>
             {% endif %}
-        {% endfor %}
+        {% endfor %} {% endcomment %}
 
         <div class="m-3 " id="enlargeattachmentContainer"></div>
         <div class="flex flex-wrap justify-between gap-2 md:gap-1">
