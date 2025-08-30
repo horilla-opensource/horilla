@@ -297,11 +297,28 @@ class LeaveRequestsDetailView(HorillaDetailedView):
         (_("Created By"), "created_by"),
         (_("Description"), "description"),
         (_("View attachment"), "attachment_action", True),
-        (_("Reason for Rejection"), "rejected_action", True),
-        (_("Reason for Cancellation"), "cancelled_action", True),
-        (_("Multiple Approvals"), "multiple_approval_action", True),
     ]
     action_method = "leave_requests_detail_view_actions"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        body = list(self.body)
+
+        if self.instance.multiple_approvals:
+            insert_index = 7
+            body.insert(
+                insert_index,
+                (_("Multiple Approvals"), "multiple_approval_action", True),
+            )
+
+        if self.instance.reject_reason:
+            insert_index = 8
+            body.insert(
+                insert_index, (_("Reason for Rejection"), "rejected_action", True)
+            )
+
+        context["body"] = body
+        return context
 
 
 @method_decorator(login_required, name="dispatch")
