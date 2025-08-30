@@ -620,7 +620,11 @@ class RotatingWorkTypeAssign(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        try:
+            return f"""{self.employee_id.employee_work_info.department_id } /
+            { self.employee_id.employee_work_info.job_position_id}"""
+        except:
+            return None
 
     def work_rotate_detail_view(self):
         """
