@@ -1,0 +1,36 @@
+# Development Dockerfile for Horilla v2.0
+# Includes compilers and dev tools, runs Django with autoreload.
+
+FROM python:3.11-slim-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Dev system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    libffi-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libmagic1 \
+    libssl-dev \
+    gettext \
+    git \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt ./
+RUN python -m pip install --upgrade pip \
+  && pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8000
+
+# Use Django dev server; compose binds volumes for live reload
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

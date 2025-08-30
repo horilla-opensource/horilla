@@ -1,5 +1,33 @@
-.github
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# VCS
+.git/
 .gitignore
-*.md
-LICENSE
-docker-compose.yaml
+
+# OS files
+.DS_Store
+
+# Node
+node_modules/
+
+# Django static/media
+staticfiles/
+media/
+
+# Bytecode & caches
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Docker
+.wheels/
