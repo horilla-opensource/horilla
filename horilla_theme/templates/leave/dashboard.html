@@ -114,16 +114,16 @@
         </div>
 
         <div class="oh-dashboard__right col-12 col-sm-12 col-md-12 col-lg-3">
-            <div class="oh-dashboard__events pb-3">
+            <div class="pb-3">
                 <div class="w-100">
-                    <div class="w-100 mb-1 pb-1" id="back_button" style="width: 120%;">
+                    <div class="w-100 mb-1 pb-1" id="back_button">
                         <a href="{% url 'leave-employee-dashboard' %}?dashboard=true"
                             class="oh-btn oh-btn--secondary oh-btn--shadow">{% trans "View Personal Dashboard" %}
                             <ion-icon class="me-2 md hydrated" name="arrow-forward-outline" role="img" aria-label="arrow-back-outline"></ion-icon>
                         </a>
                     </div>
 
-                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2" style="padding-bottom: 0.75rem; width: 120%;">
+                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2 rounded-md">
                         <div class="oh-dasboard__event-photo" style="background-color: white">
                             <img src="{% static '/images/ui/sunbed.png' %}" class="oh-dashboard__event-userphoto" />
                         </div>
