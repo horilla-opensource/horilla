@@ -118,14 +118,13 @@
                             <a
                             class="oh-dropdown__link oh-dropdown__link--secondary"
                             hx-get='{% url "send-mail" cand.id %}'
-                            hx-target='#objectDetailsModalTarget'
+                            hx-target="#objectCreateModalTarget"
                             hx-swap='innerHTML'
                             style="cursor: pointer;"
                             data-toggle='oh-modal-toggle'
-                            data-target='#objectDetailsModal'
+                            data-target='#objectCreateModal'
                             >{% trans "Send Mail" %}</a
                             >
-                        </li>
                     {% endif %}
                     {% if perms.recruitment.add_skillzonecandidate or request.user.employee_get in stage.stage_managers.all %}
                         <li class="oh-dropdown__item">
