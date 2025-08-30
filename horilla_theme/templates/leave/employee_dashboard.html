@@ -100,17 +100,17 @@
         </div>
 
         <div class="oh-dashboard__right  col-12 col-sm-12 col-md-12 col-lg-3">
-            <div class="oh-dashboard__events pb-0">
+            <div class="pb-0">
                 <div class="w-100">
                     {% if perms.leave.view_leaverequest %}
-                    <div class="w-100 mb-1 pb-1" id="back_button" style="width: 120%;">
+                    <div class="w-100 mb-1 pb-1" id="back_button">
                         <a href="{% url 'leave-dashboard' %}" class="oh-btn oh-btn--secondary oh-btn--shadow">
                             {% trans "View Admin Dashboard" %}
                             <ion-icon class="me-2 md hydrated" name="arrow-forward-outline" role="img"
                                 aria-label="arrow-back-outline"></ion-icon></a>
                     </div>
                     {% endif %}
-                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2" style="padding-bottom:1rem; width: 120%;">
+                    <div class="oh-dashboard__event oh-dashboard__event--purple mb-2 rounded-md">
                         <div class="oh-dasboard__event-photo" style="background-color:white">
                             <img src="{% static '/images/ui/sunbed.png' %}" class="oh-dashboard__event-userphoto" />
                         </div>
