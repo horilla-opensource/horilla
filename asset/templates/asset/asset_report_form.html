@@ -1,34 +1,22 @@
 {% load i18n %}
 {% if messages %}
-    <div class="oh-wrapper">
-        {% for message in messages %}
-            <div class="oh-alert-container">
-                <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
-            </div>
-        {% endfor %}
-        <script>
-            {% if requests_ids %}
-                setTimeout(function () {
-                    $('.oh-modal__close--custom').click()
-                }, 1000);
-            {% else %}
-                setTimeout(function () {
-                    $('.oh-modal__close').click()
-                }, 1000);
-            {% endif %}
-        </script>
-    </div>
+    <script>
+        setTimeout(function () {
+            $('#dynamicCreateModalHeader').children(".oh-modal__close--custom").click();
+            reloadMessage();
+        }, 500);
+    </script>
 {% endif %}
-<div class="oh-modal__dialog-header">
+<div class="oh-modal__dialog-header" id="dynamicCreateModalHeader">
     <h2 class="oh-modal__dialog-title" id="addAssetReportLabel">{% trans 'Add Asset Report' %}</h2>
-    <button type="button" class="oh-modal_close--custom"
+    <button type="button" class="oh-modal__close--custom"
         onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"><ion-icon name="close-outline"
             role="img" aria-label="close outline"></ion-icon>
     </button>
 </div>
 <div class="oh-modal__dialog-body">
     <form id="add-form" hx-post="{% url 'add-asset-report' %}" hx-target="#dynamicCreateModalTarget"
-        hx-encoding="multipart/form-data" onsubmit="return handleFormSubmit();">
+        hx-encoding="multipart/form-data">
         {% csrf_token %}
         <input type="text" hidden name="asset_id" value="{{ asset_id }}" />
         <div class="oh-profile-section pt-0">
@@ -57,9 +45,9 @@
                 <input name="file" multiple="True" type="file" id="fileUpload" />
             </div>
             <div class="oh-modal__dialog-footer p-0">
-                <input type="submit" value="{% trans 'Save' %}"
-                    class="oh-btn oh-btn--secondary oh-btn--shadow pl-5 pr-5"
-                    onclick="$('.oh-modal_close--custom').click()" />
+                <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
+                    {% trans "Save" %}
+                </button>
             </div>
         </div>
     </form>

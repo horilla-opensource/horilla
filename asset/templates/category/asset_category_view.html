@@ -224,18 +224,6 @@
         });
     </script>
 {% endif %}
-<script>
-    function handleFormSubmit() {
-
-        $('#successMessage').show();
-
-        setTimeout(function () {
-            $('#successMessage').hide();
-        }, 3000);
-
-        return false; // Prevent the default form submission
-    }
-</script>
 <script src="{% static '/base/filter.js' %}"></script>
 <script src="{% static 'src/asset_category/assetCategoryView.js' %}"></script>
 {% endblock %}

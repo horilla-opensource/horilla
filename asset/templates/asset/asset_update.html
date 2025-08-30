@@ -209,21 +209,18 @@
                     <button type="submit" class="oh-btn oh-btn--secondary oh-btn--shadow">
                         {% trans "Save" %}
                     </button>
-                    {% if asset_form.instance.assetassignment_set.all %}
-                        <button class=" oh-btn oh-btn--info oh-btn--shadow mr-2" data-toggle="oh-modal-toggle"
-                            data-target="#dynamicCreateModal" onclick="event.preventDefault();event.stopPropagation()"
-                            hx-get="{% url 'add-asset-report' asset_form.instance.id %}?asset_list=true"
-                            hx-target="#dynamicCreateModalTarget">
-                            {% trans "Add Report" %}
-                        </button>
-                    {% else %}
-                        <button class=" oh-btn oh-btn--info oh-btn--shadow mr-2" disabled
-                            onclick="event.preventDefault();event.stopPropagation()" data-toggle="oh-modal-toggle"
-                            data-target="#dynamicCreateModal" hx-get="{% url 'add-asset-report' asset_form.instance.id %}?asset_list=true"
-                            hx-target="#dynamicCreateModalTarget">
-                            {% trans "Add Report" %}
-                        </button>
-                    {% endif %}
+                    <button class="oh-btn oh-btn--info oh-btn--shadow mr-2"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#dynamicCreateModal"
+                        onclick="event.preventDefault();event.stopPropagation()"
+                        hx-get="{% url 'add-asset-report' asset_form.instance.id %}?asset_list=true"
+                        hx-target="#dynamicCreateModalTarget"
+                        {% if not asset_form.instance.assetassignment_set.all %}
+                            disabled
+                            title="{% trans 'Assign asset before adding a report' %}"
+                        {% endif %}>
+                        {% trans "Add Report" %}
+                    </button>
                 </div>
             </div>
         </form>
@@ -236,15 +233,4 @@
         })
     })
     $("#id_expiry_date").change()
-
-    function handleFormSubmit() {
-
-        $('#successMessage').show();
-
-        setTimeout(function () {
-            $('#successMessage').hide();
-        }, 3000);
-
-        return false;
-    }
 </script>
