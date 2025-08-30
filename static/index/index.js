@@ -724,7 +724,8 @@ $(document).on("htmx:beforeRequest", function (event, data) {
             "BiometricDeviceTestFormTarget",
             "reloadMessages",
             "infinite",
-            "OtpContainer"
+            "OtpContainer",
+            "attendance-activity-container"
         ];
         var avoid_target_class = ["oh-badge--small"];
         if (
