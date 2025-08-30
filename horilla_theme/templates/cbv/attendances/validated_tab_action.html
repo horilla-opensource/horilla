@@ -1,0 +1,35 @@
+{% load i18n basefilters %} 
+
+{% if perms.instance.change_attendance or perms.instance.delete_attendance or request.user|is_reportingmanager %}
+    <a
+        class="oh-btn oh-btn-group oh-btn--info"
+        hx-get="{% url 'attendance-update' instance.id %}?dashboard={{dashboard}}"
+        hx-target="#genericModalBody"
+        hx-swap="innerHTML"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+    >
+        <ion-icon
+            name="create-outline"
+            role="img"
+            class="md hydrated"
+            aria-label="create outline"
+        ></ion-icon
+        >{% trans "Edit" %}
+    </a>
+
+    <form
+        action="{% url 'attendance-delete' instance.id  %}"
+        onsubmit="return confirm(`{% trans 'Are you sure want to delete this attendance?' %}`)"
+        hx-target="#tab_contents"
+        method="post"
+        class="oh-btn oh-btn-group oh-btn--danger"
+    >
+        {% csrf_token %}
+        <button
+            type="submit"
+        >
+            <ion-icon name="trash-outline"></ion-icon>{% trans 'Delete' %}
+        </button>
+    </form>
+{% endif %}
