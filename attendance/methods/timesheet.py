@@ -8,12 +8,15 @@ from notifications.models import Notification
 
 from project.models import TimeSheet
 from attendance.models import Attendance
+
 from attendance.methods.utils import strtime_seconds, format_time
+
 from employee.models import Employee
 
 
 def _check_timesheet(employee: Employee, day: date):
     """Return timesheet comparison info for a given day.
+
 
     Always returns a dictionary with keys:
       - ``missing``: True if no timesheet entries exist for the day
@@ -39,6 +42,7 @@ def _check_timesheet(employee: Employee, day: date):
         "missing": not sheets.exists(),
         # Compare by hours only; minutes difference within same hour is OK
         "mismatch": worked > 0 and (logged_hours != worked_hours),
+
         "worked": worked,
         "logged": logged,
     }
@@ -71,6 +75,7 @@ def validate_previous_day_timesheet(employee: Employee, today: date):
         return
 
     message = None
+
     day_name = day.strftime("%A")
     day_str = day.strftime("%d %b %Y")
     if info["missing"]:
@@ -81,6 +86,7 @@ def validate_previous_day_timesheet(employee: Employee, today: date):
         message = _(
             "Your logged hours are less than your check-in/check-out duration for {day_name}, {date}. Please update your timesheet."
         ).format(day_name=day_name, date=day_str)
+
     if not message:
         return
 
@@ -92,16 +98,20 @@ def validate_previous_day_timesheet(employee: Employee, today: date):
     manager = employee.get_reporting_manager()
     if manager:
         manager_msg = _(
+
             "Employee {name} has not submitted their timesheet for {day_name}, {date}. Please follow up."
         ).format(name=str(employee), day_name=day_name, date=day_str)
+
         _send_notification(employee, manager.employee_user_id, manager_msg, redirect_url)
 
 
 def get_employee_timesheet_reminders(employee: Employee):
+
     """Return reminder messages for the logged-in employee and ensure notifications exist.
 
     Each reminder item may include worked/logged in HH:MM for display.
     """
+
 
     today = date.today()
     day = today - timedelta(days=1)
@@ -109,6 +119,7 @@ def get_employee_timesheet_reminders(employee: Employee):
     reminders = []
     if info:
         redirect_url = reverse("view-time-sheet")
+
         day_name = day.strftime("%A")
         day_str = day.strftime("%d %b %Y")
         if info["missing"]:
@@ -130,15 +141,18 @@ def get_employee_timesheet_reminders(employee: Employee):
                 "worked_hm": format_time(info["worked"]),
                 "logged_hm": format_time(info["logged"]),
             })
+
             _send_notification(employee, employee.employee_user_id, msg, redirect_url)
     return reminders
 
 
 def get_manager_timesheet_reminders(manager: Employee):
+
     """Return reminders for a manager about subordinates and ensure notifications exist.
 
     Each item contains message plus details: missing/mismatch and HH:MM values.
     """
+
 
     today = date.today()
     day = today - timedelta(days=1)
@@ -149,6 +163,7 @@ def get_manager_timesheet_reminders(manager: Employee):
     for emp in subordinates:
         info = _check_timesheet(emp, day)
         if info and (info["missing"] or info["mismatch"]):
+
             redirect_url = reverse("view-time-sheet")
             day_name = day.strftime("%A")
             day_str = day.strftime("%d %b %Y")
@@ -177,3 +192,4 @@ def get_manager_timesheet_reminders(manager: Employee):
                 })
                 _send_notification(emp, manager.employee_user_id, msg, redirect_url)
     return reminders
+

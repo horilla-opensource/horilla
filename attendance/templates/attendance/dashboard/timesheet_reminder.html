@@ -57,12 +57,15 @@
         </div>
       </div>
       {% endif %}
+
     </div>
   </section>
 {% endif %}
 
 {# Modal: hard lock with backdrop, built and appended to body #}
+
 {% if employee_reminders or manager_reminders %}
+
   <template id="ts-modal-template">
     <div class="ts-modal" id="timesheetReminderModal" role="dialog" aria-modal="true" aria-labelledby="ts-modal-title">
       <div class="ts-modal__backdrop" id="ts-backdrop"></div>
@@ -73,12 +76,14 @@
         </div>
         <div class="ts-modal__body ts-modal__body--center">
           <div class="ts-modal__icon" aria-hidden="true">
+
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
               <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <p class="ts-modal__msg">{% if employee_reminders %}{{ employee_reminders.0.message }}{% else %}{{ manager_reminders.0.message }}{% endif %}</p>
+
           <a href="{{ timesheet_url }}" class="oh-btn oh-btn--primary" id="ts-modal-complete">{% trans "Complete Now" %}</a>
         </div>
       </div>
@@ -86,6 +91,7 @@
   </template>
 
   <style>
+
     /* Section card */
     .ts-section { margin: 8px 0 14px; }
     .ts-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 10px 10px 4px; }
@@ -102,6 +108,7 @@
     .ts-select { padding: 4px 8px; border:1px solid #e5e7eb; border-radius: 6px; background:#fff; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
+
     /* Modal */
     .ts-modal__backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(3px); z-index: 2000; }
     .ts-modal__dialog { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 440px; max-width: 92vw; background: #fff; border-radius: 16px; padding: 18px 18px 22px; z-index: 2001; box-shadow: 0 20px 60px rgba(0,0,0,0.25); animation: ts-fade-in 180ms ease-out; }
@@ -110,8 +117,10 @@
     .ts-modal__close { background: none; border: none; font-size: 22px; cursor: pointer; color: #374151; position: absolute; right: 8px; top: 8px; }
     .ts-modal__close:hover { color: #111827; }
     .ts-modal__body--center { display:flex; flex-direction:column; align-items:center; text-align:center; gap: 10px; }
+
     .ts-modal__icon { color: #dc2626; }
     .ts-modal__icon svg { display:block; width:64px; height:64px; }
+
     .ts-modal__msg { margin: 0 0 4px; color: #111827; font-size: 1rem; }
     @keyframes ts-fade-in { from { opacity:0; transform: translate(-50%,-46%);} to { opacity:1; transform: translate(-50%,-50%);} }
     .ts-body-lock { overflow: hidden !important; }
@@ -150,6 +159,7 @@
         });
       }
 
+
       function initTeamToggle(){
         const sel = document.getElementById('ts-team-toggle');
         const cont = document.getElementById('ts-team-container');
@@ -166,6 +176,7 @@
       }
 
       try { showModalOnce(); initTeamToggle(); } catch(e) { /* no-op */ }
+
     })();
   </script>
 {% endif %}
