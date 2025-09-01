@@ -10,6 +10,7 @@ from project.models import TimeSheet
 from attendance.models import Attendance
 
 from attendance.methods.utils import strtime_seconds, format_time
+from base.methods import is_holiday, is_company_leave
 
 from employee.models import Employee
 
@@ -70,6 +71,10 @@ def validate_previous_day_timesheet(employee: Employee, today: date):
     """Validate yesterday's timesheet for an employee and send notifications."""
 
     day = today - timedelta(days=1)
+    # Skip reminders for non-working days
+    if _is_non_working_day(day):
+        return
+
     info = _check_timesheet(employee, day)
     if not info:
         return
@@ -115,6 +120,10 @@ def get_employee_timesheet_reminders(employee: Employee):
 
     today = date.today()
     day = today - timedelta(days=1)
+    # Skip reminders for non-working days
+    if _is_non_working_day(day):
+        return []
+
     info = _check_timesheet(employee, day)
     reminders = []
     if info:
@@ -156,6 +165,9 @@ def get_manager_timesheet_reminders(manager: Employee):
 
     today = date.today()
     day = today - timedelta(days=1)
+    # Skip reminders for non-working days
+    if _is_non_working_day(day):
+        return []
     reminders = []
     subordinates = Employee.objects.filter(
         employee_work_info__reporting_manager_id=manager, is_active=True
@@ -192,4 +204,8 @@ def get_manager_timesheet_reminders(manager: Employee):
                 })
                 _send_notification(emp, manager.employee_user_id, msg, redirect_url)
     return reminders
+
+def _is_non_working_day(day: date) -> bool:
+    """Return True if the given date is a weekend/holiday/company leave."""
+    return day.weekday() in (5, 6) or bool(is_holiday(day)) or bool(is_company_leave(day))
 

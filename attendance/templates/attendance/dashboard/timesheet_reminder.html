@@ -128,10 +128,12 @@
 
   <script>
     (function(){
-      const shownKey = 'timesheetReminderShown';
+      const shownKey = 'timesheetReminderAt';
+      const TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
 
       function showModalOnce(){
-        if (sessionStorage.getItem(shownKey) === '1') return; // already shown this session
+        const lastShown = parseInt(localStorage.getItem(shownKey) || '0', 10);
+        if (lastShown && (Date.now() - lastShown) < TTL_MS) return; // within TTL
         if (document.getElementById('timesheetReminderModal')) return; // already present
         const tpl = document.getElementById('ts-modal-template');
         if (!tpl) return;
@@ -148,13 +150,13 @@
         function close(){
           modal?.remove();
           document.body.classList.remove('ts-body-lock');
-          sessionStorage.setItem(shownKey, '1');
+          try { localStorage.setItem(shownKey, String(Date.now())); } catch(e) {}
         }
 
         closeBtn?.addEventListener('click', close);
         backdrop?.addEventListener('click', close);
         completeBtn?.addEventListener('click', ()=>{
-          sessionStorage.setItem(shownKey, '1');
+          try { localStorage.setItem(shownKey, String(Date.now())); } catch(e) {}
           document.body.classList.remove('ts-body-lock');
         });
       }
