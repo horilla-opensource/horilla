@@ -1593,6 +1593,15 @@ class Reimbursement(HorillaModel):
         ("approved", _("Approved")),
         ("rejected", _("Rejected")),
     ]
+    # Medical claim specific fields
+    CLAIM_FOR_CHOICES = [
+        ("self", _("Self")),
+        ("mother", _("Mother")),
+        ("father", _("Father")),
+        ("son", _("Son")),
+        ("daughter", _("Daughter")),
+        ("wife", _("Wife")),
+    ]
     title = models.CharField(max_length=50)
     type = models.CharField(
         choices=reimbursement_types, max_length=20, default="reimbursement"
@@ -1605,6 +1614,14 @@ class Reimbursement(HorillaModel):
     other_attachments = models.ManyToManyField(
         ReimbursementMultipleAttachment, blank=True, editable=False
     )
+    # These fields are optional for non-medical types
+    claim_for = models.CharField(
+        max_length=20, choices=CLAIM_FOR_CHOICES, null=True, blank=True
+    )
+    dependent_name = models.CharField(max_length=100, null=True, blank=True)
+    # Store list of expense items for medical claim (see form validation)
+    medical_expenses = models.JSONField(null=True, blank=True)
+    total_claimed_amount = models.FloatField(null=True, blank=True, default=0)
     if apps.is_installed("leave"):
         leave_type_id = models.ForeignKey(
             "leave.LeaveType",
@@ -1669,6 +1686,18 @@ class Reimbursement(HorillaModel):
             raise ValidationError({"attachment": "This field is required"})
         if self.type == "medical_encashment" and self.attachment is None:
             raise ValidationError({"attachment": "This field is required"})
+        # Ensure amount mirrors total for medical claims
+        if self.type == "medical_encashment":
+            # Prefer explicitly set total_claimed_amount; if missing try computing from expenses
+            if (self.total_claimed_amount is None or self.total_claimed_amount == 0) and self.medical_expenses:
+                try:
+                    self.total_claimed_amount = sum(
+                        float(item.get("expense_amount", 0) or 0) for item in self.medical_expenses
+                    )
+                except Exception:
+                    pass
+            if self.total_claimed_amount:
+                self.amount = self.total_claimed_amount
         if self.type == "leave_encashment" and self.leave_type_id is None:
             raise ValidationError({"leave_type_id": "This field is required"})
         if self.type == "leave_encashment":

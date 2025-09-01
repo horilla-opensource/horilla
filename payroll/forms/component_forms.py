@@ -806,6 +806,13 @@ class ReimbursementForm(ModelForm):
         if not self.instance.pk:
             self.initial["allowance_on"] = str(datetime.date.today())
 
+        # Default to medical form if requested via query
+        try:
+            if self.request and not self.instance.pk and self.request.GET.get("type"):
+                self.initial["type"] = self.request.GET.get("type")
+        except Exception:
+            pass
+
         self.initial["employee_id"] = self.employee.id if self.employee else None
 
         self.configure_fields()
@@ -814,6 +821,13 @@ class ReimbursementForm(ModelForm):
         """Resolves employee either from form data or request."""
         employee_qs = self.fields["employee_id"].queryset
         employee_id = self.data.get("employee_id") if self.data else None
+
+        # Fallback to GET param to support HX reloads on employee switch
+        if not employee_id and getattr(self, "request", None):
+            try:
+                employee_id = self.request.GET.get("employee_id")
+            except Exception:
+                employee_id = None
 
         if employee_id and (emp := employee_qs.filter(id=employee_id).first()):
             return emp
@@ -853,6 +867,20 @@ class ReimbursementForm(ModelForm):
 
         self.fields["attachment"] = MultipleFileField(label="Attachments")
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
+        self.fields["attachment"].widget.attrs["multiple"] = True
+
+        # Medical-specific optional field setup (exist only after model update)
+        if "claim_for" in self.fields:
+            self.fields["claim_for"].required = False
+        if "dependent_name" in self.fields:
+            self.fields["dependent_name"].required = False
+        if "medical_expenses" in self.fields:
+            self.fields["medical_expenses"].widget = forms.HiddenInput()
+            self.fields["medical_expenses"].required = False
+        if "total_claimed_amount" in self.fields:
+            # read-only in UI, still posted for server-side checks
+            self.fields["total_claimed_amount"].required = False
+            self.fields["total_claimed_amount"].widget.attrs.update({"readonly": True})
 
         self.exclude_fields_by_type(exclude_fields)
 
@@ -879,6 +907,11 @@ class ReimbursementForm(ModelForm):
     def exclude_fields_by_type(self, exclude_fields):
         """Determine which fields to exclude based on type."""
         type = self.data.get("type") if self.data else None
+        if not type and getattr(self, "request", None):
+            try:
+                type = self.request.GET.get("type") or type
+            except Exception:
+                pass
         if not type and self.instance:
             type = self.instance.type
             
@@ -909,16 +942,41 @@ class ReimbursementForm(ModelForm):
                 "ad_to_encash",
             ]
 
+        # Hide medical-only fields for non-medical types
+        if type != "medical_encashment":
+            exclude_fields += [
+                "claim_for",
+                "dependent_name",
+                "medical_expenses",
+                "total_claimed_amount",
+            ]
+
+        # Keep type visible to allow switching forms in modal
+
         if is_edit:
             exclude_fields += ["type", "employee_id"]
 
     def as_p(self):
-        """
-        Render the form fields as HTML table rows with Bootstrap styling.
-        """
-        context = {"form": self}
-        table_html = render_to_string("common_form.html", context)
-        return table_html
+        """Render generic or medical-specific form layout."""
+        # determine type from data/instance/initial
+        _type = None
+        if self.data:
+            _type = self.data.get("type")
+        # Fallback to GET in case of HX reloads
+        if not _type and getattr(self, "request", None):
+            try:
+                _type = self.request.GET.get("type") or _type
+            except Exception:
+                pass
+        if not _type and getattr(self.instance, "type", None):
+            _type = self.instance.type
+        if not _type:
+            _type = self.initial.get("type")
+
+        context = {"form": self, "employee": self.employee}
+        if _type == "medical_encashment":
+            return render_to_string("payroll/reimbursement/medical_form_fields.html", context)
+        return render_to_string("common_form.html", context)
 
     def clean(self):
         cleaned_data = super().clean()
@@ -935,16 +993,97 @@ class ReimbursementForm(ModelForm):
             return cleaned_data
 
         if type_ == 'medical_encashment':
+            # Build total from JSON expense entries (if provided)
+            expenses_raw = cleaned_data.get("medical_expenses") or self.data.get("medical_expenses")
+            import json as _json
+            expenses = []
+            if isinstance(expenses_raw, str) and expenses_raw.strip():
+                try:
+                    expenses = _json.loads(expenses_raw)
+                except Exception:
+                    self.add_error("medical_expenses", _("Invalid expense data"))
+            elif isinstance(expenses_raw, list):
+                expenses = expenses_raw
+
+            # client-side ensures 1..5, but enforce server-side too
+            if not expenses:
+                self.add_error("medical_expenses", _("Add at least 1 expense"))
+            if expenses and len(expenses) > 5:
+                self.add_error("medical_expenses", _("Maximum 5 expenses allowed"))
+
+            total = 0
+            from datetime import date as _date
+            for idx, item in enumerate(expenses or []):
+                etype = (item or {}).get("expense_type")
+                provider = (item or {}).get("provider")
+                edate = (item or {}).get("expense_date")
+                amount_val = None
+                try:
+                    amount_val = float((item or {}).get("expense_amount"))
+                except Exception:
+                    amount_val = -1
+                receipt = (item or {}).get("receipt_no_date")
+                if not etype:
+                    self.add_error("medical_expenses", _("Expense #{}: Type is required".format(idx+1)))
+                if not provider:
+                    self.add_error("medical_expenses", _("Expense #{}: Provider/Hospital is required".format(idx+1)))
+                if not edate:
+                    self.add_error("medical_expenses", _("Expense #{}: Expense Date is required".format(idx+1)))
+                else:
+                    try:
+                        y, m, d = [int(x) for x in str(edate).split("-")]
+                        exd = datetime.date(y, m, d)
+                        if exd > datetime.date.today():
+                            self.add_error("medical_expenses", _("Expense #{}: Date cannot be in the future".format(idx+1)))
+                    except Exception:
+                        self.add_error("medical_expenses", _("Expense #{}: Invalid date".format(idx+1)))
+                if amount_val is None or amount_val <= 0:
+                    self.add_error("medical_expenses", _("Expense #{}: Amount must be greater than 0".format(idx+1)))
+                if receipt is None or str(receipt).strip() == "":
+                    self.add_error("medical_expenses", _("Expense #{}: Receipt No/Date is required".format(idx+1)))
+                else:
+                    if not str(receipt).strip().isdigit():
+                        self.add_error("medical_expenses", _("Expense #{}: Receipt must be numeric".format(idx+1)))
+                total += amount_val if amount_val and amount_val > 0 else 0
+
+            # Validate claim_for and dependent name
+            claim_for = cleaned_data.get("claim_for") or self.data.get("claim_for")
+            dependent_name = cleaned_data.get("dependent_name") or self.data.get("dependent_name")
+            if not claim_for:
+                self.add_error("claim_for", _("This field is required"))
+            elif str(claim_for).lower() != "self" and not dependent_name:
+                self.add_error("dependent_name", _("Dependent Name is required"))
+
+            # Validate attachments: at least 1, max 5, types and size
+            attachments = self.files.getlist("attachment")
+            if not attachments and not (self.instance and self.instance.attachment):
+                self.add_error("attachment", _("At least 1 supporting document is required"))
+            allowed_ext = {".pdf", ".jpg", ".jpeg", ".png"}
+            max_files = 5
+            max_size = 5 * 1024 * 1024
+            if attachments:
+                if len(attachments) > max_files:
+                    self.add_error("attachment", _("Maximum 5 files allowed"))
+                for f in attachments:
+                    ext = ("." + f.name.split(".")[-1].lower()) if "." in f.name else ""
+                    if ext not in allowed_ext:
+                        self.add_error("attachment", _("Only PDF/JPG/JPEG/PNG allowed"))
+                    if getattr(f, "size", 0) and f.size > max_size:
+                        self.add_error("attachment", _("Each file must be ≤ 5 MB"))
+
+            # Propagate computed totals to amount fields for further checks and saving
+            cleaned_data["total_claimed_amount"] = total
+            cleaned_data["amount"] = total
+
+            # Now perform existing policy validations using computed 'amount'
+            amount = total
             if amount is None:
-                self.add_error("amount", "Amount is required ")
+                self.add_error("amount", _("Amount is required"))
             else:
                 if amount > 100000:
-                
-                    self.add_error("amount", "Amount cannot exceed PKR 100,000")
-
+                    self.add_error("amount", _("Amount cannot exceed PKR 100,000"))
                 if amount <= 0:
-                    
-                    self.add_error("amount", "Amount cannot be less than or equal to PKR 0")
+                    self.add_error("amount", _("Amount cannot be less than or equal to PKR 0"))
 
                 approved_claims_total = (
                     Reimbursement.objects.filter(
@@ -952,20 +1091,19 @@ class ReimbursementForm(ModelForm):
                         type="medical_encashment",
                         status="approved",
                     )
-                    .exclude(id=self.instance.pk)  # Exclude current instance in case of edit
+                    .exclude(id=self.instance.pk)
                     .aggregate(total=Sum("amount"))["total"]
                     or 0
                 )
-
                 if approved_claims_total >= 100000:
                     self.add_error(
                         "amount",
-                        "No medical claim can be submitted once PKR 100,000 is fully used.",
+                        _("No medical claim can be submitted once PKR 100,000 is fully used."),
                     )
                 elif (approved_claims_total + amount) > 100000:
                     self.add_error(
                         "amount",
-                        f"Total approved medical claims (including this one) cannot exceed PKR 100,000. Currently approved: PKR {approved_claims_total:,}",
+                        _("Total approved medical claims (including this one) cannot exceed PKR 100,000. Currently approved: PKR {}".format(approved_claims_total)),
                     )
                     
         elif type_ == "bonus_encashment":
@@ -1130,3 +1268,6 @@ class PayslipAutoGenerateForm(ModelForm):
         context = {"form": self}
         table_html = render_to_string("common_form.html", context)
         return table_html
+
+
+

@@ -1,0 +1,274 @@
+{% load i18n widget_tweaks %}
+<style>
+  .mr-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .mr-card{background:#fff;border:1px solid #eee;border-radius:10px;padding:16px}
+  .mr-card h4{margin:0 0 10px 0;font-size:1rem}
+  .mr-expense{border:1px dashed #d9d9d9;border-radius:8px;padding:12px;margin-bottom:10px;position:relative}
+  .mr-remove{position:absolute;right:8px;top:8px;cursor:pointer;color:#c00;font-weight:bold}
+  .mr-col-12{grid-column:span 12}
+  .mr-col-8{grid-column:span 8}
+  .mr-col-6{grid-column:span 6}
+  .mr-col-4{grid-column:span 4}
+  .mr-col-3{grid-column:span 3}
+  .mr-muted{color:#666;font-size:.85rem}
+  .mr-total input[readonly]{background:#fafafa}
+</style>
+
+<div class="oh-payslip__header">
+  <div class="oh-payslip__header-left">
+    <div class="oh-payroll__component-title">{% trans "New Medical Form" %}</div>
+  </div>
+  <div class="oh-payslip__header-right mr-muted">{% trans "Attach PDFs or images (max 5MB each)" %}</div>
+  {{ form.non_field_errors }}
+  {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+</div>
+
+<div class="mr-grid">
+  <div class="mr-card mr-col-12">
+    <label class="oh-label required-star" for="id_type">{% trans 'Type' %}</label>
+    {{ form.type|add_class:'oh-input w-100' }}
+  </div>
+
+  <div class="mr-card mr-col-4">
+    <h4>{% trans "Employee Information" %}</h4>
+    <div class="mr-muted">{% trans "Pre-filled employee details." %}</div>
+    {% if perms.payroll.add_reimbursement %}
+      <div class="mb-2">
+        <label class="oh-label required-star" for="id_employee_id">{% trans 'Employee' %}</label>
+        {{ form.employee_id|add_class:'oh-input w-100' }}
+        {{ form.employee_id.errors }}
+      </div>
+    {% endif %}
+    <div class="row mt-2">
+      <div class="col-12 col-md-6">
+        <label class="oh-label required-star">{% trans 'Employee ID' %}</label>
+        <input class="oh-input w-100" value="{{ employee.employee_work_info.employee_id }}" disabled />
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="oh-label required-star">{% trans 'Name' %}</label>
+        <input class="oh-input w-100" value="{{ employee }}" disabled />
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="oh-label required-star">{% trans 'Department' %}</label>
+        <input class="oh-input w-100" value="{{ employee.employee_work_info.department_id }}" disabled />
+      </div>
+      <div class="col-12 col-md-6">
+        <label class="oh-label required-star">{% trans 'Contact' %}</label>
+        <input class="oh-input w-100" value="{{ employee.phone|default:'-' }}" disabled />
+      </div>
+      <div class="col-12 col-md-12">
+        <label class="oh-label required-star">{% trans 'Email' %}</label>
+        <input class="oh-input w-100" value="{{ employee.employee_user_id.email }}" disabled />
+      </div>
+    </div>
+  </div>
+
+  <div class="mr-card mr-col-4">
+    <h4>{% trans "Claim For" %}</h4>
+    <div class="row">
+      <div class="col-12">
+        <label class="oh-label required-star" for="id_claim_for">{% trans 'Claim For' %}</label>
+        {{ form.claim_for|add_class:'oh-input w-100' }}
+        {{ form.claim_for.errors }}
+      </div>
+      <div class="col-12" id="dependentNameBox" style="display:none">
+        <label class="oh-label required-star" for="id_dependent_name">{% trans 'Dependent Name' %}</label>
+        {{ form.dependent_name|add_class:'oh-input w-100' }}
+        {{ form.dependent_name.errors }}
+      </div>
+      <div class="col-12 mt-2">
+        <label class="oh-label required-star" for="id_allowance_on">{% trans 'Date' %}</label>
+        {{ form.allowance_on|add_class:'oh-input w-100' }}
+        {{ form.allowance_on.errors }}
+      </div>
+      <div class="col-12 mt-2">
+        <label class="oh-label" for="id_title">{% trans 'Title' %}</label>
+        {{ form.title|add_class:'oh-input w-100' }}
+        {{ form.title.errors }}
+      </div>
+    </div>
+  </div>
+
+  <div class="mr-card mr-col-4">
+    <h4>{% trans "Additional Description" %}</h4>
+    {{ form.description|add_class:'oh-input w-100' }}
+    {{ form.description.errors }}
+  </div>
+
+  <div class="mr-card mr-col-8">
+    <h4>{% trans "Medical Expense Details" %}</h4>
+    <div id="expensesContainer"></div>
+    <button type="button" class="oh-btn oh-btn--secondary mt-2" id="addExpenseBtn">+ {% trans 'Add New Expense' %}</button>
+    {{ form.medical_expenses }}
+    {{ form.medical_expenses.errors }}
+  </div>
+
+  <div class="mr-card mr-col-4">
+    <h4>{% trans "Supporting Documents" %}</h4>
+    <div class="mr-muted">{% trans "Max 5 files (JPEG, PDF, PNG)" %}</div>
+    {{ form.attachment|add_class:'oh-input w-100' }}
+    {{ form.attachment.errors }}
+    <div id="docsPreview" class="mt-2"></div>
+  </div>
+
+  <div class="mr-card mr-col-4 mr-total">
+    <h4>{% trans "Amount" %}</h4>
+    {{ form.amount|add_class:'oh-input w-100'|attr:'readonly:readonly' }}
+    <small class="mr-muted">{% trans "Auto-calculated from expense amounts" %}</small>
+  </div>
+
+  <div class="mr-col-12 d-flex flex-row-reverse">
+    <button type="submit" class="oh-btn oh-btn--secondary mt-2 ml-2">{% trans 'Submit Claim' %}</button>
+    <button type="button" class="oh-btn oh-btn--light-bkg mt-2" data-toggle="oh-modal-toggle" data-target="#objectCreateModal">{% trans 'Cancel' %}</button>
+  </div>
+</div>
+
+<script>
+  (function(){
+    var formRoot = document.getElementById('objectCreateModalTarget') || document;
+    var container = document.getElementById('expensesContainer');
+    var addBtn = document.getElementById('addExpenseBtn');
+    var hiddenJson = document.getElementById('id_medical_expenses');
+    var totalEl = document.getElementById('id_amount');
+    var claimFor = document.getElementById('id_claim_for');
+    var depBox = document.getElementById('dependentNameBox');
+    var empSel = document.getElementById('id_employee_id');
+    var typeSel = document.getElementById('id_type');
+    var fileInput = document.getElementById('id_attachment');
+    var docsPreview = document.getElementById('docsPreview');
+
+    function toggleDependent(){
+      if (!claimFor) return;
+      var v = (claimFor.value || '').toLowerCase();
+      depBox.style.display = v && v !== 'self' ? '' : 'none';
+      var dep = document.getElementById('id_dependent_name');
+      if (dep) dep.required = (v && v !== 'self');
+    }
+    if (claimFor){ claimFor.addEventListener('change', toggleDependent); setTimeout(toggleDependent, 0); }
+
+    function tmpl(idx, data){
+      data = data || {};
+      return (
+        '<div class="mr-expense" data-index="'+idx+'">'
+        + '<span class="mr-remove" title="Remove">&times;</span>'
+        + '<div class="row">'
+        +   '<div class="col-12 col-md-4">'
+        +     '<label class="oh-label required-star">Expense Date</label>'
+        +     '<input type="date" class="oh-input w-100 exp-date" value="'+(data.expense_date||'')+'" required />'
+        +   '</div>'
+        +   '<div class="col-12 col-md-4">'
+        +     '<label class="oh-label required-star">Type of Expense</label>'
+        +     '<input type="text" class="oh-input w-100 exp-type" value="'+(data.expense_type||'')+'" required />'
+        +   '</div>'
+        +   '<div class="col-12 col-md-4">'
+        +     '<label class="oh-label required-star">Hospital/ Provider Name</label>'
+        +     '<input type="text" class="oh-input w-100 exp-provider" value="'+(data.provider||'')+'" required />'
+        +   '</div>'
+        +   '<div class="col-12 col-md-4 mt-2">'
+        +     '<label class="oh-label required-star">Expense Amount</label>'
+        +     '<input type="number" min="0" step="0.01" class="oh-input w-100 exp-amount" value="'+(data.expense_amount||'')+'" required />'
+        +   '</div>'
+        +   '<div class="col-12 col-md-4 mt-2">'
+        +     '<label class="oh-label required-star">Receipt No/Date</label>'
+        +     '<input type="text" class="oh-input w-100 exp-receipt" value="'+(data.receipt_no_date||'')+'" required />'
+        +   '</div>'
+        + '</div>'
+        + '</div>'
+      );
+    }
+
+    function calcTotal(){
+      var total = 0;
+      Array.prototype.forEach.call(container.querySelectorAll('.mr-expense'), function(card){
+        var v = parseFloat(card.querySelector('.exp-amount').value || '0');
+        if (!isNaN(v)) total += v;
+      });
+      if (totalEl){ totalEl.value = total.toFixed(2); }
+    }
+
+    function serialize(){
+      var items = [];
+      Array.prototype.forEach.call(container.querySelectorAll('.mr-expense'), function(card){
+        items.push({
+          expense_date: card.querySelector('.exp-date').value,
+          expense_type: card.querySelector('.exp-type').value,
+          provider: card.querySelector('.exp-provider').value,
+          expense_amount: card.querySelector('.exp-amount').value,
+          receipt_no_date: card.querySelector('.exp-receipt').value
+        });
+      });
+      if (hiddenJson){ hiddenJson.value = JSON.stringify(items); }
+      calcTotal();
+    }
+
+    function addExpense(data){
+      var count = container.querySelectorAll('.mr-expense').length;
+      if (count >= 5){
+        if (window.Swal){ Swal.fire({icon:'info', text:'Maximum 5 expenses allowed'}); }
+        return;
+      }
+      var idx = count + 1;
+      container.insertAdjacentHTML('beforeend', tmpl(idx, data || {}));
+      serialize();
+    }
+    if (addBtn){ addBtn.addEventListener('click', function(){ addExpense({}); }); }
+
+    container.addEventListener('click', function(e){
+      if (e.target.classList.contains('mr-remove')){
+        e.preventDefault();
+        var row = e.target.closest('.mr-expense');
+        if (row){ row.parentNode.removeChild(row); serialize(); }
+      }
+    });
+    container.addEventListener('input', function(e){
+      if (e.target && (e.target.classList.contains('exp-date') || e.target.classList.contains('exp-type') || e.target.classList.contains('exp-provider') || e.target.classList.contains('exp-amount') || e.target.classList.contains('exp-receipt'))){
+        serialize();
+      }
+    });
+
+    // Initialize rows from instance or add one by default
+    try{
+      var existing = {{ form.instance.medical_expenses|default:'null'|safe }};
+      if (Array.isArray(existing) && existing.length){ existing.forEach(addExpense); }
+      else { addExpense({}); }
+    }catch(err){ addExpense({}); }
+
+    // Ensure Type defaults to medical when this layout is active
+    // Force type to medical when this layout is active
+    if (typeSel){ typeSel.value = 'medical_encashment'; }
+
+    // Attachment preview with remove ability (rebuild FileList)
+    function renderFiles(){
+      if (!fileInput || !docsPreview) return;
+      docsPreview.innerHTML='';
+      var files = Array.from(fileInput.files || []);
+      files.forEach(function(f, idx){
+        var row = document.createElement('div');
+        row.style.display = 'flex'; row.style.alignItems='center'; row.style.justifyContent='space-between';
+        row.style.border='1px solid #eee'; row.style.borderRadius='6px'; row.style.padding='6px 10px'; row.style.marginBottom='6px';
+        var name = document.createElement('span'); name.textContent = f.name;
+        var remove = document.createElement('a'); remove.href='#'; remove.textContent='Remove'; remove.style.color='#c00';
+        remove.onclick = function(ev){ ev.preventDefault(); var dt=new DataTransfer(); files.forEach(function(file,i){ if(i!==idx) dt.items.add(file); }); fileInput.files = dt.files; renderFiles(); };
+        row.appendChild(name); row.appendChild(remove); docsPreview.appendChild(row);
+      });
+    }
+    if (fileInput){ fileInput.addEventListener('change', renderFiles); renderFiles(); }
+
+    // Admin employee change reloads medical form preserving medical type
+    if (empSel){
+      empSel.addEventListener('change', function(){
+        var v = this.value;
+        var url = '{% url 'create-reimbursement' %}?type=medical_encashment&employee_id=' + encodeURIComponent(v);
+        if (window.htmx){ htmx.ajax('GET', url, {target:'#objectCreateModalTarget'}); }
+      });
+    }
+
+    // Serialize on submit
+    var formEl = (formRoot.querySelector('form') || document.currentScript.closest('form'));
+    if (formEl){
+      formEl.addEventListener('submit', function(){ serialize(); });
+      // Also ensure JSON is set on HX cycle
+      formEl.addEventListener('htmx:beforeRequest', function(){ serialize(); });
+    }
+  })();
+</script>

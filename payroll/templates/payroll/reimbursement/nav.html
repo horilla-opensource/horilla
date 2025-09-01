@@ -46,7 +46,7 @@
       {% include 'payroll/reimbursement/filter.html' %}
       <div class="oh-main__titlebar-button-container">
         <div class="oh-main__titlebar-button-container">
-          <a hx-get="{% url 'create-reimbursement' %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
+          <a id="reimbCreateBtn" hx-get="{% url 'create-reimbursement' %}" hx-target="#objectCreateModalTarget" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" class="oh-btn oh-btn--secondary">
             <ion-icon name="add-outline"></ion-icon>
             {% trans 'Create' %}
           </a>
@@ -55,3 +55,28 @@
     </div>
   </form>
 </section>
+<script>
+  // Update Create target based on active tab
+  (function(){
+    const btn = document.getElementById('reimbCreateBtn');
+    if (!btn) return;
+    function updateHref(){
+      try{
+        const base = btn.getAttribute('hx-get').split('?')[0];
+        const activeTab = localStorage.getItem('activeTabReimbursment');
+        if (activeTab === '#medical_encashment_tab'){
+          btn.setAttribute('hx-get', base + '?type=medical_encashment');
+        } else {
+          btn.setAttribute('hx-get', base);
+        }
+      }catch(e){}
+    }
+    document.addEventListener('DOMContentLoaded', updateHref);
+    setTimeout(updateHref, 200);
+    document.addEventListener('click', function(e){
+      if (e.target.closest('.oh-tabs__tab')) setTimeout(updateHref, 0);
+    });
+  })();
+</script>
+
+

@@ -1661,7 +1661,11 @@ def create_reimbursement(request):
             print("Form errors:", form.errors)
             # messages.error(request, "Reimbursement not saved successfully")
     else:
-        form = forms.ReimbursementForm(instance=instance)
+        initial = {}
+        _t = request.GET.get('type')
+        if _t:
+            initial['type'] = _t
+        form = forms.ReimbursementForm(instance=instance, initial=initial)
 
     return render(request, "payroll/reimbursement/form.html", {"form": form})
 
@@ -2495,3 +2499,4 @@ def payslip_detailed_export(request):
     wb.save(response)
 
     return response
+

@@ -12,7 +12,11 @@
         hx-target="#objectCreateModalTarget"
         hx-encoding="multipart/form-data"
     >
-        {{form.as_p}}
+        {% if form.type.value == 'medical_encashment' or request.GET.type == 'medical_encashment' or form.initial.type == 'medical_encashment' or form.instance.type == 'medical_encashment' %}
+            {% include 'payroll/reimbursement/medical_form_fields.html' with employee=form.employee %}
+        {% else %}
+            {{ form.as_p }}
+        {% endif %}
     </form>
     <table
         class="oh-table oh-table--sortable" {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "medical_encashment" or form.instance.type == "bonus_encashment" %}
@@ -42,22 +46,26 @@
         </tbody>
     </table>
 <script>
+    // Enlarge modal for medical form and enable type switching via HX
+    (function(){
+        try{ $("#objectCreateModal #objectCreateModalTarget").css("max-width","1200px"); }catch(e){}
+        var sel = document.querySelector('#objectCreateModalTarget [name="type"]');
+        if (sel){ sel.addEventListener('change', function(){
+            var v = this.value;
+            var url = '{% url 'create-reimbursement' %}?type=' + encodeURIComponent(v){% if form.instance.id %} + '&instance_id={{form.instance.id}}'{% endif %};
+            if (window.htmx){ htmx.ajax('GET', url, {target:'#objectCreateModalTarget'}); }
+            else if (window.jQuery){ $("#objectCreateModalTarget").load(url); }
+        });}
+    })();
+</script><script>
     toggleReimbursmentType($("#objectCreateModalTarget [name=type]").first());
     removeHighlight();
-    var attachemntLabelElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
-    );
-    var attachemntlElement = $("#objectCreateModalTarget #id_attachment");
-    var attachemntParentlElement = $(
-        "#objectCreateModalTarget [for=id_attachment]"
-    ).parent();
-
-    // Detach both elements from the DOM
-    attachemntLabelElement.detach();
-    attachemntlElement.detach();
-    attachemntParentlElement.html("");
-    // Append them in the desired order
-    attachemntParentlElement.append(attachemntLabelElement);
-    attachemntParentlElement.append(attachemntlElement);
 </script>
 </div>
+
+
+
+
+
+
+
