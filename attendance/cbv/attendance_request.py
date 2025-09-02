@@ -63,6 +63,16 @@ class AttendancesRequestTabView(HorillaTabView):
         ]
 
 
+def request_approved_by(self):
+    """
+    Approve the attendance request
+    """
+    return self.approved_by if self.approved_by else "-"
+
+
+Attendance.request_approved_by = request_approved_by
+
+
 @method_decorator(login_required, name="dispatch")
 class AttendancesRequestListView(HorillaListView):
     """
@@ -88,6 +98,7 @@ class AttendancesRequestListView(HorillaListView):
         (_("Min Hour"), "minimum_hour"),
         (_("At Work"), "attendance_worked_hour"),
         (_("Overtime"), "attendance_overtime"),
+        (_("Approved By"), "request_approved_by"),
     ]
     sortby_mapping = [
         ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
@@ -319,6 +330,7 @@ class AttendanceListTabDetailView(HorillaDetailedView):
         (_("Min Hour"), "minimum_hour"),
         (_("At Work"), "attendance_worked_hour"),
         (_("Overtime"), "attendance_overtime"),
+        (_("Approved By"), "request_approved_by"),
         (_("Activities"), "attendance_detail_activity_col", True),
     ]
 
