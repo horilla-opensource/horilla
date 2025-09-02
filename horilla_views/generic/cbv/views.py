@@ -1170,7 +1170,7 @@ class HorillaListView(ListView):
 
         self.export_path = (
             reverse("export-list", kwargs={"short_id": self.view_id})
-            + f"?model={self.model._meta.app_label}.models.{self.model.__name__}"
+            + f"?model={self.model.__module__}.{self.model.__name__}"
         )
         context["export_path"] = self.export_path
 
