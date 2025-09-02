@@ -159,8 +159,8 @@ class LeaveTypeDetailView(HorillaDetailedView):
     body = [
         (_("Period In"), "period_in"),
         (_("Total Days"), "count"),
-        (_("Reset"), "leave_detail_reset", True),
-        (_("Carryforward Type"), "leave_detail_carryforward", True),
+        (_("Reset"), "reset"),
+        (_("Carryforward Type"), "carryforward_type"),
         (_("Is paid"), "payment"),
         (_("Require Approval"), "require_approval"),
         (_("Require Attachment"), "require_attachment"),
@@ -169,6 +169,52 @@ class LeaveTypeDetailView(HorillaDetailedView):
         (_("Is Encashable"), "encashable"),
     ]
     action_method = "detail_view_actions"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        instance = self.instance
+        body = list(self.body)
+
+        # Function to insert item after a specific key
+        def insert_after(target_key, item):
+            for i, (_, key) in enumerate(body):
+                if key == target_key:
+                    body.insert(i + 1, item)
+                    break
+            return body
+
+        # Conditionally insert fields
+        if instance.reset_based:
+            body = insert_after("reset", (_("Reset Based"), "reset_based"))
+
+        if instance.reset_month:
+            body = insert_after("reset_based", (_("Reset Month"), "reset_month"))
+
+        if instance.reset_day:
+            body = insert_after("reset_based", (_("Reset Day"), "reset_day"))
+
+        if instance.reset_weekend:
+            body = insert_after("reset_based", (_("Reset weekend"), "reset_weekend"))
+
+        if instance.carryforward_max:
+            body = insert_after(
+                "carryforward_type", (_("Maximum Carryforward"), "carryforward_max")
+            )
+
+        if instance.carryforward_expire_in:
+            body = insert_after(
+                "carryforward_max",
+                (_("Carryforward Expires In"), "carryforward_expire_in"),
+            )
+
+        if instance.carryforward_expire_period:
+            body = insert_after(
+                "carryforward_expire_in",
+                (_("Carryforward Expires In"), "carryforward_expire_period"),
+            )
+
+        context["body"] = body
+        return context
 
 
 @method_decorator(login_required, name="dispatch")

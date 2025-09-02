@@ -997,6 +997,12 @@ def leave_request_approve(request, id, emp_id=None):
     """
     leave_request = LeaveRequest.objects.get(id=id)
     employee_id = leave_request.employee_id
+    if employee_id == request.user.employee_get:
+        messages.error(request, _("You cannot approve your own leave request."))
+        if emp_id is not None:
+            employee_id = emp_id
+            return redirect(f"/employee/employee-view/{employee_id}/")
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     leave_type_id = leave_request.leave_type_id
     available_leave = AvailableLeave.objects.get(
         leave_type_id=leave_type_id, employee_id=employee_id
@@ -1106,7 +1112,13 @@ def leave_request_approve(request, id, emp_id=None):
 def leave_request_bulk_approve(request):
     if request.method == "POST":
         request_ids = request.POST.getlist("ids")
+        filtered_ids = []
         for request_id in request_ids:
+            leave_request = LeaveRequest.objects.get(id=int(request_id))
+            # Exclude requests where the employee is the current user
+            if leave_request.employee_id != request.user.employee_get:
+                filtered_ids.append(request_id)
+        for request_id in filtered_ids:
             try:
                 leave_request = (
                     LeaveRequest.objects.get(id=int(request_id)) if request_id else None
@@ -1777,7 +1789,7 @@ def assign_leave_type_excel(_request):
     """
     try:
         columns = [
-            "Employee Badge ID",
+            "Badge ID",
             "Leave Type",
             "Available Days",
             "Carry Forward Days",
@@ -1802,7 +1814,7 @@ def assign_leave_type_import(request):
     or generates an error report in the form of an Excel file.
     """
     error_data = {
-        "Employee Badge ID": [],
+        "Badge ID": [],
         "Leave Type": [],
         "Badge ID Error": [],
         "Leave Type Error": [],
@@ -1831,7 +1843,7 @@ def assign_leave_type_import(request):
         error_list = []
 
         for assign_leave in assign_leave_dicts:
-            badge_id = assign_leave.get("Employee Badge ID", "").strip().lower()
+            badge_id = str(assign_leave.get("Badge ID", "")).strip().lower()
             assign_leave_type = assign_leave.get("Leave Type", "").strip().lower()
             available_days = assign_leave.get("Available Days", "0")
             cfd = assign_leave.get("Carry Forward Days", "0")
@@ -1851,11 +1863,29 @@ def assign_leave_type_import(request):
                 continue
 
             # Check if leave type has already been assigned to the employee
-            if (leave_type.id, employee.id) in available_leaves:
-                assign_leave["Assigned Error"] = _(
-                    "Leave type has already been assigned to the employee."
-                )
-                error_list.append(assign_leave)
+            # if (leave_type.id, employee.id) in available_leaves:
+            #     assign_leave["Assigned Error"] = _(
+            #         "Leave type has already been assigned to the employee."
+            #     )
+            #     error_list.append(assign_leave)
+            existing_leave = available_leaves.get((leave_type.id, employee.id))
+            if existing_leave:
+                # Update existing leave instead of raising error
+                existing_leave.available_days = available_days or leave_type.total_days
+                if cfd:
+                    existing_leave.carryforward_days = cfd
+                    existing_leave.expired_date = leave_type.carryforward_expire_date
+                    try:
+                        existing_leave.reset_date = (
+                            leave_type.leave_type_next_reset_date()
+                        )
+                    except:
+                        pass
+                    existing_leave.assigned_date = datetime.today()
+                    existing_leave.total_leave_days = (
+                        existing_leave.carryforward_days + existing_leave.available_days
+                    )
+                existing_leave.save()
                 continue
 
             # If no errors, create the AvailableLeave instance

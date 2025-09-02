@@ -296,6 +296,14 @@ class Attendance(HorillaModel):
     )
     is_holiday = models.BooleanField(default=False)
     requested_data = models.JSONField(null=True, editable=False)
+    approved_by = models.ForeignKey(
+        Employee,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        verbose_name=_("Approved By"),
+        editable=False,
+    )
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
