@@ -66,6 +66,7 @@ class AssignedleaveList(HorillaListView):
 
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Badge ID"), "employee_id__badge_id"),
         (_("Leave Type"), "leave_type_id"),
         (_("Available Days"), "available_days"),
         (_("Carryforward Days"), "carryforward_days"),

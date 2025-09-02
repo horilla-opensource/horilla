@@ -2,6 +2,7 @@
 This page handles the cbv of leave requests page
 """
 
+import ast
 import contextlib
 from typing import Any
 
@@ -58,6 +59,25 @@ class LeaveRequestsListView(HorillaListView):
         self.view_id = "leaveRequest"
         if self.request.user.has_perm("leave.change_leaverequest"):
             self.bulk_update_fields = ["status"]
+
+    def handle_bulk_submission(self, request):
+        instance_ids = request.POST.getlist("instance_ids")
+        if (
+            instance_ids
+            and isinstance(instance_ids[0], str)
+            and instance_ids[0].startswith("[")
+        ):
+            instance_ids = ast.literal_eval(instance_ids[0])
+        instance_ids = [int(i) for i in instance_ids if str(i).isdigit()]
+        filtered_ids = []
+        for request_id in instance_ids:
+            leave_request = LeaveRequest.objects.get(id=request_id)
+            if leave_request.employee_id.id != request.user.employee_get.id:
+                filtered_ids.append(request_id)
+        formatted_ids = [str(filtered_ids)]
+        request.POST = request.POST.copy()
+        request.POST.setlist("instance_ids", formatted_ids)
+        return super().handle_bulk_submission(request)
 
     def get_queryset(self):
         queryset = super().get_queryset()
