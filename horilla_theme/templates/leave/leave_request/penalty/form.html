@@ -1,4 +1,4 @@
-{% load i18n %} {% load horillafilters %} 
+{% load i18n %} {% load horillafilters %}
 {% if messages %}
 	<div class="oh-alert-container">
 		{% for message in messages %}
@@ -26,7 +26,7 @@
 		hx-get="{% url 'late-come-early-out-search' %}?{{pd}}"
 		hx-target="#report-container"
 	></span>
-	{% endif %} 
+	{% endif %}
 {% endif %}
 
 <div class="oh-modal__dialog-header">
@@ -63,7 +63,7 @@
 					{{ instance.employee_id.get_full_name }}
 				</p>
 				<p class="text-xs text-[#666]">
-					{{ instance.employee_id.get_department }} / 
+					{{ instance.employee_id.get_department }} /
 					{{ instance.employee_id.get_job_position }}
 				</p>
 			</div>
