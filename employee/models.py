@@ -976,9 +976,7 @@ class EmployeeNote(HorillaModel):
         on_delete=models.CASCADE,
         related_name="employee_name",
     )
-    description = models.TextField(
-        verbose_name=_("Description"), max_length=255, null=True
-    )
+    description = models.TextField(verbose_name=_("Description"), null=True)  # 905
     note_files = models.ManyToManyField(NoteFiles, blank=True)
     updated_by = models.ForeignKey(Employee, on_delete=models.CASCADE)
     objects = HorillaCompanyManager(

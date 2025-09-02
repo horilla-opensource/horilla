@@ -1,13 +1,25 @@
 {% load i18n %}
-<form class='oh-general__tab-target oh-profile-section'>
-  {{note_form.as_p}}
-  <div class="d-flex flex-row-reverse">
-    <button
-    class="oh-btn oh-btn--secondary pr-4 pl-4"
-    hx-post="{% url 'add-employee-note-post' %}"
-    hx-target='#remark-content'
-    >
-    {% trans "Add" %}
-  </button>
-  </div>
+{% load basefilters %}
+
+<form hx-target="#note_target" hx-post="{% url 'add-employee-note' employee.id %}" id="commentForm">
+    {% csrf_token %}
+    <div>
+        <div class="mt-4">
+            <span class="oh-activity-sidebar__title fw-bold">{{employee}}'s {% trans "Notes" %}</span>
+            {% if perms.employee.add_employeenote or request.user|is_reportingmanager %}
+                {% if form.description.errors %}
+                    {{ form.description.errors }}
+                {% endif %}
+                <input type="text" hx-on:keyup="toggleCommentButton(this);" name="description" id="commentInput"
+                    class="oh-input w-100 mt-2" placeholder="{% trans 'Add notes' %}"
+                    value="{{ form.description.value|default:'' }}"
+                >
+            {% endif %}
+        </div>
+        <button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+            {% if not form.description.value %}style="display: none;"{% endif %}>
+            {% trans "Add" %}
+        </button>
+    </div>
+    <div class="oh-inner-sidebar-content__footer"></div>
 </form>
