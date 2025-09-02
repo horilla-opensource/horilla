@@ -1825,21 +1825,33 @@ class Payslip(HorillaModel):
         gross pay
         """
         gross_pay = self.gross_pay
-        return f"Rs {gross_pay:.2f}"
+
+        return render_template(
+            path="cbv/payslip/pay_display.html",
+            context={"amount": gross_pay},
+        )
 
     def deduction_display(self):
         """
         deduction
         """
         deduction = self.deduction
-        return f"Rs {deduction:.2f}"
+
+        return render_template(
+            path="cbv/payslip/pay_display.html",
+            context={"amount": deduction},
+        )
 
     def net_pay_display(self):
         """
         net pay
         """
         net_pay = self.net_pay
-        return f"Rs {net_pay:.2f}"
+
+        return render_template(
+            path="cbv/payslip/pay_display.html",
+            context={"amount": net_pay},
+        )
 
     def custom_status_col(self):
         """
