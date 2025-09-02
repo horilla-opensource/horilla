@@ -174,6 +174,8 @@ class LeaveRequestFilter(HorillaFilterSet):
             "department_name",
             "overall_leave",
             "employee_id__employee_work_info__company_id",
+            "employee_id__employee_work_info__employee_type_id",
+            "employee_id__employee_work_info__job_role_id",
             "employee_id__employee_work_info__reporting_manager_id",
             "employee_id__employee_work_info__department_id",
             "employee_id__employee_work_info__job_position_id",
