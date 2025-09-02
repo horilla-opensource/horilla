@@ -1,0 +1,172 @@
+{% load static i18n generic_template_filters payrollfilters %}
+<div
+	class="modal-box mx-5 bg-white w-full max-w-md md:min-w-[700px] rounded-lg shadow-card p-0 transition-all duration-300 opacity-100 scale-100"
+>
+	<div class="p-5" id="detailViewContainer">
+		<div class="flex justify-between items-center mb-2">
+			<h2 class="text-md font-semibold">{% trans "Details" %}</h2>
+
+			<button
+				class="text-gray-500 hover:text-red-500 text-xl"
+				onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+			>
+				<img
+					src="{% static 'horilla_theme/assets/icons/close.svg' %} "
+					alt=""
+				/>
+			</button>
+		</div>
+
+		<div
+			class="flex items-center gap-5 mb-5 cursor-pointer"
+			onclick="window.location.href=`{% url 'employee-view-individual' loan.employee_id.id %}`"
+		>
+			<div>
+				<img
+					src="{{loan.employee_id.get_avatar}}"
+					alt=""
+					class="w-[50px] h-[50px] rounded-full"
+				/>
+			</div>
+			<div>
+				<p class="mb-1 text-sm font-semibold">{{ loan.employee_id }}</p>
+				<p class="text-xs text-[#666]">
+					{{ loan.employee_id.get_department }} / {{ loan.employee_id.get_job_position }}
+				</p>
+			</div>
+		</div>
+
+		<hr class="line" />
+
+		<div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-5 mt-5">
+			<div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+				<span class="font-medium text-xs text-[#565E6C] w-32">
+					{% trans "Total Amount" %}
+				</span>
+				<p class="text-xs font-semibold flex items-center gap-5">
+					: <span> {{loan.loan_amount}} </span>
+				</p>
+			</div>
+			<div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+				<span class="font-medium text-xs text-[#565E6C] w-32">
+					{% trans "Paid Amount" %}
+				</span>
+				<p class="text-xs font-semibold flex items-center gap-5">
+					: <span> {{installments|paid_amount}} </span>
+				</p>
+			</div>
+			<div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+				<span class="font-medium text-xs text-[#565E6C] w-32">
+					{% trans "Balance Amount" %}
+				</span>
+				<p class="text-xs font-semibold flex items-center gap-5">
+					:
+					<span>
+						{{loan.loan_amount|balance_amount:installments}}
+					</span>
+				</p>
+			</div>
+		</div>
+
+		<div class="max-h-96 overflow-auto pb-5" id="deductionContainer" >
+			<script> reloadMessage() </script>
+			<table class="fixed-table w-full">
+				<thead class="sticky top-0 bg-[white] z-[1]">
+					<tr class="border-b border-[#ececec]">
+						<th class="text-sm font-bold text-left p-3">
+							{% trans "S/N" %}
+						</th>
+						<th class="text-sm font-bold text-left p-3">
+							{% trans "One Time Date" %}
+						</th>
+						<th class="text-sm font-bold text-left p-3">
+							{% trans "Amount" %}
+						</th>
+						<th class="text-sm font-bold text-left p-3">
+							{% trans "Status" %}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for deduction in installments %}
+					<tr class="border-b border-[#f3f3f3]">
+						<td
+							class="text-sm text-left p-3 text-[#666]"
+						>
+							{{ forloop.counter }}
+						</td>
+						<td class="text-sm text-left p-3 text-[#666]">
+							{{ deduction.one_time_date|selected_format:request.user.employee_get.get_company }}
+						</td>
+						<td class="text-sm text-left p-3 text-[#666]">
+							<input
+								name="amount"
+								class="px-3 py-2 rounded border border-transparent bg-white focus:border-primary-600 focus:outline-none focus:bg-gray-100"
+								hx-post="{% url 'edit-installment-amount' %}?loan_id={{loan.id}}&ded_id={{deduction.id}}"
+								hx-select="#deductionContainer"
+								hx-target="#deductionContainer"
+								hx-trigger="change"
+								hx-swap="outerHTML"
+								onclick="event.stopPropagation();"
+								align="center"
+								value="{{ deduction.amount|floatformat:2 }}"
+							/>
+						</td>
+						<td class="text-sm text-left p-3 text-[#666]">
+							{% if deduction.installment_payslip %}
+							<span title="Installment paid, Click to view">
+								<a
+									href="{% url 'view-created-payslip' deduction.installment_payslip.id %}"
+								>
+									✅
+								</a>
+							</span>
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %} 
+
+					{% if loan.settled %}
+					<tr class="border-b border-[#f3f3f3]">
+						<td
+							class="text-sm text-left p-3 text-[#666] flex gap-3"
+						>
+							{{ installments|length|add:1 }}
+						</td>
+						<td class="text-sm text-left p-3 text-[#666]">
+							{{ loan.settled_date.date|selected_format:request.user.employee_get.get_company }}
+						</td>
+						<td class="text-sm text-left p-3 text-[#666]">
+							{{ loan.loan_amount|balance_amount:installments }}
+						</td>
+						<td class="text-sm text-left p-3 text-[#666]">
+							<span title="Loan Settled">
+								<a href="#"> ✅ </a>
+							</span>
+						</td>
+					</tr>
+					{% endif %}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="flex flex-wrap justify-end gap-2 md:gap-1">
+			{% if instance_ids %}
+				<div class="flex gap-1 ml-auto">
+					<button data-action="previous"
+						hx-get="{{ previous_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
+						hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');" hx-target="#genericModalBody"
+						class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+						<i class="fa-solid fa-angle-left"></i>
+					</button>
+					<button data-action="next"
+						hx-get="{{ next_url }}?{{ ids_key }}={{ instance_ids }}{% if extra_query %}&{{ extra_query }}{% endif %}"
+						hx-target="#genericModalBody" hx-on:click="$('#detailViewContainer').toggleClass('animate-pulse');"
+						class="p-2 w-8 h-8 justify-center bg-primary-600 text-white rounded-full text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
+						<i class="fa-solid fa-angle-right"></i>
+					</button>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
