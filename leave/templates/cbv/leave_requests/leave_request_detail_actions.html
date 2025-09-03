@@ -2,7 +2,7 @@
 <div class="oh-modal__button-container text-center mt-3 w-100">
     <div class="oh-btn oh-btn-group">
         {% if instance.is_approved and instance.status == 'requested' %}
-            {% if instance.employee_id == request.user.employee_get %}
+            {% if instance.employee_id == request.user.employee_get and not request.user.is_superuser %}
                 <a type="submit" href="#" title="{% trans 'Approve' %}"
                     class="oh-btn oh-btn-group oh-btn--success oh-btn--disabled
                     w-100">

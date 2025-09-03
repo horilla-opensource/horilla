@@ -1368,6 +1368,9 @@ def validate_bulk_attendance(request):
         except (OverflowError, ValueError):
             error_messages.append(_("Invalid attendance ID"))
 
+    if request.user.is_superuser:
+        filtered_ids = ids
+
     for obj_id in filtered_ids:
         try:
             attendance = Attendance.objects.get(id=obj_id)
@@ -1426,9 +1429,10 @@ def validate_this_attendance(request, obj_id):
     """
     try:
         attendance = Attendance.objects.get(id=obj_id)
-        if attendance.employee_id.id == request.user.employee_get.id:
-            messages.error(request, _("You cannot validate your own attendance."))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        if not request.user.is_superuser:
+            if attendance.employee_id.id == request.user.employee_get.id:
+                messages.error(request, _("You cannot validate your own attendance."))
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         attendance.attendance_validated = True
         attendance.save()
         urlencode = request.GET.urlencode()
@@ -1505,9 +1509,10 @@ def approve_overtime(request, obj_id):
     """
     try:
         attendance = Attendance.objects.get(id=obj_id)
-        if attendance.employee_id.id == request.user.employee_get.id:
-            messages.error(request, _("You cannot approve your own overtime."))
-            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+        if not request.user.is_superuser:
+            if attendance.employee_id.id == request.user.employee_get.id:
+                messages.error(request, _("You cannot approve your own overtime."))
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
         attendance.attendance_overtime_approve = True
         attendance.save()
         urlencode = request.GET.urlencode()
@@ -1555,6 +1560,8 @@ def approve_bulk_overtime(request):
                 filtered_ids.append(attendance_id)
         except (Attendance.DoesNotExist, OverflowError, ValueError):
             messages.error(request, _("Attendance not found"))
+    if request.user.is_superuser:
+        filtered_ids = ids
     for attendance_id in filtered_ids:
         try:
             attendance = Attendance.objects.get(id=attendance_id)

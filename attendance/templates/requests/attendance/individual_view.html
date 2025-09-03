@@ -99,7 +99,7 @@
                 <ion-icon name="checkmark-outline"></ion-icon>
                 {% trans "Approve" %}
             </a> {% endcomment %}
-            {% if attendance.employee_id == request.user.employee_get %}
+            {% if attendance.employee_id == request.user.employee_get and not request.user.is_superuser %}
                 <a type="submit" href="#" class="oh-btn oh-btn--success w-100 oh-btn--disabled">
                     <ion-icon name="checkmark-outline"></ion-icon>
                     {% trans "Approve" %}

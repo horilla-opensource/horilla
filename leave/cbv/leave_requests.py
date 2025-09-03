@@ -74,6 +74,8 @@ class LeaveRequestsListView(HorillaListView):
             leave_request = LeaveRequest.objects.get(id=request_id)
             if leave_request.employee_id.id != request.user.employee_get.id:
                 filtered_ids.append(request_id)
+        if request.user.is_superuser:
+            filtered_ids = instance_ids
         formatted_ids = [str(filtered_ids)]
         request.POST = request.POST.copy()
         request.POST.setlist("instance_ids", formatted_ids)

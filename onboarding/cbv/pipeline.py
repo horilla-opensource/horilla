@@ -309,7 +309,7 @@ def task_fetch(self):
     """
     return f"""
     <div id="selectedInstanceIds" data-ids="[]"></div>
-    <div style="width:220% !important;" hx-get="{reverse('get-cand-task',kwargs={"pk":self.pk})}?field=stage_id" hx-trigger="load">
+    <div hx-get="{reverse('get-cand-task',kwargs={"pk":self.pk})}?field=stage_id" hx-trigger="load">
     </div>
 """
 
@@ -331,6 +331,8 @@ class CandidateOnboardingDetail(CandidateDetail):
         ("Job Position", "job_position_id"),
         ("Tasks", "task_fetch", True),
     ]
+
+    cols = {"task_fetch": 12}
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
