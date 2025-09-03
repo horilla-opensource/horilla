@@ -1,0 +1,13 @@
+{% load i18n %}
+<div class="col-span-1 md:col-span-6 mb-2">
+    <span class="font-medium text-xs text-[#565E6C] w-32">
+        {% trans "Minutes Of Meeting" %}
+    </span>
+    <div class="">
+        {% if perms.pms.view_meetings or request.user.employee_get in instance.manager.all or instance.show_response %}
+            {{ instance.response|default:"-"|safe }}
+        {% else %}
+            -
+        {% endif %}
+    </div>
+</div>

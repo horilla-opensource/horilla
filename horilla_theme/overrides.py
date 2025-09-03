@@ -3,6 +3,8 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
+from horilla_views.cbv_methods import render_template
+
 
 class DummyModel:
     """A dummy fallback class that behaves like a model placeholder."""
@@ -32,6 +34,7 @@ AttendanceLateComeEarlyOut = get_horilla_model_class(
 )
 Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
 LeaveRequest = get_horilla_model_class(app_label="leave", model="leaverequest")
+Meetings = get_horilla_model_class(app_label="pms", model="Meetings")
 
 
 def tot_hires(self):
@@ -208,6 +211,14 @@ def leave_clash_col(self):
     return col
 
 
+def mom_detail_col(self):
+
+    return render_template(
+        path="cbv/meetings/mom_detail_col.html",
+        context={"instance": self},
+    )
+
+
 Recruitment.managers_detail = managers_detail
 Recruitment.open_job_detail = open_job_detail
 Recruitment.tot_hires = tot_hires
@@ -219,3 +230,23 @@ LeaveRequest.rejected_action = rejected_action
 LeaveRequest.attachment_action = attachment_action
 LeaveRequest.penality_col = penalities_column
 LeaveRequest.leave_clash_col = leave_clash_col
+Meetings.mom_detail_col = mom_detail_col
+
+
+if apps.is_installed("pms"):
+    from pms.cbv.meetings import MeetingsDetailedView
+
+    _meeting_detailed_init_orig = MeetingsDetailedView.__init__
+
+    def _meeting_detailed_init(self, **kwargs):
+        _meeting_detailed_init_orig(self, **kwargs)
+        self.body = [
+            (_("Date"), "date"),
+            (_("Question Template"), "question_template"),
+            (_("Employees"), "employ_detail_col"),
+            (_("Managers"), "manager_detail_col"),
+            (_("Answerable employees"), "answerable_col"),
+            (_("Minutes of Meeting"), "mom_detail_col", True),
+        ]
+
+    MeetingsDetailedView.__init__ = _meeting_detailed_init
