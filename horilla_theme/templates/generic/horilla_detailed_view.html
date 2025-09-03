@@ -35,11 +35,11 @@
                         <span class="font-medium text-xs text-[#565E6C] w-32">
                             {{ col.0 }}
                         </span>
-                        <p class="text-xs font-semibold flex items-center gap-5">
+                        <div class="text-xs font-semibold flex items-center gap-5">
                             : <span>
                                 {{ object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
                             </span>
-                        </p>
+                        </div>
                     </div>
                 {% else %}
                     <div class="col-span-1 md:col-span-{{ cols|get_item:col.1|default:6 }}">
