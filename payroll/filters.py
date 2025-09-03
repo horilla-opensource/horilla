@@ -27,6 +27,7 @@ from payroll.models.models import (
     PayslipAutoGenerate,
     Reimbursement,
 )
+from payroll.models.tax_models import TaxBracket
 
 
 class ContractFilter(HorillaFilterSet):
@@ -467,6 +468,46 @@ class ReimbursementFilter(HorillaFilterSet):
             (queryset.filter(employee_id__employee_first_name__icontains=value))
             | queryset.filter(title__icontains=value)
         ).distinct()
+
+
+class TaxBracketFilter(HorillaFilterSet):
+    """
+    Filter set class for TaxBracket model.
+    """
+
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = TaxBracket
+        fields = "__all__"
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search employees and objective
+        """
+
+        return (
+            queryset.filter(filing_status_id__filing_status__icontains=value)
+        ).distinct()
+
+
+class FilingStatusFilter(HorillaFilterSet):
+    """
+    Filter set class for TaxBracket model.
+    """
+
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = FilingStatus
+        fields = "__all__"
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search employees and objective
+        """
+
+        return (queryset.filter(filing_status__icontains=value)).distinct()
 
 
 class ContractReGroup:

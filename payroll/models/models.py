@@ -116,6 +116,24 @@ class FilingStatus(HorillaModel):
     def __str__(self) -> str:
         return str(self.filing_status)
 
+    def get_update_url(self):
+        """
+        Returns the URL for updating the filing status instance.
+        """
+        return reverse("filing-status-update", kwargs={"pk": self.pk})
+
+    def get_create_url(self):
+        """
+        Returns the URL for updating the filing status instance.
+        """
+        return reverse("tax-bracket-create", kwargs={"filing_status_id": self.pk})
+
+    def get_delete_url(self):
+        """
+        Returns the URL for updating the filing status instance.
+        """
+        return f"{reverse('generic-delete')}?model=payroll.FilingStatus&pk={self.pk}"
+
     class Meta:
         ordering = ["-id"]
         verbose_name = _("Filing Status")
@@ -551,83 +569,74 @@ class WorkRecord(models.Model):
 if apps.is_installed("attendance"):
     from attendance.models import Attendance
 
-    class OverrideAttendance(Attendance):
-        """
-        Class to override Attendance model save method
-        """
-
-        pass
-        # Additional fields and methods specific to AnotherModel
-        # @receiver(post_save, sender=Attendance)
-        # def attendance_post_save(sender, instance, **kwargs):
-        #     """
-        #     Overriding Attendance model save method
-        #     """
-        #     if instance.first_save:
-        #         min_hour_second = strtime_seconds(instance.minimum_hour)
-        #         at_work_second = strtime_seconds(instance.attendance_worked_hour)
-
-        #         status = "FDP" if instance.at_work_second >= min_hour_second else "HDP"
-
-        #         status = "CONF" if instance.attendance_validated is False else status
-        #         message = (
-        #             _("Validate the attendance") if status == "CONF" else _("Validated")
-        #         )
-
-        #         message = (
-        #             _("Incomplete minimum hour")
-        #             if status == "HDP" and min_hour_second > at_work_second
-        #             else message
-        #         )
-        #         work_record = WorkRecord.objects.filter(
-        #             date=instance.attendance_date,
-        #             is_attendance_record=True,
-        #             employee_id=instance.employee_id,
-        #         )
-        #         work_record = (
-        #             WorkRecord()
-        #             if not WorkRecord.objects.filter(
-        #                 date=instance.attendance_date,
-        #                 employee_id=instance.employee_id,
-        #             ).exists()
-        #             else WorkRecord.objects.filter(
-        #                 date=instance.attendance_date,
-        #                 employee_id=instance.employee_id,
-        #             ).first()
-        #         )
-        #         work_record.employee_id = instance.employee_id
-        #         work_record.date = instance.attendance_date
-        #         work_record.at_work = instance.attendance_worked_hour
-        #         work_record.min_hour = instance.minimum_hour
-        #         work_record.min_hour_second = min_hour_second
-        #         work_record.at_work_second = at_work_second
-        #         work_record.work_record_type = status
-        #         work_record.message = message
-        #         work_record.is_attendance_record = True
-        #         if instance.attendance_validated:
-        #             work_record.day_percentage = (
-        #                 1.00 if at_work_second > min_hour_second / 2 else 0.50
-        #             )
-        #         work_record.save()
-
-        #         if status == "HDP" and work_record.is_leave_record:
-        #             message = _("Half day leave")
-
-        #         if status == "FDP":
-        #             message = _("Present")
-
-        #         work_record.message = message
-        #         work_record.save()
-
-        #         message = work_record.message
-        #         status = work_record.work_record_type
-        #         if not instance.attendance_clock_out:
-        #             status = "FDP"
-        #             message = _("Currently working")
-        #         work_record.message = message
-        #         work_record.work_record_type = status
-        #         work_record.save()
-
+    # class OverrideAttendance(Attendance):
+    #     """
+    #     Class to override Attendance model save method
+    #     """
+    #     pass
+    # Additional fields and methods specific to AnotherModel
+    # @receiver(post_save, sender=Attendance)
+    # def attendance_post_save(sender, instance, **kwargs):
+    #     """
+    #     Overriding Attendance model save method
+    #     """
+    #     if instance.first_save:
+    #         min_hour_second = strtime_seconds(instance.minimum_hour)
+    #         at_work_second = strtime_seconds(instance.attendance_worked_hour)
+    #         status = "FDP" if instance.at_work_second >= min_hour_second else "HDP"
+    #         status = "CONF" if instance.attendance_validated is False else status
+    #         message = (
+    #             _("Validate the attendance") if status == "CONF" else _("Validated")
+    #         )
+    #         message = (
+    #             _("Incomplete minimum hour")
+    #             if status == "HDP" and min_hour_second > at_work_second
+    #             else message
+    #         )
+    #         work_record = WorkRecord.objects.filter(
+    #             date=instance.attendance_date,
+    #             is_attendance_record=True,
+    #             employee_id=instance.employee_id,
+    #         )
+    #         work_record = (
+    #             WorkRecord()
+    #             if not WorkRecord.objects.filter(
+    #                 date=instance.attendance_date,
+    #                 employee_id=instance.employee_id,
+    #             ).exists()
+    #             else WorkRecord.objects.filter(
+    #                 date=instance.attendance_date,
+    #                 employee_id=instance.employee_id,
+    #             ).first()
+    #         )
+    #         work_record.employee_id = instance.employee_id
+    #         work_record.date = instance.attendance_date
+    #         work_record.at_work = instance.attendance_worked_hour
+    #         work_record.min_hour = instance.minimum_hour
+    #         work_record.min_hour_second = min_hour_second
+    #         work_record.at_work_second = at_work_second
+    #         work_record.work_record_type = status
+    #         work_record.message = message
+    #         work_record.is_attendance_record = True
+    #         if instance.attendance_validated:
+    #             work_record.day_percentage = (
+    #                 1.00 if at_work_second > min_hour_second / 2 else 0.50
+    #             )
+    #         work_record.save()
+    #         if status == "HDP" and work_record.is_leave_record:
+    #             message = _("Half day leave")
+    #         if status == "FDP":
+    #             message = _("Present")
+    #         work_record.message = message
+    #         work_record.save()
+    #         message = work_record.message
+    #         status = work_record.work_record_type
+    #         if not instance.attendance_clock_out:
+    #             status = "FDP"
+    #             message = _("Currently working")
+    #         work_record.message = message
+    #         work_record.work_record_type = status
+    #         work_record.save()
     # @receiver(pre_delete, sender=Attendance)
     # def attendance_pre_delete(sender, instance, **_kwargs):
     #     """

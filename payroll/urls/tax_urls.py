@@ -18,6 +18,11 @@ urlpatterns = [
         federal_tax.FederalTaxFormView.as_view(),
         name="create-filing-status",
     ),
+    path(
+        "filing-status-nav/",
+        federal_tax.TaxBracketNavView.as_view(),
+        name="filing-status-nav",
+    ),
     # path(
     #     "create-filing-status",
     #     tax_views.create_filing_status,
@@ -38,10 +43,20 @@ urlpatterns = [
         tax_views.filing_status_delete,
         name="filing-status-delete",
     ),
+    # path(
+    #     "filing-status-search/",
+    #     tax_views.filing_status_search,
+    #     name="filing-status-search",
+    # ),
     path(
         "filing-status-search/",
-        tax_views.filing_status_search,
+        federal_tax.FilingStatusPipeline.as_view(),
         name="filing-status-search",
+    ),
+    path(
+        "filing-status-list/",
+        federal_tax.TaxBracketListView.as_view(),
+        name="filing-status-list",
     ),
     path(
         "tax-bracket-list/<int:filing_status_id>",
