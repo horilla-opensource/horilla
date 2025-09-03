@@ -359,6 +359,8 @@ class CandidateOnboardingDetail(CandidateDetail):
         ("Tasks", "task_fetch", True),
     ]
 
+    cols = {"task_fetch": 12}
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
