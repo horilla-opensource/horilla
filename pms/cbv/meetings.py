@@ -119,10 +119,10 @@ class MeetingsDetailedView(HorillaDetailedView):
         self.body = [
             (_("Date"), "date"),
             (_("Question Template"), "question_template"),
-            (_("Employees"), "employ_detail_col", True),
-            (_("Managers"), "manager_detail_col", True),
+            (_("Employees"), "employ_detail_col"),
+            (_("Managers"), "manager_detail_col"),
             (_("Minutes of Meeting"), "mom_col"),
-            (_("Answerable employees"), "answerable_col", True),
+            (_("Answerable employees"), "answerable_col"),
         ]
 
     action_method = "detail_action"
