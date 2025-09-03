@@ -78,8 +78,11 @@ class ModelForm(forms.ModelForm):
         reload_queryset(self.fields)
         for field_name, field in self.fields.items():
             widget = field.widget
-            if isinstance(widget, (forms.DateInput)):
-                field.initial = date.today()
+            if isinstance(widget, forms.DateInput):
+                field.initial = date.today
+                widget.input_type = "date"
+                widget.format = "%Y-%m-%d"
+                field.input_formats = ["%Y-%m-%d"]
 
             if isinstance(
                 widget,
@@ -250,8 +253,6 @@ class RecruitmentCreationForm(BaseModelForm):
         fields = "__all__"
         exclude = ["is_active", "linkedin_post_id"]
         widgets = {
-            "start_date": forms.DateInput(attrs={"type": "date"}),
-            "end_date": forms.DateInput(attrs={"type": "date"}),
             "description": forms.Textarea(attrs={"data-summernote": ""}),
         }
 
@@ -415,11 +416,6 @@ class CandidateCreationForm(BaseModelForm):
             "canceled",
             "is_active",
         ]
-
-        widgets = {
-            "scheduled_date": forms.DateInput(attrs={"type": "date"}),
-            "dob": forms.DateInput(attrs={"type": "date"}),
-        }
 
     def save(self, commit: bool = ...):
         candidate = self.instance
@@ -1184,9 +1180,6 @@ class ScheduleInterviewForm(BaseModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["interview_date"].widget = forms.DateInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
-        )
         self.fields["interview_time"].widget = forms.TimeInput(
             attrs={"type": "time", "class": "oh-input w-100"}
         )

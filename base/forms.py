@@ -23,7 +23,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.core.validators import validate_ipv46_address
-from django.forms import DateInput, HiddenInput, TextInput
+from django.forms import HiddenInput, TextInput
 from django.template import loader
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
@@ -192,9 +192,11 @@ class ModelForm(forms.ModelForm):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
         for field_name, field in self.fields.items():
             widget = field.widget
-            if isinstance(widget, (forms.DateInput)):
-                field.initial = date.today()
-
+            if isinstance(widget, forms.DateInput):  # 902
+                field.initial = date.today
+                widget.input_type = "date"
+                widget.format = "%Y-%m-%d"
+                field.input_formats = ["%Y-%m-%d"]
             if isinstance(
                 widget,
                 (
@@ -666,7 +668,6 @@ class RotatingWorkTypeForm(ModelForm):
         fields = "__all__"
         exclude = ["employee_id", "is_active"]
         widgets = {
-            "start_date": DateInput(attrs={"type": "date"}),
             "additional_data": forms.HiddenInput(),
         }
 
@@ -777,9 +778,6 @@ class RotatingWorkTypeAssignForm(ModelForm):
         choices=BASED_ON, initial="daily", label=_trans("Based on")
     )
     rotate_after_day = forms.IntegerField(initial=5, label=_trans("Rotate after day"))
-    start_date = forms.DateField(
-        initial=datetime.date.today, widget=forms.DateInput, label=_trans("Start date")
-    )
 
     class Meta:
         """
@@ -796,7 +794,6 @@ class RotatingWorkTypeAssignForm(ModelForm):
             "additional_data",
         ]
         widgets = {
-            "start_date": DateInput(attrs={"type": "date"}),
             "is_active": HiddenInput(),
         }
         labels = {
@@ -838,13 +835,6 @@ class RotatingWorkTypeAssignForm(ModelForm):
             {
                 "class": "w-100",
                 "style": " height:50px; border-radius:0;border:1px solid hsl(213deg,22%,84%);",
-            }
-        )
-        self.fields["start_date"].widget = forms.DateInput(
-            attrs={
-                "class": "w-100 oh-input",
-                "type": "date",
-                "style": " height:50px; border-radius:0;",
             }
         )
         self.fields["rotating_work_type_id"].widget.attrs.update(
@@ -939,7 +929,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
             rotating_work_type_assign.save()
 
 
-class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
+class RotatingWorkTypeAssignUpdateForm(ModelForm):
     """
     RotatingWorkTypeAssign model's form
     """
@@ -962,9 +952,6 @@ class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
             "is_active",
             "additional_data",
         ]
-        widgets = {
-            "start_date": DateInput(attrs={"type": "date"}),
-        }
         labels = {
             "start_date": _trans("Start date"),
             "rotate_after_day": _trans("Rotate after day"),
@@ -1008,13 +995,6 @@ class RotatingWorkTypeAssignUpdateForm(forms.ModelForm):
                 "class": "w-100",
                 "style": " height:50px; border-radius:0; border:1px solid \
                     hsl(213deg,22%,84%);",
-            }
-        )
-        self.fields["start_date"].widget = forms.DateInput(
-            attrs={
-                "class": "w-100 oh-input",
-                "type": "date",
-                "style": " height:50px; border-radius:0;",
             }
         )
         self.fields["rotating_work_type_id"].widget.attrs.update(
@@ -1197,10 +1177,6 @@ class EmployeeShiftScheduleForm(ModelForm):
         model = EmployeeShiftSchedule
         fields = "__all__"
         exclude = ["is_night_shift", "is_active"]
-        widgets = {
-            "start_time": DateInput(attrs={"type": "time"}),
-            "end_time": DateInput(attrs={"type": "time"}),
-        }
 
     def __init__(self, *args, **kwargs):
         if instance := kwargs.get("instance"):
@@ -1405,7 +1381,7 @@ class RotatingShiftForm(ModelForm):
         return instance
 
 
-class RotatingShiftAssignForm(forms.ModelForm):
+class RotatingShiftAssignForm(ModelForm):
     """
     RotatingShiftAssign model's form
     """
@@ -1424,9 +1400,6 @@ class RotatingShiftAssignForm(forms.ModelForm):
         choices=BASED_ON, initial="daily", label=_trans("Based on")
     )
     rotate_after_day = forms.IntegerField(initial=5, label=_trans("Rotate after day"))
-    start_date = forms.DateField(
-        initial=datetime.date.today, widget=forms.DateInput, label=_trans("Start date")
-    )
 
     class Meta:
         """
@@ -1442,9 +1415,6 @@ class RotatingShiftAssignForm(forms.ModelForm):
             "is_active",
             "additional_data",
         ]
-        widgets = {
-            "start_date": DateInput(attrs={"type": "date"}),
-        }
         labels = {
             "rotating_shift_id": _trans("Rotating Shift"),
             "start_date": _("Start date"),
@@ -1486,13 +1456,6 @@ class RotatingShiftAssignForm(forms.ModelForm):
             {
                 "class": "w-100",
                 "style": " height:50px; border-radius:0;border:1px solid hsl(213deg,22%,84%);",
-            }
-        )
-        self.fields["start_date"].widget = forms.DateInput(
-            attrs={
-                "class": "w-100 oh-input",
-                "type": "date",
-                "style": " height:50px; border-radius:0;",
             }
         )
         self.fields["rotating_shift_id"].widget.attrs.update(
@@ -1608,9 +1571,6 @@ class RotatingShiftAssignUpdateForm(ModelForm):
             "is_active",
             "additional_data",
         ]
-        widgets = {
-            "start_date": DateInput(attrs={"type": "date"}),
-        }
         labels = {
             "start_date": _trans("Start date"),
             "rotate_after_day": _trans("Rotate after day"),
@@ -1653,13 +1613,6 @@ class RotatingShiftAssignUpdateForm(ModelForm):
             {
                 "class": "w-100",
                 "style": " height:50px; border-radius:0; border:1px solid hsl(213deg,22%,84%);",
-            }
-        )
-        self.fields["start_date"].widget = forms.DateInput(
-            attrs={
-                "class": "w-100 oh-input",
-                "type": "date",
-                "style": " height:50px; border-radius:0;",
             }
         )
         self.fields["rotating_shift_id"].widget.attrs.update(
@@ -1726,10 +1679,6 @@ class ShiftRequestForm(ModelForm):
             "is_active",
             "shift_changed",
         ]
-        widgets = {
-            "requested_date": DateInput(attrs={"type": "date"}),
-            "requested_till": DateInput(attrs={"type": "date"}),
-        }
         labels = {
             "description": _trans("Description"),
             "requested_date": _trans("Requested Date"),
@@ -1778,10 +1727,6 @@ class ShiftAllocationForm(ModelForm):
             "is_active",
             "shift_changed",
         )
-        widgets = {
-            "requested_date": DateInput(attrs={"type": "date"}),
-            "requested_till": DateInput(attrs={"type": "date", "required": "true"}),
-        }
 
         labels = {
             "description": _trans("Description"),
@@ -1791,6 +1736,8 @@ class ShiftAllocationForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["requested_till"].required = True
+        self.fields["requested_till"].widget.attrs.update({"required": True})
         self.fields["shift_id"].widget.attrs.update(
             {
                 "hx-target": "#id_reallocate_to_parent_div",
@@ -1838,10 +1785,6 @@ class WorkTypeRequestForm(ModelForm):
             "is_active",
             "work_type_changed",
         )
-        widgets = {
-            "requested_date": DateInput(attrs={"type": "date"}),
-            "requested_till": DateInput(attrs={"type": "date"}),
-        }
         labels = {
             "requested_date": _trans("Requested Date"),
             "requested_till": _trans("Requested Till"),
@@ -2392,7 +2335,6 @@ class AnnouncementForm(ModelForm):
         exclude = ["is_active"]
         widgets = {
             "description": forms.Textarea(attrs={"data-summernote": ""}),
-            "expire_date": DateInput(attrs={"type": "date"}),
         }
 
     def clean_description(self):
@@ -2709,18 +2651,7 @@ class HolidayForm(ModelForm):
 
     This form allows users to create or update holiday data by specifying details such as
     the start date and end date.
-
-    Attributes:
-        - start_date: A DateField representing the start date of the holiday.
-        - end_date: A DateField representing the end date of the holiday.
     """
-
-    start_date = forms.DateField(
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
-    end_date = forms.DateField(
-        widget=forms.DateInput(attrs={"type": "date"}),
-    )
 
     def clean_end_date(self):
         start_date = self.cleaned_data.get("start_date")
@@ -2748,12 +2679,6 @@ class HolidayForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(HolidayForm, self).__init__(*args, **kwargs)
         self.fields["name"].widget.attrs["autocomplete"] = "name"
-        self.fields["start_date"].label = (
-            f"{self.Meta.model()._meta.get_field('start_date').verbose_name}"
-        )
-        self.fields["end_date"].label = (
-            f"{self.Meta.model()._meta.get_field('end_date').verbose_name}"
-        )
 
 
 class HolidaysColumnExportForm(forms.Form):
