@@ -1513,7 +1513,7 @@ class Meetings(HorillaModel):
         else:
             return ""
 
-    def mom_col(self):
+    def mom_detail_col(self):
         request = getattr(_thread_locals, "request", None)
         if not self.response:
             return "-"
@@ -1523,6 +1523,12 @@ class Meetings(HorillaModel):
         ):
             return self.response
         return "-" if not self.show_response else self.response
+
+    def mom_col(self):
+        return render_template(
+            path="cbv/meetings/mom_col.html",
+            context={"instance": self},
+        )
 
     def diff_cell(self):
         request = getattr(_thread_locals, "request", None)
