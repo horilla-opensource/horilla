@@ -1431,10 +1431,9 @@ class Meetings(HorillaModel):
         employees = self.answer_employees.all()
         if employees:
             employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
+                [str(employee.get_full_name()) for employee in employees]
             )
-            employee_title = _("Answerable employees")
-            return f'<span class="oh-timeoff-modal__stat-title">{employee_title}</span><span class="oh-timeoff-modal__stat-count">{employee_names_string}</span>'
+            return employee_names_string
         else:
             return ""
 
@@ -1495,10 +1494,9 @@ class Meetings(HorillaModel):
         employees = self.employee_id.all()
         if employees:
             employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
+                [str(employee.get_full_name()) for employee in employees]
             )
-            employee_title = _("Employees")
-            return f'<span class="oh-timeoff-modal__stat-title">{employee_title}</span><span class="oh-timeoff-modal__stat-count">{employee_names_string}</span>'
+            return employee_names_string
         else:
             return ""
 
@@ -1509,10 +1507,9 @@ class Meetings(HorillaModel):
         employees = self.manager.all()
         if employees:
             employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
+                [str(employee.get_full_name()) for employee in employees]
             )
-            employee_title = _("Managers")
-            return f'<span class="oh-timeoff-modal__stat-title">{employee_title}</span><span class="oh-timeoff-modal__stat-count">{employee_names_string}</span>'
+            return employee_names_string
         else:
             return ""
 
