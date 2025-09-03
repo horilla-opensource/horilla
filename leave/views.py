@@ -997,12 +997,13 @@ def leave_request_approve(request, id, emp_id=None):
     """
     leave_request = LeaveRequest.objects.get(id=id)
     employee_id = leave_request.employee_id
-    if employee_id == request.user.employee_get:
-        messages.error(request, _("You cannot approve your own leave request."))
-        if emp_id is not None:
-            employee_id = emp_id
-            return redirect(f"/employee/employee-view/{employee_id}/")
-        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+    if not request.user.is_superuser:
+        if employee_id == request.user.employee_get:
+            messages.error(request, _("You cannot approve your own leave request."))
+            if emp_id is not None:
+                employee_id = emp_id
+                return redirect(f"/employee/employee-view/{employee_id}/")
+            return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
     leave_type_id = leave_request.leave_type_id
     available_leave = AvailableLeave.objects.get(
         leave_type_id=leave_type_id, employee_id=employee_id
@@ -1118,6 +1119,8 @@ def leave_request_bulk_approve(request):
             # Exclude requests where the employee is the current user
             if leave_request.employee_id != request.user.employee_get:
                 filtered_ids.append(request_id)
+        if request.user.is_superuser:
+            filtered_ids = request_ids
         for request_id in filtered_ids:
             try:
                 leave_request = (
