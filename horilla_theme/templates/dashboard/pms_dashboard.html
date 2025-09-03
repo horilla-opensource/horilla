@@ -80,7 +80,7 @@
                 </div>
 
                 <div class="oh-dashboard__movable-cards row mt-4">
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable mb-3">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable mb-3">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                                 <span class="oh-card-dashboard__title">{% trans "Objective status" %}</span>
@@ -102,7 +102,7 @@
                         </div>
                     </div>
                     {% if perms.pms.view_feedback or request.user|is_reportingmanager %}
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-5 oh-card-dashboard--moveable">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-4 oh-card-dashboard--moveable">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                                 <span class="oh-card-dashboard__title">{% trans "Key result status" %}</span>
@@ -123,7 +123,7 @@
                         </div>
                     </div>
                     {% endif %}
-                    <div class="col-12 col-sm-12 col-md-12 col-lg-5 mb-3 ">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-4 mb-3 ">
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                                 <span class="oh-card-dashboard__title">{% trans "Feedback status" %}</span>
