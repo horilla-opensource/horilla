@@ -662,6 +662,8 @@ def bulk_approve_attendance_request(request):
         attendance = Attendance.objects.get(id=attendance_id)
         if attendance.employee_id != request.user.employee_get:
             filtered_ids.append(attendance_id)
+    if request.user.is_superuser:
+        filtered_ids = ids
     for attendance_id in filtered_ids:
         attendance = Attendance.objects.get(id=attendance_id)
         prev_attendance_date = attendance.attendance_date
