@@ -42,11 +42,11 @@
           </div>
         </div>
       </div>
-      <div 
+      <div
       class="oh-tabs__movable-body position-relative"
       hx-get="{{url}}?{% for parameter in parameters %}{{parameter|format:group}}&{% endfor %}{{request.GET.urlencode}}"
       hx-trigger="load" id="taxbracketList{{group.id}}"
-      
+
       >
     </div>
     </div>
@@ -65,4 +65,3 @@
     $(".oh-tabs__movable-body").addClass("d-none")
 
 </script>
-  
