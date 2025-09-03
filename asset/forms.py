@@ -50,12 +50,6 @@ class AssetForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
         widgets = {
-            "asset_purchase_date": forms.DateInput(
-                attrs={"type": "date", "class": "oh-input w-100"}
-            ),
-            "expiry_date": forms.DateInput(
-                attrs={"type": "date", "class": "oh-input w-100"}
-            ),
             "asset_lot_number_id": forms.Select(
                 attrs={"onchange": "batchNoChange($(this))"}
             ),
@@ -347,9 +341,6 @@ class AssetReturnForm(ModelForm):
         model = AssetAssignment
         fields = ["return_date", "return_condition", "return_status", "return_images"]
         widgets = {
-            "return_date": forms.DateInput(
-                attrs={"type": "date", "class": "oh-input w-100", "required": "true"}
-            ),
             "return_condition": forms.Textarea(
                 attrs={
                     "class": "oh-input oh-input--textarea oh-input--block",
@@ -370,8 +361,7 @@ class AssetReturnForm(ModelForm):
         Initializes the AssetReturnForm with initial values and custom field settings.
         """
         super().__init__(*args, **kwargs)
-        self.fields["return_date"].initial = date.today()
-
+        self.fields["return_date"].widget.attrs.update({"required": "true"})
         self.fields["return_images"] = MultipleFileField(
             label=_("Return Condition Images")
         )

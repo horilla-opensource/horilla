@@ -848,10 +848,6 @@ class ReimbursementForm(ModelForm):
             "onchange"
         ] = "getAssignedLeave($(this))"
 
-        self.fields["allowance_on"].widget = forms.DateInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
-        )
-
         self.fields["attachment"] = MultipleFileField(label="Attachments")
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
