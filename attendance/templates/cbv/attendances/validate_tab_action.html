@@ -18,7 +18,7 @@
     </a>
 
     {% comment %} {% if request.user.employee_get != instance.employee_id and request.user|is_reportingmanager or perms.attendance.change_attendance or request.user|is_self_reporting_manager %} {% endcomment %}
-    {% if instance.employee_id == request.user.employee_get %}
+    {% if instance.employee_id == request.user.employee_get and not request.user.is_superuser %}
         <a type="submit" href="#" class="oh-btn oh-btn--success w-50 oh-btn--disabled">
             <ion-icon name="checkmark-done-outline"></ion-icon>
             {% trans "Validate" %}
