@@ -720,7 +720,7 @@ class StageNote(HorillaModel):
     """
 
     candidate_id = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-    description = models.TextField(verbose_name=_("Description"), max_length=255)
+    description = models.TextField(verbose_name=_("Description"))  # 905
     stage_id = models.ForeignKey(Stage, on_delete=models.CASCADE)
     stage_files = models.ManyToManyField(StageFiles, blank=True)
     updated_by = models.ForeignKey(

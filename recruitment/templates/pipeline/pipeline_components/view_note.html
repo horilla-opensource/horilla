@@ -162,13 +162,16 @@
 					</form>
 				</div>
 				<span class="oh-activity-sidebar__a">
-					{% trans 'by' %}
-					<img
-						src="{{ note.note_by.get_avatar }}"
-						style="width: 1.5em; border-radius: 100%"
-					/>
-					{{ note.updated_user }} @ {{note.stage_id }}
-					{% trans "stage" %}
+                        {% trans "by" %}
+                        <img src="https://ui-avatars.com/api/?name={{note.updated_user.get_full_name}}&amp;background=random"
+                            style="width: 1.5em; border-radius: 100%" alt="User" />
+                        {{note.updated_user}}
+                    </span>
+				<span class="oh-activity-sidebar__a">
+					{% trans "at" %} &nbsp
+					<span class="dateformat_changer">{{ note.created_at|date:"Y-m-d" }}</span>
+					&nbsp
+					<span class="timeformat_changer">{{ note.created_at|time:"H:i" }}</span>
 				</span>
 				<div style="width: 50%">
 					<div id="enlargeImageContainer" class="enlargeImageContainer"></div>
