@@ -61,7 +61,7 @@
                 <div
                     class="max-h-[calc(100vh_-_380px)] overflow-hidden overflow-y-auto overflow-x-auto"
                 >
-                    <table class="fixed-table w-full" data-bulk-select-option = "{{bulk_select_option|yesno:'true,false'}}">
+                    <table class="fixed-table w-full border-separate" data-bulk-select-option = "{{bulk_select_option|yesno:'true,false'}}">
                         <thead class="sticky top-0 bg-[white] z-[1]">
                             <tr class="border-b border-[#ececec]">
                                 {% if bulk_select_option %}
@@ -142,7 +142,7 @@
                                     {{row_attrs|format:instance|safe}}
                                 >
                                     {% if bulk_select_option %}
-                                    <td class="text-sm text-left p-3 text-[#666]">
+                                    <td class="text-sm text-left p-3 text-[#666] rounded-lg {{row_status_class|format:instance|safe}}">
                                         <input
                                             type="checkbox"
                                             class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
