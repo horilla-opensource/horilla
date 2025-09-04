@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.utils.translation import gettext_lazy as _
 
 from horilla_views.cbv_methods import render_template
@@ -35,6 +35,10 @@ AttendanceLateComeEarlyOut = get_horilla_model_class(
 Attendance = get_horilla_model_class(app_label="attendance", model="attendance")
 LeaveRequest = get_horilla_model_class(app_label="leave", model="leaverequest")
 Meetings = get_horilla_model_class(app_label="pms", model="Meetings")
+ResignationLetter = get_horilla_model_class(
+    app_label="offboarding", model="ResignationLetter"
+)
+AssetAssignment = get_horilla_model_class(app_label="asset", model="AssetAssignment")
 
 
 def tot_hires(self):
@@ -219,6 +223,94 @@ def mom_detail_col(self):
     )
 
 
+def detail_description_col(self):
+
+    return render_template(
+        path="cbv/exit_process/detail_page_description.html",
+        context={"instance": self},
+    )
+
+
+def assign_condition_img(self):
+    images = self.assign_images.all()
+
+    if not images:
+        return ""
+
+    label = _("Assign Condition Images")
+
+    links_html = format_html_join(
+        "",
+        """
+        <a href="{}" rel="noopener noreferrer" target="_blank">
+            <span
+                class="oh-file-icon oh-file-icon--pdf"
+                onmouseover="enlargeattachment('{}')"
+                style="width:40px;height:40px"
+            ></span>
+        </a>
+        """,
+        ((doc.image.url, doc.image.url) for doc in images),
+    )
+
+    col = format_html(
+        """
+        <div class="mb-2">
+            <span class="font-medium text-xs text-[#565E6C] w-32">
+                {}
+            </span>
+            <div class="d-flex mt-2 mb-2 gap-2">
+                {}
+            </div>
+        </div>
+        """,
+        label,
+        links_html,
+    )
+
+    return col
+
+
+def return_condition_img(self):
+    images = self.return_images.all()
+
+    if not images:
+        return ""
+
+    label = _("Return Condition Images")
+
+    links_html = format_html_join(
+        "",
+        """
+        <a href="{}" rel="noopener noreferrer" target="_blank">
+            <span
+                class="oh-file-icon oh-file-icon--pdf"
+                onmouseover="enlargeattachment('{}')"
+                style="width:40px;height:40px"
+            ></span>
+        </a>
+        """,
+        ((doc.image.url, doc.image.url) for doc in images),
+    )
+
+    col = format_html(
+        """
+        <div class="mb-2 ">
+            <span class="font-medium text-xs text-[#565E6C] w-32">
+                {}
+            </span>
+            <div class="d-flex mt-2 mb-2 gap-2">
+                {}
+            </div>
+        </div>
+        """,
+        label,
+        links_html,
+    )
+
+    return col
+
+
 Recruitment.managers_detail = managers_detail
 Recruitment.open_job_detail = open_job_detail
 Recruitment.tot_hires = tot_hires
@@ -231,6 +323,9 @@ LeaveRequest.attachment_action = attachment_action
 LeaveRequest.penality_col = penalities_column
 LeaveRequest.leave_clash_col = leave_clash_col
 Meetings.mom_detail_col = mom_detail_col
+ResignationLetter.detail_description_col = detail_description_col
+AssetAssignment.assign_condition_img = assign_condition_img
+AssetAssignment.return_condition_img = return_condition_img
 
 
 if apps.is_installed("pms"):
@@ -250,3 +345,22 @@ if apps.is_installed("pms"):
         ]
 
     MeetingsDetailedView.__init__ = _meeting_detailed_init
+
+
+if apps.is_installed("offboarding"):
+    from offboarding.cbv.resignation import ResignationLetterDetailView
+
+    _resignation_detailed_init_orig = ResignationLetterDetailView.__init__
+
+    def _resignation_detailed_init(self, **kwargs):
+        _resignation_detailed_init_orig(self, **kwargs)
+        self.body = [
+            (_("Planned To Leave"), "planned_to_leave_on"),
+            (_("Status"), "get_status"),
+            (_("Description"), "detail_description_col", True),
+        ]
+        self.cols = {
+            "detail_description_col": 12,
+        }
+
+    ResignationLetterDetailView.__init__ = _resignation_detailed_init
