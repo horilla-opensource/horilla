@@ -45,9 +45,13 @@
                   {{form.employee_id__employee_work_info__company_id}}
                 </div>
                 <div class="oh-input-group">
-                    <label class="oh-label" for="{{form.employee_id__employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
-                    {{form.employee_id__employee_work_info__department_id}}
-                  </div>
+                  <label class="oh-label" for="{{form.employee_id__employee_work_info__employee_type_id.id_for_label}}">{% trans "Employee Type" %}</label>
+                  {{form.employee_id__employee_work_info__employee_type_id}}
+                </div>
+                  <div class="oh-input-group">
+                    <label class="oh-label" for="{{form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
+                    {{form.employee_id__employee_work_info__job_position_id}}
+                </div>
                   <div class="oh-input-group">
                     <label class="oh-label" for="{{form.employee_id__employee_work_info__shift_id.id_for_label}}">{% trans "Shift" %}</label>
                     {{form.employee_id__employee_work_info__shift_id}}
@@ -59,8 +63,13 @@
                     {{form.employee_id__employee_work_info__reporting_manager_id}}
                   </div>
               <div class="oh-input-group">
-                <label class="oh-label" for="{{form.employee_id__employee_work_info__job_position_id.id_for_label}}">{% trans "Job Position" %}</label>
-                {{form.employee_id__employee_work_info__job_position_id}}
+                <label class="oh-label" for="{{form.employee_id__employee_work_info__department_id.id_for_label}}">{% trans "Department" %}</label>
+                {{form.employee_id__employee_work_info__department_id}}
+              </div>
+
+              <div class="oh-input-group">
+                <label class="oh-label" for="{{form.employee_id__employee_work_info__job_role_id.id_for_label}}">{% trans "Job Role" %}</label>
+                {{form.employee_id__employee_work_info__job_role_id}}
               </div>
               <div class="oh-input-group">
                 <label class="oh-label" for="{{form.employee_id__employee_work_info__work_type_id.id_for_label}}">{% trans "Work Type" %}</label>

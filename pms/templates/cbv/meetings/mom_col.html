@@ -1,0 +1,6 @@
+
+{% if perms.pms.view_meetings or request.user.employee_get in instance.manager.all or instance.show_response %}
+    {{ instance.response|truncatechars_html:100|default:"-"|safe }}
+{% else %}
+    -
+{% endif %}

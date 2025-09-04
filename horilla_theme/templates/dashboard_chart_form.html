@@ -1,0 +1,107 @@
+{% load i18n %}
+
+<div class="oh-modal__dialog-header">
+	<h2 class="oh-modal__dialog-title" id="createTitle">
+		{% trans "Dashboard Chart Select" %}
+	</h2>
+	<button type="button" class="oh-modal__close" aria-label="Close">
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
+</div>
+
+<div class="oh-modal__dialog-body">
+	<div class="oh-modal__dialog-body p-0">
+		<div class="oh-dropdown_btn-header oh-btn-group justify-start">
+			<span
+				class="oh-btn oh-btn--success-outline text-sm border"
+				id="select_all"
+			>
+				{% trans "Select All Rows" %}
+			</span>
+			<span
+				class="oh-btn oh-btn--primary-outline text-sm border"
+				id="unselect_all"
+			>
+				{% trans "Unselect All Rows" %}
+			</span>
+		</div>
+
+		<form
+			hx-post="{% url 'employee-chart-show' %}"
+			hx-target="#objectDetailsModalTarget"
+			id="dashboardChartForm"
+		>
+			<div class="max-h-[650px] overflow-hidden overflow-y-auto">
+				<table class="fixed-table w-full">
+					<thead class="sticky top-0 bg-[white] z-[1]">
+						<tr class="border-b border-[#ececec]">
+							<th class="text-sm font-bold text-left p-3">
+								{% trans "Charts" %}
+							</th>
+							<th class="text-sm font-bold text-left p-3">
+								{% trans "View" %}
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for chart in dashboard_charts %}
+						<tr class="border-b border-[#f3f3f3]">
+							<td class="text-sm text-left p-3 text-[#666] flex gap-3">
+								<img
+									src="https://ui-avatars.com/api/?name={{chart.1}}&background=random"
+									class="rounded-full w-7 h-7"
+								/>
+								<span class="oh-profile__name oh-text--dark"
+									>{{chart.1}}</span
+								>
+							</td>
+							<td class="text-sm text-left p-3 text-[#666]">
+								<label class="toggle-label">
+									<input
+										type="checkbox"
+										class="toggle-input"
+										name="{{chart.0}}"
+										id="enableResignationRequest"
+										data-target="#limitFields"
+										{% if not chart.0 in employee_chart%}
+											checked
+										{% endif %}
+									/>
+									<div class="toggle-switch"></div>
+								</label>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+
+			<div class="flex gap-1 justify-end border-t border-dark-50 pt-3 mt-3">
+				<button
+					type="submit"
+					class="oh-btn oh-btn--secondary mt-2 mr-5 pl-4 pr-5 oh-btn--w-100-resp"
+				>
+					{% trans "Save" %}
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script>
+	$(document).ready(function () {
+		$("#select_all").on("click", function () {
+			$("#dashboardChartForm")
+				.find("[type=checkbox]")
+				.prop("checked", true)
+				.change();
+		});
+
+		$("#unselect_all").on("click", function () {
+			$("#dashboardChartForm")
+				.find("[type=checkbox]")
+				.prop("checked", false)
+				.change();
+		});
+	});
+</script>

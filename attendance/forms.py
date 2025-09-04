@@ -156,6 +156,7 @@ class AttendanceUpdateForm(BaseModelForm):
                 "hx-include": "#attendanceUpdateForm",
                 "hx-target": "#attendanceUpdateFormFields,#personal",
                 "hx-trigger": "change",
+                "hx-swap": "outerHTML",
                 "hx-get": "/attendance/update-fields-based-shift",
             }
         )
@@ -309,6 +310,7 @@ class AttendanceForm(BaseModelForm):
                 "hx-include": "#attendanceCreateForm",
                 "hx-target": "#attendanceFormFields,#personal",
                 "hx-trigger": "change",
+                "hx-swap": "outerHTML",
                 "hx-get": "/attendance/update-fields-based-shift",
             }
         )
@@ -616,7 +618,7 @@ class AttendanceRequestForm(BaseModelForm):
                 {
                     "id": str(uuid.uuid4()),
                     "hx-include": "#attendanceRequestForm",
-                    "hx-target": "#attendanceRequest",
+                    "hx-target": "#attendanceRequestDiv",
                     "hx-swap": "innerHTML",
                     "hx-get": "/attendance/update-fields-based-shift",
                 }

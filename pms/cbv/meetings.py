@@ -60,6 +60,8 @@ class MeetingsList(HorillaListView):
     model = Meetings
     filter_class = MeetingsFilter
 
+    header_attrs = {"mom_col": """style="width: 20%;" """}
+
     columns = [
         (_("Title"), "title_col"),
         (_("Employees"), "employees_col"),
@@ -114,15 +116,19 @@ class MeetingsDetailedView(HorillaDetailedView):
     detail view of page
     """
 
+    cols = {
+        "mom_detail_col": 12,
+    }
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.body = [
             (_("Date"), "date"),
             (_("Question Template"), "question_template"),
-            (_("Employees"), "employ_detail_col", True),
-            (_("Managers"), "manager_detail_col", True),
-            (_("Minutes of Meeting"), "mom_col"),
-            (_("Answerable employees"), "answerable_col", True),
+            (_("Employees"), "employ_detail_col"),
+            (_("Managers"), "manager_detail_col"),
+            (_("Answerable employees"), "answerable_col"),
+            (_("Minutes of Meeting"), "mom_detail_col"),
         ]
 
     action_method = "detail_action"

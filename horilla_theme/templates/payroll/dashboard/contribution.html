@@ -1,0 +1,47 @@
+{% load i18n static horillafilters %}
+
+{% if contribution_deductions %}
+<div>
+    <table class="fixed-table w-full">
+        <thead class="sticky top-0 bg-[white] z-[1]">
+            <tr class="border-b border-[#ececec]">
+                <th class="text-sm font-bold text-left p-3">
+                    {% trans "Deduction" %}
+                </th>
+                <th class="text-sm font-bold text-left p-3">
+                    {% trans "Employee Contribution" %}
+                </th>
+                <th class="text-sm font-bold text-left p-3">
+                    {% trans "Employer Contribution" %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for deduction in contribution_deductions %}
+            <tr class="border-b border-[#f3f3f3]">
+                <td class="text-sm text-left p-3 text-[#666] flex gap-3">
+                    <img
+                        src="https://ui-avatars.com/api/?name={{deduction.title}}&background=random"
+                        class="rounded-full w-7 h-7"
+                    />
+                    <span class="oh-profile__name oh-text--dark"
+                        >{{deduction.title}}</span
+                    >
+                </td>
+                <td class="text-sm text-left p-3 text-[#666]">
+                    {{ deduction.employee_contribution|floatformat:2|currency_symbol_position }}
+                </td>
+                <td class="text-sm text-left p-3 text-[#666]">
+                    {{ deduction.employer_contribution|floatformat:2|currency_symbol_position }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+    <div class="flex flex-col items-center justify-center h-full">
+        <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+        <p class="text-[#666] mb-5">No records available at the moment</p>
+    </div>
+{% endif %}

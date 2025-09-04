@@ -466,6 +466,7 @@ def approve_validate_attendance_request(request, attendance_id):
     attendance.is_validate_request_approved = True
     attendance.is_validate_request = False
     attendance.request_description = None
+    attendance.approved_by = request.user.employee_get
     attendance.save()
     if attendance.requested_data is not None:
         requested_data = json.loads(attendance.requested_data)
@@ -656,7 +657,14 @@ def bulk_approve_attendance_request(request):
     """
     ids = request.POST["ids"]
     ids = json.loads(ids)
+    filtered_ids = []
     for attendance_id in ids:
+        attendance = Attendance.objects.get(id=attendance_id)
+        if attendance.employee_id != request.user.employee_get:
+            filtered_ids.append(attendance_id)
+    if request.user.is_superuser:
+        filtered_ids = ids
+    for attendance_id in filtered_ids:
         attendance = Attendance.objects.get(id=attendance_id)
         prev_attendance_date = attendance.attendance_date
         prev_attendance_clock_in_date = attendance.attendance_clock_in_date
@@ -665,6 +673,7 @@ def bulk_approve_attendance_request(request):
         attendance.is_validate_request_approved = True
         attendance.is_validate_request = False
         attendance.request_description = None
+        attendance.approved_by = request.user.employee_get
         attendance.save()
         if attendance.requested_data is not None:
             requested_data = json.loads(attendance.requested_data)

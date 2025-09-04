@@ -1,4 +1,4 @@
-{% load i18n basefilters %} 
+{% load i18n basefilters %}
 
 {% if perms.instance.change_attendance and perms.instance.delete_attendance or request.user|is_reportingmanager %}
 <a
@@ -26,7 +26,7 @@
 	class="oh-btn oh-btn-group oh-btn--success oh-btn--disabled"
 	onclick="event.stopPropagation()"
 >
-	
+
     <ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
     {% trans "Approve" %}
 </a>
@@ -38,7 +38,7 @@
 	class="oh-btn oh-btn-group oh-btn--success w-50"
 	onclick="event.stopPropagation()"
 >
-	
+
     <ion-icon class="me-1" name="checkmark-done-outline"></ion-icon>
     {% trans "Approve" %}
 </a>

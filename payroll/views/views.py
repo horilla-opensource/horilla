@@ -844,18 +844,24 @@ def dashboard_department_chart(request):
         )
 
         for employee in employee_list:
-            department.append(
-                employee.employee_id.employee_work_info.department_id.department
-            )
+            try:
+                department.append(
+                    employee.employee_id.employee_work_info.department_id.department
+                )
+            except Exception as e:
+                print(e)
 
         department = list(set(department))
         for depart in department:
             department_total.append({"department": depart, "amount": 0})
 
         for employee in employee_list:
-            employee_department = (
-                employee.employee_id.employee_work_info.department_id.department
-            )
+            try:
+                employee_department = (
+                    employee.employee_id.employee_work_info.department_id.department
+                )
+            except Exception as e:
+                print(e)
 
             for depart in department_total:
                 if depart["department"] == employee_department:
@@ -1020,22 +1026,9 @@ def payslip_export(request):
                     }
                 )
 
-    emp = request.user.employee_get
+    date_format = request.user.employee_get.get_date_format()
     if employee_payslip_list:
         for payslip in employee_payslip_list:
-            # Taking the company_name of the user
-            info = EmployeeWorkInformation.objects.filter(employee_id=emp).first()
-
-            if info:
-                employee_company = info.company_id
-                company_name = Company.objects.filter(company=employee_company).first()
-                date_format = (
-                    company_name.date_format
-                    if company_name and company_name.date_format
-                    else "MMM. D, YYYY"
-                )
-            else:
-                date_format = "MMM. D, YYYY"
 
             start_date_str = str(payslip.start_date)
             end_date_str = str(payslip.end_date)
@@ -1081,9 +1074,12 @@ def payslip_export(request):
         )
 
     for employee in employee_payslip_list:
-        department.append(
-            employee.employee_id.employee_work_info.department_id.department
-        )
+        try:
+            department.append(
+                employee.employee_id.employee_work_info.department_id.department
+            )
+        except Exception as e:
+            print(e)
 
     department = list(set(department))
 
@@ -1091,9 +1087,12 @@ def payslip_export(request):
         table2_data.append({"Department": depart, "Amount": 0})
 
     for employee in employee_payslip_list:
-        employee_department = (
-            employee.employee_id.employee_work_info.department_id.department
-        )
+        try:
+            employee_department = (
+                employee.employee_id.employee_work_info.department_id.department
+            )
+        except Exception as e:
+            print(e)
 
         for depart in table2_data:
             if depart["Department"] == employee_department:

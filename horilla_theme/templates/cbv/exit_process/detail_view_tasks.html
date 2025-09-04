@@ -1,0 +1,73 @@
+{% load i18n %}
+
+<style>
+    .oh-select-custom {
+        border: 1px solid hsl(213, 22%, 84%);
+        padding: 0.3rem 0.8rem 0.3rem 0.3rem;
+        border-radius: 0rem;
+    }
+    .oh-dot--color-completed {
+        background-color: hsl(148deg, 71%, 44%);
+    }
+    .oh-dot--color-stuck {
+        background-color: #ff0400;
+    }
+    .oh-dot--color-in_progress {
+        background-color: hsl(204deg, 70%, 53%);
+    }
+    .oh-dot--color-todo {
+        background-color: #e3b75f80;
+    }
+</style>
+
+{% if tasks %}
+    <div class="col-span-1 md:col-span-12 mb-2">
+        <span class="font-medium text-xs text-[#565E6C] w-32">
+            {% trans "Tasks" %}
+        </span>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+            {% for task in tasks %}
+                <div class="col-span-1 md:col-span-6 mb-2 task-item">
+                    <div class="text-xs font-semibold mb-1">
+                        <span
+                            class="oh-dot oh-dot--small me-1 oh-dot--color-{{task.status}}"
+                        ></span>
+                        {{task.task_id.title|title}}
+                    </div>
+                    <div class="" id="task{{task.id}}{{instance.id}}">
+                        <select
+                            hx-get="{% url 'update-task-status' %}?stage_id={{instance.stage_id.id}}&employee_ids={{instance.id}}&task_id={{task.task_id.id}}"
+                            hx-swap="none"
+                            hx-on-htmx-after-request="$(`#offboardingStageContainer{{instance.stage_id.pk}}`).find('.reload-record').click()"
+                            name="task_status"
+                            id="task_status{{assinged_tasks.id}}"
+                            class="p-2 w-full border rounded-md text-xs"
+                            onclick="event.stopPropagation()"
+                        >
+                            {% for t in task.statuses %}
+                                {% if task.status == t.0 %}
+                                    <option value="{{ t.0 }}" selected>{{ t.1 }}</option>
+                                {% else %}
+                                    <option value="{{ t.0 }}">{{ t.1 }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+<script>
+	$(document).on("htmx:afterRequest", function (event, data) {
+		$("select[name='task_status']").on("change", function () {
+			var value = $(this).val();
+			var dot = $(this).closest(".task-item").find("span.oh-dot");
+
+			dot.removeClass().addClass(
+				"oh-dot oh-dot--small me-1 oh-dot--color-" + value
+			);
+		});
+	});
+</script>
