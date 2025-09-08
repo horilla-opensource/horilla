@@ -32,6 +32,19 @@
   </div>
 </div>
 
+<div class="oh-modal" id="objectDetailW75Modal" role="dialog" aria-labelledby="allocationModal">
+	<div class="oh-modal__dialog oh-modal__dialog-process max-w-[900px]">
+		<div class="oh-modal__dialog-header">
+			<button class="oh-modal__close" aria-label="Close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')">
+				<ion-icon name="close-outline" role="img" class="md hydrated"></ion-icon>
+			</button>
+		</div>
+
+		<div class="oh-modal__dialog-body" id="objectDetailW75ModalTarget"></div>
+	</div>
+</div>
+
+
 <script>
   $(document).on("htmx:afterOnLoad", function (event) {
     $("[data-toggle='oh-modal-toggle']").click(function (e) {
