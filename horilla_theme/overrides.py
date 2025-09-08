@@ -39,6 +39,7 @@ ResignationLetter = get_horilla_model_class(
     app_label="offboarding", model="ResignationLetter"
 )
 AssetAssignment = get_horilla_model_class(app_label="asset", model="AssetAssignment")
+TimeSheet = get_horilla_model_class(app_label="project", model="TimeSheet")
 
 
 def tot_hires(self):
@@ -311,6 +312,70 @@ def return_condition_img(self):
     return col
 
 
+def detail_view_subtitle(self):
+    """
+    for subtitle in detail view
+    """
+    col = format_html(
+        """
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 rounded-md bg-white text-sm text-gray-700">
+
+                    <div>
+                        <span class="text-gray-500 mb-2">Date</span><br />
+                        <span class="font-semibold">{}</span>
+                    </div>
+
+                    <div>
+                        <span class="text-gray-500 mb-2">Time Spent</span><br />
+                        <span class="font-semibold">{}</span>
+                    </div>
+
+                    <div>
+                        <span class="text-gray-500 mb-2">Project</span><br />
+                        <span class="font-semibold">{}</span>
+                    </div>
+
+                    <div>
+                        <span class="text-gray-500 mb-2">Task</span><br />
+                        <span class="font-semibold">{}</span>
+                    </div>
+
+
+                </div>
+            """,
+        self.date,
+        self.time_spent,
+        self.project_id,
+        self.task_id,
+    )
+
+    return col
+
+
+def detail_view_title(self):
+
+    col = format_html(
+        """
+            <div class="flex items-center gap-5 mb-5">
+
+                <div>
+                    <img src="{}" alt="" class="w-[50px] h-[50px] rounded-full">
+                </div>
+
+                <div>
+                    <p class="mb-1 text-sm font-semibold">
+                        {}
+                    </p>
+                </div>
+            </div>
+        """,
+        self.employee_id.get_avatar(),
+        self.employee_id.get_full_name(),
+    )
+
+    return col
+
+
 Recruitment.managers_detail = managers_detail
 Recruitment.open_job_detail = open_job_detail
 Recruitment.tot_hires = tot_hires
@@ -322,10 +387,16 @@ LeaveRequest.rejected_action = rejected_action
 LeaveRequest.attachment_action = attachment_action
 LeaveRequest.penality_col = penalities_column
 LeaveRequest.leave_clash_col = leave_clash_col
+
 Meetings.mom_detail_col = mom_detail_col
+
 ResignationLetter.detail_description_col = detail_description_col
+
 AssetAssignment.assign_condition_img = assign_condition_img
 AssetAssignment.return_condition_img = return_condition_img
+
+TimeSheet.detail_view_subtitle = detail_view_subtitle
+TimeSheet.detail_view_title = detail_view_title
 
 
 if apps.is_installed("pms"):
@@ -364,3 +435,75 @@ if apps.is_installed("offboarding"):
         }
 
     ResignationLetterDetailView.__init__ = _resignation_detailed_init
+
+
+if apps.is_installed("project"):
+    from project.cbv.timesheet import (
+        TimeSheetCardView,
+        TimeSheetDetailView,
+        TimeSheetList,
+        TimeSheetNavView,
+    )
+
+    _timesheet_nav_init_orig = TimeSheetNavView.__init__
+
+    def _timesheet_nav_init(self, **kwargs):
+        _timesheet_nav_init_orig(self, **kwargs)
+        url = f"{reverse('personal-time-sheet-view',kwargs={'emp_id': self.request.user.employee_get.id})}"
+        self.view_types = [
+            {
+                "type": "list",
+                "icon": "list-outline",
+                "url": reverse("time-sheet-list"),
+            },
+            {
+                "type": "card",
+                "icon": "grid-outline",
+                "url": reverse("time-sheet-card"),
+            },
+            {
+                "type": "graph",
+                "icon": "bar-chart",
+                "url": url,
+            },
+        ]
+
+    _timesheet_list_init_orig = TimeSheetList.__init__
+
+    def _timesheet_list_init(self, **kwargs):
+        _timesheet_list_init_orig(self, **kwargs)
+        self.row_attrs = """
+            hx-get='{detail_view}?instance_ids={ordered_ids}'
+            hx-target="#objectDetailsModalTarget"
+            data-target="#objectDetailsModal"
+            data-toggle="oh-modal-toggle"
+        """
+
+    _timesheet_card_init_orig = TimeSheetCardView.__init__
+
+    def _timesheet_card_init(self, **kwargs):
+        _timesheet_card_init_orig(self, **kwargs)
+        self.card_attrs = """
+            hx-get='{detail_view}?instance_ids={ordered_ids}'
+            hx-target="#objectDetailsModalTarget"
+            data-target="#objectDetailsModal"
+            data-toggle="oh-modal-toggle"
+        """
+
+        self.details = {
+            "title": "{detail_view_title}",
+            "subtitle": "{detail_view_subtitle}",
+        }
+
+    _timesheet_detail_init_orig = TimeSheetDetailView.__init__
+
+    def _timesheet_detail_init(self, **kwargs):
+        _timesheet_detail_init_orig(self, **kwargs)
+        self.cols = {
+            "description": 12,
+        }
+
+    TimeSheetNavView.__init__ = _timesheet_nav_init
+    TimeSheetList.__init__ = _timesheet_list_init
+    TimeSheetCardView.__init__ = _timesheet_card_init
+    TimeSheetDetailView.__init__ = _timesheet_detail_init
