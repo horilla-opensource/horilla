@@ -442,7 +442,7 @@ class AssetAllocationFormView(HorillaFormView):
             message = _("Asset allocated Successfully")
             form.save()
             request = getattr(_thread_locals, "request", None)
-            files = request.FILES.getlist("asset_condition_img")
+            files = request.FILES.getlist("assign_images")
             attachments = []
             if request.FILES:
                 for file in files:
@@ -506,7 +506,7 @@ class AssetApproveFormView(HorillaFormView):
             asset_request.asset_request_status = "Approved"
             asset_request.save()
             request = getattr(_thread_locals, "request", None)
-            files = request.FILES.getlist("asset_condition_img")
+            files = request.FILES.getlist("assign_images")
             attachments = []
             if request.FILES:
                 for file in files:

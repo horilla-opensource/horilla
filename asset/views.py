@@ -871,7 +871,7 @@ def asset_allocate_return(request, asset_id):
                     asset_allocation.return_images.add(*attachments)
                 asset.asset_status = "Available"
                 asset.save()
-                messages.info(request, _("Asset Return Successful !."))
+                messages.success(request, _("Asset Returned Successfully..."))
                 return HttpResponse(
                     response.content.decode("utf-8")
                     + "<script>location.reload();</script>"
