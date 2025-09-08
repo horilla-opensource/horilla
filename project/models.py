@@ -609,6 +609,16 @@ class TimeSheet(HorillaModel):
             context={"instance": self},
         )
 
+    def get_description_col(self):
+        """
+        This method for get custom column for action.
+        """
+
+        return render_template(
+            path="cbv/timesheet/description_col.html",
+            context={"instance": self},
+        )
+
     def detail_actions(self):
         """
         This method for get custom column for action.

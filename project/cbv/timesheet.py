@@ -151,22 +151,15 @@ class TimeSheetList(HorillaListView):
         self.search_url = reverse("time-sheet-list")
         self.action_method = "actions"
 
-    @cached_property
-    def columns(self):
-        get_field = self.model()._meta.get_field
-        return [
-            (
-                get_field("employee_id").verbose_name,
-                "employee_id",
-                "employee_id__get_avatar",
-            ),
-            (get_field("project_id").verbose_name, "project_id"),
-            (get_field("task_id").verbose_name, "task_id"),
-            (get_field("date").verbose_name, "date"),
-            (get_field("time_spent").verbose_name, "time_spent"),
-            (get_field("status").verbose_name, "get_status_display"),
-            (get_field("description").verbose_name, "description"),
-        ]
+    columns = [
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        "project_id",
+        "task_id",
+        "date",
+        "time_spent",
+        "status",
+        (_("Description"), "get_description_col"),
+    ]
 
     @cached_property
     def sortby_mapping(self):
