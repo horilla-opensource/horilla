@@ -703,8 +703,12 @@ class RejectedCandidate(HorillaModel):
         ],
     )
 
+    class Meta:
+        verbose_name = _("Rejected Candidate")
+        verbose_name_plural = _("Rejected Candidates")
+
     def __str__(self) -> str:
-        return super().__str__()
+        return self.candidate_id
 
 
 class StageFiles(HorillaModel):
