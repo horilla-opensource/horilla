@@ -40,6 +40,7 @@
                             <li hx-swap="none" data-url="{{type.url}}" data-type="{{type.type}}"
                                 hx-get="{% url 'active-hnv-view-type' %}?view={{type.type}}&path={{request.path}}"
                                 class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 nav-view-btn"
+                                title="{{type.type|title}}"
                                 onclick="
                                     $(this).closest('form').attr('hx-get','{{type.url}}');
                                     $(this).closest('form').find('#applyFilter').click();
