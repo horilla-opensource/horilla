@@ -428,8 +428,11 @@ class CandidateCard(HorillaKanbanView):
     filter_keys_to_remove = ["rec_id"]
 
     kanban_attrs = """
-            onclick="window.location.href = `{get_individual_url}`"
-        """
+        hx-get='{get_details_candidate}'
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        hx-target="#genericModalBody"
+    """
 
     details = {
         "image_src": "{get_avatar}",

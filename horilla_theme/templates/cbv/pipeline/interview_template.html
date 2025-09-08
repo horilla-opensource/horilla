@@ -1,0 +1,93 @@
+{% load static %}
+{% load i18n %}
+<style>
+  .oh-sticky-table {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    font-size: 14px;
+  }
+
+  .oh-sticky-table__thead {
+    background: #f9fafb;
+    font-weight: 600;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .oh-sticky-table__tr {
+    display: grid;
+    grid-template-columns: 70px 1fr 1fr 1fr; /* adjust columns */
+    align-items: center;
+  }
+
+  .oh-sticky-table__th,
+  .oh-sticky-table__td {
+    padding: 12px 12px;
+    text-align: left;
+  }
+
+  .oh-sticky-table__th.sl-no,
+  .oh-sticky-table__td.sl-no {
+    text-align: center;
+    width: 70px !important;
+  }
+
+  .oh-sticky-table__tbody .oh-sticky-table__tr:nth-child(even) {
+    background: #fafafa;
+  }
+
+  .oh-sticky-table__tbody .oh-sticky-table__tr:hover {
+    background: #f1f5f9;
+    transition: background 0.2s ease;
+  }
+
+  .status-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .status-yes {
+    background: #dcfce7;
+    color: #166534;
+  }
+  .status-no {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+</style>
+
+{% if interviews %}
+<div class="oh-sticky-table">
+  <!-- Header -->
+  <div class="oh-sticky-table__thead">
+    <div class="oh-sticky-table__tr">
+      <div class="oh-sticky-table__th sl-no">{% trans "Sl No." %}</div>
+      <div class="oh-sticky-table__th">{% trans "Date" %}</div>
+      <div class="oh-sticky-table__th">{% trans "Time" %}</div>
+      <div class="oh-sticky-table__th">{% trans "Status" %}</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="oh-sticky-table__tbody">
+    {% for interview in interviews %}
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__td sl-no">{{ forloop.counter }}</div>
+        <div class="oh-sticky-table__td dateformat_changer">{{ interview.interview_date }}</div>
+        <div class="oh-sticky-table__td timeformat_changer">{{ interview.interview_time }}</div>
+        <div class="oh-sticky-table__td">
+          {% if interview.completed %}
+            <span class="status-pill status-yes">{% trans "Completed" %}</span>
+          {% else %}
+            <span class="status-pill status-no">{% trans "Pending" %}</span>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
