@@ -111,6 +111,8 @@ class TaxBracketCreateForm(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_taxbracket"), name="dispatch")
 class TaxBracketNavView(HorillaNavView):
     """
     Nav view for tax bracket list
@@ -130,6 +132,8 @@ class TaxBracketNavView(HorillaNavView):
         """
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_taxbracket"), name="dispatch")
 class FilingStatusPipeline(Pipeline):
     """
     Pipeline class for FilingStatus model.
@@ -185,6 +189,8 @@ class FilingStatusPipeline(Pipeline):
     ]
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("payroll.view_taxbracket"), name="dispatch")
 class TaxBracketListView(HorillaListView):
     """
     List view for tax brackets
