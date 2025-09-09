@@ -3,11 +3,10 @@ from django.http import JsonResponse
 from django.shortcuts import render
 
 if apps.is_installed("asset"):
-
     from asset.filters import AssetFilter
     from asset.models import Asset
     from base.models import Company
-    from horilla_views.cbv_methods import login_required, permission_required
+    from horilla.decorators import login_required, permission_required
 
     @login_required
     @permission_required(perm="asset.view_asset")
