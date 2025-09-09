@@ -14,6 +14,7 @@ from recruitment.models import (
     Recruitment,
     RecruitmentSurvey,
     RecruitmentSurveyAnswer,
+    RejectedCandidate,
     SkillZone,
     Stage,
 )
@@ -24,6 +25,7 @@ from recruitment.models import (
 admin.site.register(Stage)
 admin.site.register(Recruitment)
 admin.site.register(Candidate)
+admin.site.register(RejectedCandidate)
 admin.site.register(RecruitmentSurveyAnswer)
 admin.site.register(RecruitmentSurvey)
 admin.site.register(CandidateRating)
