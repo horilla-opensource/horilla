@@ -708,7 +708,8 @@ class RejectedCandidate(HorillaModel):
         verbose_name_plural = _("Rejected Candidates")
 
     def __str__(self) -> str:
-        return self.candidate_id
+        reasons = ", ".join(self.reject_reason_id.values_list("title", flat=True))
+        return f"{self.candidate_id} - {reasons if reasons else 'No Reason'}"
 
 
 class StageFiles(HorillaModel):
