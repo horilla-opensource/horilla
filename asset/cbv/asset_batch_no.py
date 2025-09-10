@@ -40,34 +40,33 @@ class AssetBatchNoListView(HorillaListView):
     list view for batch number
     """
 
+    model = AssetLot
+    filter_class = AssetBatchNoFilter
+    columns = [
+        "lot_number",
+        "lot_description",
+        (_("Assets"), "assets_column"),
+    ]
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("asset-batch-list")
         self.view_id = "AssetBatchList"
 
-    model = AssetLot
-    filter_class = AssetBatchNoFilter
-
-    columns = [
-        (_("Batch Number"), "lot_number"),
-        (_("Description"), "lot_description"),
-        (_("Assets"), "assets_column"),
-    ]
-
     header_attrs = {
         "action": """
-                   style = "width:180px !important"
-                   """
+            style = "width:180px !important"
+        """
     }
 
     action_method = "actions"
 
     row_attrs = """
-                hx-get='{asset_batch_detail}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+        hx-get='{asset_batch_detail}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -77,21 +76,21 @@ class AssetBatchNoNav(HorillaNavView):
     Nav bar
     """
 
+    nav_title = _("Asset Batch Number")
+    filter_instance = AssetBatchNoFilter()
+    search_swap_target = "#listContainer"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("asset-batch-list")
 
         if self.request.user.has_perm("asset.view_assetlot"):
             self.create_attrs = f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get="{reverse('asset-batch-number-creation')}"
-                            """
-
-    nav_title = _("Asset Batch Number")
-    filter_instance = AssetBatchNoFilter()
-    search_swap_target = "#listContainer"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+                hx-get="{reverse('asset-batch-number-creation')}"
+            """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -139,46 +138,8 @@ class AssetBatchDetailView(HorillaDetailedView):
     detail view of the page
     """
 
-    def get_context_data(self, **kwargs: Any):
-        """
-        Return context data with the title set to the contract's name.
-        """
-
-        context = super().get_context_data(**kwargs)
-        lot_number = context["assetlot"].lot_number
-        context["title"] = "Asset Batch:" + lot_number
-        return context
-
-    model = AssetLot
+    title = _("Details")
     header = False
-
-    cols = {"assets_column": 12, "lot_description": 12, "lot_number": 12}
-    body = {
-        (_("Assets"), "assets_column"),
-        (_("Description"), "lot_description"),
-        (_("Batch Number"), "lot_number"),
-    }
-
-    actions = [
-        {
-            "action": _("Edit"),
-            "icon": "create-outline",
-            "attrs": """
-                        class="oh-btn oh-btn--info w-100"
-                        hx-get='{get_update_url}?instance_ids={ordered_ids}'
-								hx-target="#genericModalBody"
-								data-toggle="oh-modal-toggle"
-								data-target="#genericModal"
-                      """,
-        },
-        {
-            "action": _("Delete"),
-            "icon": "trash-outline",
-            "attrs": """
-                    class="oh-btn oh-btn--danger w-100"
-                    hx-confirm="Do you want to delete this batch number?"
-                    hx-post="{get_delete_url}?instance_ids={ordered_ids}"
-                    hx-target="#AssetBatchList"
-                    """,
-        },
-    ]
+    model = AssetLot
+    body = ["lot_number", (_("Asset"), "assets_column"), "lot_description"]
+    action_method = "detail_actions"
