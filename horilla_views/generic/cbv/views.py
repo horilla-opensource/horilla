@@ -1505,6 +1505,20 @@ class HorillaDetailedView(DetailView):
         self.request = request
         # update_initial_cache(request, CACHE, HorillaDetailedView)
 
+        # Add verbose names to fields if possible
+        updated_body = []
+        get_field = self.model()._meta.get_field
+        for body in self.body:
+            if isinstance(body, str):
+                try:
+                    updated_body.append((get_field(body).verbose_name, body))
+                except FieldDoesNotExist:
+                    updated_body.append(body)
+            else:
+                updated_body.append(body)
+
+        self.body = updated_body
+
     def get_context_data(self, **kwargs: Any):
         context = super().get_context_data(**kwargs)
         obj = context.get("object")
