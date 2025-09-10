@@ -1341,7 +1341,8 @@ class RejectedCandidate(HorillaModel):
     )
 
     def __str__(self) -> str:
-        return super().__str__()
+        reasons = ", ".join(self.reject_reason_id.values_list("title", flat=True))
+        return f"{self.candidate_id} - {reasons if reasons else 'No Reason'}"
 
 
 class StageFiles(HorillaModel):
