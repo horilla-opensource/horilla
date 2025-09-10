@@ -1653,6 +1653,7 @@ class HorillaCardView(ListView):
     records_per_page: int = 50
     card_status_class: str = """"""
     card_status_indications: list = []
+    custom_empty_template: str = ""
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -1714,6 +1715,7 @@ class HorillaCardView(ListView):
         context["show_filter_tags"] = self.show_filter_tags
         context["card_status_class"] = self.card_status_class
         context["card_status_indications"] = self.card_status_indications
+        context["custom_empty_template"] = self.custom_empty_template
 
         if self.show_filter_tags:
             data_dict = parse_qs(self._saved_filters.urlencode())
