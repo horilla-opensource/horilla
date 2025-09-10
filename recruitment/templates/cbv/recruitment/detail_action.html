@@ -13,7 +13,7 @@
         outline: inherit;"
          title="{% trans 'Edit' %}">
         <ion-icon name="create-outline" ></ion-icon>
-      Edit</button></a>
+      {% trans "Edit" %}</button></a>
     {% endif %}
     {% if perms.recruitment.delete_recruitment %}
       {% if instance.is_active %}
@@ -28,7 +28,7 @@
             outline: inherit;"
              title="{% trans 'Archive' %}">
             <ion-icon name="archive" ></ion-icon>
-          Archive</button></a>
+          {% trans "Archive" %}</button></a>
         {% else %}
         <a onclick="return confirm('{% trans "Are you sure you want to unarchive this recruitment?" %}');" href="{% url 'recruitment-archive' instance.id %}" class="oh-btn  oh-btn--primary w-50" title="{% trans 'Unarchive' %}">
             <button style="
@@ -40,30 +40,36 @@
             cursor: pointer;
             outline: inherit;"
              title="{% trans 'Unarchive' %}">
-            <ion-icon name="archive" ></ion-icon> Un-archive
+            <ion-icon name="archive" ></ion-icon> {% trans "Un-archive" %}
           </button></a>
       {% endif %}
     {% endif %}
     {% if perms.recruitment.delete_recruitment %}
-
-      <form class="oh-btn  oh-btn--secondary w-50" title="{% trans 'Delete' %}"
-      action="{% url 'recruitment-delete' instance.id  %}"
-      onsubmit="return confirm('{% trans "Are you sure to delete this recruitment?" %}')"
-      method="post"
-     >
-      {% csrf_token %}
-      <button style="
-        background: none;
-        color: inherit;
-        border: none;
-        padding: 0;
-        font: inherit;
-        cursor: pointer;
-        outline: inherit;"
-         title="{% trans 'Delete' %}">
-        <ion-icon name="trash-outline" ></ion-icon>
-      Delete</button>
-    </form>
+    <div style="
+          background: hsl(8, 77%, 56%);
+          color: inherit;
+          border: none;
+          padding: 0;
+          font: inherit;
+          cursor: pointer;
+          outline: inherit;"
+          class="oh-btn  oh-btn--secondary w-50">
+      <button
+        onclick="$(this).closest('.oh-modal').removeClass('oh-modal--show').hide();"
+        style="
+          background: hsl(8, 77%, 56%);
+          color: white;"
+        class="oh-btn w-100"
+        title="{% trans 'Remove' %}"
+        hx-get="{% url 'generic-delete' %}?model=recruitment.recruitment&pk={{instance.id}}"
+        data-toggle="oh-modal-toggle"
+        data-target="#deleteConfirmation"
+        hx-target="#deleteConfirmationBody"
+      >
+       <ion-icon name="trash-outline" ></ion-icon>
+      {% trans "Delete" %}
+      </button>
+    </div>
 
     {% endif %}
   </div>

@@ -58,6 +58,14 @@ class RecruitmentList(HorillaListView):
         super().__init__(**kwargs)
         self.search_url = reverse("list-recruitment")
 
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        self.queryset = (
+            super()
+            .get_queryset(queryset, filtered, *args, **kwargs)
+            .filter(is_active=self.request.GET.get("is_active", True))
+        )
+        return self.queryset
+
     columns = [
         ("Recruitment", "recruitment_column"),
         ("Managers", "managers_column"),
