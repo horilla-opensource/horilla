@@ -1,7 +1,7 @@
 {% load i18n %} {% load static %}
 <div
     id="{{hx_target}}"
-    class="d-flex"
+    class="d-flex available-leave-count"
     style="{% if not available_leave and not leave_type_id %}height: 1px;display:none;{% else %}height: 40px;{% endif %}"
 >
     {% if not leave_type_id %}
