@@ -399,6 +399,28 @@ TimeSheet.detail_view_subtitle = detail_view_subtitle
 TimeSheet.detail_view_title = detail_view_title
 
 
+from base.cbv.dashboard.dashboard import DashboardWorkTypeRequest, ShiftRequestToApprove
+
+_shift_request_to_approve_init_orig = ShiftRequestToApprove.__init__
+
+
+def _shift_request_to_approve_init(self, **kwargs):
+    _shift_request_to_approve_init_orig(self, **kwargs)
+    self.header_attrs = {}
+
+
+_work_type_request_to_approve_init_orig = DashboardWorkTypeRequest.__init__
+
+
+def _work_type_request_to_approve_init(self, **kwargs):
+    _work_type_request_to_approve_init_orig(self, **kwargs)
+    self.header_attrs = {}
+
+
+ShiftRequestToApprove.__init__ = _shift_request_to_approve_init
+DashboardWorkTypeRequest.__init__ = _work_type_request_to_approve_init
+
+
 if apps.is_installed("pms"):
     from pms.cbv.meetings import MeetingsDetailedView
 
@@ -507,3 +529,37 @@ if apps.is_installed("project"):
     TimeSheetList.__init__ = _timesheet_list_init
     TimeSheetCardView.__init__ = _timesheet_card_init
     TimeSheetDetailView.__init__ = _timesheet_detail_init
+
+
+if apps.is_installed("attendance"):
+    from attendance.cbv.dashboard import (
+        DashboardaAttendanceOT,
+        DashboardAttendanceToValidate,
+    )
+
+    _overtime_attendance_init_orig = DashboardaAttendanceOT.__init__
+
+    def _overtime_attendance_init(self, **kwargs):
+        _overtime_attendance_init_orig(self, **kwargs)
+        self.header_attrs = {}
+
+    _validate_attendance_init_orig = DashboardAttendanceToValidate.__init__
+
+    def _validate_attendance_init(self, **kwargs):
+        _validate_attendance_init_orig(self, **kwargs)
+        self.header_attrs = {}
+
+    DashboardaAttendanceOT.__init__ = _overtime_attendance_init
+    DashboardAttendanceToValidate.__init__ = _validate_attendance_init
+
+
+if apps.is_installed("leave"):
+    from leave.cbv.dashboard import LeaveRequestsToApprove
+
+    _leave_request_to_approve_init_orig = LeaveRequestsToApprove.__init__
+
+    def _leave_request_to_approve_init(self, **kwargs):
+        _leave_request_to_approve_init_orig(self, **kwargs)
+        self.header_attrs = {}
+
+    LeaveRequestsToApprove.__init__ = _leave_request_to_approve_init
