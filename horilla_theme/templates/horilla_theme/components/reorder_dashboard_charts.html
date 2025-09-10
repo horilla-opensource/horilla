@@ -1,0 +1,78 @@
+{% load i18n %}
+
+<style>
+	.chart-sortable-placeholder {
+		background-color: #e5e7eb; 
+		border: 2px dashed #fc8578; 
+		visibility: visible !important;
+		box-shadow: none !important;
+		border-radius: 6px
+	}
+	.ui-sortable-helper {
+		transition: none !important;
+		opacity: 0.8; /* optional, looks nice */
+	}
+	.oh-modal__dialog {
+		max-width: 600px
+	}
+</style>
+
+<div class="oh-modal__dialog-header">
+	<h2 class="oh-modal__dialog-title font-semibold">
+		{% trans "Reorder Dashboard Charts" %}
+	</h2>
+	<button type="button" class="absolute top-6 right-4 text-2xl" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')">
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
+</div>
+
+<div class="oh-modal__dialog-body p-5 pt-2">
+	<div class="container">
+		<form hx-post="{% url 'reorder-dashboard-charts' %}" hx-target="#objectDetailsModalTarget">
+			<div class="grid grid-cols-2 gap-4 min-h-96 p-5 bg-stone-100 rounded-xl border-2 border-dashed border-stone-300" id="sortableGrid">
+				{% for chart in charts %}
+				<div class="bg-white grid-item shadow-md text-slate-500 p-5 rounded-lg cursor-grab flex flex-col justify-between text-center min-h-20 hover:-translate-y-0.5 ">
+					<span class="w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center
+						{% cycle 'bg-blue-100 text-blue-600' 'bg-purple-100 text-purple-600' 'bg-green-100 text-green-600' 'bg-orange-100 text-orange-600' 'bg-red-100 text-red-600' %}
+					"
+					>
+						{{forloop.counter}} 
+					</span>
+					<div class="font-medium text-lg text-center text-gray-900">{{chart.1|title}} </div>
+					<div class="text-base cursor-grab active:cursor-grabbing text-right">⋮⋮</div>
+					<input name="{{chart.0}}" value="{{forloop.counter}}" hidden />
+				</div>
+				{% endfor %}
+			</div>
+
+			<div class="flex gap-1 justify-end border-t border-dark-50 pt-3 mt-3">
+				<button
+					type="submit"
+					class="oh-btn oh-btn--secondary mt-2 mr-5 pl-4 pr-5 oh-btn--w-100-resp"
+				>
+					{% trans "Save" %}
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script>
+	$("#sortableGrid").sortable({
+		placeholder: "chart-sortable-placeholder",
+		helper: "clone",
+		cursor: "move",
+		tolerance: "pointer",
+		// stop: function(event, ui) {
+		// 	updateOrderNumbers();
+		// },
+	});
+
+	function updateOrderNumbers() {
+		$('#sortableGrid .grid-item').each(function(index) {
+			const orderBadge = $(this).find('span').first();
+			orderBadge.text(index + 1);
+		});
+	}
+	
+</script>

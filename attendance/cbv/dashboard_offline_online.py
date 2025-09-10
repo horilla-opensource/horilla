@@ -9,7 +9,6 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
-from attendance.cbv.attendances import OTAttendancesList, ValidateAttendancesList
 from base.decorators import manager_can_enter
 from employee.filters import EmployeeFilter
 from employee.models import Employee
@@ -26,6 +25,10 @@ class DashboardOfflineEmployees(HorillaListView):
 
     model = Employee
     filter_class = EmployeeFilter
+    view_id = "offlineEmployees"
+    records_per_page = 10
+    show_toggle_form = False
+    bulk_select_option = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -54,9 +57,6 @@ class DashboardOfflineEmployees(HorillaListView):
         style="width:80px !important;"
         """,
     }
-    records_per_page = 7
-    show_toggle_form = False
-    bulk_select_option = False
 
 
 @method_decorator(login_required, name="dispatch")
@@ -68,6 +68,9 @@ class DashboardOnlineEmployees(HorillaListView):
 
     model = Employee
     filter_class = EmployeeFilter
+    view_id = "onlineEmployees"
+    records_per_page = 10
+    bulk_select_option = False
     show_toggle_form = False
 
     def __init__(self, **kwargs: Any) -> None:
@@ -85,7 +88,7 @@ class DashboardOnlineEmployees(HorillaListView):
         return queryset
 
     columns = [
-        ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
+        ("Employee", "get_full_name", "get_avatar"),
         ("Work Status", "get_custom_forecasted_info_col"),
     ]
 
@@ -93,6 +96,3 @@ class DashboardOnlineEmployees(HorillaListView):
         "employee_id__get_full_name": """ style="width:200px !important" """,
         "get_custom_forecasted_info_col": """ style="width:180px !important" """,
     }
-
-    records_per_page = 8
-    bulk_select_option = False

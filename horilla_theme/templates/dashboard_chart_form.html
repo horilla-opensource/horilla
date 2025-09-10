@@ -11,19 +11,33 @@
 
 <div class="oh-modal__dialog-body">
 	<div class="oh-modal__dialog-body p-0">
-		<div class="oh-dropdown_btn-header oh-btn-group justify-start">
-			<span
-				class="oh-btn oh-btn--success-outline text-sm border"
-				id="select_all"
-			>
-				{% trans "Select All Rows" %}
-			</span>
-			<span
-				class="oh-btn oh-btn--primary-outline text-sm border"
-				id="unselect_all"
-			>
-				{% trans "Unselect All Rows" %}
-			</span>
+		<div class="flex justify-between items-center">
+			<div class="oh-btn-group justify-start" >
+				<span
+					class="oh-btn oh-btn--success-outline text-sm border"
+					id="select_all"
+				>
+					{% trans "Select All Charts" %}
+				</span>
+				<span
+					class="oh-btn oh-btn--primary-outline text-sm border"
+					id="unselect_all"
+				>
+					{% trans "Unselect All Charts" %}
+				</span>
+			</div>
+			{% if employee_chart|length >= 1 %}
+				<div>
+					<button class="oh-btn oh-btn--info m-1 pl-4 pr-5 oh-btn--w-100-resp"
+						data-target="#objectCreateModal"
+						hx-target="#objectCreateModalTarget"
+						data-toggle="oh-modal-toggle"
+						hx-get="{% url 'reorder-dashboard-charts' %}"
+					>
+						{% trans "Reorder Charts" %}
+					</button>
+				</div>
+			{% endif %}
 		</div>
 
 		<form
@@ -63,7 +77,7 @@
 										name="{{chart.0}}"
 										id="enableResignationRequest"
 										data-target="#limitFields"
-										{% if not chart.0 in employee_chart%}
+										{% if chart.0 in employee_chart %}
 											checked
 										{% endif %}
 									/>
