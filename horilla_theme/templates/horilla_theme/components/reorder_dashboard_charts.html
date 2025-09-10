@@ -2,8 +2,8 @@
 
 <style>
 	.chart-sortable-placeholder {
-		background-color: #e5e7eb; 
-		border: 2px dashed #fc8578; 
+		background-color: #e5e7eb;
+		border: 2px dashed #fc8578;
 		visibility: visible !important;
 		box-shadow: none !important;
 		border-radius: 6px
@@ -36,7 +36,7 @@
 						{% cycle 'bg-blue-100 text-blue-600' 'bg-purple-100 text-purple-600' 'bg-green-100 text-green-600' 'bg-orange-100 text-orange-600' 'bg-red-100 text-red-600' %}
 					"
 					>
-						{{forloop.counter}} 
+						{{forloop.counter}}
 					</span>
 					<div class="font-medium text-lg text-center text-gray-900">{{chart.1|title}} </div>
 					<div class="text-base cursor-grab active:cursor-grabbing text-right">⋮⋮</div>
@@ -74,5 +74,5 @@
 			orderBadge.text(index + 1);
 		});
 	}
-	
+
 </script>
