@@ -119,6 +119,7 @@ from base.forms import (
     WorkTypeRequestForm,
 )
 from base.methods import (
+    check_chart_permission,
     choosesubordinates,
     closest_numbers,
     export_data,
@@ -197,6 +198,32 @@ from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
 from notifications.models import Notification
 from notifications.signals import notify
+
+CHARTS = [
+    ("employee_work_info", _("Employee Work Info")),
+    ("offline_employees", _("Offline Employees")),
+    ("online_employees", _("Online Employees")),
+    ("overall_leave_chart", _("Overall Leave Chart")),
+    ("hired_candidates", _("Hired Candidates")),
+    ("onboarding_candidates", _("Onboarding Candidates")),
+    ("recruitment_analytics", _("Recruitment Analytics")),
+    ("attendance_analytic", _("Attendance analytics")),
+    ("hours_chart", _("Hours Chart")),
+    ("employees_chart", _("Employees Chart")),
+    ("department_chart", _("Department Chart")),
+    ("gender_chart", _("Gender Chart")),
+    ("shift_request_approve", _("Shift Request to Approve")),
+    ("work_type_request_approve", _("Work Type Request to Approve")),
+    ("overtime_approve", _("Overtime to Approve")),
+    ("attendance_validate", _("Attendance to Validate")),
+    ("leave_request_approve", _("Leave Request to Approve")),
+    ("leave_allocation_approve", _("Leave Allocation to Approve")),
+    ("feedback_answer", _("Feedbacks to Answer")),
+    ("asset_request_approve", _("Asset Request to Approve")),
+    ("objective_status", _("Objective Status")),
+    ("key_result_status", _("Key Result Status")),
+    ("feedback_status", _("Feedback Status")),
+]
 
 
 def custom404(request):
@@ -936,26 +963,33 @@ def home(request):
     today_weekday = today.weekday()
     first_day_of_week = today - timedelta(days=today_weekday)
     last_day_of_week = first_day_of_week + timedelta(days=6)
+    total_employees = Employee.objects.filter(is_active=True).count()
+    current_employee = request.user.employee_get
 
-    employee_charts = DashboardEmployeeCharts.objects.get_or_create(
-        employee=request.user.employee_get
-    )[0]
+    employee_charts = DashboardEmployeeCharts.objects.filter(
+        employee=current_employee
+    ).first()
 
-    user = request.user
-    today = timezone.now().date()  # Get today's date
+    chart_list = [chart[0] for chart in check_chart_permission(request, CHARTS)]
+
+    if employee_charts and employee_charts.charts is not None:
+        chart_list = employee_charts.charts
+
+    today = timezone.now().date()
     is_birthday = None
 
-    if user.employee_get.dob != None:
+    if current_employee.dob != None:
         is_birthday = (
-            user.employee_get.dob.month == today.month
-            and user.employee_get.dob.day == today.day
+            current_employee.dob.month == today.month
+            and current_employee.dob.day == today.day
         )
 
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
-        "charts": employee_charts.charts,
+        "charts": chart_list,
         "is_birthday": is_birthday,
+        "total_employees": total_employees,
     }
 
     return render(request, "index.html", context)
@@ -6809,155 +6843,61 @@ def dashboard_components_toggle(request):
     return HttpResponse("")
 
 
-def check_chart_permission(request, charts):
-    """
-    This function is used to check the permissions for the charts
-    Args:
-        charts: dashboard charts
-    """
-    from base.templatetags.basefilters import is_reportingmanager
-
-    if apps.is_installed("recruitment"):
-        from recruitment.templatetags.recruitmentfilters import is_stagemanager
-
-        need_stage_manager = [
-            "hired_candidates",
-            "onboarding_candidates",
-            "recruitment_analytics",
-        ]
-    chart_apps = {
-        "offline_employees": "attendance",
-        "online_employees": "attendance",
-        "overall_leave_chart": "leave",
-        "hired_candidates": "recruitment",
-        "onboarding_candidates": "onboarding",
-        "recruitment_analytics": "recruitment",
-        "attendance_analytic": "attendance",
-        "hours_chart": "attendance",
-        "objective_status": "pms",
-        "key_result_status": "pms",
-        "feedback_status": "pms",
-        "shift_request_approve": "base",
-        "work_type_request_approve": "base",
-        "overtime_approve": "attendance",
-        "attendance_validate": "attendance",
-        "leave_request_approve": "leave",
-        "leave_allocation_approve": "leave",
-        "asset_request_approve": "asset",
-        "employees_chart": "employee",
-        "gender_chart": "employee",
-        "department_chart": "base",
-    }
-    permissions = {
-        "offline_employees": "employee.view_employee",
-        "online_employees": "employee.view_employee",
-        "overall_leave_chart": "leave.view_leaverequest",
-        "hired_candidates": "recruitment.view_candidate",
-        "onboarding_candidates": "recruitment.view_candidate",
-        "recruitment_analytics": "recruitment.view_recruitment",
-        "attendance_analytic": "attendance.view_attendance",
-        "hours_chart": "attendance.view_attendance",
-        "objective_status": "pms.view_employeeobjective",
-        "key_result_status": "pms.view_employeekeyresult",
-        "feedback_status": "pms.view_feedback",
-        "shift_request_approve": "base.change_shiftrequest",
-        "work_type_request_approve": "base.change_worktyperequest",
-        "overtime_approve": "attendance.change_attendance",
-        "attendance_validate": "attendance.change_attendance",
-        "leave_request_approve": "leave.change_leaverequest",
-        "leave_allocation_approve": "leave.change_leaveallocationrequest",
-        "asset_request_approve": "asset.change_assetrequest",
-    }
-    chart_list = []
-    need_reporting_manager = [
-        "offline_employees",
-        "online_employees",
-        "attendance_analytic",
-        "hours_chart",
-        "objective_status",
-        "key_result_status",
-        "feedback_status",
-        "shift_request_approve",
-        "work_type_request_approve",
-        "overtime_approve",
-        "attendance_validate",
-        "leave_request_approve",
-        "leave_allocation_approve",
-        "asset_request_approve",
-    ]
-    for chart in charts:
-        if apps.is_installed(chart_apps.get(chart[0])):
-            if (
-                chart[0] in permissions.keys()
-                or chart[0] in need_reporting_manager
-                or (apps.is_installed("recruitment") and chart[0] in need_stage_manager)
-            ):
-                if request.user.has_perm(permissions[chart[0]]):
-                    chart_list.append(chart)
-                elif chart[0] in need_reporting_manager:
-                    if is_reportingmanager(request.user):
-                        chart_list.append(chart)
-                elif (
-                    apps.is_installed("recruitment") and chart[0] in need_stage_manager
-                ):
-                    if is_stagemanager(request.user):
-                        chart_list.append(chart)
-            else:
-                chart_list.append(chart)
-
-    return chart_list
-
-
 @login_required
 def employee_chart_show(request):
     """
     This function is used to choose which chart to show in the dashboard
     """
-    employee_charts = DashboardEmployeeCharts.objects.get_or_create(
+    employee_charts, created = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
-    )[0]
-    charts = [
-        ("offline_employees", _("Offline Employees")),
-        ("online_employees", _("Online Employees")),
-        ("overall_leave_chart", _("Overall Leave Chart")),
-        ("hired_candidates", _("Hired Candidates")),
-        ("onboarding_candidates", _("Onboarding Candidates")),
-        ("recruitment_analytics", _("Recruitment Analytics")),
-        ("attendance_analytic", _("Attendance analytics")),
-        ("hours_chart", _("Hours Chart")),
-        ("employees_chart", _("Employees Chart")),
-        ("department_chart", _("Department Chart")),
-        ("gender_chart", _("Gender Chart")),
-        ("objective_status", _("Objective Status")),
-        ("key_result_status", _("Key Result Status")),
-        ("feedback_status", _("Feedback Status")),
-        ("shift_request_approve", _("Shift Request to Approve")),
-        ("work_type_request_approve", _("Work Type Request to Approve")),
-        ("overtime_approve", _("Overtime to Approve")),
-        ("attendance_validate", _("Attendance to Validate")),
-        ("leave_request_approve", _("Leave Request to Approve")),
-        ("leave_allocation_approve", _("Leave Allocation to Approve")),
-        ("feedback_answer", _("Feedbacks to Answer")),
-        ("asset_request_approve", _("Asset Request to Approve")),
-    ]
-    charts = check_chart_permission(request, charts)
+    )
+
+    charts = check_chart_permission(request, CHARTS)
 
     if request.method == "POST":
-        employee_charts.charts = []
-        employee_charts.save()
-        data = request.POST
-        for chart in charts:
-            if chart[0] not in data.keys() and chart[0] not in employee_charts.charts:
-                employee_charts.charts.append(chart[0])
-            elif chart[0] in data.keys() and chart[0] in employee_charts.charts:
-                employee_charts.charts.remove(chart[0])
-            else:
-                pass
+        data = set(request.POST.keys())
+        current_order = employee_charts.charts or []
 
+        new_order = [c for c in current_order if c in data]
+
+        for char in data:
+            if char not in new_order:
+                new_order.append(char)
+
+        employee_charts.charts = new_order
         employee_charts.save()
+        messages.success(request, _("Dashboard charts updated successfully"))
+
         return HttpResponse("<script>window.location.reload();</script>")
+
     context = {"dashboard_charts": charts, "employee_chart": employee_charts.charts}
     return render(request, "dashboard_chart_form.html", context)
+
+
+@login_required
+def reorder_dashboard_charts(request):
+    """
+    This function is used to reorder the dashboard charts
+    """
+    employee_charts, created = DashboardEmployeeCharts.objects.get_or_create(
+        employee=request.user.employee_get
+    )
+    charts = [(chart, chart.replace("_", " ")) for chart in employee_charts.charts]
+
+    if request.method == "POST":
+        chart_keys = list(request.POST.keys())
+        filtered_chart_keys = [
+            item for item in chart_keys if item in employee_charts.charts
+        ]
+        employee_charts.charts = filtered_chart_keys
+        employee_charts.save()
+        return HttpResponse(headers={"HX-Refresh": "true"})
+
+    return render(
+        request,
+        "horilla_theme/components/reorder_dashboard_charts.html",
+        {"charts": charts},
+    )
 
 
 @login_required

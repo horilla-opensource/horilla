@@ -62,6 +62,7 @@ from horilla_audit.cbv import audit
 from horilla_audit.models import AuditTag
 
 urlpatterns = [
+    path("", views.home, name="home-page"),
     path(
         "employee/work-type-request-view/",
         work_type_request.WorkRequestView.as_view(),
@@ -152,7 +153,6 @@ urlpatterns = [
         mail_template.MailTemplateDuplicateForm.as_view(),
         name="mail-template-duplicate-form",
     ),
-    path("", views.home, name="home-page"),
     path("initialize-database", views.initialize_database, name="initialize-database"),
     path("load-demo-database", views.load_demo_database, name="load-demo-database"),
     path(
@@ -1439,6 +1439,11 @@ urlpatterns = [
         "dashboard-components-toggle",
         views.dashboard_components_toggle,
         name="dashboard-components-toggle",
+    ),
+    path(
+        "reorder-dashboard-charts",
+        views.reorder_dashboard_charts,
+        name="reorder-dashboard-charts",
     ),
     path("employee-chart-show", views.employee_chart_show, name="employee-chart-show"),
     path(
