@@ -1,0 +1,27 @@
+{% load static i18n %}
+{% if perms.asset.change_assetlot %}
+    <!-- Start of Edit Button -->
+    <button data-toggle="oh-modal-toggle" data-target="#genericModal"
+        hx-get="{{ instance.get_update_url }}?instance_ids={{ instance.ordered_ids }}" hx-target="#genericModalBody"
+        class="oh-btn oh-btn--info w-100"
+    >
+        <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+        {% trans 'Edit' %}
+    </button>
+    <!-- End of Edit Button -->
+{% endif %}
+
+{% if perms.asset.delete_assetlot %}
+    <!-- Start of Delete Form -->
+    <form hx-confirm="{% trans 'Do you want to delete this batch number ?' %}" class="w-100"
+        hx-post="{{ instance.get_delete_url }}?instance_ids={{ instance.ordered_ids }}" hx-target="#AssetBatchList">
+        {% csrf_token %}
+        <button data-action="delete" type="submit"
+            class="oh-btn oh-btn--danger w-100"
+        >
+            <ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+            {% trans 'Delete' %}
+        </button>
+    </form>
+    <!-- End of Delete Form -->
+{% endif %}
