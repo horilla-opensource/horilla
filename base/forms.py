@@ -197,6 +197,13 @@ class ModelForm(forms.ModelForm):
                 widget.input_type = "date"
                 widget.format = "%Y-%m-%d"
                 field.input_formats = ["%Y-%m-%d"]
+
+            # Time Field
+            if isinstance(widget, forms.TimeInput):
+                widget.input_type = "time"
+                widget.format = "%H:%M"
+                field.input_formats = ["%H:%M"]
+
             if isinstance(
                 widget,
                 (
