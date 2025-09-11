@@ -26,7 +26,7 @@
                 <div id="gridView" class="p-5">
                     <div class="grid grid-cols-4 gap-4">
                         {% for instance in queryset %}
-                            <div class="border border-[#ebebeb] p-4 rounded-md shadow-card {{card_status_class|format:instance|safe}}" {{card_attrs|format:instance|safe}}>
+                            <div class="border border-[#ebebeb] p-4 rounded-md shadow-card cursor-pointer {{card_status_class|format:instance|safe}}" {{card_attrs|format:instance|safe}}>
                                 <div class="flex gap-5 relative">
                                     <div
                                         class="absolute inline-block right-0 -top-1" onclick="event.stopPropagation();"
