@@ -1652,7 +1652,8 @@ class InterviewSchedule(HorillaModel):
     interview_date = models.DateField(verbose_name=_("Interview Date"))
     interview_time = models.TimeField(verbose_name=_("Interview Time"))
     description = models.TextField(
-        verbose_name=_("Description"), blank=True, max_length=255
+        verbose_name=_("Description"),
+        blank=True,
     )
     completed = models.BooleanField(
         default=False, verbose_name=_("Is Interview Completed")
