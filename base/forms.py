@@ -5,11 +5,10 @@ This module is used to register forms for base module
 """
 
 import calendar
-import datetime
 import ipaddress
 import os
 import uuid
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from django import forms
@@ -110,10 +109,10 @@ def get_next_week_date(target_day, start_date):
 
     Parameters:
         target_day (int): The target day of the week (0-6, where Monday is 0 and Sunday is 6).
-        start_date (datetime.date): The starting date.
+        start_date (date): The starting date.
 
     Returns:
-        datetime.date: The date of the next occurrence of the target day within the next week.
+        date: The date of the next occurrence of the target day within the next week.
     """
     if start_date.weekday() == target_day:
         return start_date
@@ -137,12 +136,12 @@ def get_next_monthly_date(start_date, rotate_every):
     last day of the current month.
 
     Parameters:
-    - start_date: The start date of the rotation schedule, as a datetime.date object.
+    - start_date: The start date of the rotation schedule, as a date object.
     - rotate_every: The rotation day, specified as an integer between 1 and 31, or the
       string 'last'.
 
     Returns:
-    - A datetime.date object representing the next rotation date.
+    - A date object representing the next rotation date.
     """
 
     if rotate_every == "last":
@@ -156,15 +155,13 @@ def get_next_monthly_date(start_date, rotate_every):
         # If the rotation day has not occurred yet this month, or if it's the last-
         # day of the month, set the next change date to the rotation day of this month
         try:
-            next_change = datetime.date(start_date.year, start_date.month, rotate_every)
+            next_change = date(start_date.year, start_date.month, rotate_every)
         except ValueError:
-            next_change = datetime.date(
+            next_change = date(
                 start_date.year, start_date.month + 1, 1
             )  # Advance to next month
             # Set day to rotate_every
-            next_change = datetime.date(
-                next_change.year, next_change.month, rotate_every
-            )
+            next_change = date(next_change.year, next_change.month, rotate_every)
     else:
         # If the rotation day has already occurred this month, set the next change
         # date to the rotation day of the next month
@@ -183,28 +180,59 @@ def get_next_monthly_date(start_date, rotate_every):
 
 class ModelForm(forms.ModelForm):
     """
-    Override django model's form to add initial styling
+    Override of Django ModelForm to add initial styling and defaults.
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         reload_queryset(self.fields)
+
         request = getattr(horilla_middlewares._thread_locals, "request", None)
+
+        today = date.today()
+        now = datetime.now()
+
+        default_input_class = "oh-input w-100"
+        select_class = "oh-select oh-select-2 select2-hidden-accessible"
+        checkbox_class = "oh-switch__checkbox"
+
         for field_name, field in self.fields.items():
             widget = field.widget
-            if isinstance(widget, forms.DateInput):  # 902
-                field.initial = date.today
+            label = _(field.label) if field.label else ""
+
+            # Date field
+            if isinstance(widget, forms.DateInput):
+                field.initial = today
                 widget.input_type = "date"
                 widget.format = "%Y-%m-%d"
                 field.input_formats = ["%Y-%m-%d"]
 
-            # Time Field
-            if isinstance(widget, forms.TimeInput):
+                existing_class = widget.attrs.get("class", default_input_class)
+                widget.attrs.update(
+                    {
+                        "class": f"{existing_class} form-control",
+                        "placeholder": label,
+                    }
+                )
+
+            # Time field
+            elif isinstance(widget, forms.TimeInput):
+                field.initial = now
                 widget.input_type = "time"
                 widget.format = "%H:%M"
                 field.input_formats = ["%H:%M"]
 
-            if isinstance(
+                existing_class = widget.attrs.get("class", default_input_class)
+                widget.attrs.update(
+                    {
+                        "class": f"{existing_class} form-control",
+                        "placeholder": label,
+                    }
+                )
+
+            # Number, Email, Text, File, URL fields
+            elif isinstance(
                 widget,
                 (
                     forms.NumberInput,
@@ -214,57 +242,55 @@ class ModelForm(forms.ModelForm):
                     forms.URLInput,
                 ),
             ):
-                label = ""
-                if field.label is not None:
-                    label = _(field.label.title())
-                existing_class = field.widget.attrs.get("class", "oh-input w-100")
-                field.widget.attrs.update(
-                    {"class": f"{existing_class}", "placeholder": label}
+                existing_class = widget.attrs.get("class", default_input_class)
+                widget.attrs.update(
+                    {
+                        "class": f"{existing_class} form-control",
+                        "placeholder": _(field.label.title()) if field.label else "",
+                    }
                 )
 
-            elif isinstance(widget, (forms.Select,)):
-                field.empty_label = None
+            # Select fields
+            elif isinstance(widget, forms.Select):
                 if not isinstance(field, forms.ModelMultipleChoiceField):
-                    label = ""
-                    if field.label is not None:
-                        label = _(field.label)
                     field.empty_label = _("---Choose {label}---").format(label=label)
-                field.widget.attrs.update(
-                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
-                )
-            elif isinstance(widget, (forms.Textarea)):
-                field.widget.attrs.update(
+                existing_class = widget.attrs.get("class", select_class)
+                widget.attrs.update({"class": existing_class})
+
+            # Textarea
+            elif isinstance(widget, forms.Textarea):
+                existing_class = widget.attrs.get("class", default_input_class)
+                widget.attrs.update(
                     {
-                        "class": "oh-input w-100",
-                        "placeholder": _(field.label),
+                        "class": f"{existing_class} form-control",
+                        "placeholder": label,
                         "rows": 2,
                         "cols": 40,
                     }
                 )
+
+            # Checkbox types
             elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
+                widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)
             ):
-                field.widget.attrs.update({"class": "oh-switch__checkbox"})
+                existing_class = widget.attrs.get("class", checkbox_class)
+                widget.attrs.update({"class": existing_class})
 
-            try:
-                self.fields["employee_id"].initial = request.user.employee_get
-            except:
-                pass
+        # Set employee_id and company_id once
+        if request:
+            employee = getattr(request.user, "employee_get", None)
+            if employee:
+                if "employee_id" in self.fields:
+                    self.fields["employee_id"].initial = employee
 
-            try:
-                company_field = self.fields["company_id"]
-                company = request.user.employee_get.get_company
-                company_queryset = company_field.queryset
-
-                company_field.initial = (
-                    company if company in company_queryset else company_queryset.first()
-                )
-            except:
-                pass
+                if "company_id" in self.fields:
+                    company_field = self.fields["company_id"]
+                    company = getattr(employee, "get_company", None)
+                    if company:
+                        queryset = company_field.queryset
+                        company_field.initial = (
+                            company if company in queryset else queryset.first()
+                        )
 
     def verbose_name(self):
         """
@@ -930,7 +956,7 @@ class RotatingWorkTypeAssignForm(ModelForm):
             elif based_on == "after":
                 rotating_work_type_assign.next_change_date = (
                     rotating_work_type_assign.start_date
-                    + datetime.timedelta(days=int(self.data.get("rotate_after_day")))
+                    + timedelta(days=int(self.data.get("rotate_after_day")))
                 )
 
             rotating_work_type_assign.save()
@@ -1039,9 +1065,8 @@ class RotatingWorkTypeAssignUpdateForm(ModelForm):
             next_date = get_next_monthly_date(start_date, rotate_every)
             self.instance.next_change_date = next_date
         elif based_on == "after":
-            self.instance.next_change_date = (
-                self.instance.start_date
-                + datetime.timedelta(days=int(self.data.get("rotate_after_day")))
+            self.instance.next_change_date = self.instance.start_date + timedelta(
+                days=int(self.data.get("rotate_after_day"))
             )
         return super().save()
 
@@ -1550,7 +1575,7 @@ class RotatingShiftAssignForm(ModelForm):
             elif based_on == "after":
                 rotating_shift_assign.next_change_date = (
                     rotating_shift_assign.start_date
-                    + datetime.timedelta(days=int(self.data.get("rotate_after_day")))
+                    + timedelta(days=int(self.data.get("rotate_after_day")))
                 )
             rotating_shift_assign.save()
 
@@ -1657,9 +1682,8 @@ class RotatingShiftAssignUpdateForm(ModelForm):
             next_date = get_next_monthly_date(start_date, rotate_every)
             self.instance.next_change_date = next_date
         elif based_on == "after":
-            self.instance.next_change_date = (
-                self.instance.start_date
-                + datetime.timedelta(days=int(self.data.get("rotate_after_day")))
+            self.instance.next_change_date = self.instance.start_date + timedelta(
+                days=int(self.data.get("rotate_after_day"))
             )
         return super().save()
 
