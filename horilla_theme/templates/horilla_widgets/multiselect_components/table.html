@@ -1,0 +1,254 @@
+{% load i18n %}
+
+<style>
+  .oh-sticky-table {
+  border: 1px solid #cdd5df;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 50vh; /* already in your inline style */
+}
+
+.oh-sticky-table__thead {
+  flex: 0 0 auto;
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  border-bottom: 1px solid #cdd5df;
+}
+
+.oh-sticky-table__table {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.oh-sticky-table__tr--custom {
+  padding: 0.5rem;
+  transition: background 0.2s;
+}
+
+.oh-sticky-table__tr--custom:hover {
+  background: #f1f5f9;
+  cursor: pointer;
+}
+</style>
+<div class="oh-sticky-table mb-2" style="height: 50vh">
+  <div
+    class="oh-sticky-table__table oh-table--sortable"
+    id="chooseTableHeaderParent"
+  >
+    <div class="oh-sticky-table__thead p-2" id="chooseTableHeader">
+      <div class="oh-sticky-table__tr">
+        <div class="oh-sticky-table__th oh-sticky-table__th--custom">
+          <div class="d-flex">
+            <div class="" >
+              <input
+                type="checkbox"
+                title="Select all users"
+                class="oh-input oh-input__checkbox mt-2 mr-2"
+                id="choose-all-user"
+              />
+            </div>
+            <span style="margin-left:5%;" class="text-sm mt-1">{% trans "Employee" %}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% for instance in queryset %}
+    <div class="oh-sticky-table__tbody" data-instance-id="{{instance.id}}">
+      <div
+        class="oh-sticky-table__tr oh-sticky-table__tr--custom"
+        data-instance-id="{{instance.id}}"
+        data-label="{{instance}}"
+        data-avatar="{{instance.get_avatar}}"
+        draggable="true"
+      >
+        <div
+          class="oh-sticky-table__sd"
+          id="selectRow{{self.attrs.id}}{{instance.id}}"
+        >
+          <div class="d-flex" style="margin-left:2%;">
+            <div class="">
+              <input
+                type="checkbox"
+                value="{{instance.id}}"
+                class="oh-input oh-input__checkbox mt-2 mr-2 all-choose-user-row"
+              />
+            </div>
+            <div class="oh-profile oh-profile--md" style="margin-left:5%;">
+              <div class="oh-profile__avatar mr-1">
+                <img
+                  src="{{instance.get_avatar}}"
+                  class="oh-profile__image"
+                />
+              </div>
+              <span class="oh-profile__name text-[#666] text-sm">{{instance}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<script>
+  var selectedIds = [];
+  $(document).ready(function () {
+    $("#{{section_id}} #{{self.attrs.id}}").select2({
+      multiple: true,
+    });
+    $("#{{section_id}} #{{self.attrs.id}}")
+      .next()
+      .find(".select2-container")
+      .css("width", "100%");
+
+    $("#{{section_id}} #chooseTableHeader")
+      .not("[type=checkbox]")
+      .click(function (e) {
+        e.preventDefault();
+        if ($(this).find("[type=checkbox]:first").is(":checked")) {
+          $(this).find("[type=checkbox]:first").prop("checked", false);
+        } else {
+          $(this).find("[type=checkbox]:first").prop("checked", true);
+        }
+        $("#{{section_id}} #choose-all-user").change();
+      });
+    $("#{{section_id}} #selectAllUsers").click(function (e) {
+      e.preventDefault();
+      $("#{{section_id}} #choose-all-user").prop("checked", true);
+      $("#{{section_id}} #choose-all-user").change();
+    });
+    $("#{{section_id}} #unselectAllUsers").click(function (e) {
+      e.preventDefault();
+      $("#{{section_id}} #choose-all-user").prop("checked", false);
+      $("#{{section_id}} #choose-all-user").change();
+    });
+    $("#{{section_id}} #choose-all-user").change(function (e) {
+      e.preventDefault();
+      if ($(this).is(":checked")) {
+        $("#{{section_id}} .all-choose-user-row:visible").prop("checked", true);
+        $("#{{section_id}} .oh-sticky-table__tr--custom:visible .oh-sticky-table__sd").addClass(
+          "oh-sticky-table__tr--selected"
+        );
+      } else {
+        $("#{{section_id}} .all-choose-user-row:visible").prop("checked", false);
+        $(
+          "#{{section_id}} .oh-sticky-table__tr--custom:visible .oh-sticky-table__sd"
+        ).removeClass("oh-sticky-table__tr--selected");
+      }
+    });
+    $("#{{section_id}} .oh-sticky-table__tr--custom").click(function (e) {
+      var checkbox = $(this).find("[type=checkbox]");
+
+      // Toggle the checkbox's checked state
+      checkbox.prop("checked", function (i, checked) {
+        if (!checked) {
+          $(this)
+            .parent()
+            .parent()
+            .parent()
+            .addClass("oh-sticky-table__tr--selected");
+        } else {
+          $(this)
+            .parent()
+            .parent()
+            .parent()
+            .removeClass("oh-sticky-table__tr--selected");
+        }
+        return !checked;
+      });
+    });
+    $("#{{section_id}} #filterChoose{{section_id}}").click(function (e) {
+      e.preventDefault();
+      var selectedRows = $("#{{section_id}} #filterChoose{{section_id}} div").find(
+        ".oh-sticky-table__tr--selected"
+      );
+      var ids = [];
+      var instanceData = [];
+      $.each(selectedRows, function (indexInArray, valueOfElement) {
+        var id = $(valueOfElement).parent().attr("data-instance-id");
+        var label = $(valueOfElement).parent().attr("data-label");
+        ids.push(id);
+        instanceData.push({ id: id, label: label });
+      });
+      var selectedCount = selectedRows.length;
+      $("#{{section_id}} .selected-count").html(selectedCount);
+
+      $("#{{section_id}} #{{self.attrs.id}}").val(ids);
+      $("#{{section_id}} #{{self.attrs.id}}").change();
+      $("#{{section_id}} #avatarsContainer").html("");
+      $.each(instanceData, function (indexInArray, valueOfElement) {
+        var imgUrl = $(
+          `#{{section_id}} .oh-sticky-table__tr.oh-sticky-table__tr--custom[data-instance-id=${valueOfElement.id}]`
+        ).attr("data-avatar");
+        $("#{{section_id}} #avatarsContainer").append(
+          $(
+            `<a href="#" class="avatars__item" title="${valueOfElement.label}"><img class="avatar" src="${imgUrl}" alt=""></a>`
+          )
+        );
+      });
+    });
+    $("#{{section_id}} #selectAllInstances").click(function (e) {
+      e.preventDefault();
+      $("#{{section_id}} #choose-all-user").prop("checked", true);
+      $("#{{section_id}} .all-choose-user-row").prop("checked", true);
+      $("#{{section_id}} .oh-sticky-table__tr--custom .oh-sticky-table__sd").addClass(
+        "oh-sticky-table__tr--selected"
+      );
+      $("#{{section_id}} #choose-all-user").change();
+    });
+    $("#{{section_id}} #{{ self.attrs.id }}").change(function (e) {
+      e.preventDefault();
+
+      // Get all selected options
+      $("#{{section_id}} #avatarsContainer").html("");
+      $("#{{section_id}} .oh-sticky-table__tr--selected")
+        .find("[type=checkbox]")
+        .prop("checked", false);
+      $("#{{section_id}} .oh-sticky-table__tr--selected").removeClass(
+        "oh-sticky-table__tr--selected"
+      );
+      var selectedOptions = $(this).find(`:selected`);
+      $("#{{section_id}} .selected-count").html(selectedOptions.length);
+
+      // Loop through the selected options
+      selectedOptions.each(function (indexInArray, valueOfElement) {
+        // Get the HTML content of each selected option
+        var optionHtml = $(this).html();
+        // Append the selected option's HTML to the avatarsContainer
+        var imgUrl = $(
+          `#{{section_id}} .oh-sticky-table__tr.oh-sticky-table__tr--custom[data-instance-id=${$(
+            valueOfElement
+          ).val()}]`
+        ).attr("data-avatar");
+        $("#{{section_id}} #avatarsContainer").append(
+          $(
+            `<a href="#" class="avatars__item" title="${optionHtml}"><img class="avatar" src="${imgUrl}" alt=""></a>`
+          )
+        );
+        var optValue = $(valueOfElement).val();
+        var rowId = "#{{section_id}} #selectRow{{self.attrs.id}}" + optValue;
+        $(rowId).addClass("oh-sticky-table__tr--selected");
+        $(rowId).find("[type=checkbox]").prop("checked", true);
+      });
+    });
+    {% if initial %}
+      $('#{{section_id}} #selectContainer{{self.attrs.id}}').find("[name={{field_name}}]").val({{initial|safe}}).change()
+    {% endif %}
+  });
+  $("#{{section_id}} #choose-all-user").click(function (e) {
+    setTimeout(() => {
+      $("#{{section_id}}  #choose-all-user").closest(".oh-sticky-table__th--custom")[0].click()
+    }, 2);
+  });
+  $("#{{section_id}} .all-choose-user-row").click(function (e) {
+    e.preventDefault();
+    setTimeout(() => {
+      $(this).closest(".oh-sticky-table__tr--custom")[0].click()
+    }, 1);
+
+  });
+</script>

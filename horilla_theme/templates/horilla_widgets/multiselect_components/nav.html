@@ -1,0 +1,152 @@
+{% load static i18n %}
+<div class="flex flex-wrap justify-between items-center mb-3 mt-5" id="widgetFilterFormContainer{{self.attrs.id}}">
+  <!-- Left Side -->
+  <h3 class="text-lg font-semibold">{{field.label}}</h3>
+
+  <!-- Right Side -->
+  <div class="flex flex-wrap gap-2 items-center">
+
+    <!-- Search -->
+    <div class="relative">
+      <input type="text"
+        class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600"
+        name="search"
+        aria-label="Search Input"
+        placeholder="{% trans 'Search' %}"
+        autocomplete="off" />
+
+      <i class="fas fa-search absolute left-3 top-[10px] bottom-0 m-auto opacity-50 text-xs"></i>
+    </div>
+
+    <!-- Filter Dropdown -->
+
+    <div class="oh-dropdown" x-data="{open: false}">
+        <button 
+          hx-get="{% url 'get-filter-form' %}?template_path={{filter_template_path}}"
+          hx-target="#widgetFilterContainer"
+          hx-swap="innerHTML"
+          hx-trigger="load"
+          id="hxButton"
+          hidden
+        >
+          <button
+          onclick="$(this).closest('.oh-main__titlebar-button-container').find('#hxButton').click();"
+          class="px-4 py-2 bg-white rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer"
+          @click="open = !open">
+            <img src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}" alt="{% trans 'Filter' %}" width="15"
+                class="mt-[-1px]"> {% trans "Filter" %}
+            <div id="filterCount"></div>
+          </button>
+        </button>
+        <div
+          class="oh-dropdown__menu oh-dropdown__menu--left oh-dropdown__filter p-4"
+          x-show="open"
+          @click.outside="open = false"
+          style="width: 395px;"
+        >
+          <div id="widgetFilterContainer">
+          </div>
+          <div class="oh-dropdown__filter-footer">
+            <button
+              type="submit"
+              class="oh-btn oh-btn--secondary oh-btn--small w-100"
+              data-action="{% url filter_route_name %}"
+              id="widgetFilterButton{{self.attrs.id}}"
+            >
+              {% trans "Filter" %}
+            </button>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    function transformJson(inputJson) {
+      // Clone the input JSON to avoid modifying the original object
+      const modifiedJson = JSON.parse(JSON.stringify(inputJson));
+
+      // Iterate through each object in the JSON array
+      modifiedJson.forEach((obj) => {
+        // Remove "_id" when it appears at the end of a name
+
+        // If there are "__" in the name, keep only the word after the last "__" and capitalize it
+        obj.name = obj.name.replace(/_id$/, "");
+        obj.name.replace("_", " ");
+        if (obj.name.includes("__")) {
+          const parts = obj.name.split("__");
+          obj.name = parts[parts.length - 1];
+        }
+        obj.name = obj.name.charAt(0).toUpperCase() + obj.name.slice(1);
+        obj.name = obj.name.replace(/_/g, " ");
+      });
+
+      return modifiedJson;
+    }
+
+    $("#{{section_id}} #widgetFilterButton{{self.attrs.id}}").click(function (e) {
+      e.preventDefault();
+      const formFields = $("#{{section_id}} #widgetFilterFormContainer{{self.attrs.id}}").find(
+        "[name]"
+      );
+      var formData = [];
+      formFields.each(function () {
+        const name = $(this).attr("name");
+        const value = $(this).val();
+        formData.push({ name, value });
+      });
+      var filterUrl = $(this).attr("data-action");
+      $.ajax({
+        type: "get",
+        url: filterUrl,
+        data: formData,
+        success: function (response) {
+          let ids = response.ids;
+          $("#{{section_id}} #chooseTableHeaderParent .oh-sticky-table__tbody").hide();
+          $.each(ids, function (indexInArray, valueOfElement) {
+            $(
+              `#{{section_id}} #chooseTableHeaderParent .oh-sticky-table__tbody[data-instance-id=${valueOfElement}]`
+            ).show();
+          });
+          $("#{{section_id}} .visible-count").html(
+            $("#{{section_id}} .oh-sticky-table__tr--custom:visible .oh-sticky-table__sd")
+              .length
+          );
+          var labeledTags = transformJson(formData);
+          var tagContainer = $("#{{section_id}} #filterTagContainer{{self.attrs.id}}");
+          tagContainer.html("");
+          $.each(labeledTags, function (indexInArray, valueOfElement) {
+            if (valueOfElement.value.length != 0) {
+              tagContainer.append(
+                $(`
+                <span class="oh-filter-tag" id="tag-{{self.attrs.id}}"
+                  >${valueOfElement.name}<button class="oh-filter-tag__close" onclick="closeFilterTag(event, ${formData[indexInArray].name}, '#{{section_id}} #tag-{{self.attrs.id}}')">
+                    <ion-icon name="close-outline"></ion-icon></button
+                  >
+                </span>`)
+              );
+            }
+          });
+        },
+      });
+    });
+    $("#{{section_id}} #widgetFilterFormContainer{{self.attrs.id}} [name=search]").keyup(
+      function (e) {
+        $("#{{section_id}} #widgetFilterButton{{self.attrs.id}}").click();
+      }
+    );
+  });
+  function closeFilterTag(e, fieldName, targetTag) {
+    e.preventDefault();
+    $(fieldName).val("");
+    if ($(fieldName).is("select")) {
+      $(fieldName)
+        .next()
+        .find(`#select2-${$(fieldName).attr("id")}-container`)
+        .html("---------");
+    }
+    $("#{{section_id}} #widgetFilterButton{{self.attrs.id}}").click();
+    $(targetTag).remove();
+  }
+</script>

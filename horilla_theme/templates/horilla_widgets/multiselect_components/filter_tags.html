@@ -1,0 +1,36 @@
+{% load i18n %}
+<style>
+  .oh-checkpoint-badge--success {
+    color: yellowgreen;
+  }
+  .oh-checkpoint-badge {
+    cursor: pointer;
+  }
+  .m-zero {
+    margin: 0 !important;
+  }
+</style>
+<div class="oh-filter-tag-container mb-2 p-0" id="filterTagContainer{{self.attrs.id}}">
+
+</div>
+<div class="ration-container mb-2 d-flex justify-content-between align-items-center gap-2 flex-wrap">
+  <div
+    class="px-4 py-2 bg-[#73aae3] text-white rounded-md text-xs transition duration-300"
+    data-toggle="oh-modal-toggle"
+    data-target="#viewSelectedModal"
+  >
+    {% trans "Selected" %} <span class="selected-count">0</span>/<span class="total-count">{{queryset|length}}</span>
+  </div>
+
+  <div class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" style="cursor: pointer;margin-left: 7%;" id="selectAllUsers">
+    {% trans "Select All" %} <span class="total-count visible-count">{{queryset|length}}</span> {% trans "user" %}
+  </div>
+
+  <div class="px-4 py-2 bg-[#720c80] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" style="cursor: pointer;" id="unselectAllUsers">
+    {% trans "Unselect All" %}
+  </div>
+
+    <div class="px-4 py-2 bg-[#a4933b] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" style="cursor: pointer;" id="selectAllInstances">
+      {% trans "Select All" %} {{queryset|length}} {% trans "Item" %}
+    </div>
+</div>

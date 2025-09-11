@@ -1,107 +1,172 @@
-{% load i18n %}
-{% load static %}
-{% include "generic/components.html" %}
-{% comment %} {% include "generic/components.html" %} {% endcomment %}
+{% load i18n static %}
+
+{% now "Y-m-d" as today %}
+
 <div id="interview">
-{% if candidate.candidate_interview.exists %}
-<div class="flex items-center justify-between mt-4">
-  <span class="font-semibold text-sm">
-    {{ candidate }}'s {% trans "Scheduled Interviews" %}
-  </span>
+	{% if candidate.candidate_interview.exists %}
+	<div class="flex items-center justify-between mt-4">
+		<span class="font-semibold text-sm">
+			{{ candidate }}'s {% trans "Scheduled Interviews" %}
+		</span>
 
-  <button type="button"
-          hx-get="{% url 'interview-schedule' candidate.id %}"
-          title="{% trans 'Schedule Interview' %}"
-          hx-target="#genericModalBody"
-          hx-swap="innerHTML"
-          data-target="#genericModal"
-          class="oh-btn oh-btn--secondary flex items-center gap-1 text-sm"
-          data-toggle="oh-modal-toggle">
-      <ion-icon name="add" class="text-base" role="img" aria-label="add"></ion-icon>
-      {% trans "Add" %}
-  </button>
-</div>
+		<button
+			type="button"
+			hx-get="{% url 'interview-schedule' candidate.id %}"
+			title="{% trans 'Schedule Interview' %}"
+			hx-target="#genericModalBody"
+			hx-swap="innerHTML"
+			data-target="#genericModal"
+			class="oh-btn oh-btn--secondary flex items-center gap-1 text-sm"
+			data-toggle="oh-modal-toggle"
+		>
+			<ion-icon
+				name="add"
+				class="text-base"
+				role="img"
+				aria-label="add"
+			></ion-icon>
+			{% trans "Add" %}
+		</button>
+	</div>
 
-  <ol class="oh-activity-sidebar__qa-list" role="list">
-    {% for interview_schedule in candidate.candidate_interview.all %}
-      <li class="oh-activity-sidebar__qa-item">
-        <span class="oh-activity-sidebar__q" style="font-size:16px;">
-          <span class="float-end" title="{% trans "Delete" %}" hx-get="{% url 'delete-interview' interview_schedule.id %}?view=false"
-                data-target="#activitySidebar"
-                hx-swap="innerHTML" hx-target="#interview">
-            <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated"
-                aria-label="close outline"></ion-icon>
-          </span>
-          <span class="float-end" title="{% trans "Edit" %}" hx-get="{% url 'edit-interview' interview_schedule.id %}?view=false"
-                data-target="#genericModal" hx-swap="innerHTML" hx-target="#genericModalBody"
-                data-toggle="oh-modal-toggle">
-            <ion-icon name="create-outline" style="font-size: 19px" role="img" class="md hydrated"
-                aria-label="create outline"></ion-icon>
-          </span>
-          {{forloop.counter}}.<span class="ms-1 mb-2"> {% trans "Date" %} :</span> <span class="ms-2 dateformat_changer">{{ interview_schedule.interview_date }}</span>
-          <span class="d-flex ms-3 mb-2 mt-2">{% trans "Time" %} : <span class=" ms-2 timeformat_changer">{{ interview_schedule.interview_time }}</span></span>
-          <span class="ms-3">{% trans "Interviewer" %} :</span>
-            {% for interviewer in  interview_schedule.employee_id.all %}
-              &nbsp<i id="fabIcon" style="font-size:12px;" class="material-icons">radio_button_checked</i> {{ interviewer }}
-            {% endfor %}
-            <br>
-            {% if interview_schedule.description %}
-              <span class="d-flex ms-3 mb-2 mt-2">{% trans "Description" %} : <span class=" ms-2">{{ interview_schedule.description }}</span>
-            {% endif %}
-        </span>
-        {% if interview_schedule.completed %}
-            <div class="d-flex" style="color:green;">
-                <i id="fabIcon" style="font-size:18px;" class="material-icons ms-3 mt-2">check_circle</i>
-                <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Completed" %}</span>
-            </div>
-        {% elif interview_schedule.interview_date|date:"Y-m-d" < now|date:"Y-m-d" %}
-            <div class="d-flex" style="color:red;">
-                <i id="fabIcon" style="font-size:18px" class="material-icons ms-3 mt-2">dangerous</i>
-                <span class="oh-activity-sidebar__q mt-2">{% trans "Expired Interview" %}</span>
-            </div>
-        {% elif interview_schedule.interview_date|date:"Y-m-d" > now|date:"Y-m-d" %}
-            <div class="d-flex" style="color:orange;">
-                <i id="fabIcon" title="{{interview_schedule.interview_date|timeuntil}}" style="font-size:18px;" class="material-icons ms-3 mt-2">schedule</i>
-                <span class="oh-activity-sidebar__q mt-2">{% trans "Upcoming Interview" %}</span>
-            </div>
-        {% elif interview_schedule.interview_date|date:"Y-m-d" == now|date:"Y-m-d" and not interview_schedule.completed %}
-            <div class="d-flex" style="color:blue;">
-                <i id="fabIcon" style="font-size:18px;" class="material-symbols-outlined ms-3 mt-2">today</i>
-                <span class="oh-activity-sidebar__q mt-2">{% trans "Interview Today" %}</span>
-            </div>
-        {% endif %}
+	<ol class="mt-4" role="list">
+		{% for interview_schedule in candidate.candidate_interview.all %}
 
-      </li>
+		<li class="mx-auto mb-3 list-none bg-white rounded-2xl overflow-hidden shadow-md border border-slate-200 hover:bg-slate-50 transition-all duration-200" >
+			<div class="grid grid-cols-1 md:grid-cols-[auto_1fr_auto_auto] gap-6 items-center p-5 ">
+				<div class="bg-slate-100 text-slate-600 w-10 h-10 rounded-full flex items-center justify-center font-semibold">
+					{{forloop.counter}}
+				</div>
 
-    {% endfor %}
-  </ol>
-{% else %}
-  <div class="flex items-center justify-between mt-4">
-    <span class="font-semibold text-sm">
-      {{ candidate }}'s {% trans "Scheduled Interviews" %}
-    </span>
+				<div class="flex flex-1 flex-wrap gap-4">
 
-    <button type="button"
-            hx-get="{% url 'interview-schedule' candidate.id %}"
-            title="{% trans 'Schedule Interview' %}"
-            hx-target="#genericModalBody"
-            hx-swap="innerHTML"
-            data-target="#genericModal"
-            class="oh-btn oh-btn--secondary flex items-center gap-1 text-sm"
-            data-toggle="oh-modal-toggle">
-        <ion-icon name="add" class="text-base" role="img" aria-label="add"></ion-icon>
-        {% trans "Add" %}
-    </button>
-  </div>
+					<div class="flex flex-col gap-1 basis-28 shrink-0">
+						<label class="text-[0.7rem] text-slate-500 font-semibold uppercase tracking-wider">{% trans "Date" %}</label>
+						<span class="text-[0.9rem] text-slate-800 font-medium dateformat_changer">{{ interview_schedule.interview_date }}</span>
+					</div>
 
+					<div class="flex flex-col gap-1 basis-24 shrink-0">
+						<label class="text-[0.7rem] text-slate-500 font-semibold uppercase tracking-wider">{% trans "Time" %}</label>
+						<span class="text-[0.9rem] text-slate-800 font-medium timeformat_changer">{{ interview_schedule.interview_time }}</span>
+					</div>
 
-  <div class="oh-wrapper h-full" align="center">
-    <div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
-        <div class="flex flex-col items-center justify-center h-full">
-            <img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
-            <p class="text-[#666] mb-5">{% trans "No interviews are scheduled for this candidate." %}</p>
-        </div>
-    </div>
-</div>
-{% endif %}
+					<div class="flex flex-col gap-1 grow">
+						<label class="text-[0.7rem] text-slate-500 font-semibold uppercase tracking-wider">{% trans "Interviewers" %}</label>
+						<div class="flex flex-wrap gap-1">
+							{% for interviewer in interview_schedule.employee_id.all %}
+								<span class="bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded-xl text-sm font-medium">{{interviewer.get_full_name}}</span>
+							{% endfor %}
+						</div>
+					</div>
+
+				</div>
+
+				{% if interview_schedule.completed %}
+					<div class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-green-50 text-green-600 border border-green-200">
+						{% trans "Interview Completed" %}
+					</div>
+
+				{% elif interview_schedule.interview_date|date:"Y-m-d" == today %}
+					<div class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-blue-50 text-blue-600 border border-blue-200">
+						{% trans "Interview Today" %}
+					</div>
+
+				{% elif interview_schedule.interview_date|date:"Y-m-d" < today %}
+					<div class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-red-50 text-red-600 border border-red-200">
+						{% trans "Expired Interview" %}
+					</div>
+
+				{% elif interview_schedule.interview_date|date:"Y-m-d" > today %}
+					<div class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap bg-orange-50 text-orange-600 border border-orange-200">
+						{% trans "Upcoming Interview" %}
+					</div>
+
+				{% endif %}
+
+				<div class="flex gap-1">
+					<button class="w-8 h-8 rounded-md flex items-center justify-center transition-all bg-blue-50 text-blue-600 hover:bg-blue-100"
+						title="{% trans 'Edit' %}"
+						hx-get="{% url 'edit-interview' interview_schedule.id %}?view=false"
+						data-target="#genericModal"
+						hx-swap="innerHTML"
+						hx-target="#genericModalBody"
+						data-toggle="oh-modal-toggle"
+					>
+						<ion-icon
+							name="create-outline"
+							role="img"
+							class="md"
+							aria-label="create outline"
+						></ion-icon>
+					</button>
+
+					<button class="w-8 h-8 rounded-md flex items-center justify-center transition-all bg-red-50 text-red-600 hover:bg-red-100"
+						title="{% trans 'Delete' %}"
+						hx-get="{% url 'delete-interview' interview_schedule.id %}?view=false"
+						data-target="#activitySidebar"
+						hx-swap="innerHTML"
+						hx-target="#interview"
+
+					>
+						<ion-icon
+							name="close-outline"
+							role="img"
+							class="md"
+							aria-label="close outline"
+						></ion-icon>
+					</button>
+				</div>
+			</div>
+
+			<div class="bg-slate-100 text-sm text-slate-900 pl-[85px] pb-5 pt-2">
+				<label class="text-basesm font-medium text-slate-500 uppercase tracking-wider">{% trans "Description" %}</label> <br/>
+				{{interview_schedule.description}}
+			</div>
+		</li>
+		{% endfor %}
+	</ol>
+	{% else %}
+	<div class="flex items-center justify-between mt-4">
+		<span class="font-semibold text-sm">
+			{{ candidate }}'s {% trans "Scheduled Interviews" %}
+		</span>
+
+		<button
+			type="button"
+			hx-get="{% url 'interview-schedule' candidate.id %}"
+			title="{% trans 'Schedule Interview' %}"
+			hx-target="#genericModalBody"
+			hx-swap="innerHTML"
+			data-target="#genericModal"
+			class="oh-btn oh-btn--secondary flex items-center gap-1 text-sm"
+			data-toggle="oh-modal-toggle"
+		>
+			<ion-icon
+				name="add"
+				class="text-base"
+				role="img"
+				aria-label="add"
+			></ion-icon>
+			{% trans "Add" %}
+		</button>
+	</div>
+
+	<div class="oh-wrapper h-full" align="center">
+		<div
+			class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]"
+		>
+			<div class="flex flex-col items-center justify-center h-full">
+				<img
+					src="/static/horilla_theme/assets/img/no-records.svg"
+					alt=""
+					width="300"
+					class="mb-4"
+				/>
+				<p class="text-[#666] mb-5">
+					{% trans "No interviews are scheduled for this candidate." %}
+				</p>
+			</div>
+		</div>
+	</div>
+	{% endif %}
 </div>
