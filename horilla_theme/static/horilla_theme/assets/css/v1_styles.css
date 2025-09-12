@@ -352,6 +352,46 @@ input[type="file"] {
   width: 50px;
 }
 
+.row-status--purple {
+    border-left: 4px solid rgba(128, 128, 128, 0.482) !important;
+    border-radius: 5px;
+}
+
+.row-status--cyan {
+    border-left: 4px solid cyan !important;
+    border-radius: 5px;
+}
+
+.row-status--yellow {
+    border-left: 4px solid yellowgreen !important;
+    border-radius: 5px;
+}
+
+.row-status--red {
+    border-left: 4px solid red !important;
+    border-radius: 5px;
+}
+
+.row-status--black {
+    border-left: 4px solid black !important;
+    border-radius: 5px;
+}
+
+.row-status--gray {
+    border-left: 4px solid gray !important;
+    border-radius: 5px;
+}
+
+.row-status--orange {
+    border-left: 4px solid orange !important;
+    border-radius: 5px;
+}
+
+.row-status--blue {
+    border-left: 4px solid rgb(103, 171, 238) !important;
+    border-radius: 5px;
+}
+
 .row {
     --bs-gutter-x: 1.5rem;
     --bs-gutter-y: 0;

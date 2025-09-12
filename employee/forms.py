@@ -23,7 +23,7 @@ class YourForm(forms.Form):
 
 import logging
 import re
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from django import forms
@@ -57,66 +57,119 @@ logger = logging.getLogger(__name__)
 
 class ModelForm(forms.ModelForm):
     """
-    Overriding django default model form to apply some styles
+    Override of Django ModelForm to add initial styling and defaults.
     """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        request = getattr(horilla_middlewares._thread_locals, "request", None)
-        reload_queryset(self.fields)
-        for _, field in self.fields.items():
-            widget = field.widget
-            if isinstance(widget, (forms.DateInput)):
-                field.initial = date.today()
 
-            if isinstance(
-                widget,
-                (forms.NumberInput, forms.EmailInput, forms.TextInput, forms.FileInput),
-            ):
-                label = trans(field.label.title())
-                field.widget.attrs.update(
-                    {"class": "oh-input w-100", "placeholder": label}
-                )
-            elif isinstance(widget, (forms.Select,)):
-                label = ""
-                if field.label is not None:
-                    label = trans(field.label)
-                field.empty_label = trans("---Choose {label}---").format(label=label)
-                field.widget.attrs.update(
-                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
-                )
-            elif isinstance(widget, (forms.Textarea)):
-                if field.label is not None:
-                    label = trans(field.label)
-                field.widget.attrs.update(
+        reload_queryset(self.fields)
+
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+
+        today = date.today()
+        now = datetime.now()
+
+        default_input_class = "oh-input w-100"
+        select_class = "oh-select oh-select-2 select2-hidden-accessible"
+        checkbox_class = "oh-switch__checkbox"
+
+        for field_name, field in self.fields.items():
+            widget = field.widget
+            label = _(field.label) if field.label else ""
+
+            # Date field
+            if isinstance(widget, forms.DateInput):
+                field.initial = today
+                widget.input_type = "date"
+                widget.format = "%Y-%m-%d"
+                field.input_formats = ["%Y-%m-%d"]
+
+                existing_class = widget.attrs.get("class", default_input_class)
+                widget.attrs.update(
                     {
-                        "class": "oh-input w-100",
+                        "class": f"{existing_class} form-control",
+                        "placeholder": label,
+                    }
+                )
+
+            # Time field
+            elif isinstance(widget, forms.TimeInput):
+                field.initial = now
+                widget.input_type = "time"
+                widget.format = "%H:%M"
+                field.input_formats = ["%H:%M"]
+
+                existing_class = widget.attrs.get("class", default_input_class)
+                widget.attrs.update(
+                    {
+                        "class": f"{existing_class} form-control",
+                        "placeholder": label,
+                    }
+                )
+
+            # Number, Email, Text, File, URL fields
+            elif isinstance(
+                widget,
+                (
+                    forms.NumberInput,
+                    forms.EmailInput,
+                    forms.TextInput,
+                    forms.FileInput,
+                    forms.URLInput,
+                ),
+            ):
+                existing_class = widget.attrs.get("class", default_input_class)
+                widget.attrs.update(
+                    {
+                        "class": f"{existing_class} form-control",
+                        "placeholder": _(field.label.title()) if field.label else "",
+                    }
+                )
+
+            # Select fields
+            elif isinstance(widget, forms.Select):
+                if not isinstance(field, forms.ModelMultipleChoiceField):
+                    field.empty_label = _("---Choose {label}---").format(label=label)
+                existing_class = widget.attrs.get("class", select_class)
+                widget.attrs.update({"class": existing_class})
+
+            # Textarea
+            elif isinstance(widget, forms.Textarea):
+                existing_class = widget.attrs.get("class", default_input_class)
+                widget.attrs.update(
+                    {
+                        "class": f"{existing_class} form-control",
                         "placeholder": label,
                         "rows": 2,
                         "cols": 40,
                     }
                 )
+
+            # Checkbox types
             elif isinstance(
-                widget,
-                (
-                    forms.CheckboxInput,
-                    forms.CheckboxSelectMultiple,
-                ),
+                widget, (forms.CheckboxInput, forms.CheckboxSelectMultiple)
             ):
-                field.widget.attrs.update({"class": "oh-switch__checkbox"})
+                existing_class = widget.attrs.get("class", checkbox_class)
+                widget.attrs.update({"class": existing_class})
 
-            try:
-                if self._meta.model.__name__ not in ["DisciplinaryAction"]:
-                    self.fields["employee_id"].initial = request.user.employee_get
-            except:
-                pass
+        # Set employee_id and company_id once
+        if request:
+            employee = getattr(request.user, "employee_get", None)
+            if employee:
+                if "employee_id" in self.fields and self._meta.model.__name__ not in [
+                    "DisciplinaryAction"
+                ]:
+                    self.fields["employee_id"].initial = employee
 
-            try:
-                self.fields["company_id"].initial = (
-                    request.user.employee_get.get_company
-                )
-            except:
-                pass
+                if "company_id" in self.fields:
+                    company_field = self.fields["company_id"]
+                    company = getattr(employee, "get_company", None)
+                    if company:
+                        queryset = company_field.queryset
+                        company_field.initial = (
+                            company if company in queryset else queryset.first()
+                        )
 
 
 class UserForm(ModelForm):
