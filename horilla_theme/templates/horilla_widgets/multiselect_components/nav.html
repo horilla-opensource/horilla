@@ -21,7 +21,7 @@
     <!-- Filter Dropdown -->
 
     <div class="oh-dropdown" x-data="{open: false}">
-        <button 
+        <button
           hx-get="{% url 'get-filter-form' %}?template_path={{filter_template_path}}"
           hx-target="#widgetFilterContainer"
           hx-swap="innerHTML"
