@@ -35,7 +35,7 @@
                     </div>
 
                     <div>
-                        <div class="relative inline-block dropdown-wrapper">
+                        <div class="relative inline-block dropdown-wrapper" onclick="event.stopPropagation();$(this).find('.dropdown-menu').toggleClass('hidden')">
                             <a class="cursor-pointer dropdown-toggle">
                                 <i class="fa-solid fa-ellipsis-vertical text-black"></i>
                             </a>
@@ -53,8 +53,8 @@
                                     <li>
                                         <a  onclick="deleteDocument();"
                                         class="w-full text-dark-600 flex justify-start text-left px-3 py-1 hover:text-red-600 transition duration-300 cursor-pointer"
-                                        title="Delete">
-                                        Delete
+                                        >
+                                        {% trans "Delete" %}
                                     </a>
 
 
