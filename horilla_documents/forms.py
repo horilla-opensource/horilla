@@ -89,7 +89,7 @@ class DocumentForm(ModelForm):
 class DocumentUpdateForm(ModelForm):
     """form to Update a Document"""
 
-    cols = {"document": 12, "expiry_date": 12, "notify_before": 12}
+    cols = {"document": 12}
 
     verbose_name = "Document"
 
