@@ -6831,13 +6831,13 @@ def dashboard_components_toggle(request):
     """
     This function is used to create personalized dashboard charts for employees
     """
-    employee_charts = DashboardEmployeeCharts.objects.get_or_create(
+    employee_charts, created = DashboardEmployeeCharts.objects.get_or_create(
         employee=request.user.employee_get
-    )[0]
+    )
     charts = employee_charts.charts or []
     chart_id = request.GET.get("chart_id")
-    if chart_id and chart_id not in charts:
-        charts.append(chart_id)
+    if chart_id and chart_id in charts:
+        charts.remove(chart_id)
         employee_charts.charts = charts
         employee_charts.save()
     return HttpResponse("")
