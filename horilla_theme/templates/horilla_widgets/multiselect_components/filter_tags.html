@@ -1,4 +1,4 @@
-{% load i18n %}
+{% comment %} {% load i18n %}
 <style>
   .oh-checkpoint-badge--success {
     color: yellowgreen;
@@ -33,4 +33,4 @@
     <div class="px-4 py-2 bg-[#a4933b] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" style="cursor: pointer;" id="selectAllInstances">
       {% trans "Select All" %} {{queryset|length}} {% trans "Item" %}
     </div>
-</div>
+</div> {% endcomment %}
