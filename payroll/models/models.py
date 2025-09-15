@@ -1697,11 +1697,11 @@ class Reimbursement(HorillaModel):
         )
         contract = Contract.objects.filter(employee_id=self.employee_id).order_by('-contract_start_date').first()
         daily_wage = contract.wage / 30 if contract and contract.wage else 0
-        if self.attendance_id:
-            if self.attendance_id.is_poya_holiday:
-                self.amount = daily_wage * 1.5
-            elif self.attendance_id.is_mercantile_holday:
-                self.amount = daily_wage * 2
+        # if self.attendance_id:
+        #     if self.attendance_id.is_poya_holiday:
+        #         self.amount = daily_wage * 1.5
+        #     elif self.attendance_id.is_mercantile_holday:
+        #         self.amount = daily_wage * 2
 
         # Setting the created use if the used dont have the permission
         has_perm = request.user.has_perm("payroll.change_reimbursement")
