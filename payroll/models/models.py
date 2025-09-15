@@ -1604,6 +1604,11 @@ class Reimbursement(HorillaModel):
         ("bonus_encashment", _("Bonus Point Encashment")),
     ]
 
+    holiday_types = [
+        ("poya_holiday" , _("Poya Holiday")),
+        ("mercantile_holiday" , _("Mercantile Holiday"))
+    ]
+
     if apps.is_installed("leave"):
         reimbursement_types.append(("leave_encashment", _("Leave Encashment")))
 
@@ -1620,10 +1625,21 @@ class Reimbursement(HorillaModel):
         Employee, on_delete=models.PROTECT, verbose_name="Employee"
     )
     allowance_on = models.DateField()
-    attachment = models.FileField(upload_to="payroll/reimbursements", null=True)
+    attachment = models.FileField(upload_to="payroll/reimbursements", null=True , blank=True)
     other_attachments = models.ManyToManyField(
         ReimbursementMultipleAttachment, blank=True, editable=False
     )
+
+    holiday_type = models.CharField(choices=holiday_types , null=True , blank=True)
+
+    if apps.is_installed("attendance"):
+        attendance_id = models.ForeignKey(
+            "attendance.Attendance",
+            on_delete=models.PROTECT,
+            null=True,
+            blank=True,
+            verbose_name=_("Attendance"),
+        )
     if apps.is_installed("leave"):
         leave_type_id = models.ForeignKey(
             "leave.LeaveType",
@@ -1658,7 +1674,7 @@ class Reimbursement(HorillaModel):
         related_name="approved_by",
         editable=False,
     )
-    description = models.TextField(null=True, max_length=255)
+    description = models.TextField(null=True, max_length=255 , blank=True)
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )
@@ -1679,6 +1695,13 @@ class Reimbursement(HorillaModel):
             if EncashmentGeneralSettings.objects.first()
             else 1
         )
+        contract = Contract.objects.filter(employee_id=self.employee_id).order_by('-contract_start_date').first()
+        daily_wage = contract.wage / 30 if contract and contract.wage else 0
+        if self.attendance_id:
+            if self.attendance_id.is_poya_holiday:
+                self.amount = daily_wage * 1.5
+            elif self.attendance_id.is_mercantile_holday:
+                self.amount = daily_wage * 2
 
         # Setting the created use if the used dont have the permission
         has_perm = request.user.has_perm("payroll.change_reimbursement")
@@ -1897,7 +1920,7 @@ class PayslipAutoGenerate(models.Model):
     generate_day = models.CharField(
         max_length=30,
         choices=DAYS,
-        default=("1"),
+        default=("25"),
         verbose_name="Payslip Generate Day",
         help_text="On this day of every month,Payslip will auto generate",
     )
