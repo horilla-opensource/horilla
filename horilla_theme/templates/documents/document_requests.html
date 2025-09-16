@@ -1,9 +1,42 @@
 {% extends "index.html" %} {% block content %} {% load static %} {% load i18n %}
 {% load basefilters %} {% load horillafilters %}
+<style>
+	.oh-not-found {
+		display: flex; justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		opacity: 0.5;
+	}
+</style>
 
 <div hx-get="{% url 'document-request-nav-cbv' %}" hx-trigger="load"></div>
 
 <div id="view-container" class="oh-wrapper">
 	{% comment %} {% include 'documents/requests.html' %} {% endcomment %}
+</div>
+
+<div
+	class="oh-modal"
+	id="viewFileModal"
+	role="dialog"
+	aria-labelledby="viewFileModal"
+	aria-hidden="true"
+>
+	<div class="oh-modal__dialog custom-dialog">
+		<div class="oh-modal__dialog-header">
+			<span class="oh-modal__dialog-title" id="viewFileModalLabel"
+				>{% trans "View File" %}</span
+			>
+			<button class="oh-modal__close" aria-label="Close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')">
+				<ion-icon
+					name="close-outline"
+					role="img"
+					class="md hydrated"
+					aria-label="close outline"
+				></ion-icon>
+			</button>
+		</div>
+		<div class="oh-modal__dialog-body" id="viewFile"></div>
+	</div>
 </div>
 {% endblock %}

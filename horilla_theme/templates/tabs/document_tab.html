@@ -151,6 +151,12 @@
 							<button
 								class="oh-btn flex-1 text-base bg-amber-100 text-amber-600 hover:bg-amber-200 hover:scale-105 transition"
 								title="{% trans 'Upload Document' %}"
+								hx-get="{% url 'file-upload' document.id %}"
+								hx-target="#genericModalBody"
+								data-document-id="{{ document.id }}"
+								data-toggle="oh-modal-toggle"
+								data-target="#genericModal"
+								onclick="event.stopPropagation()"
 							>
 								<ion-icon
 									class="me-1"
