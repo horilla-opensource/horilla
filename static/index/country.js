@@ -730,10 +730,13 @@ function populateCountries(countryElementId, stateElementId) {
         }
         countryEl.options[countryEl.length] = option;
     }
-
+    // # 913
+    countryEl.onchange = function () {
+        let selectedValue = this.value;
+        this.setAttribute("data-selected", selectedValue);
+    };
     if (stateEl) {
         populateStates(countryElementId, stateElementId);
-
         countryEl.onchange = function () {
             populateStates(countryElementId, stateElementId);
         };

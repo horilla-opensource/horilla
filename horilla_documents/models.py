@@ -48,9 +48,7 @@ class DocumentRequest(HorillaModel):
     max_size = models.IntegerField(
         blank=True, null=True, verbose_name=_("Max size (In MB)")
     )
-    description = models.TextField(
-        blank=True, null=True, max_length=255, verbose_name=_("Description")
-    )
+    description = models.TextField(blank=True, null=True, verbose_name=_("Description"))
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
