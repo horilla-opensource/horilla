@@ -430,11 +430,11 @@ urlpatterns = [
         views.document_request_view,
         name="document-request-view",
     ),
-    path(
-        "document-request-filter-view",
-        views.document_filter_view,
-        name="document-request-filter-view",
-    ),
+    # path(
+    #     "document-request-filter-view",
+    #     views.document_filter_view,
+    #     name="document-request-filter-view",
+    # ),
     path(
         "document-request-create",
         document_request.DocumentRequestCreateForm.as_view(),
@@ -449,6 +449,16 @@ urlpatterns = [
         "document-request-nav-cbv/",
         document_request.DocumentRequestNav.as_view(),
         name="document-request-nav-cbv",
+    ),
+    path(
+        "document-request-filter-view",
+        document_request.DocumentRequestPipelineView.as_view(),
+        name="document-request-filter-view",
+    ),
+    path(
+        "document-request-list",
+        document_request.DocumentListView.as_view(),
+        name="document-request-list",
     ),
     path(
         "document-request-update/<int:pk>/",
