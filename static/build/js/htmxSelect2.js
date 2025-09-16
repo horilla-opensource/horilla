@@ -3972,9 +3972,6 @@
                             return (
                                 this.each(function () {
                                     var e = s.GetData(this, "select2");
-                                    console.log(this)
-                                    console.log(e)
-                                    console.log('____________________________________________________________________________')
                                     null == e &&
                                         window.console &&
                                         console.error &&
