@@ -24,7 +24,7 @@ from employee.models import (
 )
 from horilla.filters import FilterSet, HorillaFilterSet, filter_by_name
 from horilla.horilla_middlewares import _thread_locals
-from horilla_documents.models import Document
+from horilla_documents.models import Document, DocumentRequest
 from horilla_views.templatetags.generic_template_filters import getattribute
 
 
@@ -296,6 +296,25 @@ class DocumentRequestFilter(FilterSet):
             "employee_id__employee_work_info__company_id",
             "employee_id__employee_work_info__shift_id",
         ]
+
+
+class DocumentPipelineFilter(HorillaFilterSet):
+    """
+    Filter set class for TaxBracket model.
+    """
+
+    search = django_filters.CharFilter(method="search_method")
+
+    class Meta:
+        model = DocumentRequest
+        fields = "__all__"
+
+    def search_method(self, queryset, _, value):
+        """
+        This method is used to search
+        """
+
+        return queryset.filter(title__icontains=value).distinct()
 
 
 class DisciplinaryActionFilter(FilterSet):
