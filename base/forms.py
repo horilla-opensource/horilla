@@ -194,7 +194,7 @@ class ModelForm(forms.ModelForm):
         now = datetime.now()
 
         default_input_class = "oh-input w-100"
-        select_class = "oh-select oh-select-2 select2-hidden-accessible"
+        select_class = "oh-select oh-select-2"
         checkbox_class = "oh-switch__checkbox"
 
         for field_name, field in self.fields.items():
@@ -327,9 +327,7 @@ class Form(forms.Form):
                 if field.label is not None:
                     label = field.label.replace("id", " ")
                 field.empty_label = _("---Choose {label}---").format(label=label)
-                field.widget.attrs.update(
-                    {"class": "oh-select oh-select-2 select2-hidden-accessible"}
-                )
+                field.widget.attrs.update({"class": "oh-select oh-select-2"})
             elif isinstance(widget, (forms.Textarea)):
                 label = _(field.label)
                 field.widget.attrs.update(
