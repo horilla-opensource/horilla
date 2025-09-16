@@ -17,44 +17,53 @@
     <div class="oh-wrapper oh-main__topbar">
         <div class="oh-main__titlebar oh-main__titlebar--left">
             <div style="display: flow">
-                <h1 class="text-lg font-semibold">
+                <h1 class="text-lg font-semibold mb-3">
                     {% trans "Organization Chart" %}
                 </h1>
+
+                <div class="flex gap-2 items-center">
+                    <p class="text-sm text-gray font-semibold">
+                        {% trans "Reporting Managers" %} :
+                    </p>
+                    <div>
+                        <select
+                            id="managerSelect"
+                            class="oh-select {% if not reporting_manager_dict %} hidden {% endif %}"
+                            style="
+                                align-items: center;
+                                background-color: #fff;
+                                border: 1px solid #aaa;
+                                border-radius: 2px;
+                            "
+                            name="manager_id"
+                            title="{% trans 'Reporting Managers' %}"
+                            hx-post="{% url 'organisation-chart' %}"
+                            hx-target="#chart_target"
+                            hx-swap="OuterHTML"
+                            hx-trigger="load"
+                        >
+                            {% for manager_id, values in reporting_manager_dict.items %}
+                                <option value="{{ manager_id }}" {% if act_manager_id == manager_id %} selected {% endif %} >{{ values }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="oh-main__titlebar oh-main__titlebar--right pr-5">
-            <div class="flex gap-2 items-center">
-                <p class="text-sm text-gray font-semibold">
-                    {% trans "Reporting Managers" %} :
-                </p>
-                <div>
-                    <select
-                        id="mangerSelect"
-                        class="oh-select {% if not reporting_manager_dict %} hidden {% endif %}"
-                        style="
-                            align-items: center;
-                            background-color: #fff;
-                            border: 1px solid #aaa;
-                            border-radius: 2px;
-                        "
-                        name="manager_id"
-                        title="{% trans 'Reporting Managers' %}"
-                        hx-post="{% url 'organisation-chart' %}"
-                        hx-target="#chart_target"
-                    >
-                        {% for manager_id, values in reporting_manager_dict.items %}
-                            <option value="{{ manager_id }}" {% if act_manager_id == manager_id %} selected {% endif %} >{{ values }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+            <div class="relative">
+                <input
+                    class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+                    type="text"
+                    name="search"
+                    placeholder="Search"
+                    autocomplete="false"
+                    id="searchInput"
+                >
+                <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
             </div>
         </div>
     </div>
     <div class="oh-wrapper" id="chart_target"></div>
 
-    <script>
-        $(document).ready(function (e) {
-            htmx.trigger("#mangerSelect", "change");
-        });
-    </script>
 {% endblock %}
