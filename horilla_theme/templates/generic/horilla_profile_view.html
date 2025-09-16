@@ -90,7 +90,7 @@
 											data-action="previous"
 											hx-get="{{previous_url}}?instance_ids={{instance_ids}}"
 											{% if push_url %}
-											    hx-push-url="{{object.get_push_url}}"
+											hx-push-url="{{push_url_previous}}"
 											{% endif %}
 											hx-target="#{{view_id|safe}}"
 											hx-swap="outerHTML"
@@ -105,7 +105,7 @@
 											data-action="next"
 											hx-get="{{next_url}}?instance_ids={{instance_ids}}"
 											{% if push_url %}
-											    hx-push-url="{{object.get_push_url}}"
+											hx-push-url="{{push_url_next}}"
 											{% endif %}
 											hx-target="#{{view_id|safe}}"
 											hx-swap="outerHTML"
