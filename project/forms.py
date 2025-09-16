@@ -116,7 +116,7 @@ class TaskFormCreate(ModelForm):
             "sequence": forms.HiddenInput(),
             "stage": forms.SelectMultiple(
                 attrs={
-                    "class": "oh-select oh-select-2 select2-hidden-accessible",
+                    "class": "oh-select oh-select-2",
                     "onchange": "keyResultChange($(this))",
                 }
             ),
