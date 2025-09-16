@@ -1,5 +1,5 @@
 {% load i18n %}
-<div>
+<div id="documentForm">
     {% include 'generic/horilla_form.html' %}
 </div>
 <style>
@@ -9,8 +9,15 @@
     border-color: #d6e9c6;
     border: 1px solid transparent;
     border-radius: 4px;
+    padding:10px;
+    margin-top:10px;
+  }
 
-  }</style>
+	.file-validation ul {
+		padding: 15px;
+	}
+
+</style>
 <script>
   $(document).ready(function () {
       $("#id_notify_before_parent_div").addClass("d-none");
@@ -23,16 +30,16 @@
     });
 
     var infoBox = `
-          <div class="file-validation" style="margin-left:10px;">
+          <div class="file-validation col-12">
             <ul style="list-style-type: disc;">
-                <li>Upload PDF file</li>
-                <li>Max size of the file: 5 MB</li>
+                <li>Upload {{ form.instance.document_request_id.format|upper }} file</li>
+                <li>Max size of the file: {{ form.instance.document_request_id.max_size|default:"any" }} MB</li>
             </ul>
       </div>
-      `;
+    `;
 
       // Append the info box before the Save button
-      $("#id_expiry_date_parent_div").before(infoBox);
+      $("#documentForm [type='submit']").closest("div").before(infoBox);
 
     });
   </script>

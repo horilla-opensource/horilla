@@ -115,7 +115,7 @@
       <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
         {% trans "Bulk Payslip" %}
       </h1>
-      <button class="oh-modal__close" aria-label="Close">
+      <button class="oh-modal__close" aria-label="Close" onclick="$(this).closest('#bulkPayslipModal').removeClass('oh-modal--show');">
         <ion-icon name="close-outline"></ion-icon>
       </button>
     </div>

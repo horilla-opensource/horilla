@@ -15,12 +15,9 @@ from django.utils.translation import gettext_lazy as _
 from base.methods import choosesubordinates
 from employee.models import Employee
 from horilla.decorators import manager_can_enter
-from horilla_documents.forms import (
-    DocumentForm,
-    DocumentRejectCbvForm,
-    DocumentRequestForm,
-    DocumentUpdateForm,
-)
+from horilla_documents.forms import DocumentForm
+from horilla_documents.forms import DocumentRejectCbvForm as RejectForm
+from horilla_documents.forms import DocumentRequestForm, DocumentUpdateForm
 from horilla_documents.models import Document, DocumentRequest
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaFormView
@@ -117,7 +114,7 @@ class DocumentRejectCbvForm(HorillaFormView):
     """
 
     model = Document
-    form_class = DocumentRejectCbvForm
+    form_class = RejectForm
     hx_confirm = _("Do you want to reject this request")
 
     def get_context_data(self, **kwargs):
@@ -126,18 +123,14 @@ class DocumentRejectCbvForm(HorillaFormView):
             self.form_class.verbose_name = _("Reject")
         return context
 
-    def form_valid(self, form: DocumentRejectCbvForm) -> HttpResponse:
+    def form_valid(self, form: RejectForm) -> HttpResponse:
         if form.is_valid():
-            pk = self.form.instance.pk
-            document_obj = get_object_or_404(Document, id=pk)
-            if document_obj.document:
-                if form.is_valid():
-                    document_obj.status = "rejected"
-                    document_obj.save()
-                    messages.error(self.request, _("Document request rejected"))
+            if self.form.instance.document:
+                self.form.instance.status = "rejected"
+                form.save()
+                messages.success(self.request, _("Document request rejected"))
             else:
                 messages.error(self.request, _("No document uploaded"))
-            # form.save()
             return HttpResponse("<script>window.location.reload();</script>")
         return super().form_valid(form)
 

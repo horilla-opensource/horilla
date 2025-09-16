@@ -105,10 +105,9 @@ class Company(HorillaModel):
         return str(self.company)
 
     def company_icon_with_name(self):
-        from django.utils.html import format_html
 
         return format_html(
-            '<img src="{}" style="width: 30px; border-radius: 100%" class="oh-profile__image" alt="" /> {}',
+            '<img src="{}" style="width: 30px; border-radius: 100%; display:inline;" class="oh-profile__image" alt="" /> {}',
             self.icon.url,
             self.company,
         )

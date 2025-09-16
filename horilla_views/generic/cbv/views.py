@@ -2397,6 +2397,7 @@ class HorillaProfileView(DetailView):
             context["previous_url"] = previous_url
             context["push_url_next"] = push_url_next
             context["push_url_prev"] = push_url_prev
+            context["push_url"] = self.push_url
 
         context["display_count"] = display_count
         context["actions"] = self.actions
