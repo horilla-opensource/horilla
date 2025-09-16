@@ -5,18 +5,15 @@
 
 <form  hidden action="{% url 'employee-reset-password' %}" method="post" role="button"
 style="display: flex;">
-<ion-icon name="key-outline" style="width: 20px; height: 20px; "></ion-icon>
 {% csrf_token %}
 <input name="email" hidden value="{{instance.employee_user_id.username}}" />
-<button  id="reset-button" type="submit" style="border: none; background: transparent;">{% trans "Send password reset link" %} </button>
+<button  id="reset-button" type="submit" style="border: none; background: transparent;"></button>
 </form>
 
 
 <form hidden action="{% url 'employee-account-block-unblock' instance.id %}" id="block-form">
 {% csrf_token %}
-<img src="{% static 'images/ui/block-user.png' %}" style="width: 20px; height: 20px; ">
 <button  id="block-button" type="submit" style=" border: none; background: transparent;">
-        {% trans "Block Account" %}
 </button>
 </form>
 
