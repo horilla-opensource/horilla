@@ -1,0 +1,214 @@
+{% load i18n %}{% load widget_tweaks %}{% load mathfilters %}{% load basefilters %}
+
+<form
+  hx-get="{% url 'emp-objective-search' objective.id %}"
+  hx-target="#emp_objective_card"
+  hx-swap="innerHTML"
+  method="get"
+  id="filterForm"
+  onsubmit="event.preventDefault()"
+>
+  <div class="flex flex-wrap justify-between items-center mb-3">
+    <h3 class="text-lg font-semibold">{% trans "Employee Objectives" %}</h3>
+
+    <div class="flex items-center flex-wrap gap-2">
+      <!-- Search -->
+      <div class="relative">
+        <input
+          name="search"
+          type="text"
+          placeholder="{% trans 'Search by Employee or Objective...' %}"
+          class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm transition duration-300 focus:border-primary-600"
+          onkeyup="$('.filterButton').click()"
+          autocomplete="off"
+        />
+        <i
+          class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"
+        ></i>
+      </div>
+
+      <!-- Filter Dropdown -->
+      <div class="oh-dropdown" x-data="{open: false}">
+        <button
+          class="ml-2 px-4 py-2 bg-white rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+          @click="open = !open"
+          onclick="event.preventDefault()"
+        >
+          <img
+            src="/static/horilla_theme/assets/img/icons/sort.svg"
+            alt="Filter"
+            width="16"
+            class="mt-[-1px]"
+          />
+          {% trans "Filter" %}
+          <div id="filterCount"></div>
+        </button>
+        <div
+            class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+            x-show="open"
+            @click.outside="open = false"
+            style="display: none; width: 450px;"
+            >
+            <div class="oh-dropdown__filter-body">
+
+                <!-- Accordion: Objective -->
+                <div class="oh-accordion">
+                <div class="oh-accordion-header"
+                    onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">
+                    {% trans "Objective" %}
+                </div>
+                <div class="oh-accordion-body">
+                    <div class="row">
+                    <div class="col-sm-6">
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Assignees" %}</label>
+                        {{emp_obj_form.form.employee_id}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Key Result" %}</label>
+                        {{emp_obj_form.form.key_result_id}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Start Date From" %}</label>
+                        {{emp_obj_form.form.start_date_from}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Start Date Till" %}</label>
+                        {{emp_obj_form.form.start_date_till}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Objective Progress % (GTE)" %}</label>
+                        {{emp_obj_form.form.progress_percentage__gte}}
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "End Date From" %}</label>
+                        {{emp_obj_form.form.end_date_from}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "End Date Till" %}</label>
+                        {{emp_obj_form.form.end_date_till}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Status" %}</label>
+                        {{emp_obj_form.form.status}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Archive" %}</label>
+                        {{emp_obj_form.form.archive}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Objective Progress % (LTE)" %}</label>
+                        {{emp_obj_form.form.progress_percentage__lte}}
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Accordion: Key Results -->
+                <div class="oh-accordion">
+                <div class="oh-accordion-header"
+                    onclick="event.stopImmediatePropagation();$(this).parent().toggleClass('oh-accordion--show');">
+                    {% trans "Key Results" %}
+                </div>
+                <div class="oh-accordion-body">
+                    <div class="row">
+                    <div class="col-sm-6">
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Start Date From" %}</label>
+                        {{emp_obj_form.form.kr_start_date_from}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "Start Date Till" %}</label>
+                        {{emp_obj_form.form.kr_start_date_till}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "End Date From" %}</label>
+                        {{emp_obj_form.form.kr_end_date_from}}
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "End Date Till" %}</label>
+                        {{emp_obj_form.form.kr_end_date_till}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "KR Progress % (GTE)" %}</label>
+                        {{emp_obj_form.form.kr_progress_percentage__gte}}
+                        </div>
+                        <div class="oh-input-group">
+                        <label class="oh-label">{% trans "KR Progress % (LTE)" %}</label>
+                        {{emp_obj_form.form.kr_progress_percentage__lte}}
+                        </div>
+                    </div>
+                    </div>
+
+                    <!-- Pills -->
+                    <div class="mt-3">
+                    <label class="oh-label">{% trans "Quick Filters" %}</label>
+                    <input type="text" name="due" hidden />
+                    <div class="flex flex-wrap gap-2">
+                        {% for value, label in emp_obj_form.form.due.field.choices %}
+                        {% if value %}
+                        <button
+                            type="button"
+                            onclick="$(this).closest('form').find('[name=due]').val('{{value}}');$(this).closest('form').find('.filterButton').click();"
+                            class="px-3 py-1 rounded-full border text-xs transition duration-300 {% if request.GET.due == value %} bg-primary-600 text-white border-primary-600 {% else %} bg-white text-dark-200 border-gray-300 hover:border-primary-600 {% endif %}"
+                        >
+                            {{ label }}
+                        </button>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    </div>
+                </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="oh-dropdown__filter-footer">
+                <button
+                class="oh-btn oh-btn--secondary oh-btn--small w-100 filterButton"
+                id="objective-filter-form-submit"
+                >
+                <img
+                    src="/static/horilla_theme/assets/img/icons/sort.svg"
+                    alt="Filter"
+                    width="16"
+                    class="mt-[-1px]"
+                    style="filter: invert(1) brightness(2);"
+                />
+                {% trans "Filter" %}
+                </button>
+            </div>
+            </div>
+
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- Modal -->
+<div
+  class="oh-modal"
+  id="dynamicCreateModal"
+  role="dialog"
+  aria-hidden="true"
+  style="z-index: 1022"
+>
+  <div
+    class="oh-modal__dialog"
+    style="max-width: 550px"
+    id="dynamicCreateModalBody"
+  ></div>
+</div>
+
+<div
+  id="filterTagContainerSectionNav"
+  class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"
+></div>
