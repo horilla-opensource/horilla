@@ -493,6 +493,51 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
     }
 
 
+def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, **kwargs):
+    # this returns the days without weekend and holidays
+    working_day_data = get_working_days(start_date, end_date)
+    total_working_days = working_day_data["total_working_days"]
+
+    # defined company leaves like annual holidays and weekends
+    company_leave_days = get_company_leave_dates(start_date.year)
+    holiday_dates = get_holiday_dates(start_date, end_date)
+
+    leave_data = get_leaves(employee, start_date, end_date)
+    attendance_data = get_attendance(employee, start_date, end_date)
+    contract = employee.contract_set.filter(contract_status="active").first()
+    basic_pay = wage * total_working_days
+    date_range = get_date_range(start_date, end_date)
+    attendance_days = attendance_data['attendances_on_period']
+    # todo add the functionality to extract the attendance days when they have mercantile and Poya holiday marked
+
+    print(f"""
+    --- Debug Info ---
+    Basic Pay: {basic_pay}
+    Total Working Days: {total_working_days}
+    Wage: {wage}
+    Start Date: {start_date}
+    End Date: {end_date}
+    Working Day Data: {working_day_data}
+    Leave Data: {leave_data}
+    Contract: {contract}
+    Date Range: {date_range}
+    Attendance Data: {attendance_data} 
+    Company Leave Days: {company_leave_days}
+    Holiday Dates: {holiday_dates}
+    Attendance Days: {attendance_days}
+    ------------------
+    """)
+
+
+
+    return {
+        "basic_pay": 0,
+        "loss_of_pay": 0,
+        "paid_days": 0,
+        "unpaid_days": 0,
+    }
+
+#todo: implement 30 day wage type
 def compute_salary_on_period(employee, start_date, end_date, wage=None):
     """
     This method is used to compute salary on the start to end date period
@@ -519,7 +564,11 @@ def compute_salary_on_period(employee, start_date, end_date, wage=None):
         data = daily_computation(employee, wage, start_date, end_date)
         month_data = months_between_range(wage, start_date, end_date)
         data["month_data"] = month_data
-
+# Here Add new condition for 30 day wage type
+    elif wage_type == "30days":
+        data = compute_salary_on_30_day_wage(employee, wage, start_date, end_date)
+        month_data = months_between_range(wage, start_date, end_date)
+        data["month_data"] = month_data
     else:
         data = monthly_computation(employee, wage, start_date, end_date)
     data["contract_wage"] = wage
