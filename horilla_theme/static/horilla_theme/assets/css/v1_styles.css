@@ -3162,6 +3162,14 @@ span.oh-activity-sidebar__a img {
   justify-content: flex-end !important;
 }
 
+.justify-content-between {
+    justify-content: space-between !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
 /* ===========================
 *         Employee Forms
 * ============================ */
