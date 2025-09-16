@@ -226,30 +226,6 @@ class AssetRequestForm(ModelForm):
         model = AssetRequest
         fields = "__all__"
         exclude = ["is_active"]
-        widgets = {
-            "requested_employee_id": forms.Select(
-                attrs={
-                    "class": "oh-select  oh-select-2 select2-hidden-accessible",
-                }
-            ),
-            "asset_category_id": forms.Select(
-                attrs={
-                    "class": "oh-select  oh-select-2 select2-hidden-accessible",
-                }
-            ),
-            "description": forms.Textarea(
-                attrs={
-                    "type": "text",
-                    "id": "objective_description",
-                    "placeholder": _(
-                        "Requesting a laptop for software development purposes."
-                    ),
-                    "class": "oh-input oh-input--textarea oh-input--block",
-                    "rows": 3,
-                    "cols": 40,
-                }
-            ),
-        }
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
