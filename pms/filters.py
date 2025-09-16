@@ -77,7 +77,7 @@ class CustomFilterSet(django_filters.FilterSet):
             elif isinstance(widget, (forms.Select,)):
                 field.widget.attrs.update(
                     {
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
+                        "class": "oh-select oh-select-2",
                     }
                 )
             elif isinstance(widget, (forms.Textarea)):
@@ -93,7 +93,7 @@ class CustomFilterSet(django_filters.FilterSet):
             elif isinstance(widget, (forms.ModelChoiceField)):
                 field.widget.attrs.update(
                     {
-                        "class": "oh-select oh-select-2 select2-hidden-accessible",
+                        "class": "oh-select oh-select-2",
                     }
                 )
             if isinstance(field, django_filters.CharFilter):
@@ -411,7 +411,7 @@ class MeetingsFilter(FilterSet):
     #             required=False,
     #             widget=forms.SelectMultiple(
     #                 attrs={
-    #                     "class": "oh-select oh-select-2 select2-hidden-accessible",
+    #                     "class": "oh-select oh-select-2",
     #                 }
     #             ),
     #         )
