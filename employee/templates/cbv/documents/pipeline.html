@@ -42,7 +42,7 @@
           </div>
         </div>
       </div>
-      <div 
+      <div
       class="oh-tabs__movable-body position-relative d-none"
       hx-get="{{url}}?{% for parameter in parameters %}{{parameter|format:group}}&{% endfor %}{{request.GET.urlencode}}"
       hx-trigger="load"

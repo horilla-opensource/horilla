@@ -17,9 +17,9 @@
 		hx-on:click="htmxLoadIndicator(this);"
 	></button>
 
-	{% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %} 
+	{% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
 
-	{% if queryset|length %} 
+	{% if queryset|length %}
 
 		<div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative">
 			<div
@@ -41,18 +41,18 @@
 							class="grid md:grid-cols-[60px_1fr_120px_120px_180px] gap-4 px-6 py-4 border-b border-slate-100 items-center hover:bg-slate-50 cursor-pointer
 								{% if document.document %}
 									{% if document.status == "approved" %}row-status--yellow
-									{% elif document.status == 'rejected' %}row-status--red 
+									{% elif document.status == 'rejected' %}row-status--red
 									{% elif document.status == 'requested' %}row-status--blue
 									{% endif %}
 								{% endif %}
 							"
 							hx-get="{% url 'view-file' document.id %}"
-							hx-target="#viewFile" 
-							data-toggle="oh-modal-toggle" 
+							hx-target="#viewFile"
+							data-toggle="oh-modal-toggle"
 							data-target="#viewFileModal"
 							id="document{{document.id}}"
 						>
-							{% if document.document %} 
+							{% if document.document %}
 								{% if document.status == "approved" %}
 									<div
 										class="w-8 h-8 rounded-md bg-green-100 text-green-700 flex items-center justify-center shrink-0"
@@ -71,7 +71,7 @@
 									>
 										<ion-icon name="document-text-outline"></ion-icon>
 									</div>
-								{% endif %} 
+								{% endif %}
 							{% else %}
 								<div
 									class="w-8 h-8 rounded-md bg-amber-100 text-amber-700 flex items-center justify-center shrink-0"
@@ -102,8 +102,8 @@
 								<div
 									class="text-sm font-medium px-3 py-1 rounded-xl text-center {% if document.document %} {% if document.status == 'approved' %}bg-green-100 text-green-700 {% elif document.status == 'rejected' %}bg-red-100 text-red-700 {% elif document.status == 'requested' %}bg-blue-100 text-blue-700 {% endif %} {% else %} bg-amber-100 text-amber-700 {% endif %}"
 								>
-									{% if document.document %} {{document.status}} 
-									{% else %} {% trans "No Document" %} 
+									{% if document.document %} {{document.status}}
+									{% else %} {% trans "No Document" %}
 									{% endif %}
 								</div>
 							</div>
@@ -113,7 +113,7 @@
 							</div>
 
 							<div class="flex gap-1 w-full">
-								{% if document.document %} 
+								{% if document.document %}
 									{% if perms.horilla_document.change_documentrequest %}
 										{% if document.status == "approved" %}
 											<button
@@ -149,8 +149,8 @@
 											>
 												<ion-icon class="me-1" name="close-outline"></ion-icon>
 											</button>
-										{% endif %} 
-									{% endif %} 
+										{% endif %}
+									{% endif %}
 								{% else %}
 									<button
 										class="oh-btn flex-1 text-base bg-amber-100 text-amber-600 hover:bg-amber-200 hover:scale-105 transition"
@@ -246,10 +246,10 @@
 		badge.html(count);
 		badge.attr("title", title);
 	{% endif %}
-</script> 
+</script>
 
 <script>
-	$("ul[data-search-url] a").click(function (e) { 
+	$("ul[data-search-url] a").click(function (e) {
 		e.preventDefault();
 		const url =  $(this).attr("hx-get")
 		const $urlObj = $('<a>', { href: url });
