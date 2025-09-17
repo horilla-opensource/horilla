@@ -1,0 +1,28 @@
+{% load i18n %}
+
+<div class="oh-modal__dialog-header mb-5">
+    <span class="text-lg font-semibold text-gray-900">{% trans "Viewed By" %} </span>
+    <button class="oh-modal__close--custom"
+        onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+    >
+        <ion-icon name="close-outline"></ion-icon>
+    </button>
+</div>
+<div class="oh-modal__dialog-body">
+    <table class="fixed-table w-full border-separate border rounded-md">
+        <tbody>
+            {% for instance in viewed_by %}
+                <tr class="border-b border-[#f3f3f3]"
+                    data-instance-id="{{instance.id}}"
+                >
+                    <td class="text-sm text-left p-3 text-[#666]">
+                        {{instance.user.employee_get}}
+                    </td>
+                    <td class="text-sm text-left p-3 text-[#666]">
+                        {{instance.created_at}}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

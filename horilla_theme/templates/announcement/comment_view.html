@@ -1,0 +1,128 @@
+{% load basefilters static %}
+{% load i18n %}
+
+
+{% if messages %}
+    <div class="oh-alert-container">
+        {% for message in messages %}
+            <div class="oh-alert oh-alert--animated {{message.tags}}">{{ message }}</div>
+        {% endfor %}
+    </div>
+{% endif %}
+<div class="oh-activity-sidebar__header">
+    <a style="cursor: pointer;" onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+        <ion-icon name="chevron-forward-outline"
+            class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+            data-target="#genericSidebar"></ion-icon>
+    </a>
+    <span class="oh-activity-sidebar__title">{% trans "Comments of - " %} {{announcement.title|title}} </span>
+</div>
+
+{% if not announcement.disable_comments %}
+    <form hx-post="{% url 'announcement-add-comment' request_id %}" hx-target="#genericOffCanvas"
+        hx-encoding="multipart/form-data">
+        {% csrf_token %}
+
+        <div>
+            <input type="text" name="comment" id="commentInput" hx-on:keyup="toggleCommentButton(this);"
+                class="oh-input w-100" placeholder="Comment here">
+            <button type="submit" id="commentButton" class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+                style="display: none;">
+                {% trans "Comment" %}
+            </button>
+        </div>
+
+        <div class="oh-inner-sidebar-content__footer"></div>
+    </form>
+
+    {% if no_comments %}
+
+    <div class="oh-timeoff-modal__profile-content">
+        <div class="oh-404">
+            <div class="">
+                <span class="oh-timeoff-title fw-bold" style="display: block">{% trans "There are no comments to show."%}</span>
+                <img style="display: block; width: 100px; margin: 20px auto" src="{% static '/images/ui/comment.png' %}"
+                    class="" />
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+
+    {% comment %} <ol class="oh-activity-sidebar__qa-list" role="list">
+        {% for comment in comments %}
+        <li class="oh-activity-sidebar__qa-item" id="announCommentCard{{comment.id}}">
+            <span class="oh-activity-sidebar__q" style="font-size:16px;">{{ comment.comment }}
+                {% if perms.base.delete_announcementcomment or request.user == comment.created_by %}
+                <span class="float-end" hx-get="{% url 'announcement-delete-comment' comment.id %}" hx-swap="delete"
+                    hx-target="#announCommentCard{{comment.id}}"
+                    hx-on:click="setTimeout(() => {reloadMessage(this);},100);">
+                    <ion-icon name="close-outline" style="font-size: 24px" role="img" class="md hydrated"
+                        aria-label="close outline"></ion-icon></span>
+                {% endif %}
+            </span>
+
+            <span class="d-flex mt-3">
+                <div>
+                    <span class="oh-timeoff-modal__stat-title fw-bold">{% trans "By" %}</span>
+                    <div class="oh-profile oh-profile--md">
+                        <div class="oh-profile__avatar mr-1">
+                            <img src="{{comment.employee_id.get_avatar}}" class="oh-profile__image">
+                        </div>
+                        <span class="oh-timeoff-modal__stat-title fw-bold mt-2">
+                            {{ comment.employee_id }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="float-end" style="margin-left: 50px;">
+                    <span class="oh-timeoff-modal__stat-title fw-bold mb-2">{% trans "Date & Time" %}</span>
+                    <span class="oh-timeoff-modal__stat-title">
+                        {% trans "on" %} &nbsp<span class="dateformat_changer">{{ comment.created_at|date:"F j, Y" }}</span>
+                        &nbsp
+                        {% trans "at" %} &nbsp <span class="timeformat_changer">{{ comment.created_at|time:"g:i A" }}</span>
+                    </span>
+                </div>
+            </span>
+        </li>
+
+        {% endfor %}
+    </ol> {% endcomment %}
+    {% for comment in comments %}
+        <div class="border border-dark-50 p-3 rounded-md mb-2" id="announCommentCard{{comment.id}}" >
+            <div class="flex justify-between" id="announCommentCard{{comment.id}}" >
+                <h3 class="font-semibold text-sm">{{ comment.comment|title }}</h3>
+                {% if perms.base.delete_announcementcomment or request.user == comment.created_by %}
+                    <form method="POST"
+                        hx-post="{% url 'announcement-delete-comment' comment.id %}"
+                        hx-confirm="{% trans 'Are you sure you want to delete this comment?' %}"
+                        hx-target="#announCommentCard{{comment.id}}"
+                        hx-swap="delete"
+                        class="inline-block"
+                        hx-on:click="setTimeout(() => {reloadMessage(this);},100);"
+                    >
+                        {% csrf_token %}
+                        <button type="submit" class="cursor-pointer bg-transparent border-0 p-0" title="{% trans 'Delete' %}">
+                            <ion-icon name="trash-outline" style="color: #e54f38;"></ion-icon>
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <p class="text-xs text-[#565E6C] mt-2">
+                {% trans "By" %} <span class="text-primary-600">{{ comment.employee_id }}</span>
+            </p>
+            <p class="text-xs text-[#565E6C] mt-2">
+                {% trans "on" %} <span class="dateformat_changer font-semibold"> {{ comment.created_at.date }} </span> {% trans "at" %} <span class="timeformat_changer font-semibold"> {{ comment.created_at.time }} </span>
+            </p>
+        </div>
+    {% endfor %}
+
+    {% endif %}
+{% else %}
+    <div class="oh-404">
+        <img src="{% static 'images/ui/no_comments.png' %}" class="oh-404__image mb-4"
+            alt="Page not found. 404." />
+        <h5 class="oh-404__subtitle">{% trans "Comments have been disabled for this announcement." %}</h5>
+    </div>
+{% endif %}
