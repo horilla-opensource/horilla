@@ -2268,7 +2268,12 @@ class Announcement(HorillaModel):
     )
     expire_date = models.DateField(null=True, blank=True)
     employees = models.ManyToManyField(
-        Employee, related_name="announcement_employees", blank=True
+        Employee,
+        related_name="announcement_employees",
+        blank=True,
+        help_text=_(
+            "If no employee, department or job position is selected, the announcement will be visible to all employees in the selected company."
+        ),
     )
     department = models.ManyToManyField(Department, blank=True)
     job_position = models.ManyToManyField(
