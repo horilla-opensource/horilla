@@ -343,10 +343,10 @@ class Attendance(HorillaModel):
             self.minimum_hour = "00:00"
             self.is_holiday = True
             holiday_data  = is_holiday(self.attendance_date)
-            if holiday_data.is_mercantile_holday:
-                self.is_mercantile_holday = True
-            if holiday_data.is_poya_holiday:
-                self.is_poya_holiday = True
+            # if holiday_data.is_mercantile_holday:
+            #     self.is_mercantile_holday = True
+            # if holiday_data.is_poya_holiday:
+            #     self.is_poya_holiday = True
 
 
     def update_attendance_overtime(self):
