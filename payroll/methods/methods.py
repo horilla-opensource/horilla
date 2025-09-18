@@ -558,14 +558,22 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     # remove company leave dates from holiday dates to avoid double counting
     company_leave_dates = list(set(company_leave_dates) - set(holiday_dates))
 
-    number_of_attendance_days_without_holidays = len(filtered_days)
+    number_of_attendance_days_with_holidays = len(filtered_days)
 
+    # calculate the paid days
+    paid_days = number_of_attendance_days_with_holidays + len(company_leave_dates) + paid_leaves
 
-    paid_days = number_of_attendance_days_without_holidays + len(company_leave_dates) + paid_leaves
     # calculate basic pay based on the working days and paid leaves
-    basic_pay = wage / 30 * paid_days
+    basic_pay = wage
     loss_of_pay_dates = 30 - paid_days
     loss_of_pay = salary_per_day * loss_of_pay_dates
+
+
+    employee_epf_amount = wage / 100 * 8
+    employer_epf_amount = wage / 100 * 12
+    employer_etf_amount = wage / 100 * 3
+
+
     print(f"""
     --- Debug Info ---
     Basic Pay: {basic_pay}
@@ -573,15 +581,18 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     Paid Days: {paid_days}
     company_working_days: {len(company_working_days)}
     company_leave_dates: {len(company_leave_dates)}
-    Marked attendance days: {number_of_attendance_days_without_holidays}
+    Marked attendance days: {number_of_attendance_days_with_holidays}
     Wage: {wage}
     Leave Data: {leave_data}
     Attendance Data: {attendance_data} 
-    Number of Attendance Days: {number_of_attendance_days_without_holidays}
+    Number of Attendance Days: {number_of_attendance_days_with_holidays}
     Holiday Dates: {holiday_dates}
     Attendance Days: {attendance_days}
     Paid Leaves: {paid_leaves}
     Unpaid Leaves: {unpaid_leaves}
+    employee_epf_amount: {employee_epf_amount}
+    employer_epf_amount: {employer_epf_amount}
+    employer_etf_amount: {employer_etf_amount}
     ------------------
     """)
 
@@ -593,6 +604,10 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
         "paid_days": paid_days,
         "unpaid_days": loss_of_pay_dates,
         "holiday_allowances": holiday_allowances,
+        "contract": contract,
+        "employee_epf_amount": employee_epf_amount,
+        "employer_epf_amount": employer_epf_amount,
+        "employer_etf_amount": employer_etf_amount,
 
     }
 
