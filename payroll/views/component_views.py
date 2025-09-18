@@ -149,7 +149,9 @@ def payroll_calculation(employee, start_date, end_date):
     }
     # basic pay will be basic_pay = basic_pay - update_compensation_amount
     allowances = calculate_allowance(**kwargs)
-
+    holiday_allowances = basic_pay_details.get("holiday_allowances", [])
+    for ha in holiday_allowances:
+        allowances["allowances"].append(ha)
     # finding the total allowance
     total_allowance = sum(allowance["amount"] for allowance in allowances["allowances"])
 
