@@ -41,11 +41,24 @@ class AnnouncementFormView(HorillaFormView):
             else:
                 message = _("Announcement created successfully.")
             anou, attachment_ids = form.save(commit=False)
-            anou.save()
-            anou.attachments.set(attachment_ids)
+
             employees = form.cleaned_data["employees"]
             departments = form.cleaned_data["department"]
             job_positions = form.cleaned_data["job_position"]
+            company = form.cleaned_data.get(
+                "company_id", [self.request.user.employee_get.get_company()]
+            )
+
+            if not (employees or departments or job_positions):
+                employees = Employee.objects.filter(
+                    employee_work_info__company_id__in=company, is_active=True
+                )
+                message = _(
+                    f"Announcement created successfully to all employees in {', '.join(company.values_list('company', flat=True))}."
+                )
+
+            anou.save()
+            anou.attachments.set(attachment_ids)
             anou.department.set(departments)
             anou.job_position.set(job_positions)
             emp_dep = User.objects.filter(

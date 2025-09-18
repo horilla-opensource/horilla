@@ -1,8 +1,10 @@
-{% load static %}
-{% load i18n %}
+{% load static i18n %}
+
+{% now "Y-m-d" as current_date %}
+
 {% if not announcements %}
     <div class="oh-empty h-100" style="padding-top: 50px;">
-        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="Page not found. 404." />
+        <img src="{% static 'images/ui/search.svg' %}" class="oh-404__image" alt="404" />
         <h1 class="oh-empty__title">{% trans "No Records found." %}</h1>
         <p class="oh-empty__subtitle">{% trans "There are no announcements at the moment." %}</p>
     </div>
@@ -25,9 +27,17 @@
                                     {{announcement.title}}
                                 </span>
                                 {% if announcement.created_at|date:"Y-m-d" == current_date and request.user not in announcement.viewed_by %}
-                                    <span class="oh-profile__info-value ms-2" id="newTab"
-                                        style="background-color: hsl(8,77%,56%); color:white;
-                                                            font-size: 0.7rem; padding: 3px 8px; border-radius: 15px; font-weight: 800; width:auto;">
+                                    <span class="oh-profile__info-value ms-2 newTag"
+                                        style="
+                                            background-color: hsl(8,77%,56%);
+                                            color:white;
+                                            font-size: 0.7rem;
+                                            padding: 3px 8px;
+                                            border-radius: 15px;
+                                            font-weight: 800;
+                                            width:auto;
+                                        "
+                                    >
                                         {% trans "NEW" %}
                                     </span>
                                 {% endif %}
@@ -39,3 +49,8 @@
         </div>
     </div>
 {% endif %}
+<script>
+    function closeNew(anchorElement) {
+        $(anchorElement).closest('.announcement_title').find('.newTag').hide();
+    }
+</script>
