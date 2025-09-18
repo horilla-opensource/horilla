@@ -1384,6 +1384,9 @@ class Payslip(HorillaModel):
     gross_pay = models.FloatField(null=True, default=0)
     deduction = models.FloatField(null=True, default=0)
     net_pay = models.FloatField(null=True, default=0)
+    employee_epf_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    employer_epf_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    employer_etf_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     status = models.CharField(
         max_length=20, null=True, default="draft", choices=status_choices
     )
@@ -1632,16 +1635,7 @@ class Reimbursement(HorillaModel):
         ReimbursementMultipleAttachment, blank=True, editable=False
     )
 
-    holiday_type = models.CharField(choices=holiday_types , null=True , blank=True)
 
-    if apps.is_installed("attendance"):
-        attendance_id = models.ForeignKey(
-            "attendance.Attendance",
-            on_delete=models.PROTECT,
-            null=True,
-            blank=True,
-            verbose_name=_("Attendance"),
-        )
     if apps.is_installed("leave"):
         leave_type_id = models.ForeignKey(
             "leave.LeaveType",
