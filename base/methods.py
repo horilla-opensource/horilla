@@ -779,6 +779,27 @@ def is_holiday(date):
     return holiday if holiday else False
 
 
+def is_mercantile_or_poya_holiday(date):
+    """
+    Check if the given date is a holiday and return its Poya/Mercantile flags.
+    """
+    holiday = Holidays.objects.filter(
+        Q(start_date__lte=date, end_date__gte=date) |
+        Q(recurring=True, start_date__month=date.month, start_date__day=date.day)
+    ).first()
+
+    if holiday:
+        return {
+            "is_poya_holiday": holiday.is_poya_holiday,
+            "is_mercantile_holday": holiday.is_mercantile_holday
+        }
+
+    return {
+        "is_poya_holiday": False,
+        "is_mercantile_holday": False
+    }
+
+
 def is_company_leave(input_date):
     """
     Check if the given date is a company leave.
