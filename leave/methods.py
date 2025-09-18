@@ -1,6 +1,7 @@
 import calendar
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 
+import pandas as pd
 from django.apps import apps
 from django.db.models import Q
 
@@ -158,3 +159,41 @@ def filter_conditional_leave_request(request):
         else:
             leave_request_ids.append(instance.leave_request_id.id)
     return LeaveRequest.objects.filter(pk__in=leave_request_ids)
+
+
+def parse_excel_date(value):
+    """
+    Convert Excel date values into a valid Python date object.
+    Supports multiple formats: YYYY-MM-DD, DD-MM-YYYY, DD Month YYYY, MM/DD/YYYY, etc.
+    """
+    if not value or pd.isna(value):
+        return None
+
+    if isinstance(value, date):
+        # Already a date (from Excel or pandas)
+        return value
+
+    if isinstance(value, datetime):
+        # Datetime object → convert to date
+        return value.date()
+
+    if isinstance(value, str):
+        value = value.strip()
+        # Try multiple formats
+        date_formats = [
+            "%Y-%m-%d",  # 2025-07-22
+            "%d-%m-%Y",  # 22-07-2025
+            "%d/%m/%Y",  # 22/07/2025
+            "%m/%d/%Y",  # 07/22/2025
+            "%d %B %Y",  # 22 July 2025
+            "%d %B, %Y",  # 22 July, 2025
+            "%d-%b-%Y",  # 22-Jul-2025
+        ]
+        for fmt in date_formats:
+            try:
+                return datetime.strptime(value, fmt).date()
+            except ValueError:
+                continue
+
+    # If nothing matches, return None (caller should handle error)
+    return None
