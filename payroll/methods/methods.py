@@ -495,7 +495,7 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
 
 def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, **kwargs):
 
-
+# Salary per Day
     salary_per_day = wage / 30
 
 
@@ -520,7 +520,6 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
 
     attendance_days = list(attendance_data['attendances_on_period'])
 
-    # todo add the functionality to extract the attendance days when they have mercantile , weekend and Poya holiday marked
     holiday_allowances = []
     filtered_days = []
     for attendance_day in attendance_days:
@@ -548,13 +547,14 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
             filtered_days.append(attendance_day)
     attended_dates = {att.attendance_date for att in attendance_days}
 
+# add paid holidays as attended days
     for hday in holiday_dates:
         if hday not in attended_dates:
             filtered_days.append(hday)
 
 
-    company_leave_dates = list(set(attendance_data) - set(holiday_dates))
-
+    # company_leave_dates = list(set(attendance_data) - set(holiday_dates))
+    company_leave_dates = list(set(company_leave_dates) - set(holiday_dates))
 
     number_of_attendance_days_without_holidays = len(filtered_days)
 
