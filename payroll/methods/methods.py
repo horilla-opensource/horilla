@@ -504,24 +504,26 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     total_working_days = working_day_data["total_working_days"]
     company_working_days = working_day_data["working_days_on"]
     company_leave_dates = working_day_data["company_leave_dates"]
-
-    # defined company leaves like annual holidays and weekends
-    # company_leave_days = get_company_leave_dates(start_date.year)
-
+    # get all the holiday dates between the range
     holiday_dates = get_holiday_dates(start_date, end_date)
-
+    # get all the leave data between the range
     leave_data = get_leaves(employee, start_date, end_date)
     unpaid_leaves = leave_data['unpaid_leaves']
     paid_leaves = leave_data['paid_leave']
-    attendance_data = get_attendance(employee, start_date, end_date)
-    contract = employee.contract_set.filter(contract_status="active").first()
 
+
+    #get the contract of the employee
+    contract = employee.contract_set.filter(contract_status="active").first()
     date_range = get_date_range(start_date, end_date)
 
-    attendance_days = list(attendance_data['attendances_on_period'])
-
+    # create list to store holiday  allowances and filtered days
     holiday_allowances = []
     filtered_days = []
+
+    # get the attendance data between the range
+    attendance_data = get_attendance(employee, start_date, end_date)
+    attendance_days = list(attendance_data['attendances_on_period'])
+
     for attendance_day in attendance_days:
         if attendance_day.is_mercantile_holday:
             print(f"Attendance marked on Mercantile Holiday: {attendance_day.attendance_date}")
@@ -547,19 +549,19 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
             filtered_days.append(attendance_day)
     attended_dates = {att.attendance_date for att in attendance_days}
 
-# add paid holidays as attended days
+    # add paid holidays as attended days
     for hday in holiday_dates:
         if hday not in attended_dates:
             filtered_days.append(hday)
 
 
-    # company_leave_dates = list(set(attendance_data) - set(holiday_dates))
+    # remove company leave dates from holiday dates to avoid double counting
     company_leave_dates = list(set(company_leave_dates) - set(holiday_dates))
 
     number_of_attendance_days_without_holidays = len(filtered_days)
 
 
-    paid_days = number_of_attendance_days_without_holidays + len(company_leave_dates)
+    paid_days = number_of_attendance_days_without_holidays + len(company_leave_dates) + paid_leaves
     # calculate basic pay based on the working days and paid leaves
     basic_pay = wage / 30 * paid_days
     loss_of_pay_dates = 30 - paid_days
@@ -569,17 +571,11 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     Basic Pay: {basic_pay}
     Total Working Days: {total_working_days}
     Paid Days: {paid_days}
-    Company Leaves Days: {len(company_leave_dates)}
-    Company Leaves Dates: {company_leave_dates}
     company_working_days: {len(company_working_days)}
+    company_leave_dates: {len(company_leave_dates)}
     Marked attendance days: {number_of_attendance_days_without_holidays}
     Wage: {wage}
-    Start Date: {start_date}
-    End Date: {end_date}
-    Working Day Data: {working_day_data}
     Leave Data: {leave_data}
-    Contract: {contract}
-    Date Range: {date_range}
     Attendance Data: {attendance_data} 
     Number of Attendance Days: {number_of_attendance_days_without_holidays}
     Holiday Dates: {holiday_dates}
