@@ -125,8 +125,14 @@ def payroll_calculation(employee, start_date, end_date):
     loss_of_pay = basic_pay_details["loss_of_pay"]
     paid_days = basic_pay_details["paid_days"]
     unpaid_days = basic_pay_details["unpaid_days"]
-
     working_days_details = basic_pay_details["month_data"]
+
+    employee_epf_amount = basic_pay_details["employee_epf_amount"]
+    employer_epf_amount = basic_pay_details["employer_epf_amount"]
+    employer_etf_amount = basic_pay_details["employer_etf_amount"]
+
+    ## debug steps
+    print("employee_epf_amount", employee_epf_amount , "employer_epf_amount", employer_epf_amount, "employer_etf_amount", employer_etf_amount)
 
     updated_basic_pay_data = update_compensation_deduction(
         employee, basic_pay, "basic_pay", start_date, end_date
@@ -172,7 +178,10 @@ def payroll_calculation(employee, start_date, end_date):
     taxable_gross_pay = calculate_taxable_gross_pay(**kwargs)
     tax_deductions = calculate_tax_deduction(**kwargs)
     federal_tax = calculate_taxable_amount(**kwargs)
-
+    post_tax_deductions["post_tax_deductions"].append({
+        "title": "EPF (Employee 8%)",
+        "amount": employee_epf_amount,
+    })
     total_allowance = sum(item["amount"] for item in allowances["allowances"])
     total_pretax_deduction = sum(
         item["amount"] for item in pretax_deductions["pretax_deductions"]
@@ -226,6 +235,9 @@ def payroll_calculation(employee, start_date, end_date):
         "contract_wage": contract_wage,
         "basic_pay": basic_pay,
         "gross_pay": gross_pay,
+        "employee_epf_amount": employee_epf_amount,
+        "employer_epf_amount": employer_epf_amount,
+        "employer_etf_amount": employer_etf_amount,
         "taxable_gross_pay": taxable_gross_pay["taxable_gross_pay"],
         "net_pay": net_pay,
         "allowances": allowances["allowances"],
@@ -775,6 +787,11 @@ def generate_payslip(request):
                 data["status"] = "draft"
                 data["contract_wage"] = payslip["contract_wage"]
                 data["basic_pay"] = payslip["basic_pay"]
+
+                # data["employee_epf_amount"] = payslip["employee_epf_amount"]
+                # data["employer_epf_amount"] = payslip["employer_epf_amount"]
+                # data["employer_etf_amount"] = payslip["employer_etf_amount"]
+
                 data["gross_pay"] = payslip["gross_pay"]
                 data["deduction"] = payslip["total_deductions"]
                 data["net_pay"] = payslip["net_pay"]
@@ -908,6 +925,11 @@ def create_payslip(request, new_post_data=None):
                 data["gross_pay"] = payslip_data["gross_pay"]
                 data["deduction"] = payslip_data["total_deductions"]
                 data["net_pay"] = payslip_data["net_pay"]
+
+                # data["employee_epf_amount"] = payslip["employee_epf_amount"]
+                # data["employer_epf_amount"] = payslip["employer_epf_amount"]
+                # data["employer_etf_amount"] = payslip["employer_etf_amount"]
+
                 data["pay_data"] = json.loads(payslip_data["json_data"])
                 calculate_employer_contribution(data)
                 data["installments"] = payslip_data["installments"]
