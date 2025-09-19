@@ -97,7 +97,7 @@ class AttendanceUpdateForm(BaseModelForm):
             "is_active",
             "is_holiday",
             # "is_poya_holiday",
-            # "is_mercantile_holday"   -- testing
+            # "is_mercantile_holday"   -- testing #todo add this fields to exclude once the debug and testing completed
         ]
         model = Attendance
         widgets = {
