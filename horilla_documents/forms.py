@@ -121,18 +121,9 @@ class DocumentRejectCbvForm(ModelForm):
         self.fields["reject_reason"].widget.attrs["required"] = True
 
 
-class DocumentRejectForm(forms.Form):
+class DocumentRejectForm(ModelForm):
     verbose_name = Document()._meta.get_field("reject_reason").verbose_name
-    reject_reason = forms.CharField(
-        widget=forms.Textarea(
-            attrs={
-                "class": "oh-input w-100",
-                "placeholder": verbose_name,
-                "rows": 2,
-                "cols": 40,
-            }
-        ),
-        max_length=255,
-        required=True,
-        label=verbose_name,
-    )
+
+    class Meta:
+        model = Document
+        fields = ["reject_reason"]

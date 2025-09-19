@@ -1391,7 +1391,7 @@ class WorkTypeRequest(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def delete(self, *args, **kwargs):
         request = getattr(_thread_locals, "request", None)
@@ -1675,11 +1675,7 @@ class ShiftRequest(HorillaModel):
         Detail view subtitle
         """
 
-        try:
-            return f"""{self.employee_id.employee_work_info.department_id } /
-            { self.employee_id.employee_work_info.job_position_id}"""
-        except:
-            return None
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def clean(self):
 

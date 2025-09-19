@@ -71,6 +71,7 @@
                 hx-get="{{object.get_profile_url}}"
                 {% if push_url %}
                 hx-push-url="{{object.get_profile_url}}"
+                {% endif %}
                 hx-target="#{{view_id|safe}}"
                 hx-swap="outerHTML"
                   ><img
