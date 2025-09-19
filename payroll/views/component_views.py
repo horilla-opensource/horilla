@@ -131,7 +131,7 @@ def payroll_calculation(employee, start_date, end_date):
     employer_epf_amount = basic_pay_details["employer_epf_amount"]
     employer_etf_amount = basic_pay_details["employer_etf_amount"]
 
-    ## debug steps
+    ## debug steps # todo remove later
     print("employee_epf_amount", employee_epf_amount , "employer_epf_amount", employer_epf_amount, "employer_etf_amount", employer_etf_amount)
 
     updated_basic_pay_data = update_compensation_deduction(
