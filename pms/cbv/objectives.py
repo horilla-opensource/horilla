@@ -481,12 +481,27 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
     model = EmployeeKeyResult
     new_display_title = _("Create Key result")
     dynamic_create_fields = [("key_result_id", DynamicKeyResultCreateForm)]
+    view_id = "empKeyrsult"
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.view_id = "empKeyrsult"
+    def dispatch(self, request, *args, **kwargs):
+        emp_obj_id = kwargs.get("emp_obj_id")
+
+        if emp_obj_id:
+            self.emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
+        else:
+            pk = kwargs.get("pk")
+            if pk:
+                key_result = EmployeeKeyResult.objects.get(pk=pk)
+                self.emp_objective = key_result.employee_objective_id
+            else:
+                self.emp_objective = None
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
         emp_obj_id = self.kwargs.get("emp_obj_id")
-        self.emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
+        kwargs["emp_objective"] = EmployeeObjective.objects.get(id=emp_obj_id)
+        return kwargs
 
     def get(self, request, *args, pk=None, **kwargs):
         if (
