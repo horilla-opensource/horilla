@@ -633,7 +633,7 @@ class Candidate(HorillaModel):
     schedule_date = models.DateTimeField(
         blank=True, null=True, verbose_name=_("Schedule date")
     )
-    email = models.EmailField(max_length=254, unique=True, verbose_name=_("Email"))
+    email = models.EmailField(max_length=254, verbose_name=_("Email"))
     mobile = models.CharField(
         max_length=15,
         blank=True,
