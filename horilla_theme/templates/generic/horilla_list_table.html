@@ -136,7 +136,8 @@
                         </thead>
                         <tbody>
                             {% for instance in queryset %}
-                                <tr class="border-b border-[#f3f3f3]{% if row_attrs %} cursor-pointer {% endif %}"
+                                <tr
+                                    {% comment %} class="border-b border-[#f3f3f3]{% if row_attrs %} cursor-pointer {% endif %}" {% endcomment %}
                                     data-instance-id="{{instance.id}}"
                                     {{row_attrs|format:instance|safe}}
                                 >
