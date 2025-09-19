@@ -41,14 +41,14 @@
     <div class="py-5" id="detailViewContainer">
         <div class="flex justify-between items-center mb-2">
             <h2 class="text-lg font-semibold text-gray-900">{% trans "Announcement" %}</h2>
-            <button class="text-gray-500 hover:text-red-500 text-xl" 
+            <button class="text-gray-500 hover:text-red-500 text-xl"
                 onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
                 <img src="{% static 'horilla_theme/assets/icons/close.svg' %} " alt="" />
             </button>
         </div>
 
         <div class="bg-white border border-gray-300 rounded-xl shadow-sm max-w-4xl mx-auto relative mt-2">
-            
+
             <div class="px-6 pt-5 pb-4 border-b border-gray-300">
                 <div class="flex justify-between items-start mb-3 flex-wrap md:flex-nowrap">
                     <h5 class="text-xl font-extrabold text-gray-900 flex-1 md:mr-4 mb-2 md:mb-0">{{instance.title}} </h5>
@@ -91,10 +91,10 @@
                         <small>{% trans "Posted on" %} <span class="dateformat_changer">{{ announcement.created_at.date}}</span> {% trans "at" %} <span class="timeformat_changer">{{ announcement.created_at.time}}</span></small>
                     </div>
                     {% if perms.base.view_announcement %}
-                        <div class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium cursor-pointer mt-2 hover:bg-blue-200" 
-                            hx-get="{% url 'announcement-viewed-by' %}?announcement_id={{announcement.id}}" 
+                        <div class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium cursor-pointer mt-2 hover:bg-blue-200"
+                            hx-get="{% url 'announcement-viewed-by' %}?announcement_id={{announcement.id}}"
                             title="{{announcement.get_views|length}} Views"
-                            data-toggle="oh-modal-toggle" 
+                            data-toggle="oh-modal-toggle"
                             hx-target="#objectCreateModalTarget"
                             data-target="#objectCreateModal"
                         >
@@ -107,7 +107,7 @@
 
             <div class="px-4 py-6 max-h-[300px] overflow-auto">
                 <span class=" block font-semibold text-sm mb-2 text-[#565E6C] w-32">
-                    {% trans "Description" %} 
+                    {% trans "Description" %}
                 </span>
                 <div class="text-gray-700 text-base leading-relaxed px-2">
                     {{ announcement.description|safe }}
@@ -118,9 +118,9 @@
                 {% for attachment in instance.attachments.all %}
                     {% with extension=attachment.file.name|lower|slice:"-4:" %}
                         <a href="{{ attachment.file.url }}" target="_blank" class="oh-helpdesk__icon">
-                            <span 
+                            <span
                                 title="{{ attachment }}"
-                                class="oh-file-icon 
+                                class="oh-file-icon
                                 {% if extension == '.pdf' %} oh-file-icon--pdf
                                 {% elif extension in '.jpg .jpeg .png .gif .svg' %} oh-file-icon--image
                                 {% elif extension in '.mp3 .wav .ogg' %} oh-file-icon--audio
@@ -129,7 +129,7 @@
                                 {% elif extension in '.ppt .pptx' %} oh-file-icon--powerpoint
                                 {% elif extension in '.html' %} oh-file-icon--html
                                 {% else %} oh-file-icon--default
-                                {% endif %}" 
+                                {% endif %}"
                                 onmouseover="enlargeDoc('{{ attachment.file.url }}',$(this))"
                                 {% comment %} onmouseout="hideEnlargeDoc()" {% endcomment %}
                             >
@@ -158,9 +158,9 @@
                             </button>
                         {% else %}
                             <button class="bg-gray-200 text-gray-700 oh-btn rounded-md text-sm flex items-center gap-1 hover:bg-gray-300 transition-colors duration-200"
-                                hx-get="{% url 'announcement-view-comment' instance.id %}" 
+                                hx-get="{% url 'announcement-view-comment' instance.id %}"
                                 hx-target="#genericOffCanvas"
-                                data-target='#genericSidebar' 
+                                data-target='#genericSidebar'
                                 onclick="$('#genericSidebar').addClass('oh-activity-sidebar--show')"
                                 title="{% trans 'Comments' %}"
                             >
@@ -218,4 +218,3 @@
         <div class="m-3 max-h-[200px]" id="enlargeattachmentContainer"></div>
     </div>
 </div>
-
