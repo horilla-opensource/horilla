@@ -495,7 +495,7 @@ def monthly_computation(employee, wage, start_date, end_date, *args, **kwargs):
 
 def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, **kwargs):
 
-# Salary per Day
+    # Salary per Day
     salary_per_day = wage / 30
 
 
