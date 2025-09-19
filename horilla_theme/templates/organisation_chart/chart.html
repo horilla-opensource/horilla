@@ -1,75 +1,573 @@
-{% load static %}
-<div class="oh-main__org-chart-container rounded shadow-card m-0 border-none" id="orgChart"></div>
+{% load static i18n %}
+
+<style>
+	.genealogy-tree ul {
+		display: flex;
+		justify-content: center;
+		align-items: stretch;
+		padding-top: 20px;
+		padding-left: 0px;
+		position: relative;
+	}
+
+	.genealogy-tree li {
+		text-align: center;
+		list-style-type: none;
+		position: relative;
+		padding: 20px 5px 0 5px;
+	}
+
+	.genealogy-tree li::before,
+	.genealogy-tree li::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 50%;
+		border-top: 2px solid #ccc;
+		width: 50%;
+		height: 18px;
+	}
+
+	.genealogy-tree li::after {
+		right: auto;
+		left: 50%;
+		border-left: 2px solid #ccc;
+	}
+
+	.genealogy-tree li:only-child::after,
+	.genealogy-tree li:only-child::before {
+		display: none;
+	}
+
+	.genealogy-tree li:only-child {
+		padding-top: 0;
+	}
+
+	.genealogy-tree li:first-child::before,
+	.genealogy-tree li:last-child::after {
+		border: 0 none;
+	}
+
+	.genealogy-tree li:last-child::before {
+		border-right: 2px solid #ccc;
+		border-radius: 0 5px 0 0;
+		-webkit-border-radius: 0 5px 0 0;
+		-moz-border-radius: 0 5px 0 0;
+	}
+
+	.genealogy-tree li:first-child::after {
+		border-radius: 5px 0 0 0;
+		-webkit-border-radius: 5px 0 0 0;
+		-moz-border-radius: 5px 0 0 0;
+	}
+
+	.genealogy-tree ul ul::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 50%;
+		border-left: 2px solid #ccc;
+		width: 0;
+		height: 20px;
+	}
+
+	.genealogy-tree li a {
+		text-decoration: none;
+		color: #666;
+		font-size: 13px;
+		display: inline-block;
+		border-radius: 10px;
+		transition: 0.3s;
+		min-width: 180px;
+		min-height: 120px;
+	}
+
+	.member-view-box {
+		padding: 10px 10px;
+		text-align: center;
+		border-radius: 10px;
+		border: 1px;
+		border-color: #ffb6ab;
+		border-style: solid;
+		position: relative;
+		background-color: #fff6e0;
+		display: flex;
+		flex-flow: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.genealogy-tree li > a .member-view-box span {
+		display: none;
+	}
+
+	.genealogy-tree li.has-children > a .member-view-box span {
+		display: block;
+	}
+
+	.has-children > a .member-view-box {
+		background-color: #ffe4e0;
+	}
+
+	.member-image {
+		padding: 10px;
+		width: 120px;
+		position: relative;
+	}
+
+	.member-image img {
+		width: 100px;
+		height: 100px;
+		border-radius: 6px;
+		background-color: #fff;
+		z-index: 1;
+	}
+
+	.member-header {
+		color: #333;
+		font-size: 16px;
+		font-weight: 600;
+	}
+
+	.member-footer {
+		text-align: center;
+	}
+
+	.member-footer div.name {
+		color: #666;
+		font-size: 13px;
+		margin-bottom: 15px;
+		font-weight: 500;
+	}
+
+	.canvas-wrap {
+		position: relative;
+		overflow-y: auto;
+		background: #f7f7f7;
+		border-radius: 10px;
+		overflow-x: auto;
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		height: calc(100vh - 230px);
+	}
+
+	.canvas {
+		position: relative;
+		transform: translate(var(--tx), var(--ty)) scale(var(--scale));
+		transform-origin: 0 0;
+		transition: transform 0s;
+	}
+
+	.node {
+		position: absolute;
+		min-width: 140px;
+		min-height: 72px;
+		padding: 12px 14px;
+		background: #fff;
+		border: 1px solid #e5e7eb;
+		border-radius: 10px;
+		box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+		cursor: move;
+		user-select: none;
+	}
+
+	.canvas-wrap.hand {
+		cursor: grab;
+	}
+
+	.canvas-wrap.hand.dragging {
+		cursor: grabbing;
+	}
+
+	.upArrow {
+		transform: rotate(180deg);
+	}
+	.buttons {
+		position: absolute;
+		right: 2%;
+		top: 210px;
+	}
+
+    .buttons .zoomIn, .buttons .zoomOut {
+		padding: 7px;
+		margin-bottom: 5px;
+		background-color: #444;
+		color: #fff;
+		border-style: none;
+		border: 1px solid #000;
+		border-radius: 8px;
+    }
+
+	.direction-controls {
+		width: 74px;
+		height: 74px;
+		background: #444;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.dir-btn {
+		position: absolute;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: bold;
+		color: #495057;
+		transition: all 0.15s ease;
+		font-family: monospace;
+		color: #fff;
+
+	}
+
+	.dir-btn:hover {
+		background: rgba(233, 236, 239, 0.7);
+		color: #212529;
+	}
+
+	.dir-btn:active {
+		background: rgba(222, 226, 230, 0.8);
+	}
+
+	.dir-btn.up {
+		top: 0;
+		left: 25px;
+		width: 24px;
+		height: 25px;
+	}
+
+	.dir-btn.left {
+		top: 25px;
+		left: 0;
+		width: 25px;
+		height: 24px;
+	}
+
+	.dir-btn.right {
+		top: 25px;
+		right: 0;
+		width: 25px;
+		height: 24px;
+	}
+
+	.dir-btn.down {
+		bottom: 0;
+		left: 25px;
+		width: 24px;
+		height: 25px;
+	}
+</style>
+
+<div class="canvas-wrap" id="viewport">
+	<div class="canvas" id="canvas" style="--tx: 0px; --ty: 0px; --scale: 1">
+		<div class="genealogy-body genealogjy-scroll">
+			<div class="genealogy-tree" id="org-tree"></div>
+		</div>
+	</div>
+</div>
+
+<div class="buttons">
+	<button class="zoomOut cursor-zoom-out"><i class="fa fa-search-minus" aria-hidden="true"></i></button>
+	<button class="zoomIn cursor-zoom-in"><i class="fa fa-search-plus" aria-hidden="true"></i></button>
+
+	<div class="direction-controls text-2xl">
+		<button class="dir-btn up" ><ion-icon name="chevron-up-outline"></ion-icon></button>
+		<button class="dir-btn left" ><ion-icon name="chevron-back-outline"></ion-icon></button>
+		<button class="dir-btn right" ><ion-icon name="chevron-forward-outline"></ion-icon></button>
+		<button class="dir-btn down" ><ion-icon name="chevron-down-outline"></ion-icon></button>
+	</div>
+</div>
+
+
 {{ act_datasource|json_script:"chart-data" }}
-<script src="{% static 'cdn/orgChart/orgChart.js' %}"></script>
 
 <script>
-	var chart;
-	var flatData = [];
-	function initChart() {
-		const hierarchicalData = JSON.parse(
-			document.getElementById("chart-data").textContent
+	var orgData = JSON.parse($("#chart-data").text());
+
+	// Function to create a tree node
+	function createNode(person) {
+		const hasChildren = person.children && person.children.length > 0;
+
+		return `
+                <li class="flex-1 flex flex-col items-center justify-start ${
+					hasChildren ? "has-children" : ""
+				}">
+                    <a class="block" href="#" onclick="event.preventDefault()">
+                        <div class="member-view-box relative h-full">
+                            <div class="member-header">${person.name}</div>
+                            <div class="member-footer">
+                                <div class="name">${person.title}</div>
+                            </div>
+							<span class="absolute bottom-[-10px] left-0 right-0 text-xl"><ion-icon name="chevron-down-outline"></ion-icon></span>
+                        </div>
+                    </a>
+                    ${hasChildren ? createChildrenList(person.children) : ""}
+                </li>
+            `;
+	}
+
+	// Function to create children list
+	function createChildrenList(children) {
+		if (!children || children.length === 0) return "";
+
+		return `
+                <ul>
+                    ${children.map((child) => createNode(child)).join("")}
+                </ul>
+            `;
+	}
+
+	// Function to build the complete tree
+	function buildOrgTree(data) {
+		return `
+                <ul>
+                    ${createNode(data)}
+                </ul>
+            `;
+	}
+
+	// Initialize the tree
+	function initializeTree() {
+		const treeContainer = document.getElementById("org-tree");
+		treeContainer.innerHTML = buildOrgTree(orgData);
+		setupTreeBehavior();
+	}
+
+	// Setup tree expand/collapse behavior
+	function setupTreeBehavior() {
+		$(".genealogy-tree ul").hide();
+		$(".genealogy-tree > ul").show();
+		$(".genealogy-tree ul.active").show();
+
+		$(".genealogy-tree li").each(function () {
+			if ($(this).children("ul").length) {
+				$(this).addClass("has-children");
+			}
+		});
+
+		$(".genealogy-tree li .member-view-box")
+			.off("click")
+			.on("click", function (e) {
+				const $children = $(this).closest("li").children("ul");
+				$(this).find("span").toggleClass("upArrow");
+
+				if ($children.length) {
+					if ($children.is(":visible")) {
+						$children
+							.slideUp("fast")
+							.removeClass("active")
+							.find("ul")
+							.slideUp("fast")
+							.removeClass("active");
+					} else {
+						$children.slideDown("fast").addClass("active");
+					}
+				}
+
+				e.stopPropagation();
+			});
+	}
+
+	// Pan and zoom functionality
+	function initializePanAndZoom(
+		viewportId = "viewport",
+		canvasId = "canvas",
+	) {
+		const wrap = document.getElementById(viewportId);
+		const plane = document.getElementById(canvasId);
+
+		let isSpace = false,
+			isPanning = false,
+			start = { x: 0, y: 0 },
+			base = { tx: 0, ty: 0 };
+		let scale = 1;
+
+		const MIN = 0.2,
+			MAX = 3,
+			ZOOM_STEP = 0.1; // 10% per step
+			PAN_STEP = 50;
+
+		// Apply transform to plane
+		const setVars = () => {
+			plane.style.transform = `translate(${base.tx}px, ${base.ty}px) scale(${scale})`;
+		};
+
+		// --- Keyboard Space Panning ---
+		document.addEventListener("keydown", (e) => {
+			if (e.code === "Space" && !isSpace) {
+				const target = e.target;
+				const isEditable =
+					target.tagName === "INPUT" ||
+					target.tagName === "TEXTAREA" ||
+					target.isContentEditable;
+
+				if (isEditable) return; // allow space in inputs
+
+				isSpace = true;
+				wrap.classList.add("hand");
+				e.preventDefault();
+			}
+		});
+
+		document.addEventListener("keyup", (e) => {
+			if (e.code === "Space") {
+				isSpace = false;
+				wrap.classList.remove("hand", "dragging");
+			}
+		});
+
+		// --- Mouse Panning ---
+		wrap.addEventListener("mousedown", (e) => {
+			if (!isSpace) return;
+			isPanning = true;
+			wrap.classList.add("dragging");
+			start.x = e.clientX;
+			start.y = e.clientY;
+			e.preventDefault();
+		});
+
+		document.addEventListener("mousemove", (e) => {
+			if (!isPanning) return;
+			base.tx += e.clientX - start.x;
+			base.ty += e.clientY - start.y;
+			start.x = e.clientX;
+			start.y = e.clientY;
+			setVars();
+		});
+
+		document.addEventListener("mouseup", () => {
+			if (isPanning) {
+				isPanning = false;
+				wrap.classList.remove("dragging");
+			}
+		});
+
+		// Prevent clicks after drag
+		plane.addEventListener(
+			"click",
+			(e) => {
+				if (isPanning || isSpace) {
+					e.stopPropagation();
+					e.preventDefault();
+				}
+			},
+			true
 		);
 
-		let idCounter = 1;
-		flatData = [];
+		// --- Wheel Zoom ---
+		wrap.addEventListener(
+			"wheel",
+			(e) => {
+				if (!e.ctrlKey) return;
+				e.preventDefault();
 
-		function processNode(node, pid) {
-			const id = idCounter++;
-			const newNode = {
-				id: id,
-				pid: pid,
-				name: node.name,
-				title: node.title,
-				tags: ["primary"],
-			};
-			flatData.push(newNode);
+				const rect = plane.getBoundingClientRect();
+				const cx = (e.clientX - rect.left) / scale;
+				const cy = (e.clientY - rect.top) / scale;
 
-			if (node.children && node.children.length > 0) {
-				for (const child of node.children) {
-					processNode(child, id);
-				}
-			}
+				const old = scale;
+				const dir = Math.sign(e.deltaY); // 1 or -1
+				scale = Math.min(
+					MAX,
+					Math.max(MIN, old * (1 - dir * ZOOM_STEP))
+				);
+
+				base.tx -= cx * scale - cx * old;
+				base.ty -= cy * scale - cy * old;
+				setVars();
+			},
+			{ passive: false }
+		);
+
+		// --- Zoom Buttons ---
+		$(".zoomIn").on("click", () => {
+			scale = Math.min(MAX, scale * (1 + ZOOM_STEP));
+			setVars();
+		});
+		$(".zoomOut").on("click", () => {
+			scale = Math.max(MIN, scale * (1 - ZOOM_STEP));
+			setVars();
+		});
+
+		// --- Direction Buttons ---
+		$(".dir-btn.up").on("click", () => {
+			base.ty += PAN_STEP;
+			setVars();
+		});
+		$(".dir-btn.down").on("click", () => {
+			base.ty -= PAN_STEP;
+			setVars();
+		});
+		$(".dir-btn.left").on("click", () => {
+			base.tx += PAN_STEP;
+			setVars();
+		});
+		$(".dir-btn.right").on("click", () => {
+			base.tx -= PAN_STEP;
+			setVars();
+		});
+
+		wrap.addEventListener("dblclick", (e) => {
+			if (e.target.closest(".buttons")) return;
+
+			base = { tx: 0, ty: 0 };
+			scale = 1;
+			setVars();
+		});
+
+		setVars();
+	}
+
+	function filterMembers(keyword) {
+		var $tree = $("#org-tree");
+
+		$tree.find(".matched, .retained").removeClass("matched retained");
+		$tree.find("li").removeClass("hidden");
+
+		if (!keyword.trim()) {
+			return;
 		}
 
-		processNode(hierarchicalData, null);
-
-		OrgChart.templates.primary = Object.assign({}, OrgChart.templates.ana);
-		OrgChart.templates.primary.size = [275, 80];
-		OrgChart.templates.primary.node = `
-            <rect x="0" y="0" height="80" width="250" fill="#e54f381a" stroke="#e54f38bd" stroke-width="1" rx="10" ry="10"></rect>
-        `;
-		OrgChart.templates.primary.field_0 = `
-            <text class="field_0" x="110" y="30" text-anchor="middle" style="font-weight:bold;font-size:14px;">{val}</text>
-        `;
-		OrgChart.templates.primary.field_1 = `
-            <text class="field_1" x="110" y="55" text-anchor="middle" style="font-size:12px;fill:#666;">{val}</text>
-        `;
-
-		chart = new OrgChart("#orgChart", {
-			nodeBinding: {
-				field_0: "name",
-				field_1: "title",
-			},
-			tags: {
-				primary: { template: "primary" },
-			},
-			enableSearch: true,
-			toolbar: false,
-			nodeMouseClick: OrgChart.action.none,
-			mouseScrool: OrgChart.action.ctrlZoom,
-			mouseScrool: OrgChart.action.scroll,
-			orientation: OrgChart.orientation.left,
-			align: OrgChart.align.orientation,
-			nodes: flatData,
-			scaleInitial: 0.8,
-			collapse: {
-				level: 2,
-				allChildren: true,
-			},
+		var $matched = $tree.find(".member-view-box").filter(function () {
+			return (
+				$(this).text().toLowerCase().indexOf(keyword.toLowerCase()) > -1
+			);
 		});
+
+		$matched.addClass("matched");
+
+		$matched
+			.parents("li")
+			.addClass("retained")
+			.each(function () {
+				$(this).parents("ul").addClass("active");
+				$(this).parents("ul").slideDown("fast").addClass("active");
+			});
+
+		$tree
+			.find("li")
+			.not(".retained")
+			.not($matched.closest("li"))
+			.addClass("hidden");
 	}
+
 	$(document).ready(function () {
-			initChart();
+		let searchTimer;
+		const searchDelay = 500;
+		initializeTree();
+		initializePanAndZoom();
+
+		$("#searchInput").on("keyup", function () {
+			clearTimeout(searchTimer);
+			const search = $(this).val();
+			searchTimer = setTimeout(function () {
+				filterMembers(search);
+			}, searchDelay);
+		});
 	});
 </script>

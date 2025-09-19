@@ -218,7 +218,7 @@ class ModelForm(forms.ModelForm):
 
             # Time field
             elif isinstance(widget, forms.TimeInput):
-                field.initial = now
+                field.initial = now.strftime("%H:%M")
                 widget.input_type = "time"
                 widget.format = "%H:%M"
                 field.input_formats = ["%H:%M"]
@@ -2899,6 +2899,9 @@ class AnnouncementForm(ModelForm):
             filter_template_path="employee_filters.html",
         ),
         label="Employees",
+        help_text=_(
+            "If no employee, department or job position is selected, the announcement will be visible to all employees in the selected company."
+        ),
     )
 
     cols = {
@@ -2981,16 +2984,16 @@ class AnnouncementForm(ModelForm):
         job_positions_selected = self.cleaned_data.get("job_position")
 
         # Check if none of the three are selected
-        if (
-            not employees_selected
-            and not departments_selected
-            and not job_positions_selected
-        ):
-            raise forms.ValidationError(
-                _(
-                    "You must select at least one of: Employees, Department, or Job Position."
-                )
-            )
+        # if (
+        #     not employees_selected
+        #     and not departments_selected
+        #     and not job_positions_selected
+        # ):
+        #     raise forms.ValidationError(
+        #         _(
+        #             "You must select at least one of: Employees, Department, or Job Position."
+        #         )
+        #     )
 
         return cleaned_data
 

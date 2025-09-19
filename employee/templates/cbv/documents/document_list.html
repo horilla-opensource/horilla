@@ -1,0 +1,274 @@
+{% load static i18n generic_template_filters %}
+
+<div id="{{view_id}}" class="hlv-container">
+
+	<script>
+		if (!$(".HTV").length) {
+			reloadMessage(null);
+		}
+	</script>
+	<button
+		class="reload-record"
+		id="{{view_id}}Reload"
+		hidden
+		hx-get="{{request.path}}?{{saved_filters.urlencode}}"
+		hx-target="#{{view_id}}"
+		hx-swap="outerHTML"
+		hx-on:click="htmxLoadIndicator(this);"
+	></button>
+
+	{% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
+
+	{% if queryset|length %}
+
+		<div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative">
+			<div
+				class="max-h-[600px] overflow-hidden overflow-y-auto overflow-x-auto heightContainer"
+			>
+				<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+					<div
+						class="hidden md:grid grid-cols-[60px_1fr_120px_120px_180px] gap-4 px-6 py-4 bg-slate-50 border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500 items-center"
+					>
+						<div></div>
+						<div>{% trans "Document" %}</div>
+						<div>{% trans "Status" %}</div>
+						<div>{% trans "Date" %}</div>
+						<div>{% trans "Actions" %}</div>
+					</div>
+
+					{% for document in queryset %}
+						<div
+							class="grid md:grid-cols-[60px_1fr_120px_120px_180px] gap-4 px-6 py-4 border-b border-slate-100 items-center hover:bg-slate-50 cursor-pointer
+								{% if document.document %}
+									{% if document.status == "approved" %}row-status--yellow
+									{% elif document.status == 'rejected' %}row-status--red
+									{% elif document.status == 'requested' %}row-status--blue
+									{% endif %}
+								{% endif %}
+							"
+							hx-get="{% url 'view-file' document.id %}"
+							hx-target="#viewFile"
+							data-toggle="oh-modal-toggle"
+							data-target="#viewFileModal"
+							id="document{{document.id}}"
+						>
+							{% if document.document %}
+								{% if document.status == "approved" %}
+									<div
+										class="w-8 h-8 rounded-md bg-green-100 text-green-700 flex items-center justify-center shrink-0"
+									>
+										<ion-icon name="checkmark-outline"></ion-icon>
+									</div>
+								{% elif document.status == 'rejected' %}
+									<div
+										class="w-8 h-8 rounded-md bg-red-100 text-red-600 flex items-center justify-center shrink-0"
+									>
+										<ion-icon name="warning-outline"></ion-icon>
+									</div>
+								{% else %}
+									<div
+										class="w-8 h-8 rounded-md bg-blue-100 text-blue-600 flex items-center justify-center shrink-0"
+									>
+										<ion-icon name="document-text-outline"></ion-icon>
+									</div>
+								{% endif %}
+							{% else %}
+								<div
+									class="w-8 h-8 rounded-md bg-amber-100 text-amber-700 flex items-center justify-center shrink-0"
+								>
+									<ion-icon name="cloud-upload-outline"></ion-icon>
+								</div>
+							{% endif %}
+
+							<div class="w-full">
+								<div class="title-wrapper">
+									<div
+										onclick="event.stopPropagation()"
+										class="font-semibold text-slate-900 mb-1 hover:bg-slate-100 px-1 rounded inline-block {% if document.document_request_id %} cursor-pointer {% else %} cursor-text title-display {% endif %}">
+										{{ document.title }} -- {{document.employee_id.get_full_name}}
+									</div>
+
+									<input type="text"
+										name="title"
+										data-id="{{document.id}}"
+										class="hidden font-semibold text-slate-900 mb-1 cursor-text border border-slate-300 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-blue-300 w-full title-input"
+										value="{{ document.title }}"
+										onclick="event.stopPropagation();"
+									>
+								</div>
+							</div>
+
+							<div>
+								<div
+									class="text-sm font-medium px-3 py-1 rounded-xl text-center {% if document.document %} {% if document.status == 'approved' %}bg-green-100 text-green-700 {% elif document.status == 'rejected' %}bg-red-100 text-red-700 {% elif document.status == 'requested' %}bg-blue-100 text-blue-700 {% endif %} {% else %} bg-amber-100 text-amber-700 {% endif %}"
+								>
+									{% if document.document %} {{document.status}}
+									{% else %} {% trans "No Document" %}
+									{% endif %}
+								</div>
+							</div>
+
+							<div class="text-sm text-slate-500 font-medium">
+								{% if document.issue_date %}<span class="dateformat_changer"> {{document.issue_date}}</span>{% else %} - {% endif %}
+							</div>
+
+							<div class="flex gap-1 w-full">
+								{% if document.document %}
+									{% if perms.horilla_document.change_documentrequest %}
+										{% if document.status == "approved" %}
+											<button
+												class="oh-btn flex-1 text-base bg-green-100 text-green-700 hover:bg-green-200 hover:scale-105 opacity-50 cursor-not-allowed"
+												title="{% trans 'Approve' %}"
+											>
+												<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+											</button>
+
+											<button
+												class="oh-btn flex-1 text-base bg-red-100 text-red-600 hover:bg-red-200 hover:scale-105 transition"
+												hx-get="{% url 'document-reject' document.id %}"
+												hx-target="#genericModalBody"
+												data-toggle="oh-modal-toggle"
+												data-target="#genericModal"
+												title="{% trans 'Reject' %}"
+												onclick="event.stopPropagation()"
+											>
+												<ion-icon class="me-1" name="close-outline"></ion-icon>
+											</button>
+										{% else %}
+											<button
+												class="oh-btn flex-1 text-base bg-green-100 text-green-700 hover:bg-green-200 hover:scale-105"
+												hx-get="{% url 'document-approve' document.id %}"
+												title="{% trans 'Approve' %}"
+												onclick="event.stopPropagation()"
+											>
+												<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
+											</button>
+											<button
+												class="oh-btn flex-1 text-base bg-red-100 text-red-600 hover:bg-red-200 hover:scale-105 transition opacity-50 cursor-not-allowed"
+												title="{% trans 'Reject' %}"
+											>
+												<ion-icon class="me-1" name="close-outline"></ion-icon>
+											</button>
+										{% endif %}
+									{% endif %}
+								{% else %}
+									<button
+										class="oh-btn flex-1 text-base bg-amber-100 text-amber-600 hover:bg-amber-200 hover:scale-105 transition"
+										title="{% trans 'Upload Document' %}"
+										hx-get="{% url 'file-upload' document.id %}"
+										hx-target="#genericModalBody"
+										data-document-id="{{ document.id }}"
+										data-toggle="oh-modal-toggle"
+										data-target="#genericModal"
+										onclick="event.stopPropagation()"
+									>
+										<ion-icon
+											class="me-1"
+											name="cloud-upload-outline"
+										></ion-icon>
+									</button>
+								{% endif %}
+
+								{% if not document.document_request_id or perms.horilla_document.change_documentrequest %}
+									<form
+										hx-confirm="{% trans 'Are you sure you want to delete this Document Request?' %}"
+										hx-post="{% url 'document-delete' document.id %}"
+										hx-target="#document{{document.id}}"
+										hx-swap="outerHTML"
+										hx-on-htmx-after-request="setTimeout(() => { reloadMessage(); }, 300);"
+										onclick="event.stopPropagation()"
+									>
+										{% csrf_token %}
+										<button
+											type="submit"
+											class="oh-btn text-base bg-slate-100 text-slate-500 hover:scale-105 hover:text-red-500 transition"
+											title="{% trans 'Delete' %}"
+										>
+											<ion-icon class="me-1" name="trash-outline"></ion-icon>
+										</button>
+									</form>
+								{% endif %}
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+			{% if queryset.has_previous or queryset.has_next %}
+				<div
+					class="flex justify-between items-center mt-4 w-full inset-0"
+				>
+					<p class="text-xs text-[#666]">{% trans "Page" %} {{ queryset.number }} {% trans "of" %} {{ queryset.paginator.num_pages }}</p>
+					<div class="flex gap-3 text-[#666] items-center">
+						{% if queryset.has_previous %}
+							<button
+								class="text-xs hover:text-primary-600 transition duration-300"
+								hx-target="#{{view_id}}"
+								hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.previous_page_number }}"
+							>
+								<i class="fa-solid fa-arrow-left"></i>
+							</button>
+						{% endif %}
+						{{ queryset.number }} / {{ queryset.paginator.num_pages }}
+						{% if queryset.has_next %}
+							<button
+								class="text-xs hover:text-primary-600 transition duration-300"
+								hx-target="#{{view_id}}"
+								hx-get="{{search_url}}?{{request.GET.urlencode}}&page={{ queryset.next_page_number }}"
+							>
+								<i class="fa-solid fa-arrow-right"></i>
+							</button>
+						{% endif %}
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	{% else %}
+			<div class="oh-wrapper h-full" align="center" >
+				<div class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]">
+					<div class="flex flex-col items-center justify-center h-full">
+						<img src="/static/horilla_theme/assets/img/no-records.svg" alt="" width="300" class="mb-4">
+						<p class="text-[#666] mb-5">{% trans "No Documents available at the moment" %}</p>
+					</div>
+				</div>
+			</div>
+	{% endif %}
+</div>
+
+<script>
+	reloadSelectedCount($('#count_{{view_id}}'),'{{selected_instances_key_id}}');
+	reloadSelectedCount($('.count_{{view_id}}'),'{{selected_instances_key_id}}');
+	{% if records_count_in_tab %}
+		var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
+		var badge = $(`#badge-${tabId}`);
+		var count = "{{queryset.paginator.count}}";
+		var label = badge.attr("data-badge-label") || "";
+		var title = count + " " + label;
+		badge.html(count);
+		badge.attr("title", title);
+	{% endif %}
+</script>
+
+<script>
+	$("ul[data-search-url] a").click(function (e) {
+		e.preventDefault();
+		const url =  $(this).attr("hx-get")
+		const $urlObj = $('<a>', { href: url });
+		const searchParams = new URLSearchParams($urlObj[0].search);
+
+		let lastPageParam = null;
+		let lastPageValue = 1;
+
+		searchParams.forEach((value, param) => {
+		if (param === "page") {
+			lastPageParam = param;
+			lastPageValue = value.split(",").pop();
+		}
+		});
+
+		form = $(`form[hx-get="{{search_url}}"]`)
+		pageInput = form.find("#pageInput")
+		pageInput.attr("name",lastPageParam)
+		pageInput.attr("value",lastPageValue)
+
+	});
+</script>

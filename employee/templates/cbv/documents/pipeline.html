@@ -1,0 +1,65 @@
+{% load i18n generic_template_filters %}
+
+<div id="{{view_id}}">
+  {% for group in groups %}
+  <div id="{{selected_instances_key_name}}{{ group.id }}" data-ids="[]"></div>
+  <div class="oh-tabs__movable-area mb-2">
+    <div class="oh-tabs__movable">
+      <div class="oh-tabs__movable-header"  style="cursor:pointer;" onclick="$(this).parent().find('.oh-tabs__movable-body').toggleClass('d-none');">
+        <span class"oh-tabs__movable-title">{{group}}</span>
+
+        <div onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
+          <div style="cursor: pointer;" onclick="event.stopPropagation()" class="oh-dropdown" x-data="{open: false}">
+            <button
+              class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn"
+              @click="open = !open"
+              @click.outside="open = false"
+              title="Actions"
+              style="color: #e54f38;"
+            >
+              <ion-icon
+                name="ellipsis-vertical"
+                role="img"
+                class="md hydrated"
+                aria-label="ellipsis vertical"
+              ></ion-icon>
+            </button>
+            <div
+              class="oh-dropdown__menu oh-dropdown__menu--right mwidth"
+              x-show="open"
+              style="display: none; min-width:135px !important;"
+            >
+              <ul class="oh-dropdown__items">
+                {% for action in actions %}
+                {% if action.accessibility|accessibility:group %}
+                <li class="oh-dropdown__item">
+                  <a {{action.attrs|format:group|safe}}>{{action.action}}</a>
+                </li>
+                {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+      class="oh-tabs__movable-body position-relative d-none"
+      hx-get="{{url}}?{% for parameter in parameters %}{{parameter|format:group}}&{% endfor %}{{request.GET.urlencode}}"
+      hx-trigger="load"
+
+      >
+    </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+<script>
+    var tabId = $("#{{view_id}}").closest(".oh-tabs__content").attr("id");
+    var badge = $(`#badge-${tabId}`);
+    var count = "{{groups|length}}";
+    var label = badge.attr("data-badge-label") || "";
+    var title = count + " " + label;
+    badge.html(count);
+    badge.attr("title", title);
+
+</script>

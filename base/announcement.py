@@ -381,9 +381,7 @@ def comment_view(request, anoun_id):
         "-created_at"
     )
     if not announcement.public_comments:
-        comments = filter_own_records(
-            request, comments, "base.view_announcementcomment"
-        )
+        comments = filter_own_records(request, comments, "base.view_announcement")
     no_comments = not comments.exists()
 
     return render(

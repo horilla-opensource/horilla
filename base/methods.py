@@ -117,10 +117,14 @@ CHART_CONFIG = {
         "perm": "asset.change_assetrequest",
         "need_reporting_manager": True,
     },
+    "employee_work_info": {
+        "app": "employee",
+        "perm": "employee.change_employee",
+        "need_reporting_manager": True,
+    },
     "employees_chart": {"app": "employee"},
     "gender_chart": {"app": "employee"},
     "department_chart": {"app": "base"},
-    "employee_work_info": {"app": "employee"},
 }
 
 

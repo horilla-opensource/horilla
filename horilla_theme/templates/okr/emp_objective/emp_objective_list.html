@@ -15,6 +15,7 @@
 <div class="accordion-wrapper space-y-2">
     {% for emp_objective in emp_objectives.object_list %}
       {% if perms.pms.view_employeeobjective or emp_objective|is_manager_or_owner:request.user %}
+      <div id="ekrIds{{emp_objective.pk}}" data-ids="[]"></div>
       <div class="accordion-item border border-primary-300 rounded-md">
         <button
             class="accordion-btn w-full flex justify-between gap-5 md:gap-0 items-center flex-wrap px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all"
@@ -37,13 +38,12 @@
           <div class="flex items-center flex-wrap gap-2 md:gap-8">
             {% if emp_objective.employee_key_result.first %}
             <!-- Progress -->
-            <div class="dropdown-toggle flex items-center gap-2">
-              <div class="w-48 bg-gray-200 rounded-full h-1.5">
-                <div class="bg-primary-600 h-1.5 rounded-full" style="width: {{ emp_objective.progress_percentage|default:0 }}%"></div>
-
+              <div class="dropdown-toggle flex items-center gap-2">
+                <div class="w-48 bg-gray-200 rounded-full h-1.5">
+                  <div class="bg-primary-600 h-1.5 rounded-full" id="kr{{emp_objective.pk}}" style="width: {{ emp_objective.progress_percentage|default:0 }}%"></div>
+                </div>
+                <div class="text-xs text-dark-200 font-medium" id="kr{{emp_objective.pk}}Html">{{ emp_objective.progress_percentage }}%</div>
               </div>
-              <div class="text-xs text-dark-200 font-medium">{{ emp_objective.progress_percentage }}%</div>
-            </div>
             {% endif %}
 
             <!-- Status -->

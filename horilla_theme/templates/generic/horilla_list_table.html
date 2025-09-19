@@ -66,7 +66,7 @@
                             <tr class="border-b border-[#ececec]">
                                 {% if bulk_select_option %}
                                     <th
-                                        class="text-sm font-medium text-left p-3 w-30"
+                                        class="text-sm font-medium text-left p-3 w-[30px]"
                                     >
                                         <input
                                             type="checkbox"
@@ -93,7 +93,6 @@
                                         {% if cell.2 and not cell_attr %}style="width:220px!important;"{% endif %}
                                     >
                                         <div class="flex gap-3 {% for sort_map in sortby_mapping %} {% if sort_map.0 == cell.0 %}cursor-pointer {% endif %}{% endfor %}"
-                                            {{cell_attr|safe}}
                                             {% for sort_map in sortby_mapping %}
                                                 {% if sort_map.0 == cell.0 %}
                                                     hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
@@ -137,7 +136,8 @@
                         </thead>
                         <tbody>
                             {% for instance in queryset %}
-                                <tr class="border-b border-[#f3f3f3]{% if row_attrs %} cursor-pointer {% endif %}"
+                                <tr
+                                    {% comment %} class="border-b border-[#f3f3f3]{% if row_attrs %} cursor-pointer {% endif %}" {% endcomment %}
                                     data-instance-id="{{instance.id}}"
                                     {{row_attrs|format:instance|safe}}
                                 >

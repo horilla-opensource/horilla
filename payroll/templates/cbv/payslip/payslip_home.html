@@ -56,49 +56,52 @@
 		<div class="animated-background"></div>
 	</div>
 
-	<div
-		class="oh-modal"
-		id="individualPayslipModal"
-		role="dialog"
-		aria-labelledby="individualPayslipModal"
-		aria-hidden="true"
-	>
-		<div class="oh-modal__dialog">
-			<div class="oh-modal__dialog-header pb-0">
-				<h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-					{% trans "Create Payslip" %}
-				</h1>
-				<button class="oh-modal__close" aria-label="Close">
-					<ion-icon name="close-outline"></ion-icon>
-				</button>
-			</div>
-			<div class="oh-modal__dialog-body" id="individualPayslipModal">
-				{% include "payroll/payslip/create_payslip.html" %}
-			</div>
-		</div>
-	</div>
+<div
+  class="oh-modal"
+  id="individualPayslipModal"
+  role="dialog"
+  aria-labelledby="individualPayslipModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header pb-0">
+      <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Create Payslip" %}
+      </h1>
+      <button class="oh-modal__close" aria-label="Close">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="individualPayslipModal">
+      {% include "payroll/payslip/create_payslip.html" %}
+    </div>
+  </div>
+</div>
 
-	<div
-		class="oh-modal"
-		id="bulkPayslipModal"
-		role="dialog"
-		aria-labelledby="bulkPayslipModal"
-		aria-hidden="true"
-	>
-		<div class="oh-modal__dialog">
-			<div class="oh-modal__dialog-header pb-0">
-				<h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
-					{% trans "Bulk Payslip" %}
-				</h1>
-				<button class="oh-modal__close" aria-label="Close">
-					<ion-icon name="close-outline"></ion-icon>
-				</button>
-			</div>
-			<div class="oh-modal__dialog-body" id="bulkPayslipModal">
-				{% include "payroll/payslip/bulk_create_payslip.html" %}
-			</div>
-		</div>
-	</div>
+
+<div
+  class="oh-modal"
+  id="bulkPayslipModal"
+  role="dialog"
+  aria-labelledby="bulkPayslipModal"
+  aria-hidden="true"
+  >
+  <div class="oh-modal__dialog">
+    <div class="oh-modal__dialog-header pb-0">
+      <h1 class="oh-modal__dialog-title" id="addEmployeeModalLabel">
+        {% trans "Bulk Payslip" %}
+      </h1>
+      <button class="oh-modal__close" aria-label="Close" onclick="$(this).closest('#bulkPayslipModal').removeClass('oh-modal--show');">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+    <div class="oh-modal__dialog-body" id="bulkPayslipModal">
+      {% include "payroll/payslip/bulk_create_payslip.html" %}
+    </div>
+  </div>
+</div>
+
+
 
 	<div
 		class="oh-modal"

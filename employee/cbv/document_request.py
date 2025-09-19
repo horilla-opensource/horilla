@@ -13,7 +13,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.methods import choosesubordinates, is_reportingmanager
-from employee.filters import DocumentRequestFilter
+from employee.filters import DocumentPipelineFilter, DocumentRequestFilter
 from employee.models import Employee
 from horilla.decorators import manager_can_enter
 from horilla_documents.forms import DocumentForm
@@ -21,7 +21,12 @@ from horilla_documents.forms import DocumentRejectCbvForm as RejectForm
 from horilla_documents.forms import DocumentRequestForm, DocumentUpdateForm
 from horilla_documents.models import Document, DocumentRequest
 from horilla_views.cbv_methods import login_required
-from horilla_views.generic.cbv.views import HorillaFormView, HorillaNavView
+from horilla_views.generic.cbv.pipeline import Pipeline
+from horilla_views.generic.cbv.views import (
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+)
 from notifications.signals import notify
 
 
@@ -179,6 +184,7 @@ class DocumentUploadForm(HorillaFormView):
                     )
                 except:
                     pass
+            form.instance.status = "requested"
             form.save()
             return HttpResponse("<script>window.location.reload();</script>")
         return super().form_valid(form)
@@ -239,3 +245,65 @@ class DocumentRequestNav(HorillaNavView):
     filter_instance = DocumentRequestFilter()
     filter_form_context_name = "form"
     search_swap_target = "#view-container"
+
+
+class DocumentRequestPipelineView(Pipeline):
+    """
+    Pipeline view for document request
+    """
+
+    model = Document
+    filter_class = DocumentRequestFilter
+    grouper = "document_request_id"
+    template_name = "cbv/documents/pipeline.html"
+
+    allowed_fields = [
+        {
+            "field": "document_request_id",
+            "model": DocumentRequest,
+            "filter": DocumentPipelineFilter,
+            "url": reverse_lazy("document-request-list"),
+            "parameters": [
+                "document_request_id={pk}",
+            ],
+            "actions": [
+                {
+                    "action": _("Edit"),
+                    "attrs": """
+                        class="oh-dropdown__link oh-dropdown__link"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                        hx-get="{get_edit_url}"
+                        hx-target="#objectCreateModalTarget"
+                    """,
+                },
+                {
+                    "action": _("Delete"),
+                    "attrs": """
+                        class="oh-dropdown__link oh-dropdown__link"
+                        hx-confirm="Are you sure you want to delete this document request?"
+                        hx-post="{get_delete_url}"
+                        hx-target="body"
+                    """,
+                },
+            ],
+        }
+    ]
+
+
+class DocumentListView(HorillaListView):
+    """
+    List view for document request
+    """
+
+    model = Document
+    filter_class = DocumentRequestFilter
+    template_name = "cbv/documents/document_list.html"
+    filter_keys_to_remove = ["document_request_id"]
+
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        queryset = super().get_queryset(queryset, filtered, *args, **kwargs)
+        queryset = queryset.filter(
+            document_request_id__pk=self.request.GET.get("document_request_id")
+        )
+        return queryset

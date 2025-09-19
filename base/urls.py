@@ -1416,9 +1416,14 @@ urlpatterns = [
         announcement.comment_view,
         name="announcement-view-comment",
     ),
+    # path(
+    #     "announcement-single-view/<int:anoun_id>",
+    #     announcement.announcement_single_view,
+    #     name="announcement-single-view",
+    # ),
     path(
-        "announcement-single-view/<int:anoun_id>",
-        announcement.announcement_single_view,
+        "announcement-single-view/<int:pk>",
+        announcement_cbv.AnnouncementDetailView.as_view(),
         name="announcement-single-view",
     ),
     path(
