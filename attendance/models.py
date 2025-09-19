@@ -211,7 +211,7 @@ class Attendance(HorillaModel):
         default=False, verbose_name=_("Is validate request approved")
     )
     request_description = models.TextField(
-        null=True, max_length=255, verbose_name=_("Request Description")
+        null=True, verbose_name=_("Request Description")
     )
     request_type = models.CharField(
         max_length=18, null=True, choices=status, default="update_request"

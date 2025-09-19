@@ -1638,7 +1638,7 @@ class Reimbursement(HorillaModel):
         related_name="approved_by",
         editable=False,
     )
-    description = models.TextField(null=True, max_length=255)
+    description = models.TextField(null=True)
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, null=True, editable=False
     )

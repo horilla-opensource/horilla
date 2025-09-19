@@ -648,7 +648,7 @@ class LeaveRequest(HorillaModel):
     leave_clashes_count = models.IntegerField(
         default=0, verbose_name=_("Leave Clashes Count")
     )
-    description = models.TextField(verbose_name=_("Description"), max_length=255)
+    description = models.TextField(verbose_name=_("Description"))
     attachment = models.FileField(
         null=True,
         blank=True,

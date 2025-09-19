@@ -1040,7 +1040,7 @@ class CandidateDocumentRequest(HorillaModel):
     candidate_id = models.ManyToManyField(Candidate)
     format = models.CharField(choices=FORMATS, max_length=10)
     max_size = models.IntegerField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True, max_length=255)
+    description = models.TextField(blank=True, null=True)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
