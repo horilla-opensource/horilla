@@ -1,12 +1,13 @@
 # Development Dockerfile for Horilla v2.0
-# Includes compilers and dev tools, runs Django with autoreload.
+# Includes development tools and enables hot reloading
 
 FROM python:3.11-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    DJANGO_SETTINGS_MODULE=horilla.settings
 
-# Dev system dependencies
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
@@ -18,19 +19,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpangocairo-1.0-0 \
     libmagic1 \
     libssl-dev \
+    libpq5 \
     gettext \
     git \
-  && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
+# Install Python dependencies
 COPY requirements.txt ./
 RUN python -m pip install --upgrade pip \
-  && pip install --no-cache-dir -r requirements.txt
+    && pip install -r requirements.txt
 
+# Copy project source
 COPY . .
+
+# Make entrypoint executable
+RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000
 
-# Use Django dev server; compose binds volumes for live reload
+# Use Django's development server for hot reloading
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
