@@ -523,7 +523,7 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     # get the attendance data between the range
     attendance_data = get_attendance(employee, start_date, end_date)
     attendance_days = list(attendance_data['attendances_on_period'])
-
+ # todo remove debug print function after testing
     for attendance_day in attendance_days:
         if attendance_day.is_mercantile_holday:
             print(f"Attendance marked on Mercantile Holiday: {attendance_day.attendance_date}")
@@ -573,7 +573,7 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     employer_epf_amount = wage / 100 * 12
     employer_etf_amount = wage / 100 * 3
 
-
+#todo remove debug print function after testing
     print(f"""
     --- Debug Info ---
     Basic Pay: {basic_pay}
