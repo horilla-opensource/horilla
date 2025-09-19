@@ -145,10 +145,10 @@ class ShiftRequestList(ShiftList):
         (_("Description"), "description"),
         (_("Comment"), "comment"),
     ]
+
     header_attrs = {
-        "option": """
-                    style="width:190px !important;"
-                    """
+        "option": """ style="width:190px !important;" """,
+        "description": """ style="width:300px !important;" """,
     }
 
     option_method = "shift_actions"

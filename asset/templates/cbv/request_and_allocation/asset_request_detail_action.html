@@ -8,7 +8,7 @@
                 role="button123"
                 data-toggle="oh-modal-toggle"
                 data-target="#objectCreateModal"
-                hx-get="{% url 'asset-request-approve' req_id=instance.id %}"
+                hx-get="{% url 'asset-request-approve-form' req_id=instance.id %}"
                 hx-target="#objectCreateModalTarget"
             >
                 <ion-icon name="checkmark-outline"></ion-icon>{% trans 'Approve' %}

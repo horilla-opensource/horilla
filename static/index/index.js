@@ -407,48 +407,6 @@ function htmxLoadIndicator(e) {
     }
 }
 
-function ajaxWithResponseHandler(event) {
-    $(event.target).each(function () {
-        $.each(this.attributes, function () {
-            if (this.specified && this.name === "hx-on-htmx-after-request") {
-                eval(this.value);
-            }
-        });
-    });
-}
-
-function handleHtmxTarget(event, path, verb) {
-    var targetElement;
-    var hxTarget = $(event.target).attr("hx-target");
-    if (hxTarget) {
-        if (hxTarget === "this") {
-            targetElement = $(event.target);
-        } else if (hxTarget.startsWith("closest ")) {
-            var selector = hxTarget.replace("closest ", "").trim();
-            targetElement = $(event.target).closest(selector);
-        } else if (hxTarget.startsWith("find ")) {
-            var selector = hxTarget.replace("find ", "").trim();
-            targetElement = $(event.target).find(selector).first();
-        } else if (hxTarget === "next") {
-            targetElement = $(event.target).next();
-        } else if (hxTarget.startsWith("next ")) {
-            var selector = hxTarget.replace("next ", "").trim();
-            targetElement = $(event.target).nextAll(selector).first();
-        } else if (hxTarget === "previous") {
-            targetElement = $(event.target).prev();
-        } else if (hxTarget.startsWith("previous ")) {
-            var selector = hxTarget.replace("previous ", "").trim();
-            targetElement = $(event.target).prevAll(selector).first();
-        } else {
-            targetElement = $(hxTarget);
-        }
-        hxTarget = targetElement.length ? targetElement[0] : null;
-    } else if (path && verb) {
-        hxTarget = event.target;
-    }
-    return hxTarget;
-}
-
 function hxConfirm(element, messageText) {
     Swal.fire({
         html: messageText,
@@ -555,14 +513,163 @@ function show_answer(element) {
     }
 }
 
+// var originalConfirm = window.confirm;
+// // Override the default confirm function with SweetAlert
+// window.confirm = function (message) {
+//     var event = window.event || {};
+//     event.preventDefault();
+
+//     $("#confirmModalBody").html(message);
+//     var submit = false;
+
+//     Swal.fire({
+//         text: message,
+//         icon: "question",
+//         showCancelButton: true,
+//         confirmButtonColor: "#008000",
+//         cancelButtonColor: "#d33",
+//         confirmButtonText: i18nMessages.confirm,
+//         cancelButtonText: i18nMessages.cancel,
+//     }).then((result) => {
+//         if (result.isConfirmed) {
+//             var path = event.target["htmx-internal-data"]?.path;
+//             var verb = event.target["htmx-internal-data"]?.verb;
+//             var hxTarget = handleHtmxTarget(event, path, verb);
+//             var hxVals = $(event.target).attr("hx-vals")
+//                 ? JSON.parse($(event.target).attr("hx-vals"))
+//                 : {};
+//             var hxSwap = $(event.target).attr("hx-swap");
+//             $(event.target).each(function () {
+//                 $.each(this.attributes, function () {
+//                     if (
+//                         this.specified &&
+//                         this.name === "hx-on-htmx-before-request"
+//                     ) {
+//                         eval(this.value);
+//                     }
+//                 });
+//             });
+//             if (event.target.tagName.toLowerCase() === "form") {
+//                 if (path && verb) {
+//                     // Collect all form values
+//                     const formData = new FormData(event.target);
+//                     const values = {};
+//                     formData.forEach((value, key) => {
+//                         values[key] = value;
+//                     });
+
+//                     // Merge with hx-vals, if any
+//                     Object.assign(values, hxVals);
+
+//                     htmx.ajax(verb.toUpperCase(), path, {
+//                         target: hxTarget,
+//                         swap: hxSwap,
+//                         values: values,
+//                     }).then((response) => {
+//                         ajaxWithResponseHandler(event);
+//                     });
+//                 } else {
+//                     event.target.submit();  // fallback
+//                 }
+//             }
+//             else if (event.target.tagName.toLowerCase() === "a") {
+//                 if (event.target.href) {
+//                     window.location.href = event.target.href;
+//                 } else {
+//                     if (verb === "post") {
+//                         htmx.ajax("POST", path, {
+//                             target: hxTarget,
+//                             swap: hxSwap,
+//                             values: hxVals,
+//                         }).then((response) => {
+//                             ajaxWithResponseHandler(event);
+//                         });
+//                     } else {
+//                         htmx.ajax("GET", path, {
+//                             target: hxTarget,
+//                             swap: hxSwap,
+//                             values: hxVals,
+//                         }).then((response) => {
+//                             ajaxWithResponseHandler(event);
+//                         });
+//                     }
+//                 }
+//             } else {
+//                 if (verb === "post") {
+//                     htmx.ajax("POST", path, {
+//                         target: hxTarget,
+//                         swap: hxSwap,
+//                         values: hxVals,
+//                     }).then((response) => {
+//                         ajaxWithResponseHandler(event);
+//                     });
+//                 } else {
+//                     htmx.ajax("GET", path, {
+//                         target: hxTarget,
+//                         swap: hxSwap,
+//                         values: hxVals,
+//                     }).then((response) => {
+//                         ajaxWithResponseHandler(event);
+//                     });
+//                 }
+//             }
+//         }
+//     });
+// };
+
+
+function ajaxWithResponseHandler(elm) {
+    $(elm).each(function () {
+        $.each(this.attributes, function () {
+            if (this.specified && this.name === "hx-on-htmx-after-request") {
+                eval(this.value);
+            }
+        });
+    });
+}
+
+function handleHtmxTarget(elm, path, verb) {
+    var targetElement;
+    var hxTarget = $(elm).attr("hx-target");
+    if (hxTarget) {
+        if (hxTarget === "this") {
+            targetElement = $(elm);
+        } else if (hxTarget.startsWith("closest ")) {
+            var selector = hxTarget.replace("closest ", "").trim();
+            targetElement = $(elm).closest(selector);
+        } else if (hxTarget.startsWith("find ")) {
+            var selector = hxTarget.replace("find ", "").trim();
+            targetElement = $(elm).find(selector).first();
+        } else if (hxTarget === "next") {
+            targetElement = $(elm).next();
+        } else if (hxTarget.startsWith("next ")) {
+            var selector = hxTarget.replace("next ", "").trim();
+            targetElement = $(elm).nextAll(selector).first();
+        } else if (hxTarget === "previous") {
+            targetElement = $(elm).prev();
+        } else if (hxTarget.startsWith("previous ")) {
+            var selector = hxTarget.replace("previous ", "").trim();
+            targetElement = $(elm).prevAll(selector).first();
+        } else {
+            targetElement = $(hxTarget);
+        }
+        hxTarget = targetElement.length ? targetElement[0] : null;
+    } else if (path && verb) {
+        hxTarget = elm;
+    }
+    return hxTarget;
+}
+
 var originalConfirm = window.confirm;
 // Override the default confirm function with SweetAlert
 window.confirm = function (message) {
     var event = window.event || {};
     event.preventDefault();
 
-    $("#confirmModalBody").html(message);
-    var submit = false;
+    const triggerEl = event.target.closest(
+        "form, a, [hx-post], [hx-get], [hx-delete], [hx-put]"
+    );
+    if (!triggerEl) return;
 
     Swal.fire({
         text: message,
@@ -574,14 +681,17 @@ window.confirm = function (message) {
         cancelButtonText: i18nMessages.cancel,
     }).then((result) => {
         if (result.isConfirmed) {
-            var path = event.target["htmx-internal-data"]?.path;
-            var verb = event.target["htmx-internal-data"]?.verb;
-            var hxTarget = handleHtmxTarget(event, path, verb);
-            var hxVals = $(event.target).attr("hx-vals")
-                ? JSON.parse($(event.target).attr("hx-vals"))
+            // Read HTMX data from the trigger element
+            var path = triggerEl["htmx-internal-data"]?.path;
+            var verb = triggerEl["htmx-internal-data"]?.verb;
+            var hxTarget = handleHtmxTarget(triggerEl, path, verb);
+            var hxVals = $(triggerEl).attr("hx-vals")
+                ? JSON.parse($(triggerEl).attr("hx-vals"))
                 : {};
-            var hxSwap = $(event.target).attr("hx-swap");
-            $(event.target).each(function () {
+            var hxSwap = $(triggerEl).attr("hx-swap");
+
+            // Evaluate hx-on-htmx-before-request if present
+            $(triggerEl).each(function () {
                 $.each(this.attributes, function () {
                     if (
                         this.specified &&
@@ -591,10 +701,12 @@ window.confirm = function (message) {
                     }
                 });
             });
-            if (event.target.tagName.toLowerCase() === "form") {
+
+            // Handle <form>
+            if (triggerEl.tagName.toLowerCase() === "form") {
                 if (path && verb) {
                     // Collect all form values
-                    const formData = new FormData(event.target);
+                    const formData = new FormData(triggerEl);
                     const values = {};
                     formData.forEach((value, key) => {
                         values[key] = value;
@@ -608,15 +720,16 @@ window.confirm = function (message) {
                         swap: hxSwap,
                         values: values,
                     }).then((response) => {
-                        ajaxWithResponseHandler(event);
+                        ajaxWithResponseHandler(triggerEl);
                     });
                 } else {
-                    event.target.submit();  // fallback
+                    triggerEl.submit();
                 }
-            }
-            else if (event.target.tagName.toLowerCase() === "a") {
-                if (event.target.href) {
-                    window.location.href = event.target.href;
+
+            // Handle <a>
+            } else if (triggerEl.tagName.toLowerCase() === "a") {
+                if (triggerEl.href) {
+                    window.location.href = triggerEl.href;
                 } else {
                     if (verb === "post") {
                         htmx.ajax("POST", path, {
@@ -624,7 +737,7 @@ window.confirm = function (message) {
                             swap: hxSwap,
                             values: hxVals,
                         }).then((response) => {
-                            ajaxWithResponseHandler(event);
+                            ajaxWithResponseHandler(triggerEl);
                         });
                     } else {
                         htmx.ajax("GET", path, {
@@ -632,10 +745,29 @@ window.confirm = function (message) {
                             swap: hxSwap,
                             values: hxVals,
                         }).then((response) => {
-                            ajaxWithResponseHandler(event);
+                            ajaxWithResponseHandler(triggerEl);
                         });
                     }
                 }
+            } else if (triggerEl.tagName.toLowerCase() === "button") {
+                if (verb === "post") {
+                    htmx.ajax("POST", path, {
+                        target: hxTarget,
+                        swap: hxSwap,
+                        values: hxVals,
+                    }).then((response) => {
+                        ajaxWithResponseHandler(triggerEl);
+                    });
+                } else {
+                    htmx.ajax("GET", path, {
+                        target: hxTarget,
+                        swap: hxSwap,
+                        values: hxVals,
+                    }).then((response) => {
+                        ajaxWithResponseHandler(triggerEl);
+                    });
+                }
+            // Handle other HTMX triggers
             } else {
                 if (verb === "post") {
                     htmx.ajax("POST", path, {

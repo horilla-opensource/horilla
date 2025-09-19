@@ -218,7 +218,7 @@ class ModelForm(forms.ModelForm):
 
             # Time field
             elif isinstance(widget, forms.TimeInput):
-                field.initial = now
+                field.initial = now.strftime("%H:%M")
                 widget.input_type = "time"
                 widget.format = "%H:%M"
                 field.input_formats = ["%H:%M"]
