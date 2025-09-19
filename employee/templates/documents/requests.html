@@ -39,7 +39,8 @@
 									{{document_list.grouper}}
 								<div class="oh-checkpoint-badge oh-checkpoint-badge--secondary" style="margin-left: 20px;"
 									title="{% trans 'Uploaded / Requested' %}">
-									{{document_list.list.0.upload_documents_count}} / {{document_list.list|length}}
+									{% comment %} # 918 {% endcomment %}
+									{{document_list.list.0.upload_documents_count}} / {{ document_list.list.paginator.count }}
 								</div>
 							</div>
 						</span>
@@ -138,10 +139,12 @@
 														<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
 													</a>
 												{% else %}
+													{% comment %} # 918 {% endcomment %}
 													<a type="submit" hx-confirm="{% trans 'Do you want to approve this request' %}"
-														hx-get="{% url 'document-approve' document.id %}" hx-target="#viewFile"
-														title="{% trans 'Approve' %}" class="oh-btn oh-btn--success w-100"
-														onclick="event.stopPropagation()">
+														hx-get="{% url 'document-approve' document.id %}" hx-target="this" hx-swap="outerHTML"
+														hx-vals='{ "refresh_url": "{% url 'document-request-filter-view' %}?{{pd}}&{{document_list.dynamic_name}}={{ document_list.list.number }}" }'
+														hx-on-htmx-after-request="reloadMessage(this);"
+														title="{% trans 'Approve' %}" class="oh-btn oh-btn--success w-100" onclick="event.stopPropagation()">
 														<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
 													</a>
 												{% endif %}
