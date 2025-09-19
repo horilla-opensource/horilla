@@ -70,10 +70,10 @@
                 </small>
             </span>
             <span class="oh-payslip__netpay-title">{% trans "EPF Amount 12%" %}
-                <small style="margin-left:36px; font-weight:bold;">: {{ employer_epf_amount }}</small>
+                <small style="margin-left:37px; font-weight:bold;">: {{ employer_epf_amount|floatformat:2|currency_symbol_position }}</small>
             </span>
             <span class="oh-payslip__netpay-title">{% trans "ETF Amount 3%" %}
-                <small style="margin-left:36px; font-weight:bold;">: {{ employer_etf_amount }}</small>
+                <small style="margin-left:41px; font-weight:bold;">: {{ employer_etf_amount|floatformat:2|currency_symbol_position }}</small>
             </span>
         </div>
     </div>
