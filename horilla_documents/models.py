@@ -10,7 +10,7 @@ from django.utils.translation import gettext as _
 
 from base.horilla_company_manager import HorillaCompanyManager
 from employee.models import Employee
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 
 STATUS = [
     ("requested", "Requested"),
@@ -85,7 +85,7 @@ class Document(HorillaModel):
         DocumentRequest, on_delete=models.PROTECT, null=True
     )
     document = models.FileField(
-        upload_to="employee/documents", null=True, verbose_name=_("Document")
+        upload_to=upload_path, null=True, verbose_name=_("Document")
     )
     status = models.CharField(
         choices=STATUS, max_length=10, default="requested", verbose_name=_("Status")
