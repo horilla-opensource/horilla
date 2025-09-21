@@ -1,0 +1,46 @@
+# Deploy to VM First time with migration
+
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Replace with your actual GCR image path
+#    image: gcr.io/your-gcp-project/horilla-server:latest
+    ports:
+      # Map the host's port 80 (standard HTTP) to the container's port 8000
+      - "8080:8000"
+#    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/hrms"
+    command: sh ./entrypoint.sh
+    volumes:
+      - horilla-data:/mnt/app/hrms_media
+      - horilla-data:/mnt/app/hrms_logs
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-bullseye
+    environment:
+      POSTGRES_DB: hrms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5439:5432
+#    restart: unless-stopped
+    volumes:
+      - horilla-data:/mnt/app/data/hrms
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  horilla-data:
