@@ -33,9 +33,9 @@ class AllCompany:
     class Urls:
         url = "https://ui-avatars.com/api/?name=All+Company&background=random"
 
-    company = "All Company"
+    company = "Cleaff"
     icon = Urls()
-    text = "All companies"
+    text = "Cleaff"
     id = None
 
 
