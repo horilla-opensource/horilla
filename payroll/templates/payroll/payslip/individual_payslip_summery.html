@@ -63,7 +63,7 @@
             </span>
             <span class="oh-payslip__netpay-title">
                 {% trans "Taxable Gross Pay" %}
-                <small style="margin-left:20px;font-weight:bold;">: {{ taxable_gross_pay|floatformat:2|currency_symbol_position }}<br>
+                <small style="margin-left:20px;font-weight:bold;">: {{ taxable_gross_pay|floatformat:2|intcomma|currency_symbol_position }}<br>
                     <i style="font-style: italic; margin-left: 10px; font-weight: normal;">
                         <ion-icon name="information-circle-outline" style="color:blue;"></ion-icon>
                         {% trans "taxable amount" %}
@@ -71,13 +71,13 @@
                 </small>
             </span>
              <span class="oh-payslip__netpay-title">{% trans "ETF Amount 3%" %}
-                <small style="margin-left:41px; font-weight:bold;">: {{ employer_etf_amount|floatformat:2|currency_symbol_position }}</small>
+                <small style="margin-left:41px; font-weight:bold;">: {{ employer_etf_amount|floatformat:2|intcomma|currency_symbol_position }}</small>
             </span>
             <span class="oh-payslip__netpay-title">{% trans "EPF Amount 12%" %}
-                <small style="margin-left:37px; font-weight:bold;">: {{ employer_epf_amount|floatformat:2|currency_symbol_position }}</small>
+                <small style="margin-left:37px; font-weight:bold;">: {{ employer_epf_amount|floatformat:2|intcomma|currency_symbol_position }}</small>
             </span>
              <span class="oh-payslip__netpay-title">{% trans "EPF Amount 20%" %}
-                <small style="margin-left:33px; font-weight:bold;">: {{ employer_epf_amount|add:employee_epf_amount|floatformat:2|currency_symbol_position }}</small>
+                <small style="margin-left:33px; font-weight:bold;">: {{ employer_epf_amount|add:employee_epf_amount|floatformat:2|intcomma|currency_symbol_position }}</small>
             </span>
         </div>
     </div>
