@@ -228,7 +228,8 @@
                         <p class="oh-payslip-company-name">{{ employee.employee_work_info.company_id }}</p>
                         <p class="oh-payslip-company-address">
                             {{ employee.employee_work_info.company_id.address }}
-                            {{ employee.employee_work_info.company_id.country }} {{ employee.employee_work_info.company_id.state }}, {{ employee.employee_work_info.company_id.city }}
+                            {{ employee.employee_work_info.company_id.city }}<br/>
+                           {{ employee.employee_work_info.company_id.state }}, {{ employee.employee_work_info.company_id.country }} <br/>
                             {{ employee.employee_work_info.company_id.zip }}
                         </p>
                     </div>
