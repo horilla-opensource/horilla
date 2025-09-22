@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Django Notifications example views """
 
-
 from django import get_version
 from django.contrib.auth.decorators import login_required
 from django.forms import model_to_dict
