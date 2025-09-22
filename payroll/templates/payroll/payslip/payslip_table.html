@@ -1,6 +1,8 @@
 {% load static %}
 {% load i18n horillafilters %}
 {% if messages %}
+{% load humanize %}
+
     <div class="oh-wrapper">
         {% for message in messages %}
             <div class="oh-alert-container">
@@ -102,13 +104,13 @@
                                 {{payslip.group_name}}
                             </div>
                             <div data-cell-index="5" class="oh-sticky-table__td">
-                                {{payslip.gross_pay|floatformat:2|currency_symbol_position}}
+                                {{payslip.gross_pay|floatformat:2|intcomma|currency_symbol_position}}
                             </div>
                             <div data-cell-index="6" class="oh-sticky-table__td">
-                                {{payslip.deduction|floatformat:2|currency_symbol_position}}
+                                {{payslip.deduction|floatformat:2|intcomma|currency_symbol_position}}
                             </div>
                             <div data-cell-index="7" class="oh-sticky-table__td">
-                                {{payslip.net_pay|floatformat:2|currency_symbol_position}}
+                                {{payslip.net_pay|floatformat:2|intcomma|currency_symbol_position}}
                             </div>
                             {% if perms.payroll.change_payslip %}
                                 <div data-cell-index="3" class="oh-sticky-table__td" onclick="event.preventDefault();">
