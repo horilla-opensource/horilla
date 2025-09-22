@@ -71,7 +71,7 @@ class ModelForm(forms.ModelForm):
         now = datetime.now()
 
         default_input_class = "oh-input w-100"
-        select_class = "oh-select oh-select-2 select2-hidden-accessible"
+        select_class = "oh-select"
         checkbox_class = "oh-switch__checkbox"
 
         for field_name, field in self.fields.items():
@@ -409,7 +409,7 @@ class EmployeeWorkInformationForm(ModelForm):
                             initial=field.initial,
                             widget=forms.Select(
                                 attrs={
-                                    "class": "oh-select oh-select-2 select2-hidden-accessible",
+                                    "class": "oh-select",
                                     "onchange": f'onDynamicCreate(this.value,"{urls.get(field.label)}");',
                                 }
                             ),
@@ -653,9 +653,7 @@ class BulkUpdateFieldForm(forms.Form):
         ]
         self.fields["update_fields"].choices = updated_choices
         for visible in self.visible_fields():
-            visible.field.widget.attrs["class"] = (
-                "oh-select oh-select-2 select2-hidden-accessible oh-input w-100"
-            )
+            visible.field.widget.attrs["class"] = "oh-select oh-input w-100"
 
 
 class EmployeeNoteForm(ModelForm):
@@ -798,7 +796,7 @@ class DisciplinaryActionForm(ModelForm):
         label=_("Action"),
         widget=forms.Select(
             attrs={
-                "class": "oh-select oh-select-2 select2-hidden-accessible",
+                "class": "oh-select",
                 "onchange": "actionTypeChange($(this))",
             }
         ),

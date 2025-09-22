@@ -55,11 +55,11 @@ class AllowanceDeductionTabView(HorillaTabView):
                     {
                         "action": "Add Bonus",
                         "attrs": f"""
-                                hx-get="{reverse('add-bonus')}?employee_id={pk}",
-								hx-target="#addBonusModalBody"
-								data-toggle="oh-modal-toggle"
-								data-target="#addBonusModal"
-                      """,
+                            hx-get="{reverse('add-bonus')}?employee_id={pk}"
+                            hx-target="#addBonusModalBody"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#addBonusModal"
+                        """,
                     }
                 ],
             },
