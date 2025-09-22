@@ -369,7 +369,7 @@ class EmployeeWorkInformationForm(ModelForm):
                             initial=field.initial,
                             widget=forms.Select(
                                 attrs={
-                                    "class": "oh-select oh-select-2 select2-hidden-accessible",
+                                    "class":"oh-select oh-select-2 color-red select2-hidden-accessible create-blue",
                                     "onchange": f'onDynamicCreate(this.value,"{urls.get(field.label)}");',
                                 }
                             ),
