@@ -44,7 +44,7 @@
 
 
 
- <div hx-get="{% url "employees-nav" %}" hx-trigger="load">
+<div hx-get="{% url "employees-nav" %}?{{request.GET.urlencode}}" hx-trigger="load">
 </div>
 {% comment %} my_app/templates/my_app/generic/index.html {% endcomment %}
 
