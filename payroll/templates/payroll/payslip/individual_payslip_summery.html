@@ -1,4 +1,5 @@
-{% load i18n horillafilters %}
+{% load i18n horillafilters %} {% load humanize %}
+
 {% if messages %}
     <div class="oh-wrapper">
         {% for message in messages %}
@@ -38,12 +39,12 @@
 
     <div class="oh-payslip__netpay" style="text-align:left; border-radius: 15px; border: 1px solid hsl(213,22%,84%);">
         <div style="border-radius: 15px; background-color: #d2f8d7; padding: 10px; border-left: 3px solid #00cc66;">
-            <span class="oh-payslip__netpay-amount">{{ net_pay|floatformat:2|currency_symbol_position }}</span>
+            <span class="oh-payslip__netpay-amount">{{ net_pay|floatformat:2|intcomma|currency_symbol_position }}</span>
             <span class="oh-payslip__netpay-title">{% trans "Employee Net Pay" %}</span>
         </div>
         <div class="payslip__netpay__summary">
             <span class="oh-payslip__netpay-title">{% trans "Actual Basic Pay" %}
-                <small style="margin-left:36px; font-weight:bold;">: {{ instance.contract_wage|currency_symbol_position }}</small>
+                <small style="margin-left:36px; font-weight:bold;">: {{ instance.contract_wage|floatformat:2|intcomma|currency_symbol_position }}</small>
             </span>
             <span class="oh-payslip__netpay-title">{% trans "Paid Days" %}
                 <small style="margin-left:86px;font-weight:bold;">: {{ paid_days }}</small>
@@ -53,7 +54,7 @@
             </span>
             <span class="oh-payslip__netpay-title">
                 {% trans "Updated Basic Pay" %}
-                <small style="margin-left:20px;font-weight:bold;">: {{ basic_pay|floatformat:2|currency_symbol_position }}<br>
+                <small style="margin-left:20px;font-weight:bold;">: {{ basic_pay|floatformat:2|intcomma|currency_symbol_position }}<br>
                     <i style="font-style: italic; margin-left: 10px; font-weight: normal;">
                         <ion-icon name="information-circle-outline" style="color:blue;"></ion-icon>
                         {% trans "The payslip is calculated based on the updated basic pay" %}
