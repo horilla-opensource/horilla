@@ -770,3 +770,16 @@ form label {
 .swal2-styled.swal2-cancel{
     background-color : rgb(221, 51, 51);
 }
+
+
+select.create-blue option[value="create"],
+.create-blue option[value="create"] {
+    color: darkorange !important;
+}
+.select2-container .select2-results__option[data-select2-id*="create"] {
+    color: darkorange !important;
+}
+
+.select2-container .select2-results__option[data-select2-id*="create"]:hover {
+    color: darkorange !important;
+}
