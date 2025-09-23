@@ -240,7 +240,7 @@ class LeaveType(HorillaModel):
     )
     is_compensatory_leave = models.BooleanField(default=False)
     company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
+        Company, null=True, blank=True, on_delete=models.PROTECT
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
 

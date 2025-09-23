@@ -10,6 +10,7 @@ from typing import Any
 
 from django import forms
 from django.apps import apps
+from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms.widgets import TextInput
@@ -90,6 +91,22 @@ class ConditionForm(forms.ModelForm):
             self.fields["company_id"].initial = request.user.employee_get.get_company
         except:
             pass
+
+
+class LeaveTypeAdminForm(forms.ModelForm):
+    class Meta:
+        model = LeaveType
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if f := self.fields.get("company_id"):
+            from horilla_widgets.forms import default_select_option_template
+
+            w = getattr(f.widget, "widget", f.widget)
+            if isinstance(w, forms.Select):
+                w.option_template_name = default_select_option_template
 
 
 class LeaveTypeForm(ConditionForm):
