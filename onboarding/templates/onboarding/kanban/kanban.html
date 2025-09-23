@@ -109,7 +109,7 @@
                                                             <a href="#" class="oh-dropdown__link oh-dropdown__link--danger oh-kanban__card-delete">Delete</a>
                                                         </li> {% endcomment %}
                                                         <li class="oh-dropdown__item">
-                                                            <a href="#" data-toggle="oh-modal-toggle" data-target="#sendMailModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#sendMailModalBody" class="oh-dropdown__link">{% trans "Send Mail" %}</a>
+                                                            <a href="#" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" hx-get="{% url 'onboarding-send-mail' candidate.candidate_id.id %}" hx-target="#objectCreateModalTarget" class="oh-dropdown__link">{% trans "Send Mail" %}</a>
                                                         </li>
                                                     </ul>
                                                 </div>
