@@ -249,21 +249,24 @@ def send_leave_request_reminders():
     from django.utils import timezone
     from leave.models import LeaveRequest
 
-    today = timezone.now().date()
-
-    pending_requests = LeaveRequest.objects.filter(
-        status='requested'
-    )
+    pending_requests = LeaveRequest.objects.filter(status="requested")
 
     for request in pending_requests:
-        manager = request.employee_id.reporting_manager_id
-        print("Leave Request Reminder", request, manager)
-        if manager and manager.email:
+        employee = request.employee_id
+        manager = employee.get_reporting_manager()
+
+        if manager:
+            print("Leave Request Reminder", request, manager.email)
+
             subject = f"Leave Request Reminder for {request.employee_id.get_full_name()}"
-            message = f"Dear {manager.get_full_name()},\n\nThis is a reminder that {request.employee_id.get_full_name()} has a pending leave request starting on {request.start_date}.\n\nPlease review and take necessary action.\n\nBest regards,\nHR Team"
-            print(subject)
-            print(message)
-            print(manager.email)
+            message = (
+                f"Dear {manager.get_full_name()},\n\n"
+                f"This is a reminder that {request.employee_id.get_full_name()} "
+                f"has a pending leave request starting on {request.start_date}.\n\n"
+                "Please review and take necessary action.\n\nBest regards,\nHR Team"
+            )
+
+            # print(subject   , message , employee.email)
             # send_mail(
             #     subject,
             #     message,
@@ -287,6 +290,6 @@ def start():
     # scheduler.add_job(send_probation_end_notifications, "interval", days=1)
     # scheduler.add_job(send_contract_end_notification, "interval", seconds=30)
     # scheduler.add_job(send_birthday_in_this_month_notification, "interval", seconds=5)
-    scheduler.add_job(send_leave_request_reminders, "interval", seconds=1)
+    # scheduler.add_job(send_leave_request_reminders, "interval", seconds=1)
     scheduler.start()
 
