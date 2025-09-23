@@ -252,23 +252,25 @@ def send_leave_request_reminders():
     today = timezone.now().date()
 
     pending_requests = LeaveRequest.objects.filter(
-        status='pending',
-        start_date__lte=today + timedelta(days=2),
-        start_date__gte=today
+        status='requested'
     )
 
     for request in pending_requests:
         manager = request.employee_id.reporting_manager_id
+        print("Leave Request Reminder", request, manager)
         if manager and manager.email:
             subject = f"Leave Request Reminder for {request.employee_id.get_full_name()}"
             message = f"Dear {manager.get_full_name()},\n\nThis is a reminder that {request.employee_id.get_full_name()} has a pending leave request starting on {request.start_date}.\n\nPlease review and take necessary action.\n\nBest regards,\nHR Team"
-            send_mail(
-                subject,
-                message,
-                settings.DEFAULT_FROM_EMAIL,
-                [manager.email],
-                fail_silently=False,
-            )
+            print(subject)
+            print(message)
+            print(manager.email)
+            # send_mail(
+            #     subject,
+            #     message,
+            #     settings.DEFAULT_FROM_EMAIL,
+            #     [manager.email],
+            #     fail_silently=False,
+            # )
 
 
 if not any(
@@ -285,6 +287,6 @@ def start():
     # scheduler.add_job(send_probation_end_notifications, "interval", days=1)
     # scheduler.add_job(send_contract_end_notification, "interval", seconds=30)
     # scheduler.add_job(send_birthday_in_this_month_notification, "interval", seconds=5)
-    # scheduler.add_job(send_leave_request_reminders(), "interval", days=1)
+    scheduler.add_job(send_leave_request_reminders, "interval", seconds=1)
     scheduler.start()
 
