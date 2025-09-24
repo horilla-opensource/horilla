@@ -5,7 +5,7 @@
     {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
         <a hx-get="{% url 'rotating-work-type-assign-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
             hx-target="#genericModalBody" data-target="#genericModal" data-toggle="oh-modal-toggle" type="button"
-            class="oh-btn oh-btn--light-bkg small-button w-100" title="{% trans 'Update' %}">
+            class="oh-btn oh-btn--light-bkg small-button w-100" title="{% trans 'Edit' %}">
             <ion-icon name="create-outline"></ion-icon>
         </a>
     {% endif %}
