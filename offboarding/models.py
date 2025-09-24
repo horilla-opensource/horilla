@@ -153,6 +153,14 @@ class ResignationLetter(HorillaModel):
         Employee, on_delete=models.CASCADE, verbose_name="Employee"
     )
     title = models.CharField(max_length=100, null=True)
+    exit_reason = models.ForeignKey(
+        "ExitReason",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="offboardings",
+        verbose_name=_("Reason"),
+    )
     description = models.TextField(null=True, max_length=255)
     planned_to_leave_on = models.DateField()
     status = models.CharField(max_length=10, choices=statuses, default="requested")
@@ -163,14 +171,7 @@ class ResignationLetter(HorillaModel):
         related_company_field="employee_id__employee_work_info__company_id"
     )
 
-    exit_reason = models.ForeignKey(
-        "ExitReason",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="offboardings",
-        verbose_name=_("Exit Reason"),
-    )
+
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -310,14 +311,27 @@ class ExitReason(HorillaModel):
     """
     ExitReason model
     """
+    REASON_TYPES = (
+        ("employee", "Employee Side"),
+        ("admin", "Admin Side"),
+    )
+
 
     title = models.CharField(max_length=50)
-    description = models.TextField(max_length=255)
-    offboarding_employee_id = models.ForeignKey(
-        OffboardingEmployee, on_delete=models.CASCADE
+    reason_type = models.CharField(
+        max_length=20,
+        choices=REASON_TYPES,
+        default="employee",
+        verbose_name=_("Reason Type"),
     )
+    description = models.TextField(max_length=255)
+    # offboarding_employee_id = models.ForeignKey(
+    #     OffboardingEmployee, on_delete=models.CASCADE
+    # )
     attachments = models.ManyToManyField(OffboardingStageMultipleFile)
 
+    def __str__(self):
+        return self.title
 
 class OffboardingNote(HorillaModel):
     """
