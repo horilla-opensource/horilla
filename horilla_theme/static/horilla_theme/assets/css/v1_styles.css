@@ -2445,6 +2445,10 @@ ul.errorlist ul.errorlist li {
     border-left: none;
 }
 
+.fixed-table td {
+    max-width: 0; /* This forces cells to respect their width constraints */
+}
+
 .oh-permission-table__collapse {
     border: none;
     display: flex;
@@ -3049,7 +3053,6 @@ ul.errorlist ul.errorlist li {
 .oh-activity-sidebar__body {
     overflow-y: auto;
     min-height: calc(100% - 90px);
-    max-height: calc(100% - 90px);
 }
 
 .oh-activity-sidebar__qa-list {

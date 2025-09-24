@@ -38,7 +38,7 @@
 									class="text-xl font-bold text-secondary-900"
 									hx-get="{% url 'joining-today-count' %}"
 									hx-trigger="load"
-								></p>
+								>0</p>
 							</div>
 						</div>
 					</a>
@@ -61,9 +61,10 @@
 						<div>
 							<p class="text-sm">{% trans "Leave on today" %}</p>
 							<div class="flex items-center gap-2">
-								<p class="text-xl font-bold text-secondary-900">
-									{{leave_today}}
-								</p>
+								<p class="text-xl font-bold text-secondary-900"
+									hx-get="{% url 'leave-today-count' %}"
+									hx-trigger="load"
+								>0</p>
 							</div>
 						</div>
 					</a>
@@ -90,7 +91,7 @@
 									class="text-xl font-bold text-secondary-900"
 									hx-get="{% url 'joining-week-count' %}"
 									hx-trigger="load"
-								></p>
+								>0</p>
 							</div>
 						</div>
 					</a>
@@ -173,7 +174,102 @@
 	<div class="w-full md:w-9/12 grid grid-cols-12 gap-4 mb-4 max-h-[76vh] overflow-auto" id="tileContainer">
 		{% include "horilla_theme/components/dashboard_tiles.html" %}
 	</div>
+
+    <div class="oh-modal" id="sendMailModal" role="dialog" aria-labelledby="sendMailModal" aria-hidden="true">
+        <div class="oh-modal__dialog">
+            <div class="oh-modal__dialog-header">
+                <h5 class="oh-modal__dialog-title" id="sendMailModalLabel">
+                    {% trans "Send Mail" %}
+                </h5>
+                <button class="oh-modal__close" aria-label="Close" onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="mail-content"></div>
+        </div>
+    </div>
+
+
+	<div class="oh-modal" id="activityViewModal" role="dialog" aria-hidden="true" style="z-index:1100;">
+		<div class="oh-modal__dialog" style="max-width: 900px;">
+			<div class="oh-modal__dialog-header">
+				<h3 class="oh-main__titlebar-title fw-bold ">{% trans " Activities" %}</h3>
+				<button class="oh-modal__close--custom" aria-label="Close"
+					onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');"
+				>
+					<ion-icon name="close-outline"></ion-icon>
+				</button>
+			</div>
+			<div class="oh-modal__dialog-body" id="activityViewModalBody" style="overflow-x:auto;"></div>
+		</div>
+	</div>
+
+	<div
+		class="oh-modal"
+		id="rejectModal"
+		role="dialog"
+		aria-labelledby="rejectDialogModal"
+		aria-hidden="true"
+	>
+		<div class="oh-modal__dialog">
+			<div class="rejectForm">
+				<div class="oh-modal__dialog-header">
+					<h2 class="oh-modal__dialog-title" id="rejectTitle">
+						{% trans "Reject" %}
+					</h2>
+					<button
+						class="oh-modal__close"
+						onclick="$('#rejectModal').removeClass('oh-modal--show');"
+						aria-label="Close"
+					>
+						<ion-icon name="close-outline"></ion-icon>
+					</button>
+				</div>
+				<div class="oh-modal__dialog-body" id="rejectForm"></div>
+			</div>
+
+			<div id="rejectTarget">
+
+			</div>
+		</div>
+	</div>
+
+	<div class="oh-modal" id="penaltyModal" role="dialog" aria-hidden="true">
+		<div class="oh-modal__dialog" id="penaltyModalBody" style="max-width: 550px"></div>
+	</div>
+
+
+	<div
+		class="oh-modal"
+		id="TaskModal"
+		role="dialog"
+		aria-labelledby="TaskModal"
+		aria-hidden="true"
+	>
+		<div
+			class="oh-modal__dialog"
+			style="max-width: 550px"
+			id="TaskFormTarget"
+		></div>
+	</div>
+
 </div>
+
+<script>
+	$("#rejectModal").on("htmx:afterSwap", function (event) {
+		const targetEl = event.originalEvent.detail.target;
+		const $rejectForm = $(this).find(".rejectForm");
+		const $rejectTarget = $(this).find("#rejectTarget");
+
+		if (targetEl.id === "rejectTarget") {
+			$rejectForm.find("#rejectForm").html("");
+			$rejectForm.hide()
+		} else if (targetEl.id === "rejectForm") {
+			$rejectForm.show()
+			$rejectTarget.html("");
+		}
+	});
+</script>
 
 <script src="{% static 'dashboard/employeeChart.js' %}"></script>
 {% if "recruitment"|app_installed %}
