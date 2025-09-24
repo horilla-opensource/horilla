@@ -23,7 +23,7 @@ from offboarding.models import (
     OffboardingStage,
     OffboardingStageMultipleFile,
     OffboardingTask,
-    ResignationLetter,
+    ResignationLetter, ExitReason,
 )
 
 
@@ -267,6 +267,9 @@ class ResignationLetterForm(ModelForm):
         request = getattr(horilla_middlewares._thread_locals, "request", None)
 
         if request and not request.user.has_perm("offboarding.add_offboardingemployee"):
+            self.fields["exit_reason"].queryset = ExitReason.objects.filter(
+                reason_type="employee"
+            )
             exclude = exclude + [
                 "employee_id",
                 "status",
