@@ -13,7 +13,7 @@ FROM python:3.10-slim-bullseye AS runtime
 
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
+WORKDIR /app/
 
 COPY --from=builder /install /usr/local
 
