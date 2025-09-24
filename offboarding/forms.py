@@ -310,3 +310,24 @@ class ResignationLetterForm(ModelForm):
                     icon="information",
                 )
         return instance
+
+
+class ResignationReasonForm(ModelForm):
+    """
+    Resignation Reason model form
+    """
+
+    verbose_name = "Resignation Reason"
+
+    class Meta:
+        model = ExitReason
+        fields = "__all__"
+        exclude = ["is_active"]
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        table_html = render_to_string("common_form.html", context)
+        return table_html
