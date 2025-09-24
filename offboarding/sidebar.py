@@ -31,6 +31,11 @@ SUBMENUS = [
         "redirect": reverse("resignation-request-view"),
         "accessibility": "offboarding.sidebar.resignation_letter_accessibility",
     },
+    {
+        "menu": _("Resignation Reasons"),
+        "redirect": reverse("resignation-reason-view"),
+        "accessibility": "offboarding.sidebar.resignation_letter_accessibility",
+    },
 ]
 
 
