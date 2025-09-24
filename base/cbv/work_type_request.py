@@ -259,19 +259,29 @@ class WorkTypeDetailView(HorillaDetailedView):
         (_("Previous Work Type"), "previous_work_type_id"),
         (_("Requested Date"), "requested_date"),
         (_("Requested Till"), "requested_till"),
-        (_("Description"), "description"),
         (_("Is Permanent Work Type"), "is_permanent_work_type_display"),
+        (_("Description"), "description"),
     ]
+
+    cols = {
+        "description": 12,
+    }
 
     action_method = "confirmation"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
+        self.action_method = "confirmation"
 
-        if self.request.GET.get("dashboard"):
-            self.action_method = "confirmation"
-        else:
-            self.action_method = "detail_view_actions"
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if (
+            self.request.user.employee_get == self.instance.employee_id
+            and not self.request.GET.get("dashboard")
+        ):
+            context["action_method"] = "detail_view_actions"
+
+        return context
 
 
 @method_decorator(login_required, name="dispatch")

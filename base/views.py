@@ -5168,16 +5168,19 @@ def shift_request_delete(request, id):
             )
     if hx_target and hx_target == "genericModalBody":
         previous_data = request.GET.urlencode()
-        instances_ids = request.GET.get("instances_ids")
-        instances_list = json.loads(instances_ids)
+        instances_ids = request.GET.get("instances_ids", None)
+        instances_list = json.loads(instances_ids) if instances_ids else []
         if id in instances_list:
             instances_list.remove(id)
             previous_instance, next_instance = closest_numbers(
                 json.loads(instances_ids), id
             )
-        return redirect(
-            f"/shift-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
-        )
+            return redirect(
+                f"/shift-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
+            )
+        else:
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
