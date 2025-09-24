@@ -61,9 +61,14 @@ urlpatterns = [
         name="resignation-request-view",
     ),
     path(
-        "resignation_reason_view/",
+        "resignation-reason-view/",
         views.view_resignation_reason,
         name="resignation-reason-view",
+    ),
+    path(
+        "create-resignation-reason/",
+        views.create_exit_reason,
+        name="create-resignation-reason",
     ),
     path(
         "resignation-requests-single-view/<int:id>/",
