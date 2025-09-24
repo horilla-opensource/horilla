@@ -52,7 +52,7 @@
             <div class="px-6 pt-5 pb-4 border-b border-gray-300">
                 <div class="flex justify-between items-start mb-3 flex-wrap md:flex-nowrap">
                     <h5 class="text-xl font-extrabold text-gray-900 flex-1 md:mr-4 mb-2 md:mb-0">{{instance.title}} </h5>
-
+                    {% if perms.base.change_announcement or perms.base.delete_announcement %}
                     <div x-data="{open: false}">
                         <button class="oh-btn oh-stop-prop oh-btn--transparent oh-accordion-meta__btn" @click="open = !open"
                             @click.outside="open = false" title="{% trans 'Actions' %}"
@@ -84,6 +84,7 @@
                             </ul>
                         </div>
                     </div>
+                    {% endif %}
                 </div>
 
                 <div class="flex justify-between">

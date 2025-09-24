@@ -1,13 +1,13 @@
 {% extends 'index.html' %}
 {% load static i18n %}
 {% block content %}
-<div id="view-container" style="margin: 20px 150px 0px 150px;">
+<div id="view-container">
     <section
-        class="oh-wrapper oh-main__topbar oh-profile-section__topbar "
+        class="oh-wrapper oh-main__topbar oh-profile-section__topbar pt-0"
         x-data="{searchShow: false}"
     >
         <div class="oh-main__titlebar oh-main__titlebar--left">
-            <h1 class="oh-main__titlebar-title fw-bold mb-0 text-lg font-semibold mb-3">
+            <h1 class="oh-main__titlebar-title fw-bold text-lg font-semibold">
                 {% trans "Add Employee" %}
             </h1>
         </div>
