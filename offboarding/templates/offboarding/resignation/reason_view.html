@@ -1,74 +1,59 @@
-{% extends "index.html" %} {% load static i18n %}
-
+{% extends "index.html" %}
+{% load static i18n %}
 
 {% block content %}
-{% include "offboarding/resignation/nav.html" %}
-  <div class="oh-container">
-    <div class="oh-card">
-      <table class="oh-table oh-table--responsive">
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Reason Type</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for reason in reasons %}
-            <tr>
-              <td data-label="Title">{{ reason.title }}</td>
-              <td data-label="Reason Type">{{ reason.get_reason_type_display }}</td>
-              <td data-label="Description">{{ reason.description|truncatewords:20 }}</td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="4" class="text-center">No resignation reasons found.</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+{% include "offboarding/resignation/create_reason.html" %}
 
-      <!-- Pagination -->
-      {% if reasons.has_other_pages %}
-        <nav class="oh-pagination" aria-label="Page navigation">
-          <ul class="oh-pagination__list">
-            {% if reasons.has_previous %}
-              <li class="oh-pagination__item">
-                <a class="oh-pagination__link" href="?page={{ reasons.previous_page_number }}">Previous</a>
-              </li>
-            {% endif %}
-            {% for num in reasons.paginator.page_range %}
-              <li class="oh-pagination__item {% if reasons.number == num %}oh-pagination__item--active{% endif %}">
-                <a class="oh-pagination__link" href="?page={{ num }}">{{ num }}</a>
-              </li>
-            {% endfor %}
-            {% if reasons.has_next %}
-              <li class="oh-pagination__item">
-                <a class="oh-pagination__link" href="?page={{ reasons.next_page_number }}">Next</a>
-              </li>
-            {% endif %}
-          </ul>
-        </nav>
-      {% endif %}
-    </div>
+<div class="oh-container">
+  <div class="oh-grid oh-grid--3-cols gap-4">
+    {% for reason in reasons %}
+      <div class="oh-card p-4 shadow-sm">
+        <h3 class="oh-card__title">{{ reason.title }}</h3>
+        <p class="text-muted mb-2"><strong>Type:</strong> {{ reason.get_reason_type_display }}</p>
+        <p>{{ reason.description|truncatewords:20 }}</p>
+      </div>
+    {% empty %}
+      <div class="oh-card text-center p-4">
+        <p>No resignation reasons found.</p>
+      </div>
+    {% endfor %}
   </div>
 
-  <!-- Ensure Select2 and custom styles work -->
-  <style>
-    /* Match existing create-blue styling for consistency */
-    .create-blue option[value="create"] {
-      background-color: #007bff !important;
-      color: white !important;
-      font-weight: bold !important;
-    }
-    .select2-container .select2-results__option[title*="Create New"] {
-      background-color: #007bff !important;
-      color: white !important;
-      font-weight: bold !important;
-    }
-    .select2-container .select2-results__option[title*="Create New"]:hover {
-      background-color: #0056b3 !important;
-      color: white !important;
-    }
-  </style>
+  <!-- Pagination -->
+  {% if reasons.has_other_pages %}
+    <nav class="oh-pagination mt-4" aria-label="Page navigation">
+      <ul class="oh-pagination__list">
+        {% if reasons.has_previous %}
+          <li class="oh-pagination__item">
+            <a class="oh-pagination__link" href="?page={{ reasons.previous_page_number }}">Previous</a>
+          </li>
+        {% endif %}
+        {% for num in reasons.paginator.page_range %}
+          <li class="oh-pagination__item {% if reasons.number == num %}oh-pagination__item--active{% endif %}">
+            <a class="oh-pagination__link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% endfor %}
+        {% if reasons.has_next %}
+          <li class="oh-pagination__item">
+            <a class="oh-pagination__link" href="?page={{ reasons.next_page_number }}">Next</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+
+<style>
+  .oh-grid {
+    display: grid;
+  }
+  .oh-grid--3-cols {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .oh-card__title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+</style>
 {% endblock %}
