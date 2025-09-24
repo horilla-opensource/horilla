@@ -1007,118 +1007,20 @@ class RotatingWorkTypeAssignForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
-        for field_name, field in self.fields.items():
-            if field.required:
-                self.fields[field_name].label_suffix = " *"
-
-            self.fields["rotate_every_weekend"].widget.attrs.update(
-                {
-                    "class": "w-100",
-                    "style": "display:none; height:50px; border-radius:0;border:1px\
-                        solid hsl(213deg,22%,84%);",
-                    "data-hidden": True,
-                }
-            )
-            self.fields["rotate_every"].widget.attrs.update(
-                {
-                    "class": "w-100",
-                    "style": "display:none; height:50px; border-radius:0;border:1px \
-                        solid hsl(213deg,22%,84%);",
-                    "data-hidden": True,
-                }
-            )
-            self.fields["rotate_after_day"].widget.attrs.update(
-                {
-                    "class": "w-100 oh-input",
-                    "style": " height:50px; border-radius:0;",
-                }
-            )
-            self.fields["based_on"].widget.attrs.update(
-                {
-                    "class": "w-100",
-                    "style": " height:50px; border-radius:0; border:1px solid \
-                        hsl(213deg,22%,84%);",
-                }
-            )
-            self.fields["start_date"].widget = forms.DateInput(
-                attrs={
-                    "class": "w-100 oh-input",
-                    "type": "date",
-                    "style": " height:50px; border-radius:0;",
-                }
-            )
-            self.fields["rotating_work_type_id"].widget.attrs.update(
-                {
-                    "class": "oh-select oh-select-2",
-                }
-            )
-            self.fields["employee_id"].widget.attrs.update(
-                {
-                    "class": "oh-select oh-select-2",
-                }
-            )
-        else:
-            super().__init__(*args, **kwargs)
-
-            reload_queryset(self.fields)
-            request = getattr(horilla_middlewares._thread_locals, "request", None)
-            self.fields["employee_id"].initial = request.GET.get("emp_id")
-
-            if not self.instance.pk and not request.GET.get("emp_id"):
-                self.fields["employee_id"] = HorillaMultiSelectField(
-                    queryset=Employee.objects.filter(employee_work_info__isnull=False),
-                    widget=HorillaMultiSelectWidget(
-                        filter_route_name="employee-widget-filter",
-                        filter_class=EmployeeFilter,
-                        filter_instance_contex_name="f",
-                        filter_template_path="employee_filters.html",
-                    ),
-                    label=_("Employees"),
-                )
-            self.fields["rotate_every_weekend"].widget.attrs.update(
-                {
-                    "class": "w-100",
-                    "style": "display:none; height:50px; border-radius:0;border:1px \
-                        solid hsl(213deg,22%,84%);",
-                    "data-hidden": True,
-                }
-            )
-            self.fields["rotate_every"].widget.attrs.update(
-                {
-                    "class": "w-100",
-                    "style": "display:none; height:50px; border-radius:0;border:1px \
-                        solid hsl(213deg,22%,84%);",
-                    "data-hidden": True,
-                }
-            )
-            self.fields["rotate_after_day"].widget.attrs.update(
-                {
-                    "class": "w-100 oh-input",
-                    "style": " height:50px; border-radius:0;",
-                }
-            )
-            self.fields["based_on"].widget.attrs.update(
-                {
-                    "class": "w-100",
-                    "style": " height:50px; border-radius:0;border:1px solid hsl(213deg,22%,84%);",
-                }
-            )
-            self.fields["start_date"].widget = forms.DateInput(
-                attrs={
-                    "class": "w-100 oh-input",
-                    "type": "date",
-                    "style": " height:50px; border-radius:0;",
-                }
-            )
-            self.fields["rotating_work_type_id"].widget.attrs.update(
-                {
-                    "class": "oh-select oh-select-2",
-                }
-            )
-            self.fields["employee_id"].widget.attrs.update(
-                {
-                    "class": "oh-select oh-select-2",
-                }
+        request = getattr(_thread_locals, "request", None)
+        self.fields["employee_id"].initial = request.GET.get("emp_id")
+        if not self.instance.pk and not request.GET.get("emp_id"):
+            self.fields["employee_id"] = HorillaMultiSelectField(
+                queryset=Employee.objects.filter(
+                    employee_work_info__isnull=False, is_active=True
+                ),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                ),
+                label=_("Employees"),
             )
 
     def clean_employee_id(self):
@@ -1153,24 +1055,25 @@ class RotatingWorkTypeAssignForm(ModelForm):
         return cleaned_data
 
     def save(self, commit=False, manager=None):
+
+        day_name = self.cleaned_data["rotate_every_weekend"]
+        day_names = [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+        ]
+        target_day = day_names.index(day_name.lower())
+
         if self.instance.pk:
             employee = Employee.objects.get(id=self.instance.pk)
             rotating_work_type_assign = RotatingWorkTypeAssign()
             rotating_work_type = RotatingWorkType.objects.get(
                 id=self.data["rotating_work_type_id"]
             )
-            day_name = self.cleaned_data["rotate_every_weekend"]
-            day_names = [
-                "monday",
-                "tuesday",
-                "wednesday",
-                "thursday",
-                "friday",
-                "saturday",
-                "sunday",
-            ]
-            target_day = day_names.index(day_name.lower())
-
             rotating_work_type_assign.next_change_date = self.cleaned_data["start_date"]
             rotating_work_type_assign.current_work_type = (
                 employee.employee_work_info.work_type_id
@@ -1198,19 +1101,6 @@ class RotatingWorkTypeAssignForm(ModelForm):
             rotating_work_type = RotatingWorkType.objects.get(
                 id=self.data["rotating_work_type_id"]
             )
-
-            day_name = self.cleaned_data["rotate_every_weekend"]
-            day_names = [
-                "monday",
-                "tuesday",
-                "wednesday",
-                "thursday",
-                "friday",
-                "saturday",
-                "sunday",
-            ]
-            target_day = day_names.index(day_name.lower())
-
             for employee_id in employee_ids:
                 employee = Employee.objects.filter(id=employee_id).first()
                 rotating_work_type_assign = RotatingWorkTypeAssign()
@@ -1781,7 +1671,7 @@ class RotatingShiftForm(ModelForm):
         return instance
 
 
-class RotatingShiftAssignForm(forms.ModelForm):
+class RotatingShiftAssignForm(ModelForm):
     """
     RotatingShiftAssign model's form
     """
@@ -1841,117 +1731,19 @@ class RotatingShiftAssignForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
         request = getattr(_thread_locals, "request", None)
-        for field_name, field in self.fields.items():
-            if field.required:
-                self.fields[field_name].label_suffix = " *"
-
-            self.fields["rotate_every_weekend"].widget.attrs.update(
-                {
-                    "class": "w-100 ",
-                    "style": "display:none; height:50px; border-radius:0;border:1px \
-                    solid hsl(213deg,22%,84%);",
-                    "data-hidden": True,
-                }
-            )
-            self.fields["rotate_every"].widget.attrs.update(
-                {
-                    "class": "w-100 ",
-                    "style": "display:none; height:50px; border-radius:0;border:1px \
-                        solid hsl(213deg,22%,84%);",
-                    "data-hidden": True,
-                }
-            )
-            self.fields["rotate_after_day"].widget.attrs.update(
-                {
-                    "class": "w-100 oh-input",
-                    "style": " height:50px; border-radius:0;",
-                }
-            )
-            self.fields["based_on"].widget.attrs.update(
-                {
-                    "class": "w-100",
-                    "style": " height:50px; border-radius:0;border:1px solid hsl(213deg,22%,84%);",
-                }
-            )
-            self.fields["start_date"].widget = forms.DateInput(
-                attrs={
-                    "class": "w-100 oh-input",
-                    "type": "date",
-                    "style": " height:50px; border-radius:0;",
-                }
-            )
-            self.fields["rotating_shift_id"].widget.attrs.update(
-                {
-                    "class": "oh-select oh-select-2",
-                }
-            )
-            self.fields["employee_id"].widget.attrs.update(
-                {
-                    "class": "oh-select oh-select-2",
-                }
-            )
-        else:
-            super().__init__(*args, **kwargs)
-            reload_queryset(self.fields)
-            self.fields["employee_id"].initial = request.GET.get("emp_id")
-            if not self.instance.pk and not request.GET.get("emp_id"):
-                self.fields["employee_id"] = HorillaMultiSelectField(
-                    queryset=Employee.objects.filter(
-                        employee_work_info__isnull=False, is_active=True
-                    ),
-                    widget=HorillaMultiSelectWidget(
-                        filter_route_name="employee-widget-filter",
-                        filter_class=EmployeeFilter,
-                        filter_instance_contex_name="f",
-                        filter_template_path="employee_filters.html",
-                    ),
-                    label=_("Employees"),
-                )
-
-            self.fields["rotate_every_weekend"].widget.attrs.update(
-                {
-                    "class": "w-100 ",
-                    "style": "display:none; height:50px; border-radius:0;border:1px \
-                        solid hsl(213deg,22%,84%);",
-                    "data-hidden": True,
-                }
-            )
-            self.fields["rotate_every"].widget.attrs.update(
-                {
-                    "class": "w-100 ",
-                    "style": "display:none; height:50px; border-radius:0;border:1px \
-                        solid hsl(213deg,22%,84%);",
-                    "data-hidden": True,
-                }
-            )
-            self.fields["rotate_after_day"].widget.attrs.update(
-                {
-                    "class": "w-100 oh-input",
-                    "style": " height:50px; border-radius:0;",
-                }
-            )
-            self.fields["based_on"].widget.attrs.update(
-                {
-                    "class": "w-100",
-                    "style": " height:50px; border-radius:0;border:1px solid hsl(213deg,22%,84%);",
-                }
-            )
-            self.fields["start_date"].widget = forms.DateInput(
-                attrs={
-                    "class": "w-100 oh-input",
-                    "type": "date",
-                    "style": " height:50px; border-radius:0;",
-                }
-            )
-            self.fields["rotating_shift_id"].widget.attrs.update(
-                {
-                    "class": "oh-select oh-select-2",
-                }
-            )
-            self.fields["employee_id"].widget.attrs.update(
-                {
-                    "class": "oh-select oh-select-2",
-                }
+        self.fields["employee_id"].initial = request.GET.get("emp_id")
+        if not self.instance.pk and not request.GET.get("emp_id"):
+            self.fields["employee_id"] = HorillaMultiSelectField(
+                queryset=Employee.objects.filter(
+                    employee_work_info__isnull=False, is_active=True
+                ),
+                widget=HorillaMultiSelectWidget(
+                    filter_route_name="employee-widget-filter",
+                    filter_class=EmployeeFilter,
+                    filter_instance_contex_name="f",
+                    filter_template_path="employee_filters.html",
+                ),
+                label=_("Employees"),
             )
 
     def clean_employee_id(self):
@@ -1988,19 +1780,19 @@ class RotatingShiftAssignForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=False):
-        if self.instance.pk:
-            day_name = self.cleaned_data["rotate_every_weekend"]
-            day_names = [
-                "monday",
-                "tuesday",
-                "wednesday",
-                "thursday",
-                "friday",
-                "saturday",
-                "sunday",
-            ]
-            target_day = day_names.index(day_name.lower())
+        day_name = self.cleaned_data["rotate_every_weekend"]
+        day_names = [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+        ]
+        target_day = day_names.index(day_name.lower())
 
+        if self.instance.pk:
             based_on = self.cleaned_data["based_on"]
             start_date = self.instance.start_date
             if based_on == "weekly":
@@ -2021,17 +1813,6 @@ class RotatingShiftAssignForm(forms.ModelForm):
             rotating_shift = RotatingShift.objects.get(
                 id=self.data["rotating_shift_id"]
             )
-            day_name = self.cleaned_data["rotate_every_weekend"]
-            day_names = [
-                "monday",
-                "tuesday",
-                "wednesday",
-                "thursday",
-                "friday",
-                "saturday",
-                "sunday",
-            ]
-            target_day = day_names.index(day_name.lower())
             for employee_id in employee_ids:
                 employee = Employee.objects.filter(id=employee_id).first()
                 rotating_shift_assign = RotatingShiftAssign()
