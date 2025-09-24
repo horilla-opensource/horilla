@@ -39,6 +39,7 @@ class Offboarding(HorillaModel):
     )
     objects = HorillaCompanyManager("company_id")
 
+
     def __str__(self):
         return self.title
 
@@ -160,6 +161,15 @@ class ResignationLetter(HorillaModel):
     )
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
+    )
+
+    exit_reason = models.ForeignKey(
+        "ExitReason",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="offboardings",
+        verbose_name=_("Exit Reason"),
     )
 
     def save(self, *args, **kwargs):
