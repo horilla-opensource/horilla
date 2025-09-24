@@ -104,7 +104,7 @@
                                         href="{% url 'rec-candidate-update' candidate.id %}?onboarding=True"><ion-icon
                                           name="create-outline"></ion-icon></a>
                                       {% if perms.recruitment.change_candidate %}
-                                      <button type="button" hx-get="{% url 'send-mail' candidate.id %}" title="{% trans "Send Mail" %}" hx-target="#objectDetailsModalTarget" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#objectDetailsModal" >
+                                      <button type="button" hx-get="{% url 'send-mail' candidate.id %}" title="{% trans "Send Mail" %}" hx-target="#objectCreateModalTarget" hx-swap="innerHTML" class="oh-btn oh-btn--light w-100" data-toggle="oh-modal-toggle" data-target="#objectCreateModal" >
                                         <ion-icon name="mail-open-outline" role="img" class="md hydrated" aria-label="mail open outline"></ion-icon>
                                       </button>
                                       {% endif %}
