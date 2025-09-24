@@ -110,6 +110,15 @@ class RotatingShiftList(RotatingShiftListParent):
         queryset = filtersubordinates(
             self.request, queryset, "base.view_rotatingshiftassign"
         )
+
+        active = (
+            True
+            if self.request.GET.get("is_active", True)
+            in ["unknown", "True", "true", True]
+            else False
+        )
+        queryset = queryset.filter(is_active=active)
+
         return queryset
 
     row_attrs = """
