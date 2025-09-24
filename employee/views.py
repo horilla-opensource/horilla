@@ -28,7 +28,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import F, ProtectedError
+from django.db.models import F, ProtectedError, Q
 from django.db.models.query import QuerySet
 from django.forms import DateInput, HiddenInput, Select
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -2971,6 +2971,19 @@ def joining_week_count(request):
             hired=True,
         ).count()
     return HttpResponse(newbies_week)
+
+
+@login_required
+def leave_today_count(request):
+    leave_today = 0
+    if apps.is_installed("leave"):
+        LeaveRequest = get_horilla_model_class(app_label="leave", model="leaverequest")
+        leave_today = LeaveRequest.objects.filter(
+            Q(start_date__lte=date.today(), end_date__gte=date.today()),
+            status="approved",
+            is_active=True,
+        ).count()
+    return HttpResponse(leave_today)
 
 
 @login_required
