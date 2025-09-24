@@ -93,6 +93,22 @@ class ConditionForm(forms.ModelForm):
             pass
 
 
+class LeaveTypeAdminForm(forms.ModelForm):
+    class Meta:
+        model = LeaveType
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if f := self.fields.get("company_id"):
+            from horilla_widgets.forms import default_select_option_template
+
+            w = getattr(f.widget, "widget", f.widget)
+            if isinstance(w, forms.Select):
+                w.option_template_name = default_select_option_template
+
+
 class LeaveTypeForm(ConditionForm):
 
     employee_id = HorillaMultiSelectField(
