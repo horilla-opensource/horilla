@@ -872,6 +872,24 @@ def create_resignation_request(request):
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "offboarding/resignation/form.html", {"form": form})
 
+@login_required
+def create_exit_reason(request):
+    instance_id = eval_validate(str(request.GET.get("instance_id")))
+    instance = None
+    if instance_id:
+        instance = ExitReason.objects.get(id=instance_id)
+
+    form = ResignationReasonForm(instance=instance)
+
+    if request.method == "POST":
+        form = ResignationReasonForm(request.POST, request.FILES, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, _("Exit reason saved successfully"))
+            return HttpResponse("<script>window.location.reload()</script>")
+
+    return render(request, "offboarding/resignation/exit_reason_form.html", {"form": form})
+
 
 @login_required
 @check_feature_enabled("resignation_request")
