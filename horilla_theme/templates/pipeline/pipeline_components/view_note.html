@@ -68,7 +68,7 @@
 	<script>
 		reloadMessage();
 	</script>
-{% endif %} 
+{% endif %}
 <style>
 	.enlarge-image-container {
 		display: none;
@@ -189,7 +189,7 @@
 								{% endif %}
 							</span>
 						</a>
-					{% endfor %} 
+					{% endfor %}
 
 					<form
 						hx-post="{% url 'add-more-files' note.id %}"
@@ -239,9 +239,9 @@
 
 				{% if perms.recruitment.change_candidate or request.user|is_stagemanager %}
 					<div class="absolute bottom-0 right-0 p-4">
-						<form 
-							class="form-check form-switch m-0 oh-switch" 
-							hx-post="{% url 'candidate-can-view-note' note.id %}" 
+						<form
+							class="form-check form-switch m-0 oh-switch"
+							hx-post="{% url 'candidate-can-view-note' note.id %}"
 							hx-swap = "none"
 							hx-on-htmx-after-request="reloadMessage()"
 						>
@@ -251,10 +251,10 @@
 								role="switch"
 								name="enable_block_account"
 								onchange="$(this).closest('form').find('input[type=submit]').click()"
-								{% if note.candidate_can_view %} 
-									title="Candidate can view this note" checked 
+								{% if note.candidate_can_view %}
+									title="Candidate can view this note" checked
 								{% else %}
-									title="Candidate can't view this note" 
+									title="Candidate can't view this note"
 								{% endif %}
 							/>
 							<input type="submit" hidden/>
