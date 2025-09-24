@@ -1,0 +1,19 @@
+{% load i18n %}
+<div class="oh-modal__dialog-body">
+    <form hx-post="{% url 'create-resignation-reason' %}" hx-target="#resignationModalBody">
+        {% csrf_token %}
+        <div class="oh-input-group">
+            <label class="oh-label">{{ form.title.label }}</label>
+            {{ form.title }}
+        </div>
+        <div class="oh-input-group">
+            <label class="oh-label">{{ form.reason_type.label }}</label>
+            {{ form.reason_type }}
+        </div>
+        <div class="oh-input-group">
+            <label class="oh-label">{{ form.description.label }}</label>
+            {{ form.description }}
+        </div>
+        <button type="submit" class="oh-btn oh-btn--secondary">{% trans "Save" %}</button>
+    </form>
+</div>
