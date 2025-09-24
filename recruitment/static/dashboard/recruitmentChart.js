@@ -93,6 +93,13 @@ $(document).ready(function () {
 						}
 					},
 				},
+				plugins: [{
+					afterRender: (chart) => {
+						if (typeof emptyChart === "function") {
+							emptyChart(chart);
+						}
+					}
+				}]
 
 			});
 		}
@@ -189,7 +196,9 @@ $(document).ready(function () {
 				},
 				plugins: [{
 					afterRender: (chart) => {
-						if (typeof emptyChart === "function") emptyChart(chart);
+						if (typeof emptyChart === "function") {
+							emptyChart(chart);
+						}
 					}
 				}]
 			});
