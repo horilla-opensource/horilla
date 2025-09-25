@@ -5,6 +5,7 @@ from urllib.parse import parse_qs
 from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -867,7 +868,31 @@ def create_resignation_request(request):
     if request.method == "POST":
         form = ResignationLetterForm(request.POST, instance=instance)
         if form.is_valid():
+            hr_users = User.objects.filter(groups__name="HR")
+            print(hr_users)
+            employee = form.cleaned_data["employee_id"]
+            description = form.cleaned_data["description"]
+            print(employee, description)
+            for user in hr_users:
+                notify.send(
+                    sender=employee,
+                    recipient=user,
+                    verb=f"New resignation letter from {employee}",
+                    description=description,
+                    icon="envelope-open-text",
+                )
+
+                if user.email:  
+                    send_mail(
+                        subject=f"New resignation letter from {employee}",
+                        message=description,
+                        from_email='tech@wireapps.co.uk',
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                    )
+
             form.save()
+
             messages.success(request, _("Resignation letter saved"))
             return HttpResponse("<script>window.location.reload()</script>")
     return render(request, "offboarding/resignation/form.html", {"form": form})
