@@ -1,25 +1,29 @@
 <style>
-  #enlargeImageContainer {
-    position: absolute;
-    left: -300px;
-    top: 100px;
-    height: 200px;
-    width: 200px;
-  }
+	#enlargeImageContainer {
+		position: absolute;
+		left: -300px;
+		top: 100px;
+		height: 200px;
+		width: 200px;
+	}
 </style>
 <div class="oh-modal__dialog-header">
-  <h2 class="oh-modal__dialog-title">
-    {{ policy.title }}
-  </h2>
-  <button class="oh-modal__close" aria-label="Close">
-    <ion-icon name="close-outline"></ion-icon>
-  </button>
+	<h2 class="oh-modal__dialog-title">{{ policy.title }}</h2>
+	<button class="oh-modal__close" aria-label="Close">
+		<ion-icon name="close-outline"></ion-icon>
+	</button>
 </div>
 
-<div class="oh-modal__dialog-body">
-  <p class="oh-card__footer--border-top"></p>
-  {{ policy.body|safe }}
-  <div id="attachmentContainer" class="d-flex" hx-get="{% url 'get-attachments-policy' %}?policy_id={{ policy.id }}" hx-trigger="load"></div>
+<div class="oh-modal__dialog-body border rounded-md shadow-card m-[20px]">
+	<p class="oh-card__footer--border-top"></p>
+	{{ policy.body|safe }}
+	<div
+		id="attachmentContainer"
+		class="d-flex"
+		hx-get="{% url 'get-attachments-policy' %}?policy_id={{ policy.id }}"
+		hx-trigger="load"
+	></div>
 
-  <div id="enlargeImageContainer"></div>
+	<div id="enlargeImageContainer"></div>
 </div>
+<div class="h-1"></div>
