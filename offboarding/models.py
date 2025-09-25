@@ -152,7 +152,7 @@ class ResignationLetter(HorillaModel):
     employee_id = models.ForeignKey(
         Employee, on_delete=models.CASCADE, verbose_name="Employee"
     )
-    title = models.CharField(max_length=100, null=True)
+    title = models.CharField(max_length=100, null=True ,blank=True)
     exit_reason = models.ForeignKey(
         "ExitReason",
         on_delete=models.SET_NULL,
@@ -174,10 +174,11 @@ class ResignationLetter(HorillaModel):
 
 
     def save(self, *args, **kwargs):
+        if not self.title:
+            self.title = f"Resignation of {self.employee_id.get_full_name()}"
         super().save(*args, **kwargs)
         if self.status == "approved":
             pass
-
         return
 
     def to_offboarding_employee(
