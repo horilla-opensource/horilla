@@ -1629,7 +1629,9 @@ class Reimbursement(HorillaModel):
     )
     amount = models.FloatField(default=0)
     status = models.CharField(
-        max_length=10, choices=status_types, default="requested", editable=False
+        max_length=10,
+        choices=status_types,
+        default="requested",
     )
     approved_by = models.ForeignKey(
         Employee,
