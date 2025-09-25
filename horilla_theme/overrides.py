@@ -400,6 +400,7 @@ TimeSheet.detail_view_title = detail_view_title
 
 
 from base.cbv.dashboard.dashboard import DashboardWorkTypeRequest, ShiftRequestToApprove
+from employee.cbv.disciplinary_actions import DisciplinaryActionsList
 
 _shift_request_to_approve_init_orig = ShiftRequestToApprove.__init__
 
@@ -417,8 +418,23 @@ def _work_type_request_to_approve_init(self, **kwargs):
     self.header_attrs = {}
 
 
+_disciplinary_action_list_init_orig = DisciplinaryActionsList.__init__
+
+
+def _disciplinary_action_list_init(self, **kwargs):
+    _disciplinary_action_list_init_orig(self, **kwargs)
+    self.row_attrs = """
+        class ="oh-sticky-table__tr oh-permission-table--collapsed"
+        hx-get='{dis_action_detail_view}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
+
+
 ShiftRequestToApprove.__init__ = _shift_request_to_approve_init
 DashboardWorkTypeRequest.__init__ = _work_type_request_to_approve_init
+DisciplinaryActionsList.__init__ = _disciplinary_action_list_init
 
 
 if apps.is_installed("pms"):

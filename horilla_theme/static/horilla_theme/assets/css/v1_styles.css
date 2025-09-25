@@ -1844,6 +1844,11 @@ input[type="file"] {
     font-size: 1.25rem;
 }
 
+.oh-helpdesk_attached--content {
+  display: flex;
+  align-items: center;
+}
+
 .oh-helpdesk__icon {
     min-width: 42px;
     width: 42px;
