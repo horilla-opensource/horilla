@@ -1656,7 +1656,7 @@ class ShiftRequest(HorillaModel):
         """
 
         return render_template(
-            path="cbv/shift_request/shift_deatil_actions.html",
+            path="cbv/shift_request/shift_detail_actions.html",
             context={"instance": self},
         )
 
