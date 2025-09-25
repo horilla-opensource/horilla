@@ -1401,11 +1401,10 @@ class RecruitmentSurvey(HorillaModel):
         return str(self.question)
 
     def options_col(self):
-        if self.type == "options" or self.type == "multiple":
-            return (
-                f"<div class='oh-timeoff-modal__stat-title'>Options</div><div>{self.options}</div>"
-                if self.options
-                else ""
+        if self.type in ["options", "multiple"]:
+            return render_template(
+                "cbv/recruitment_survey/option_col.html",
+                {"instance": self},
             )
         return ""
 

@@ -1,0 +1,6 @@
+{% load static %}
+{% load i18n %}
+{% if instance.options %}
+    <div class='oh-timeoff-modal__stat-title'>{% trans "Options" %}</div>
+    <div>{{instance.options}}</div>
+{% endif %}
