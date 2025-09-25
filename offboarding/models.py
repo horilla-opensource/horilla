@@ -162,7 +162,7 @@ class ResignationLetter(HorillaModel):
         verbose_name=_("Reason"),
     )
     description = models.TextField(null=True, max_length=255)
-    planned_to_leave_on = models.DateField()
+    planned_to_leave_on = models.DateField(verbose_name="Planned Resignation Date")
     status = models.CharField(max_length=10, choices=statuses, default="requested")
     offboarding_employee_id = models.ForeignKey(
         OffboardingEmployee, on_delete=models.CASCADE, editable=False, null=True
