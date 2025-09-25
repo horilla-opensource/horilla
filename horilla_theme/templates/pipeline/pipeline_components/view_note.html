@@ -1,0 +1,289 @@
+{% load static i18n basefilters recruitmentfilters %}
+<script>
+	function submitForm(elem) {
+		$(elem).siblings(".add_more_submit").click();
+	}
+	{% comment %} function enlargeDoc(src, $element) {
+		var enlargeDocContainer = $element
+			.parents()
+			.closest("li")
+			.find("#enlargeDocContainer");
+
+		enlargeDocContainer.empty();
+		style = "width:100%; height:90%; box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2); background:white";
+		var enlargedImage = $("<iframe>").attr({ src: src, style: style });
+		var name = $("<span>").text(src.split("/").pop().replace(/_/g, " "));
+		enlargeDocContainer.append(enlargedImage);
+		enlargeDocContainer.append(name);
+		setTimeout(function () {
+			enlargeDocContainer.show();
+
+			const iframe = document.querySelector("iframe").contentWindow;
+			var iframe_document = iframe.document;
+			iframe_image = iframe_document.getElementsByTagName("img")[0];
+			$(iframe_image).attr("style", "width:100%; height:100%;");
+		}, 100);
+	}
+
+	function hideEnlargeDoc() {
+		var enlargeDocContainer = $(".enlargeDocContainer");
+		enlargeDocContainer.empty();
+	} {% endcomment %}
+
+	function enlargeDoc(src, $element) {
+        var enlargeDocContainer = $element.closest('.noteItems').find(".enlargeImageContainer");
+        enlargeDocContainer.empty();
+
+        var style = 'width:100%; height:100%; border:none; box-shadow: 0 10px 10px rgba(0,0,0,0.2), 0 6px 20px rgba(0,0,0,0.2); background:white;';
+        var iframe = $('<iframe>', {
+            src: src,
+            style: style
+        });
+
+        var filename = src.split('/').pop().replace(/_/g, ' ');
+        var name = $('<span>').text(filename).css({
+            display: 'block',
+            textAlign: 'center',
+            marginTop: '10px',
+            fontWeight: 'bold'
+        });
+
+        enlargeDocContainer.append(iframe).append(name).show();
+    }
+
+    function hideEnlargeDoc() {
+        var enlargeDocContainer = $('#enlargeDocContainer')
+        enlargeDocContainer.empty()
+    }
+
+
+	$(document).on("click", function (event) {
+		if (!$(event.target).closest("#enlargeDocContainer").length) {
+			hideEnlargeDoc();
+		}
+	});
+</script>
+
+{% if messages %}
+	<script>
+		reloadMessage();
+	</script>
+{% endif %}
+<style>
+	.enlarge-image-container {
+		display: none;
+		position: fixed;
+		top: 40%;
+		left: 40%;
+		transform: translate(-50%, -50%);
+		width: 30%;
+		height: 50%;
+		z-index: 9999;
+	}
+	.diff-cell {
+		background: rgba(255, 166, 0, 0.158);
+	}
+</style>
+
+	<div class="bg-white rounded-md p-3 mb-5 lg:mb-0">
+
+		<div class="oh-activity-sidebar__header mt-5">
+			<a
+				style="cursor: pointer;"
+				onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');"
+			>
+				<ion-icon
+					name="chevron-forward-outline"
+					class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+					data-target="#activitySidebar"
+				></ion-icon>
+			</a>
+			<span class="oh-activity-sidebar__title fw-bold">{{cand}}'s {% trans "Notes" %}</span>
+		</div>
+
+		{% if perms.recruitment.add_stagenote or request|is_any_manager %}
+			<form
+				hx-target="#activitySidebar"
+				hx-post="{% url 'create-note' cand.id %}"
+				id="commentForm"
+			>
+				{% csrf_token %}
+				<input
+					type="text"
+					name="description"
+					id="commentInput"
+					class="oh-input w-full mt-2"
+					placeholder="{% trans 'Add notes' %}"
+					hx-on:keyup="toggleCommentButton(this);"
+				/>
+				<button
+					type="submit"
+					id="commentButton"
+					class="oh-btn oh-btn--secondary mt-2"
+					style="display: none"
+				>
+					<i class="fa-regular fa-square-plus"></i>
+					{% trans "Add" %}
+				</button>
+			</form>
+		{% endif %}
+
+		<div class="overflow-hidden overflow-y-auto mt-4 max-h-[75vh]" id="note_target">
+			{% for note in notes %}
+			<div
+				class="border border-dark-50 p-3 rounded-md mb-2 relative noteItems"
+				id="employeeNote{{note.id}}"
+			>
+				<div class="flex justify-between">
+					<h3 class="font-semibold text-sm">{{ note.description }}</h3>
+
+					{% if perms.recruitment.delete_stagenote or request.user|is_stagemanager %}
+						<form
+							method="POST"
+							hx-post="{% url 'note-delete' note.id %}"
+							hx-confirm="{% trans 'Are you sure you want to delete this note?' %}"
+							hx-target="#employeeNote{{note.id}}"
+							hx-on-htmx-after-request="reloadMessage();"
+							hx-swap="delete"
+							class="inline-block"
+						>
+							{% csrf_token %}
+							<button
+								type="submit"
+								class="cursor-pointer bg-transparent border-0 p-0"
+								title="{% trans 'Delete' %}"
+							>
+								<ion-icon
+									name="trash-outline"
+									style="color: #e54f38"
+								></ion-icon>
+							</button>
+						</form>
+					{% endif %}
+				</div>
+
+				<div class="flex flex-wrap items-center gap-2 mt-2 mb-2">
+					{% for file in note.stage_files.all %}
+						<a
+							href="{{ file.files.url }}"
+							target="_blank"
+							rel="noopener noreferrer"
+							id="candidateNoteFile{{file.id}}"
+						>
+							<span
+								class="oh-file-icon oh-file-icon--pdf"
+								id="noteFile{{file.id}}"
+								onmouseover="enlargeDoc('{{ file.files.url }}',$(this))"
+								onmouseout="hideEnlargeDoc()"
+								style="width: 40px; height: 40px"
+							>
+								{% if perms.employee.delete_notefiles or request.user|is_reportingmanager %}
+									<img
+										src="{% static 'images/ui/minus-icon.png' %}"
+										style="display: block; width: 50%; height: 50%"
+										hx-get="{% url 'delete-stage-note-file' file.id %}"
+										hx-target="#candidateNoteFile{{file.id}}"
+										hx-swap="delete"
+										onclick="event.stopPropagation();event.preventDefault()"
+									/>
+								{% endif %}
+							</span>
+						</a>
+					{% endfor %}
+
+					<form
+						hx-post="{% url 'add-more-files' note.id %}"
+						class="add-files-form"
+						hx-encoding="multipart/form-data"
+						hx-swap="innerHTML"
+						hx-target="#activitySidebar,#note"
+					>
+						{% csrf_token %}
+						<label
+							for="addFile_{{note.id}}"
+							title="{% trans 'Add Files' %}"
+						>
+							<ion-icon
+								name="add-outline"
+								style="
+									font-size: 12px;
+									border: 1px solid #818791;
+									border-radius: 5px;
+								"
+								class="text-gray-700"
+							></ion-icon>
+						</label>
+						<input
+							type="file"
+							name="files"
+							class="d-none"
+							multiple
+							id="addFile_{{note.id}}"
+							onchange="submitForm(this)"
+						/>
+						<input
+							type="submit"
+							class="d-none add_more_submit"
+							value="save"
+						/>
+					</form>
+				</div>
+
+				<p class="text-xs text-[#565E6C] mt-1">
+					{% trans "By" %}
+					<span class="text-primary-600">{{ note.updated_by }}</span>
+				</p>
+				<p class="text-xs text-[#565E6C] mt-1">
+					{% trans "At" %} {{ note.created_at|date:"d/m/Y" }} {{ note.created_at|time:"H:i A" }}
+				</p>
+
+				{% if perms.recruitment.change_candidate or request.user|is_stagemanager %}
+					<div class="absolute bottom-0 right-0 p-4">
+						<form
+							class="form-check form-switch m-0 oh-switch"
+							hx-post="{% url 'candidate-can-view-note' note.id %}"
+							hx-swap = "none"
+							hx-on-htmx-after-request="reloadMessage()"
+						>
+							<input
+								type="checkbox"
+								class="form-check-input oh-switch__checkbox"
+								role="switch"
+								name="enable_block_account"
+								onchange="$(this).closest('form').find('input[type=submit]').click()"
+								{% if note.candidate_can_view %}
+									title="Candidate can view this note" checked
+								{% else %}
+									title="Candidate can't view this note"
+								{% endif %}
+							/>
+							<input type="submit" hidden/>
+						</form>
+					</div>
+				{% endif %}
+
+				<div style="width: 50%">
+					<div class="enlargeImageContainer"></div>
+				</div>
+			</div>
+			{% empty %}
+				<div class="oh-wrapper h-full" align="center">
+					<div
+						class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]"
+					>
+						<div class="flex flex-col items-center justify-center h-full">
+							<img
+								src="/static/horilla_theme/assets/img/no-records.svg"
+								alt=""
+								width="300"
+								class="mb-4"
+							/>
+							<p class="text-[#666] mb-5">
+								{% trans "No notes have been added for this employee" %}
+							</p>
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>

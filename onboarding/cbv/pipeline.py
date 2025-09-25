@@ -65,15 +65,6 @@ class PipelineNav(HorillaNavView):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        if self.request.user.has_perm("recruitment.add_recruitment"):
-            self.create_attrs = f"""
-                hx-get="{reverse_lazy('recruitment-create')}?closed=false"
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-            """
-        else:
-            self.create_attrs = None
 
         self.view_types = [
             {

@@ -594,7 +594,7 @@ class AssetRequest(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.requested_employee_id.employee_work_info.department_id} / {self.requested_employee_id.employee_work_info.job_position_id}"
+        return f"{self.requested_employee_id.get_department()} / {self.requested_employee_id.get_job_position()}"
 
     def detail_view_asset_request(self):
         """

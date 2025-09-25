@@ -145,10 +145,10 @@ class ShiftRequestList(ShiftList):
         (_("Description"), "description"),
         (_("Comment"), "comment"),
     ]
+
     header_attrs = {
-        "option": """
-                    style="width:190px !important;"
-                    """
+        "option": """ style="width:190px !important;" """,
+        "description": """ style="width:300px !important;" """,
     }
 
     option_method = "shift_actions"
@@ -379,16 +379,27 @@ class ShiftRequestDetailview(HorillaDetailedView):
         (_("Previous Shift"), "previous_shift_id"),
         (_("Requested Date"), "requested_date"),
         (_("Requested Till"), "requested_till"),
-        (_("Description"), "description"),
         (_("Is permenent shift"), "is_permanent"),
+        (_("Description"), "description"),
     ]
+
+    cols = {
+        "description": 12,
+    }
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        if self.request.GET.get("dashboard"):
-            self.action_method = "confirmations"
-        else:
-            self.action_method = "detail_actions"
+        self.action_method = "confirmations"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if (
+            self.request.user.employee_get == self.instance.employee_id
+            and not self.request.GET.get("dashboard")
+        ):
+            context["action_method"] = "detail_actions"
+
+        return context
 
 
 @method_decorator(login_required, name="dispatch")

@@ -79,6 +79,10 @@ def strtobool(val):
     return str(val).lower() in ("y", "yes", "t", "true", "on", "1")
 
 
+def strtobool(val):
+    return str(val).lower() in ("y", "yes", "t", "true", "on", "1")
+
+
 @login_required
 def faq_category_view(request):
     """

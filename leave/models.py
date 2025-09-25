@@ -248,7 +248,7 @@ class LeaveType(HorillaModel):
     )
     is_compensatory_leave = models.BooleanField(default=False)
     company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
+        Company, null=True, blank=True, on_delete=models.PROTECT
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
 
@@ -910,7 +910,7 @@ class LeaveRequest(HorillaModel):
     leave_clashes_count = models.IntegerField(
         default=0, verbose_name=_("Leave Clashes Count")
     )
-    description = models.TextField(verbose_name=_("Description"), max_length=255)
+    description = models.TextField(verbose_name=_("Description"))
     attachment = models.FileField(
         null=True,
         blank=True,

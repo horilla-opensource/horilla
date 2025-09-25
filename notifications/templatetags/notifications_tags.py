@@ -16,7 +16,7 @@ def notifications_unread(context):
     return user.notifications.unread().count()
 
 
-# notifications_unread = register.simple_tag(takes_context=True)(notifications_unread)
+notifications_unread = register.simple_tag(takes_context=True)(notifications_unread)
 
 
 @register.filter

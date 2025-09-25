@@ -100,28 +100,34 @@ class HorillaCompanyManager(models.Manager):
         try:
             queryset = self.get_queryset()
             if queryset.exists():
-                try:
-                    model_name = queryset.model._meta.model_name
-                    if model_name == "employee":
-                        request = getattr(_thread_locals, "request", None)
-                        if not getattr(request, "is_filtering", None):
-                            queryset = queryset.filter(is_active=True)
-                    elif model_name == "offboardingemployee":
-                        return queryset
-                    else:
-                        for field in queryset.model._meta.fields:
-                            if isinstance(field, models.ForeignKey):
-                                if field.name in self.check_fields:
-                                    related_model_is_active_filter = {
-                                        f"{field.name}__is_active": True
-                                    }
-                                    queryset = queryset.filter(
-                                        **related_model_is_active_filter
-                                    )
-                except:
-                    pass
-        except:
-            pass
+                model_name = queryset.model._meta.model_name
+                if model_name == "employee":
+                    request = getattr(_thread_locals, "request", None)
+                    if request:
+                        active = (
+                            True
+                            if request.GET.get("is_active", True)
+                            in ["unknown", "True", "true", True]
+                            else False
+                        )
+                        queryset = queryset.filter(is_active=active)
+
+                elif model_name == "offboardingemployee":
+                    return queryset
+                else:
+                    for field in queryset.model._meta.fields:
+                        if isinstance(field, models.ForeignKey):
+                            if field.name in self.check_fields:
+                                related_model_is_active_filter = {
+                                    f"{field.name}__is_active": True
+                                }
+                                queryset = queryset.filter(
+                                    **related_model_is_active_filter
+                                )
+
+        except Exception as e:
+            logger.error(e)
+
         return queryset
 
     def filter(self, *args, **kwargs):

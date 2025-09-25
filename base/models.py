@@ -619,11 +619,8 @@ class RotatingWorkTypeAssign(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        try:
-            return f"""{self.employee_id.employee_work_info.department_id } /
-            { self.employee_id.employee_work_info.job_position_id}"""
-        except:
-            return None
+
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def work_rotate_detail_view(self):
         """
@@ -1214,8 +1211,7 @@ class RotatingShiftAssign(HorillaModel):
         Detail view subtitle
         """
 
-        return f"""{self.employee_id.employee_work_info.department_id } /
-          { self.employee_id.employee_work_info.job_position_id}"""
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def check_active(self):
         """
@@ -1392,7 +1388,7 @@ class WorkTypeRequest(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def delete(self, *args, **kwargs):
         request = getattr(_thread_locals, "request", None)
@@ -1660,7 +1656,7 @@ class ShiftRequest(HorillaModel):
         """
 
         return render_template(
-            path="cbv/shift_request/shift_deatil_actions.html",
+            path="cbv/shift_request/shift_detail_actions.html",
             context={"instance": self},
         )
 
@@ -1676,11 +1672,7 @@ class ShiftRequest(HorillaModel):
         Detail view subtitle
         """
 
-        try:
-            return f"""{self.employee_id.employee_work_info.department_id } /
-            { self.employee_id.employee_work_info.job_position_id}"""
-        except:
-            return None
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def clean(self):
 
