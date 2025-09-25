@@ -16,7 +16,7 @@
         <ion-icon name="create-outline"></ion-icon>
         {% trans "Edit" %}
     </a>
-{% endif %}
+{% endif %} 
 
 {% if instance.approved or instance.canceled %}
     <button class="oh-btn oh-btn--secondary w-50" disabled>
@@ -26,7 +26,7 @@
 {% else %}
     <a
         hx-confirm="{% trans 'Are you sure you want to delete this shift request?' %}"
-        hx-post="{% url 'shift-request-delete' instance.id %}?instances_ids={{ request.GET.instance_ids }}"
+        hx-post="{% url 'shift-request-delete' instance.id %}?instances_ids={{ request.session.ordered_ids_shiftrequest }}"
         hx-target="#genericModalBody"
         class="oh-btn oh-btn--danger w-50"
         title="{% trans 'Delete' %}"
@@ -34,7 +34,7 @@
         <ion-icon name="create-outline"></ion-icon>
         {% trans "Delete" %}
     </a>
-{% endif %}
+{% endif %} 
 
 {% if request.GET.deleted %}
     <script>

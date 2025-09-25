@@ -1,37 +1,30 @@
-$(document).on('htmx:load',function () {
-    function hidBasedOn(basedOn) {
-      if (basedOn == "after") {
-        $("label[for='id_rotate_after_day']").show();
-        $("#id_rotate_after_day").show();
+$(document).on('htmx:load', function () {
+	function hidBasedOn(basedOn) {
+		if (basedOn == "after") {
+			$("#id_rotate_after_day_parent_div").show();
 
-        $("label[for='id_rotate_every_weekend']").hide();
-        $("#id_rotate_every_weekend").hide();
-        $("label[for='id_rotate_every']").hide();
-        $("#id_rotate_every").hide();
-      } else if (basedOn == "weekly") {
-        $("label[for='id_rotate_every_weekend']").show();
-        $("#id_rotate_every_weekend").show();
+			$("#id_rotate_every_weekend_parent_div").hide();
+			$("#id_rotate_every_parent_div").hide();
 
-        $("label[for='id_rotate_after_day']").hide();
-        $("#id_rotate_after_day").hide();
-        $("label[for='id_rotate_every']").hide();
-        $("#id_rotate_every").hide();
-      } else if (basedOn == "monthly") {
-        $("label[for='id_rotate_every']").show();
-        $("#id_rotate_every").show();
+		} else if (basedOn == "weekly") {
+			$("#id_rotate_every_weekend_parent_div").show();
 
-        $("label[for='id_rotate_after_day']").hide();
-        $("#id_rotate_after_day").hide();
-        $("label[for='id_rotate_every_weekend']").hide();
-        $("#id_rotate_every_weekend").hide();
-      }
-    }
-    var basedOn = $("#id_based_on");
-    hidBasedOn(basedOn.val());
+			$("#id_rotate_after_day_parent_div").hide();
+			$("#id_rotate_every_parent_div").hide();
 
+		} else if (basedOn == "monthly") {
+			$("#id_rotate_every_parent_div").show();
 
-    basedOn.on('change',function (e) {
+			$("#id_rotate_after_day_parent_div").hide();
+			$("#id_rotate_every_weekend_parent_div").hide();
 
-      hidBasedOn(basedOn.val());
-    });
-  });
+		}
+	}
+
+	var basedOn = $("#id_based_on");
+	hidBasedOn(basedOn.val());
+
+	basedOn.on('change', function (e) {
+		hidBasedOn(basedOn.val());
+	});
+});

@@ -117,6 +117,15 @@ class RotatingWorkListView(GeneralParent):
         queryset = filtersubordinates(
             self.request, queryset, "base.view_rotatingworktypeassign"
         )
+
+        active = (
+            True
+            if self.request.GET.get("is_active", True)
+            in ["unknown", "True", "true", True]
+            else False
+        )
+        queryset = queryset.filter(is_active=active)
+
         return queryset
 
     bulk_update_fields = [

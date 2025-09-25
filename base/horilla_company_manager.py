@@ -104,9 +104,13 @@ class HorillaCompanyManager(models.Manager):
                 if model_name == "employee":
                     request = getattr(_thread_locals, "request", None)
                     if request:
-                        queryset = queryset.filter(
-                            is_active=request.GET.get("is_active", True)
+                        active = (
+                            True
+                            if request.GET.get("is_active", True)
+                            in ["unknown", "True", "true", True]
+                            else False
                         )
+                        queryset = queryset.filter(is_active=active)
 
                 elif model_name == "offboardingemployee":
                     return queryset
