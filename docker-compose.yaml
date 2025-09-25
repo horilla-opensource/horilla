@@ -1,10 +1,10 @@
+version: "3.9"
+
 services:
   server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: sharathshepur/horila:${BUILD_NUMBER}   # use pushed image
     ports:
-      - 8000:8000
+      - "8000:8000"
     restart: unless-stopped
     environment:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
@@ -25,7 +25,7 @@ services:
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - 5432:5432
+      - "5432:5432"
     restart: unless-stopped
     volumes:
       - horilla-data:/var/lib/postgresql/data
