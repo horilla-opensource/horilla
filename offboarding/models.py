@@ -329,7 +329,6 @@ class ExitReason(HorillaModel):
     # offboarding_employee_id = models.ForeignKey(
     #     OffboardingEmployee, on_delete=models.CASCADE
     # )
-    attachments = models.ManyToManyField(OffboardingStageMultipleFile)
 
     def __str__(self):
         return self.title
