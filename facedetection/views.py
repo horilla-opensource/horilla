@@ -101,6 +101,11 @@ class EmployeeFaceDetectionGetPostAPIView(APIView):
         except Exception as e:
             raise serializers.ValidationError(e)
 
+    def get(self, request):
+        facedetection = self.get_facedetection(request)
+        serializer = EmployeeFaceDetectionSerializer(facedetection)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def post(self, request):
         if self.get_facedetection(request).start:
             employee_id = request.user.employee_get.id
