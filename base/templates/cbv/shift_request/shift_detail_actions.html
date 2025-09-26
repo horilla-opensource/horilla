@@ -16,7 +16,7 @@
         <ion-icon name="create-outline"></ion-icon>
         {% trans "Edit" %}
     </a>
-{% endif %} 
+{% endif %}
 
 {% if instance.approved or instance.canceled %}
     <button class="oh-btn oh-btn--secondary w-50" disabled>
@@ -34,7 +34,7 @@
         <ion-icon name="create-outline"></ion-icon>
         {% trans "Delete" %}
     </a>
-{% endif %} 
+{% endif %}
 
 {% if request.GET.deleted %}
     <script>
