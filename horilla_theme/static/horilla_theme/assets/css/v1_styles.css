@@ -1481,6 +1481,32 @@ input[type="file"] {
     background-color: hsl(1, 100%, 97%);
 }
 
+.oh-apply_btn {
+  font-weight: 500;
+  border: 1px solid hsl(8, 77%, 56%);
+  background-color: hsl(0, 0%, 97.5%);
+  color: hsl(8, 77%, 56%);
+  text-decoration: none;
+}
+
+.oh-apply_btn:active {
+  background-color: hsl(8, 77%, 56%);
+  color: hsl(0, 0%, 100%);
+}
+
+.oh-apply_btn:focus {
+  background-color: hsl(8, 77%, 56%);
+  color: hsl(0, 0%, 100%);
+  border: none;
+  outline: none;
+}
+
+.oh-apply_btn:hover {
+  background-color: hsl(8, 77%, 56%);
+  color: hsl(0, 0%, 100%);
+  text-decoration: none;
+}
+
 .oh-floatin-btn {
     position: fixed;
     right: 1.5rem;
@@ -2131,6 +2157,10 @@ input[type="file"] {
     padding: 1rem;
     transition: all 0.4s ease-in-out;
     cursor: pointer;
+}
+
+.oh-card__footer--border-top {
+  border-top: 1px solid hsl(213, 22%, 93%);
 }
 
 .oh-tabs__movable-title {
