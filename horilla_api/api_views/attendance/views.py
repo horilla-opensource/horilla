@@ -89,6 +89,7 @@ class ClockInAPIView(APIView):
                 if request.__dict__.get("date"):
                     date_today = request.date
                 attendance_date = date_today
+
                 day = date_today.strftime("%A").lower()
                 day = EmployeeShiftDay.objects.get(day=day)
                 now = datetime.now().strftime("%H:%M")
