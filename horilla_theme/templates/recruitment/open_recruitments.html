@@ -53,45 +53,43 @@
     </div>
 {% endif %}
 
-    <div class="p-5 flex justify-center items-center h-screen flex-col">
-        <div class="w-full max-w-5xl pl-5 flex justify-start mb-2">
+    <div class="p-5 w-[80%] m-auto">
+        <div class="w-full flex justify-between mb-2 py-9 px-5 items-center">
             {% if request.user.is_authenticated %}
-            <div class="oh-wrapper">
-                <div class="oh-wrapper">
-                    <div class="oh-wrapper" style="font-size: xx-large; cursor: pointer;">
-                        {% if request.path not in request.META.HTTP_REFERER %}
-                        <a href="{{ request.META.HTTP_REFERER }}">
-                            <ion-icon name="arrow-back-outline"></ion-icon>
-                        </a>
-                        {% else %}
-                        <a href="/">
-                            <ion-icon name="arrow-back-outline"></ion-icon>
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
+            <span class="text-4xl inline">
+                {% if request.path not in request.META.HTTP_REFERER %}
+                <a href="{{ request.META.HTTP_REFERER }}">
+                    <ion-icon name="arrow-back-outline"></ion-icon>
+                </a>
+                {% else %}
+                <a href="/">
+                    <ion-icon name="arrow-back-outline"></ion-icon>
+                </a>
+                {% endif %}
+            </span>
             {% endif %}
+            <h3 class="text-3xl text-center font-bold mb-2">{% trans "Open Job Listings" %}</h3>
+            <div></div>
         </div>
-        <h3 class="text-3xl font-bold mb-2">{% trans "Open Job Listings" %}</h3>
+
         <p class="text-sm mb-4 text-center">
             {% trans "We're hiring! Join our team and be part of a vibrant workplace where your talents make a difference. Here are the open Recruitments...." %}
         </p>
-        <div class="relative mb-5">
+        {% comment %} <div class="relative mb-5">
             <input type="text" placeholder="Search for Jobs..."
                 class="text-color-600 ps-10 p-2 placeholder:text-sm w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600">
             <i class="fas fa-search absolute left-3 top-0 bottom-0 m-auto flex items-center opacity-50 text-sm"></i>
-        </div>
+        </div> {% endcomment %}
         <div class="h-[80vh] overflow-hidden overflow-y-auto p-5 bg-[#00000005] rounded-md">
             {% for recruitment in recruitments %}
-                <div class="shadow-card p-3 rounded-md mb-3 bg-white min-w-80">
+                <div class="shadow-card p-5 rounded-md mb-3 bg-white min-w-80">
                     <div class="gap-5 flex flex-col lg:grid grid-cols-4  xl:gap-20 lg:items-center">
                         <div class="flex items-center gap-4">
                             <div class="w-12 rounded-md overflow-hidden">
                                 <img src="{{recruitment.company_id.icon.url}}" alt="">
                             </div>
                             <div>
-                                <h5 class="text-md font-bold">{{recruitment.company_id}}</h5>
+                                <h5 class="text-md font-bold">{{recruitment.title}}</h5>
                                 <p class="text-xs text-dark-200 font-medium">{{recruitment.created_at|timesince}}</p>
                             </div>
                         </div>
@@ -99,7 +97,7 @@
                             {% for job_position in recruitment.open_positions.all %}
                                 <h5 class="bg-primary-300  text-primary-600 text-xs px-2 py-1 rounded-full font-medium w-max mb-2">{{job_position.job_position}}</h5>
                             {% endfor %}
-                            <p class="text-sm ps-2 font-medium">{{recruitment.title}}</p>
+                            <p class="text-sm ps-2 font-semibold">{{recruitment.company_id}}</p>
                         </div>
                         {% if perms.recruitment.view_recruitment %}
                             <div>
@@ -122,9 +120,11 @@
                             <div class="flex gap-1 lg:justify-end">
                                 <button
                                     class="toggleSidemenu w-20 justify-center px-4 py-2 border border-primary-600 text-primary-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-primary-800 transition duration-300"
-                                    data-sidebar="sidebarModal" hx-get='{% url "recruitment-details" recruitment.id %}' hx-target="#sidebarModal">{% trans "View" %}
+                                    data-target="#activitySidebar" hx-get="{% url 'recruitment-details' recruitment.id %}" hx-target="#commentContainer"
+                                    onclick="sidebarToggle()"
+                                >{% trans "View" %}
                                 </button>
-                                <a href="{% url 'application-form' %}?recruitmentId={{ recruitment.id }}"
+                                <a href="{% url 'application-form' %}?recruitmentId={{ recruitment.id }}" target="_blank"
                                 class="w-20 justify-center px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
                                     {% trans "Apply" %}
                                 <i class="fa-solid fa-arrow-right transform -rotate-45"></i>
@@ -148,48 +148,28 @@
         </div><!--sidecont-->
     </div>
 
+<div class="oh-activity-sidebar" id="activitySidebar" style="z-index: 1000">
+    <div class="oh-activity-sidebar__header">
+		<a style="cursor: pointer;" onclick="sidebarToggle()" title="close">
+			<ion-icon name="chevron-forward-outline" class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close md flip-rtl hydrated" data-target="#activitySidebar" role="img"></ion-icon>
+		</a>
+		<span class="oh-activity-sidebar__title font-bold">{% trans "Recruitment Details" %}</span>
+	</div>
+    <div class="oh-activity-sidebar__body p-5 leading-relaxed border rounded-md" id="commentContainer"></div>
+</div>
+
 
     <script type="module"  src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
-    <script>
-        document.querySelector('.oh-password-input--toggle').addEventListener('click', function (e) {
-            e.preventDefault();
-            const passwordInput = document.querySelector('.oh-input--password');
-            const showIcon = document.querySelector('.oh-password-input__show-icon');
-            const hideIcon = document.querySelector('.oh-password-input__hide-icon');
+    <script src="{% static 'htmx/htmx.min.js' %}"></script>
 
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                showIcon.classList.add('hidden');
-                hideIcon.classList.remove('hidden');
-            } else {
-                passwordInput.type = 'password';
-                showIcon.classList.remove('hidden');
-                hideIcon.classList.add('hidden');
-            }
-        });
-    </script>
-  <script src="{% static 'htmx/htmx.min.js' %}"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-            document.body.addEventListener('htmx:configRequest', (event) => {
-            event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
-            })
-        </script>
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-    // Toggle any sidebar based on data-sidebar attribute
-    document.querySelectorAll(".toggleSidemenu").forEach((button) => {
-        button.addEventListener("click", () => {
-        const sidebarId = button.getAttribute("data-sidebar");
-        const sidebar = document.getElementById(sidebarId);
-        if (sidebar) {
-            sidebar.classList.toggle("active");
-            document.body.classList.toggle("overflow-hidden");
-        }
-        });
-    });
-    });
-
+    function sidebarToggle() {
+        // Toggle any sidebar based on data-sidebar attribute
+            const sidebar = document.getElementById("activitySidebar");
+            if (sidebar) {
+                sidebar.classList.toggle("oh-activity-sidebar--show");
+            }
+    }
 
 </script>
 </body>
