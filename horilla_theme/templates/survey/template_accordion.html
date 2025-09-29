@@ -1,11 +1,11 @@
 {% load i18n %}{% load static %}
 {% if templates %}
-    <div class="p-5 shadow-card bg-white">
+    <div class="p-2 mt-5 shadow-card bg-white">
         {% for grouper in templates %}
             <div class="oh-accordion mb-3">
                 <div class="oh-accordion-item">
                     <div class="oh-accordion-header no-after d-flex justify-between align-center">
-                        <span class="oh-accordion-title text-base d-flex items-center">
+                        <span class="oh-accordion-title text-sm d-flex items-center">
                             {{grouper.grouper}}
                             <div class="flex items-center">
                                 <span class="inline-block p-1 text-center w-[22px] h-[22px] text-xs flex justify-center items-center rounded-full bg-[#e55a4f] text-white ms-2 mr-2"

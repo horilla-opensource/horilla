@@ -1,0 +1,12 @@
+{% load static %}
+{% load i18n %}
+{% if instance.options %}
+<div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+    <span class="font-medium text-xs text-[#565E6C] w-32">
+        {% trans "Options" %}
+    </span>
+    <div class="text-xs font-semibold flex items-center gap-5">
+        : <span>{{instance.options}}</span>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,52 @@
+{% load i18n %} {% load basefilters %}{% load widget_tweaks %}
+{{ form.non_field_errors }}
+
+<div class="row">
+    {% for field in form %}
+        {% if field.name != 'profile' and field.name != 'country' and field.name != 'state' and field.name != 'badge_id' %}
+            <div class="col-lg-6">
+                <div class="oh-input__group">
+                    <label class="oh-label {% if field.field.required %}required-star{% endif %}" for="{{field.id_for_label}}"
+                        title="{{ field.help_text|safe }}">
+                        {{ field.label }}
+                    </label>
+
+                    {% if field.field.widget.input_type == 'checkbox' %}
+                        <div class="oh-switch" style="width: 30px;">{{ field|add_class:'oh-switch__checkbox' }}</div>
+                    {% else %}
+                        {{ field|add_class:'form-control' }}
+                    {% endif %}
+
+                    {{ field.errors }}
+                </div>
+            </div>
+        {% elif field.name == 'country' %}
+            <div class="row">
+                <div class="col-lg-6">
+                    <label class="oh-label" for="{{form.country.id_for_label}}">{{form.country.label}}</label>
+                    <select name="country" class="w-100 oh-select-2" id="id_country"
+                        data-selected="{{ form.country.value|default:'' }}">
+                    </select>
+                    {{form.country.errors}}
+                    <span class="dropdown-wrapper" aria-hidden="true"></span>
+                    </span>
+                </div>
+                <div class="col-lg-6">
+                    <label class="oh-label d-block" for="{{form.state.id_for_label}}">{{form.state.label}}</label>
+                    <select name="state" class="w-100 oh-select-2" id="id_state"
+                        data-selected="{{ form.state.value|default:'' }}">
+                    </select>
+                    {{form.state.errors}}
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(".row").find("select").select2({
+            width: '100%'
+        });
+    });
+</script>
