@@ -1,81 +1,77 @@
-# Production Dockerfile (multi-stage) for Horilla v2.0
-# Builds Python wheels in builder image, then installs them into a slim runtime.
+# syntax=docker/dockerfile:1
 
-FROM python:3.11-slim-bookworm AS python-builder
+# -------- Base image with dependencies layer --------
+FROM python:3.11-slim AS base
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-# System deps required to build certain Python packages and render PDFs/images
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
-    libffi-dev \
-    libjpeg-dev \
-    zlib1g-dev \
-    libcairo2 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libmagic1 \
-    libssl-dev \
-    gettext \
-    git \
-  && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-# Leverage layer caching for deps
-COPY requirements.txt ./
-RUN python -m pip install --upgrade pip \
-  && pip wheel --no-cache-dir --no-deps -r requirements.txt -w /wheels
-
-# ---------------------------- Runtime image ----------------------------
-FROM python:3.11-slim-bookworm AS runtime
-
+# System deps
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    DJANGO_SETTINGS_MODULE=horilla.settings
+    PIP_NO_CACHE_DIR=1 \
+    POETRY_VIRTUALENVS_CREATE=false
 
-# Create app user for security
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-
-# Runtime libs only (no compilers)
+# Install build deps for common Python packages (incl. cairo)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libcairo2 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libjpeg62-turbo \
-    zlib1g \
-    libmagic1 \
-    libpq5 \
-    gettext \
-  && rm -rf /var/lib/apt/lists/*
+    build-essential \
+    libpq-dev \
+    gcc \
+    curl \
+    pkg-config \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg62-turbo-dev \
+    zlib1g-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Install built wheels
-COPY --from=python-builder /wheels /wheels
-RUN pip install --no-cache-dir /wheels/* \
-  && rm -rf /wheels
+# -------- Builder for wheels --------
+FROM base AS builder
+COPY requirements.txt ./
+RUN pip wheel --wheel-dir /wheels -r requirements.txt
 
-# Copy project source
+# -------- Final runtime image --------
+FROM python:3.11-slim AS runtime
+
+# Create non-root user
+RUN addgroup --system app && adduser --system --ingroup app app
+
+# Install runtime deps for libraries like psycopg2, cairo, etc. (minimal)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    libcairo2 \
+    libpango-1.0-0 \
+    libjpeg62-turbo \
+    zlib1g \
+    libxml2 \
+    libxslt1.1 \
+    libffi8 \
+    libfreetype6 \
+    ghostscript \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy wheels and install
+COPY --from=builder /wheels /wheels
+RUN pip install --no-index --find-links=/wheels /wheels/*
+
+# Copy project
 COPY . .
 
-# Create required directories and set permissions
-RUN mkdir -p /app/media /app/staticfiles \
-  && chown -R appuser:appuser /app
+# Ensure static dirs exist and are owned by app
+RUN mkdir -p /app/staticfiles /app/static_root && chown -R app:app /app
 
-# Ensure entrypoint is executable
-RUN chmod +x /app/entrypoint.sh
+# Gunicorn config
+ENV PORT=8000 \
+    GUNICORN_CMD_ARGS="--config deploy/gunicorn.conf.py"
 
-# Switch to non-root user
-USER appuser
+# Entrypoint
+COPY deploy/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
+USER app
 EXPOSE 8000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-  CMD python -c "import requests; requests.get('http://localhost:8000/health/', timeout=10)" || exit 1
-
-# Entrypoint runs migrations, collectstatic, admin creation, and gunicorn
-CMD ["sh", "./entrypoint.sh"]
+CMD ["/entrypoint.sh"]

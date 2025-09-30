@@ -1,13 +1,12 @@
-# Git and version control
-.git
-.gitignore
-.gitattributes
-
-# Python cache and build artifacts
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
 .Python
 build/
 develop-eggs/
@@ -20,70 +19,63 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
-# Virtual environments
-venv/
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Django stuff:
+*.log
+local_settings.py
+media/
+staticfiles/
+static_root/
+
+# Environments
+.env
+.venv
 env/
+venv/
 ENV/
 
-# IDE and editor files
+# IDEs
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
 
-# OS files
+# MacOS
 .DS_Store
-Thumbs.db
 
-# Node.js (not used in deployment)
+# Node
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-package.json
-package-lock.json
 
-# Django
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Media and static files (handled by volumes)
-media/
-staticfiles/
-static/
-
-# Environment files
-.env
-.env.local
-.env.production
-.env.test
+# Git
+.git/
+.gitignore
 
 # Docker
 Dockerfile*
-docker-compose*.yaml
-docker-compose*.yml
+.dockerignore
 
-# Documentation
-*.md
-docs/
-
-# Testing
-.coverage
-.pytest_cache/
-.tox/
-
-# Backup files
-*.backup
-*.sql
-
-# Temporary files
-*.tmp
-*.temp
+# Migrations cache
+**/migrations/__pycache__/
