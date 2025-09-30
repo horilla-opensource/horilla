@@ -29,6 +29,7 @@
 
 	<div class="accordion-wrapper space-y-2">
 		{% for group in groups %}
+
             <div
                 class="oh-accordion border border-primary-300 rounded-md overflow-hidden"
             >
@@ -378,4 +379,30 @@
 			$(".shadow-card .oh-accordion-header").first().click();
 		});
 	});
+</script>
+
+<script>
+    let lastOpenAccordion = null;
+
+    $(document).ready(function () {
+        // Track which accordion is open
+        $(document).on("click", ".oh-accordion-header", function () {
+            let body = $(this).next(".oh-accordion-body");
+            if (body.is(":visible")) {
+                lastOpenAccordion = null; // closing
+            } else {
+                lastOpenAccordion = $(this).data("group"); // save opened group
+            }
+        });
+
+        // After HTMX reload, restore the accordion state
+        $(document).on("htmx:afterSettle", function () {
+            if (lastOpenAccordion) {
+                $(`.oh-accordion-header[data-group='${lastOpenAccordion}']`).click();
+            } else {
+                // fallback: open the first accordion only if none was previously open
+                $(".shadow-card .oh-accordion-header").first().click();
+            }
+        });
+    });
 </script>
