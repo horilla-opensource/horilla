@@ -870,7 +870,10 @@ def create_resignation_request(request):
         if form.is_valid():
             hr_users = User.objects.filter(groups__name="HR")
             print(hr_users)
-            employee = form.cleaned_data["employee_id"]
+            if "employee_id" in form.cleaned_data:
+                employee = form.cleaned_data["employee_id"]
+            else:
+                employee = request.user.employee_get
             description = form.cleaned_data["description"]
             print(employee, description)
             for user in hr_users:
