@@ -90,7 +90,7 @@
                                         class="text-sm font-medium text-left min-w-[150px]"
                                         id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
                                     >
-                                        <div class="flex gap-3 p-3 {% for sort_map in sortby_mapping %} {% if sort_map.0 == cell.0 %}cursor-pointer {% endif %}{% endfor %}"
+                                        <div class="flex gap-3 p-3 {% for sort_map in sortby_mapping %}{% if sort_map.0 == cell.0 %}cursor-pointer{% endif %}{% endfor %}"
                                             {% for sort_map in sortby_mapping %}
                                                 {% if sort_map.0 == cell.0 %}
                                                     hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
@@ -146,7 +146,7 @@
                                     {{row_attrs|format:instance|safe}}
                                 >
                                     {% if bulk_select_option %}
-                                    <td class="text-sm text-left p-3 text-[#666] rounded-lg h-[45px] leading-none {{row_status_class|format:instance|safe}}">
+                                    <td class="text-sm text-left p-3 text-[#666] rounded-lg h-[45px] {{row_status_class|format:instance|safe}}">
                                         <input
                                             type="checkbox"
                                             class="list-table-row custom-checkbox w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer"
@@ -195,7 +195,7 @@
                                     {% endfor %}
 
                                     {% if options or option_method %}
-                                        <td class="text-sm text-center p-3 text-[#666] h-[45px] leading-none"
+                                        <td class="text-sm text-center p-3 text-[#666] h-[45px]"
                                             onclick="event.stopPropagation()"
                                         >
                                             {% if not option_method %}
@@ -228,7 +228,7 @@
                                     {% endif %}
 
                                     {% if actions or action_method %}
-                                        <td class="stickyright text-sm text-center p-3 text-[#666] h-[45px] leading-none"
+                                        <td class="stickyright text-sm text-center p-3 text-[#666] h-[45px]"
                                             onclick="event.stopPropagation()"
                                         >
                                             {% if not action_method %}
