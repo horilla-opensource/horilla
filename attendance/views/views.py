@@ -1636,20 +1636,27 @@ def update_fields_based_shift(request):
 
     employee_ids = (
         request.GET.get("employee_id")
-        if hx_target == "attendanceUpdate"
-        or hx_target == "attendanceRequest"
-        or hx_target == "attendanceUpdateFormFields"
-        or hx_target == "attendanceFormFields"
+        if hx_target
+        in [
+            "attendanceUpdate",
+            "attendanceRequest",
+            "attendanceUpdateFormFields",
+            "attendanceFormFields",
+            "attendanceRequestDiv",
+        ]
         else request.GET.getlist("employee_id")
     )
     employee_queryset = (
         (
             Employee.objects.get(id=employee_ids)
-            if hx_target == "attendanceUpdate"
-            or hx_target == "attendanceRequestDiv"
-            or hx_target == "attendanceRequest"
-            or hx_target == "attendanceUpdateFormFields"
-            or hx_target == "attendanceFormFields"
+            if hx_target
+            in [
+                "attendanceUpdate",
+                "attendanceUpdateFormFields",
+                "attendanceRequest",
+                "attendanceRequestDiv",
+                "attendanceFormFields",
+            ]
             else Employee.objects.filter(id__in=employee_ids)
         )
         if employee_ids
@@ -1707,10 +1714,10 @@ def update_fields_based_shift(request):
     }
     form = (
         AttendanceUpdateForm(initial=initial_data)
-        if hx_target == "attendanceUpdate" or hx_target == "attendanceUpdateFormFields"
+        if hx_target in ["attendanceUpdate", "attendanceUpdateFormFields"]
         else (
             NewRequestForm(initial=initial_data)
-            if hx_target == "attendanceRequest"
+            if hx_target in ["attendanceRequest", "attendanceRequestDiv"]
             else AttendanceForm(initial=initial_data)
         )
     )

@@ -359,6 +359,7 @@ class NewAttendanceRequestFormView(HorillaFormView):
     form_class = NewRequestForm
     model = Attendance
     new_display_title = _("New Attendance Request")
+    template_name = "requests/attendance/request_form.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
