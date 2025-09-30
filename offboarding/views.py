@@ -876,6 +876,11 @@ def create_resignation_request(request):
             else:
                 employee = request.user.employee_get
 
+            manager = employee.get_reporting_manager()
+            if manager:
+                hr_users = hr_users | User.objects.filter(
+                    id=manager.employee_user_id.id
+                )
             description = form.cleaned_data["description"]
             planned_to_leave_on = form.cleaned_data["planned_to_leave_on"]
             exit_reason = form.cleaned_data["exit_reason"]
