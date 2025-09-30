@@ -882,13 +882,14 @@ def create_resignation_request(request):
                     icon="envelope-open-text",
                 )
 
-                if user.email:  
+                if user.email:
                     send_mail(
                         subject=f"New resignation letter from {employee}",
                         message=description,
                         from_email='tech@wireapps.co.uk',
                         recipient_list=[user.email],
                         fail_silently=False,
+                        html_message=description
                     )
 
             form.save()
