@@ -8,24 +8,30 @@
 
         <div class="p-[20px] rounded-[5px] text-sm relative bg-white mb-2">
             {% if actions or view.action_method %}
-            <div class="absolute inline-block dropdown-wrapper right-5 top-5 w-3" role="button"
+            <div
+                x-data="{ open: false }"
+                class="absolute inline-block dropdown-wrapper right-5 top-5 w-3"
+                @click.outside="open = false"
+                title="{% trans 'Actions' %}"
                 onclick="event.stopPropagation()"
-                title = "{% trans 'Actions' %}"
             >
-                <a class="cursor-pointer dropdown-toggle">
+                <a class="cursor-pointer dropdown-toggle" @click="open = !open">
                     <i class="fa-solid fa-ellipsis-vertical text-black"></i>
                 </a>
 
                 <div
-                    class="dropdown-menu absolute right-0 bg-[#f7f7f7] rounded-lg shadow-card py-2 hidden z-50 min-w-[170px]"
+                    x-show="open"
+                    x-transition
+                    style="cursor:pointer;"
+                    class="dropdown-menu absolute right-0 bg-[#f7f7f7] rounded-lg shadow-card py-2 z-50 min-w-[170px]"
                 >
-                    <ul class="text-xs ">
+                    <ul class="text-xs">
                         {% if view.action_method %}
-                            {{instance|getattribute:view.action_method|safe}}
+                            {{ instance|getattribute:view.action_method|safe }}
                         {% else %}
                             {% for action in actions %}
                                 {% if action.accessibility|accessibility:instance %}
-                                    <li>
+                                    <li class="p-1">
                                         <p
                                             class="w-full text-left px-3 py-1 hover:text-primary-600 font-semibold"
                                         >
