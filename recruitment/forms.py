@@ -1093,14 +1093,20 @@ class SkillZoneCandidateForm(ModelForm):
         return table_html
 
     def clean_candidate_id(self):
-        selected_candidates = self.cleaned_data["candidate_id"]
+        candidate_field = self.cleaned_data["candidate_id"]
 
-        # Ensure all selected candidates are instances of the Candidate model
-        for candidate in selected_candidates:
-            if not isinstance(candidate, Candidate):
-                raise forms.ValidationError("Invalid candidate selected.")
+        # Case 1: update (single select → a Candidate object)
+        if isinstance(candidate_field, Candidate):
+            return candidate_field
 
-        return selected_candidates.first()
+        # Case 2: create (multi select → QuerySet/iterable of Candidate)
+        if hasattr(candidate_field, "__iter__"):
+            for candidate in candidate_field:
+                if not isinstance(candidate, Candidate):
+                    raise forms.ValidationError("Invalid candidate selected.")
+            return candidate_field
+
+        return candidate_field
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
