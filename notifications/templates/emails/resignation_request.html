@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #2c3e50;
+        }
+
+        p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+    <title></title>
+</head>
+<body>
+<div class="card">
+    <h2>New Resignation Request</h2>
+    <p><span class="label">Employee:</span> {{ employee }}</p>
+    <p><span class="label">Planned Last Working Day:</span> {{ planned_to_leave_on }}</p>
+    <p><span class="label">Exit Reason:</span> {{ exit_reason }}</p>
+    <span class="label">Description:</span> {{ description|safe|striptags }}
+    <div class="footer">
+        <p>This is an automated notification from the HR system.</p>
+    </div>
+</div>
+</body>
+</html>
