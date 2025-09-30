@@ -9,6 +9,7 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -874,7 +875,11 @@ def create_resignation_request(request):
                 employee = form.cleaned_data["employee_id"]
             else:
                 employee = request.user.employee_get
+
             description = form.cleaned_data["description"]
+            planned_to_leave_on = form.cleaned_data["planned_to_leave_on"]
+            exit_reason = form.cleaned_data["exit_reason"]
+
             print(employee, description)
             for user in hr_users:
                 notify.send(
@@ -892,7 +897,12 @@ def create_resignation_request(request):
                         from_email='tech@wireapps.co.uk',
                         recipient_list=[user.email],
                         fail_silently=False,
-                        html_message=description
+                        html_message=render_to_string("emails/resignation_request.html", {
+                            "employee": employee,
+                            "description": description,
+                            "planned_to_leave_on": planned_to_leave_on,
+                            "exit_reason": exit_reason,
+                        })
                     )
 
             form.save()
