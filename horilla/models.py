@@ -9,6 +9,7 @@ information, audit logging, and active/inactive status management.
 """
 
 import re
+from uuid import uuid4
 
 from auditlog.models import AuditlogHistoryField
 from auditlog.registry import auditlog
@@ -17,6 +18,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.fields.files import FieldFile
 from django.urls import reverse
+from django.utils.text import slugify
 from django.utils.translation import gettext as _
 
 from horilla.horilla_middlewares import _thread_locals
@@ -37,12 +39,48 @@ def url(self: FieldFile):
 setattr(FieldFile, "url", url)
 
 
-def has_xss(value):
-    """Basic check for common XSS patterns."""
+def has_xss(value: str) -> bool:
+    """Detect common XSS attempts (scripts, event handlers, js URLs, active content)."""
     if not isinstance(value, str):
         return False
-    xss_pattern = re.compile(r"<.*?script.*?>|javascript:|on\w+=", re.IGNORECASE)
-    return bool(xss_pattern.search(value))
+
+    xss_patterns = [
+        r"<\s*script.*?>.*?<\s*/\s*script\s*>",  # <script> ... </script>
+        r"javascript\s*:",  # javascript: pseudo-protocol
+        r"on\w+\s*=",  # inline event handlers (onclick, onload, etc.)
+        r"<\s*(embed|object|iframe|svg|math|link|meta).*?>",  # dangerous active content
+        r"on\w+\s*=\s*['\"]?\s*(eval|setTimeout|setInterval|new\s+Function|XMLHttpRequest|fetch|\$\s*\()[^>]*",  # JS API abuse
+    ]
+
+    combined = re.compile("|".join(xss_patterns), re.IGNORECASE | re.DOTALL)
+    return bool(combined.search(value))
+
+
+def upload_path(instance, filename):
+    """
+    Generates a unique file path for uploads in the format:
+    app_label/model_name/field_name/originalfilename-uuid.ext
+    """
+    ext = filename.split(".")[-1]
+    base_name = ".".join(filename.split(".")[:-1]) or "file"
+    unique_name = f"{slugify(base_name)}-{uuid4().hex[:8]}.{ext}"
+
+    # Try to find which field is uploading this file
+    field_name = next(
+        (
+            k
+            for k, v in instance.__dict__.items()
+            if hasattr(v, "name") and v.name == filename
+        ),
+        None,
+    )
+
+    app_label = instance._meta.app_label
+    model_name = instance._meta.model_name
+
+    if field_name:
+        return f"{app_label}/{model_name}/{field_name}/{unique_name}"
+    return f"{app_label}/{model_name}/{unique_name}"
 
 
 class HorillaModel(models.Model):

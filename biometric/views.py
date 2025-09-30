@@ -150,6 +150,7 @@ class ZKBioAttendance(Thread):
                 force_udp=False,
                 ommit_ping=False,
             )
+            patch_direction = {"in": 0, "out": 1}
             conn = zk_device.connect()
             self.conn = conn
             if conn:
@@ -162,7 +163,11 @@ class ZKBioAttendance(Thread):
                         for attendance in attendances:
                             if attendance:
                                 user_id = attendance.user_id
-                                punch_code = attendance.punch
+                                punch_code = (
+                                    patch_direction[device.device_direction]
+                                    if device.device_direction in patch_direction
+                                    else attendance.punch
+                                )
                                 date_time = django_timezone.make_aware(
                                     attendance.timestamp
                                 )

@@ -1,0 +1,82 @@
+{% load generic_template_filters i18n %}
+<style>
+  .opacity-50{
+    opacity: .5!important;
+  }
+</style>
+{% if import_fields and import_accessibility %}
+  <div id="import_{{ view_id }}" class="oh-checkpoint-badge text-warning" style="cursor: pointer;color: hsl(211.72deg 91% 60%) !important;" data-toggle="oh-modal-toggle" data-target="#importModal{{ view_id }}" onclick="
+      ids = $('#{{ selected_instances_key_id }}').attr('data-ids');
+      $('#submitGetImportSheet{{ view_id }}Form').find('[name=selected_ids]').val(ids);">
+    <span class="label">{% trans 'Import' %}</span>
+    (<ion-icon name="arrow-down-outline" class="m-0"></ion-icon>)
+  </div>
+  <div class="oh-modal" id="importModal{{ view_id }}">
+    <div class="oh-modal__dialog" id="objectCreateModalTarget">
+      <div class="oh-modal__dialog-header">
+        <h2 class="oh-modal__dialog-title">Import Records</h2>
+        <button class="oh-modal__close" aria-label="Close"><ion-icon name="close-outline" role="img"></ion-icon></button>
+        <div class="oh-modal__dialog-body p-0 pb-4">
+          <form hx-post="/{{ post_import_sheet_path }}" hx-encoding="multipart/form-data" class="oh-profile-section">
+            <div class="oh-modal__dialog-body mr-5" id="uploading{{view_id}}" style="display: none">
+              <div class="loader-container">
+                <div class="loader"></div>
+                <div class="loader-text">Uploading...</div>
+              </div>
+            </div>
+            <div id="error-container" style="color: red"></div>
+            <div class="modal-body">
+              <div class="oh-dropdown__import-form">
+                <label class="oh-dropdown__import-label">
+                  <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon md hydrated" role="img" aria-label="cloud upload"></ion-icon>
+                  <span class="oh-dropdown__import-form-title">Upload a File</span>
+                  <span class="oh-dropdown__import-form-text">Drag and drop files here</span>
+                </label>
+                <input  id="resumeUpload{{ view_id }}" type="file" name="file" required="" />
+                <div class="d-inline float-end">
+                  <a onclick="
+                                  $('#submitGetImportSheet{{ view_id }}').click();
+                                  " style="text-decoration:none; display: inline-block;" class="oh-dropdown__link" hx-on:click="template_download(event)">
+                    <ion-icon name="cloud-download-outline" style="font-size:20px; vertical-align: middle;" role="img" class="md hydrated"></ion-icon>
+                    <span>Download Template</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% if import_help %}
+              <h6 class="mt-3"><b>{% trans 'Import Help' %}</b></h6>
+              <div class="row">
+                {% for key in import_help %}
+                  <div class="mt-1 col-3">
+                    <b>{{ key }}</b>
+                    {% for val in import_help|get_item:key %}
+                      <li>{{ val }}</li>
+                    {% endfor %}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <div class="modal-footer d-flex flex-row-reverse">
+              <input
+              onclick="
+                 if($('#resumeUpload{{ view_id }}').val()){
+                  $('#uploading{{view_id}}').show();
+                  $(this).addClass('opacity-50');
+                  setTimeout(() => {
+                    $(this).attr('type','button');
+                  }, 100);
+                 }
+                "
+               type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-3" value="Upload" />
+            </div>
+          </form>
+          <form id="submitGetImportSheet{{ view_id }}Form" action="/{{ get_import_sheet_path }}" method="post">
+            {% csrf_token %}
+            <input type="text" name="selected_ids" hidden />
+            <input type="submit" hidden id="submitGetImportSheet{{ view_id }}" />
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}

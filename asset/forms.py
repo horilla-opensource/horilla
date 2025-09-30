@@ -50,12 +50,6 @@ class AssetForm(ModelForm):
         fields = "__all__"
         exclude = ["is_active"]
         widgets = {
-            "asset_purchase_date": forms.DateInput(
-                attrs={"type": "date", "class": "oh-input w-100"}
-            ),
-            "expiry_date": forms.DateInput(
-                attrs={"type": "date", "class": "oh-input w-100"}
-            ),
             "asset_lot_number_id": forms.Select(
                 attrs={"onchange": "batchNoChange($(this))"}
             ),
@@ -232,30 +226,6 @@ class AssetRequestForm(ModelForm):
         model = AssetRequest
         fields = "__all__"
         exclude = ["is_active"]
-        widgets = {
-            "requested_employee_id": forms.Select(
-                attrs={
-                    "class": "oh-select  oh-select-2 select2-hidden-accessible",
-                }
-            ),
-            "asset_category_id": forms.Select(
-                attrs={
-                    "class": "oh-select  oh-select-2 select2-hidden-accessible",
-                }
-            ),
-            "description": forms.Textarea(
-                attrs={
-                    "type": "text",
-                    "id": "objective_description",
-                    "placeholder": _(
-                        "Requesting a laptop for software development purposes."
-                    ),
-                    "class": "oh-input oh-input--textarea oh-input--block",
-                    "rows": 3,
-                    "cols": 40,
-                }
-            ),
-        }
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
@@ -347,9 +317,6 @@ class AssetReturnForm(ModelForm):
         model = AssetAssignment
         fields = ["return_date", "return_condition", "return_status", "return_images"]
         widgets = {
-            "return_date": forms.DateInput(
-                attrs={"type": "date", "class": "oh-input w-100", "required": "true"}
-            ),
             "return_condition": forms.Textarea(
                 attrs={
                     "class": "oh-input oh-input--textarea oh-input--block",
@@ -370,8 +337,7 @@ class AssetReturnForm(ModelForm):
         Initializes the AssetReturnForm with initial values and custom field settings.
         """
         super().__init__(*args, **kwargs)
-        self.fields["return_date"].initial = date.today()
-
+        self.fields["return_date"].widget.attrs.update({"required": "true"})
         self.fields["return_images"] = MultipleFileField(
             label=_("Return Condition Images")
         )

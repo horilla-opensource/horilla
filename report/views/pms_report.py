@@ -5,7 +5,7 @@ from django.shortcuts import render
 if apps.is_installed("pms"):
 
     from base.models import Company
-    from horilla_views.cbv_methods import login_required, permission_required
+    from horilla.decorators import login_required, permission_required
     from pms.filters import EmployeeObjectiveFilter, FeedbackFilter
     from pms.models import EmployeeKeyResult, EmployeeObjective, Feedback, Objective
     from pms.views import objective_filter_pagination

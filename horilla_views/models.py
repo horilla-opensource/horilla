@@ -65,6 +65,10 @@ class SavedFilter(HorillaModel):
     path = models.CharField(max_length=256)
     referrer = models.CharField(max_length=256, default="")
 
+    xss_exempt_fields = [
+        "urlencode",
+    ]
+
     def save(self, *args, **kwargs):
         SavedFilter.objects.filter(
             is_default=True, path=self.path, created_by=self.created_by

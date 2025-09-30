@@ -303,8 +303,9 @@ def allowances_deductions_tab(request, emp_id):
                     ):
                         applicable = False
                         break
-            if applicable:
+            if applicable and allowance not in employee_allowances:
                 employee_allowances.append(allowance)
+
         employee_allowances = [
             allowance
             for allowance in employee_allowances
@@ -1541,8 +1542,8 @@ def asset_fine(request):
             instance.save()
             messages.success(request, _("Asset fine added"))
             return HttpResponse(
-                "<script>$('#assetFineModal').removeClass('oh-modal--show');$('#reloadMessagesButton').click();</script>"
-            )
+                "<script>$('#dynamicCreateModal').toggleClass('oh-modal--show'); $('#reloadMessagesButton').click();</script>"
+            )  # 880
     return render(
         request,
         "payroll/asset_fine/form.html",

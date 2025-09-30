@@ -8,7 +8,7 @@ import uuid
 import django_filters
 from django import forms
 from django.utils.translation import gettext as __
-from django_filters import CharFilter, DateFilter, FilterSet, NumberFilter, filters
+from django_filters import CharFilter, DateFilter, filters
 
 from base.models import (
     CompanyLeaves,

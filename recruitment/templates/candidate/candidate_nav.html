@@ -161,8 +161,8 @@ x-data="{searchShow: false}"
               {% if perms.recruitment.change_candidates or request.user|is_stagemanager %}
               <li class="oh-dropdown__item">
                 <a href="#" class="oh-dropdown__link "
-                  hx-get='{% url "send-mail" %}?stage_id={{stage.id}}' hx-target="#objectDetailsModalTarget"
-                  data-toggle="oh-modal-toggle" data-target="#objectDetailsModal"
+                  hx-get='{% url "send-mail" %}?stage_id={{stage.id}}' hx-target="#objectCreateModalTarget"
+                  data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
 
                   >{% trans "Bulk mail" %}</a
                 >

@@ -1295,3 +1295,95 @@ class CheckUserLevel(APIView):
         if request.user.has_perm(perm):
             return Response(status=200)
         return Response({"error": "No permission"}, status=400)
+
+
+from datetime import datetime, timedelta
+
+from bs4 import BeautifulSoup
+from django.db.models import Q
+
+from base.models import Announcement, AnnouncementExpire
+
+
+class AnnouncementPagination(PageNumberPagination):
+    page_size_query_param = "page_size"  # allow client to override
+    max_page_size = 100  # prevent abuse
+
+
+class AnnouncementListAPIView(APIView):
+    """
+    API endpoint to list announcements for the authenticated user.
+
+    - Updates expire dates if missing.
+    - Filters based on user permissions and validity.
+    - Marks announcements with whether the user has viewed them.
+    - Supports pagination.
+    """
+
+    permission_classes = [IsAuthenticated]
+    pagination_class = AnnouncementPagination
+
+    def get(self, request, *args, **kwargs):
+        # Default expire days
+        expire_days = (
+            AnnouncementExpire.objects.values_list("days", flat=True).first() or 30
+        )
+
+        # Update missing expire_date in bulk
+        announcements_to_update = Announcement.objects.filter(
+            expire_date__isnull=True
+        ).only("id", "created_at")
+        for ann in announcements_to_update:
+            ann.expire_date = ann.created_at + timedelta(days=expire_days)
+        if announcements_to_update:
+            Announcement.objects.bulk_update(announcements_to_update, ["expire_date"])
+
+        # Base queryset: non-expired announcements
+        announcements = Announcement.objects.filter(
+            expire_date__gte=datetime.today().date()
+        )
+
+        # Permission filter
+        if not request.user.has_perm("base.view_announcement"):
+            announcements = announcements.filter(
+                Q(employees=request.user.employee_get) | Q(employees__isnull=True)
+            )
+
+        # Prefetch related views for efficiency
+        announcements = announcements.prefetch_related("announcementview_set").order_by(
+            "-created_at"
+        )
+
+        # Build response data
+        data = [
+            {
+                "id": ann.id,
+                "title": ann.title,
+                "content": self._parse_description(ann.description),
+                "created_at": ann.created_at,
+                "expire_date": ann.expire_date,
+                "has_viewed": ann.announcementview_set.filter(
+                    user=request.user, viewed=True
+                ).exists(),
+            }
+            for ann in announcements
+        ]
+
+        # Apply pagination
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset(data, request)
+        return paginator.get_paginated_response(page)
+
+    @staticmethod
+    def _parse_description(description: str) -> list[dict]:
+        """
+        Parse HTML description into structured text (headings + paragraphs).
+        """
+        soup = BeautifulSoup(description or "", "html.parser")
+        content = []
+
+        for tag in soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p"]):
+            tag_type = "heading" if tag.name.startswith("h") else "paragraph"
+            content.append({"type": tag_type, "text": tag.get_text(" ", strip=True)})
+
+        return content

@@ -9,7 +9,7 @@ if apps.is_installed("attendance"):
     from attendance.filters import AttendanceFilters
     from attendance.models import Attendance
     from base.models import Company
-    from horilla_views.cbv_methods import login_required, permission_required
+    from horilla.decorators import login_required, permission_required
 
     def convert_time_to_decimal_w(time_str):
         try:

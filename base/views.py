@@ -7,7 +7,6 @@ This module is used to map url pattens with django views or methods
 import csv
 import json
 import os
-import random
 import threading
 import uuid
 from datetime import datetime, timedelta
@@ -25,7 +24,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.files.base import ContentFile
-from django.core.mail import EmailMessage, EmailMultiAlternatives, send_mail
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.core.management import call_command
 from django.db.models import ProtectedError, Q
 from django.http import (
@@ -1368,7 +1367,16 @@ def object_duplicate(request, obj_id, **kwargs):
     model = kwargs["model"]
     form_class = kwargs["form"]
     template = kwargs["template"]
-    original_object = model.objects.get(id=obj_id)
+    try:
+        original_object = model.objects.get(id=obj_id)
+    except model.DoesNotExist:
+        messages.error(request, f"{model._meta.verbose_name} object does not exist.")
+        if request.headers.get("HX-Request"):
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+        else:
+            current_url = request.META.get("HTTP_REFERER", "/")
+            return HttpResponseRedirect(current_url)
+
     form = form_class(instance=original_object)
     search_words = (
         form.get_template_language() if hasattr(form, "get_template_language") else None
@@ -6547,7 +6555,7 @@ def action_type_create(request):
             form.save()
             form = ActiontypeForm()
             messages.success(request, _("Action has been created successfully!"))
-            if dynamic != "None":
+            if dynamic != None:
                 url = reverse("create-actions")
                 instance = Actiontype.objects.all().order_by("-id").first()
                 mutable_get = request.GET.copy()
@@ -7489,8 +7497,27 @@ def view_penalties(request):
     return render(request, "penalty/penalty_view.html", {"records": records})
 
 
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.tokens import UntypedToken
+
+
+def is_jwt_token_valid(auth_header):
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return None  # No token
+
+    token = auth_header.split("Bearer ")[1].strip()
+    try:
+        UntypedToken(token)  # Will raise if invalid
+        validated_token = JWTAuthentication().get_validated_token(token)
+        user = JWTAuthentication().get_user(validated_token)
+        return user
+    except (InvalidToken, TokenError):
+        return None
+
+
 def protected_media(request, path):
-    page_urls = [
+    public_pages = [
         "/login",
         "/forgot-password",
         "/change-username",
@@ -7500,21 +7527,26 @@ def protected_media(request, path):
         "/recruitment/open-recruitments",
         "/recruitment/candidate-self-status-tracking",
     ]
-
     exempted_folders = ["base/icon/"]
 
     media_path = os.path.join(settings.MEDIA_ROOT, path)
     if not os.path.exists(media_path):
         raise Http404("File not found")
 
-    referer = urlparse(request.META.get("HTTP_REFERER", ""))
-    referer_path = referer.path
+    referer_path = urlparse(request.META.get("HTTP_REFERER", "")).path
 
-    if referer_path not in page_urls and not any(
-        path.startswith(folder) for folder in exempted_folders
+    # Try Bearer token auth
+    jwt_user = is_jwt_token_valid(request.META.get("HTTP_AUTHORIZATION", ""))
+
+    # Access control logic
+    if referer_path not in public_pages and not any(
+        path.startswith(f) for f in exempted_folders
     ):
-        if not request.user.is_authenticated:
-            messages.error(request, "You must be logged in to access this file.")
+        if not request.user.is_authenticated and not jwt_user:
+            messages.error(
+                request,
+                "You must be logged in or provide a valid token to access this file.",
+            )
             return redirect("login")
 
     return FileResponse(open(media_path, "rb"))

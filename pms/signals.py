@@ -82,7 +82,9 @@ def start_automation():
                     """
                     if type == "ManyToManyField":
 
-                        @receiver(m2m_changed, sender=model_class.members.through)
+                        @receiver(
+                            m2m_changed, sender=getattr(model_class, field).through
+                        )
                         def members_changed(sender, instance, action, **kwargs):
                             """
                             Handle m2m_changed signal for the members field in YourModel.

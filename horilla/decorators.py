@@ -258,6 +258,8 @@ def login_required(view_func):
             or not employee
             or not employee.is_active
         ):
+            if request.headers.get("HX-Request"):
+                return HttpResponse(status=204, headers={"HX-Refresh": "true"})
             return redirect(redirect_url)
         try:
             func = view_func(request, *args, **kwargs)

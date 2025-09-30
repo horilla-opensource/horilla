@@ -179,29 +179,57 @@ def get_template(request, emp_id):
 @login_required
 def get_mail_preview(request):
     """
-    This method is used to return the mail template
+    Returns the mail template preview as HTML.
     """
-    body = request.GET.get("body")
-    template_bdy = template.Template(body)
+    body = request.POST.get("body")
+    if not body:
+        return HttpResponse("No body provided", status=400)
+
     emp_id = request.GET.get("emp_id")
-    if emp_id:
-        employee = Employee.objects.get(id=emp_id)
-        context = template.Context(
-            {
-                "instance": employee,
-                "self": request.user.employee_get,
-                "request": request,
-            }
+    employee_ids = request.POST.getlist("employees")
+
+    # Fetch one employee for preview if provided
+    employee_obj = None
+    if emp_id or employee_ids:
+        ids = [emp_id] if emp_id else employee_ids
+        employee_obj = Employee.objects.filter(id__in=ids).first()
+        if not employee_obj:
+            return HttpResponse("Employee not found", status=404)
+
+    # Build context
+    context = {
+        "instance": employee_obj,
+        "model_instance": employee_obj,
+        "self": getattr(request.user, "employee_get", None),
+        "request": request,
+    }
+
+    # Render template
+    rendered_body = template.Template(body).render(template.Context(context)) or " "
+
+    # Add preview note if multiple employees
+    if employee_ids and len(employee_ids) > 1 and employee_obj:
+        rendered_body = (
+            f"<p style='color:gray; font-size:13px;'>"
+            f"Preview shown for {employee_obj.get_full_name()}. "
+            f"Mail will be personalized for {len(employee_ids)} employees."
+            f"</p>{rendered_body}"
         )
-        body = template_bdy.render(context) or " "
-    return JsonResponse({"body": body})
+
+    # Wrap in styled div
+    textarea_field = (
+        f'<div class="oh-input oh-input--textarea" '
+        f'style="border: solid .1px #dbd7d7; padding:5px;">{rendered_body}</div>'
+    )
+
+    return HttpResponse(textarea_field, content_type="text/html")
 
 
 @login_required
-@manager_can_enter(perm="recruitment.change_employee")
+@manager_can_enter(perm="employee.change_employee")
 def send_mail_to_employee(request):
     """
-    This method is used to send acknowledgement mail to the candidate
+    This method is used to send acknowledgement mail to the employee
     """
     employee_id = request.POST["id"]
     subject = request.POST.get("subject")

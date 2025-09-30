@@ -793,7 +793,7 @@ class ReimbursementForm(ModelForm):
     class Meta:
         model = Reimbursement
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active", "status"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -810,6 +810,9 @@ class ReimbursementForm(ModelForm):
 
     def get_employee(self):
         """Resolves employee either from form data or request."""
+        if hasattr(self.instance, "employee_id") and self.instance.employee_id:
+            return self.instance.employee_id
+
         employee_qs = self.fields["employee_id"].queryset
         employee_id = self.data.get("employee_id") if self.data else None
 
@@ -845,14 +848,10 @@ class ReimbursementForm(ModelForm):
             "onchange"
         ] = "getAssignedLeave($(this))"
 
-        self.fields["allowance_on"].widget = forms.DateInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
-        )
-
         self.fields["attachment"] = MultipleFileField(label="Attachments")
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
-        self.exclude_fields_by_type(exclude_fields)
+        # self.exclude_fields_by_type(exclude_fields)
 
         for field in exclude_fields:
             self.fields.pop(field, None)
@@ -900,9 +899,6 @@ class ReimbursementForm(ModelForm):
                 "cfd_to_encash",
                 "ad_to_encash",
             ]
-
-        if is_edit:
-            exclude_fields += ["type", "employee_id"]
 
     def as_p(self):
         """

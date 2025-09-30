@@ -80,10 +80,6 @@ class OffboardingEmployeeForm(ModelForm):
         model = OffboardingEmployee
         fields = "__all__"
         exclude = ["notice_period", "unit", "is_active"]
-        widgets = {
-            "notice_period_starts": forms.DateInput(attrs={"type": "date"}),
-            "notice_period_ends": forms.DateInput(attrs={"type": "date"}),
-        }
 
     def as_p(self):
         """
@@ -254,9 +250,6 @@ class ResignationLetterForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["planned_to_leave_on"].widget = forms.DateInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
-        )
         exclude = []
         if self.instance.pk:
             exclude.append("employee_id")

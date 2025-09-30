@@ -192,11 +192,11 @@
                       <a
                         class="oh-dropdown__link oh-dropdown__link--secondary"
                         hx-get='{% url "send-mail" cand.id %}'
-                        hx-target='#objectDetailsModalTarget'
+                        hx-target="#objectCreateModalTarget"
                         hx-swap='innerHTML'
                         style="cursor: pointer;"
                         data-toggle='oh-modal-toggle'
-                        data-target='#objectDetailsModal'
+                        data-target='#objectCreateModal'
                         >{% trans "Send Mail" %}</a
                       >
                     </li>

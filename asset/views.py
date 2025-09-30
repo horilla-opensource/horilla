@@ -110,6 +110,11 @@ def asset_creation(request, asset_category_id):
     Raises:
         None
     """
+    asset_category = AssetCategory.find(asset_category_id)
+    if not asset_category:
+        messages.error(request, _("Asset category not found"))
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
     initial_data = {"asset_category_id": asset_category_id}
     # Use request.GET to pre-fill the form with dynamic create batch number data if available
     form = (
@@ -156,9 +161,6 @@ def add_asset_report(request, asset_id=None):
             if asset_report_form.is_valid() and request.FILES:
                 for file in request.FILES.getlist("file"):
                     AssetDocuments.objects.create(asset_report=asset_report, file=file)
-
-                return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
-            # return HttpResponse("<script>window.location.reload()</script>")
 
     return render(
         request,
@@ -417,7 +419,11 @@ def asset_category_update(request, cat_id):
     """
 
     previous_data = request.GET.urlencode()
-    asset_category = AssetCategory.objects.get(id=cat_id)
+    asset_category = AssetCategory.find(cat_id)
+    if not asset_category:
+        messages.error(request, _("Asset category not found"))
+        return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
     form = AssetCategoryForm(instance=asset_category)
     context = {"form": form, "pg": previous_data}
     if request.method == "POST":
@@ -438,13 +444,21 @@ def delete_asset_category(request, cat_id):
     This method is used to delete asset category
     """
     previous_data = request.GET.urlencode()
+
+    asset_category = AssetCategory.find(cat_id)
+    if not asset_category:
+        messages.error(request, _("Asset category not found"))
+        return redirect(f"/asset/asset-category-view-search-filter?{previous_data}")
+
     try:
-        AssetCategory.objects.get(id=cat_id).delete()
+        asset_category.delete()
         messages.success(request, _("Asset category deleted."))
-    except:
+    except Exception:
         messages.error(request, _("Assets are located within this category."))
-    if not AssetCategory.objects.filter():
+
+    if not AssetCategory.objects.exists():
         return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
     return redirect(f"/asset/asset-category-view-search-filter?{previous_data}")
 
 
@@ -475,7 +489,7 @@ def filter_pagination_asset_category(request):
     asset_categories = asset_category_paginator.get_page(page_number)
 
     data_dict = parse_qs(previous_data)
-    get_key_instances(AssetCategory, data_dict)
+    get_key_instances(Asset, data_dict)  # 882
 
     asset_creation_form = AssetForm()
     if data_dict.get("type"):

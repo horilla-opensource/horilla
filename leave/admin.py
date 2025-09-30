@@ -7,6 +7,8 @@ from django.apps import apps
 from django.contrib import admin
 from simple_history.admin import SimpleHistoryAdmin
 
+from leave.forms import LeaveTypeAdminForm
+
 from .models import (
     AvailableLeave,
     LeaveAllocationRequest,
@@ -19,8 +21,13 @@ from .models import (
     RestrictLeave,
 )
 
+
+class LeaveTypeAdmin(admin.ModelAdmin):
+    form = LeaveTypeAdminForm
+
+
 # Register your models here.
-admin.site.register(LeaveType)
+admin.site.register(LeaveType, LeaveTypeAdmin)
 admin.site.register(LeaveRequest)
 admin.site.register(AvailableLeave)
 admin.site.register(LeaveAllocationRequest, SimpleHistoryAdmin)

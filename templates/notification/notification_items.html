@@ -87,7 +87,7 @@
                             {% endcomment %}
                             <div class="oh-navbar__notification-image" style="margin-left: 5px"
                                 onclick="event.stopPropagation();event.preventDefault();" hx-target="#notificationItem{{notification.id}}"
-                                hx-post="{% url 'mark-as-read-notification' notification.id %}" hx-swap="outerHTML">
+                                hx-post="{% url 'mark-as-read-notification' notification.id %}" hx-swap="outerHTML" hx-on:click="setTimeout(updateNotificationCount, 500)">
                                 <ion-icon name="checkmark-outline"></ion-icon>
                             </div>
                         </div>
@@ -155,4 +155,13 @@
             });
         });
     });
+
+    function updateNotificationCount() {
+        var unreadCount = $(".oh-navbar__notification-item .oh-navbar__notification-dot--unread").length;
+
+        var $badge = $(".live_notify_badge");
+        if ($badge.length) {
+            $badge.text(unreadCount);
+        }
+    }
 </script>

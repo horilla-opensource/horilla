@@ -210,3 +210,21 @@ class MailTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = HorillaMailTemplate
         fields = "__all__"
+
+
+class UserAttendanceListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = [
+            "id",
+            "attendance_date",
+            "attendance_clock_in",
+            "attendance_clock_out",
+            "attendance_worked_hour",
+        ]
+
+
+class UserAttendanceDetailedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = "__all__"

@@ -10,6 +10,7 @@ from typing import Any
 
 from django import forms
 from django.apps import apps
+from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.forms.widgets import TextInput
@@ -52,9 +53,11 @@ class ConditionForm(forms.ModelForm):
                 field.widget.attrs["style"] = (
                     "width:100%; height:50px;border: 1px solid hsl(213deg,22%,84%);border-radius: 0rem;padding: 0.8rem 1.25rem;"
                 )
-            elif isinstance(widget, (forms.DateInput)):
-                field.widget.attrs.update({"class": "oh-input w-100"})
-                field.initial = date.today()
+            elif isinstance(widget, forms.DateInput):
+                field.initial = date.today
+                widget.input_type = "date"
+                widget.format = "%Y-%m-%d"
+                field.input_formats = ["%Y-%m-%d"]
 
             elif isinstance(
                 widget, (forms.NumberInput, forms.EmailInput, forms.TextInput)
@@ -90,6 +93,22 @@ class ConditionForm(forms.ModelForm):
             pass
 
 
+class LeaveTypeAdminForm(forms.ModelForm):
+    class Meta:
+        model = LeaveType
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if f := self.fields.get("company_id"):
+            from horilla_widgets.forms import default_select_option_template
+
+            w = getattr(f.widget, "widget", f.widget)
+            if isinstance(w, forms.Select):
+                w.option_template_name = default_select_option_template
+
+
 class LeaveTypeForm(ConditionForm):
 
     employee_id = HorillaMultiSelectField(
@@ -115,7 +134,6 @@ class LeaveTypeForm(ConditionForm):
             "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
             "period_in": forms.HiddenInput(),
             "total_days": forms.HiddenInput(),
-            "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
         }
 
     def clean(self):
@@ -174,10 +192,11 @@ class UpdateLeaveTypeForm(ConditionForm):
     class Meta:
         model = LeaveType
         fields = "__all__"
-        exclude = ["period_in", "total_days", "is_active"]
+        exclude = ["is_active"]
         widgets = {
             "color": TextInput(attrs={"type": "color", "style": "height:40px;"}),
-            "carryforward_expire_date": forms.DateInput(attrs={"type": "date"}),
+            "period_in": forms.HiddenInput(),
+            "total_days": forms.HiddenInput(),
         }
 
     def clean(self):
@@ -198,8 +217,6 @@ class UpdateLeaveTypeForm(ConditionForm):
 
 
 class LeaveRequestCreationForm(BaseModelForm):
-    start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
     def __init__(self, *args, **kwargs):
 
@@ -254,8 +271,6 @@ class LeaveRequestCreationForm(BaseModelForm):
 
 
 class LeaveRequestUpdationForm(BaseModelForm):
-    start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
     def __init__(self, *args, **kwargs):
 
@@ -414,8 +429,6 @@ class AvailableLeaveUpdateForm(BaseModelForm):
 
 
 class UserLeaveRequestForm(BaseModelForm):
-    start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     description = forms.CharField(label=_("Description"), widget=forms.Textarea)
 
     def __init__(self, *args, **kwargs):
@@ -535,8 +548,6 @@ class RejectForm(forms.Form):
 
 
 class UserLeaveRequestCreationForm(BaseModelForm):
-    start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
 
     def as_p(self, *args, **kwargs):
         """
@@ -873,12 +884,6 @@ class RestrictLeaveForm(BaseModelForm):
     def __init__(self, *args, **kwargs):
         super(RestrictLeaveForm, self).__init__(*args, **kwargs)
         self.fields["title"].widget.attrs["autocomplete"] = "title"
-        self.fields["start_date"].widget = forms.DateInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
-        )
-        self.fields["end_date"].widget = forms.DateInput(
-            attrs={"type": "date", "class": "oh-input w-100"}
-        )
         self.fields["department"].widget.attrs.update(
             {
                 "hx-include": "#leaveRestrictForm",

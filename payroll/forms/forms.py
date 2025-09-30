@@ -47,20 +47,6 @@ class ContractForm(ModelForm):
         self.fields["employee_id"].widget.attrs.update(
             {"onchange": "contractInitial(this)"}
         )
-        self.fields["contract_start_date"].widget = widgets.DateInput(
-            attrs={
-                "type": "date",
-                "class": "oh-input w-100",
-                "placeholder": "Select a date",
-            }
-        )
-        self.fields["contract_end_date"].widget = widgets.DateInput(
-            attrs={
-                "type": "date",
-                "class": "oh-input w-100",
-                "placeholder": "Select a date",
-            }
-        )
         self.fields["contract_status"].widget.attrs.update(
             {
                 "class": "oh-select",

@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from base.models import Company
 from employee.models import Employee
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 
 
 class AssetCategory(HorillaModel):
@@ -188,9 +188,7 @@ class AssetDocuments(HorillaModel):
     asset_report = models.ForeignKey(
         "AssetReport", related_name="documents", on_delete=models.CASCADE
     )
-    file = models.FileField(
-        upload_to="asset/asset_report/documents/", blank=True, null=True
-    )
+    file = models.FileField(upload_to=upload_path, blank=True, null=True)
     objects = models.Manager()
 
     class Meta:
@@ -209,7 +207,7 @@ class ReturnImages(HorillaModel):
     - image: A FileField for uploading the image file (optional).
     """
 
-    image = models.FileField(upload_to="asset/return_images/", blank=True, null=True)
+    image = models.FileField(upload_to=upload_path, blank=True, null=True)
 
 
 class AssetAssignment(HorillaModel):

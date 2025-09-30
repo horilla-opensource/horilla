@@ -846,14 +846,28 @@ def document_approve(request, id):
     """
 
     document_obj = get_object_or_404(Document, id=id)
+    refresh_url = request.GET.get("refresh_url") or request.POST.get("refresh_url")
     if document_obj.document:
         document_obj.status = "approved"
         document_obj.save()
         messages.success(request, _("Document request approved"))
     else:
         messages.error(request, _("No document uploaded"))
+    # 918
+    if refresh_url:
+        span = f"""
+        <span
+            hx-trigger="load"
+            hx-get="{refresh_url}"
+            hx-target="#requestDocument{id}"
+            hx-select="#requestDocument{id}"
+            hx-swap="outerHTML"
+            ">
+        </span>
+        """
+        return HttpResponse(span)
 
-    return HttpResponse("<script>window.location.reload();</script>")
+    return HttpResponse(status=204, headers={"HX-Refresh": "true"})
 
 
 @login_required

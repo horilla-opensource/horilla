@@ -12,7 +12,7 @@
                     <form hx-confirm="{% trans 'Are you sure you want to delete this job position?' %}"
                         hx-get="{% url 'initialize-job-position-delete' instance.id %}"
                         hx-target="#initializeJobPositions" hx-swap="outerHTML">
-                        <button class="oh-filter-tag__close" style="color: red;" title={% trans "Delete" %}>
+                        <button class="oh-filter-tag__close" style="color: red;" title="{% trans 'Delete' %}">
                             <ion-icon name="trash-outline"></ion-icon>
                         </button>
                     </form>
@@ -32,15 +32,13 @@
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="oh-input-group mb-2">
-                            <label for="{{form.job_position.id_for_label}}" class="mb-1">{% trans "Job Position"
-                                %}</label>
+                            <label for="{{form.job_position.id_for_label}}" class="mb-1">{% trans "Job Position" %}</label>
                             {{form.job_position}} {{form.job_position.errors}}
                         </div>
                     </div>
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4">
                         <div class="oh-input-group mb-2">
-                            <label for="{{form.department_id.id_for_label}}" class="mb-1">{% trans "Department"
-                                %}</label>
+                            <label for="{{form.department_id.id_for_label}}" class="mb-1">{% trans "Department" %}</label>
                             {{form.department_id}} {{form.department_id.errors}}
                         </div>
                     </div>
@@ -60,7 +58,7 @@
             </div>
             {% if job_positions %}
                 <div class="oh-modal__dialog-footer p-0 mt-3">
-                    <a hx-get="{% url " update-selected-company" %}?company_id={{company.id}}"
+                    <a hx-get="{% url 'update-selected-company' %}?company_id={{company.id}}"
                         class="oh-btn oh-btn--secondary-outline m-2" role="button">
                         {% trans "Go To Home" %}
                         <ion-icon class="ms-2" name="arrow-forward-outline"></ion-icon>

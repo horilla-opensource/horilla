@@ -8,16 +8,21 @@
         $(this).closest('.oh-accordion').toggleClass('oh-accordion--show');
     });
 
-    $("#{{view_id}} form button").click(function (e) {
-        const form = document.getElementById('multipleConditionForm');
-        const elements = form.elements;
-        const queryString = Array.from(elements)
-            .filter(element => element.name && !element.disabled)
-            .map(element => encodeURIComponent(element.name) + '=' + encodeURIComponent(element.value))
+    $(document).on('click', '#{{view_id}}Form button[type="submit"]', function () {
+        const $mainForm = $('#{{view_id}}Form');
+        const conditionFormEl = $('#multipleConditionForm')[0];
+
+        if (!conditionFormEl) return;
+
+        const queryString = Array.from(conditionFormEl.elements)
+            .filter(el => el.name && !el.disabled)
+            .map(el => encodeURIComponent(el.name) + '=' + encodeURIComponent(el.value))
             .join('&');
-        $("#{{view_id}} form [name=condition_querystring]").val(queryString);
-        html = $(".note-editable #multipleConditionForm").html()
-        $("#{{view_id}} form [name=condition_html]").val(html);
+
+        $mainForm.find('[name="condition_querystring"]').val(queryString);
+
+        const html = $(".note-editable #multipleConditionForm").html();
+        $mainForm.find('[name="condition_html"]').val(html);
     });
 
     $("#dynamic_field_condition").parent().removeClass("col-md-6");

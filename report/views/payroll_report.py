@@ -6,7 +6,7 @@ from django.utils.dateparse import parse_date
 if apps.is_installed("payroll"):
 
     from base.models import Company
-    from horilla_views.cbv_methods import login_required, permission_required
+    from horilla.decorators import login_required, permission_required
     from payroll.filters import PayslipFilter
     from payroll.models.models import Payslip
 

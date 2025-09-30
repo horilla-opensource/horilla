@@ -60,6 +60,7 @@ from leave.methods import (
     company_leave_dates_list,
     filter_conditional_leave_request,
     holiday_dates_list,
+    parse_excel_date,
 )
 from leave.models import *
 from leave.models import leave_requested_dates
@@ -1776,6 +1777,10 @@ def assign_leave_type_excel(_request):
         columns = [
             "Employee Badge ID",
             "Leave Type",
+            "Available Days",  # 779
+            "Carryforward Days",
+            "Total Leave Days",
+            "Assigned Date",
         ]
         data_frame = pd.DataFrame(columns=columns)
         response = HttpResponse(content_type="application/ms-excel")
@@ -1801,9 +1806,9 @@ def assign_leave_type_import(request):
         "Leave Type": [],
         "Badge ID Error": [],
         "Leave Type Error": [],
-        "Assigned Error": [],
         "Available Days": [],
         "Carry Forward Days": [],
+        "Assigned Date Error": [],
         "Other Errors": [],
     }
 
@@ -1817,62 +1822,77 @@ def assign_leave_type_import(request):
             emp.badge_id.lower(): emp for emp in Employee.objects.all() if emp.badge_id
         }
         leave_types = {lt.name.lower(): lt for lt in LeaveType.objects.all()}
-        available_leaves = {
+        existing = {
             (al.leave_type_id.id, al.employee_id.id): al
             for al in AvailableLeave.objects.all()
         }
 
-        assign_leave_list = []
-        error_list = []
+        assign_leave_list, error_list = [], []
 
-        for assign_leave in assign_leave_dicts:
-            badge_id = assign_leave.get("Employee Badge ID", "").strip().lower()
-            assign_leave_type = assign_leave.get("Leave Type", "").strip().lower()
-            available_days = assign_leave.get("Available Days", "0")
-            cfd = assign_leave.get("Carry Forward Days", "0")
+        for row in assign_leave_dicts:
+            badge_id = str(row.get("Employee Badge ID", "")).strip().lower()
+            leave_type_name = str(row.get("Leave Type", "")).strip().lower()
             employee = employees.get(badge_id)
-            leave_type = leave_types.get(assign_leave_type)
+            leave_type = leave_types.get(leave_type_name)
 
-            errors = []
-            if employee is None:
-                errors.append(_("This badge id does not exist."))
-            if leave_type is None:
-                errors.append(_("This leave type does not exist."))
-            if errors:
-                assign_leave[
-                    "Badge ID Error" if "badge id" in errors[0] else "Leave Type Error"
-                ] = " ".join(force_str(error) for error in errors)
-                error_list.append(assign_leave)
+            if not employee:
+                row["Badge ID Error"] = _("This badge id does not exist.")
+                error_list.append(row)
+                continue
+            if not leave_type:
+                row["Leave Type Error"] = _("This leave type does not exist.")
+                error_list.append(row)
                 continue
 
-            # Check if leave type has already been assigned to the employee
-            if (leave_type.id, employee.id) in available_leaves:
-                assign_leave["Assigned Error"] = _(
+            if (leave_type.id, employee.id) in existing:
+                row["Assigned Error"] = _(
                     "Leave type has already been assigned to the employee."
                 )
-                error_list.append(assign_leave)
+                error_list.append(row)
                 continue
 
-            # If no errors, create the AvailableLeave instance
-            if available_days == 0:
+            # Extract optional fields # 779
+            available_days = row.get("Available Days")
+            carryforward_days = row.get("Carryforward Days")
+            total_leave_days = row.get("Total Leave Days")
+            assigned_date_raw = row.get("Assigned Date")
+
+            # Apply defaults when missing
+            if pd.isna(available_days) or available_days == "":
                 available_days = leave_type.total_days
+            if pd.isna(carryforward_days) or carryforward_days == "":
+                carryforward_days = 0
+            if pd.isna(total_leave_days) or total_leave_days == "":
+                total_leave_days = available_days + carryforward_days
+
+            assigned_date = parse_excel_date(assigned_date_raw) or (
+                timezone.now().date()
+                if isinstance(assigned_date_raw, float)
+                and math.isnan(assigned_date_raw)
+                else None
+            )
+            if not assigned_date:
+                row["Other Errors"] = _(
+                    "Invalid date format. Please use YYYY-MM-DD or a supported format."
+                )
+                error_list.append(row)
+                continue
 
             available_leave = AvailableLeave(
                 leave_type_id=leave_type,
                 employee_id=employee,
-                available_days=available_days,
+                available_days=float(available_days),
+                carryforward_days=float(carryforward_days),
+                total_leave_days=float(total_leave_days),
+                assigned_date=assigned_date,
             )
-            if cfd:
-                available_leave.carryforward_days = cfd
+            if carryforward_days:
                 available_leave.expired_date = leave_type.carryforward_expire_date
                 try:
                     available_leave.reset_date = leave_type.leave_type_next_reset_date()
-                except:
+                except Exception:
                     pass
-                available_leave.assigned_date = datetime.today()
-                available_leave.total_leave_days = (
-                    available_leave.carryforward_days + available_leave.available_days
-                )
+
             assign_leave_list.append(available_leave)
 
         # Bulk create available leaves

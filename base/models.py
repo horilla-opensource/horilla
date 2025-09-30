@@ -19,7 +19,7 @@ from django.utils.translation import gettext_lazy as _
 from base.horilla_company_manager import HorillaCompanyManager
 from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 
 # Create your models here.
@@ -78,7 +78,7 @@ class Company(HorillaModel):
     city = models.CharField(max_length=50)
     zip = models.CharField(max_length=20)
     icon = models.FileField(
-        upload_to="base/icon",
+        upload_to=upload_path,
         null=True,
     )
     objects = models.Manager()
@@ -826,7 +826,7 @@ class RotatingShiftAssign(HorillaModel):
 
 
 class BaserequestFile(models.Model):
-    file = models.FileField(upload_to="base/request_files")
+    file = models.FileField(upload_to=upload_path)
     objects = models.Manager()
 
 
@@ -1176,7 +1176,6 @@ class HorillaMailTemplate(HorillaModel):
         verbose_name=_("Company"),
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
-    xss_exempt_fields = ["body"]
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -1487,7 +1486,7 @@ class Attachment(models.Model):
     Attachment model for multiple attachments in announcements.
     """
 
-    file = models.FileField(upload_to="attachments/")
+    file = models.FileField(upload_to=upload_path)
 
     def __str__(self):
         return self.file.name

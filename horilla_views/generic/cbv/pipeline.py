@@ -32,6 +32,8 @@ class Pipeline(ListView):
         super().__init__(**kwargs)
         self.request = getattr(_thread_locals, "request", None)
         self.grouper = self.request.GET.get("grouper", self.grouper)
+        if kwargs.get("view") == "kanban":
+            self.template_name = "generic/pipeline/kanban.html"
         for allowed_field in self.allowed_fields:
             if self.grouper == allowed_field["field"]:
                 self.field_model = allowed_field["model"]
@@ -40,7 +42,23 @@ class Pipeline(ListView):
                 self.parameters = allowed_field["parameters"]
                 self.actions = allowed_field["actions"]
 
+    @classmethod
+    def as_view(cls, **initkwargs):
+        def view(request, *args, **kwargs):
+            # Inject URL params into initkwargs
+            initkwargs_with_url = {**initkwargs, **kwargs}
+            self = cls(**initkwargs_with_url)
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            return self.dispatch(request, *args, **kwargs)
+
+        return view
+
     def get_queryset(self):
+        if self.kwargs.get("view"):
+            del self.kwargs["view"]
+
         if not self.queryset:
             self.queryset = self.field_filter_class(self.request.GET).qs.filter(
                 **self.kwargs

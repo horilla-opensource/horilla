@@ -26,7 +26,7 @@ from base.models import (
 )
 from employee.models import Employee, EmployeeWorkInformation
 from horilla import horilla_middlewares
-from horilla.models import HorillaModel
+from horilla.models import HorillaModel, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
 from leave.methods import (
@@ -157,38 +157,69 @@ WEEK_DAYS = [
 
 
 class LeaveType(HorillaModel):
-    icon = models.ImageField(null=True, blank=True, upload_to="leave/leave_icon")
-    name = models.CharField(max_length=30, null=False)
-    color = models.CharField(null=True, max_length=30)
-    payment = models.CharField(max_length=30, choices=PAYMENT, default="unpaid")
+    icon = models.ImageField(
+        null=True, blank=True, upload_to=upload_path, verbose_name=_("Icon")
+    )
+    name = models.CharField(max_length=30, null=False, verbose_name=_("Name"))
+    color = models.CharField(null=True, max_length=30, verbose_name=_("Color"))
+    payment = models.CharField(
+        max_length=30, choices=PAYMENT, default="unpaid", verbose_name=_("Is Paid")
+    )
     count = models.FloatField(null=True, default=1)
     period_in = models.CharField(max_length=30, choices=TIME_PERIOD, default="day")
-    limit_leave = models.BooleanField(default=True)
+    limit_leave = models.BooleanField(default=True, verbose_name=_("Limit Leave Days"))
     total_days = models.FloatField(null=True, default=1)
-    reset = models.BooleanField(default=False)
-    is_encashable = models.BooleanField(default=False, verbose_name=_("Is encashable"))
+    reset = models.BooleanField(default=False, verbose_name=_("Reset"))
+    is_encashable = models.BooleanField(default=False, verbose_name=_("Is Encashable"))
     reset_based = models.CharField(
         max_length=30,
         choices=RESET_BASED,
         blank=True,
         null=True,
+        verbose_name=_("Reset Period"),
     )
-    reset_month = models.CharField(max_length=30, choices=MONTHS, blank=True)
-    reset_day = models.CharField(max_length=30, choices=DAYS, null=True, blank=True)
+    reset_month = models.CharField(
+        max_length=30, choices=MONTHS, blank=True, verbose_name=_("Reset Month")
+    )
+    reset_day = models.CharField(
+        max_length=30, choices=DAYS, null=True, blank=True, verbose_name=_("Reset Day")
+    )
     reset_weekend = models.CharField(
-        max_length=10, null=True, blank=True, choices=WEEK_DAYS
+        max_length=10,
+        null=True,
+        blank=True,
+        choices=WEEK_DAYS,
+        verbose_name=_("Reset Weekday"),
     )
     carryforward_type = models.CharField(
-        max_length=30, choices=CARRYFORWARD_TYPE, default="no carryforward"
+        max_length=30,
+        choices=CARRYFORWARD_TYPE,
+        default="no carryforward",
+        verbose_name=_("Carryforward Type"),
     )
-    carryforward_max = models.FloatField(null=True, blank=True)
-    carryforward_expire_in = models.IntegerField(null=True, blank=True)
+    carryforward_max = models.FloatField(
+        null=True, blank=True, verbose_name=_("Carryforward Max")
+    )
+    carryforward_expire_in = models.IntegerField(
+        null=True, blank=True, verbose_name=_("Carryforward Expire In")
+    )
     carryforward_expire_period = models.CharField(
-        max_length=30, choices=TIME_PERIOD, null=True, blank=True
+        max_length=30,
+        choices=TIME_PERIOD,
+        null=True,
+        blank=True,
+        verbose_name=_("Carryforward Expire Period"),
     )
-    carryforward_expire_date = models.DateField(null=True, blank=True)
+    carryforward_expire_date = models.DateField(
+        null=True, blank=True, verbose_name=_("Carryforward Expire Date")
+    )
     require_approval = models.CharField(
-        max_length=30, choices=CHOICES, null=True, blank=True, default="yes"
+        max_length=30,
+        choices=CHOICES,
+        null=True,
+        blank=True,
+        default="yes",
+        verbose_name=_("Require Approval"),
     )
     require_attachment = models.CharField(
         max_length=30,
@@ -199,12 +230,17 @@ class LeaveType(HorillaModel):
         verbose_name=_("Require Attachment"),
     )
     exclude_company_leave = models.CharField(
-        max_length=30, choices=CHOICES, default="no"
+        max_length=30,
+        choices=CHOICES,
+        default="no",
+        verbose_name=_("Exclude Company Holidays"),
     )
-    exclude_holiday = models.CharField(max_length=30, choices=CHOICES, default="no")
+    exclude_holiday = models.CharField(
+        max_length=30, choices=CHOICES, default="no", verbose_name=_("Exclude Holidays")
+    )
     is_compensatory_leave = models.BooleanField(default=False)
     company_id = models.ForeignKey(
-        Company, null=True, editable=False, on_delete=models.PROTECT
+        Company, null=True, blank=True, on_delete=models.PROTECT
     )
     objects = HorillaCompanyManager(related_company_field="company_id")
 
@@ -612,11 +648,11 @@ class LeaveRequest(HorillaModel):
     leave_clashes_count = models.IntegerField(
         default=0, verbose_name=_("Leave Clashes Count")
     )
-    description = models.TextField(verbose_name=_("Description"), max_length=255)
+    description = models.TextField(verbose_name=_("Description"))
     attachment = models.FileField(
         null=True,
         blank=True,
-        upload_to="leave/leave_attachment",
+        upload_to=upload_path,
         verbose_name=_("Attachment"),
     )
     status = models.CharField(
@@ -924,9 +960,7 @@ class LeaveRequest(HorillaModel):
         available_leave = AvailableLeave.objects.get(
             employee_id=self.employee_id, leave_type_id=leave_type
         )
-        total_leave_days = (
-            available_leave.available_days + available_leave.carryforward_days
-        )
+
         requested_days = calculate_requested_days(
             self.start_date,
             self.end_date,
@@ -947,19 +981,19 @@ class LeaveRequest(HorillaModel):
             unique_dates.remove(f"{today.strftime('%m')}-{today.year}")
 
         forcated_days = available_leave.forcasted_leaves(self.start_date)
-        total_leave_days = (
-            available_leave.leave_type_id.carryforward_max
-            if available_leave.leave_type_id.carryforward_type
-            in ["carryforward", "carryforward expire"]
-            and available_leave.leave_type_id.carryforward_max < total_leave_days
-            else total_leave_days
-        )
-        if (
-            available_leave.leave_type_id.carryforward_type == "no carryforward"
-            and available_leave.carryforward_days
-        ):
-            total_leave_days = total_leave_days - available_leave.carryforward_days
-        total_leave_days += forcated_days
+
+        available_days = available_leave.available_days or 0
+        carryforward_days = available_leave.carryforward_days or 0
+        carryforward_max = available_leave.leave_type_id.carryforward_max or 0
+        carryforward_type = available_leave.leave_type_id.carryforward_type
+
+        if carryforward_type in ["carryforward", "carryforward expire"]:
+            carryforward_days = min(carryforward_days, carryforward_max)
+        elif carryforward_type == "no carryforward":
+            carryforward_days = 0
+
+        total_leave_days = available_days + carryforward_days + forcated_days
+
         if not effective_requested_days <= total_leave_days:
             raise ValidationError(
                 _("Does not have sufficient leave balance for the requested dates.")
@@ -1159,7 +1193,7 @@ class LeaveRequest(HorillaModel):
 
 
 class LeaverequestFile(models.Model):
-    file = models.FileField(upload_to="leave/request_files")
+    file = models.FileField(upload_to=upload_path)
 
 
 class LeaverequestComment(HorillaModel):
@@ -1191,7 +1225,7 @@ class LeaveAllocationRequest(HorillaModel):
     attachment = models.FileField(
         null=True,
         blank=True,
-        upload_to="leave/leave_attachment",
+        upload_to=upload_path,
         verbose_name=_("Attachment"),
     )
     status = models.CharField(
