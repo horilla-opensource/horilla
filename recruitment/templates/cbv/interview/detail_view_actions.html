@@ -5,8 +5,8 @@
     hx-target='#genericModalBody'
     data-toggle="oh-modal-toggle"
     data-target='#genericModal'
-    class="oh-btn oh-btn--info w-100" title="{% trans 'Edit' %}">
-    <ion-icon name="create-outline"></ion-icon>
+    class="oh-btn oh-btn--info w-100">
+    <ion-icon name="create-outline"></ion-icon> {% trans "Edit" %}
 </a>
 {% endif %}
 {% if perms.recruitment.delete_interviewschedule %}
@@ -17,8 +17,8 @@ hx-confirm="{% trans "Are you sure you want to delete this interview?" %}"
 method="post"
 style="display: contents;width:100%">
 {% csrf_token %}
-<button onclick="event.stopPropagation()" type="submit" class="oh-btn oh-btn--secondary w-100" title="{% trans 'Delete' %}">
-<ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
+<button onclick="event.stopPropagation()" type="submit" class="oh-btn oh-btn--secondary w-100">
+<ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>{% trans 'Delete' %}
 </button>
 
 
