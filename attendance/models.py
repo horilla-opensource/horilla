@@ -116,7 +116,7 @@ class AttendanceActivity(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def attendance_detail_view(self):
         """
@@ -336,8 +336,7 @@ class Attendance(HorillaModel):
         Detail view subtitle
         """
 
-        return f"""{self.employee_id.employee_work_info.department_id } /
-          { self.employee_id.employee_work_info.job_position_id}"""
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def my_attendance_detail(self):
         """
@@ -550,7 +549,7 @@ class Attendance(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def activities(self):
         """
@@ -949,6 +948,9 @@ class AttendanceOverTime(HorillaModel):
         verbose_name = _("Hour Account")
         verbose_name_plural = _("Hour Accounts")
 
+    def __str__(self):
+        return f"{self.employee_id} - {self.month}"
+
     def get_month_capitalized(self):
         """
         capitalize month
@@ -989,8 +991,7 @@ class AttendanceOverTime(HorillaModel):
         Detail view subtitle
         """
 
-        return f"""{self.employee_id.employee_work_info.department_id } /
-          { self.employee_id.employee_work_info.job_position_id}"""
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def hour_account_detail(self):
         """
@@ -1197,8 +1198,7 @@ class AttendanceLateComeEarlyOut(HorillaModel):
         Detail view subtitle
         """
 
-        return f"""{self.employee_id.employee_work_info.department_id } /
-          { self.employee_id.employee_work_info.job_position_id}"""
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def attendance_validated_check(self):
         if self.attendance_id.attendance_validated == True:
