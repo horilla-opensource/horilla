@@ -835,7 +835,10 @@ class Attendance(HorillaModel):
         else:
             out_time = self.attendance_clock_out
 
-        if self.attendance_clock_in_date < self.attendance_date:
+        if (
+            self.attendance_clock_in_date
+            and self.attendance_clock_in_date < self.attendance_date
+        ):
             raise ValidationError(
                 {
                     "attendance_clock_in_date": "Attendance check-in date cannot be earlier than attendance date"
