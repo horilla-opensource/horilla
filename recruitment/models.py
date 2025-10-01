@@ -15,6 +15,7 @@ from uuid import uuid4
 import django
 import requests
 from django import forms
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage

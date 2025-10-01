@@ -183,6 +183,9 @@ class ListCandidates(HorillaListView):
         "email": """
                    style ="width : 200px !important;"
                    """,
+        "rating": """
+                   style ="width : 170px !important;"
+                   """,
     }
 
     actions = [
