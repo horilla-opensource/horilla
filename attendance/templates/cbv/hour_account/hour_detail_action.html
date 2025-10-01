@@ -5,7 +5,7 @@
 		<a
 			class="oh-btn oh-btn--warning"
 			style="width: 50%"
-			onclick="validateHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&attendance_date__gte={{ dates.0|date:'Y-m-d' }}&attendance_date__lte={{ dates.1|date:'Y-m-d' }}');"
+			onclick="validateHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&month={{ dates.1.month}}');"
 		>
 			{{ instance.not_validated_hrs }} {% trans "Hours to validate" %}
 		</a>
@@ -14,7 +14,7 @@
 		<a
 			class="oh-btn oh-btn--warning"
 			style="width: 50%"
-			href="{% url 'view-my-attendance' %}?attendance_date__gte={{ dates.0|date:'Y-m-d' }}&attendance_date__lte={{ dates.1|date:'Y-m-d' }}"
+			href="{% url 'view-my-attendance' %}?month={{ dates.1.month}}"
 		>
 			{{ instance.not_validated_hrs }} {% trans "Hours to validate" %}
 		</a>
@@ -24,7 +24,7 @@
 		<a
 			class="oh-btn oh-btn--success"
 			style="width: 50%"
-			onclick="validateOTHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&attendance_date__gte={{ dates.0|date:'Y-m-d' }}&attendance_date__lte={{ dates.1|date:'Y-m-d' }}');"
+			onclick="validateOTHours('{% url 'attendance-view' %}?employee_id={{instance.employee_id.id}}&month={{ dates.1.month}}');"
 		>
 			{{ instance.not_approved_ot_hrs }} hrs {% trans "OT to Approve" %}
 		</a>
@@ -32,7 +32,7 @@
 		<a
 			class="oh-btn oh-btn-group oh-btn--success"
 			style="width: 50%"
-			href="{% url 'view-my-attendance' %}?attendance_date__gte={{ dates.0|date:'Y-m-d' }}&attendance_date__lte={{ dates.1|date:'Y-m-d' }}"
+			href="{% url 'view-my-attendance' %}?month={{ dates.1.month}}"
 		>
 			{{ instance.not_approved_ot_hrs }} hrs {% trans "OT to Approve" %}
 		</a>
