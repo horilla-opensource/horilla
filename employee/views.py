@@ -459,15 +459,16 @@ def shift_tab(request, emp_id):
 @manager_can_enter("horilla_documents.view_documentrequest")
 def document_request_view(request):
     """
-    This function is used to view documents requests of employees.
+    This function is used to view and filter document requests of employees.
 
     Parameters:
     request (HttpRequest): The HTTP request object.
 
-    Returns: return document_request template
+    Returns:
+    Render 'documents/document_requests.html' with documents and filters.
     """
     previous_data = request.GET.urlencode()
-    filter_class = DocumentRequestFilter()
+    filter_class = DocumentRequestFilter(request.GET or None)
     document_requests = DocumentRequest.objects.all()
     documents = Document.objects.filter(document_request_id__isnull=False)
     documents = filtersubordinates(
@@ -475,6 +476,12 @@ def document_request_view(request):
         perm="horilla_documents.view_documentrequest",
         queryset=documents,
     )
+
+    if request.GET:
+        filtered_docs = filter_class.qs
+        filtered_docs = filtered_docs.filter(document_request_id__isnull=False)
+        documents = filtered_docs
+
     documents = group_by_queryset(
         documents, "document_request_id", request.GET.get("page"), "page"
     )
@@ -847,6 +854,9 @@ def document_approve(request, id):
 
     document_obj = get_object_or_404(Document, id=id)
     refresh_url = request.GET.get("refresh_url") or request.POST.get("refresh_url")
+    hx_target = request.GET.get("hx_target") or request.POST.get("hx_target")
+    hx_select = request.GET.get("hx_select") or request.POST.get("hx_select")
+    hx_swap = request.GET.get("hx_swap") or request.POST.get("hx_swap")
     if document_obj.document:
         document_obj.status = "approved"
         document_obj.save()
@@ -855,14 +865,20 @@ def document_approve(request, id):
         messages.error(request, _("No document uploaded"))
     # 918
     if refresh_url:
+        attrs = []
+        if hx_target:
+            attrs.append(f'hx-target="{hx_target}"')
+        if hx_select:
+            attrs.append(f'hx-select="{hx_select}"')
+        if hx_swap:
+            attrs.append(f'hx-swap="{hx_swap}"')
+
         span = f"""
         <span
             hx-trigger="load"
             hx-get="{refresh_url}"
-            hx-target="#requestDocument{id}"
-            hx-select="#requestDocument{id}"
-            hx-swap="outerHTML"
-            ">
+            {' '.join(attrs)}
+            >
         </span>
         """
         return HttpResponse(span)
