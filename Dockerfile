@@ -1,77 +1,49 @@
-# syntax=docker/dockerfile:1
+FROM python:3.12-slim
 
-# -------- Base image with dependencies layer --------
-FROM python:3.11-slim AS base
-
-# System deps
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    POETRY_VIRTUALENVS_CREATE=false
+    PYTHONUNBUFFERED=1
 
-# Install build deps for common Python packages (incl. cairo)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    gcc \
-    curl \
-    pkg-config \
-    libcairo2-dev \
-    libpango1.0-dev \
-    libjpeg62-turbo-dev \
-    zlib1g-dev \
-    libxml2-dev \
-    libxslt1-dev \
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        libpq-dev \
+        libjpeg-dev \
+        zlib1g-dev \
+        libcairo2-dev \
+        libpango1.0-dev \
+        libgdk-pixbuf-xlib-2.0-dev \
+        libxml2-dev \
+        libxslt1-dev \
+        libffi-dev \
+        pkg-config \
+        curl \
+        netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-# -------- Builder for wheels --------
-FROM base AS builder
-COPY requirements.txt ./
-RUN pip wheel --wheel-dir /wheels -r requirements.txt
-
-# -------- Final runtime image --------
-FROM python:3.11-slim AS runtime
 
 # Create non-root user
-RUN addgroup --system app && adduser --system --ingroup app app
-
-# Install runtime deps for libraries like psycopg2, cairo, etc. (minimal)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq5 \
-    libcairo2 \
-    libpango-1.0-0 \
-    libjpeg62-turbo \
-    zlib1g \
-    libxml2 \
-    libxslt1.1 \
-    libffi8 \
-    libfreetype6 \
-    ghostscript \
-    && rm -rf /var/lib/apt/lists/*
+RUN useradd --create-home --uid 1000 appuser
 
 WORKDIR /app
 
-# Copy wheels and install
-COPY --from=builder /wheels /wheels
-RUN pip install --no-index --find-links=/wheels /wheels/*
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt gunicorn psycopg2-binary
 
-# Copy project
+# Copy application
 COPY . .
 
-# Ensure static dirs exist and are owned by app
-RUN mkdir -p /app/staticfiles /app/static_root && chown -R app:app /app
+# Set permissions
+RUN mkdir -p staticfiles media \
+    && chown -R appuser:appuser /app
 
-# Gunicorn config
-ENV PORT=8000 \
-    GUNICORN_CMD_ARGS="--config deploy/gunicorn.conf.py"
-
-# Entrypoint
-COPY deploy/entrypoint.sh /entrypoint.sh
+# Copy entrypoint
+COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER app
+USER appuser
+
 EXPOSE 8000
 
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["gunicorn", "horilla.wsgi:application", "--config", "docker/gunicorn.conf.py"]
