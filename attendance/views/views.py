@@ -2506,8 +2506,12 @@ def work_records_change_month(request):
 @permission_required("attendance.view_workrecords")
 def work_record_export(request):
     try:
-        month = int(request.GET.get("month") or date.today().month)
-        year = int(request.GET.get("year") or date.today().year)
+        month_str = request.GET.get("month")
+        if month_str:
+            year, month = map(int, month_str.split("-"))
+        else:
+            today = date.today()
+            year, month = today.year, today.month
     except ValueError:
         return HttpResponseBadRequest("Invalid month or year parameter.")
 
