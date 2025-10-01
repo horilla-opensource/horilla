@@ -70,12 +70,20 @@ ENV/
 node_modules/
 
 # Git
-.git/
+.git
 .gitignore
-
-# Docker
-Dockerfile*
+README.md
+Dockerfile
 .dockerignore
-
-# Migrations cache
-**/migrations/__pycache__/
+docker-compose.yml
+.vscode
+.idea
+*.pyc
+__pycache__
+.pytest_cache
+.coverage
+*.log
+.env
+horillavenv
+node_modules
+.DS_Store
