@@ -2199,7 +2199,11 @@ class HorillaNavView(TemplateView):
         context["empty_inputs"] = self.empty_inputs + ["nav_url"]
         context["last_filter"] = dict(last_filter)
         if self.filter_instance:
-            context[self.filter_form_context_name] = self.filter_instance.form
+            FilterClass = self.filter_instance.__class__
+            filterset = FilterClass(self.request.GET or None)
+            context[self.filter_form_context_name] = filterset.form
+            context[self.filter_instance_context_name] = filterset
+
         context["active_view"] = models.ActiveView.objects.filter(
             path=self.request.path
         ).first()
@@ -2209,7 +2213,9 @@ class HorillaNavView(TemplateView):
         for key, val in self.request.GET.items():
             extra_params[key] = val
 
-        extra_params["referrer"] = self.request.META.get("HTTP_REFERER", "")
+        extra_params["referrer"] = urlparse(
+            self.request.META.get("HTTP_REFERER", "")
+        ).path
 
         # Update each view's URL with query parameters
         for view in self.view_types:
