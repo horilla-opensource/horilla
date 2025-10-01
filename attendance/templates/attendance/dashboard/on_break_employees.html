@@ -6,10 +6,10 @@
             <li class="oh-card-dashboard__user-item">
                 <div class="oh-profile oh-profile--md">
                     <div class="oh-profile__avatar mr-1">
-                        <img src="https://ui-avatars.com/api/?name={{emp.employee_id}}&background=random"
-                            class="oh-profile__image" alt="Amy Winehouse" />
+                        <img src="https://ui-avatars.com/api/?name={{emp.employee_id.get_full_name}}&background=random"
+                            class="oh-profile__image" alt="" />
                     </div>
-                    <span class="oh-profile__name oh-text--dark">{{emp.employee_id}}</span>
+                    <span class="oh-profile__name oh-text--dark">{{emp.employee_id.get_full_name}}</span>
                 </div>
             </li>
         {% endfor %}

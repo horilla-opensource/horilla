@@ -2132,11 +2132,7 @@ def interview_delete(request, interview_id):
     except:
         messages.error(request, _("Scheduled Interview not found"))
 
-    return HttpResponse(
-        "<script>$('.filterButton')[0].click()</script>"
-        if view == "true"
-        else "<script>window.location.reload()</script>"
-    )
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required

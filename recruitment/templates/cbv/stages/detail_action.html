@@ -7,11 +7,10 @@
           data-toggle="oh-modal-toggle"
           data-target="#genericModal"
           class="oh-btn oh-btn--info w-50"
-          title="{% trans 'Edit' %}"
         >
         <ion-icon name="create-outline" role="img"
         class="md hydrated" aria-label="create outline">
-        </ion-icon>
+        </ion-icon>{% trans 'Edit' %}
         </a>
       {% endif %}
       {% if perms.recruitment.delete_stage %}
@@ -22,9 +21,8 @@
         <button
           type="submit"
           class="oh-btn oh-btn--secondary w-100"
-          title="Remove"
         >
-          <ion-icon name="trash-outline"></ion-icon>
+          <ion-icon name="trash-outline"></ion-icon>{% trans "Delete" %}
         </button>
       </form>
       {% endif %}
