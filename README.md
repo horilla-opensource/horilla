@@ -31,7 +31,7 @@ Horilla can be installed on your system by following the steps below. Ensure you
 2. During installation, ensure you select **"Add Python to PATH"**.
 3. Verify the installation:
    ```bash
-   python3 --version
+   python --version
    ```
 
 #### **macOS**
@@ -380,3 +380,4 @@ python manage.py runserver 8080   # For Windows
 ---
 
 This README provides a comprehensive guide to installing and setting up Horilla on various platforms. If you encounter any issues, feel free to reach out to the Horilla community for support. Happy coding! 🚀
+
