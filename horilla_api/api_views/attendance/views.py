@@ -446,11 +446,7 @@ class AttendanceRequestView(APIView):
             employee_id=employee_id, attendance_date=attendance_date
         ).exists():
             return Response(
-                {
-                    "error": [
-                        "Attendance for this employee on the current date already exists."
-                    ]
-                },
+                {error: list(message) for error, message in serializer.errors.items()},
                 status=400,
             )
         return Response(serializer.errors, status=404)
