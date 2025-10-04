@@ -285,7 +285,7 @@ class Contract(HorillaModel):
         verbose_name=_("Deduction For One Leave Amount"),
     )
 
-    note = models.TextField(null=True, blank=True, max_length=255)
+    note = models.TextField(null=True, blank=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -372,8 +372,7 @@ class Contract(HorillaModel):
         Detail view subtitle
         """
 
-        return f"""{self.employee_id.employee_work_info.department_id } /
-          { self.employee_id.employee_work_info.job_position_id}"""
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def contracts_detail(self):
         """
@@ -2086,7 +2085,7 @@ class LoanAccount(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def get_installments(self):
         """
