@@ -72,7 +72,7 @@ class AssignedleaveList(HorillaListView):
         (_("Carryforward Days"), "carryforward_days"),
         (_("Total Leave Days"), "total_leave_days"),
         (_("Assigned Date"), "assigned_date"),
-        (_("taken Leaves"), "leave_taken"),
+        (_("Taken Leaves"), "leave_taken"),
     ]
 
     action_method = "assigned_leave_actions"
