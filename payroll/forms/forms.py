@@ -194,3 +194,11 @@ class DashboardExport(Form):
         ],
         widget=forms.SelectMultiple,
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["employees"].widget.attrs.update({"class": "oh-select oh-select-2"})
+        self.fields["status"].widget.attrs.update({"class": "oh-select oh-select-2"})
+        self.fields["contributions"].widget.attrs.update(
+            {"class": "oh-select oh-select-2"}
+        )
