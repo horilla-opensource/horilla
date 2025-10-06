@@ -15,10 +15,6 @@
         {% elif form.candidate_id %}
             <input type="hidden" name="candidate_id" value="{{form.candidate_id.value}}" />
         {% endif %}
-        <input type="hidden" name="status" value="requested" />
-        <input type="hidden" name="title" value="{{form.instance.title}}" />
-        <input type="hidden" name="rejection_reason" value="{{form.rejection_reason.value}}" />
-        <input type="hidden" name="document_request_id" value="{{form.document_request_id.value}}" />
         {{ form.non_field_errors }}
 
         <div class="row">
