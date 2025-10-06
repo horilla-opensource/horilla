@@ -1,6 +1,12 @@
-{% load i18n %}
+{% load i18n horillafilters %}
+
 {% if instance.has_max_limit %}
-<span class="oh-timeoff-modal__stat-count">{{instance.maximum_amount}} {{currency}} {% if instance.based_on == "basic_pay" %}{% trans "For working days on a month" %}{% endif %}</span>
+    <span class="oh-timeoff-modal__stat-count"
+        >{{instance.maximum_amount|currency_symbol_position}}
+        {% if instance.based_on == "basic_pay" %}
+            {% trans "For working days on a month"%}
+        {% endif %}
+    </span>
 {% else %}
-<span class="oh-timeoff-modal__stat-count">{% trans "No" %}</span>
+    <span class="oh-timeoff-modal__stat-count">{% trans "No" %}</span>
 {% endif %}
