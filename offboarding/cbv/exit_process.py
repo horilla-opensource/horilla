@@ -623,6 +623,7 @@ class OffboardingEmployeeList(HorillaListView):
         ("Start Date", "notice_period_starts"),
         ("End Date", "notice_period_ends"),
         ("Stage", "get_stage_col"),
+        ("Created At", "get_created_at_date"),
         ("Task Status", "get_task_status_col"),
     ]
 
