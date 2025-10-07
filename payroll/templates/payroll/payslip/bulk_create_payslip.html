@@ -43,5 +43,26 @@
         <div class="oh-modal__dialog-footer p-0 pt-4">
             <input type="submit" value="Generate Payslips" class="oh-btn oh-btn--secondary oh-btn--shadow" />
         </div>
+{#           {% if bulk_form.non_field_errors %}#}
+{#<div class="mt-4 mb-2"#}
+{#     style="background-color:#fee2e2; border:1px solid #f87171; color:#b91c1c; padding:12px; border-radius:6px;">#}
+{#    {% for error in bulk_form.non_field_errors %}#}
+{#        <p style="color:#b91c1c; font-weight:500; margin:0;">{{ error }}</p>#}
+{#    {% endfor %}#}
+{#</div>#}
+{#{% endif %}#}
+{% if bulk_form.errors %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const modal = document.getElementById("bulkPayslipModal");
+    if (modal) {
+        // use your modal library’s open method if needed
+        modal.style.display = "block";
+    }
+});
+</script>
+{% endif %}
+
+
     </form>
 </div>
