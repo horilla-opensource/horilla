@@ -466,6 +466,15 @@ class GeneratePayslipForm(HorillaForm):
             raise forms.ValidationError(
                 {"end_date": "The end date cannot be in the future."}
             )
+
+        if start_date and end_date:
+            delta = (end_date - start_date).days + 1
+            print("DEBUG: Date difference =", delta)
+            if delta != 30:
+                raise forms.ValidationError(
+                    f"The payslip period must be exactly 30 days — currently {delta} days."
+                )
+
         return cleaned_data
 
     def __init__(self, *args, **kwargs):
