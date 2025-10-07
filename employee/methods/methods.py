@@ -151,7 +151,7 @@ def get_ordered_badge_ids():
     """
     This method is used to return ordered badge ids
     """
-    employees = Employee.objects.all()
+    employees = Employee.objects.entire()
     data = (
         employees.exclude(badge_id=None)
         .order_by("badge_id")
