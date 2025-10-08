@@ -3,8 +3,22 @@
     <div class="oh-wrapper d-flex justify-content-center mt-4 mb-4">
         <form action="" hx-swap="none" class="oh-onboarding-card" method="post" enctype="multipart/form-data">
             {% csrf_token %} {{form.as_p}}
+            <div class="oh-modal__dialog-footer p-0 pt-4 flex justify-between items-center">
+    <button type="button" class="oh-btn oh-btn--light mr-2" onclick="redirectToPayslipView()">
+        Cancel
+    </button>
+    <input type="submit" value="Generate Payslips" class="oh-btn oh-btn--secondary oh-btn--shadow" />
+</div>
+
         </form>
+
     </div>
+<script>
+function redirectToPayslipView() {
+    window.location.href = "/payroll/view-payslip/";
+}
+</script>
+
     <script>
         var rangeToggle = () => {
             if ($("[name = 'if_condition']").val() == "range") {
