@@ -81,7 +81,6 @@ class FeedbackListView(HorillaListView):
         ("Employee", "employee_id__get_full_name"),
         ("Status", "custom_status_style"),
         ("Title", "review_cycle"),
-        ("Status", "custom_status_style"),
         ("Start Date", "start_date"),
         ("Due On", "due_days_diff"),
     ]
@@ -309,9 +308,6 @@ class AnonymousFeedbackTab(HorillaListView):
     sortby_mapping = [("Created At", "created_at")]
 
     action_method = "anonymous_actions_col"
-    header_attrs = {
-        "action": """style="width:200px!important;" """,
-    }
 
     def get_queryset(self):
         queryset = super().get_queryset()
