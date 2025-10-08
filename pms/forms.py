@@ -875,14 +875,15 @@ class QuestionForm(ModelForm):
 
         model = Question
         exclude = ["question_option_id", "template_id", "is_active"]
-        # widgets = {
-        #     "question_type": forms.Select(
-        #         attrs={
-        #             "class": "oh-select oh-select--sm oh-select-no-search oh-select--qa-change w-100",
-        #             "required": True,
-        #         }
-        #     )
-        # }
+        widgets = {
+            "question_type": forms.Select(
+                attrs={
+                    "class": "oh-select oh-select--sm oh-select--qa-change w-100",
+                    "required": True,
+                    "onchange": "questionTypeChange($(this))",
+                }
+            )
+        }
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
