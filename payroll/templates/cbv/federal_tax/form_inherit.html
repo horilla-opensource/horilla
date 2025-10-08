@@ -12,13 +12,7 @@ width="100%"
 >
 </iframe>
 <script>
-    {% comment %} var inputBox = $('#id_use_py');
-    if($(this).is(':checked')){
-        $('#oc-editor').show();
-    }
-    console.log(inputBox) {% endcomment %}
     var iFrame = document.getElementById('oc-editor');
-    console.log(iFrame)
 
     // Make sure the iframe is fully loaded before sending the postMessage
     iFrame.onload = function() {
