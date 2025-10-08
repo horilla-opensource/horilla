@@ -857,6 +857,8 @@ class EmployeeBonusPointFilter(FilterSet):
     Filter through BonusPointSetting model
     """
 
+    search = django_filters.CharFilter(method="search_method")
+
     class Meta:
         model = EmployeeBonusPoint
         fields = "__all__"
