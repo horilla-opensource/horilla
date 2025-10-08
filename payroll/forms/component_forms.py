@@ -684,6 +684,9 @@ class LoanAccountForm(ModelForm):
     """
 
     verbose_name = "Loan / Advanced Sarlary"
+    cols = {
+        "description": 12,
+    }
 
     class Meta:
         model = LoanAccount

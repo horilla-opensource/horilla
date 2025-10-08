@@ -2090,17 +2090,17 @@ class LoanAccount(HorillaModel):
         ("advanced_salary", _("Advanced Salary")),
         ("fine", _("Penalty / Fine")),
     ]
-    type = models.CharField(default="loan", choices=loan_type, max_length=15)
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=100)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
     )
+    type = models.CharField(default="loan", choices=loan_type, max_length=15)
     loan_amount = models.FloatField(default=0, verbose_name=_("Amount"))
     provided_date = models.DateField()
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, editable=False, null=True
     )
-    description = models.TextField(null=True, max_length=255)
+    description = models.TextField(null=True)
     deduction_ids = models.ManyToManyField(Deduction, editable=False)
     is_fixed = models.BooleanField(default=True, editable=False)
     rate = models.FloatField(default=0, editable=False)

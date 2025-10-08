@@ -1505,7 +1505,8 @@ def edit_installment_amount(request):
     ded_id = request.GET.get("ded_id")
     value = float(request.POST.get("amount")) if request.POST.get("amount") else 0
 
-    loan = LoanAccount.objects.filter(id=loan_id).first()
+    loans = LoanAccount.objects.filter(id=loan_id)
+    loan = loans.first()
     deductions = loan.deduction_ids.all().order_by("one_time_date")
     deduction = deductions.filter(id=ded_id).first()
     deductions_before = deductions.filter(one_time_date__lt=deduction.one_time_date)
@@ -1525,14 +1526,20 @@ def edit_installment_amount(request):
         deduction.save()
 
         for item in deductions.filter(one_time_date__gt=deduction.one_time_date):
-            item.amount = new_installment
-            item.save()
+            if new_installment > 0:
+                item.amount = new_installment
+                item.save()
+            else:
+                item.delete()
+                loan.deduction_ids.remove(item)
 
+        # If there are no deductions after the current one and a new installment amount is calculated,
         if len(deductions_after) == 0 and new_installment != 0:
             date = get_next_month_same_date(deduction.one_time_date)
             installment = create_deductions(loan, new_installment, date)
             loan.deduction_ids.add(installment)
 
+        loans.update(installments=len(loan.deduction_ids.all()))
         messages.success(request, "Installment amount updated successfully")
     else:
         messages.error(request, "Cannot change paid installments ")
