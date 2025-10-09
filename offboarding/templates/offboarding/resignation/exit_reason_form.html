@@ -1,9 +1,10 @@
 {% load i18n %}
+
 <div class="oh-modal__dialog-body">
     <form hx-post="{% url 'create-resignation-reason' %}" hx-target="#resignationReasonModalBody">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Save</button>
+
 </form>
 
 </div>
