@@ -123,15 +123,15 @@
                                     {% endwith %}
                                 {% endfor %}
                                 {% if options or option_method%}
-                                    <th class="text-sm font-medium min-w-[150px]">
-                                        <div class="p-3" {{header_attrs.option|safe}}>
+                                    <th class="text-sm font-medium min-w-[150px]" {{header_attrs.option|safe}}>
+                                        <div class="p-3">
                                             {% trans "Options" %}
                                         </div>
                                     </th>
                                 {% endif %}
                                 {% if actions or action_method %}
-                                    <th class="stickyright text-sm font-medium min-w-[150px]">
-                                        <div class="p-3" {{header_attrs.action|safe}} >
+                                    <th class="stickyright text-sm font-medium min-w-[150px]" {{header_attrs.action|safe}} >
+                                        <div class="p-3">
                                             {% trans "Actions" %}
                                         </div>
                                     </th>
