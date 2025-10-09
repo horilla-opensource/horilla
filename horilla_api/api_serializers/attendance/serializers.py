@@ -61,6 +61,9 @@ class AttendanceRequestSerializer(serializers.ModelSerializer):
         source="employee_id.employee_last_name", read_only=True
     )
     shift_name = serializers.CharField(source="shift_id.employee_shift", read_only=True)
+    work_type_name = serializers.CharField(
+        source="work_type_id.work_type", read_only=True
+    )
     badge_id = serializers.CharField(source="employee_id.badge_id", read_only=True)
     employee_profile_url = serializers.SerializerMethodField(read_only=True)
 

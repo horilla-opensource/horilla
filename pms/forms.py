@@ -476,11 +476,6 @@ class KRForm(HorillaModelForm):
             "target_value",
             "duration",
             "company_id",
-            "archive",
-        ]
-        exclude = [
-            "history",
-            "objects",
         ]
 
     def as_p(self):
@@ -942,8 +937,9 @@ class QuestionForm(ModelForm):
         widgets = {
             "question_type": forms.Select(
                 attrs={
-                    "class": "oh-select oh-select--sm oh-select-no-search oh-select--qa-change w-100",
+                    "class": "oh-select oh-select--sm oh-select--qa-change w-100",
                     "required": True,
+                    "onchange": "questionTypeChange($(this))",
                 }
             )
         }

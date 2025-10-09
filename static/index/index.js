@@ -107,7 +107,11 @@ function getAssignedLeave(employeeElement) {
                 const element = response[index];
                 rows =
                     rows +
-                    `<tr class="toggle-highlight"><td>${element.leave_type_id__name}</td><td>${element.available_days}</td><td>${element.carryforward_days}</td></tr>`;
+                    `<tr class="toggle-highlight">
+                        <td class="text-sm p-3 text-[#666] rounded-lg">${element.leave_type_id__name}</td>
+                        <td class="text-sm p-3 text-[#666] rounded-lg">${element.available_days}</td>
+                        <td class="text-sm p-3 text-[#666] rounded-lg">${element.carryforward_days}</td>
+                    </tr>`;
             }
             $("#availableTableBody").html($(rows));
             let newLeaves = "";

@@ -493,7 +493,7 @@ class EmployeeObjective(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def manager_col(self):
         """
@@ -1321,8 +1321,11 @@ class AnonymousFeedback(models.Model):
         This method to get individual feedback
         """
 
-        url = reverse_lazy("single-anonymous-feedback-view", kwargs={"obj_id": self.pk})
+        url = reverse_lazy("single-anonymous-feedback-view", kwargs={"pk": self.pk})
         return url
+
+    def detail_view_subtitle(self):
+        return "Anonymous Feedback"
 
 
 class Answer(models.Model):
@@ -1430,8 +1433,8 @@ class Meetings(HorillaModel):
         """
         employees = self.answer_employees.all()
         if employees:
-            employee_names_string = "<br>".join(
-                [str(employee.get_full_name()) for employee in employees]
+            employee_names_string = ", ".join(
+                str(employee.get_full_name()) for employee in employees
             )
             return employee_names_string
         else:
@@ -1493,8 +1496,8 @@ class Meetings(HorillaModel):
         """
         employees = self.employee_id.all()
         if employees:
-            employee_names_string = "<br>".join(
-                [str(employee.get_full_name()) for employee in employees]
+            employee_names_string = ", ".join(
+                str(employee.get_full_name()) for employee in employees
             )
             return employee_names_string
         else:
@@ -1506,8 +1509,8 @@ class Meetings(HorillaModel):
         """
         employees = self.manager.all()
         if employees:
-            employee_names_string = "<br>".join(
-                [str(employee.get_full_name()) for employee in employees]
+            employee_names_string = ", ".join(
+                str(employee.get_full_name()) for employee in employees
             )
             return employee_names_string
         else:

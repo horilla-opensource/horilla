@@ -2871,6 +2871,7 @@ def open_recruitments(request):
     return response
 
 
+@hx_request_required
 def recruitment_details(request, id):
     """
     This method is used to render the recruitment details page

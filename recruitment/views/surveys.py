@@ -348,7 +348,9 @@ def application_form(request):
         return redirect("open-recruitments")
 
     try:
-        recruitment = Recruitment.objects.filter(id=recruitment_id).first()
+        recruitment = Recruitment.objects.filter(
+            id=recruitment_id, is_published=True
+        ).first()  # Only create applications for published recruitments.
         if not recruitment:
             messages.error(request, _("Recruitment not found"))
             return redirect("open-recruitments")

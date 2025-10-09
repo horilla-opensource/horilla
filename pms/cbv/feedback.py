@@ -19,6 +19,7 @@ from employee.cbv.employee_profile import EmployeeProfileView
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
+    HorillaDetailedView,
     HorillaFormView,
     HorillaListView,
     HorillaNavView,
@@ -51,6 +52,20 @@ class FeedbackListView(HorillaListView):
         super().__init__(**kwargs)
         self.search_url = reverse("feedback-list-page")
 
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        archive_param = self.request.GET.get("archive")
+
+        qs = super().get_queryset(queryset, filtered, *args, **kwargs)
+
+        if archive_param in ["true", "True", "1"]:
+            # only archived
+            qs = qs.filter(archive=True)
+        elif archive_param in ["false", "False", "0", "unknown"]:
+            # include False and unknown (NULL)
+            qs = qs.filter(Q(archive=False) | Q(archive__isnull=True))
+
+        return qs
+
     model = Feedback
     filter_class = FeedbackFilter
     columns = [
@@ -81,7 +96,6 @@ class FeedbackListView(HorillaListView):
         ("Employee", "employee_id__get_full_name"),
         ("Status", "custom_status_style"),
         ("Title", "review_cycle"),
-        ("Status", "custom_status_style"),
         ("Start Date", "start_date"),
         ("Due On", "due_days_diff"),
     ]
@@ -290,6 +304,21 @@ class AnonymousFeedbackTab(HorillaListView):
         super().__init__(**kwargs)
         self.search_url = reverse("anonymous-feedback-tab")
 
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        archive_param = self.request.GET.get("archive")
+        qs = super().get_queryset(queryset, filtered, *args, **kwargs)
+
+        if archive_param in ["true", "True", "1"]:
+            qs = qs.filter(archive=True)
+        elif archive_param in ["false", "False", "0", "unknown"]:
+            qs = qs.filter(Q(archive=False) | Q(archive__isnull=True))
+
+        employee = self.request.user.employee_get
+        if not self.request.user.has_perm("pms.view_feedback"):
+            qs = qs.filter(employee_id=employee)
+
+        return qs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         querys = self.get_queryset()
@@ -302,33 +331,26 @@ class AnonymousFeedbackTab(HorillaListView):
 
     columns = [
         (_("Subject"), "feedback_subject"),
-        (_("based on"), "get_based_on_value"),
+        (_("Based on"), "get_based_on_value"),
         (_("Created At"), "created_at"),
     ]
+
+    header_attrs = {
+        "action": """
+                    style="width:100px !important;"
+                """
+    }
 
     sortby_mapping = [("Created At", "created_at")]
 
     action_method = "anonymous_actions_col"
-    header_attrs = {
-        "action": """style="width:200px!important;" """,
-    }
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        employee = self.request.user.employee_get
-        queryset = (
-            queryset.filter(employee_id=employee)
-            if not self.request.user.has_perm("pms.view_feedback")
-            else queryset
-        )
-        return queryset
 
     row_attrs = """
                 onclick="
                 event.stopPropagation();"
                 hx-get='{get_individual_anonymous_feedback}'
-                hx-target="#OneFeedbackTarget"
-                data-target="#FeedbackModal"
+                hx-target="#genericModalBody"
+                data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 data-anounymous = "true"
 
@@ -539,3 +561,22 @@ class FeedbackUpdateFormView(HorillaFormView):
             messages.success(self.request, message)
             return self.HttpResponse()
         return super().form_valid(form)
+
+
+class AnounyFeedbackDetailView(HorillaDetailedView):
+
+    model = AnonymousFeedback
+
+    title = _("Details")
+
+    header = {"title": "detail_view_subtitle", "subtitle": ""}
+
+    body = [
+        (_("Subject"), "feedback_subject"),
+        (_("Based On"), "based_on"),
+        (_("Description"), "feedback_description"),
+    ]
+
+    cols = {
+        "feedback_description": 12,
+    }

@@ -272,14 +272,15 @@ class ValidateAttendancesList(AttendancesListView):
         self.search_url = reverse("validate-attendance-tab")
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(
-            attendance_validated=False, employee_id__is_active=True
-        )
-        queryset = filtersubordinates(
-            self.request, queryset, "attendance.view_attendance"
-        )
-        return queryset
+        if not self.queryset:
+            self.queryset = super().get_queryset()
+            self.queryset = self.queryset.filter(
+                attendance_validated=False, employee_id__is_active=True
+            )
+            self.queryset = filtersubordinates(
+                self.request, self.queryset, "attendance.view_attendance"
+            )
+        return self.queryset
 
     selected_instances_key_id = "validateselectedInstances"
     action_method = "validate_button"
@@ -312,21 +313,22 @@ class OTAttendancesList(AttendancesListView):
         self.action_method = "ot_approve"
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        minot = strtime_seconds("00:30")
-        condition = (
-            AttendanceValidationCondition.objects.first()
-        )  # and condition.minimum_overtime_to_approve is not None
-        if condition is not None:
-            minot = strtime_seconds(condition.minimum_overtime_to_approve)
-        queryset = queryset.filter(
-            overtime_second__gt=0,
-            attendance_validated=True,
-        )
-        queryset = filtersubordinates(
-            self.request, queryset, "attendance.view_attendance"
-        )
-        return queryset
+        if not self.queryset:
+            self.queryset = super().get_queryset()
+            minot = strtime_seconds("00:30")
+            condition = (
+                AttendanceValidationCondition.objects.first()
+            )  # and condition.minimum_overtime_to_approve is not None
+            if condition is not None:
+                minot = strtime_seconds(condition.minimum_overtime_to_approve)
+            self.queryset = self.queryset.filter(
+                overtime_second__gt=0,
+                attendance_validated=True,
+            )
+            self.queryset = filtersubordinates(
+                self.request, self.queryset, "attendance.view_attendance"
+            )
+        return self.queryset
 
     row_attrs = """
                 hx-get='{ot_detail_view}?instance_ids={ordered_ids}'
@@ -355,14 +357,16 @@ class ValidatedAttendancesList(AttendancesListView):
         self.search_url = reverse("validated-attendance-tab")
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        queryset = queryset.filter(
-            attendance_validated=True, employee_id__is_active=True
-        )
-        queryset = filtersubordinates(
-            self.request, queryset, "attendance.view_attendance"
-        )
-        return queryset
+
+        if not self.queryset:
+            self.queryset = super().get_queryset()
+            self.queryset = self.queryset.filter(
+                attendance_validated=True, employee_id__is_active=True
+            )
+            self.queryset = filtersubordinates(
+                self.request, self.queryset, "attendance.view_attendance"
+            )
+        return self.queryset
 
     row_attrs = """
                 hx-get='{validated_detail_view}?instance_ids={ordered_ids}'
