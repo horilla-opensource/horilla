@@ -1332,7 +1332,7 @@ def object_delete(request, obj_id, **kwargs):
             - model (Model): The Django model class to which the object belongs.
             - redirect_path (str): The URL path to redirect to after deletion.
     Returns:
-        HttpResponse: Redirects to the specified `redirect_path` or reloads the
+        HttpResponse: Redirects to the specified redirect_path or reloads the
                       previous page. In case of a ProtectedError, it shows an error
                       message indicating that the object is in use.
     """
@@ -1340,7 +1340,6 @@ def object_delete(request, obj_id, **kwargs):
     redirect_path = kwargs.get("redirect_path")
     delete_error = False
     try:
-        count = model.objects.count()
         instance = model.objects.get(id=obj_id)
         instance.delete()
         messages.success(
@@ -1370,16 +1369,18 @@ def object_delete(request, obj_id, **kwargs):
             return redirect(redirect_path)
         else:
             return HttpResponse("<script>window.location.reload()</script>")
+
     if redirect_path:
         previous_data = request.GET.urlencode()
         redirect_path = redirect_path + "?" + previous_data
         return redirect(redirect_path)
     elif kwargs.get("HttpResponse"):
-        return_part = (
-            "<script>$('.reload-record').click();</script>"
-            if delete_error or count == 1
-            else kwargs.get("HttpResponse")
-        )
+        if delete_error:
+            return_part = "<script>window.location.reload()</script>"
+        elif kwargs.get("HttpResponse") is True:
+            return_part = ""
+        else:
+            return_part = kwargs.get("HttpResponse")
         return HttpResponse(f"{return_part}")
     else:
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
