@@ -417,6 +417,28 @@ def kr_create_or_update(request, kr_id=None):
 
 
 @login_required
+@permission_required("pms.change_keyresult")
+def archive_key_result(request, pk):
+    """
+    This view is used to archive and unarchive the key result,
+    Args:
+        meet_id(int) : primarykey of the key result.
+        employee_id(int) : primarykey of the employee
+    Returns:
+    """
+    key_result = KeyResult.find(pk)
+    key_result.is_active = not key_result.is_active
+    key_result.save()
+    message = (
+        _("Key reuslt unarchived successfully")
+        if key_result.is_active
+        else _("Key reuslt archived successfully")
+    )
+    messages.success(request, message)
+    return HttpResponse("")
+
+
+@login_required
 @hx_request_required
 def add_assignees(request, obj_id):
     """
@@ -1962,7 +1984,7 @@ def feedback_answer_post(request, id):
         for key_result in feedback.employee_key_results_id.all():
             if request.POST.get(f"key_result{key_result.id}"):
                 answer = request.POST.get(f"key_result{key_result.id}")
-                KeyResultFeedback.objects.get_or_create(
+                keyresult, create = KeyResultFeedback.objects.get_or_create(
                     answer={"answer": answer},
                     key_result_id=key_result,
                     feedback_id=feedback,
@@ -3137,7 +3159,7 @@ def archive_anonymous_feedback(request, obj_id):
 
     else:
         messages.info(request, _("You are don't have permissions."))
-    return redirect(feedback_list_view)
+    return redirect(reverse("feedback-view"))
 
 
 @login_required
@@ -3558,9 +3580,6 @@ def create_meetings(request):
             "form": form,
         },
     )
-
-
-from django.db.models import F
 
 
 @login_required
