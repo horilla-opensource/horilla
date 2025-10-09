@@ -110,6 +110,10 @@ class KeyResultsListView(HorillaListView):
         ("Duration", "duration"),
     ]
 
+    header_attrs = {
+        "description": 'style="width: 300px;"',
+    }
+
     action_method = "action_col"
 
     row_attrs = """
@@ -118,6 +122,17 @@ class KeyResultsListView(HorillaListView):
                 data-target="#genericModal"
                 data-toggle="oh-modal-toggle"
                 """
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        active = (
+            True
+            if self.request.GET.get("is_active", True)
+            in ["unknown", "True", "true", True]
+            else False
+        )
+        queryset = queryset.filter(is_active=active)
+        return queryset
 
 
 @method_decorator(login_required, name="dispatch")
@@ -200,6 +215,10 @@ class KeyResultsDetailedView(HorillaDetailedView):
         (_("Duration"), "duration"),
         (_("Description"), "description"),
     ]
+
+    cols = {
+        "description": 12,
+    }
 
     action_method = "detail_action_col"
 

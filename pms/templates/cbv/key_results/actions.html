@@ -1,35 +1,65 @@
 {% load i18n %}
-<div class="oh-btn-group">
-    <a
-    onclick="event.stopPropagation();"
-    class="oh-btn oh-btn--light-bkg w-100"
-    data-toggle="oh-modal-toggle"
-    data-target="#genericModal"
-    hx-get="{% url 'update-key-result' instance.id %}?instance_ids={{instance.ordered_ids}}"
-    hx-target="#genericModalBody"
-    title='{% trans "Edit" %}'
-    >
-    <ion-icon
-        name="create-outline"
-        role="img"
-        class="md hydrated"
-        style="color: blue"
-        aria-label="create outline"
-    ></ion-icon>
-    </a>
-    <a
-    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-    onclick = "event.preventDefault();event.stopPropagation();"
-    hx-confirm="{% trans 'Do you want to delete this Key result?' %}"
-    hx-post="{% url 'delete-key-result' instance.id %}?{{pd}}"
-    hx-target="#key-result-container"
-    title="{% trans 'Delete' %}"
-    >
-    <ion-icon
-        name="trash-outline"
-        role="img"
-        class="md hydrated"
-        aria-label="trash outline"
-    ></ion-icon>
-    </a>
+<div class="oh-btn-group" onclick="event.stopPropagation()">
+	<a
+		onclick="event.stopPropagation();"
+		class="oh-btn oh-btn--light-bkg"
+        style="width:30%"
+		data-toggle="oh-modal-toggle"
+		data-target="#genericModal"
+		hx-get="{% url 'update-key-result' instance.id %}?instance_ids={{instance.ordered_ids}}"
+		hx-target="#genericModalBody"
+		title='{% trans "Edit" %}'
+	>
+		<ion-icon
+			name="create-outline"
+			role="img"
+			class="md hydrated"
+			aria-label="create outline"
+		></ion-icon>
+	</a>
+
+	{% if not instance.is_active %}
+        <a
+            class="oh-btn oh-btn--light-bkg"
+            style="width:30%"
+            hx-confirm="{% trans 'Do you want to unarchive this key Result?' %}"
+            hx-post="{% url 'archive-key-result' instance.id %}"
+            hx-target="closest tr"
+            hx-on-htmx-after-request="reloadMessage(this);"
+            method="post"
+            title="{% trans 'Unarchive' %}"
+        >
+            <ion-icon name="archive-outline"></ion-icon>
+        </a>
+	{% else %}
+        <a
+            class="oh-btn oh-btn--light-bkg"
+            style="width:30%"
+            hx-confirm="{% trans 'Do you want to archive this key Result?' %}"
+            hx-post="{% url 'archive-key-result' instance.id %}"
+            hx-target="closest tr"
+            hx-on-htmx-after-request="reloadMessage(this);"
+            method="post"
+            title="{% trans 'Archive' %}"
+        >
+            <ion-icon name="archive-outline"></ion-icon>
+        </a>
+	{% endif %}
+
+	<a
+		class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
+        style="width:30%"
+		onclick="event.preventDefault();event.stopPropagation();"
+		hx-confirm="{% trans 'Do you want to delete this Key result?' %}"
+		hx-post="{% url 'delete-key-result' instance.id %}?{{pd}}"
+		hx-target="#key-result-container"
+		title="{% trans 'Delete' %}"
+	>
+		<ion-icon
+			name="trash-outline"
+			role="img"
+			class="md hydrated"
+			aria-label="trash outline"
+		></ion-icon>
+	</a>
 </div>
