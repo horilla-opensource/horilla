@@ -92,8 +92,10 @@
         {% if perms.pms.delete_meetings %}
             {% if not instance.is_active %}
                     <form
-                        action='{% url "archive-meeting" instance.id %}'
-                        onsubmit="return confirm('{% trans "Do you want to unarchive this meeting?" %}')"
+                        hx-confirm="{% trans 'Do you want to unarchive this meeting?' %}"
+                        hx-post="{% url 'archive-meeting' instance.id %}"
+                        hx-target="closest tr"
+                        hx-on-htmx-after-request="reloadMessage(this);"
                         method="post"
                         style="display: contents;width:100%">
                         {% csrf_token %}
@@ -103,8 +105,10 @@
                     </form>
             {% else %}
                     <form
-                        action="{% url 'archive-meeting' instance.id %}"
-                        onsubmit="return confirm('{% trans "Do you want to archive this meeting?" %}')"
+                        hx-confirm="{% trans 'Do you want to archive this meeting?' %}"
+                        hx-post="{% url 'archive-meeting' instance.id %}"
+                        hx-target="closest tr"
+                        hx-on-htmx-after-request="reloadMessage(this);"
                         method="post"
                         style="display: contents;width:100%">
                         {% csrf_token %}
@@ -116,8 +120,10 @@
         {% endif %}
         {% if perms.pms.delete_meetings %}
             <form
-                action="{% url 'meetings-delete' instance.id %}"
-                onsubmit="return confirm('{% trans "Are you sure to delete this meeting?" %}')"
+                hx-confirm="{% trans 'Are you sure to delete this meeting?' %}"
+                hx-post="{% url 'meetings-delete' instance.id %}"
+                hx-target="closest tr"
+                hx-on-htmx-after-request="reloadMessage(this);"
                 method="post"
                 style="display: contents;width:100%">
                 {% csrf_token %}
