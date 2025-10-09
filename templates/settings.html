@@ -120,14 +120,17 @@
 												>
 											</div>
 											{% else %}
+											{% url 'outlook_view_records' as outlook_url %} <!-- Added this to gracefully handle exceptions -->
+  											{% if outlook_url %}
 											<div class="oh-input-group">
 													<a
 													id="date"
-													href="{% url 'outlook_view_records' %}"
+													href="{{ outlook_url }}"
 													class="oh-inner-sidebar__link oh-dropdown__link"
 													>{% trans "Outlook Mail" %}</a
 												>
 											</div>
+										{% endif %}
 										{% endif %}
 											<div class="oh-input-group">
 												{% if perms.horilla_backup.view_googledrivebackup %}
@@ -641,3 +644,4 @@
 </script>
 {% endif %}
 {% endblock content %}
+
