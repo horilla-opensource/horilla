@@ -1,0 +1,160 @@
+{% extends "index.html" %}
+{% load i18n static %}
+{% block content %}
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+
+        <section class="oh-wrapper oh-main__topbar flex items-center justify-between mt-4 mb-2">
+            <h1 class="oh-main__titlebar-title fw-bold text-lg">
+                {% trans "PAYE Tax Table" %}
+            </h1>
+
+            <button class="oh-btn oh-btn--secondary flex items-center gap-1"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#importModal">
+                <ion-icon name="cloud-upload-outline" class="text-lg"></ion-icon>
+                <span>{% trans "Import New CSV" %}</span>
+            </button>
+        </section>
+
+
+        <!-- Tax Table -->
+        <section class="oh-wrapper mt-6">
+            <div class="oh-card shadow-sm">
+                {% if tax_records %}
+                    <div class="table-responsive">
+                        <table class="oh-table w-full">
+                            <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left">{% trans "Start Range" %}</th>
+                                <th class="text-left">{% trans "End Range" %}</th>
+                                <th class="text-left">{% trans "Tax Amount" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for tax in tax_records %}
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td>{{ tax.start_range|floatformat:2 }}</td>
+                                    <td>
+                                        {% if tax.end_range %}
+                                            {{ tax.end_range|floatformat:2 }}
+                                        {% else %}
+                                            ∞
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ tax.tax_amount|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if page_obj.paginator.num_pages > 1 %}
+                        <div class="mt-6 border-t border-gray-200 pt-4 text-center">
+                            <div class="inline-flex items-center justify-center gap-2 bg-white rounded-lg p-2 shadow-sm">
+
+                                {% if page_obj.has_previous %}
+                                    <a href="?page=1" class="oh-btn oh-btn--light text-sm px-3 py-1.5">«</a>
+                                    <a href="?page={{ page_obj.previous_page_number }}"
+                                       class="oh-btn oh-btn--light text-sm px-3 py-1.5">‹</a>
+                                {% else %}
+                                    <span class="oh-btn oh-btn--light text-sm px-3 py-1.5 opacity-50 cursor-not-allowed">«</span>
+                                    <span class="oh-btn oh-btn--light text-sm px-3 py-1.5 opacity-50 cursor-not-allowed">‹</span>
+                                {% endif %}
+
+                                {% for i in page_obj.paginator.page_range %}
+                                    {% if i == page_obj.number %}
+                                        <span class=" text-sm px-3 py-1.5">{{ i }}</span>
+                                    {% elif i > page_obj.number|add:-2 and i < page_obj.number|add:2 %}
+                                        <a href="?page={{ i }}"
+                                           class="oh-btn oh-btn--light text-sm px-3 py-1.5">{{ i }}</a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <a href="?page={{ page_obj.next_page_number }}"
+                                       class="oh-btn oh-btn--light text-sm px-3 py-1.5">›</a>
+                                    <a href="?page={{ page_obj.paginator.num_pages }}"
+                                       class="oh-btn oh-btn--light text-sm px-3 py-1.5">»</a>
+                                {% else %}
+                                    <span class="oh-btn oh-btn--light text-sm px-3 py-1.5 opacity-50 cursor-not-allowed">›</span>
+                                    <span class="oh-btn oh-btn--light text-sm px-3 py-1.5 opacity-50 cursor-not-allowed">»</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="text-gray-500 p-4 text-center">
+                        {% trans "No tax data available. Please import a CSV file." %}
+                    </p>
+                {% endif %}
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Import Modal -->
+<div id="importModal" class="oh-modal fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
+    <div class="oh-modal__dialog w-full max-w-md rounded-2xl bg-white shadow-xl animate-fadeIn">
+        <!-- Header -->
+        <div class="oh-modal__dialog-header flex items-center justify-between border-b border-gray-200 px-5 py-3">
+            <h2 class="oh-modal__dialog-title text-lg font-semibold text-gray-800">
+                {% trans "Import PAYE Tax CSV" %}
+            </h2>
+            <button class="oh-modal__close text-gray-500 hover:text-gray-800 transition" aria-label="Close">
+                <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="oh-modal__dialog-body px-6 py-5">
+            <form method="post" enctype="multipart/form-data" action="{% url 'import-payee-tax' %}" class="space-y-5">
+                {% csrf_token %}
+
+                <!-- File Input -->
+                <div class="oh-input-group">
+                    <label class="oh-label block text-sm font-medium text-gray-700 mb-2">
+                        {% trans "Select CSV File" %}
+                    </label>
+                    <input type="file" name="csv_file" accept=".csv"
+                           class="oh-input w-full border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition"
+                           required>
+                    <p class="text-xs text-gray-500 mt-1">
+                        {% trans "Only .csv files are supported." %}
+                    </p>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3 pt-2">
+                    <button type="submit"
+                            class="oh-btn flex-1 oh-btn--secondary oh-btn--shadow rounded-lg font-medium text-sm py-2 hover:scale-[1.02] transition">
+                        <ion-icon name="cloud-upload-outline" class="text-lg align-middle mr-1"></ion-icon>
+                        {% trans "Import" %}
+                    </button>
+                    <button type="button"
+                            class="oh-btn flex-1 oh-btn--light rounded-lg font-medium text-sm py-2 oh-modal__close hover:bg-gray-100 transition">
+                        {% trans "Cancel" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        document.querySelectorAll('[data-toggle="oh-modal-toggle"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = document.querySelector(btn.dataset.target);
+                target.style.display = target.style.display === 'none' || !target.style.display ? 'flex' : 'none';
+            });
+        });
+
+        document.querySelectorAll('.oh-modal__close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.closest('.oh-modal').style.display = 'none';
+            });
+        });
+    </script>
+
+
+{% endblock %}
