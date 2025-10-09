@@ -118,7 +118,23 @@ $(document).ready(function () {
         this.submit();
     }
     });
+     // Avoid re-initializing existing Select2 fields
+    $('.oh-select').each(function () {
+        if (!$(this).data('select2')) {
+            $(this).select2({
+                minimumResultsForSearch: Infinity,
+                width: '100%',
+            });
+        }
+    });
 });
+function questionTypeChange(element) {
+    if (element.val() === "4") {
+        $(element).parents().siblings('.oh-link__expanded').removeClass('d-none');
+    } else {
+        $(element).parents().siblings('.oh-link__expanded').addClass('d-none');
+    }
+}
 </script>
 
 
