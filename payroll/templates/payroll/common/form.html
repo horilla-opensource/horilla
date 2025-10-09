@@ -1,4 +1,20 @@
 {% extends 'index.html' %} {% block content %} {% load static %}
+
+<style>
+    .oh-onboarding-card {
+        background-color: hsl(0, 0%, 100%);
+        width: 90%;
+        max-width: 600px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+    }
+
+    @media (min-width: 1400px) {
+        .oh-onboarding-card {
+            max-width: 800px;
+        }
+    }
+</style>
+
 <div id="contractFormTarget">
     <div class="oh-wrapper d-flex justify-content-center mt-4 mb-4">
         <form action="" hx-swap="none" class="oh-onboarding-card" method="post" enctype="multipart/form-data">

@@ -102,7 +102,7 @@ class PayslipList(HorillaListView):
         ("Net Pay", "net_pay_display"),
         ("Status", "custom_status_col"),
     ]
-    records_per_page = 5
+    records_per_page = 10
     action_method = "custom_actions_col"
 
     row_status_indications = [

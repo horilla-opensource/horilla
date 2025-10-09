@@ -684,8 +684,8 @@ class LeaveAllocationRequestForm(BaseModelForm):
             "leave_type_id",
             "employee_id",
             "requested_days",
-            "description",
             "attachment",
+            "description",
         ]
 
 

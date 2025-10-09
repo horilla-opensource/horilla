@@ -436,33 +436,44 @@ class AttendanceRequestView(APIView):
         return pagenation.get_paginated_response(serializer.data)
 
     def post(self, request):
-        serializer = AttendanceRequestSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=200)
+        from attendance.forms import NewRequestForm
+
+        form = NewRequestForm(data=request.data)
+        if form.is_valid():
+            work_type = form.cleaned_data.get("work_type_id")
+
+            if not WorkType.objects.filter(pk=getattr(work_type, "pk", None)).exists():
+                form.cleaned_data["work_type_id"] = None
+
+            if form.new_instance is not None:
+                form.new_instance.save()
+
+            return Response(form.data, status=200)
         employee_id = request.data.get("employee_id")
         attendance_date = request.data.get("attendance_date", date.today())
         if Attendance.objects.filter(
             employee_id=employee_id, attendance_date=attendance_date
         ).exists():
             return Response(
-                {
-                    "error": [
-                        "Attendance for this employee on the current date already exists."
-                    ]
-                },
+                {error: list(message) for error, message in form.errors.items()},
                 status=400,
             )
-        return Response(serializer.errors, status=404)
+        return Response(form.errors, status=404)
 
-    @manager_permission_required("attendance.update_attendance")
     def put(self, request, pk):
+        from attendance.forms import AttendanceRequestForm
+
         attendance = Attendance.objects.get(id=pk)
-        serializer = AttendanceRequestSerializer(instance=attendance, data=request.data)
-        if serializer.is_valid():
-            instance = serializer.save()
+        form = AttendanceRequestForm(data=request.data, instance=attendance)
+        if form.is_valid():
+            attendance = Attendance.objects.get(id=form.instance.pk)
+            instance = form.save()
             instance.employee_id = attendance.employee_id
             instance.id = attendance.id
+            work_type = form.cleaned_data.get("work_type_id")
+
+            if not WorkType.objects.filter(pk=getattr(work_type, "pk", None)).exists():
+                form.cleaned_data["work_type_id"] = None
             if attendance.request_type != "create_request":
                 attendance.requested_data = json.dumps(instance.serialize())
                 attendance.request_description = instance.request_description
@@ -473,8 +484,8 @@ class AttendanceRequestView(APIView):
                 instance.is_validate_request_approved = False
                 instance.is_validate_request = True
                 instance.save()
-            return Response(serializer.data, status=200)
-        return Response(serializer.errors, status=404)
+            return Response(form.data, status=200)
+        return Response(form.errors, status=404)
 
 
 class AttendanceRequestApproveView(APIView):

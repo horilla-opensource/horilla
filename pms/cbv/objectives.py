@@ -50,6 +50,20 @@ class ObjectivesList(HorillaListView):
         super().__init__(**kwargs)
         self.search_url = reverse("tab-objectives-view")
 
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        archive_param = self.request.GET.get("archive")
+
+        qs = super().get_queryset(queryset, filtered, *args, **kwargs)
+
+        if archive_param in ["true", "True", "1"]:
+            # only archived
+            qs = qs.filter(archive=True)
+        elif archive_param in ["false", "False", "0", "unknown"]:
+            # include False and unknown (NULL)
+            qs = qs.filter(Q(archive=False) | Q(archive__isnull=True))
+
+        return qs
+
     model = Objective
     bulk_update_fields = [
         "self_employee_progress_update",
@@ -596,13 +610,15 @@ class EmployeeObjectiveDetailView(HorillaDetailedView):
     }
     body = [
         (_("Title"), "objective_id__title"),
-        (_("Description"), "objective_id__description"),
         (_("Start Date"), "start_date"),
         (_("End Date"), "end_date"),
         (_("Status"), "status_col"),
+        (_("Description"), "objective_id__description"),
     ]
 
     action_method = "emp_obj_action"
+
+    cols = {"objective_id__description": 12}
 
 
 def get_history_url(self):

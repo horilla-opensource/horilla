@@ -267,7 +267,7 @@ class Contract(HorillaModel):
         verbose_name=_("Deduction For One Leave Amount"),
     )
 
-    note = models.TextField(null=True, blank=True, max_length=255)
+    note = models.TextField(null=True, blank=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -354,8 +354,7 @@ class Contract(HorillaModel):
         Detail view subtitle
         """
 
-        return f"""{self.employee_id.employee_work_info.department_id } /
-          { self.employee_id.employee_work_info.job_position_id}"""
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def contracts_detail(self):
         """
@@ -1061,7 +1060,7 @@ class Allowance(HorillaModel):
         """
 
         employees = self.specific_employees.all()
-        employee_names_string = "<br>".join([str(employee) for employee in employees])
+        employee_names_string = ", ".join([str(employee) for employee in employees])
         return employee_names_string
 
     def get_exclude_employees(self):
@@ -1240,6 +1239,59 @@ class Allowance(HorillaModel):
         for attribute in attributes_to_reset:
             setattr(self, attribute, None)
         self.has_max_limit = False
+
+    def get_specific_exclude_employees(self):
+        """
+        Get all specific and exclude employees separated by commas for detail view.
+        """
+        col = ""
+        if self.specific_employees.exists():
+            specific_employees = self.specific_employees.all()
+            specific_employee_names = ", ".join(
+                str(employee.get_full_name()) for employee in specific_employees
+            )
+            label = "Specific Employees"
+
+            col += format_html(
+                """
+                    <div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+                            <span class="font-medium text-xs text-[#565E6C] w-32">
+                                {}
+                            </span>
+                            <div class="text-xs font-semibold flex items-center gap-5">
+                                : <span>
+                                    {}
+                                </span>
+                            </div>
+                        </div>
+                """,
+                label,
+                specific_employee_names,
+            )
+
+        if self.exclude_employees.exists():
+            exclude_employees = self.exclude_employees.all()
+            exclude_employee_names = ", ".join(
+                str(employee.get_full_name()) for employee in exclude_employees
+            )
+            label = "Excluded Employees"
+            col += format_html(
+                """
+                    <div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+                            <span class="font-medium text-xs text-[#565E6C] w-32">
+                                {}
+                            </span>
+                            <div class="text-xs font-semibold flex items-center gap-5">
+                                : <span>
+                                    {}
+                                </span>
+                            </div>
+                        </div>
+                """,
+                label,
+                exclude_employee_names,
+            )
+        return col
 
     def clean(self):
         super().clean()
@@ -1546,7 +1598,7 @@ class Deduction(HorillaModel):
         """
         return dict(CONDITION_CHOICE).get(self.condition)
 
-    def condition_bsed_col(self):
+    def condition_based_col(self):
         """
         Condition based column
         """
@@ -1638,7 +1690,9 @@ class Deduction(HorillaModel):
         Specific Employees
         """
         employees = self.specific_employees.all()
-        employee_names_string = "<br>".join([str(employee) for employee in employees])
+        employee_names_string = ", ".join(
+            [str(employee.get_full_name()) for employee in employees]
+        )
         return employee_names_string
 
     def excluded_employees_col(self):
@@ -1646,7 +1700,9 @@ class Deduction(HorillaModel):
         Excluded employees
         """
         employees = self.exclude_employees.all()
-        employee_names_string = "<br>".join([str(employee) for employee in employees])
+        employee_names_string = ", ".join(
+            [str(employee.get_full_name()) for employee in employees]
+        )
         return employee_names_string
 
     def tax_col(self):
@@ -1673,6 +1729,59 @@ class Deduction(HorillaModel):
             return f"On <span class='dateformat_changer'> {self.one_time_date}</span> "
         else:
             return "No"
+
+    def get_specific_exclude_employees(self):
+        """
+        Get all specific and exclude employees separated by commas for detail view.
+        """
+        col = ""
+        if self.specific_employees.exists():
+            specific_employees = self.specific_employees.all()
+            specific_employee_names = ", ".join(
+                str(employee.get_full_name()) for employee in specific_employees
+            )
+            label = "Specific Employees"
+
+            col += format_html(
+                """
+                    <div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+                            <span class="font-medium text-xs text-[#565E6C] w-32">
+                                {}
+                            </span>
+                            <div class="text-xs font-semibold flex items-center gap-5">
+                                : <span>
+                                    {}
+                                </span>
+                            </div>
+                        </div>
+                """,
+                label,
+                specific_employee_names,
+            )
+
+        if self.exclude_employees.exists():
+            exclude_employees = self.exclude_employees.all()
+            exclude_employee_names = ", ".join(
+                str(employee.get_full_name()) for employee in exclude_employees
+            )
+            label = "Excluded Employees"
+            col += format_html(
+                """
+                    <div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+                            <span class="font-medium text-xs text-[#565E6C] w-32">
+                                {}
+                            </span>
+                            <div class="text-xs font-semibold flex items-center gap-5">
+                                : <span>
+                                    {}
+                                </span>
+                            </div>
+                        </div>
+                """,
+                label,
+                exclude_employee_names,
+            )
+        return col
 
     def clean(self):
         super().clean()
@@ -1963,17 +2072,17 @@ class LoanAccount(HorillaModel):
         ("advanced_salary", _("Advanced Salary")),
         ("fine", _("Penalty / Fine")),
     ]
-    type = models.CharField(default="loan", choices=loan_type, max_length=15)
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=100)
     employee_id = models.ForeignKey(
         Employee, on_delete=models.PROTECT, verbose_name=_("Employee")
     )
+    type = models.CharField(default="loan", choices=loan_type, max_length=15)
     loan_amount = models.FloatField(default=0, verbose_name=_("Amount"))
     provided_date = models.DateField()
     allowance_id = models.ForeignKey(
         Allowance, on_delete=models.SET_NULL, editable=False, null=True
     )
-    description = models.TextField(null=True, max_length=255)
+    description = models.TextField(null=True)
     deduction_ids = models.ManyToManyField(Deduction, editable=False)
     is_fixed = models.BooleanField(default=True, editable=False)
     rate = models.FloatField(default=0, editable=False)
@@ -2068,7 +2177,7 @@ class LoanAccount(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def get_installments(self):
         """
