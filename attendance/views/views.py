@@ -2458,13 +2458,18 @@ def work_records_change_month(request):
         request, employee_filter_form.qs, "attendance.view_attendance"
     )
 
+    all_employees = employees
+
+    paginator_emp = Paginator(employees, 20)
+    page_emp = paginator_emp.get_page(request.GET.get("page"))
+
     month_str = request.GET.get("month", f"{date.today().year}-{date.today().month}")
     try:
         year, month = map(int, month_str.split("-"))
     except ValueError:
         year, month = date.today().year, date.today().month
 
-    employees = [request.user.employee_get] + list(employees)
+    employees = [request.user.employee_get] + list(page_emp.object_list)
 
     month_dates = [
         datetime(year, month, day).date()
@@ -2474,20 +2479,22 @@ def work_records_change_month(request):
     ]
 
     work_records = WorkRecords.objects.filter(
-        date__in=month_dates, employee_id__in=employees
+        date__in=month_dates, employee_id__in=page_emp.object_list
     ).select_related("employee_id", "shift_id", "attendance_id")
 
     work_records_dict = {(wr.employee_id.id, wr.date): wr for wr in work_records}
 
-    data = {
+    work_record_table = {
         employee: [
             work_records_dict.get((employee.id, current_date))
             for current_date in month_dates
         ]
-        for employee in employees
+        for employee in all_employees
     }
 
-    paginator = Paginator(list(data.items()), get_pagination())
+    paginated_table = list(work_record_table.items())
+
+    paginator = Paginator(paginated_table, 20)
     page = paginator.get_page(request.GET.get("page"))
 
     context = {
