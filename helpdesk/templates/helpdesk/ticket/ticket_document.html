@@ -3,12 +3,22 @@
 	<div class="oh-btn-group mb-4">
 		{% if document.file %}
 		<a
+			href="{{ document.file.url }}"
+			class="oh-btn oh-btn--success w-100 me-2"
+			target="_blank"
+			rel="noopener"
+			title="{% trans 'View' %}"
+		>
+			<ion-icon class="me-1" name="eye-outline"></ion-icon>
+		</a>
+		<a
 			href="data:{{ content_type }};base64,{{ file_content|base64_encode }}"
 			class="oh-btn oh-btn--info w-100"
 			download="{{document.file}}"
 			title="{% trans 'Download' %}"
-			><ion-icon class="me-1" name="download-outline"></ion-icon
-		></a>
+		>
+			<ion-icon class="me-1" name="download-outline"></ion-icon>
+		</a>
 		{% endif %}
 	</div>
 </div>
