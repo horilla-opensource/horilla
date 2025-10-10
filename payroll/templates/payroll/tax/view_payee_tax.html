@@ -92,54 +92,63 @@
 
     </main>
 
-    <!-- Import Modal -->
-<div id="importModal" class="oh-modal fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="oh-modal__dialog w-full max-w-md rounded-2xl bg-white shadow-xl animate-fadeIn">
-        <!-- Header -->
-        <div class="oh-modal__dialog-header flex items-center justify-between border-b border-gray-200 px-5 py-3">
-            <h2 class="oh-modal__dialog-title text-lg font-semibold text-gray-800">
+<<div class="oh-modal" id="importModal" role="dialog" aria-labelledby="payeeTaxImportLabel" aria-hidden="true">
+    <div class="oh-modal__dialog oh-modal__dialog--wide">
+        <div class="oh-modal__dialog-header">
+            <h2 class="oh-modal__dialog-title" id="payeeTaxImportLabel">
                 {% trans "Import PAYE Tax CSV" %}
             </h2>
-            <button class="oh-modal__close text-gray-500 hover:text-gray-800 transition" aria-label="Close">
-                <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+            <button class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
             </button>
         </div>
-
-        <!-- Body -->
-        <div class="oh-modal__dialog-body px-6 py-5">
+        <div class="oh-modal__dialog-body p-0 pt-2">
             <form method="post" enctype="multipart/form-data" action="{% url 'import-payee-tax' %}" class="space-y-5">
                 {% csrf_token %}
 
-                <!-- File Input -->
-                <div class="oh-input-group">
-                    <label class="oh-label block text-sm font-medium text-gray-700 mb-2">
-                        {% trans "Select CSV File" %}
+                 <div id="uploadContainer" class="px-4 pb-4">
+                    <label class="oh-dropdown__import-label" for="uploadFile">
+                        <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+                        <span class="oh-dropdown__import-form-title">{% trans "Upload CSV File" %}</span>
+                        <span class="oh-dropdown__import-form-text">{% trans "Drag and drop your PAYE Tax CSV here" %}</span>
                     </label>
-                    <input type="file" name="csv_file" accept=".csv"
-                           class="oh-input w-full border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 transition"
-                           required>
-                    <p class="text-xs text-gray-500 mt-1">
-                        {% trans "Only .csv files are supported." %}
-                    </p>
+
+                    <input type="file" name="csv_file" id="uploadFile" accept=".csv" required class="mt-3 w-full" />
+
                 </div>
 
-                <!-- Buttons -->
-                <div class="flex gap-3 pt-2">
-                    <button type="submit"
-                            class="oh-btn flex-1 oh-btn--secondary oh-btn--shadow rounded-lg font-medium text-sm py-2 hover:scale-[1.02] transition">
-                        <ion-icon name="cloud-upload-outline" class="text-lg align-middle mr-1"></ion-icon>
+                <div class="px-4 pb-4">
+                    <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2">
                         {% trans "Import" %}
-                    </button>
-                    <button type="button"
-                            class="oh-btn flex-1 oh-btn--light rounded-lg font-medium text-sm py-2 oh-modal__close hover:bg-gray-100 transition">
-                        {% trans "Cancel" %}
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+<style>
+.oh-modal__dialog--wide {
+    max-width: 700px !important;
+    width: 90%;
+    margin: auto;
+    border-radius: 12px;
+}
 
+.oh-modal__dialog {
+    background-color: #fff;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+.oh-modal__close ion-icon {
+    font-size: 22px;
+    color: #444;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+.oh-modal__close ion-icon:hover {
+    transform: scale(1.2);
+    color: #000;
+}
+</style>
 
     <script>
         document.querySelectorAll('[data-toggle="oh-modal-toggle"]').forEach(btn => {
