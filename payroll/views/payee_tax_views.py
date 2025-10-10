@@ -20,13 +20,11 @@ def import_payee_tax(request):
         if form.is_valid():
             csv_file = form.cleaned_data["csv_file"]
 
-            # Validate file type
             if not csv_file.name.endswith(".csv"):
                 messages.error(request, "Please upload a valid CSV file.")
                 return redirect("import-payee-tax")
 
             try:
-                # Decode and parse CSV
                 data_set = csv_file.read().decode("utf-8")
                 io_string = io.StringIO(data_set)
                 reader = csv.DictReader(io_string)
