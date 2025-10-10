@@ -31,8 +31,8 @@ def import_payee_tax(request):
                 io_string = io.StringIO(data_set)
                 reader = csv.DictReader(io_string)
 
-                # Optional: clear existing data before import
-                # PayeeTax.objects.all().delete()
+
+                PayeeTax.objects.all().delete()
 
                 count = 0
                 for row in reader:
@@ -52,7 +52,7 @@ def import_payee_tax(request):
     else:
         form = PayeeTaxImportForm()
 
-    return render(request, "payroll/tax/import_payee_tax.html", {"form": form})
+    return render(request, "payroll/tax/view_payee_tax.html", {"form": form})
 
 
 
