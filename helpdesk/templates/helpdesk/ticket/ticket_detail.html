@@ -145,6 +145,9 @@
                                         <div class="oh-helpdesk__bubble-header">
                                             <div class="oh-helpdesk__bubble-user">
                                                 <div class="oh-profile oh-profile--md">
+                                                    {{item.type}}
+                                                    {{item.comment.employee_id}}
+                                                    {{ticket.employee_id}}
                                                     <div class="oh-profile__avatar mr-1">
                                                         <img src="{{item.comment.employee_id.get_avatar}}" class="oh-profile__image"
                                                             alt="{{item.comment.employee_id}}" />
@@ -218,7 +221,7 @@
                                                     </a>
                                                 {% endif %}
                                                 {% if perms.helpdesk.delete_comment %}
-                                                    <a href="{% url " comment-delete" item.comment.id %}" type="button"
+                                                    <a href="{% url 'comment-delete' item.comment.id %}" type="button"
                                                         title="{% trans 'Delete' %}" class="oh-btn p-3">
                                                         <ion-icon name="trash-outline"></ion-icon>
                                                     </a>
