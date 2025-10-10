@@ -91,64 +91,71 @@
         </section>
 
     </main>
+    <div class="oh-modal" id="importModal" role="dialog" aria-labelledby="payeeTaxImportLabel" aria-hidden="true">
+        <div class="oh-modal__dialog oh-modal__dialog--wide">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="payeeTaxImportLabel">
+                    {% trans "Import PAYE Tax CSV" %}
+                </h2>
+                <button class="oh-modal__close" aria-label="Close">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body p-0 pt-2">
+                <form method="post" enctype="multipart/form-data" action="{% url 'import-payee-tax' %}"
+                      class="space-y-5">
+                    {% csrf_token %}
 
-<<div class="oh-modal" id="importModal" role="dialog" aria-labelledby="payeeTaxImportLabel" aria-hidden="true">
-    <div class="oh-modal__dialog oh-modal__dialog--wide">
-        <div class="oh-modal__dialog-header">
-            <h2 class="oh-modal__dialog-title" id="payeeTaxImportLabel">
-                {% trans "Import PAYE Tax CSV" %}
-            </h2>
-            <button class="oh-modal__close" aria-label="Close">
-                <ion-icon name="close-outline"></ion-icon>
-            </button>
-        </div>
-        <div class="oh-modal__dialog-body p-0 pt-2">
-            <form method="post" enctype="multipart/form-data" action="{% url 'import-payee-tax' %}" class="space-y-5">
-                {% csrf_token %}
+                    <div id="uploadContainer" class="px-4 pb-4">
+                        <label class="oh-dropdown__import-label" for="uploadFile">
+                            <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+                            <span class="oh-dropdown__import-form-title">{% trans "Upload CSV File" %}</span>
+                            <span class="oh-dropdown__import-form-text">{% trans "Drag and drop your PAYE Tax CSV here" %}</span>
+                        </label>
 
-                 <div id="uploadContainer" class="px-4 pb-4">
-                    <label class="oh-dropdown__import-label" for="uploadFile">
-                        <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
-                        <span class="oh-dropdown__import-form-title">{% trans "Upload CSV File" %}</span>
-                        <span class="oh-dropdown__import-form-text">{% trans "Drag and drop your PAYE Tax CSV here" %}</span>
-                    </label>
+                        <div class="flex items-center justify-between mt-2">
+                            <input type="file" name="csv_file" id="uploadFile" accept=".csv" required class="flex-1"/>
+                            <a href="{% static 'payroll/templates/tax_import_template.csv' %}"
+                               class="oh-btn oh-btn--light" download>
+                                {% trans "Download Template CSV" %}
+                            </a>
+                        </div>
+                    </div>
 
-                    <input type="file" name="csv_file" id="uploadFile" accept=".csv" required class="mt-3 w-full" />
 
-                </div>
-
-                <div class="px-4 pb-4">
-                    <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2">
-                        {% trans "Import" %}
-                    </button>
-                </div>
-            </form>
+                    <div class="px-4 pb-4">
+                        <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2">
+                            {% trans "Import" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-<style>
-.oh-modal__dialog--wide {
-    max-width: 700px !important;
-    width: 90%;
-    margin: auto;
-    border-radius: 12px;
-}
+    <style>
+        .oh-modal__dialog--wide {
+            max-width: 700px !important;
+            width: 90%;
+            margin: auto;
+            border-radius: 12px;
+        }
 
-.oh-modal__dialog {
-    background-color: #fff;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-}
+        .oh-modal__dialog {
+            background-color: #fff;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
 
-.oh-modal__close ion-icon {
-    font-size: 22px;
-    color: #444;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-.oh-modal__close ion-icon:hover {
-    transform: scale(1.2);
-    color: #000;
-}
-</style>
+        .oh-modal__close ion-icon {
+            font-size: 22px;
+            color: #444;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .oh-modal__close ion-icon:hover {
+            transform: scale(1.2);
+            color: #000;
+        }
+    </style>
 
     <script>
         document.querySelectorAll('[data-toggle="oh-modal-toggle"]').forEach(btn => {
