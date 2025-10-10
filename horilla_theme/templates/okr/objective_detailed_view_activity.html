@@ -1,0 +1,307 @@
+{% load i18n %}
+{% load pmsfilters %}
+
+<style>
+/* ======= General Layout ======= */
+.oh-activity-sidebar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.oh-activity-sidebar__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.oh-activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  overflow-y: auto;
+  max-height: 75vh;
+}
+
+/* ======= Comment Styles ======= */
+.oh-activity-list__comment-title {
+  margin-bottom: 0.3rem;
+}
+
+.oh-activity-list__comment-container {
+  background: #f3f4f6;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  margin-left: 2.5rem;
+  margin-bottom: 0.8rem;
+  position: relative;
+}
+
+.oh-activity-list__comment-container::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #f3f4f6 transparent transparent;
+}
+
+.oh-activity-list__comment {
+  font-size: 0.85rem;
+  color: #374151;
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.oh-activity-list__photo img {
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+}
+
+.oh-activity-list__description strong {
+  color: #111827;
+}
+
+/* ======= Change Log / Activity ======= */
+.oh-activity-list__item {
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.oh-activity-list__item strong {
+  color: #111827;
+}
+
+.oh-activity-list li {
+  margin-bottom: 0.7rem;
+}
+
+.oh-activity-list small {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* ======= Editor Styles ======= */
+#commentEditor {
+  padding: 0.8rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.note-editor.note-frame {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+}
+
+.note-toolbar {
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.note-editable {
+  font-size: 0.9rem;
+  min-height: 60px;
+}
+
+/* Align send button right */
+#commentEditor .note-toolbar .note-btn-group.send-group {
+  margin-left: auto;
+}
+
+#commentEditor .note-btn-group button {
+  background: #ff3b38;
+  color: white !important;
+  border-radius: 6px;
+}
+
+#commentEditor .note-btn-group button:hover {
+  background: #ff3b38;
+}
+
+/* Alert message styling */
+.oh-alert {
+  font-size: 0.85rem;
+  border-radius: 8px;
+  margin: 0.8rem 1rem;
+}
+</style>
+
+{% if messages %}
+  <div class="oh-wrapper">
+    {% for message in messages %}
+      <div class="oh-alert-container">
+        <div class="oh-alert oh-alert--animated {{ message.tags }}">{{ message }}</div>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+<div id="activityContainer">
+
+<div class="oh-activity-sidebar__header mb-1" style="display:inline-flex; border:none; background:white;">
+  <a style="cursor: pointer;"
+     onclick="$('.oh-activity-sidebar--show').removeClass('oh-activity-sidebar--show');">
+    <ion-icon name="chevron-forward-outline"
+              class="oh-activity-sidebar__header-icon me-2 oh-activity-sidebar__close"
+              data-target="#leaveactivitySidebar"></ion-icon>
+  </a>
+  <span class="oh-activity-sidebar__title">{% trans 'Activities' %}</span>
+</div>
+
+<form method="post"
+      hx-target="#activityContainer"
+      hx-post="{% url 'objective-detailed-view-comment' objective.id %}"
+      id="commentForm">
+  {% csrf_token %}
+  <div id="commentEditor">
+    <textarea rows="2" cols="2" name="comment" id="editor"></textarea>
+    <button type="submit" id="commentButton"
+            class="oh-btn oh-btn--secondary mt-2 mr-0 oh-btn--w-100-resp"
+            style="display: none;">
+      {% trans 'Comment' %}
+    </button>
+  </div>
+</form>
+  <ul class="oh-activity-list">
+    {% for activity in activity_list %}
+      {% if activity.type == 'Changes' %}
+        <ul class="d-flex justify-content-between align-items-center pt-3 mb-3 border-top">
+          <li class="oh-activity-list__item align-items-center mb-0">
+            <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
+              <img src="https://ui-avatars.com/api/?name={{ activity.updated_by }}&background=random" class="oh-activity-list__image" alt="Albert Camus" />
+            </div>
+            <small class="oh-activity-list__description">
+              <strong>{{ activity.updated_by }}</strong>
+              {% trans 'updated' %}
+              <strong>{{ activity.changes.0.field|title|cut:'_' }}</strong> {% trans 'from' %}
+              <strong>{{ activity.changes.0.old }}</strong> {% trans "to" %} <strong>{{ activity.changes.0.new }}</strong>
+            </small>
+          </li>
+          <li>
+            <small>
+              <span class="dateformat_changer">{{ activity.pair.0.history_date|date:'M. d, Y' }}</span>&nbsp,&nbsp
+              <span class="timeformat_changer">{{ activity.pair.0.history_date|date:'g:i a' }}</span>
+            </small>
+          </li>
+        </ul>
+      {% elif activity.type == 'key_result' %}
+        {% for history in activity.key_result.delta.changes %}
+          <ul class="d-flex justify-content-between align-items-center pt-3 mb-3 border-top">
+            <li class="oh-activity-list__item align-items-center mb-0">
+              <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
+                <img src="https://ui-avatars.com/api/?name={{ activity.key_result.changed_user }}&background=random" class="oh-activity-list__image" alt="Albert Camus" />
+              </div>
+              <small class="oh-activity-list__description">
+                <strong>{{ activity.key_result.changed_user }}</strong>
+                {% trans 'updated' %}
+                <strong>{{ history.field|replace|title }}</strong> {% trans 'field of ' %}
+                <strong>{{ activity.key_result.k_r }}</strong> {% trans 'key result' %},{% trans 'from' %}
+                <strong>{{ history.old }}</strong> {% trans 'to' %} <strong>{{ history.new }}</strong>
+                {% comment %} <strong>{{ activity.changes.0.field|title|cut:'_' }}</strong> {% trans 'from' %}
+                <strong>{{ activity.changes.0.old }}</strong> to <strong>{{ activity.changes.0.new }}</strong> {% endcomment %}
+              </small>
+            </li>
+            <li>
+              <small>
+                <span class="dateformat_changer">{{ activity.date|date:'M. d, Y' }}</span>&nbsp,&nbsp
+                <span class="timeformat_changer">{{ activity.date|date:'g:i a' }}</span>
+              </small>
+            </li>
+          </ul>
+        {% endfor %}
+      {% elif activity.type == 'comment' %}
+        <ul class="pt-3 border-top">
+          <div class="oh-activity-list__comment-title d-flex justify-content-between align-items-center">
+            <div class="oh-activity-list__item align-items-center mb-0">
+              <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
+                <img src="https://ui-avatars.com/api/?name={{ activity.comment.employee_id }}&background=random"
+                      class="oh-activity-list__image"
+                      alt="{{ activity.comment.employee_id }}" />
+              </div>
+              <small class="oh-activity-list__description">
+                <strong>{{ activity.comment.employee_id }}</strong>
+                {% trans 'added a comment' %}
+              </small>
+            </div>
+            <div>
+              <small>
+                <span class="dateformat_changer">{{ activity.comment.created_at|date:'M. d, Y' }}</span>&nbsp;&nbsp;
+                <span class="timeformat_changer">{{ activity.comment.created_at|date:'g:i a' }}</span>
+              </small>
+            </div>
+          </div>
+          <div class="oh-activity-list__comment-container">
+            <p class="oh-activity-list__comment">{{ activity.comment.comment|safe }}</p>
+          </div>
+        </ul>
+      {% else %}
+        <!-- Default activity / change history -->
+        <ul class="d-flex justify-content-between align-items-center pt-3 mb-3 border-top">
+          <li class="oh-activity-list__item align-items-center mb-0">
+            <div class="oh-activity-list__photo oh-activity-list__photo--small me-2">
+              <img src="https://ui-avatars.com/api/?name={{ activity.updated_by }}&background=random"
+                    class="oh-activity-list__image" alt="{{ activity.updated_by }}" />
+            </div>
+            <small class="oh-activity-list__description">
+              <strong>{{ activity.updated_by }}</strong>
+              {% trans 'updated objective details' %}
+            </small>
+          </li>
+          <li>
+            <small>
+              <span class="dateformat_changer">{{ activity.date|date:'M. d, Y' }}</span>&nbsp;&nbsp;
+              <span class="timeformat_changer">{{ activity.date|date:'g:i a' }}</span>
+            </small>
+          </li>
+        </ul>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+  var sendButton = function (context) {
+    var ui = $.summernote.ui
+    return ui
+      .button({
+        contents: 'Add comment <ion-icon name="paper-plane-outline"></ion-icon>',
+        tooltip: 'Send Content',
+        click: function () {
+          const content = context.invoke('code')
+          $("#commentEditor button[type=submit]").click()
+        }
+      })
+      .render()
+  }
+
+  // Initialize Summernote
+  $('#editor').summernote({
+    height: 70,
+    placeholder: 'Write a comment...',
+    toolbar: [
+      ['insert', ['link', 'picture', 'pdfUpload']],
+      ['sendGroup', ['send']]
+    ],
+    buttons: {
+      pdfUpload: pdfUploadButton,
+      send: sendButton
+    }
+  })
+
+  $(document).ready(function () {
+    $('.note-toolbar .note-btn-group').last().addClass('send-group')
+  })
+</script>
+<script>
+  $(document).ready(function () {
+  // Hide the Summernote backdrop if it ever appears
+    setInterval(function () {
+      $(".note-modal-backdrop").css("display", "none");
+    }, 300);
+  });
+</script>

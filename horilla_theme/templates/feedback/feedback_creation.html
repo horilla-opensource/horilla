@@ -15,6 +15,11 @@
     </div>
 </div>
 {% endif %}
+<style>
+    .select2-selection{
+        margin-bottom:18px; !important
+    }
+</style>
 <div class="oh-wrapper" id="message"></div>
 
 <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card w-full lg:w-2/4 m-auto">
@@ -139,198 +144,33 @@
     </div>
 </div>
 <!-- end of period modal -->
+<button
+    id="colleguesButton"
+    hx-get="{% url 'get-collegues' %}"
+    hx-target="#id_colleague_id"
+    hidden
+></button>
+<button
+    id="managerButton"
+    hx-get="{% url 'get-collegues' %}"
+    hx-target="#id_manager_id"
+    hidden
+></button>
+<button
+    id="subordinatesButton"
+    hx-get="{% url 'get-collegues' %}"
+    hx-target="#id_subordinate_id"
+    hidden
+></button>
+<button
+    id="keyresultButtton"
+    hx-get="{% url 'get-collegues' %}"
+    hx-target="#id_employee_key_results_id"
+    hidden
+></button>
 
 <script>
-    function get_collegues(element) {
-        var employee_id = $(element).val();
-
-        // Check if the employee_id is valid
-
-        // Dynamically set the hx-vals attribute for the manager, colleagues, subordinates, keyresult buttons
-        if (employee_id) {
-            $("#managerButton")
-                .attr(
-                    "hx-vals",
-                    JSON.stringify({
-                        employee_id: employee_id,
-                        data: "manager",
-                    })
-                )
-                .click();
-            $("#colleguesButton")
-                .attr(
-                    "hx-vals",
-                    JSON.stringify({
-                        employee_id: employee_id,
-                        data: "colleagues",
-                    })
-                )
-                .click();
-            $("#subordinatesButton")
-                .attr(
-                    "hx-vals",
-                    JSON.stringify({
-                        employee_id: employee_id,
-                        data: "subordinates",
-                    })
-                )
-                .click();
-            $("#keyresultButtton")
-                .attr(
-                    "hx-vals",
-                    JSON.stringify({
-                        employee_id: employee_id,
-                        data: "keyresults",
-                    })
-                )
-                .click();
-        } else {
-            console.error("Invalid employee_id");
-        }
-    }
-</script>
-
-<script src="{% static 'src/feedback/feedback_creation.js' %}"></script>
-<script src="{% static 'src/period/period.js' %}"></script>
-{% endblock%}
-
-{% comment %} {% extends 'index.html' %}
-{% load static i18n widget_tweaks %}
-{% block styles %}
-<link rel="stylesheet" href="{% static 'css/pms.css' %}" />
-{% endblock styles %}
-{% block content %}
-{% if feedback_form.errors %}
-<div class="oh-wrapper">
-    <div class="oh-alert-container">
-        {% for error in feedback_form.non_field_errors %}
-        <div class="oh-alert oh-alert--animated oh-alert--danger">
-            {{ error }}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
-<div class="oh-wrapper" id="message"></div>
-
-<div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card w-full lg:w-2/4 m-auto">
-    <h3 class="text-lg font-semibold mb-3">{{feedback_form.verbose_name}}</h3>
-    <form action="{%url 'feedback-creation' %}" id="feedbackCreationForm" method="post">
-        {{feedback_form.non_field_errors}}
-        <div class="grid grid-cols-12 gap-4 h-[calc(100vh_-_260px)] overflow-hidden overflow-y-auto">
-            <div class="col-span-12 md:col-span-12">
-                <div class="p-4 border border-dark-50 rounded-md">
-                    <label class="text-xs font-medium" for="{{feedback_form.review_cycle.id_for_label}}">{{feedback_form.review_cycle.label}}</label>
-                        {{feedback_form.review_cycle}}
-                        {{feedback_form.review_cycle.errors}}
-
-                    <label class="text-xs font-medium" for="{{feedback_form.employee_id.id_for_label}}">{{feedback_form.employee_id.label}}</label>
-                        {{feedback_form.employee_id }}
-                        {{feedback_form.employee_id.errors }}
-
-                    <label class="text-xs font-medium" for="{{feedback_form.manager_id.id_for_label}}">{{feedback_form.manager_id.label}}</label>
-                        {{feedback_form.manager_id}}
-                        {{feedback_form.manager_id.errros}}
-
-                    <div class="flex items-center gap-1 pb-2 overflow-visible relative">
-                        <label class="text-xs font-medium" for="{{feedback_form.subordinate_id.id_for_label}}">
-                            {{ feedback_form.subordinate_id.label }}
-                        </label>
-                        <span class="oh-info" title="{{ feedback_form.subordinate_id.help_text|safe }}"></span>
-                    </div>
-                        {{feedback_form.subordinate_id}}
-                        {{feedback_form.subordinate_id.errors}}
-
-                    <div class="flex items-center gap-1 pb-2 overflow-visible relative">
-                        <label class="text-xs font-medium" for="{{feedback_form.colleague_id.id_for_label}}">
-                            {{ feedback_form.colleague_id.label }}
-                        </label>
-                        <span class="oh-info" title="{{ feedback_form.colleague_id.help_text|safe }}"></span>
-                    </div>
-                        {{feedback_form.colleague_id}}
-                        {{feedback_form.colleague_id.errors}}
-
-                    <label class="text-xs font-medium" for="{{feedback_form.others_id.id_for_label}}">{{feedback_form.others_id.label}}</label>
-                        {{feedback_form.others_id}}
-                        {{feedback_form.others_id.errros}}
-
-                    <label class="text-xs font-medium" for="{{feedback_form.period.id_for_label}}">{{feedback_form.period.label}}</label>
-                        {{feedback_form.period}}
-                        {{feedback_form.period.errros}}
-
-                    <label class="text-xs font-medium" for="{{feedback_form.start_date.id_for_label}}">{{feedback_form.start_date.label}}</label>
-                        {{feedback_form.start_date}}
-                        {{feedback_form.start_date.errros}}
-
-                    <label class="text-xs font-medium" for="{{feedback_form.end_date.id_for_label}}">{{feedback_form.end_date.label}}</label>
-                        {{feedback_form.end_date}}
-                        {{feedback_form.end_date.errros}}
-
-                    <label class="text-xs font-medium" for="{{feedback_form.question_template_id.id_for_label}}">{{feedback_form.question_template_id.label}}</label>
-                        {{feedback_form.question_template_id}}
-                        {{feedback_form.question_template_id.errros}}
-
-                    <label class="text-xs font-medium" for="{{feedback_form.employee_key_results_id.id_for_label}}">{{feedback_form.employee_key_results_id.label}}</label>
-                        {{feedback_form.employee_key_results_id}}
-                        {{feedback_form.employee_key_results_id.errros}}
-
-
-
-                    <!-- Limit Leave Days Toggle -->
-                    <div class="flex items-center justify-between mb-2">
-                        <label class="text-xs font-medium" for="{{feedback_form.cyclic_feedback.id_for_label}}">{{feedback_form.cyclic_feedback.label}}</label>
-                        <div class="oh-switch">
-                            {{feedback_form.cyclic_feedback}}
-                        </div>
-                        {{feedback_form.cyclic_feedback.errors}}
-                    </div>
-
-                    <label class="text-xs font-medium" for="{{feedback_form.cyclic_feedback_days_count.id_for_label}}">{{feedback_form.cyclic_feedback_days_count.label}}</label>
-                        {{feedback_form.cyclic_feedback_days_count}}
-                        {{feedback_form.cyclic_feedback_days_count.errros}}
-
-
-                </div>
-            </div>
-        </div>
-
-        <div class="flex gap-1 justify-end border-t border-dark-50 pt-3 mt-3">
-            <button
-                class="px-4 py-2 border border-primary-600 text-primary-600 rounded-md text-xs flex items-center gap-2 hover:text-white hover:bg-primary-800 transition duration-300">
-                Cancel
-            </button>
-            <button
-                class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300">
-                Save
-            </button>
-        </div>
-    </form>
-</div>
-    <!-- period modal -->
-    <div
-        class="oh-modal"
-        id="PeriodModal"
-        role="dialog"
-        aria-labelledby="editKeyResultModal"
-        aria-hidden="true"
-    >
-        <div class="oh-modal__dialog">
-            <!-- for creating period -->
-            <div class="oh-modal__dialog-header">
-                <button
-                    type="button"
-                    class="oh-modal__close"
-                    aria-label="Close"
-                >
-                    <ion-icon name="close-outline"></ion-icon>
-                </button>
-            </div>
-            <div class="oh-modal__dialog-body" id="periodModalTarget"></div>
-        </div>
-    </div>
-    <!-- end of period modal -->
-<script>
-    (document).ready(function () {
+    $(document).ready(function () {
         get_collegues($("#id_employee_id"));
         setTimeout(function () {
             select = $("select");
@@ -385,9 +225,13 @@
             console.error("Invalid employee_id");
         }
     }
-
+    $(document).ready(function(){
+        $("#feedbackCreationForm").find("select").select2({
+            width:'100%'
+        })
+    })
 </script>
 
 <script src="{% static 'src/feedback/feedback_creation.js' %}"></script>
 <script src="{% static 'src/period/period.js' %}"></script>
-{% endblock%}  {% endcomment %}
+{% endblock%}

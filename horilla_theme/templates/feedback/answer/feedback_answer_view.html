@@ -1,0 +1,114 @@
+{% extends 'index.html' %}
+{% load static i18n %}
+{% load i18n %}
+{% block content %}
+
+
+<style>
+  {% comment %} .oh-rate input[disabled] + label {
+    pointer-events: none; /* prevent hover and click */
+  } {% endcomment %}
+.oh-rate input[disabled] ~ label {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+
+
+</style>
+<div class="oh-wrapper w-75">
+  <div class="p-6" style="border: 1px solid #ffffffff;padding: 80px;margin: 50px;background: white; border-radius:10px;">
+    <div class="oh-main__titlebar oh-main__titlebar--left mb-5 border-b pb-2">
+      <h3 class="text-lg font-semibold">
+        {% trans "Feedback Responses" %}
+      </h3>
+    </div>
+
+    <div class="oh-activity-sidebar__body">
+    <ol class="oh-activity-sidebar__qa-list" role="list">
+      {% for answer in answers %}
+      <li class="oh-activity-sidebar__qa-item">
+        <span class="oh-activity-sidebar__q"> {{forloop.counter}}. {{answer.question_id.question}}?</span>
+       {% if answer.question_id.question_type == '1' %}    <!--question type =  Text-->
+        <span class="oh-activity-sidebar__a">{{ answer.answer.answer}}.</span>
+        {% endif %}
+        {% if answer.question_id.question_type == '2' %}  <!--question type =  Rating-->
+        <div class="d-block mb-0">
+          <div class="oh-rate">
+            <input type="radio" id="star5" value="5" disabled {% if answer.answer.answer == '5' %} checked {% endif %} />
+            <label for="star5" title="5 Stars">5 {% trans "Stars" %}</label>
+            <input type="radio" id="star4" value="4" disabled  {% if answer.answer.answer == '4' %} checked {% endif %} />
+            <label for="star4" title="4 Stars">4 {% trans "Stars" %}</label>
+            <input type="radio" id="star3" value="3" disabled  {% if answer.answer.answer == '3' %} checked {% endif %} />
+            <label for="star3" title="3 Stars">3 {% trans "Stars" %}</label>
+            <input type="radio" id="star2" value="2" disabled  {% if answer.answer.answer == '2' %} checked {% endif %}  />
+            <label for="star2" title="2 Stars">2 {% trans "Stars" %}</label>
+            <input type="radio" id="star1" value="1" disabled  {% if answer.answer.answer == '1' %} checked {% endif %} />
+            <label for="star1" title="1 Star">1 {% trans "Star" %}</label>
+          </div>
+        </div>
+        {% endif %}
+        {% if answer.question_id.question_type == '3' %} <!--question type =  Boolean-->
+          <div class="oh-input__group">
+            <div class="oh-input-picker-group">
+              <div class="oh-input-picker   oh-input-picker--selected boolean-colour ">
+                {{answer.answer.answer}}
+                <input type="radio" selected />
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        {% if answer.question_id.question_type == '4' %} <!--question type =  Multi-choices-->
+          <div class="d-block">
+            <ul class="oh-questions mt-2">
+              <li class="oh-questions__answer">
+                <div class="oh-radio">
+                  <input type="radio" class="oh-radio" id="answer1" name="answer{{q.id}}" value="{{option.option_a}}"
+                    checked />
+                  <span class="oh-radio__checkmark"></span>
+                  <label class="oh-label" for="answer1"> {{answer.answer.answer}}</label>
+                </div>
+              </li>
+            </ul>
+          </div>
+        {% endif %}
+        {% if answer.question_id.question_type == '5' %} <!--question type =  Likert-->
+          <div class="d-block">
+            <div class="oh-input-picker-group oh-input-picker-group--resp mt-2">
+              <div class="oh-input-picker oh-input-picker--likert likert-colour oh-input-picker--selected ">
+                {{answer.answer.answer}}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </li>
+      {% endfor %}
+
+      {% if key_result_feedback %}      <!-- if the user has key result selected in feedback  -->
+        <div class="oh-main__titlebar oh-main__titlebar--left">
+          <h4 class="oh-main__titlebar-title fw-bold mb-0 mt-3">
+            {% trans "Key Results" %}
+          </h4>
+        </div>
+        {% for key_result in key_result_feedback %}
+          <li class="oh-activity-sidebar__qa-item">
+            <span class="oh-activity-sidebar__q"> {{forloop.counter}}. {{key_result.key_result_id.key_result}}</span>
+            <span
+              class="oh-input-picker {% if key_result.answer.answer == 'Perfect' %} oh-input-picker--likert likert-colour oh-input-picker--selected oh-input-picker--4
+                     {% elif key_result.answer.answer == 'Good' %} oh-input-picker--likert likert-colour oh-input-picker--selected oh-input-picker--3
+                     {% elif key_result.answer.answer == 'Average' %} oh-input-picker--likert likert-colour oh-input-picker--selected oh-input-picker--2
+                     {% elif key_result.answer.answer == 'Bad' %} oh-input-picker--likert likert-colour oh-input-picker--selected oh-input-picker--1
+                     {% endif %}"
+            >
+              {{key_result.answer.answer}}.
+            </span>
+          </li>
+        {% endfor %}
+      {% endif %}
+    </ol>
+  </div>
+  </div>
+</div>
+
+<script src="{% static 'src/feedback/feedback_answer.js' %}"></script>
+{% endblock content %}
