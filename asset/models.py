@@ -498,7 +498,7 @@ class AssetAssignment(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.assigned_to_employee_id.employee_work_info.department_id} / {self.assigned_to_employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def status_display(self):
         status = self.asset_id.asset_status
