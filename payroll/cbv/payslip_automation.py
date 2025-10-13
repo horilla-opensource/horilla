@@ -41,6 +41,7 @@ class PaySlipAutomationListView(HorillaListView):
 
     model = PayslipAutoGenerate
     filter_class = PayslipAutoGenerateFilter
+    show_toggle_form = False
 
     columns = [
         (_("Payslip creation date"), "get_generate_day_display"),
