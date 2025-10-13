@@ -247,6 +247,6 @@ class ResignationLetterDetailView(HorillaDetailedView):
     # title = _("Details")
     header = {
         "title": "employee_id__get_full_name",
-        "subtitle": "resgnation_subtitle",
+        "subtitle": "resignation_subtitle",
         "avatar": "employee_id__get_avatar",
     }
