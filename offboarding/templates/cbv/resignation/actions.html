@@ -1,5 +1,11 @@
 {% load i18n %}
-<div style="width : 100%" onclick="event.stopPropagation()">
+<style>
+	tr span.txt {
+		display: none;
+	}
+</style>
+
+<div style="width: 100%" onclick="event.stopPropagation()">
     <form action="{% url 'update-letter-status' %}">
         {% if perms.offboarding.change_resignationletter %}
             <div class="oh-btn-group">
@@ -16,7 +22,7 @@
                         role="img"
                         aria-label="checkmark"
                     ></ion-icon>
-                    {% trans "Approve" %}
+                    <span class="txt">{% trans "Approve" %}</span>
                 </button>
                 {% else %}
                 <button
@@ -29,7 +35,7 @@
                         role="img"
                         aria-label="checkmark"
                     ></ion-icon>
-                    {% trans "Approve" %}
+                    <span class="txt">{% trans "Approve" %}</span>
                 </button>
                 {% endif %}
                 {% if instance.status == 'rejected' %}
@@ -44,7 +50,7 @@
                             role="img"
                             aria-label="close"
                         ></ion-icon>
-                        {% trans "Reject" %}
+                        <span class="txt">{% trans "Reject" %}</span>
                     </button>
                 {% else %}
                     <button
@@ -58,20 +64,19 @@
                             role="img"
                             aria-label="close"
                         ></ion-icon>
-                        {% trans "Reject" %}
+                        <span class="txt">{% trans "Reject" %}</span>
                     </button>
-                    {% endif %}
+                {% endif %}
             </div>
             <input type="hidden" name="status" />
+            <input type="hidden" name="letter_ids" value="{{instance.id}}" />
+            <input type="hidden" name="offboarding_id" />
             <input
                 type="hidden"
-                name="letter_ids"
-                value="{{instance.id}}"
+                name="notice_period_starts"
+                value="{% now 'Y-m-d' %}"
+                id="notice_period_starts{{instance.id}}"
             />
-            <input type="hidden" name="offboarding_id" />
-            <input type="hidden" name="notice_period_starts"
-            value="{% now "Y-m-d" %}"
-            id="notice_period_starts{{instance.id}}">
             <input
                 type="hidden"
                 name="notice_period_ends"
@@ -79,10 +84,6 @@
             />
             <button type="submit" hidden></button>
         {% endif %}
-        <input
-            type="submit"
-            hidden=""
-            id="requestCard1Button"
-        />
+        <input type="submit" hidden="" id="requestCard1Button" />
     </form>
 </div>
