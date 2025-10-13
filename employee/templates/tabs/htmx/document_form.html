@@ -10,13 +10,10 @@
     <form id="file-form" hx-post="{% url 'file-upload' document.id %}" hx-target="#objectCreateModalTarget"
         hx-encoding="multipart/form-data" class="oh-profile-section pt-3">
         {% csrf_token %}
-        {% if form.employee_id %}
-            <input type="hidden" name="employee_id" value="{{form.employee_id.value}}" />
-        {% elif form.candidate_id %}
+        {% if form.candidate_id %}
             <input type="hidden" name="candidate_id" value="{{form.candidate_id.value}}" />
         {% endif %}
         {{ form.non_field_errors }}
-
         <div class="row">
             <div class="col-12 col-sm-12 col-md-4 col-lg-6">
                 <div class="oh-input__group">

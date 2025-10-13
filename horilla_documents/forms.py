@@ -81,7 +81,14 @@ class DocumentUpdateForm(ModelForm):
     class Meta:
         model = Document
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = [
+            "title",
+            "document_request_id",
+            "status",
+            "created_by",
+            "modified_by",
+            "employee_id",
+        ]
         widgets = {
             "issue_date": forms.DateInput(
                 attrs={"type": "date", "class": "oh-input  w-100"}

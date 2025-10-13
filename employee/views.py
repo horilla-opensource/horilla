@@ -773,7 +773,8 @@ def file_upload(request, id):
             except:
                 pass
             return HttpResponse("<script>window.location.reload();</script>")
-
+        else:
+            logger.error(f"Document upload form errors: {form.errors}")
     context = {"form": form, "document": document_item}
     return render(request, "tabs/htmx/document_form.html", context=context)
 
