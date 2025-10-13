@@ -74,7 +74,7 @@ class GmeetCredentialNavView(views.HorillaNavView):
 
     nav_title = _trans("Google Cloud Credentials")
     search_swap_target = "#credContainer"
-    search_url = reverse_lazy("gmeet-setting-list-view")
+    search_url = None
 
 
 @method_decorator(login_required, name="dispatch")
