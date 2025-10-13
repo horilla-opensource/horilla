@@ -30,8 +30,8 @@
         ></button>
         {% if show_filter_tags %} {% include "generic/filter_tags.html" %} {% endif %}
 
+        {% if bulk_select_option %} {% include "generic/quick_actions.html" %} {% endif %}
         {% if queryset|length %}
-            {% if bulk_select_option %} {% include "generic/quick_actions.html" %} {% endif %}
 
             <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative">
                 {% if show_toggle_form %}
