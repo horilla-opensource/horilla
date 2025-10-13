@@ -166,7 +166,7 @@ class OffboardingEmployee(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def detail_view_task_custom(self):
         """
@@ -398,13 +398,12 @@ class ResignationLetter(HorillaModel):
             context={"instance": self},
         )
 
-    def resgnation_subtitle(self):
+    def resignation_subtitle(self):
         """
         Detail view subtitle
         """
 
-        return f"""{self.employee_id.employee_work_info.department_id } /
-          { self.employee_id.employee_work_info.job_position_id}"""
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def get_detail_url(self):
         """
