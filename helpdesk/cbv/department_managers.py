@@ -39,6 +39,7 @@ class DepartmentManagersListView(HorillaListView):
 
     model = DepartmentManager
     filter_class = DepartmentManagerFilter
+    show_toggle_form = False
 
     columns = [
         (_("Department"), "department"),

@@ -69,18 +69,15 @@ class TicketsListView(HorillaListView):
 
     model = TicketType
     filter_class = TicketTypeFilter
+    show_toggle_form = False
 
     columns = [
         (_("Ticket Type"), "title"),
-        (_("Type"), "type"),
+        (_("Type"), "get_type_display"),
         (_("Prefix"), "prefix"),
     ]
 
-    header_attrs = {
-        "title": """
-                   style = "width:200px !important"
-                   """
-    }
+    header_attrs = {"title": """ style = "width:200px !important" """}
 
     sortby_mapping = [
         ("Ticket Type", "title"),
