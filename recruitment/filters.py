@@ -189,38 +189,39 @@ class CandidateFilter(HorillaFilterSet):
             form_fields[field].widget.attrs["id"] = str(uuid.uuid4())
 
         self._update_field_labels(form_fields)
-
-        survey_answers = RecruitmentSurveyAnswer.objects.all()
         choices = []
+        try:
+            survey_answers = RecruitmentSurveyAnswer.objects.all()
+            for survey in survey_answers:
+                candidate = survey.candidate_id
+                answer_json = survey.answer_json
 
-        for survey in survey_answers:
-            candidate = survey.candidate_id
-            answer_json = survey.answer_json
+                # Parse JSON if stored as string
+                if isinstance(answer_json, str):
+                    try:
+                        answer_json = ast.literal_eval(answer_json)
+                    except Exception:
+                        continue
 
-            # Parse JSON if stored as string
-            if isinstance(answer_json, str):
-                try:
-                    answer_json = ast.literal_eval(answer_json)
-                except Exception:
-                    continue
+                # Extract questions & answers
+                for question, answer_list in answer_json.items():
+                    if question == "csrfmiddlewaretoken":
+                        continue
 
-            # Extract questions & answers
-            for question, answer_list in answer_json.items():
-                if question == "csrfmiddlewaretoken":
-                    continue
-
-                answer = (
-                    ", ".join(answer_list)
-                    if isinstance(answer_list, list)
-                    else str(answer_list)
-                )
-
-                choices.append(
-                    (
-                        candidate.pk,
-                        f"Q: {question} || Ans: {answer} || {candidate.get_full_name()}",
+                    answer = (
+                        ", ".join(answer_list)
+                        if isinstance(answer_list, list)
+                        else str(answer_list)
                     )
-                )
+
+                    choices.append(
+                        (
+                            candidate.pk,
+                            f"Q: {question} || Ans: {answer} || {candidate.get_full_name()}",
+                        )
+                    )
+        except:
+            pass
 
         # Add filter dynamically
         survey_answer_by = django_filters.MultipleChoiceFilter(
