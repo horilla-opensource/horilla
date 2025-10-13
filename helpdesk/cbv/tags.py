@@ -32,6 +32,7 @@ class TagsListView(HorillaListView):
 
     model = Tags
     filter_class = TagsFilter
+    show_toggle_form = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
