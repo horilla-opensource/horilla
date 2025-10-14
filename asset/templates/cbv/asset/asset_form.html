@@ -1,0 +1,18 @@
+<div id="formContainer">
+    {% include "generic/horilla_form.html" %}
+</div>
+
+<script>
+    function toggleNotify(elm) {
+        $this = $(elm).val()
+
+        if ($this) {
+            $("#id_notify_before_parent_div").show()
+        } else {
+            $("#id_notify_before_parent_div").hide()
+        }
+    }
+    $(document).ready(function(){
+        toggleNotify($("#id_expiry_date"))
+    })
+</script>
