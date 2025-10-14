@@ -20,6 +20,7 @@ class AssetRequestToApprove(AssetRequestList):
     ]
 
     bulk_select_option = False
+    show_toggle_form = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -70,6 +71,7 @@ class AllocatedAssetsList(AssetAllocationList):
         if column[1] != "return_status_col"
     ]
     bulk_select_option = False
+    show_toggle_form = False
 
     def get_queryset(self):
         queryset = super().get_queryset()
