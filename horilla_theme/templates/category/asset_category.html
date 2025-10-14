@@ -19,7 +19,7 @@
                 <div class="flex items-center gap-5">
                     <span onclick="event.stopPropagation();">
                         <div class="inline-block dropdown-wrapper text-md">
-                            <a class="cursor-pointer dropdown-toggle">
+                            <a class="cursor-pointer dropdown-toggle block w-4" title="{% trans 'Actions' %}">
                                 <i class="fa-solid fa-ellipsis-vertical "></i>
                             </a>
                             <!-- Dropdown Content -->
@@ -29,9 +29,9 @@
                                     {% if perms.asset.add_asset %}
                                         <li>
                                             <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300 asset-create"
-                                                data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                                data-toggle="oh-modal-toggle" data-target="#genericModal"
                                                 hx-get="{% url 'asset-creation' asset_category_id=asset_category.id %}?{{pg}}"
-                                                hx-target="#objectCreateModalTarget" data-category-id="{{asset_category.id}}">
+                                                hx-target="#genericModalBody" data-category-id="{{asset_category.id}}">
                                                 {% trans "Create" %}
                                             </a>
                                         </li>
@@ -39,9 +39,9 @@
                                     {% if perms.asset.add_assetcategory %}
                                         <li>
                                             <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
-                                                data-toggle="oh-modal-toggle" data-target="#objectCreateModal"
+                                                data-toggle="oh-modal-toggle" data-target="#genericModal"
                                                 hx-get="{% url 'asset-category-duplicate' obj_id=asset_category.id %}?{{pg}}"
-                                                hx-target="#objectCreateModalTarget">
+                                                hx-target="#genericModalBody">
                                                 {% trans "Duplicate" %}
                                             </a>
                                         </li>
@@ -49,9 +49,9 @@
                                     {% if perms.asset.change_assetcategory %}
                                         <li>
                                             <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
-                                                data-toggle="oh-modal-toggle" data-target="#objectUpdateModal"
+                                                data-toggle="oh-modal-toggle" data-target="#genericModal"
                                                 hx-get="{% url 'asset-category-update' pk=asset_category.id %}?{{pg}}"
-                                                hx-target="#objectUpdateModalTarget">
+                                                hx-target="#genericModalBody">
                                                 {% trans "Edit" %}
                                             </a>
                                         </li>
@@ -59,9 +59,10 @@
                                     {% if perms.asset.delete_assetcategory %}
                                         <li>
                                             <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
-                                                hx-confirm="{% trans 'Do you want to delete this category?' %}"
-                                                hx-post="{% url 'asset-category-delete' asset_category.id %}?{{pg}}"
-                                                hx-target="#assetCategoryList">
+                                                hx-get="{% url 'generic-delete-asset-category' %}?model=asset.AssetCategory&pk={{asset_category.id}}"
+                                                hx-target="#deleteConfirmationBody"
+                                                data-target="#deleteConfirmation"
+                                                data-toggle="oh-modal-toggle">
                                                 {% trans "Delete" %}
                                             </a>
                                         </li>
@@ -70,7 +71,6 @@
                             </div>
                         </div>
                     </span>
-                    <span class="icon text-xl font-bold">+</span>
                 </div>
             </button>
             <div class="accordion-panel max-h-0 overflow-hidden transition-all duration-300 bg-white px-4 text-sm text-gray-700"
@@ -105,7 +105,12 @@
     data-target="#dynamicCreateModal" hx-get="{% url 'asset-batch-number-creation' %}"
     hx-target="#dynamicCreateModalTarget">
 </span>
+{% endif %}
+
 <script>
+    $(document).ready(function(){
+        reloadMessage()
+    })
     function batchNoChange(selectElement) {
         var selectedBatchNo = selectElement.val();
         var parentForm = selectElement.parents().closest("form");
@@ -126,5 +131,16 @@
         return !isOpen;
     }
 
+    $(".dropdown-toggle").on("click", function () {
+        const dropdownMenu = $(this).next(".dropdown-menu");
+        const isOpen = dropdownMenu.is(":visible");
+
+        $(".dropdown-menu").not(dropdownMenu).hide();
+
+        if (isOpen) {
+            dropdownMenu.hide();
+        } else {
+            dropdownMenu.show();
+        }
+    });
 </script>
-{% endif %}
