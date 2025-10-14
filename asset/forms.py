@@ -48,13 +48,17 @@ class AssetForm(ModelForm):
     class Meta:
         model = Asset
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active", "owner"]
         widgets = {
             "asset_purchase_date": forms.DateInput(
                 attrs={"type": "date", "class": "oh-input w-100"}
             ),
             "expiry_date": forms.DateInput(
-                attrs={"type": "date", "class": "oh-input w-100"}
+                attrs={
+                    "type": "date",
+                    "class": "oh-input w-100",
+                    "onchange": "toggleNotify($(this))",
+                }
             ),
             "asset_lot_number_id": forms.Select(
                 attrs={"onchange": "batchNoChange($(this))"}
@@ -80,6 +84,9 @@ class AssetForm(ModelForm):
             kwargs.setdefault("initial", set_date_field_initial(instance))
 
         super().__init__(*args, **kwargs)
+
+        if self.instance.pk is None:
+            self.fields["expiry_date"].initial = None
 
         uuid_map = {
             field: str(uuid.uuid4())
