@@ -1,6 +1,61 @@
 {% extends 'index.html' %} {% block content %} {% load i18n %}
 
 <style>
+    .date-filter-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 2rem;
+        align-items: flex-end;
+        background-color: #f9f9f9;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        max-width: 700px;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Stack label and input vertically */
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    /* Button aligns right */
+    .button-group {
+        margin-left: auto;
+    }
+
+    /* Input style */
+    .oh-input {
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 0.95rem;
+        width: 180px;
+    }
+
+    /* Button style */
+    .oh-btn-filter {
+        padding: 0.5rem 1.25rem;
+        background-color: hsl(8, 77%, 56%);
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .oh-btn-filter:hover {
+        background-color: hsl(8, 77%, 56%);
+    }
+
+    /* Label style */
+    .date-filter-form label {
+        font-weight: 500;
+    }
+
     table {
         width: 100%;
     }
@@ -48,12 +103,12 @@
     <div class="col-12 mt-4 mb-4">
         <div class="oh-card d-flex justify-content-between align-items-center">
             <div>
-                <h4>{% trans "Work Records" %}</h4>
+                <h4>{% trans "Work Record Status" %}</h4>
             </div>
             <div class="me-3" >
                 <h6 class="mb-2 fw-bold">{% trans "Date:" %} {{ current_date }}</h6>
                 <h6>
-                    <div style = "cursor: pointer;display:flex;align-items:center">
+                    {% comment %} <div style = "cursor: pointer;display:flex;align-items:center">
                         <label for="monthYearField" class="text-danger fw-bold" style = "cursor: pointer;">{% trans "Month" %}</label>
                         <input class="oh-select p-2 w-75 m-1"
                         type="month"
@@ -64,7 +119,27 @@
                         hx-target="#workRecordTable"
                         hx-trigger="change"
                         >
-                    </div>
+                    </div> {% endcomment %}
+                    <form
+                        id="dateFilterForm"
+                        hx-get="{% url 'work-records-change-month' %}"
+                        hx-target="#workRecordTable"
+                        class="date-filter-form"
+                    >
+                        <div class="input-group">
+                            <label for="startDate">Start Date:</label>
+                            <input type="date" name="start_date" id="startDate" class="oh-input">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="endDate">End Date:</label>
+                            <input type="date" name="end_date" id="endDate" class="oh-input" max="{{ today|date:'Y-m-d' }}">
+                        </div>
+
+                        <div class="button-group">
+                            <button type="submit" class="oh-btn-filter">Filter</button>
+                        </div>
+                    </form>
                 </h6>
             </div>
         </div>
