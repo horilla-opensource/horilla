@@ -2471,12 +2471,48 @@ def work_records_change_month(request):
 
     employees = [request.user.employee_get] + list(page_emp.object_list)
 
-    month_dates = [
-        datetime(year, month, day).date()
-        for week in calendar.monthcalendar(year, month)
-        for day in week
-        if day
-    ]
+    start_date_str = request.GET.get("start_date")
+    end_date_str = request.GET.get("end_date")
+
+    # Initialize as None
+    start_date = None
+    end_date = None
+
+    # Try parsing the start date
+    if start_date_str:
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            start_date = None
+
+    # Try parsing the end date
+    if end_date_str:
+        try:
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            end_date = None
+
+    # Default end_date to today if missing or invalid
+    if not end_date:
+        today = date.today()
+        last_day = calendar.monthrange(today.year, today.month)[1]
+        end_date = date(today.year, today.month, last_day)
+
+    # Default start_date to first day of end_date's month if missing or invalid
+    if not start_date:
+        start_date = date(year=end_date.year, month=end_date.month, day=1)
+
+    # Ensure start_date is not after end_date
+    if start_date > end_date:
+        # Optional: raise error or swap, depending on your use case
+        start_date = date(year=end_date.year, month=end_date.month, day=1)
+
+    # Generate list of dates between start_date and end_date (inclusive)
+    month_dates = []
+    current_date = start_date
+    while current_date <= end_date:
+        month_dates.append(current_date)
+        current_date += timedelta(days=1)
 
     work_records = WorkRecords.objects.filter(
         date__in=month_dates, employee_id__in=page_emp.object_list
@@ -2512,6 +2548,7 @@ def work_records_change_month(request):
 @login_required
 @permission_required("attendance.view_workrecords")
 def work_record_export(request):
+
     try:
         month_str = request.GET.get("month")
         if month_str:
@@ -2524,8 +2561,48 @@ def work_record_export(request):
 
     employees = EmployeeFilter(request.GET).qs
     records = WorkRecords.objects.filter(date__month=month, date__year=year)
-    num_days = calendar.monthrange(year, month)[1]
-    all_date_objects = [date(year, month, day) for day in range(1, num_days + 1)]
+    # all_date_objects = [date(year, month, day) for day in range(1, num_days + 1)]
+
+    start_date_str = request.GET.get("start_date")
+    end_date_str = request.GET.get("end_date")
+
+    # Initialize as None
+    start_date = None
+    end_date = None
+
+    # Try parsing the start date
+    if start_date_str:
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            start_date = None
+
+    # Try parsing the end date
+    if end_date_str:
+        try:
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            end_date = None
+
+    # Default end_date to today if missing or invalid
+    if not end_date:
+        end_date = date.today()
+
+    # Default start_date to first day of end_date's month if missing or invalid
+    if not start_date:
+        start_date = date(year=end_date.year, month=end_date.month, day=1)
+
+    # Ensure start_date is not after end_date
+    if start_date > end_date:
+        # Optional: raise error or swap, depending on your use case
+        start_date = date(year=end_date.year, month=end_date.month, day=1)
+
+    # Generate list of dates between start_date and end_date (inclusive)
+    all_date_objects = []
+    current_date = start_date
+    while current_date <= end_date:
+        all_date_objects.append(current_date)
+        current_date += timedelta(days=1)
     leave_dates = set(monthly_leave_days(month, year))
 
     record_lookup = defaultdict(lambda: "ABS")
