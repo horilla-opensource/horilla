@@ -142,6 +142,11 @@ urlpatterns = [
         views.delete_asset_category,
         name="asset-category-delete",
     ),
+    path(
+        "generic-delete-asset-category",
+        asset_category.AssetDeleteConfirmationView.as_view(),
+        name="generic-delete-asset-category",
+    ),
     # path(
     #     "asset-request-creation",
     #     views.asset_request_creation,
