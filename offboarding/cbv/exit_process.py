@@ -804,6 +804,7 @@ class DashboardTaskListview(HorillaListView):
     filter_class = PipelineEmployeeFilter
     bulk_select_option = False
     view_id = "dashboard_task_status"
+    show_toggle_form = False
 
     def get_queryset(self):
         """
@@ -834,12 +835,13 @@ if apps.is_installed("asset"):
 
         bulk_select_option = False
         view_id = "dashboard_task_status"
+        show_toggle_form = False
 
         def __init__(self, *args, **kwargs):
-            self.AssetAssignment = get_horilla_model_class(
+            AssetAssignment = get_horilla_model_class(
                 app_label="asset", model="assetassignment"
             )
-            self.model = self.AssetAssignment  # 809
+            self.model = AssetAssignment  # 809
             super().__init__(*args, **kwargs)
 
         def get_queryset(self):
@@ -889,6 +891,8 @@ if apps.is_installed("pms"):
 
         bulk_select_option = False
         view_id = "dashboard_task_status"
+        show_toggle_form = False
+
         columns = [
             ("Employee", "employee_id__get_full_name", "employee_id__get_avatar"),
             ("Feedback", "review_cycle"),
