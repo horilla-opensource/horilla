@@ -21,6 +21,7 @@ from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaNavView,
 )
+from horilla_views.views import HorillaDeleteConfirmationView
 
 
 @method_decorator(login_required, name="dispatch")
@@ -66,14 +67,16 @@ class AssetFormView(HorillaFormView):
     model = Asset
     new_display_title = _("Asset Creation")
     dynamic_create_fields = [("asset_lot_number_id", DynamicCreateBatchNo)]
+    template_name = "cbv/asset/asset_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         asset_category_id = self.kwargs.get("asset_category_id")
         self.form.fields["asset_category_id"].initial = asset_category_id
-        self.form.fields["asset_category_id"].widget = forms.HiddenInput()
         if self.form.instance.pk:
             self.form_class.verbose_name = _("Asset Update")
+        else:
+            self.form.fields["asset_category_id"].widget = forms.HiddenInput()
         return context
 
     def form_valid(self, form: AssetForm) -> HttpResponse:
@@ -256,3 +259,10 @@ class AssetCategoryNav(HorillaNavView):
                     """,
                 }
             )
+
+
+class AssetDeleteConfirmationView(HorillaDeleteConfirmationView):
+
+    def post(self, *args, **kwargs):
+        super().post(*args, **kwargs)
+        return HorillaFormView.HttpResponse(targets_to_reload=["#applyFilter"])
