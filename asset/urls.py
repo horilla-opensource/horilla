@@ -246,9 +246,14 @@ urlpatterns = [
         asset_batch_no.AssetBatchDetailView.as_view(),
         name="asset-batch-detail-view",
     ),
+    # path(
+    #     "asset-batch-number-search",
+    #     views.asset_batch_number_search,
+    #     name="asset-batch-number-search",
+    # ),
     path(
         "asset-batch-number-search",
-        views.asset_batch_number_search,
+        asset_batch_no.AssetBatchNoListView.as_view(),
         name="asset-batch-number-search",
     ),
     # path(
