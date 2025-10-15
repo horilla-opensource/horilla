@@ -43,11 +43,11 @@ SUBMENUS = [
         "menu": trans("Encashments & Reimbursements"),
         "redirect": reverse("view-reimbursement"),
     },
-    {
-        "menu": trans("Federal Tax"),
-        "redirect": reverse("filing-status-view"),
-        "accessibility": "payroll.sidebar.federal_tax_accessibility",
-    },
+    # {
+    #     "menu": trans("Federal Tax"),
+    #     "redirect": reverse("filing-status-view"),
+    #     "accessibility": "payroll.sidebar.federal_tax_accessibility",
+    # },
     {
         "menu": trans("Payee Tax"),
         "redirect": reverse("view-payee-tax"),
