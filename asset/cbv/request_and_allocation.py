@@ -10,6 +10,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.generic.edit import DeleteView
 
 from asset.filters import AssetAllocationFilter, AssetRequestFilter, CustomAssetFilter
 from asset.forms import AssetAllocationForm, AssetRequestForm
@@ -62,18 +63,10 @@ class AllocationList(HorillaListView):
     ]
 
     header_attrs = {
-        "action": """
-                   style = "width:180px !important"
-                   """,
-        "asset_id__asset_name": """
-                   style = "width:250px !important"
-                   """,
-        "asset_id__asset_category_id": """
-                   style = "width:250px !important"
-                   """,
-        "asset_id__expiry_date": """
-                   style = "width:250px !important"
-                   """,
+        "action": """ style = "width:180px !important" """,
+        "asset_id__asset_name": """ style = "width:250px !important" """,
+        "asset_id__asset_category_id": """ style = "width:250px !important" """,
+        "asset_id__expiry_date": """ style = "width:250px !important" """,
     }
 
     sortby_mapping = [
@@ -84,11 +77,11 @@ class AllocationList(HorillaListView):
     action_method = "asset_action"
 
     row_attrs = """
-                hx-get='{detail_view_asset}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+        hx-get='{detail_view_asset}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -123,6 +116,17 @@ class AssetAllocationList(AllocationList):
         super().__init__(**kwargs)
         self.search_url = reverse("list-asset-allocation")
 
+        if any(
+            self.request.user.has_perm(p)
+            for p in [
+                "asset.delete_assetassignment",
+                "asset.change_assetassignment",
+                "asset.add_assetassignment",
+            ]
+        ):
+            self.action_method = "allocation_action"
+            self.option_method = "allocation_option"
+
     columns = [
         (
             _("Allocated User"),
@@ -141,14 +145,12 @@ class AssetAllocationList(AllocationList):
         ("Return Date", "return_status_col"),
     ]
 
-    action_method = "allocation_action"
-
     row_attrs = """
-                hx-get='{detail_view_asset_allocation}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+        hx-get='{detail_view_asset_allocation}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -164,6 +166,8 @@ class AssetRequestList(HorillaListView):
         # self.view_id = "view-container"
         if self.request.user.has_perm("asset.add_assetassignment"):
             self.action_method = "action_col"
+
+        self.option_method = "option_col"
 
     model = AssetRequest
     filter_class = AssetRequestFilter
@@ -194,11 +198,7 @@ class AssetRequestList(HorillaListView):
         (_("Status"), "status_col"),
     ]
 
-    header_attrs = {
-        "action": """
-                   style = "width:180px !important"
-                   """
-    }
+    header_attrs = {"action": """ style = "width:180px !important" """}
 
     sortby_mapping = [
         ("Request User", "requested_employee_id__get_full_name"),
@@ -208,11 +208,49 @@ class AssetRequestList(HorillaListView):
     ]
 
     row_attrs = """
-                hx-get='{detail_view_asset_request}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+        hx-get='{detail_view_asset_request}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="asset.delete_assetassignment"), name="dispatch"
+)
+class AssetAllocationDelete(DeleteView):
+    """
+    This the Asset Allocation Delete View
+    """
+
+    model = AssetAssignment
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        messages.success(request, _("Allocation deleted successfully"))
+
+        return HorillaFormView.HttpResponse()
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    permission_required(perm="asset.delete_assetrequest"), name="dispatch"
+)
+class AssetRequestDelete(DeleteView):
+    """
+    This the Asset Request Delete View
+    """
+
+    model = AssetRequest
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        messages.success(request, _("Asset request deleted successfully"))
+
+        return HorillaFormView.HttpResponse()
 
 
 @method_decorator(login_required, name="dispatch")
@@ -235,12 +273,12 @@ class RequestAndAllocationTab(HorillaTabView):
                     {
                         "action": "Create Request",
                         "attrs": f"""
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-get="{reverse('asset-request-creation')}"
-                                hx-target="#genericModalBody"
-                                style="cursor: pointer;"
-                                """,
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModal"
+                            hx-get="{reverse('asset-request-creation')}"
+                            hx-target="#genericModalBody"
+                            style="cursor: pointer;"
+                        """,
                     }
                 ],
             },
@@ -259,7 +297,7 @@ class RequestAndAllocationTab(HorillaTabView):
                                 hx-get="{reverse('asset-allocate-creation')}"
                                 hx-target="#genericModalBody"
                                 style="cursor: pointer;"
-                                """,
+                            """,
                         }
                     ],
                 },
@@ -313,14 +351,17 @@ class AssetDetailView(HorillaDetailedView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.body = [
-            (_("Description"), "asset_id__asset_description"),
             (_("Tracking Id"), "asset_id__asset_tracking_id"),
+            (_("Batch No"), "asset_id__asset_lot_number_id"),
             (_("Assigned Date"), "assigned_date"),
             (_("Status"), "asset_detail_status"),
             (_("Assigned by"), "assigned_by_employee_id"),
-            (_("Batch No"), "asset_id__asset_lot_number_id"),
+            (_("Description"), "asset_id__asset_description"),
             # ("Category","asset_id__asset_category_id")
         ]
+        self.cols = {
+            "asset_id__asset_description": 12,
+        }
 
     action_method = "asset_detail_action"
 
@@ -344,9 +385,13 @@ class AssetRequestDetailView(HorillaDetailedView):
         self.body = [
             (_("Asset Category"), "asset_category_id"),
             (_("Requested Date"), "asset_request_date"),
-            (_("Request Description"), "description"),
             (_("Status"), "status_col"),
+            (_("Request Description"), "description"),
         ]
+
+        self.cols = {
+            "description": 12,
+        }
 
     model = AssetRequest
     title = _("Details")
@@ -372,9 +417,13 @@ class AssetAllocationDetailView(HorillaDetailedView):
             (_("Allocated Date"), "assigned_date"),
             (_("Return Date"), "return_date"),
             (_("Asset"), "asset_id"),
-            (_("Return Description"), "return_condition"),
             (_("Status"), "detail_status"),
+            (_("Return Description"), "return_condition"),
         ]
+
+        self.cols = {
+            "return_condition": 12,
+        }
 
     model = AssetAssignment
     title = _("Details")
@@ -405,6 +454,9 @@ class AssetRequestCreateForm(HorillaFormView):
                 Employee.objects.filter(id=pk)
             )
             self.form.fields["requested_employee_id"].initial = pk
+
+        if self.form.instance.pk:
+            self.form_class.verbose_name = _("Asset Request")
         return context
 
     def form_valid(self, form: AssetRequestForm) -> HttpResponse:
@@ -430,6 +482,13 @@ class AssetAllocationFormView(HorillaFormView):
     form_class = AssetAllocationForm
     template_name = "cbv/request_and_allocation/forms/allo_form.html"
     new_display_title = _("Asset Allocation")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        if self.form.instance.pk:
+            self.form_class.verbose_name = _("Asset Allocation")
+        return context
 
     def form_valid(self, form: AssetAllocationForm) -> HttpResponse:
         """

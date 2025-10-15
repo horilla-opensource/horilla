@@ -377,7 +377,7 @@ def application_form(request):
             else:
                 candidate_obj.stage_id = stages.order_by("sequence").first()
             messages.success(request, _("Application saved."))
-
+            candidate_obj.save()  # 945
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )
