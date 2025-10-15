@@ -597,7 +597,6 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     """)
 
 
-
     return {
         "basic_pay": basic_pay,
         "loss_of_pay": loss_of_pay,
