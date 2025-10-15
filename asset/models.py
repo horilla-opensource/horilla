@@ -58,7 +58,7 @@ class AssetLot(HorillaModel):
         verbose_name=_("Batch Number"),
     )
     lot_description = models.TextField(
-        null=True, blank=True, max_length=255, verbose_name=_("Description")
+        null=True, blank=True, verbose_name=_("Description")
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
@@ -498,7 +498,7 @@ class AssetAssignment(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
+        return f"{self.assigned_to_employee_id.get_department()} / {self.assigned_to_employee_id.get_job_position()}"
 
     def status_display(self):
         status = self.asset_id.asset_status
