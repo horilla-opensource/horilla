@@ -13,20 +13,29 @@
 			<form
 				hx-post="{{request.path}}"
 				hx-target="#objectCreateModalTarget"
+				class="p-6"
 			>
 				{% csrf_token %}
-				<div
-					class="oh-checkpoint-badge text-success mb-2 selectFaqs"
-					style="cursor: pointer"
-				>
-					{% trans "Select All Faqs" %}
+
+				<div class="d-flex gap-2 mb-3">
+					<button
+						type="button"
+						class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs hover:bg-primary-800 transition duration-300 selectFaqs"
+					>
+						<ion-icon name="checkmark-done-outline" class="me-1"></ion-icon>
+						{% trans "Select All Faqs" %}
+					</button>
+
+					<button
+						type="button"
+						class="px-4 py-2 bg-[#720c80] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300 unSelectFaqs"
+					>
+						<ion-icon name="close-circle-outline" class="me-1"></ion-icon>
+						{% trans "Unselect All Faqs" %}
+					</button>
 				</div>
-				<div
-					class="oh-checkpoint-badge text-secondary mb-2 unSelectFaqs"
-					style="cursor: pointer"
-				>
-					{% trans "Unselect All Faqs" %}
-				</div>
+
+
 				<div class="space-y-2 mb-4">
 					<!-- Accordion Item -->
 					{% for cat_id, category in catagories.items %}
@@ -57,7 +66,7 @@
 									</span>
 
 									<div
-										class="grid grid-cols-1 lg:grid-cols-2 gap-3 p-2 h-60 overflow-hidden overflow-y-auto"
+										class="grid grid-cols-1 lg:grid-cols-2 gap-3 p-2 h-60 overflow-hidden overflow-y-auto faqs-list"
 									>
 										{% for faq in faqs %}
 											{% if faq.fields.category == cat_id %}
@@ -110,3 +119,20 @@
 		</div>
 	</div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $(".selectAll").click(function () {
+            var isChecked = $(this).prop("checked");
+            $(this).parent().siblings(".faqs-list").find(".custom-radio-checkmark").prop("checked", isChecked);
+        });
+        $(".selectFaqs").click(function () {
+            $(".selectAll").prop("checked", false);
+            $(".selectAll").click();
+        });
+        $(".unSelectFaqs").click(function () {
+            $(".selectAll").prop("checked", true);
+            $(".selectAll").click();
+        });
+    });
+</script>
