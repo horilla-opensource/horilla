@@ -121,3 +121,20 @@ class TaxBracket(HorillaModel):
                         )
                     }
                 )
+
+
+
+class PayeeTax(models.Model):
+    start_range = models.DecimalField(max_digits=12, decimal_places=2, db_index=True)
+    end_range = models.DecimalField(max_digits=12, decimal_places=2, db_index=True)
+    tax_amount = models.DecimalField(max_digits=12, decimal_places=2)
+
+    class Meta:
+        verbose_name = _("PAYE Tax Bracket")
+        verbose_name_plural = _("PAYE Tax Brackets")
+        indexes = [
+            models.Index(fields=["start_range", "end_range"]),
+        ]
+
+    def __str__(self):
+        return f"{self.start_range} - {self.end_range}: {self.tax_amount}"

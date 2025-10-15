@@ -1,25 +1,27 @@
 {% load i18n %}
 <section>
-      <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
-        <h1 class="oh-main__titlebar-title fw-bold">{% trans 'Resignation Reasons' %}</h1>
+    <div class="oh-main__titlebar oh-main__titlebar--left oh-d-flex-column--resp oh-mb-3--small">
+        <h1 class="oh-main__titlebar-title fw-bold m-3">{% trans 'Resignation Reasons' %}</h1>
     </div>
-<a hx-get="{% url 'create-resignation-reason' %}"
-   hx-target="#resignationReasonModalBody"
-   data-toggle="oh-modal-toggle"
-   data-target="#resignationReasonModal"
-   class="oh-btn oh-btn--secondary">
-   <ion-icon name="add-outline"></ion-icon> {% trans 'Create' %}
-</a>
-
-<div class="oh-modal" id="resignationReasonModal">
-  <div class="oh-modal__dialog" style="max-width: 550px">
-    <div class="oh-modal__dialog-header">
-      <button type="button" class="oh-modal__close" aria-label="Close">
-        <ion-icon name="close-outline"></ion-icon>
-      </button>
+    <div class="oh-main__titlebar oh-main__titlebar--right m-4">
+        <a hx-get="{% url 'create-resignation-reason' %}"
+           hx-target="#resignationReasonModalBody"
+           data-toggle="oh-modal-toggle"
+           data-target="#resignationReasonModal"
+           class="oh-btn oh-btn--secondary">
+            <ion-icon name="add-outline"></ion-icon>
+            {% trans 'Create' %}
+        </a>
     </div>
-    <div class="oh-modal__dialog-body" id="resignationReasonModalBody"></div>
-  </div>
-</div>
+    <div class="oh-modal" id="resignationReasonModal">
+        <div class="oh-modal__dialog" style="max-width: 550px">
+            <div class="oh-modal__dialog-header">
+                <button type="button" class="oh-modal__close" aria-label="Close">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body" id="resignationReasonModalBody"></div>
+        </div>
+    </div>
 
 </section>

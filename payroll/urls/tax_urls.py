@@ -5,8 +5,9 @@ This module is used to bind url patterns with django views that related to feder
 """
 
 from django.urls import path
-
+from payroll.views import payee_tax_views
 from payroll.views import tax_views
+from payroll.views.payee_tax_views import view_all_payee_tax
 
 urlpatterns = [
     path(
@@ -53,4 +54,6 @@ urlpatterns = [
         name="tax-bracket-delete",
     ),
     path("update-py-code/<int:pk>/", tax_views.update_py_code, name="update-py-code"),
+    path("import-payee-tax/", payee_tax_views.import_payee_tax, name="import-payee-tax"),
+    path("view-payee-tax/", view_all_payee_tax, name="view-payee-tax"),
 ]

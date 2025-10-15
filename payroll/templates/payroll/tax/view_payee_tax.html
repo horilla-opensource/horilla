@@ -1,0 +1,176 @@
+{% extends "index.html" %}
+{% load i18n static %}
+{% block content %}
+    <main :class="sidebarOpen ? 'oh-main__sidebar-visible' : ''">
+
+        <section class="oh-wrapper oh-main__topbar flex items-center justify-between mt-4 mb-2">
+            <h1 class="oh-main__titlebar-title fw-bold text-lg">
+                {% trans "PAYE Tax Table" %}
+            </h1>
+
+            <button class="oh-btn oh-btn--secondary flex items-center gap-1"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#importModal">
+                <ion-icon name="cloud-upload-outline" class="text-lg"></ion-icon>
+                <span>{% trans "Import" %}</span>
+            </button>
+        </section>
+
+
+        <!-- Tax Table -->
+        <section class="oh-wrapper mt-6">
+            <div class="oh-card shadow-sm">
+                {% if tax_records %}
+                    <div class="table-responsive">
+                        <table class="oh-table w-full">
+                            <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left">{% trans "Start Range" %}</th>
+                                <th class="text-left">{% trans "End Range" %}</th>
+                                <th class="text-left">{% trans "Tax Amount" %}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for tax in tax_records %}
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td>{{ tax.start_range|floatformat:2 }}</td>
+                                    <td>
+                                        {% if tax.end_range %}
+                                            {{ tax.end_range|floatformat:2 }}
+                                        {% else %}
+                                            ∞
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ tax.tax_amount|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% if page_obj.paginator.num_pages > 1 %}
+                        <div class="mt-6 border-t border-gray-200 pt-4 text-center">
+                            <div class="inline-flex items-center justify-center gap-2 bg-white rounded-lg p-2 shadow-sm">
+
+                                {% if page_obj.has_previous %}
+                                    <a href="?page=1" class="oh-btn oh-btn--light text-sm px-3 py-1.5">«</a>
+                                    <a href="?page={{ page_obj.previous_page_number }}"
+                                       class="oh-btn oh-btn--light text-sm px-3 py-1.5">‹</a>
+                                {% else %}
+                                    <span class="oh-btn oh-btn--light text-sm px-3 py-1.5 opacity-50 cursor-not-allowed">«</span>
+                                    <span class="oh-btn oh-btn--light text-sm px-3 py-1.5 opacity-50 cursor-not-allowed">‹</span>
+                                {% endif %}
+
+                                {% for i in page_obj.paginator.page_range %}
+                                    {% if i == page_obj.number %}
+                                        <span class=" text-sm px-3 py-1.5">{{ i }}</span>
+                                    {% elif i > page_obj.number|add:-2 and i < page_obj.number|add:2 %}
+                                        <a href="?page={{ i }}"
+                                           class="oh-btn oh-btn--light text-sm px-3 py-1.5">{{ i }}</a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                    <a href="?page={{ page_obj.next_page_number }}"
+                                       class="oh-btn oh-btn--light text-sm px-3 py-1.5">›</a>
+                                    <a href="?page={{ page_obj.paginator.num_pages }}"
+                                       class="oh-btn oh-btn--light text-sm px-3 py-1.5">»</a>
+                                {% else %}
+                                    <span class="oh-btn oh-btn--light text-sm px-3 py-1.5 opacity-50 cursor-not-allowed">›</span>
+                                    <span class="oh-btn oh-btn--light text-sm px-3 py-1.5 opacity-50 cursor-not-allowed">»</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p class="text-gray-500 p-4 text-center">
+                        {% trans "No tax data available. Please import a CSV file." %}
+                    </p>
+                {% endif %}
+            </div>
+        </section>
+
+    </main>
+    <div class="oh-modal" id="importModal" role="dialog" aria-labelledby="payeeTaxImportLabel" aria-hidden="true">
+        <div class="oh-modal__dialog oh-modal__dialog--wide">
+            <div class="oh-modal__dialog-header">
+                <h2 class="oh-modal__dialog-title" id="payeeTaxImportLabel">
+                    {% trans "Import PAYE Tax" %}
+                </h2>
+                <button class="oh-modal__close" aria-label="Close">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
+            </div>
+            <div class="oh-modal__dialog-body p-0 pt-2">
+                <form method="post" enctype="multipart/form-data" action="{% url 'import-payee-tax' %}"
+                      class="space-y-5">
+                    {% csrf_token %}
+
+                    <div id="uploadContainer" class="px-4 pb-4">
+                        <label class="oh-dropdown__import-label" for="uploadFile">
+                            <ion-icon name="cloud-upload" class="oh-dropdown__import-form-icon"></ion-icon>
+                            <span class="oh-dropdown__import-form-title">{% trans "Upload CSV File" %}</span>
+                            <span class="oh-dropdown__import-form-text">{% trans "Drag and drop your CSV file here (PAYE Tax format). Only .csv files are accepted." %}</span>
+                        </label>
+                        <div class="flex items-center justify-between mt-2">
+                            <input type="file" name="csv_file" id="uploadFile" accept=".csv" required class="flex-1"
+                                   />
+                        </div>
+                    </div>
+                    <div class="px-4">
+                        <a href="{% static 'payroll/templates/tax_import_template.csv' %}"
+                           class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2"  title="{% trans 'Click to download the PAYE tax template CSV' %}" download>
+                            {% trans "Download Template CSV" %}
+                        </a>
+                    </div>
+                    <div class="px-4 pb-4">
+                        <button type="submit" class="oh-btn oh-btn--small oh-btn--secondary w-100 mt-2" title="{% trans 'Click to import the PAYE CSV file' %}">
+                            {% trans "Import" %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <style>
+        .oh-modal__dialog--wide {
+            max-width: 700px !important;
+            width: 90%;
+            margin: auto;
+            border-radius: 12px;
+        }
+
+        .oh-modal__dialog {
+            background-color: #fff;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .oh-modal__close ion-icon {
+            font-size: 22px;
+            color: #444;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+
+        .oh-modal__close ion-icon:hover {
+            transform: scale(1.2);
+            color: #000;
+        }
+    </style>
+
+    <script>
+        document.querySelectorAll('[data-toggle="oh-modal-toggle"]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const target = document.querySelector(btn.dataset.target);
+                target.style.display = target.style.display === 'none' || !target.style.display ? 'flex' : 'none';
+            });
+        });
+
+        document.querySelectorAll('.oh-modal__close').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.closest('.oh-modal').style.display = 'none';
+            });
+        });
+    </script>
+
+
+{% endblock %}
