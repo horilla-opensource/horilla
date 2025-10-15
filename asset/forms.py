@@ -469,3 +469,4 @@ class AssetBatchForm(ModelForm):
 
         model = AssetLot
         fields = "__all__"
+        exclude = ["is_active"]
