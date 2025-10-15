@@ -1153,12 +1153,16 @@ class HorillaListView(ListView):
                 queryset = self.filter_class(
                     request.GET, queryset=queryset.object_list.model.objects.all()
                 ).qs
-            groups = group_by_queryset(
-                queryset, field, self._saved_filters.get("page"), "page"
-            )
-            context["groups"] = paginator_qry(
-                groups, self._saved_filters.get("page"), 10
-            )
+
+            try:
+                groups = group_by_queryset(
+                    queryset, field, self._saved_filters.get("page"), "page"
+                )
+                context["groups"] = paginator_qry(
+                    groups, self._saved_filters.get("page"), 10
+                )
+            except:
+                self.template_name = "generic/horilla_list_table.html"
 
             # for group in context["groups"]:
             #     for instance in group["list"]:
