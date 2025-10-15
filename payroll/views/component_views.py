@@ -164,13 +164,10 @@ def payroll_calculation(employee, start_date, end_date):
     kwargs["total_allowance"] = total_allowance
     updated_gross_pay_data = calculate_gross_pay(**kwargs)
     gross_pay = updated_gross_pay_data["gross_pay"]
-    # print("This is Gross Pay without Deductions",gross_pay)
 
     # Calculate Payee Tax deductions on gross pay
     payee_tax_base_amount = gross_pay - loss_of_pay_amount
-    # print("Payee Tax Base Amount",payee_tax_base_amount)
     payee_tax = calculate_payee_tax_deduction(payee_tax_base_amount)
-    # print("Print Payee Tax",payee_tax)
 
     gross_pay_deductions = updated_gross_pay_data["deductions"]
 
