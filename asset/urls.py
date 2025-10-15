@@ -157,6 +157,16 @@ urlpatterns = [
         request_and_allocation.AssetRequestCreateForm.as_view(),
         name="asset-request-creation",
     ),
+    path(
+        "asset-request-update/<int:pk>/",
+        request_and_allocation.AssetRequestCreateForm.as_view(),
+        name="asset-request-update",
+    ),
+    path(
+        "asset-request-delete/<int:pk>/",
+        request_and_allocation.AssetRequestDelete.as_view(),
+        name="asset-request-delete",
+    ),
     # path(
     #     "asset-request-allocation-view/",
     #     views.asset_request_allocation_view,
@@ -201,6 +211,16 @@ urlpatterns = [
         "asset-allocate-creation",
         request_and_allocation.AssetAllocationFormView.as_view(),
         name="asset-allocate-creation",
+    ),
+    path(
+        "asset-allocate-update/<int:pk>/",
+        request_and_allocation.AssetAllocationFormView.as_view(),
+        name="asset-allocate-update",
+    ),
+    path(
+        "asset-allocate-delete/<int:pk>/",
+        request_and_allocation.AssetAllocationDelete.as_view(),
+        name="asset-allocate-delete",
     ),
     path(
         "asset-allocate-return/<int:asset_id>/",

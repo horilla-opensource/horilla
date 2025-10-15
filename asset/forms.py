@@ -336,6 +336,7 @@ class AssetAllocationForm(ModelForm):
         self.fields["asset_id"].queryset = Asset.objects.filter(
             asset_status="Available"
         )
+        self.fields["assigned_by_employee_id"].initial = user.employee_get
 
         self.fields["assign_images"] = MultipleFileField(
             label=_("Assign Condition Images")
