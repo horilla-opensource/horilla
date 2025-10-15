@@ -131,8 +131,7 @@ def payroll_calculation(employee, start_date, end_date):
     employer_epf_amount = basic_pay_details["employer_epf_amount"]
     employer_etf_amount = basic_pay_details["employer_etf_amount"]
 
-    ## debug steps # todo remove later
-    print("employee_epf_amount", employee_epf_amount , "employer_epf_amount", employer_epf_amount, "employer_etf_amount", employer_etf_amount)
+
 
     updated_basic_pay_data = update_compensation_deduction(
         employee, basic_pay, "basic_pay", start_date, end_date
@@ -165,13 +164,13 @@ def payroll_calculation(employee, start_date, end_date):
     kwargs["total_allowance"] = total_allowance
     updated_gross_pay_data = calculate_gross_pay(**kwargs)
     gross_pay = updated_gross_pay_data["gross_pay"]
-    print("This is Gross Pay without Deductions",gross_pay)
+    # print("This is Gross Pay without Deductions",gross_pay)
 
     # Calculate Payee Tax deductions on gross pay
     payee_tax_base_amount = gross_pay - loss_of_pay_amount
-    print("Payee Tax Base Amount",payee_tax_base_amount)
+    # print("Payee Tax Base Amount",payee_tax_base_amount)
     payee_tax = calculate_payee_tax_deduction(payee_tax_base_amount)
-    print("Print Payee Tax",payee_tax)
+    # print("Print Payee Tax",payee_tax)
 
     gross_pay_deductions = updated_gross_pay_data["deductions"]
 
@@ -184,7 +183,7 @@ def payroll_calculation(employee, start_date, end_date):
     )
 
     taxable_gross_pay = calculate_taxable_gross_pay(**kwargs)
-    print("This is taxable gross pay",taxable_gross_pay)
+    # print("This is taxable gross pay",taxable_gross_pay)
     tax_deductions = calculate_tax_deduction(**kwargs)
     federal_tax = calculate_taxable_amount(**kwargs)
     post_tax_deductions["post_tax_deductions"].append({
@@ -244,7 +243,7 @@ def payroll_calculation(employee, start_date, end_date):
     for deduction in update_net_pay_deductions:
         net_pay_deduction_list.append(deduction)
     net_pay = net_pay - net_pay_deductions["net_deduction"]
-    print("Net Pay" , net_pay)
+    # print("Net Pay" , net_pay)
     payslip_data = {
         "employee": employee,
         "contract_wage": contract_wage,
