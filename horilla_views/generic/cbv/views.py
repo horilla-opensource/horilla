@@ -168,6 +168,20 @@ class HorillaListView(ListView):
         request = getattr(_thread_locals, "request", None)
         self.request = request
 
+        # Add verbose names to fields if possible
+        updated_column = []
+        get_field = self.model()._meta.get_field
+        for col in self.columns:
+            if isinstance(col, str):
+                try:
+                    updated_column.append((get_field(col).verbose_name, col))
+                except FieldDoesNotExist:
+                    updated_column.append(col)
+            else:
+                updated_column.append(col)
+
+        self.columns = updated_column
+
         self.visible_column = list(self.columns)
 
         hidden_fields = []
@@ -201,20 +215,6 @@ class HorillaListView(ListView):
             for col in self.visible_column
             if (col[1] if isinstance(col, tuple) else col) not in hidden_field_names
         ]
-
-        # Add verbose names to fields if possible
-        updated_column = []
-        get_field = self.model()._meta.get_field
-        for col in self.visible_column:
-            if isinstance(col, str):
-                try:
-                    updated_column.append((get_field(col).verbose_name, col))
-                except FieldDoesNotExist:
-                    updated_column.append(col)
-            else:
-                updated_column.append(col)
-
-        self.visible_column = updated_column
 
     def bulk_update_accessibility(self) -> bool:
         """
