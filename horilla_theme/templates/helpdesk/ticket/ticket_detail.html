@@ -298,6 +298,21 @@
         <div
             class="bg-white rounded-md shadow-card p-3"
         >
+            <div class="flex justify-end">
+                {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
+                    <button
+                        class="p-3 w-100 h-6 mb-2 rounded-md bg-primary-600 flex items-center justify-center text-white text-xs transition duration-300 hover:bg-primary-700"
+                        title="{% trans 'Edit Ticket' %}"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                        hx-get="{% url 'ticket-update' ticket.id %}"
+                        hx-target="#objectCreateModalTarget"
+                    >
+                    <i class="fa-solid fa-pen"></i>
+                    <span class="ms-2 text-sm font-semibold">{% trans "Edit" %}</span>
+                    </button>
+                {% endif %}
+            </div>
             <div
                 class="h-[80%] lg:h-[calc(100%_-_55px)]"
             >
@@ -326,7 +341,7 @@
                 {% for item in sorted_activity_list %}
                     {% if item.type == 'comment' %}
                         {% if item.comment.employee_id == ticket.employee_id %}
-                            <div class="w-full flex justify-end mb-3">
+                            {% comment %} <div class="w-full flex justify-end mb-3">
                                 <div
                                     class="bg-[#26bf941a] p-5 rounded-2xl max-w-[90%] md:w-[60%] mb-3 md:mb-1"
                                 >
@@ -350,6 +365,19 @@
                                     <span class="text-sm text-[#333]">
                                         {{item.comment.comment|safe}}
                                     </span>
+                                    <div class="oh-btn-group" style="border:none">
+                                        {% if request.user.employee_get|is_department_manager:ticket or perms.helpdesk.change_comment or request.user.employee_get == item.comment.employee_id %}
+                                            <a class="oh-btn p-3 edit_comment" title="{% trans 'Edit' %}">
+                                                <ion-icon name="pencil-outline"></ion-icon>
+                                            </a>
+                                        {% endif %}
+                                        {% if perms.helpdesk.delete_comment %}
+                                            <a href="{% url "comment-delete" item.comment.id %}" type="button"
+                                                title="{% trans 'Delete' %}" class="oh-btn p-3 text-danger">
+                                                <ion-icon name="trash-outline"></ion-icon>
+                                            </a>
+                                        {% endif %}
+                                    </div>
 
                                     <div class="w-[80%] overflow-x-auto flex mt-3">
                                         {% if item.comment.comment_attachment.all %}
@@ -382,12 +410,17 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                            </div>
+                            </div> {% endcomment %}
+                            <div class="w-full flex justify-end mb-3">
+                                <div
+                                    class="bg-[#26bf941a] p-5 rounded-2xl max-w-[90%] md:w-[60%] mb-3 md:mb-1"
+                                >
                         {% else %}
                             <div class="w-full flex justify-start mb-3">
                                 <div
                                     class="bg-[#d944bb1a] p-5 rounded-2xl max-w-[90%] md:w-[60%] mb-3 md:mb-1"
                                 >
+                        {% endif %}
                                     <div
                                         class="flex flex-wrap items-center justify-between mb-3"
                                     >
@@ -458,7 +491,7 @@
                                     </div>
                                 </div>
                             </div>
-                        {% endif %}
+                        {% comment %} {% endif %} {% endcomment %}
                     {% elif item.type == 'history' %}
                         {% if item.history.type == 'Ticket created' %}
                             <p class="text-sm text-[#0E79DC] mb-2">
