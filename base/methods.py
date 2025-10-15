@@ -849,7 +849,7 @@ def get_pagination():
     request = getattr(_thread_locals, "request", None)
     user = request.user
     page = DynamicPagination.objects.filter(user_id=user).first()
-    count = 50
+    count = 20
     if page:
         count = page.pagination
     return count

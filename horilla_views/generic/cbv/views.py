@@ -28,7 +28,12 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 from xhtml2pdf import pisa
 
-from base.methods import closest_numbers, eval_validate, get_key_instances
+from base.methods import (
+    closest_numbers,
+    eval_validate,
+    get_key_instances,
+    get_pagination,
+)
 from horilla.filters import FilterSet
 from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
@@ -131,7 +136,7 @@ class HorillaListView(ListView):
     show_toggle_form: bool = True
     filter_keys_to_remove: list = []
 
-    records_per_page: int = 50
+    records_per_page: int = 0
     export_fields: list = []
     verbose_name: str = ""
     bulk_update_fields: list = []
@@ -162,6 +167,8 @@ class HorillaListView(ListView):
     def __init__(self, **kwargs: Any) -> None:
         if not self.view_id:
             self.view_id = get_short_uuid(4)
+        if not self.records_per_page:
+            self.records_per_page = get_pagination()
         super().__init__(**kwargs)
 
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
@@ -1071,13 +1078,13 @@ class HorillaListView(ListView):
         context["quick_export"] = self.quick_export
         context["filter_selected"] = self.filter_selected
         context["bulk_update"] = self.bulk_update
-        if not self.verbose_name:
-            self.verbose_name = self.model.__class__
         context["model_name"] = self.verbose_name
         context["export_fields"] = self.export_fields
         context["custom_empty_template"] = self.custom_empty_template
         context["records_count_in_tab"] = self.records_count_in_tab
         referrer = self.request.GET.get("referrer", "")
+        if not self.verbose_name:
+            self.verbose_name = self.model.__class__
         if referrer:
             # Remove the protocol and domain part
             referrer = "/" + "/".join(referrer.split("/")[3:])
