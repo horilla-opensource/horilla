@@ -23,6 +23,8 @@ from base.methods import (
 from base.models import CompanyLeaves, Holidays
 from horilla.methods import get_horilla_model_class
 from payroll.models.models import Contract, Deduction, Payslip
+import logging
+logger = logging.getLogger(__name__)
 
 
 def get_total_days(start_date, end_date):
@@ -523,10 +525,9 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     # get the attendance data between the range
     attendance_data = get_attendance(employee, start_date, end_date)
     attendance_days = list(attendance_data['attendances_on_period'])
- # todo remove debug print function after testing
     for attendance_day in attendance_days:
         if attendance_day.is_mercantile_holday:
-            print(f"Attendance marked on Mercantile Holiday: {attendance_day.attendance_date}")
+            logger.info("Attendance marked on Mercantile Holiday: %s", attendance_day.attendance_date)
             holiday_allowances.append({
                 "title": "Mercantile Holiday Allowance",
                 "code": "mercantile_holiday",
@@ -535,7 +536,7 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
             })
             filtered_days.append(attendance_day)
         elif attendance_day.is_poya_holiday:
-            print(f"Attendance marked on Poya Holiday: {attendance_day.attendance_date}")
+            logger.info("Attendance marked on Poya Holiday: %s", attendance_day.attendance_date)
             holiday_allowances.append({
                 "title": "Poya Holiday Allowance",
                 "code": "poya_holiday",
@@ -544,7 +545,7 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
             })
             filtered_days.append(attendance_day)
         elif attendance_day.is_holiday:
-            print(f"Attendance marked on Weekend: {attendance_day.attendance_date}")
+            logger.info("Attendance marked on Regular Holiday: %s", attendance_day.attendance_date)
         else:
             filtered_days.append(attendance_day)
     attended_dates = {att.attendance_date for att in attendance_days}
@@ -573,8 +574,7 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     employer_epf_amount = wage / 100 * 12
     employer_etf_amount = wage / 100 * 3
 
-#todo remove debug print function after testing
-    print(f"""
+    logger.info(f"""
     --- Debug Info ---
     Basic Pay: {basic_pay}
     Total Working Days: {total_working_days}
