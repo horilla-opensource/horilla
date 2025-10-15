@@ -129,7 +129,6 @@ def calculate_payee_tax_deduction(payee_tax_base_amount):
 
     try:
         payee_tax_base_amount = Decimal(str(payee_tax_base_amount)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP)
-        print(f"Calculating PAYE for base amount (rounded to 2dp): {payee_tax_base_amount}")
 
         bracket = PayeeTax.objects.filter(
             start_range__lte=payee_tax_base_amount,
@@ -137,12 +136,12 @@ def calculate_payee_tax_deduction(payee_tax_base_amount):
         ).first()
 
         if not bracket:
-            print(f"No PAYE bracket found for base amount: {payee_tax_base_amount}")
+            logger.warning(f"No payee tax found for {payee_tax_base_amount}")
             return float('0.00')
 
-        print(f"Matched bracket: {bracket.start_range} - {bracket.end_range} | Tax amount: {bracket.tax_amount}")
+        logger.info(f"Payee tax deduction: {payee_tax_base_amount}")
         return float(bracket.tax_amount)
 
     except Exception as e:
-        print(f"Error while calculating PAYE: {e}")
+        logger.error("Error calculating PAYE tax: %s", e)
         return float('0.00')
