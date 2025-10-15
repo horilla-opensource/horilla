@@ -89,6 +89,8 @@
                                     <th
                                         class="text-sm font-medium text-left min-w-[150px]"
                                         id="{{view_id}}-{{ forloop.counter }}-{{cell.1}}-header"
+                                        {{cell_attr|safe}}
+                                        {% if cell.2 and not cell_attr %}style="width:220px!important;"{% endif %}
                                     >
                                         <div class="flex gap-3 p-3 {% for sort_map in sortby_mapping %}{% if sort_map.0 == cell.0 %}cursor-pointer{% endif %}{% endfor %}"
                                             {% for sort_map in sortby_mapping %}
@@ -97,8 +99,6 @@
                                                     hx-target="#{{view_id}}"
                                                 {% endif %}
                                             {% endfor %}
-                                            {{cell_attr|safe}}
-                                            {% if cell.2 and not cell_attr %}style="width:220px!important;"{% endif %}
                                         >
 
                                             {% for sort_map in sortby_mapping %}
