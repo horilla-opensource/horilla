@@ -208,12 +208,12 @@
                 </td>
             </tr>
         {% endfor %}
-        <tr class="oh-payslip__table-tr">
-            <td class="oh-payslip__table-td">{% trans "Federal Tax" %}</td>
-            <td class="oh-payslip__table-td">
-                {{ federal_tax|floatformat:2|intcomma|currency_symbol_position }}
-            </td>
-        </tr>
+{#        <tr class="oh-payslip__table-tr">#}
+{#            <td class="oh-payslip__table-td">{% trans "Federal Tax" %}</td>#}
+{#            <td class="oh-payslip__table-td">#}
+{#                {{ federal_tax|floatformat:2|intcomma|currency_symbol_position }}#}
+{#            </td>#}
+{#        </tr>#}
         {% for deduction in tax_deductions %}
             <tr class="oh-payslip__table-tr">
                 <td class="oh-payslip__table-td">{{ deduction.title }}</td>
