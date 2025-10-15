@@ -59,7 +59,7 @@
 	<script>
 		reloadMessage();
 	</script>
-{% endif %} 
+{% endif %}
 
 <div class="bg-white rounded-md lg:mb-0" id="commentContainer">
 
@@ -80,7 +80,7 @@
 	{% if request.user.employee_get == shift_request.employee_id or perms.base.add_shiftrequestcomment or request.user|is_reportingmanager %}
 		<form
 			hx-target="#commentContainer"
-			hx-post="{% url 'add-offboarding-note' %}?employee_id={{ employee.id }}" 
+			hx-post="{% url 'add-offboarding-note' %}?employee_id={{ employee.id }}"
 			id="commentForm"
 		>
 			{% csrf_token %}
@@ -165,7 +165,7 @@
 								{% endif %}
 							</span>
 						</a>
-					{% endfor %} 
+					{% endfor %}
 
                     <form
                         hx-post="{% url 'view-offboarding-note' employee.id %}?note_id={{ comment.id }}"
