@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: horillatw\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-13 16:39+0530\n"
+"POT-Creation-Date: 2025-10-16 11:47+0530\n"
 "PO-Revision-Date: 2025-07-31 06:12\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Traditional\n"
@@ -12969,12 +12969,6 @@ msgstr "請上傳有效的 XLSX 檔案。"
 
 msgid "Progress"
 msgstr "進步"
-
-msgid "Cc"
-msgstr ""
-
-msgid "Bcc"
-msgstr ""
 
 #~ msgid "A powerful laptop for business use."
 #~ msgstr "一台適合商務使用的強大筆記型電腦。"
