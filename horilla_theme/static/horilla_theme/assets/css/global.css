@@ -513,7 +513,7 @@
   margin-left: -10px;
 }
 
-.userlist li:last-child span {
+.userlist li:last-child span:not(:has(> a)) {
   border: 3px solid white;
   background-color: #dbdbdb;
   font-size: 12px;
