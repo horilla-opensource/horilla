@@ -138,3 +138,5 @@ class PayeeTax(models.Model):
 
     def __str__(self):
         return f"{self.start_range} - {self.end_range}: {self.tax_amount}"
+
+
