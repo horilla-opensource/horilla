@@ -13,7 +13,6 @@ from django.utils.decorators import method_decorator
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
-from base.methods import get_subordinates
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaListView
 from project.cbv.cbv_decorators import is_projectmanager_or_member_or_perms
@@ -32,6 +31,7 @@ class ProjectsDueInMonth(HorillaListView):
     bulk_select_option = False
     columns = [(_("Project"), "title", "get_avatar")]
     show_filter_tags = False
+    show_toggle_form = False
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -56,11 +56,11 @@ class ProjectsDueInMonth(HorillaListView):
         self.search_url = reverse("projects-due-in-this-month")
 
     row_attrs = """
-                hx-get='{get_detail_url}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+        hx-get='{get_detail_url}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
 
 
 class ProjectDetailView(HorillaDetailedView):
@@ -71,6 +71,12 @@ class ProjectDetailView(HorillaDetailedView):
     model = Project
     title = _("Details")
     header = {"title": "title", "subtitle": "", "avatar": "get_avatar"}
+
+    cols = {
+        "get_managers": 12,
+        "get_members": 12,
+        "description": 12,
+    }
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

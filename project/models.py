@@ -102,8 +102,8 @@ class Project(HorillaModel):
         """
         employees = self.managers.all()
         if employees:
-            employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
+            employee_names_string = ", ".join(
+                [str(employee.get_full_name()) for employee in employees]
             )
             return employee_names_string
 
@@ -113,8 +113,8 @@ class Project(HorillaModel):
         """
         employees = self.members.all()
         if employees:
-            employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
+            employee_names_string = ", ".join(
+                [str(employee.get_full_name()) for employee in employees]
             )
             return employee_names_string
 

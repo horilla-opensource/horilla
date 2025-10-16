@@ -80,6 +80,7 @@ class CompanyMiddleware:
             else:
                 text = "Other Company"
 
+            request.selected_company_instance = company_id
             request.session["selected_company"] = str(company_id.id)
             request.session["selected_company_instance"] = {
                 "company": company_id.company,
@@ -88,6 +89,11 @@ class CompanyMiddleware:
                 "id": company_id.id,
             }
         else:
+            request.selected_company_instance = (
+                user_company_id
+                if not user_company_id
+                else Company.objects.filter(hq=True).first()
+            )
             request.session["selected_company"] = "all"
             all_company = AllCompany()
             request.session["selected_company_instance"] = {
