@@ -1,18 +1,22 @@
 {% load i18n %}
 <div id="stage-container">
-    {% include "generic/horilla_nav.html" %}
-    <span hx-post="{% url 'project-bulk-archive' %}?is_active=false"
-        hx-confirm="{% trans 'Do you really want to archive all the selected projects?' %}" id="bulkArchiveProject">
-    </span>
-    <span hx-post="{% url 'project-bulk-archive' %}?is_active=true"
-        hx-confirm="{% trans 'Do you really want to unarchive all the selected projects?' %}" id="bulkUnArchiveProject">
-    </span>
-    <span hx-post="{% url 'project-bulk-delete' %}"
-        hx-confirm="{% trans 'Do you really want to delete all the selected projects?' %}" id="bulkDeleteProject">
-    </span>
+	{% include "generic/horilla_nav.html" %}
+	<span
+		hx-post="{% url 'project-bulk-archive' %}?is_active=false"
+		hx-confirm="{% trans 'Do you really want to archive all the selected projects?' %}"
+		id="bulkArchiveProject"
+	>
+	</span>
+	<span
+		hx-post="{% url 'project-bulk-archive' %}?is_active=true"
+		hx-confirm="{% trans 'Do you really want to unarchive all the selected projects?' %}"
+		id="bulkUnArchiveProject"
+	>
+	</span>
+	<span
+		hx-post="{% url 'project-bulk-delete' %}"
+		hx-confirm="{% trans 'Do you really want to delete all the selected projects?' %}"
+		id="bulkDeleteProject"
+	>
+	</span>
 </div>
-
-<script>
-    $("#applyFilter").closest("form").find("[name=is_active]").val("true");
-    $("#applyFilter").click();
-</script>
