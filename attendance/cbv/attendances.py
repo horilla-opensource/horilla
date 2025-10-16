@@ -54,6 +54,8 @@ class AttendancesListView(HorillaListView):
     list view
     """
 
+    export_file_name = _("Attendance Report")
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("attendances-list-view")
