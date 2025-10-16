@@ -102,8 +102,8 @@ class Project(HorillaModel):
         """
         employees = self.managers.all()
         if employees:
-            employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
+            employee_names_string = ", ".join(
+                [str(employee.get_full_name()) for employee in employees]
             )
             return employee_names_string
 
@@ -113,8 +113,8 @@ class Project(HorillaModel):
         """
         employees = self.members.all()
         if employees:
-            employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
+            employee_names_string = ", ".join(
+                [str(employee.get_full_name()) for employee in employees]
             )
             return employee_names_string
 
@@ -192,6 +192,20 @@ class Project(HorillaModel):
             title,
             task_count,
         )
+
+    def get_card_view_subtitle(self):
+
+        col = format_html(
+            """
+                <div class="my-2">Status : <span class="font-semibold">{}</span></div>
+                <div class="mb-2">Start date : <span class="dateformat_changer font-semibold">{}</span></div>
+                <div>End date : <span class="dateformat_changer font-semibold">{}</span></div>
+            """,
+            self.get_status_display(),
+            self.start_date,
+            self.end_date,
+        )
+        return col
 
     def get_delete_url(self):
         """
