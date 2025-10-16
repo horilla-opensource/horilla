@@ -22,7 +22,7 @@
   <div class="oh-main__titlebar oh-main__titlebar--right">
     {% if tasks %}
     <form
-      hx-get="{% url 'task-all-filter' %}?view={{view_type}}""
+      hx-get="{% url 'task-all-filter' %}?view={{view_type}}"
       hx-target="#view-container"
       hx-swap="innerHTML"
       id="taskAllFilterForm"
