@@ -12,12 +12,13 @@
       --ink:#111; --muted:#6b7280; --line:#d1d5db; --bg:#ffffff; --band:#0b0b0b;
       --wrapW: 820px; /* close to your sample image */
     }
-    html,body{margin:0;background:#f5f7ff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
+    html,body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink)}
     .sheet{max-width:var(--wrapW); margin:40px auto; background:var(--bg); border:2px solid #111; padding:24px 28px}
     .header{display:grid; grid-template-columns:1fr auto 1fr; align-items:center}
     .header .logo img{height:58px; object-fit:contain}
     .header .addr{text-align:center; grid-column:1/4; margin-top:6px; color:var(--ink); font-size:13.5px}
     .blackbar{background:var(--band); color:#fff; text-align:center; font-weight:700; letter-spacing:.5px; padding:10px 12px; margin:18px 0 12px; border:1px solid var(--band)}
+    .company_header{font-size:16px;font-weight: 700;}
     /* Top meta (employee + dates) */
     .meta{display:grid; grid-template-columns:1fr 1fr; gap:12px; border:1px solid var(--line)}
     .meta div{padding:12px 14px; border-right:1px solid var(--line); border-bottom:1px solid var(--line)}
@@ -74,7 +75,7 @@
       <div></div>
       <div class="addr">
         {% if employee.employee_work_info.company_id %}
-          <div><strong>{{ employee.employee_work_info.company_id }}</strong></div>
+          <div><strong class="company_header">{{ employee.employee_work_info.company_id }}</strong></div>
           <div>
             {{ employee.employee_work_info.company_id.address }},
             {{ employee.employee_work_info.company_id.city }},
@@ -119,7 +120,7 @@
       <div>
         <span class="label">{% trans "Process Date" %}</span>
         <span class="value">
-          {{ process_date|default:month_end_name }}
+          {{ process_date_25|date:"d F Y" }}
         </span>
       </div>
       <div>
@@ -230,24 +231,12 @@
 
     <!-- NET PAY -->
     <div class="netpay">
-      <div class="label">{% trans "NET PAY" %}</div>
+      <div class="label">{% trans "NET PAY (Via Bank Transfer)" %}</div>
       <div class="box">{{ net_pay|floatformat:2|intcomma|currency_symbol_position }}</div>
     </div>
-
-    <!-- Pay method -->
-    <table class="strip" style="margin-top:14px;">
-      <thead>
-        <tr><th colspan="2">{% trans "PAY METHOD" %}</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="muted">{% trans "Payment Method" %}</td>
-          <td class="amount">
-            {% if employee.employee_bank_details.account_number %}{% trans "Bank Transfer" %}{% else %}-{% endif %}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+   <div class="footer" style="text-align:center; margin-top:24px; font-size:13px; color:#6b7280;">
+      {% trans "This is a system-generated payslip and does not require a signature." %}
+    </div>
 
     <div class="no-print" style="margin-top:16px; text-align:right;">
       <button onclick="printDiv()" style="padding:10px 14px; font-weight:600; border:1px solid #111; background:#fff; cursor:pointer">
