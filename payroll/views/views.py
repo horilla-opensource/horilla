@@ -60,6 +60,7 @@ from payroll.models.models import (
     ReimbursementrequestComment,
 )
 from payroll.models.tax_models import PayrollSettings
+from datetime import date
 
 # Create your views here.
 
@@ -545,6 +546,8 @@ def view_payslip_pdf(request, payslip_id):
     if Payslip.objects.filter(id=payslip_id).exists():
         payslip = Payslip.objects.get(id=payslip_id)
         company = Company.objects.filter(hq=True).first()
+        today = date.today()
+        process_date_25 = today.replace(day=25)
         if (
             request.user.has_perm("payroll.view_payslip")
             or payslip.employee_id.employee_user_id == request.user
@@ -600,6 +603,7 @@ def view_payslip_pdf(request, payslip_id):
             data["instance"] = payslip
             data["currency"] = PayrollSettings.objects.first().currency_symbol
             data["all_deductions"] = []
+            data["process_date_25"] = process_date_25
             for deduction_list in [
                 data["basic_pay_deductions"],
                 data["gross_pay_deductions"],
