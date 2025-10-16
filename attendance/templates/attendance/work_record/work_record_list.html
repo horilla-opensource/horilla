@@ -6,7 +6,7 @@
         <button
             class="oh-btn oh-btn--secondary"
             onclick="
-                window.location.href = `{% url 'work-record-export' %}?month={{leave_dates.0.month}}&year={{leave_dates.0.year}}&{{request.POST.urlencode}}`
+                window.location.href = `{% url 'work-record-export' %}?{{pd}}`
             "
         >
             <ion-icon

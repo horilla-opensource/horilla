@@ -1,5 +1,6 @@
 {% load i18n basefilters %}
 
+<div class="oh-btn-group" >
 {% if perms.attendance.change_attendance or perms.attendance.delete_attendance or request.user|is_reportingmanager %}
     <a
         class="oh-btn oh-btn-group oh-btn--info"
@@ -42,3 +43,4 @@
         </button>
     </form>
 {% endif %}
+</div>

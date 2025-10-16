@@ -129,7 +129,7 @@
 							</div>
 						</div>
 						<div>
-							<form hx-post="{% url "generic-delete" %}?{{request.GET.urlencode}}" hx-target="#deleteConfirmationBody">
+							<form hx-post="{{request.path}}?{{request.GET.urlencode}}" hx-target="#deleteConfirmationBody">
 								<div class="flex flex-col justify-center gap-2 mb-5">
 									<div class="mb-2 flex items-center gap-2">
 										<input

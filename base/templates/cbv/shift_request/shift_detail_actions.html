@@ -1,0 +1,44 @@
+{% load basefilters i18n %}
+
+{% if instance.approved or instance.canceled %}
+    <button class="oh-btn oh-btn--info w-50" disabled>
+        <ion-icon name="create-outline"></ion-icon>
+        {% trans "Edit" %}
+    </button>
+{% else %}
+    <a
+        hx-get="{% url 'shift-request-update' instance.id %}"
+        hx-target="#genericModalBody"
+        data-toggle="oh-modal-toggle"
+        data-target="#genericModal"
+        class="oh-btn oh-btn--info w-50"
+    >
+        <ion-icon name="create-outline"></ion-icon>
+        {% trans "Edit" %}
+    </a>
+{% endif %}
+
+{% if instance.approved or instance.canceled %}
+    <button class="oh-btn oh-btn--secondary w-50" disabled>
+        <ion-icon name="trash-outline"></ion-icon>
+        {% trans "Delete" %}
+    </button>
+{% else %}
+    <a
+        hx-confirm="{% trans 'Are you sure you want to delete this shift request?' %}"
+        hx-post="{% url 'shift-request-delete' instance.id %}?instances_ids={{ request.session.ordered_ids_shiftrequest }}"
+        hx-target="#genericModalBody"
+        class="oh-btn oh-btn--danger w-50"
+        title="{% trans 'Delete' %}"
+    >
+        <ion-icon name="create-outline"></ion-icon>
+        {% trans "Delete" %}
+    </a>
+{% endif %}
+
+{% if request.GET.deleted %}
+    <script>
+        $("#reloadMessagesButton").click();
+        $(".reload-record").click();
+    </script>
+{% endif %}

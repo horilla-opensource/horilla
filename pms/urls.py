@@ -123,6 +123,11 @@ urlpatterns = [
         key_result.DeleteKeyResults.as_view(),
         name="key-result-delete",
     ),
+    path(
+        "archive-key-result/<int:pk>/",
+        views.archive_key_result,
+        name="archive-key-result",
+    ),
     # path("view-key-result/", views.view_key_result, name="view-key-result"),
     # path("filter-key-result/", views.filter_key_result, name="filter-key-result"),
     # path("create-key-result/", views.kr_create_or_update, name="create-key-result"),
@@ -454,9 +459,14 @@ urlpatterns = [
         views.delete_anonymous_feedback,
         name="delete-anonymous-feedback",
     ),
+    # path(
+    #     "single-anonymous-feedback-view/<int:obj_id>/",
+    #     views.view_single_anonymous_feedback,
+    #     name="single-anonymous-feedback-view",
+    # ),
     path(
-        "single-anonymous-feedback-view/<int:obj_id>/",
-        views.view_single_anonymous_feedback,
+        "single-anonymous-feedback-view/<int:pk>/",
+        feedback.AnounyFeedbackDetailView.as_view(),
         name="single-anonymous-feedback-view",
     ),
     # path(

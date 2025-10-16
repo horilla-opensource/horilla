@@ -1636,20 +1636,27 @@ def update_fields_based_shift(request):
 
     employee_ids = (
         request.GET.get("employee_id")
-        if hx_target == "attendanceUpdate"
-        or hx_target == "attendanceRequest"
-        or hx_target == "attendanceUpdateFormFields"
-        or hx_target == "attendanceFormFields"
+        if hx_target
+        in [
+            "attendanceUpdate",
+            "attendanceRequest",
+            "attendanceUpdateFormFields",
+            "attendanceFormFields",
+            "attendanceRequestDiv",
+        ]
         else request.GET.getlist("employee_id")
     )
     employee_queryset = (
         (
             Employee.objects.get(id=employee_ids)
-            if hx_target == "attendanceUpdate"
-            or hx_target == "attendanceRequestDiv"
-            or hx_target == "attendanceRequest"
-            or hx_target == "attendanceUpdateFormFields"
-            or hx_target == "attendanceFormFields"
+            if hx_target
+            in [
+                "attendanceUpdate",
+                "attendanceUpdateFormFields",
+                "attendanceRequest",
+                "attendanceRequestDiv",
+                "attendanceFormFields",
+            ]
             else Employee.objects.filter(id__in=employee_ids)
         )
         if employee_ids
@@ -1707,10 +1714,10 @@ def update_fields_based_shift(request):
     }
     form = (
         AttendanceUpdateForm(initial=initial_data)
-        if hx_target == "attendanceUpdate" or hx_target == "attendanceUpdateFormFields"
+        if hx_target in ["attendanceUpdate", "attendanceUpdateFormFields"]
         else (
             NewRequestForm(initial=initial_data)
-            if hx_target == "attendanceRequest"
+            if hx_target in ["attendanceRequest", "attendanceRequestDiv"]
             else AttendanceForm(initial=initial_data)
         )
     )
@@ -2451,36 +2458,79 @@ def work_records_change_month(request):
         request, employee_filter_form.qs, "attendance.view_attendance"
     )
 
+    all_employees = employees
+
+    paginator_emp = Paginator(employees, 20)
+    page_emp = paginator_emp.get_page(request.GET.get("page"))
+
     month_str = request.GET.get("month", f"{date.today().year}-{date.today().month}")
     try:
         year, month = map(int, month_str.split("-"))
     except ValueError:
         year, month = date.today().year, date.today().month
 
-    employees = [request.user.employee_get] + list(employees)
+    employees = [request.user.employee_get] + list(page_emp.object_list)
 
-    month_dates = [
-        datetime(year, month, day).date()
-        for week in calendar.monthcalendar(year, month)
-        for day in week
-        if day
-    ]
+    start_date_str = request.GET.get("start_date")
+    end_date_str = request.GET.get("end_date")
+
+    # Initialize as None
+    start_date = None
+    end_date = None
+
+    # Try parsing the start date
+    if start_date_str:
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            start_date = None
+
+    # Try parsing the end date
+    if end_date_str:
+        try:
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            end_date = None
+
+    # Default end_date to today if missing or invalid
+    if not end_date:
+        today = date.today()
+        last_day = calendar.monthrange(today.year, today.month)[1]
+        end_date = date(today.year, today.month, last_day)
+
+    # Default start_date to first day of end_date's month if missing or invalid
+    if not start_date:
+        start_date = date(year=end_date.year, month=end_date.month, day=1)
+
+    # Ensure start_date is not after end_date
+    if start_date > end_date:
+        # Optional: raise error or swap, depending on your use case
+        start_date = date(year=end_date.year, month=end_date.month, day=1)
+
+    # Generate list of dates between start_date and end_date (inclusive)
+    month_dates = []
+    current_date = start_date
+    while current_date <= end_date:
+        month_dates.append(current_date)
+        current_date += timedelta(days=1)
 
     work_records = WorkRecords.objects.filter(
-        date__in=month_dates, employee_id__in=employees
+        date__in=month_dates, employee_id__in=page_emp.object_list
     ).select_related("employee_id", "shift_id", "attendance_id")
 
     work_records_dict = {(wr.employee_id.id, wr.date): wr for wr in work_records}
 
-    data = {
+    work_record_table = {
         employee: [
             work_records_dict.get((employee.id, current_date))
             for current_date in month_dates
         ]
-        for employee in employees
+        for employee in all_employees
     }
 
-    paginator = Paginator(list(data.items()), get_pagination())
+    paginated_table = list(work_record_table.items())
+
+    paginator = Paginator(paginated_table, 20)
     page = paginator.get_page(request.GET.get("page"))
 
     context = {
@@ -2498,16 +2548,61 @@ def work_records_change_month(request):
 @login_required
 @permission_required("attendance.view_workrecords")
 def work_record_export(request):
+
     try:
-        month = int(request.GET.get("month") or date.today().month)
-        year = int(request.GET.get("year") or date.today().year)
+        month_str = request.GET.get("month")
+        if month_str:
+            year, month = map(int, month_str.split("-"))
+        else:
+            today = date.today()
+            year, month = today.year, today.month
     except ValueError:
         return HttpResponseBadRequest("Invalid month or year parameter.")
 
     employees = EmployeeFilter(request.GET).qs
     records = WorkRecords.objects.filter(date__month=month, date__year=year)
-    num_days = calendar.monthrange(year, month)[1]
-    all_date_objects = [date(year, month, day) for day in range(1, num_days + 1)]
+    # all_date_objects = [date(year, month, day) for day in range(1, num_days + 1)]
+
+    start_date_str = request.GET.get("start_date")
+    end_date_str = request.GET.get("end_date")
+
+    # Initialize as None
+    start_date = None
+    end_date = None
+
+    # Try parsing the start date
+    if start_date_str:
+        try:
+            start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            start_date = None
+
+    # Try parsing the end date
+    if end_date_str:
+        try:
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            end_date = None
+
+    # Default end_date to today if missing or invalid
+    if not end_date:
+        end_date = date.today()
+
+    # Default start_date to first day of end_date's month if missing or invalid
+    if not start_date:
+        start_date = date(year=end_date.year, month=end_date.month, day=1)
+
+    # Ensure start_date is not after end_date
+    if start_date > end_date:
+        # Optional: raise error or swap, depending on your use case
+        start_date = date(year=end_date.year, month=end_date.month, day=1)
+
+    # Generate list of dates between start_date and end_date (inclusive)
+    all_date_objects = []
+    current_date = start_date
+    while current_date <= end_date:
+        all_date_objects.append(current_date)
+        current_date += timedelta(days=1)
     leave_dates = set(monthly_leave_days(month, year))
 
     record_lookup = defaultdict(lambda: "ABS")

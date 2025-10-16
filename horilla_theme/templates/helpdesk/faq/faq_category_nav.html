@@ -1,4 +1,32 @@
 {% load i18n %} {% load static %}
+<style>
+.oh-faq__input-search {
+  position: relative;
+}
+
+.ui-autocomplete {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  width: 100% !important;
+  z-index: 9999 !important;
+  background-color: white !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.375rem !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important;
+  padding: 0.25rem 0 !important;
+}
+
+.ui-autocomplete li {
+  padding: 6px 10px !important;
+  font-size: 13px;
+}
+
+.ui-autocomplete li:hover {
+  background-color: #f3f4f6 !important;
+  cursor: pointer;
+}
+</style>
 <section class="oh-wrapper mb-3 p-3">
   <div class="flex flex-wrap justify-between items-center">
 
@@ -11,7 +39,7 @@
     <div class="flex items-center flex-wrap gap-2">
 
       <!-- Search Input -->
-      <div class="relative" :class="searchShow ? 'block' : 'hidden md:block'">
+      <div class="relative oh-faq__input-search" :class="searchShow ? 'block' : 'hidden md:block'">
         <input type="text"
                name="search"
                placeholder="{% trans 'Search in FAQs...' %}"

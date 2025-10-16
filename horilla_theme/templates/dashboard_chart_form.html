@@ -46,13 +46,13 @@
 			id="dashboardChartForm"
 		>
 			<div class="max-h-[650px] overflow-hidden overflow-y-auto">
-				<table class="fixed-table w-full">
+				<table class="table-fixed w-full">
 					<thead class="sticky top-0 bg-[white] z-[1]">
 						<tr class="border-b border-[#ececec]">
 							<th class="text-sm font-bold text-left p-3">
 								{% trans "Charts" %}
 							</th>
-							<th class="text-sm font-bold text-left p-3">
+							<th class="text-sm font-bold text-center p-3">
 								{% trans "View" %}
 							</th>
 						</tr>
@@ -69,7 +69,7 @@
 									>{{chart.1}}</span
 								>
 							</td>
-							<td class="text-sm text-left p-3 text-[#666]">
+							<td class="text-sm text-center p-3 text-[#666]">
 								<label class="toggle-label">
 									<input
 										type="checkbox"

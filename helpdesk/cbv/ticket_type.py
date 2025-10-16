@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.models import Attachment
+from employee.models import Employee
 from helpdesk.cbv.tags import DynamicTagsCreateFormView
 from helpdesk.filter import TicketTypeFilter
 from helpdesk.forms import TicketForm, TicketTypeForm
@@ -68,18 +69,15 @@ class TicketsListView(HorillaListView):
 
     model = TicketType
     filter_class = TicketTypeFilter
+    show_toggle_form = False
 
     columns = [
         (_("Ticket Type"), "title"),
-        (_("Type"), "type"),
+        (_("Type"), "get_type_display"),
         (_("Prefix"), "prefix"),
     ]
 
-    header_attrs = {
-        "title": """
-                   style = "width:200px !important"
-                   """
-    }
+    header_attrs = {"title": """ style = "width:200px !important" """}
 
     sortby_mapping = [
         ("Ticket Type", "title"),
@@ -213,7 +211,25 @@ class TicketsCreateFormView(HorillaFormView):
                 employees = ticket.assigned_to.all()
                 assignees = [employee.employee_user_id for employee in employees]
                 assignees.append(ticket.employee_id.employee_user_id)
-                if hasattr(ticket.get_raised_on_object(), "dept_manager"):
+
+                if ticket.assigning_type == "individual":
+                    try:
+                        employee = Employee.objects.get(
+                            id=ticket.raised_on
+                        )  # adjust if raised_on stores badge_id etc.
+                        ticket.assigned_to.set([employee])
+                        ticket.save()
+                    except Employee.DoesNotExist:
+                        print(f"No employee found with identifier: {ticket.raised_on}")
+
+                employees = ticket.assigned_to.all()
+                assignees = [emp.employee_user_id for emp in employees]
+                assignees.append(ticket.employee_id.employee_user_id)
+
+                if (
+                    hasattr(ticket.get_raised_on_object(), "dept_manager")
+                    and not ticket.assigning_type == "individual"
+                ):
                     if ticket.get_raised_on_object().dept_manager.all():
                         manager = (
                             ticket.get_raised_on_object()

@@ -55,11 +55,11 @@ class AllowanceDeductionTabView(HorillaTabView):
                     {
                         "action": "Add Bonus",
                         "attrs": f"""
-                                hx-get="{reverse('add-bonus')}?employee_id={pk}",
-								hx-target="#addBonusModalBody"
-								data-toggle="oh-modal-toggle"
-								data-target="#addBonusModal"
-                      """,
+                            hx-get="{reverse('add-bonus')}?employee_id={pk}"
+                            hx-target="#addBonusModalBody"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#addBonusModal"
+                        """,
                     }
                 ],
             },
@@ -211,7 +211,7 @@ class DeductionTab(DeductionListView):
         not in (
             "specific_employees_col",
             "excluded_employees_col",
-            "condition_bsed_col",
+            "condition_based_col",
             "rate",
         )
     ]
@@ -317,7 +317,7 @@ class DeductionDetailView(HorillaDetailedView):
     body = [
         (_("Tax"), "tax_col", True),
         (_("One Time deduction"), "get_one_time_deduction"),
-        (_("Condition Based"), "condition_bsed_col"),
+        (_("Condition Based"), "condition_based_col"),
         (_("Amount"), "amount_col"),
         (_("Has Maximum Limit"), "has_maximum_limit_col"),
         (_("Deduction Eligibility"), "deduction_eligibility"),

@@ -1,4 +1,5 @@
 {% load i18n %}
+
 {% if perms.asset.add_assetassignment %}
     {% if instance.asset_request_status == 'Requested' %}
         <div>
@@ -15,18 +16,15 @@
                 >
                     <ion-icon name="checkmark-outline"></ion-icon>
                 </a>
-                <form
-                    action="{% url 'asset-request-reject' req_id=instance.id %}"
-                    method="post"
-                    onsubmit="return confirm('{% trans "Do you want to reject this request?" %}')"
+                <a
+                    class="oh-btn oh-btn--danger w-50"
+                    role="button"
+                    href="{% url 'asset-request-reject' instance.id %}"
+                    onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
                     title="{% trans 'Reject' %}"
-                    class='w-50'
                 >
-                    {% csrf_token %}
-                    <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();">
-                        <ion-icon name="close-outline"></ion-icon>
-                    </button>
-                </form>
+                    <ion-icon name="close-outline"></ion-icon>
+                </a>
             </div>
         </div>
     {% else %}

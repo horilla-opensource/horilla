@@ -452,7 +452,13 @@ class ActualKeyResultFilter(HorillaFilterSet):
 
     class Meta:
         model = KeyResult
-        fields = ["progress_type", "target_value", "duration", "company_id"]
+        fields = [
+            "progress_type",
+            "target_value",
+            "duration",
+            "company_id",
+            "is_active",
+        ]
 
     def search_method(self, queryset, _, value: str):
         """
@@ -856,6 +862,8 @@ class EmployeeBonusPointFilter(FilterSet):
     """
     Filter through BonusPointSetting model
     """
+
+    search = django_filters.CharFilter(method="search_method")
 
     class Meta:
         model = EmployeeBonusPoint

@@ -1332,7 +1332,7 @@ def object_delete(request, obj_id, **kwargs):
             - model (Model): The Django model class to which the object belongs.
             - redirect_path (str): The URL path to redirect to after deletion.
     Returns:
-        HttpResponse: Redirects to the specified `redirect_path` or reloads the
+        HttpResponse: Redirects to the specified redirect_path or reloads the
                       previous page. In case of a ProtectedError, it shows an error
                       message indicating that the object is in use.
     """
@@ -1340,7 +1340,6 @@ def object_delete(request, obj_id, **kwargs):
     redirect_path = kwargs.get("redirect_path")
     delete_error = False
     try:
-        count = model.objects.count()
         instance = model.objects.get(id=obj_id)
         instance.delete()
         messages.success(
@@ -1370,16 +1369,18 @@ def object_delete(request, obj_id, **kwargs):
             return redirect(redirect_path)
         else:
             return HttpResponse("<script>window.location.reload()</script>")
+
     if redirect_path:
         previous_data = request.GET.urlencode()
         redirect_path = redirect_path + "?" + previous_data
         return redirect(redirect_path)
     elif kwargs.get("HttpResponse"):
-        return_part = (
-            "<script>$('.reload-record').click();</script>"
-            if delete_error or count == 1
-            else kwargs.get("HttpResponse")
-        )
+        if delete_error:
+            return_part = "<script>window.location.reload()</script>"
+        elif kwargs.get("HttpResponse") is True:
+            return_part = ""
+        else:
+            return_part = kwargs.get("HttpResponse")
         return HttpResponse(f"{return_part}")
     else:
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
@@ -5168,16 +5169,19 @@ def shift_request_delete(request, id):
             )
     if hx_target and hx_target == "genericModalBody":
         previous_data = request.GET.urlencode()
-        instances_ids = request.GET.get("instances_ids")
-        instances_list = json.loads(instances_ids)
+        instances_ids = request.GET.get("instances_ids", None)
+        instances_list = json.loads(instances_ids) if instances_ids else []
         if id in instances_list:
             instances_list.remove(id)
             previous_instance, next_instance = closest_numbers(
                 json.loads(instances_ids), id
             )
-        return redirect(
-            f"/shift-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
-        )
+            return redirect(
+                f"/shift-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
+            )
+        else:
+            return HttpResponse(status=204, headers={"HX-Refresh": "true"})
+
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 

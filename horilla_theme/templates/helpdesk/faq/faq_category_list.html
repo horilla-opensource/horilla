@@ -3,70 +3,68 @@
 {% if faq_categories %}
 <div class="oh-faq-cards grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-3 p-2">
     {% for category in faq_categories %}
-    <div class="shadow-card p-5 bg-white rounded-md border border-dark-50" id="faqCategoryItem{{category.id}}">
-        <div class="flex justify-between items-start mb-4">
-            <h3 class="text-md font-semibold">{{ category.title }}</h3>
+    <div class="shadow-card p-5 bg-white rounded-md border border-dark-50 flex flex-col justify-between h-full" id="faqCategoryItem{{category.id}}">
+        <div class="flex flex-col flex-grow">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-md font-semibold">{{ category.title }}</h3>
 
-            {% if perms.helpdesk.change_faqcategory or perms.helpdesk.delete_faqcategory %}
-            <div class="relative inline-block dropdown-wrapper" x-data="{ open: false }">
-                <a class="cursor-pointer dropdown-toggle" @click="open = !open" @click.outside="open = false">
-                    <i class="fa-solid fa-ellipsis-vertical text-black"></i>
-                </a>
-                <!-- Dropdown Content -->
-                <div
-                    class="oh-dropdown__menu oh-dropdown__menu--right"
-                    x-show="open"
-                    style="min-width:135px;"
-                >
-                    <ul class="oh-dropdown__items">
-                        {% if perms.helpdesk.change_faqcategory %}
-                        <li class="oh-dropdown__item">
-                            <a
-                                hx-get="{% url 'faq-category-update' category.id %}"
-                                hx-target="#objectCreateModalTarget"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#objectCreateModal"
-                                role="button"
-                                class="oh-dropdown__link"
-                                >{% trans "Edit" %}</a
-                            >
-                        </li>
-                        {% endif %}
-                        {% if perms.helpdesk.delete_faqcategory %}
-                        <li class="oh-dropdown__item">
-                            <form
-                                hx-confirm="{% trans 'Are you sure you want to delete this FAQ Category?' %}"
-                                hx-post="{% url 'faq-category-delete' category.id %}"
-                                hx-swap="outerHTML"
-                                hx-on-htmx-after-request="setTimeout(() => {reloadMessage(this);},100);"
-                                hx-target="#faqCategoryItem{{category.id}}"
-                            >
-                                {% csrf_token %}
-                                <button
-                                    type="submit"
-                                    class="oh-dropdown__link oh-dropdown__link--danger"
+                {% if perms.helpdesk.change_faqcategory or perms.helpdesk.delete_faqcategory %}
+                <div class="relative inline-block dropdown-wrapper" x-data="{ open: false }">
+                    <a class="cursor-pointer dropdown-toggle" @click="open = !open" @click.outside="open = false">
+                        <i class="fa-solid fa-ellipsis-vertical text-black"></i>
+                    </a>
+                    <div
+                        class="oh-dropdown__menu oh-dropdown__menu--right"
+                        x-show="open"
+                        style="min-width:135px;"
+                    >
+                        <ul class="oh-dropdown__items">
+                            {% if perms.helpdesk.change_faqcategory %}
+                            <li class="oh-dropdown__item">
+                                <a
+                                    hx-get="{% url 'faq-category-update' category.id %}"
+                                    hx-target="#objectCreateModalTarget"
+                                    data-toggle="oh-modal-toggle"
+                                    data-target="#objectCreateModal"
+                                    role="button"
+                                    class="oh-dropdown__link"
+                                >{% trans "Edit" %}</a>
+                            </li>
+                            {% endif %}
+                            {% if perms.helpdesk.delete_faqcategory %}
+                            <li class="oh-dropdown__item">
+                                <form
+                                    hx-confirm="{% trans 'Are you sure you want to delete this FAQ Category?' %}"
+                                    hx-post="{% url 'faq-category-delete' category.id %}"
+                                    hx-swap="outerHTML"
+                                    hx-on-htmx-after-request="setTimeout(() => {reloadMessage(this);},100);"
+                                    hx-target="#faqCategoryItem{{category.id}}"
                                 >
-                                    {% trans "Delete" %}
-                                </button>
-                            </form>
-                        </li>
-                        {% endif %}
-                    </ul>
+                                    {% csrf_token %}
+                                    <button
+                                        type="submit"
+                                        class="oh-dropdown__link oh-dropdown__link--danger"
+                                    >
+                                        {% trans "Delete" %}
+                                    </button>
+                                </form>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
+                {% endif %}
             </div>
-            {% endif %}
+
+            <p class="text-sm text-[#565E6C] mb-3 flex-grow">{{ category.description | linebreaksbr }}</p>
         </div>
-
-        <p class="text-sm text-[#565E6C] mb-3">{{ category.description }}</p>
-
         <a
             href="{% url 'faq-view' category.id %}"
-            class="px-5 py-2 group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
+            class="px-5 py-2 mt-auto group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
         >
             {% trans "View FAQs" %}
         </a>
     </div>
-
     {% endfor %}
 </div>
 {% else %}

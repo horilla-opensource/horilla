@@ -32,11 +32,11 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-5 mt-5">
             {% for col in body %}
                 {% if not col.2 %}
-                    <div class="col-span-1 md:col-span-{{ cols|get_item:col.1|default:6 }} mb-2 flex gap-5 items-center">
+                    <div class="col-span-1 md:col-span-{{ cols|get_item:col.1|default:6 }} mb-2 flex gap-5">
                         <span class="font-medium text-xs text-[#565E6C] w-32">
                             {{ col.0 }}
                         </span>
-                        <div class="text-xs font-semibold flex items-center gap-5">
+                        <div class="text-xs font-semibold flex gap-5">
                             : <span>
                                 {{ object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
                             </span>

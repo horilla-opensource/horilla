@@ -1,6 +1,6 @@
 {% load i18n %}
 <div class="oh-modal__dialog-header">
-	<span class="oh-modal__dialog-title" id="shiftRequestDetailModalLabel">
+	<span class="text-md font-semibold mb-3" id="shiftRequestDetailModalLabel">
 		{% trans "Responsibility" %}
 	</span>
 	<button class="oh-modal__close" aria-label="Close">
@@ -21,23 +21,24 @@
 		<div class="oh-input-group">
 			{{form.non_field_errors}}
 			<label
-				class="oh-input__label"
+				class="oh-label"
 				for="{{form.assigning_type.id_for_label}}"
 				>{{form.assigning_type.label}}</label
 			>
 			{{form.assigning_type}}
-			<label class="oh-input__label" for="{{form.raised_on.id_for_label}}"
+			<label class="oh-label" for="{{form.raised_on.id_for_label}}"
 				>{{form.raised_on.label}}</label
 			>
 			{{form.raised_on}}
 		</div>
-		<button
-			type="submit"
-			class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
-		>
-			<ion-icon class="me-1" name="save-outline"></ion-icon>
-			{% trans 'Save Changes' %}
-		</button>
+		<div class="flex justify-end">
+			<button
+				type="submit"
+				class="oh-btn oh-d-hide oh-btn--small oh-btn--secondary oh-btn--add-advanced-tab w-100 mt-3 mb-2"
+			>
+				{% trans 'Save' %}
+			</button>
+		</div>
 	</form>
 </div>
 

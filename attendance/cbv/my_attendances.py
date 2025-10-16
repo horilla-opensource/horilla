@@ -165,6 +165,7 @@ class MyAttendancestNav(HorillaNavView):
     filter_instance = AttendanceFilters()
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
+    search_input_attrs = """ hidden """
 
 
 @method_decorator(login_required, name="dispatch")

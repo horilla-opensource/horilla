@@ -254,6 +254,7 @@ urlpatterns = [
         name="total-employees-count",
     ),
     path("joining-today-count", views.joining_today_count, name="joining-today-count"),
+    path("leave-today-count", views.leave_today_count, name="leave-today-count"),
     path("joining-week-count", views.joining_week_count, name="joining-week-count"),
     path("dashboard-employee", views.dashboard_employee, name="dashboard-employee"),
     path(

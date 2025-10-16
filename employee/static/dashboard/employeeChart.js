@@ -403,6 +403,13 @@ $(document).ready(function () {
                             ctx.restore();
                         },
                     },
+                    {
+                        afterRender: (chart) => {
+                            if (typeof emptyChart === "function") {
+                                emptyChart(chart);
+                            }
+                        }
+                    }
                 ],
             });
 

@@ -49,6 +49,14 @@ class MeetingsList(HorillaListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        active = (
+            True
+            if self.request.GET.get("is_active", True)
+            in ["unknown", "True", "true", True]
+            else False
+        )
+        queryset = queryset.filter(is_active=active)
+
         if not self.request.user.has_perm("pms.view_meetings"):
             employee_id = self.request.user.employee_get
             queryset = queryset.filter(
@@ -118,6 +126,9 @@ class MeetingsDetailedView(HorillaDetailedView):
 
     cols = {
         "mom_detail_col": 12,
+        "employ_detail_col": 12,
+        "manager_detail_col": 12,
+        "answerable_col": 12,
     }
 
     def __init__(self, **kwargs: Any) -> None:
@@ -125,8 +136,8 @@ class MeetingsDetailedView(HorillaDetailedView):
         self.body = [
             (_("Date"), "date"),
             (_("Question Template"), "question_template"),
-            (_("Employees"), "employ_detail_col"),
             (_("Managers"), "manager_detail_col"),
+            (_("Employees"), "employ_detail_col"),
             (_("Answerable employees"), "answerable_col"),
             (_("Minutes of Meeting"), "mom_detail_col"),
         ]

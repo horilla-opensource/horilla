@@ -40,6 +40,7 @@ ResignationLetter = get_horilla_model_class(
 )
 AssetAssignment = get_horilla_model_class(app_label="asset", model="AssetAssignment")
 TimeSheet = get_horilla_model_class(app_label="project", model="TimeSheet")
+Deduction = get_horilla_model_class(app_label="payroll", model="Deduction")
 
 
 def tot_hires(self):
@@ -376,6 +377,34 @@ def detail_view_title(self):
     return col
 
 
+def tax_col(self):
+    if self.is_tax:
+        title = _("Tax")
+        value = "Yes" if self.is_tax else "No"
+    else:
+        title = _("Pretax")
+        value = "Yes" if self.is_pretax else "No"
+
+    col = format_html(
+        """
+            <div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+                <span class="font-medium text-xs text-[#565E6C] w-32">
+                    {}
+                </span>
+                <div class="text-xs font-semibold flex items-center gap-5">
+                    : <span>
+                        {}
+                    </span>
+                </div>
+            </div>
+        """,
+        title,
+        value,
+    )
+
+    return col
+
+
 Recruitment.managers_detail = managers_detail
 Recruitment.open_job_detail = open_job_detail
 Recruitment.tot_hires = tot_hires
@@ -398,8 +427,10 @@ AssetAssignment.return_condition_img = return_condition_img
 TimeSheet.detail_view_subtitle = detail_view_subtitle
 TimeSheet.detail_view_title = detail_view_title
 
+Deduction.tax_col = tax_col
 
 from base.cbv.dashboard.dashboard import DashboardWorkTypeRequest, ShiftRequestToApprove
+from employee.cbv.disciplinary_actions import DisciplinaryActionsList
 
 _shift_request_to_approve_init_orig = ShiftRequestToApprove.__init__
 
@@ -417,8 +448,23 @@ def _work_type_request_to_approve_init(self, **kwargs):
     self.header_attrs = {}
 
 
+_disciplinary_action_list_init_orig = DisciplinaryActionsList.__init__
+
+
+def _disciplinary_action_list_init(self, **kwargs):
+    _disciplinary_action_list_init_orig(self, **kwargs)
+    self.row_attrs = """
+        class ="oh-sticky-table__tr oh-permission-table--collapsed"
+        hx-get='{dis_action_detail_view}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
+
+
 ShiftRequestToApprove.__init__ = _shift_request_to_approve_init
 DashboardWorkTypeRequest.__init__ = _work_type_request_to_approve_init
+DisciplinaryActionsList.__init__ = _disciplinary_action_list_init
 
 
 if apps.is_installed("pms"):
@@ -563,3 +609,44 @@ if apps.is_installed("leave"):
         self.header_attrs = {}
 
     LeaveRequestsToApprove.__init__ = _leave_request_to_approve_init
+
+if apps.is_installed("payroll"):
+    from payroll.cbv.allowance_deduction import AllowanceDetailView, DeductionDetailView
+
+    _allowance_detail_init_orig = AllowanceDetailView.__init__
+    _deduction_detail_init_orig = DeductionDetailView.__init__
+
+    def _allowance_detail_init(self, **kwargs):
+        _allowance_detail_init_orig(self, **kwargs)
+
+        self.body = [
+            (_("Taxable"), "get_is_taxable_display"),
+            (_("One Time Allowance"), "one_time_date_display"),
+            (_("Condition Based"), "condition_based_display"),
+            (_("Amount"), "based_on_amount"),
+            (_("Has Maximum Limit"), "cust_allowance_max_limit"),
+            (_("Allowance Eligibility"), "allowance_eligibility"),
+            (_("Specific Employees"), "get_specific_exclude_employees", True),
+        ]
+
+        self.cols = {
+            "get_specific_exclude_employees": 12,
+        }
+
+    def _deduction_detail_init(self, **kwargs):
+        _deduction_detail_init_orig(self, **kwargs)
+        self.body = [
+            (_("Tax"), "tax_col", True),
+            (_("One Time deduction"), "get_one_time_deduction"),
+            (_("Condition Based"), "condition_based_col"),
+            (_("Amount"), "amount_col"),
+            (_("Has Maximum Limit"), "has_maximum_limit_col"),
+            (_("Deduction Eligibility"), "deduction_eligibility"),
+            (_("Specific Employees"), "get_specific_exclude_employees", True),
+        ]
+        self.cols = {
+            "get_specific_exclude_employees": 12,
+        }
+
+    AllowanceDetailView.__init__ = _allowance_detail_init
+    DeductionDetailView.__init__ = _deduction_detail_init

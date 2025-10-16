@@ -32,7 +32,7 @@
                                         <div class="oh-modal__dialog-body">
                                             <div class="oh-profile-section__image-container">
                                                 <div class="oh-profile-section__modal-avatar">
-                                                    <img src="{% static " /images/ui/user.jpg" %}"
+                                                    <img src="{% static '/images/ui/user.jpg' %}"
                                                         class="oh-profile-section__modal-image oh-upload-photo"
                                                         alt="User Photo" />
                                                 </div>
@@ -59,6 +59,7 @@
                                     </div>
                                 </div>
                                 {{ form.profile.errors }}
+                                {{ form.non_field_errors }}
                                 <div class="col-sm-12 col-md-12 col-lg-12">
                                     <div class="oh-input-group">
                                         <label class="oh-label required-star" for="name">{% trans "Name" %}</label>

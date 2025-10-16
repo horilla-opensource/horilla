@@ -267,6 +267,10 @@ class DisciplinaryActionsDetailView(HorillaDetailedView):
             (_("Description"), "description"),
         ]
 
+    cols = {
+        "description": 12,
+    }
+
     action_method = "detail_actions"
 
     model = DisciplinaryAction
@@ -276,3 +280,9 @@ class DisciplinaryActionsDetailView(HorillaDetailedView):
         "subtitle": "",
         "avatar": "get_avatar",
     }
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        instance = context["object"]
+        instance.ordered_ids = context["instance_ids"]
+        return context

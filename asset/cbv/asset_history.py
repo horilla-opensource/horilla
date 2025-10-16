@@ -51,21 +51,19 @@ class AssetHistorylistView(HorillaListView):
         (_("Return Status"), "return_status"),
     ]
 
-    records_per_page = 5
-
     sortby_mapping = [
         ("Asset", "asset_id__asset_name", "get_avatar"),
-        ("Employee", "assigned_to_employee_id"),
+        ("Employee", "assigned_to_employee_id__get_full_name"),
         ("Assigned Date", "assigned_date"),
         ("Returned Date", "return_date"),
     ]
 
     row_attrs = """
-                hx-get='{asset_detail_view}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+        hx-get='{asset_detail_view}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -112,8 +110,10 @@ class AssetHistoryDetailView(HorillaDetailedView):
         (_("Returned Status"), "return_status"),
         (_("Allocated Date"), "assigned_date"),
         (_("Returned Date"), "return_date"),
-        (_("Asset"), "asset_id"),
         (_("Return Description"), "return_condition"),
         (_("Assign Condition Images"), "assign_condition_img", True),
         (_("Return Condition Images"), "return_condition_img", True),
     ]
+    cols = {
+        "return_condition": 12,
+    }

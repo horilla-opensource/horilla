@@ -79,6 +79,10 @@ def strtobool(val):
     return str(val).lower() in ("y", "yes", "t", "true", "on", "1")
 
 
+def strtobool(val):
+    return str(val).lower() in ("y", "yes", "t", "true", "on", "1")
+
+
 @login_required
 def faq_category_view(request):
     """
@@ -1744,9 +1748,10 @@ def get_department_employees(request):
         else None
     )
     if department:
-        employees_queryset = department.employeeworkinformation_set.all().values_list(
-            "employee_id__id", "employee_id__employee_first_name"
-        )
+        employees_qs = department.employeeworkinformation_set.all()
+        employees_queryset = [
+            (emp.employee_id.id, emp.employee_id) for emp in employees_qs
+        ]
     else:
         employees_queryset = None
     employees = list(employees_queryset)

@@ -18,7 +18,7 @@
         onclick="
         switchTab(event);
         if (!$(this).attr('data-loaded')) {
-            htmx.ajax('GET', '{{tab.url}}?{{request.GET.urlencode}}', {target: '#{{view_id}}{{forloop.counter}}'});
+            htmx.ajax('GET', '{{tab.url}}', {target: '#{{view_id}}{{forloop.counter}}'});
             this.setAttribute('data-loaded', 'true');
         }
         "

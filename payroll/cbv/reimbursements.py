@@ -272,9 +272,12 @@ class ReimbursementsDetailView(HorillaDetailedView):
         (_("Date"), "created_at"),
         (_("Amount"), "amount"),
         (_("Status"), "get_status_display"),
-        (_("Description"), "description"),
         (_("Attachments"), "attachments_col"),
+        (_("Description"), "description"),
     ]
+    cols = {
+        "description": 12,
+    }
 
     action_method = "detail_action_col"
 

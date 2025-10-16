@@ -2129,11 +2129,7 @@ def interview_delete(request, interview_id):
     except:
         messages.error(request, _("Scheduled Interview not found"))
 
-    return HttpResponse(
-        "<script>$('.filterButton')[0].click()</script>"
-        if view == "true"
-        else "<script>window.location.reload()</script>"
-    )
+    return HttpResponse("<script>window.location.reload()</script>")
 
 
 @login_required
@@ -2872,6 +2868,7 @@ def open_recruitments(request):
     return response
 
 
+@hx_request_required
 def recruitment_details(request, id):
     """
     This method is used to render the recruitment details page

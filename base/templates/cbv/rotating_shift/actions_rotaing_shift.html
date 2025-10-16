@@ -5,15 +5,8 @@
     {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}
         <a hx-get="{% url 'rotating-shift-assign-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
             hx-target="#genericModalBody" hx-swap="innerHTML" data-target="#genericModal" data-toggle="oh-modal-toggle"
-            type="button" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Update' %}">
+            type="button" class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}">
             <ion-icon name="create-outline"></ion-icon>
-        </a>
-    {% endif %}
-    {% if perms.base.add_rotatingshiftassign or request.user|is_reportingmanager %}
-        <a class="oh-btn oh-btn--light-bkg w-100" data-toggle="oh-modal-toggle" data-target="#genericModal"
-            hx-get="{% url 'rotating-shift-assign-duplicate' instance.id %}?{{pg}}" title="{% trans 'Duplicate' %}"
-            hx-target="#genericModalBody" style="cursor: pointer;">
-            <ion-icon name="copy-outline"></ion-icon>
         </a>
     {% endif %}
     {% if perms.base.change_rotatingshiftassign or request.user|is_reportingmanager %}

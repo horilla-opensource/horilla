@@ -1,0 +1,25 @@
+{% load i18n %}
+
+{% if perms.asset.change_assetassignment or perms.asset.delete_assetassignment %}
+<div>
+	<div class="oh-btn-group">
+		{% if perms.asset.change_assetassignment %}
+		<a
+			class="oh-btn oh-btn--light-bkg w-100"
+			title="{% trans 'Edit' %}"
+			data-toggle="oh-modal-toggle"
+			data-target="#genericModal"
+			hx-put="{% url 'asset-allocate-update' instance.id %}"
+			hx-target="#genericModalBody"
+		>
+			<ion-icon
+				name="create-outline"
+				role="img"
+				class="md hydrated"
+				aria-label="create outline"
+			></ion-icon>
+		</a>
+		{% endif %}
+	</div>
+</div>
+{% endif%}

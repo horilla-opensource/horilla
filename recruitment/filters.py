@@ -5,6 +5,7 @@ This page is used to register filter for recruitment models
 
 """
 
+import ast
 import uuid
 
 import django_filters
@@ -19,6 +20,7 @@ from recruitment.models import (
     LinkedInAccount,
     Recruitment,
     RecruitmentSurvey,
+    RecruitmentSurveyAnswer,
     RejectReason,
     Skill,
     SkillZone,
@@ -187,6 +189,55 @@ class CandidateFilter(HorillaFilterSet):
             form_fields[field].widget.attrs["id"] = str(uuid.uuid4())
 
         self._update_field_labels(form_fields)
+        choices = []
+        try:
+            survey_answers = RecruitmentSurveyAnswer.objects.all()
+            for survey in survey_answers:
+                candidate = survey.candidate_id
+                answer_json = survey.answer_json
+
+                # Parse JSON if stored as string
+                if isinstance(answer_json, str):
+                    try:
+                        answer_json = ast.literal_eval(answer_json)
+                    except Exception:
+                        continue
+
+                # Extract questions & answers
+                for question, answer_list in answer_json.items():
+                    if question == "csrfmiddlewaretoken":
+                        continue
+
+                    answer = (
+                        ", ".join(answer_list)
+                        if isinstance(answer_list, list)
+                        else str(answer_list)
+                    )
+
+                    choices.append(
+                        (
+                            candidate.pk,
+                            f"Q: {question} || Ans: {answer} || {candidate.get_full_name()}",
+                        )
+                    )
+        except:
+            pass
+
+        # Add filter dynamically
+        survey_answer_by = django_filters.MultipleChoiceFilter(
+            choices=choices,
+            field_name="recruitmentsurveyanswer__candidate_id",
+            label=_("Survey Answer By"),
+        )
+        self.filters["survey_answer_by"] = survey_answer_by
+        self.form.fields["survey_answer_by"] = survey_answer_by.field
+        self.form.fields["survey_answer_by"].widget.attrs.update(
+            {
+                "data-placeholder": _("Select survey answers..."),
+                "class": "survey-select w-100",
+                "style": "width:100% !important;",
+            }
+        )
 
     def _update_field_labels(self, form_fields):
         """Helper method to update field labels from model verbose names"""

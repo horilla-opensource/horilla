@@ -29,8 +29,9 @@
 
 	<div class="accordion-wrapper space-y-2">
 		{% for group in groups %}
+
             <div
-                class="oh-accordion border border-primary-300 rounded-md overflow-hidden"
+                class="oh-accordion border border-primary-300 rounded-md overflow-hidden {% if forloop.first %}oh-accordion--show{% endif %}"
             >
                 <button
                     class="oh-accordion-header no-after w-full flex justify-between items-center px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all"
@@ -371,11 +372,3 @@
 	</div>
 	{% endif %}
 </div>
-
-<script>
-	$(document).ready(function () {
-		$(document).on("htmx:afterSettle", function (e) {
-			$(".shadow-card .oh-accordion-header").first().click();
-		});
-	});
-</script>
