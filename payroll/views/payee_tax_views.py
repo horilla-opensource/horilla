@@ -6,6 +6,17 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from payroll.models.tax_models import PayeeTax
 from payroll.forms.payee_tax_import_form import PayeeTaxImportForm
+from django.db import transaction,connection
+
+
+CHUNK_SIZE = 1000
+DELETE_CHUNK_SIZE = 5000
+
+def truncate_table(model):
+
+    table_name = model._meta.db_table
+    with connection.cursor() as cursor:
+        cursor.execute(f"TRUNCATE TABLE {table_name} RESTART IDENTITY CASCADE;")
 
 
 
@@ -13,7 +24,7 @@ from payroll.forms.payee_tax_import_form import PayeeTaxImportForm
 @permission_required("payroll.add_filingstatus", raise_exception=True)
 def import_payee_tax(request):
     """
-    Upload and import PayeeTax data from CSV file.
+    Upload and import PayeeTax data from CSV file in chunks.
     """
     if request.method == "POST":
         form = PayeeTaxImportForm(request.POST, request.FILES)
@@ -25,23 +36,39 @@ def import_payee_tax(request):
                 return redirect("import-payee-tax")
 
             try:
+
+                truncate_table(PayeeTax)
+
                 data_set = csv_file.read().decode("utf-8")
                 io_string = io.StringIO(data_set)
                 reader = csv.DictReader(io_string)
 
 
-                PayeeTax.objects.all().delete()
 
                 count = 0
+                batch = []
+
                 for row in reader:
-                    PayeeTax.objects.update_or_create(
+                    obj = PayeeTax(
                         start_range=row["start_range"],
                         end_range=row["end_range"],
-                        defaults={"tax_amount": row["tax_amount"]}
+                        tax_amount=row["tax_amount"]
                     )
-                    count += 1
+                    batch.append(obj)
 
-                messages.success(request, f"{count} tax records imported successfully!")
+                    if len(batch) >= CHUNK_SIZE:
+                        with transaction.atomic():
+                            PayeeTax.objects.bulk_create(batch, ignore_conflicts=True)
+                        count += len(batch)
+                        batch = []
+                    print(f"Processed {count} records...")
+
+                if batch:
+                    with transaction.atomic():
+                        PayeeTax.objects.bulk_create(batch, ignore_conflicts=True)
+                    count += len(batch)
+
+                messages.success(request, f"{count} tax records imported successfully")
                 return redirect("view-payee-tax")
 
             except Exception as e:
