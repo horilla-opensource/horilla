@@ -32,6 +32,7 @@ from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from django.utils.translation import gettext_lazy as _
 from openpyxl import Workbook
+from openpyxl.drawing.image import Image
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
@@ -553,17 +554,21 @@ def flatten_dict(d, parent_key=""):
     return dict(items)
 
 
-def export_xlsx(json_data, columns, file_name="quick_export"):
+def export_xlsx(json_data, columns, file_name="quick_export", extra_info=None):
     """
-    Quick export method
+    Quick export method with company info, logo, and date range header
     """
-    top_fields = [col[0] for col in columns if len(col) == 2]
+    company_name = extra_info.get("company_name", "") if extra_info else ""
+    date_range = extra_info.get("date_range", "") if extra_info else ""
+    report_title = extra_info.get("report_title", "Export") if extra_info else "Export"
+    logo_path = extra_info.get("logo_path", "") if extra_info else ""  # 👈 company logo
 
+    top_fields = [col[0] for col in columns if len(col) == 2]
     nested_fields = [
         col for col in columns if len(col) == 3 and isinstance(col[2], dict)
     ]
 
-    # Discover dynamic keys for each nested column
+    # --- Discover dynamic keys ---
     dynamic_columns = {}
     for title, key, mappings in nested_fields:
         dyn_keys = set()
@@ -571,8 +576,7 @@ def export_xlsx(json_data, columns, file_name="quick_export"):
             try:
                 nested_data = json.loads(entry.get(key, "[]").replace("'", '"'))
                 for item in nested_data:
-                    flat = flatten_dict(item)
-                    dyn_keys.update(flat.keys())
+                    dyn_keys.update(item.keys())
             except Exception:
                 continue
         dynamic_columns[key] = {
@@ -581,20 +585,61 @@ def export_xlsx(json_data, columns, file_name="quick_export"):
             "display_names": mappings,
         }
 
-    # Create workbook
+    # --- Workbook setup ---
     wb = Workbook()
     ws = wb.active
     ws.title = "Quick Export"
 
-    # Header row
+    total_columns = len(top_fields)
+    for nested_info in dynamic_columns.values():
+        total_columns += len(nested_info["keys"])
+
+    # --- Styles ---
+    header_font_big = Font(size=14, bold=True)
+    title_font = Font(size=14, bold=True, color="FF0000")
+    center_align = Alignment(horizontal="center", vertical="center")
+
+    # --- 1️⃣ Company Name Row ---
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=total_columns)
+    company_cell = ws.cell(row=1, column=1)
+    company_cell.value = company_name
+    company_cell.font = header_font_big
+    company_cell.alignment = center_align
+
+    # --- 2️⃣ Logo ---
+    if logo_path:
+        try:
+            logo = Image(logo_path)
+            logo.width = 120
+            logo.height = 60
+            ws.add_image(logo, "A1")  # top-left corner
+        except Exception as e:
+            print(f"Logo load failed: {e}")
+
+    # --- 3️⃣ Report Title (merged & centered) ---
+    ws.merge_cells(start_row=2, start_column=1, end_row=3, end_column=total_columns)
+    title_cell = ws.cell(row=2, column=1)
+    title_cell.value = report_title
+    title_cell.font = title_font
+    title_cell.alignment = center_align
+
+    ws.merge_cells(start_row=4, start_column=1, end_row=4, end_column=total_columns)
+    date_cell = ws.cell(row=4, column=1)
+    date_cell.value = date_range
+    date_cell.alignment = center_align
+
+    start_data_row = 6
+
     header = top_fields[:]
     for nested_info in dynamic_columns.values():
         for dyn_key in nested_info["keys"]:
             display_name = nested_info["display_names"].get(dyn_key, dyn_key)
             header.append(display_name)
-    ws.append(list(str(title) for title in header))
 
-    # Style definitions
+    ws.append([])
+    ws.append([str(title) for title in header])
+    header_row_index = start_data_row
+
     header_fill = PatternFill(
         start_color="FFD700", end_color="FFD700", fill_type="solid"
     )
@@ -606,16 +651,14 @@ def export_xlsx(json_data, columns, file_name="quick_export"):
         bottom=Side(style="thin"),
     )
 
-    # Apply styles to header
     for col_idx, title in enumerate(header, 1):
-        cell = ws.cell(row=1, column=col_idx)
+        cell = ws.cell(row=header_row_index, column=col_idx)
         cell.font = bold_font
         cell.fill = header_fill
         cell.border = thin_border
-        cell.alignment = Alignment(horizontal="center", vertical="center")
+        cell.alignment = center_align
 
-    row_index = 2
-
+    row_index = header_row_index + 1
     for entry in json_data:
         all_nested_records = []
         max_nested_rows = 1
@@ -632,28 +675,20 @@ def export_xlsx(json_data, columns, file_name="quick_export"):
 
         for i in range(max_nested_rows):
             row = []
-
-            # Top fields
             for tf in top_fields:
                 row.append(entry.get(tf, "") if i == 0 else "")
-
-            # Nested fields
             for idx, (key, nested_info) in enumerate(dynamic_columns.items()):
                 nested_data = all_nested_records[idx]
-                flat_ans = flatten_dict(nested_data[i]) if i < len(nested_data) else {}
+                nested_item = nested_data[i] if i < len(nested_data) else {}
                 for dyn_key in nested_info["keys"]:
-                    row.append(flat_ans.get(dyn_key, ""))
-
+                    row.append(nested_item.get(dyn_key, ""))
             ws.append(row)
 
-            # Apply border to row
             for col_idx in range(1, len(row) + 1):
-                cell = ws.cell(row=row_index, column=col_idx)
-                cell.border = thin_border
-
+                ws.cell(row=row_index, column=col_idx).border = thin_border
             row_index += 1
 
-        # Merge top fields if needed
+        # Merge top-level fields when multiple nested rows exist
         if max_nested_rows > 1:
             for col_idx in range(1, len(top_fields) + 1):
                 ws.merge_cells(
@@ -662,21 +697,18 @@ def export_xlsx(json_data, columns, file_name="quick_export"):
                     end_row=row_index - 1,
                     end_column=col_idx,
                 )
-                top_cell = ws.cell(row=row_index - max_nested_rows, column=col_idx)
-                top_cell.alignment = Alignment(vertical="center")
-                top_cell.border = thin_border  # Re-apply border
+                ws.cell(row=row_index - max_nested_rows, column=col_idx).alignment = (
+                    Alignment(vertical="center")
+                )
 
-    # Auto-fit column widths
     for col in ws.columns:
         max_len = max(len(str(cell.value or "")) for cell in col)
         col_letter = get_column_letter(col[0].column)
         ws.column_dimensions[col_letter].width = min(max_len + 2, 50)
 
-    # Output file
     output = BytesIO()
     wb.save(output)
     output.seek(0)
-
     response = HttpResponse(
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

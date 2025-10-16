@@ -11,11 +11,6 @@ from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
 from django.core.cache import cache as CACHE
 from django.db import router
-from django.db.models.fields.reverse_related import (
-    ManyToManyRel,
-    ManyToOneRel,
-    OneToOneRel,
-)
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
@@ -1009,7 +1004,26 @@ def export_data(request, *args, **kwargs):
             f'attachment; filename="{export_file_name}.pdf"'
         )
         return response
-    return export_xlsx(json_data, columns, file_name=export_file_name)
+
+    logo_path = ""
+    company_title = ""
+
+    company = request.selected_company_instance
+    if company:
+        logo_path = company.icon
+        company_title = company.company
+
+    return export_xlsx(
+        json_data,
+        columns,
+        file_name=export_file_name,
+        extra_info={
+            "company_name": company_title,
+            "date_range": request.session.get("report_date_range"),
+            "report_title": export_file_name,
+            "logo_path": logo_path,
+        },
+    )
 
 
 class DynamicView(View):
