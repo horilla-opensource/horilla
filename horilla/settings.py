@@ -223,6 +223,7 @@ LANGUAGES = (
     ("pt-br", "Português (Brasil)"),
     ("zh-hans", "Simplified Chinese"),
     ("zh-hant", "Traditional Chinese"),
+    ("it", "Italian"),
 )
 
 LOCALE_PATHS = [
