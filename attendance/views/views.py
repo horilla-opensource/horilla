@@ -23,11 +23,13 @@ import calendar
 import contextlib
 import io
 import json
+import os
 from collections import defaultdict
 from datetime import date, datetime, timedelta
 from urllib.parse import parse_qs, urlparse
 
 import pandas as pd
+from django.conf import settings
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.core.validators import validate_ipv46_address
@@ -48,6 +50,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext as __
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
+from xlsxwriter.utility import xl_range
 
 from attendance.filters import (
     AttendanceActivityFilter,
@@ -2629,12 +2632,66 @@ def work_record_export(request):
     columns = ["Employee"] + formatted_dates
     df = pd.DataFrame(data_rows, columns=columns)
 
+    company = getattr(request, "selected_company_instance", None)
+    logo_path = getattr(company, "icon", "") if company else ""
+    company_title = getattr(company, "company", "") if company else ""
+    date_range = f"{start_date} TO {end_date}"
+    report_title = str(_("Work Records Status"))
+
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
-        df.to_excel(writer, index=False, sheet_name="Sheet1")
+        df.to_excel(
+            writer, index=False, sheet_name="Sheet1", startrow=6
+        )  # leave space for header
         workbook = writer.book
         worksheet = writer.sheets["Sheet1"]
 
+        # --- Header Formats ---
+        company_format = workbook.add_format(
+            {"bold": True, "font_size": 16, "align": "center", "valign": "vcenter"}
+        )
+        title_format = workbook.add_format(
+            {
+                "bold": True,
+                "font_size": 14,
+                "align": "center",
+                "valign": "vcenter",
+                "font_color": "#FF0000",
+            }
+        )
+        date_format = workbook.add_format(
+            {"italic": True, "font_size": 11, "align": "center", "valign": "vcenter"}
+        )
+
+        # --- Calculate header merge range ---
+        total_columns = len(df.columns)
+        merge_range = xl_range(0, 0, 0, total_columns - 1)
+
+        # --- 1️⃣ Company Name ---
+        worksheet.merge_range(merge_range, company_title or "", company_format)
+
+        # --- 2️⃣ Report Title ---
+        worksheet.merge_range(
+            xl_range(1, 0, 2, total_columns - 1), report_title or "", title_format
+        )
+
+        # --- 3️⃣ Date Range ---
+        worksheet.merge_range(
+            xl_range(3, 0, 3, total_columns - 1), date_range or "", date_format
+        )
+
+        # --- 4️⃣ Company Logo (optional) ---
+        if logo_path:
+            try:
+                worksheet.insert_image(
+                    "A1",
+                    str(os.path.join(settings.MEDIA_ROOT, str(logo_path))),
+                    {"x_scale": 0.5, "y_scale": 0.5},
+                )
+            except Exception as e:
+                print(f"Logo insert failed: {e}")
+
+        # --- Cell formats for codes ---
         formats = {
             "ABS": workbook.add_format(
                 {"bg_color": "#808080", "font_color": "#ffffff"}
@@ -2653,14 +2710,18 @@ def work_record_export(request):
             ),
         }
 
-        for row_idx, row in enumerate(df.itertuples(index=False), start=1):
-            for col_idx, cell_value in enumerate(row[1:], start=1):
+        # --- Apply cell formats ---
+        for row_idx, row in enumerate(
+            df.itertuples(index=False), start=7
+        ):  # data starts from row 7
+            for col_idx, cell_value in enumerate(row):
                 if cell_value in formats:
                     worksheet.write(row_idx, col_idx, cell_value, formats[cell_value])
 
+        # --- Auto column width ---
         for col_idx, col in enumerate(df.columns):
             max_len = max(df[col].astype(str).map(len).max(), len(col))
-            worksheet.set_column(col_idx, col_idx, max_len)
+            worksheet.set_column(col_idx, col_idx, min(max_len + 2, 50))
 
     output.seek(0)
 
@@ -2668,7 +2729,7 @@ def work_record_export(request):
         output.read(),
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-    response["Content-Disposition"] = 'attachment; filename="work_record_export.xlsx"'
+    response["Content-Disposition"] = f'attachment; filename="Work Record Status.xlsx"'
     return response
 
 
