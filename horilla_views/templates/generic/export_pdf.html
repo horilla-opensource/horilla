@@ -1,65 +1,157 @@
 <!DOCTYPE html>
-{% load horillafilters %}
+{% load static horillafilters %}
 <html>
-  <head>
-    <style>
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: sans-serif;
-      }
-      th,
-      td {
-        border: 1px solid #333;
-        padding: 2px;
-        text-align: left;
-      }
-      th {
-        background: #f0f0f0;
-      }
-    </style>
-  </head>
-  <body>
-    <h2>Exported Data</h2>
-    <table style="width: 100%; border-collapse: collapse;">
+<head>
+  <meta charset="utf-8" />
+  <style>
+    {% if landscape %}
+    @page {
+      size: A4 landscape;
+      margin: 10mm;
+    }
+    .landscape {
+      page: landscape-page;
+    }
+    {% else %}
+    @page {
+      size: A4 portrait;
+      margin: 10mm;
+    }
+    {% endif %}
+
+    /* Apply to wrapper if in landscape */
+
+    body {
+      font-family: sans-serif;
+      font-size: 12px;
+      margin: 10px 20px;
+    }
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #aaa;
+      padding-bottom: 10px;
+    }
+
+    .logo {
+      flex: 0 0 auto;
+      margin-right: 10px;
+    }
+
+    .logo img {
+      width: 60px;
+      height: auto;
+    }
+
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .report-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #d32f2f;
+      margin-bottom: 4px;
+    }
+
+    .company-name {
+      font-size: 13px;
+      font-weight: bold;
+      color: #222;
+      margin-bottom: 2px;
+    }
+
+    .date-range {
+      font-size: 11px;
+      color: #555;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: sans-serif;
+      margin-top: 10px;
+    }
+
+    th,
+    td {
+      border: 1px solid #333;
+      padding: 1px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f0f0f0;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Wrapper with conditional orientation -->
+  <div class="{% if headers|length > 5 %}landscape{% endif %}">
+
+    <!-- Header Block -->
+    <div class="header">
+      <!-- Logo -->
+      <div class="logo">
+        {% if logo_path %}
+          <img src="{{ logo_path }}" alt="Company Logo" />
+        {% endif %}
+      </div>
+
+      <!-- Header Info -->
+      <div class="header-content">
+        <div class="report-title">{{ report_title }}</div>
+        <div class="company-name">{{ company_name }}</div>
+        <div class="date-range">{{ date_range }}</div>
+      </div>
+    </div>
+
+    <!-- Data Table -->
+    <table>
       <thead>
         <tr>
-          <th style="width: 30px;text-align: center;">SN</th>
+          <th style="width:30px; text-align:center;">SN</th>
           {% for header in headers %}
-            {% if forloop.counter != 1 %}
-              <!-- Excluding the ID column -->
-              <th style="word-wrap: break-word; white-space: normal; padding: 2px;">{{ header }}</th>
-            {% endif %}
+            <th style="word-wrap:break-word; white-space:normal;">{{ header }}</th>
           {% endfor %}
         </tr>
       </thead>
       <tbody>
         {% for row in rows %}
           <tr>
-            <td style="width: 30px;text-align: center;">{{ forloop.counter }}</td>
+            <td style="width:30px; text-align:center;">{{ forloop.counter }}</td>
             {% for header in headers %}
-              {% if forloop.counter != 1 %}
-                <!-- Excluding the ID column -->
-                <td style="word-wrap: break-word; white-space: normal; border: 1px solid #666; padding: 2px; max-width: 200px; overflow-wrap: break-word;">
-                  {% with cell=row|get_item:header %}
-                    {% if cell|length > 0 and not cell|stringformat:"s" == cell %}
-                        <!-- cell is likely a list -->
-                        <ul>
-                            {% for item in cell %}
-                                <li>{{ item }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <!-- cell is not a list -->
-                        {{ cell }}
-                    {% endif %}
+              <td style="word-wrap:break-word; white-space:normal; max-width:200px; overflow-wrap:break-word;">
+                {% with cell=row|get_item:header %}
+                  {% if cell is iterable and not cell|stringformat:'s' == cell %}
+                    <ul>
+                      {% for item in cell %}
+                        <li>{{ item }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% else %}
+                    {{ cell }}
+                  {% endif %}
                 {% endwith %}
-                </td>
-              {% endif %}
+              </td>
             {% endfor %}
           </tr>
         {% endfor %}
       </tbody>
     </table>
-  </body>
+
+  </div>
+
+</body>
 </html>
