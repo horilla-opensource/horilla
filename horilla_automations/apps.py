@@ -15,41 +15,55 @@ class HorillaAutomationConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "horilla_automations"
 
-    def ready(self):
-        """Run initialization tasks when the app is ready."""
-        from base.templatetags.horillafilters import app_installed
-        from employee.models import Employee
-        from horilla_automations.methods.methods import get_related_models
-        from horilla_automations.models import MODEL_CHOICES as model_choices
-
-        # Build MODEL_CHOICES
-        models = [Employee]
-        if app_installed("recruitment"):
-            from recruitment.models import Candidate
-
-            models.append(Candidate)
-
-        for main_model in models:
-            for model in get_related_models(main_model):
-                model_choices.append(
-                    (f"{model.__module__}.{model.__name__}", model.__name__)
-                )
-
-        model_choices.append(("employee.models.Employee", "Employee"))
-        model_choices.append(("pms.models.EmployeeKeyResult", "Employee Key Results"))
-        model_choices[:] = list(set(model_choices))  # Update in-place
-
-        # Only start automation when running the server
-        if not any(
-            cmd in sys.argv
-            for cmd in [
-                "makemigrations",
-                "migrate",
-                "compilemessages",
-                "flush",
-                "shell",
-            ]
+    def ready(self) -> None:
+        ready = super().ready()
+        if not (
+            len(sys.argv) >= 2
+            and sys.argv[1] == "runserver"
+            and os.environ.get("RUN_MAIN") == "true"
         ):
-            from horilla_automations.signals import start_automation
+            return ready
+        try:
 
-            start_automation()
+            from base.templatetags.horillafilters import app_installed
+            from employee.models import Employee
+            from horilla_automations.methods.methods import get_related_models
+            from horilla_automations.models import MODEL_CHOICES
+
+            recruitment_installed = False
+            if app_installed("recruitment"):
+                recruitment_installed = True
+
+            models = [Employee]
+            if recruitment_installed:
+                from recruitment.models import Candidate
+
+                models.append(Candidate)
+
+            main_models = models
+            for main_model in main_models:
+                related_models = get_related_models(main_model)
+
+                for model in related_models:
+                    path = f"{model.__module__}.{model.__name__}"
+                    MODEL_CHOICES.append((path, model.__name__))
+            MODEL_CHOICES.append(("employee.models.Employee", "Employee"))
+            MODEL_CHOICES.append(
+                ("pms.models.EmployeeKeyResult", "Employee Key Results")
+            )
+
+            MODEL_CHOICES = list(set(MODEL_CHOICES))
+            try:
+                from horilla_automations.signals import start_automation
+
+                start_automation()
+            except Exception as e:
+                print(e)
+                """
+                Migrations are not affected yet
+                """
+        except:
+            """
+            Models not ready yet
+            """
+        return ready
