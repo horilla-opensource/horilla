@@ -1,26 +1,33 @@
-{% load basefilters %}
-{% load i18n %}
-{% if perms.leave.change_holiday %}
-    <a  hx-get="{% url 'holiday-update' instance.id %}?{{pd}}"
-    hx-target='#genericModalBody'
-    data-toggle="oh-modal-toggle"
-    data-target='#genericModal'
-    class="oh-btn oh-btn--info w-50" title="{% trans 'Edit' %}">
-    <ion-icon name="create-outline"></ion-icon>
-</a>
-{% endif %}
-{% if perms.leave.delete_holiday %}
-<form
-hx-post="{% url 'holiday-delete' instance.id %}"
-hx-target = "#holidaydelete"
-hx-confirm="{% trans "Are you sure you want to delete?" %}"
-method="post"
-style="display: contents;width:100%">
-{% csrf_token %}
-<button  type="submit" class="oh-btn oh-btn--secondary w-50" title="{% trans 'Delete' %}">
-<ion-icon name="trash-outline" role="img" class="md hydrated" aria-label="trash outline"></ion-icon>
-</button>
+{% load basefilters i18n %}
 
+<div class="oh-btn-group w-100">
+    {% if perms.leave.change_holiday %}
+        <a
+            hx-get="{% url 'holiday-update' instance.id %}?{{pd}}"
+            hx-target="#genericModalBody"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            class="oh-btn oh-btn--info flex-fill"
+        >
+            <ion-icon name="create-outline"></ion-icon>
+            {% trans 'Edit' %}
+        </a>
+    {% endif %}
 
-
-{% endif %}
+    {% if perms.leave.delete_holiday %}
+        <a
+            hx-post="{% url 'holiday-delete' instance.id %}"
+            hx-target="#holidaydelete"
+            hx-confirm="{% trans 'Are you sure you want to delete?' %}"
+            class="oh-btn oh-btn--danger flex-fill"
+        >
+            <ion-icon
+                name="trash-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="trash outline"
+            ></ion-icon>
+            {% trans 'Delete' %}
+        </a>
+    {% endif %}
+</div>

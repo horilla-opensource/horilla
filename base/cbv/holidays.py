@@ -58,8 +58,7 @@ class HolidayListView(HorillaListView):
     ]
 
     header_attrs = {
-        "name": """ style="width:200px !important;"
-                                """,
+        "name": """ style="width:200px !important;" """,
     }
 
     sortby_mapping = [
@@ -69,13 +68,11 @@ class HolidayListView(HorillaListView):
     ]
 
     row_attrs = """
-                hx-get='{detail_view}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
-
-    records_per_page = 10
+        hx-get='{detail_view}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -98,31 +95,26 @@ class HolidayNavView(HorillaNavView):
                 {
                     "action": _("Import"),
                     "attrs": """
-                    onclick="
-                    importHolidays();
-                    "
-                    data-toggle = "oh-modal-toggle"
-                    data-target = "#holidayImport
-                    "
-                    style="cursor: pointer;"
-                """,
+                        onclick="importHolidays();"
+                        data-toggle = "oh-modal-toggle"
+                        data-target = "#holidayImport"
+                        style="cursor: pointer;"
+                    """,
                 },
                 {
                     "action": _("Export"),
                     "attrs": f"""
-                    data-toggle = "oh-modal-toggle"
-                    data-target = "#genericModal"
-                    hx-target="#genericModalBody"
-                    hx-get ="{reverse('holiday-nav-export')}"
-                    style="cursor: pointer;"
-                """,
+                        data-toggle = "oh-modal-toggle"
+                        data-target = "#genericModal"
+                        hx-target="#genericModalBody"
+                        hx-get ="{reverse('holiday-nav-export')}"
+                        style="cursor: pointer;"
+                    """,
                 },
                 {
                     "action": _("Delete"),
                     "attrs": """
-                        onclick="
-                        bulkDeleteHoliday();
-                        "
+                        onclick="bulkDeleteHoliday();"
                         data-action ="delete"
                         style="cursor: pointer; color:red !important"
                     """,
@@ -146,12 +138,13 @@ class HolidayDetailView(HorillaDetailedView):
     title = _("Details")
 
     header = {"title": "name", "subtitle": "", "avatar": "get_avatar"}
-    body = {
+    body = [
         (_("Holiday Name"), "name"),
         (_("Start Date"), "start_date"),
         (_("End Date"), "end_date"),
         (_("Recurring"), "get_recurring_status"),
-    }
+        (_("Company"), "company_id"),
+    ]
 
     action_method = "detail_view_actions"
 
@@ -179,7 +172,7 @@ class HolidayExport(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("leave.add_holiday"), name="dispatch")
+@method_decorator(permission_required("leave.add_holidays"), name="dispatch")
 class HolidayFormView(HorillaFormView):
     """
     form view for create button
