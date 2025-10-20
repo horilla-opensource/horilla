@@ -686,6 +686,14 @@ class LeaveRequest(HorillaModel):
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
+    approve_manager = models.ForeignKey(
+        Employee,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Leave Approver"),
+        related_name="leave_approvals",
+    )
 
     class Meta:
         ordering = ["-id"]
