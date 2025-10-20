@@ -336,6 +336,7 @@ class ProjectCardView(HorillaCardView):
             in ["unknown", "True", "true", True]
             else False
         )
+        queryset = queryset.filter(is_active=active)
         if not self.request.user.has_perm("project.view_project"):
             employee = self.request.user.employee_get
             task_filter = queryset.filter(
@@ -495,10 +496,10 @@ class ProjectsTabView(ListView):
     def get_queryset(self):
         pk = self.kwargs.get("pk")
         queryset = Project.objects.filter(
-            Q(manager=pk)
+            Q(managers=pk)
             | Q(members=pk)
             | Q(task__task_members=pk)
-            | Q(task__task_manager=pk)
+            | Q(task__task_managers=pk)
         )
         return queryset.distinct()
 
@@ -512,15 +513,15 @@ class ProjectsTabView(ListView):
         return context
 
 
-# Remove the command lines after horilla converted into CBV
-# from employee.cbv.employee_profile import EmployeeProfileView
-# EmployeeProfileView.add_tab(
-#     tabs=[
-#         {
-#             "title": "Projects",
-#             # "view": projects_tab,
-#             "view": ProjectsTabView.as_view(),
-#             "accessibility": "employee.cbv.accessibility.workshift_accessibility",
-#         },
-#     ]
-# )
+from employee.cbv.employee_profile import EmployeeProfileView
+
+EmployeeProfileView.add_tab(
+    tabs=[
+        {
+            "title": "Projects",
+            # "view": projects_tab,
+            "view": ProjectsTabView.as_view(),
+            "accessibility": "employee.cbv.accessibility.workshift_accessibility",
+        },
+    ]
+)
