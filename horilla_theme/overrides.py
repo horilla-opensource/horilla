@@ -41,6 +41,7 @@ ResignationLetter = get_horilla_model_class(
 AssetAssignment = get_horilla_model_class(app_label="asset", model="AssetAssignment")
 TimeSheet = get_horilla_model_class(app_label="project", model="TimeSheet")
 Deduction = get_horilla_model_class(app_label="payroll", model="Deduction")
+Task = get_horilla_model_class(app_label="project", model="Task")
 
 
 def tot_hires(self):
@@ -323,7 +324,7 @@ def detail_view_subtitle(self):
 
                     <div>
                         <span class="text-gray-500 mb-2">Date</span><br />
-                        <span class="font-semibold">{}</span>
+                        <span class="font-semibold dateformat_changer">{}</span>
                     </div>
 
                     <div>
@@ -405,6 +406,37 @@ def tax_col(self):
     return col
 
 
+def document_col(self):
+    """
+    Task detail view document column
+    """
+
+    if self.document:
+        document_url = self.document.url
+        title = _("Document")
+        col = format_html(
+            """
+                <div class="col-span-1 md:col-span-6 mb-2 flex gap-5 items-center">
+                    <span class="font-medium text-xs text-[#565E6C] w-32">
+                        {1}
+                    </span>
+                    <div class="text-xs font-semibold flex items-center gap-5">
+                        : <span onmouseover="enlargeattachment('{0}')">
+                            <a href="{0}" style="text-decoration: none" rel="noopener noreferrer" class="oh-btn oh-btn--light" target="_blank" onclick="event.stopPropagation();">
+                                <span class="oh-file-icon oh-file-icon--pdf"></span>
+                                {1}
+                            </a>
+                        </span>
+                    </div>
+                </div>
+            """,
+            document_url,
+            title,
+        )
+        return col
+    return ""
+
+
 Recruitment.managers_detail = managers_detail
 Recruitment.open_job_detail = open_job_detail
 Recruitment.tot_hires = tot_hires
@@ -428,6 +460,8 @@ TimeSheet.detail_view_subtitle = detail_view_subtitle
 TimeSheet.detail_view_title = detail_view_title
 
 Deduction.tax_col = tax_col
+
+Task.document_col = document_col
 
 from base.cbv.dashboard.dashboard import DashboardWorkTypeRequest, ShiftRequestToApprove
 from employee.cbv.disciplinary_actions import DisciplinaryActionsList
@@ -563,18 +597,9 @@ if apps.is_installed("project"):
             "subtitle": "{detail_view_subtitle}",
         }
 
-    _timesheet_detail_init_orig = TimeSheetDetailView.__init__
-
-    def _timesheet_detail_init(self, **kwargs):
-        _timesheet_detail_init_orig(self, **kwargs)
-        self.cols = {
-            "description": 12,
-        }
-
     TimeSheetNavView.__init__ = _timesheet_nav_init
     TimeSheetList.__init__ = _timesheet_list_init
     TimeSheetCardView.__init__ = _timesheet_card_init
-    TimeSheetDetailView.__init__ = _timesheet_detail_init
 
 
 if apps.is_installed("attendance"):
