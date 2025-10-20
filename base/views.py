@@ -667,7 +667,8 @@ def include_employee_instance(request, form):
     employee = Employee.objects.filter(employee_user_id=request.user)
     if employee.first() is not None:
         if queryset.filter(id=employee.first().id).first() is None:
-            queryset = queryset | employee
+            # queryset = queryset | employee
+            queryset = queryset.distinct() | employee.distinct()
             form.fields["employee_id"].queryset = queryset
     return form
 
