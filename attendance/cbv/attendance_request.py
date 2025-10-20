@@ -370,9 +370,11 @@ class NewAttendanceRequestFormView(HorillaFormView):
         self.form = choosesubordinates(
             self.request, self.form, "attendance.change_attendance"
         )
-        self.form.fields["employee_id"].queryset = self.form.fields[
-            "employee_id"
-        ].queryset | Employee.objects.filter(employee_user_id=self.request.user)
+        self.form.fields["employee_id"].queryset = (
+            self.form.fields["employee_id"].queryset
+        ).distinct() | (
+            Employee.objects.filter(employee_user_id=self.request.user)
+        ).distinct()
         self.form.fields["employee_id"].initial = self.request.user.employee_get.id
         if self.request.GET.get("emp_id"):
             emp_id = self.request.GET.get("emp_id")

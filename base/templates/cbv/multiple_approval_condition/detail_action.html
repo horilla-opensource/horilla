@@ -1,5 +1,5 @@
-{% load i18n %}
-{% load basefilters %}
+{% load i18n basefilters %}
+
 {% if perms.base.change_multipleapprovalcondition or perms.base.delete_multipleapprovalcondition %}
     <div class="oh-btn-group" style="width: 100%;">
         {% if request.user|is_reportingmanager or perms.base.change_multipleapprovalcondition %}
@@ -7,6 +7,7 @@
                 data-target="#objectUpdateModal" hx-target="#objectUpdateModalTarget"
                 hx-get="{% url 'multiple-level-approval-edit' instance.id %}">
                 <ion-icon name="create-outline" role="img" class="md hydrated" aria-label="create outline"></ion-icon>
+                {% trans 'Edit' %}
             </button>
         {% endif %}
         {% if perms.base.delete_multipleapprovalcondition %}
@@ -15,6 +16,7 @@
                 hx-target="#genericModalBody" class="oh-btn oh-btn--secondary w-50" id="delete-link"
                 title="{% trans 'Delete' %}">
                 <ion-icon name="trash-outline"></ion-icon>
+                {% trans 'Delete' %}
             </a>
         {% endif %}
     </div>

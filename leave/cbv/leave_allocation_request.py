@@ -307,9 +307,11 @@ class LeaveAllocationRequestFormView(HorillaFormView):
         self.form = choosesubordinates(
             self.request, self.form, "leave.add_leaveallocationrequest"
         )
-        self.form.fields["employee_id"].queryset = self.form.fields[
-            "employee_id"
-        ].queryset | Employee.objects.filter(employee_user_id=self.request.user)
+        self.form.fields["employee_id"].queryset = (
+            self.form.fields["employee_id"].queryset
+        ).distinct() | (
+            Employee.objects.filter(employee_user_id=self.request.user)
+        ).distinct()
         context["form"] = self.form
         return context
 
