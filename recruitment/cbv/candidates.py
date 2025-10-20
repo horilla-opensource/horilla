@@ -989,6 +989,7 @@ class RejectReasonFormView(HorillaFormView):
     form_class = RejectedCandidateForm
     new_display_title = "Rejected Candidate"
     dynamic_create_fields = [("reject_reason_id", DynamicRejectReasonFormView)]
+    template_name = "candidate/candidate_rejection_form.html"
 
     def get_initial(self) -> dict:
         initial = super().get_initial()
