@@ -251,6 +251,7 @@ class LeaveRequestCreationForm(BaseModelForm):
             "end_date",
             "end_date_breakdown",
             "attachment",
+            "approve_manager",
             "description",
         ]
 
