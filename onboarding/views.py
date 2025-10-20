@@ -1803,6 +1803,25 @@ def add_to_rejected_candidates(request):
 
 
 @login_required
+@hx_request_required
+@permission_required("recruitment.delete_rejectedcandidate")
+def delete_candidate_rejection(request, rej_id):
+    """
+    This method is used to delete candidate rejection
+    """
+    try:
+        instance = RejectedCandidate.objects.filter(id=rej_id).first()
+        if instance:
+            instance.delete()
+            messages.success(request, "Candidate rejection deleted successfully")
+        else:
+            messages.error(request, "Candidate rejection not found")
+    except Exception as e:
+        messages.error(request, "Error occurred while deleting candidate rejection")
+    return HttpResponse("<script>window.location.reload()</script>")
+
+
+@login_required
 def candidate_select(request):
     """
     This method is used for select all in candidate
