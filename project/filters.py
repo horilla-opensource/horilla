@@ -90,6 +90,7 @@ class TaskAllFilter(HorillaFilterSet):
             "task_members",
             "end_date",
             "status",
+            "is_active",
         ]
 
     def __init__(self, *args, **kwargs):
