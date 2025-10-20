@@ -2771,6 +2771,8 @@ class CompanyLeaveForm(ModelForm):
         Custom initialization to configure the 'based_on' field.
         """
         super().__init__(*args, **kwargs)
+        choices = [("", "All")] + list(self.fields["based_on_week"].choices[1:])
+        self.fields["based_on_week"].choices = choices
         self.fields["based_on_week"].widget.option_template_name = (
             "horilla_widgets/select_option.html"
         )
