@@ -1,0 +1,67 @@
+{% load i18n static %}
+<style>
+    .shadow-card {
+        padding-top:0;
+    }
+</style>
+<div id="messages" class="oh-alert-container"></div>
+{% if projects %}
+    <div
+        class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center p-4"
+    >
+        <h2 class="font-semibold text-sm">
+            {{employee.get_full_name}}{% trans "'s Projects" %}
+        </h2>
+    </div>
+    <div id="projectContainer">
+        {% for project in projects %}
+        <div
+            hx-get="{% url 'tasks-list-individual-view' %}?employee_id={{ employee.id }}&project_id={{ project.id }}&field=project"
+            hx-trigger="load"
+            hx-target="#projectTaskList{{project.id}}"
+            class="relative"
+        >
+            <button
+                onclick="event.stopPropagation();"
+                class="oh-btn bg-gray-200 absolute right-16 top-3 z-50"
+                title="{% trans 'View Project' %}"
+                hx-target="#genericModalBody"
+                data-target="#genericModal"
+                data-toggle="oh-modal-toggle"
+                hx-get="{% url 'project-detailed-view' project.id %}"
+            >
+                <ion-icon name="eye-outline" role="img"></ion-icon>
+            </button>
+            <div id="projectTaskList{{project.id}}"></div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div
+        style="
+            height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        "
+        class=""
+    >
+        <div style="" class="">
+            <img
+                style="display: block; width: 100px; margin: 10px auto"
+                src="{% static 'images/ui/project/project.png' %}"
+                class=""
+                alt="Page not found. 404."
+            />
+            <h3 style="font-size: 20px" class="oh-404__subtitle">
+                {% trans "No projects assigned to this employee." %}
+            </h3>
+        </div>
+    </div>
+{% endif %}
+
+<script>
+    $(document).on("htmx:afterSettle", function () {
+        $(".stickyleft-second").removeClass("stickyleft-second");
+    });
+</script>
