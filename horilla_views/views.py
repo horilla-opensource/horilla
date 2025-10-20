@@ -813,6 +813,55 @@ def get_model_class(model_path):
     return model_class
 
 
+import os
+
+from django.conf import settings
+from django.contrib.staticfiles import finders
+from django.templatetags.static import static
+
+
+def link_callback(uri, rel):
+    """
+    Convert html URIs to absolute system paths so xhtml2pdf can access them.
+    Called by pisa.CreatePDF(..., link_callback=link_callback)
+    """
+    # If absolute URL (http/https/file) return as-is
+    if (
+        uri.startswith("http://")
+        or uri.startswith("https://")
+        or uri.startswith("file://")
+    ):
+        return uri
+
+    # Try static files first
+    static_path = None
+    if uri.startswith(settings.STATIC_URL):
+        # remove STATIC_URL prefix
+        rel_path = uri.replace(settings.STATIC_URL, "")
+        # find with staticfiles finders
+        found = finders.find(rel_path)
+        if found:
+            static_path = found
+
+    # Try media files next
+    media_path = None
+    if uri.startswith(settings.MEDIA_URL):
+        rel_path = uri.replace(settings.MEDIA_URL, "")
+        media_path = os.path.join(settings.MEDIA_ROOT, rel_path)
+
+    # If a path found, return it
+    for path in (static_path, media_path, uri):
+        if path and os.path.exists(path):
+            return path
+
+    # Last resort: maybe it's relative to your project root
+    project_path = os.path.join(settings.BASE_DIR, uri)
+    if os.path.exists(project_path):
+        return project_path
+
+    raise Exception("File not found for URI: %s" % uri)
+
+
 @func_login_required
 def export_data(request, *args, **kwargs):
     """
@@ -961,6 +1010,14 @@ def export_data(request, *args, **kwargs):
             column = (column[0], column[1])
         columns.append(column)
 
+    logo_path = ""
+    company_title = ""
+
+    company = request.selected_company_instance
+    if company:
+        logo_path = company.icon
+        company_title = company.company
+
     if export_format == "json":
         response = HttpResponse(
             json.dumps(json_data, indent=4), content_type="application/json"
@@ -981,19 +1038,42 @@ def export_data(request, *args, **kwargs):
 
         headers = dataset.headers
         rows = dataset.dict
+        if not logo_path:
+            logo_path = static(os.path.join(settings.BASE_DIR, logo_path))
 
+        # Get absolute logo path from ImageField or fallback
+        if logo_path:
+            # If it's a FieldFile (from ImageField), convert to string
+            if hasattr(logo_path, "path"):
+                abs_logo_path = logo_path.path  # full file system path
+            else:
+                abs_logo_path = os.path.join(settings.BASE_DIR, str(logo_path))
+        else:
+            abs_logo_path = None
         # Render to HTML using a template
+        landscape = len(headers) > 5
         html_string = render_to_string(
             "generic/export_pdf.html",
             {
                 "headers": headers,
                 "rows": rows,
+                "landscape": landscape,
+                "company_name": company_title,
+                "date_range": (
+                    request.session.get("report_date_range")
+                    if request.session.get("report_date_range")
+                    else ""
+                ),
+                "report_title": export_file_name,
+                "logo_path": abs_logo_path,
             },
         )
 
         # Convert HTML to PDF using xhtml2pdf
         result = io.BytesIO()
-        pisa_status = pisa.CreatePDF(html_string, dest=result)
+        pisa_status = pisa.CreatePDF(
+            html_string, dest=result, link_callback=link_callback
+        )
 
         if pisa_status.err:
             return HttpResponse("PDF generation failed", status=500)
@@ -1004,14 +1084,6 @@ def export_data(request, *args, **kwargs):
             f'attachment; filename="{export_file_name}.pdf"'
         )
         return response
-
-    logo_path = ""
-    company_title = ""
-
-    company = request.selected_company_instance
-    if company:
-        logo_path = company.icon
-        company_title = company.company
 
     return export_xlsx(
         json_data,
