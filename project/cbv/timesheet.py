@@ -157,7 +157,7 @@ class TimeSheetList(HorillaListView):
         "task_id",
         "date",
         "time_spent",
-        "status",
+        (_("Status"), "get_status_display"),
         (_("Description"), "get_description_col"),
     ]
 
@@ -504,3 +504,7 @@ class TimeSheetDetailView(HorillaDetailedView):
             (get_field("status").verbose_name, "get_status_display"),
             (get_field("description").verbose_name, "description"),
         ]
+
+    cols = {
+        "description": 12,
+    }

@@ -144,9 +144,15 @@ class TicketForm(ModelForm):
         else:
             employee = request.user.employee_get
         # initialising employee queryset according to the user
-        self.fields["employee_id"].queryset = filtersubordinatesemployeemodel(
-            request, Employee.objects.filter(is_active=True), perm="helpdesk.add_ticket"
-        ) | Employee.objects.filter(employee_user_id=request.user)
+        self.fields["employee_id"].queryset = (
+            filtersubordinatesemployeemodel(
+                request,
+                Employee.objects.filter(is_active=True),
+                perm="helpdesk.add_ticket",
+            )
+        ).distinct() | (
+            Employee.objects.filter(employee_user_id=request.user)
+        ).distinct()
         self.fields["employee_id"].initial = employee
         # appending dynamic create option according to user
         if is_reportingmanager(request) or request.user.has_perm(
