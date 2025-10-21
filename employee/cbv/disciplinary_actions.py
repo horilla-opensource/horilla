@@ -49,12 +49,13 @@ class DisciplinaryActionsList(HorillaListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         data = queryset
-        if not self.request.user.has_perm("employee.view_disciplinaryaction"):
-            employee = self.request.user.employee_get
-            queryset = filtersubordinates(
-                self.request, queryset, "base.add_disciplinaryaction"
-            ).distinct()
-            queryset = queryset | data.filter(employee_id=employee).distinct()
+
+        employee = self.request.user.employee_get
+        queryset = filtersubordinates(
+            self.request, queryset, "employee.view_disciplinaryaction"
+        ).distinct()
+        queryset = queryset | data.filter(employee_id=employee).distinct()
+
         return queryset
 
     def __init__(self, **kwargs: Any) -> None:
