@@ -414,6 +414,16 @@ class LoanAccountFilter(HorillaFilterSet):
         widget=forms.DateInput(attrs={"type": "date"}),
         field_name="provided_date",
     )
+    from_date = django_filters.DateFilter(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        field_name="provided_date",
+        lookup_expr="gte",
+    )
+    to_date = django_filters.DateFilter(
+        widget=forms.DateInput(attrs={"type": "date"}),
+        field_name="provided_date",
+        lookup_expr="lte",
+    )
 
     def filter_by_search(self, queryset, name, value):
         return queryset.filter(
