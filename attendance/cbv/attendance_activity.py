@@ -50,7 +50,7 @@ class AttendanceActivityListView(HorillaListView):
             employee_id__employee_user_id=self.request.user
         )
         queryset = filtersubordinates(
-            self.request, queryset, "attendance.view_attendanceovertime"
+            self.request, queryset, "attendance.view_attendanceactivity"
         )
         return queryset | self_attendance_activities
 
