@@ -2009,9 +2009,7 @@ class RestrictLeave(HorillaModel):
         help_text=_("Choose leave types to exclude from restriction."),
     )
 
-    description = models.TextField(
-        null=True, verbose_name=_("Description"), max_length=255
-    )
+    description = models.TextField(null=True, verbose_name=_("Description"))
     company_id = models.ForeignKey(
         Company,
         null=True,
