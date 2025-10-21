@@ -63,6 +63,7 @@
             {% if actions or action_method %}
                 <div class="flex gap-1">
                     {% if actions and not action_method %}
+                        <div class="oh-btn-group">
                         {% for action in actions %}
                             <a {{action.attrs|format:object|safe}}>
                                 {% if action.icon|is_image_file %}
@@ -73,6 +74,7 @@
                                 {{action.action}}
                             </a>
                         {% endfor %}
+                        </div>
                     {% else %}
                         {{object|getattribute:action_method|safe}}
                     {% endif %}
