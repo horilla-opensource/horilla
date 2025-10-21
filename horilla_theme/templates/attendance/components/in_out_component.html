@@ -5,22 +5,67 @@
             <!-- "CHEKING WETHER Check in/check out enabled" -->
             {% if request|is_check_in_enabled %}
                 {% if request.user|is_clocked_in and get_forecasted_at_work.has_attendance %}
-                    <button class="check checkout" hx-get="{% url 'clock-out' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'>
+                    {% comment %} <button class="check checkout" hx-get="{% url 'clock-out' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'>
                         <span class="date">
                             <i class="fa-solid fa-right-from-bracket pe-2"></i><div class="time-runner"></div>
                         </span>
                         <span class="con hr-Check-In-out-text">{% trans "Check Out" %}</span>
                     </button>
-                    <span class="at_work_seconds" data-at-work-seconds = "{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}" data-run= "{{run|default:1}}" ></span>
+                    <span class="at_work_seconds" data-at-work-seconds = "{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}" data-run= "{{run|default:1}}" ></span> {% endcomment %}
+                    <button
+                        class="check checkout"
+                        hx-get="{% url 'clock-out' %}"
+                        hx-target='#attendance-activity-container'
+                        hx-swap='innerHTML'
+                        {% if enabled_timerunner and get_forecasted_at_work.has_attendance %}
+                            onmouseenter="$(this).find('span.hr-Check-In-out-text').show();$(this).find('.time-runner').hide();"
+                            onmouseleave="$(this).find('span.hr-Check-In-out-text').hide();$(this).find('.time-runner').show();"
+                        {% endif %}
+                    >
+                        <span class="date">
+                            <i class="fa-solid fa-right-from-bracket pe-2"></i>
+                            <div class="time-runner"></div>
+                        </span>
+                        <span class="con hr-Check-In-out-text" {% if enabled_timerunner and get_forecasted_at_work.has_attendance %} style="display:none;" {% endif %}>
+                            {% trans "Check Out" %}
+                        </span>
+                    </button>
+                    <span class="at_work_seconds"
+                        data-at-work-seconds="{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}"
+                        data-run="{{ run|default:1 }}">
+                    </span>
 
                 {% else %}
-                    <button class="check checkin" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'>
+                    {% comment %} <button class="check checkin" hx-get="{% url 'clock-in' %}"  hx-target='#attendance-activity-container' hx-swap='innerHTML'>
                         <span class="date">
                             <i class="fa-solid fa-right-to-bracket pe-2"></i> <div class="at-work-seconds"></div>
                         </span>
-                        <span class="con">{% trans "Check In" %}</span>
+                        <span class="con hr-Check-In-out-text">{% trans "Check In" %}</span>
                     </button>
-                    <span class="at_work_seconds" data-at-work-seconds = "{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}" data-run= "{{run|default:0}}" ></span>
+                    <span class="at_work_seconds" data-at-work-seconds = "{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}" data-run= "{{run|default:0}}" ></span> {% endcomment %}
+                    <button
+                        class="check checkin"
+                        hx-get="{% url 'clock-in' %}"
+                        hx-target='#attendance-activity-container'
+                        hx-swap='innerHTML'
+                        {% if enabled_timerunner %}
+                            onmouseenter="$(this).find('span.hr-Check-In-out-text').show();$(this).find('.at-work-seconds').hide();"
+                            onmouseleave="$(this).find('span.hr-Check-In-out-text').hide();$(this).find('.at-work-seconds').show();"
+                        {% endif %}
+                    >
+                        <span class="date">
+                            <i class="fa-solid fa-right-to-bracket pe-2"></i>
+                            <div class="at-work-seconds"></div>
+                        </span>
+                        <span class="con hr-Check-In-out-text" {% if enabled_timerunner %} style="display:none;" {% endif %}>
+                            {% trans "Check In" %}
+                        </span>
+                    </button>
+                    <span class="at_work_seconds"
+                        data-at-work-seconds="{{ get_forecasted_at_work.forecasted_at_work_seconds|default:0 }}"
+                        data-run="{{ run|default:0 }}">
+                    </span>
+
                     {% if enabled_timerunner %}
                         <script>
                             $(document).ready(function () {
