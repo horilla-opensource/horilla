@@ -8,12 +8,10 @@
         <span class="oh-info mr-2" title="{% trans "By enabling this feature user's will be able to see their current day worked hours in live on the navbar (inside the check in button)." %}"></span>
         </div>
         <label class="toggle-label">
-            <input type="checkbox" class="toggle-input" name="time_runner" id="enableResignationRequest"
-                data-target="#limitFields" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if enabled_timerunner %} checked{% endif %}>
+            <input type="checkbox" class="toggle-input" name="time_runner" onchange="$(this).closest('form').find('input[type=submit]').click()" {% if enabled_timerunner %} checked{% endif %}>
             <div class="toggle-switch"></div>
-
         </label>
-
+        <input type="submit" hidden />
     </div>
-    </form>
-    </div>
+</form>
+</div>
