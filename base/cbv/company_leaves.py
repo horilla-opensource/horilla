@@ -43,11 +43,15 @@ class CompanyleaveListView(HorillaListView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("company-leave-list")
+        self.search_url = reverse("company-leave-filter")
         self.view_id = "companyleavedelete"
 
-        if self.request.user.has_perm("view_companyleave"):
+        if self.request.user.has_perm("base.view_companyleave"):
             self.action_method = "company_leave_actions"
+
+        if self.request.user.has_perm("base.view_company"):
+            if (_("Company"), "company_id") not in self.columns:
+                self.columns.append((_("Company"), "company_id"))
 
     columns = [
         (_("Based On Week"), "custom_based_on_week"),
@@ -55,15 +59,7 @@ class CompanyleaveListView(HorillaListView):
     ]
 
     header_attrs = {
-        "custom_based_on_week": """
-                                style="width:200px !important;"
-                                """,
-        "based_on_week_day_col": """
-                                style="width:200px !important;"
-                                """,
-        "action": """
-                                style="width:200px !important;"
-                                """,
+        "action": """ style="width:200px !important;" """,
     }
 
     sortby_mapping = [
@@ -72,11 +68,11 @@ class CompanyleaveListView(HorillaListView):
     ]
 
     row_attrs = """
-                hx-get='{detail_view}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+        hx-get='{detail_view}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -87,7 +83,7 @@ class CompanyLeaveNavView(HorillaNavView):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("company-leave-list")
+        self.search_url = reverse("company-leave-filter")
         if self.request.user.has_perm("add_companyleave"):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy('company-leave-creation')}"
@@ -112,10 +108,11 @@ class CompanyLeaveDetailView(HorillaDetailedView):
     model = CompanyLeaves
     title = _("Details")
     header = {"title": "get_detail_title", "subtitle": "", "avatar": "get_avatar"}
-    body = {
+    body = [
         (_("Based On Week"), "custom_based_on_week"),
         (_("Based On Week Day"), "based_on_week_day_col"),
-    }
+        (_("Company"), "company_id"),
+    ]
     action_method = "detail_view_actions"
 
 

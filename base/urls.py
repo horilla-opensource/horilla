@@ -1639,9 +1639,9 @@ urlpatterns = [
         name="company-leave-view",
     ),
     path(
-        "company-leave-list/",
+        "company-leave-filter/",
         company_leaves.CompanyleaveListView.as_view(),
-        name="company-leave-list",
+        name="company-leave-filter",
     ),
     path(
         "company-leave-navbar/",
@@ -1673,9 +1673,9 @@ urlpatterns = [
         views.company_leave_delete,
         name="company-leave-delete",
     ),
-    path(
-        "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
-    ),
+    # path(
+    #     "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
+    # ),
     # path("view-penalties", views.view_penalties, name="view-penalties"),
     path("view-penalties", penalty.ViewPenaltyList.as_view(), name="view-penalties"),
     path(

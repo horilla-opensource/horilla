@@ -124,15 +124,15 @@ class ShiftRequestList(ShiftList):
     def get_queryset(self):
         queryset = super().get_queryset()
         data = queryset
-        if not self.request.user.has_perm("base.view_shiftrequest"):
-            employee = self.request.user.employee_get
-            queryset = filtersubordinates(
-                self.request,
-                queryset.filter(reallocate_to__isnull=True),
-                "base.add_shiftrequest",
-            )
-            queryset = queryset | data.filter(employee_id=employee)
-            queryset = queryset.filter(employee_id__is_active=True)
+
+        employee = self.request.user.employee_get
+        queryset = filtersubordinates(
+            self.request,
+            queryset.filter(reallocate_to__isnull=True),
+            "base.view_shiftrequest",
+        )
+        queryset = queryset | data.filter(employee_id=employee)
+        queryset = queryset.filter(employee_id__is_active=True)
 
         return queryset
 
@@ -203,7 +203,7 @@ class AllocatedShift(ShiftList):
         queryset = filtersubordinates(
             self.request,
             queryset.filter(reallocate_to__isnull=False),
-            "base.add_shiftrequest",
+            "base.view_shiftrequest",
         )
         allocated_requests = b.filter(reallocate_to__isnull=False)
         if not self.request.user.has_perm("base.view_shiftrequest"):

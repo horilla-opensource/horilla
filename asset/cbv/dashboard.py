@@ -34,7 +34,7 @@ class AssetRequestToApprove(AssetRequestList):
         queryset = filtersubordinates(
             self.request,
             queryset,
-            "asset.change_assetrequest",
+            "asset.view_assetrequest",
             field="requested_employee_id",
         )
         return queryset
