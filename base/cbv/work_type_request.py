@@ -64,13 +64,13 @@ class WorkRequestListView(HorillaListView):
         """
         queryset = super().get_queryset()
         view_data = queryset
-        if not self.request.user.has_perm("base.view_worktyperequest"):
-            employee = self.request.user.employee_get
-            queryset = filtersubordinates(
-                self.request, queryset, "base.add_worktyperequest"
-            )
-            queryset = queryset | view_data.filter(employee_id=employee)
-            queryset = queryset.filter(employee_id__is_active=True)
+
+        employee = self.request.user.employee_get
+        queryset = filtersubordinates(
+            self.request, queryset, "base.view_worktyperequest"
+        )
+        queryset = queryset | view_data.filter(employee_id=employee)
+        queryset = queryset.filter(employee_id__is_active=True)
         return queryset
 
     columns = [
