@@ -1,1 +1,1 @@
-<option value="{{ widget.value|stringformat:'s' }}" {% include "horilla_widgets/attr.html" %}>{{ widget.label }}</option>
+<option value="{{ widget.value|stringformat:'s' }}" {% include "horilla_widgets/attr.html" %} {% if widget.selected %} selected="selected"{% endif %} >{{ widget.label }}</option>
