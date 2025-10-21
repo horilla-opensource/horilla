@@ -2125,15 +2125,14 @@ def restrict_delete(request, id):
     hx_target = request.META.get("HTTP_HX_TARGET")
     if hx_target and hx_target == "genericModalBody":
         instances_ids = request.GET.get("instances_ids")
-        instances_list = json.loads(instances_ids)
-        if id in instances_list:
-            instances_list.remove(id)
-            previous_instance, next_instance = closest_numbers(
-                json.loads(instances_ids), id
+        if instances_ids:
+            instances_list = json.loads(instances_ids)
+            if id in instances_list:
+                previous_instance, next_instance = closest_numbers(instances_list, id)
+                instances_list.remove(id)
+            return redirect(
+                f"/leave/restricted-days-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
             )
-        return redirect(
-            f"/leave/restricted-days-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
-        )
     if not RestrictLeave.objects.filter():
         return HttpResponse("<script>window.location.reload();</script>")
     return redirect(f"/leave/restrict-filter?{query_string}")
