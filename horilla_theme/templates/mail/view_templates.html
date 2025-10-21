@@ -46,7 +46,7 @@
 
 				<button
 					class="px-5 py-2 group text-primary-600 text-xs font-medium bg-primary-100 rounded-md w-full hover:bg-primary-600 hover:text-white transition duration-300 flex items-center justify-center"
-					hx-get="{% url 'view-mail-template' template.id %}"
+					hx-get="{% url 'mail-template-edit-form' template.id %}"
 					hx-target="#objectCreateModalTarget"
 					data-toggle="oh-modal-toggle"
 					data-target="#objectCreateModal"
