@@ -3118,8 +3118,6 @@ class CompanyLeaveForm(ModelForm):
             - exclude: A list of fields to exclude from the form (is_active).
     """
 
-    cols = {"based_on_week": 12, "based_on_week_day": 12}
-
     class Meta:
         """
         Meta class for additional options
@@ -3134,6 +3132,8 @@ class CompanyLeaveForm(ModelForm):
         Custom initialization to configure the 'based_on' field.
         """
         super().__init__(*args, **kwargs)
+        choices = [("", "All")] + list(self.fields["based_on_week"].choices[1:])
+        self.fields["based_on_week"].choices = choices
         self.fields["based_on_week"].widget.option_template_name = (
             "horilla_widgets/select_option.html"
         )
