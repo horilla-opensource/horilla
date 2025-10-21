@@ -869,13 +869,44 @@ def reload_queryset(fields):
     return fields
 
 
-def check_manager(employee, instance):
+# def check_manager(employee, instance):
+
+
+#     try:
+#         if isinstance(instance, Employee):
+#             return instance.employee_work_info.reporting_manager_id == employee
+#         return employee == instance.employee_id.employee_work_info.reporting_manager_id
+#     except:
+#         return False
+
+
+def check_manager(employee, instance, nested=NESTED_SUBORDINATE_VISIBILITY):
+    """
+    Check if the given employee manages the instance employee.
+    Supports both direct and nested (indirect) checks.
+    """
 
     try:
-        if isinstance(instance, Employee):
-            return instance.employee_work_info.reporting_manager_id == employee
-        return employee == instance.employee_id.employee_work_info.reporting_manager_id
-    except:
+        # Get the target employee
+        target_employee = (
+            instance if isinstance(instance, Employee) else instance.employee_id
+        )
+
+        # Direct manager check
+        direct_manager = target_employee.employee_work_info.reporting_manager_id
+        if not nested:
+            return direct_manager == employee
+
+        # Recursive (nested) manager check
+        current_manager = direct_manager
+        while current_manager:
+            if current_manager == employee:
+                return True
+            current_manager = current_manager.employee_work_info.reporting_manager_id
+
+        return False
+
+    except Exception:
         return False
 
 
