@@ -1,0 +1,20 @@
+
+{% include "generic/horilla_form.html" %}
+<script>
+    function toggleLeaveType() {
+        if ($("#id_include_all").is(":checked")){
+                $("#id_spesific_leave_types_parent_div").hide()
+                $("#id_exclued_leave_types_parent_div").show()
+            } else {
+                $("#id_spesific_leave_types_parent_div").show()
+                $("#id_exclued_leave_types_parent_div").hide()
+            }
+    }
+    $(document).ready(function(){
+        toggleLeaveType()
+        $("#id_include_all").on("change", function(){
+            toggleLeaveType()
+        })
+        $("#id_job_position_parent_div").attr("id", "restrictLeaveJobPosition")
+    })
+</script>

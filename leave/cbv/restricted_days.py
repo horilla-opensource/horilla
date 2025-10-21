@@ -70,11 +70,11 @@ class RestrictedDaysList(HorillaListView):
     ]
 
     row_attrs = """
-                hx-get='{restricted_days_detail_view}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+        hx-get='{restricted_days_detail_view}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -88,20 +88,18 @@ class RestrictedDaysNav(HorillaNavView):
         self.search_url = reverse("restrict-filter")
         if self.request.user.has_perm("leave.add_restrictleave"):
             self.create_attrs = f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get="{reverse('restrict-creation')}"
-                            """
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+                hx-get="{reverse('restrict-creation')}"
+            """
             self.actions = [
                 {
                     "action": _("Delete"),
                     "attrs": """
-                    onclick="
-                    bulkRestrictedDaysDelete();
-                    "
-                    data-action ="delete"
-                    style="cursor: pointer; color:red !important"
+                        onclick="bulkRestrictedDaysDelete();"
+                        data-action ="delete"
+                        style="cursor: pointer; color:red !important"
                     """,
                 }
             ]
@@ -123,6 +121,7 @@ class RestrictedDaysFormView(HorillaFormView):
     model = RestrictLeave
     form_class = RestrictLeaveForm
     new_display_title = _("Create Restricted Day")
+    template_name = "cbv/restricted_days/restrict_form.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -160,6 +159,9 @@ class RestrictedDaysDetailView(HorillaDetailedView):
         ]
 
     action_method = "detail_action"
+    cols = {
+        "description": 12,
+    }
 
     model = RestrictLeave
     title = _("Details")
