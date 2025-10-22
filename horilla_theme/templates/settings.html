@@ -43,16 +43,6 @@
 									</a>
 								</li>
 								{% endif %}
-								{% if perms.auth.view_permission %}
-								<li class="py-1">
-									<a
-										id="defaultAccessibility"
-										href="{% url 'user-accessibility' %}"
-										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "Accessibility Restriction" %}
-									</a>
-								</li>
-								{% endif %}
 								{% if perms.auth.view_group %}
 								<li class="py-1">
 									<a
@@ -60,6 +50,16 @@
 										href="{% url 'user-group-view' %}"
 										class="hover:text-primary-600 transition duration-300 text-[13px]"
 										>{% trans "User Group" %}
+									</a>
+								</li>
+								{% endif %}
+								{% if perms.auth.view_permission %}
+								<li class="py-1">
+									<a
+										id="defaultAccessibility"
+										href="{% url 'user-accessibility' %}"
+										class="hover:text-primary-600 transition duration-300 text-[13px]"
+										>{% trans "Accessibility Restriction" %}
 									</a>
 								</li>
 								{% endif %}
