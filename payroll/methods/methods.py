@@ -570,9 +570,9 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     loss_of_pay = salary_per_day * loss_of_pay_dates
 
 
-    employee_epf_amount = wage / 100 * 8
-    employer_epf_amount = wage / 100 * 12
-    employer_etf_amount = wage / 100 * 3
+    employee_epf_amount = wage - loss_of_pay / 100 * 8
+    employer_epf_amount = wage - loss_of_pay / 100 * 12
+    employer_etf_amount = wage - loss_of_pay / 100 * 3
 
     logger.info(f"""
     --- Debug Info ---
