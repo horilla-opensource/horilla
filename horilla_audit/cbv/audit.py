@@ -36,6 +36,7 @@ class AudiTagsList(HorillaListView):
 
     model = AuditTag
     filter_class = AudiTagFilter
+    show_toggle_form = False
 
     bulk_update_fields = ["highlight"]
 
@@ -44,40 +45,32 @@ class AudiTagsList(HorillaListView):
         (_("Highlight"), "custom_highlight_col"),
     ]
 
-    row_attrs = """
-                id="auditTagTr{get_delete_instance}"
-                """
+    row_attrs = """ id="auditTagTr{get_delete_instance}" """
 
     actions = [
         {
             "action": _("Edit"),
             "icon": "create-outline",
             "attrs": """
-                        class="oh-btn oh-btn--light-bkg w-100"
-                        hx-get='{get_update_url}?instance_ids={ordered_ids}'
-								hx-target="#genericModalBody"
-								data-toggle="oh-modal-toggle"
-								data-target="#genericModal"
-                      """,
+                class="oh-btn oh-btn--light-bkg w-100"
+                hx-get='{get_update_url}?instance_ids={ordered_ids}'
+                hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+            """,
         },
         {
             "action": _("Delete"),
             "icon": "trash-outline",
             "attrs": """
-                        class="oh-btn oh-btn--light-bkg w-100 text-danger"
-                        hx-confirm="Are you sure you want to delete this history tag ?"
-                        hx-post="{get_delete_url}"
-                        hx-target="#auditTagTr{get_delete_instance}"
-                        hx-swap="delete"
-
-                      """,
+                class="oh-btn oh-btn--light-bkg w-100 text-danger"
+                hx-confirm="Are you sure you want to delete this history tag ?"
+                hx-post="{get_delete_url}"
+                hx-target="#auditTagTr{get_delete_instance}"
+                hx-swap="delete"
+            """,
         },
     ]
-
-    header_attrs = {
-        "title": """ style="width:180px !important" """,
-        "custom_highlight_col": """ style="width:180px !important" """,
-    }
 
 
 @method_decorator(login_required, name="dispatch")
@@ -91,12 +84,12 @@ class AuditTagsNavView(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("audit-tag-list")
         self.create_attrs = f"""
-                            onclick = "event.stopPropagation();"
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get="{reverse('settings-audit-tag-create')}"
-                            """
+            onclick = "event.stopPropagation();"
+            data-toggle="oh-modal-toggle"
+            data-target="#genericModal"
+            hx-target="#genericModalBody"
+            hx-get="{reverse('settings-audit-tag-create')}"
+        """
 
     nav_title = _("History Tags")
     search_swap_target = "#listContainer"
