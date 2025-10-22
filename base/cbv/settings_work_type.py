@@ -57,14 +57,13 @@ class WorkTypeList(HorillaListView):
 
     model = WorkType
     filter_class = WorkTypeFilter
+    show_toggle_form = False
 
     columns = [
         (_("Work Type"), "work_type"),
     ]
 
-    row_attrs = """
-                id="workTypeTr{get_delete_instance}"
-                """
+    row_attrs = """ id="workTypeTr{get_delete_instance}" """
 
     header_attrs = {
         "work_type": """ style="width:300px !important" """,

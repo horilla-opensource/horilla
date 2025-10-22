@@ -6,7 +6,6 @@ from typing import Any
 
 from django.contrib import messages
 from django.http import HttpResponse
-from django.middleware.csrf import get_token
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -15,7 +14,6 @@ from django.utils.translation import gettext_lazy as _
 from base.filters import DepartmentViewFilter
 from base.forms import DepartmentForm
 from base.models import Department
-from horilla.horilla_middlewares import _thread_locals
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
@@ -33,6 +31,7 @@ class DepartmentListView(HorillaListView):
 
     model = Department
     filter_class = DepartmentViewFilter
+    show_toggle_form = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -68,20 +67,7 @@ class DepartmentListView(HorillaListView):
                 }
             )
 
-        # <button
-        # 	class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-        # 	title="{% trans 'Remove' %}"
-        # 	hx-get="{% url 'generic-delete' %}?model=base.Department&pk={{dep.id}}"
-        # 	data-toggle="oh-modal-toggle"
-        # 	data-target="#deleteConfirmation"
-        # 	hx-target="#deleteConfirmationBody"
-        # >
-        # 	<ion-icon name="trash-outline"></ion-icon>
-        # </button>
-
-    row_attrs = """
-                id="departmentTr{get_delete_instance}"
-                """
+    row_attrs = """ id="departmentTr{get_delete_instance}" """
 
     columns = [
         (_("Department"), "department"),
@@ -89,11 +75,6 @@ class DepartmentListView(HorillaListView):
     sortby_mapping = [
         (_("Department"), "department"),
     ]
-
-    header_attrs = {
-        "department": """ style="width:300px !important" """,
-        "action": """ style="width:180px !important" """,
-    }
 
     records_per_page = 7
 
