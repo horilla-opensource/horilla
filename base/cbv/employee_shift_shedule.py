@@ -6,14 +6,13 @@ from typing import Any
 
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from base.filters import EmployeeShiftFilter, EmployeeShiftScheduleFilter
 from base.forms import EmployeeShiftScheduleForm
-from base.models import EmployeeShift, EmployeeShiftSchedule
+from base.models import EmployeeShiftSchedule
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -119,11 +118,7 @@ class EmployeeShiftSheduleList(HorillaListView):
         (_("Auto Check Out"), "auto_punch_out_col"),
     ]
 
-    header_attrs = {
-        "action": """
-                    style="width:200px !important;"
-                    """
-    }
+    header_attrs = {"action": """ style="width:200px !important;" """}
 
     row_attrs = """
                 id = "scheduleTr{get_instance_id}"
@@ -149,7 +144,15 @@ class EmployeeShiftSheduleDetailView(HorillaDetailedView):
         (_("End Time"), "end_time"),
         (_("Minimum Working Hours"), "minimum_working_hour"),
         (_("Auto Check Out"), "auto_punch_out_col"),
-        (_("Automatic Check Out Time"), "get_automatic_check_out_time", True),
     ]
 
     action_method = "detail_actions_col"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        instance = self.get_object()
+        if instance.is_auto_punch_out_enabled:
+            self.body.append(
+                (_("Automatic Check Out Time"), "auto_punch_out_time"),
+            )
+        return context
