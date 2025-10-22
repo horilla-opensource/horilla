@@ -39,6 +39,7 @@ class RejectReasonListView(HorillaListView):
 
     model = RejectReason
     filter_class = RejectReasonFilter
+    show_toggle_form = False
 
     columns = [
         (_("Reject Reasons"), "title"),
@@ -77,12 +78,9 @@ class RejectReasonListView(HorillaListView):
         "action": """ style="width:200px !important" """,
     }
 
-    row_attrs = """
-                id = "rejectReasonTr{get_instance_id}"
-                """
+    row_attrs = """ id = "rejectReasonTr{get_instance_id}" """
 
 
-#  onclick="deleteRejectReason('{get_delete_url}')"
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
     permission_required(perm="recruitment.view_rejectreason"), name="dispatch"
