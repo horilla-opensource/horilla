@@ -4,15 +4,24 @@ this page is handling the cbv methods for Rotating work type in settings
 
 from typing import Any
 
+from django.contrib import messages
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.decorators import manager_can_enter
 from base.filters import RotatingWorkTypeFilter
+from base.forms import RotatingWorkTypeForm
 from base.models import RotatingWorkType
 from horilla.decorators import permission_required
 from horilla_views.cbv_methods import login_required
-from horilla_views.generic.cbv.views import HorillaListView, HorillaNavView
+from horilla_views.generic.cbv.views import (
+    HorillaFormView,
+    HorillaListView,
+    HorillaNavView,
+)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -103,3 +112,64 @@ class RotatingWorkTypeNav(HorillaNavView):
     nav_title = _("Rotating Work Type")
     search_swap_target = "#listContainer"
     filter_instance = RotatingWorkTypeFilter()
+
+
+@method_decorator(manager_can_enter("base.add_rotatingworktype"), name="dispatch")
+@method_decorator(login_required, name="dispatch")
+class DynamicRotatingWorkTypeCreate(HorillaFormView):
+    """
+    form view for creating dynamic rotating work type
+    """
+
+    model = RotatingWorkType
+    form_class = RotatingWorkTypeForm
+    template_name = "cbv/rotating_work_type/forms/inherit.html"
+    new_display_title = _("Create Rotating Work Type")
+    is_dynamic_create_view = True
+
+    def form_valid(self, form: RotatingWorkTypeForm) -> HttpResponse:
+        if form.is_valid():
+            form.save()
+            messages.success(self.request, _("Rotating Work Type Created"))
+            return self.HttpResponse("<script>$('#reloadMessagesbutton').click();")
+        return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("base.add_rotatingworktype"), name="dispatch")
+class RotatingWorkTypesCreateForm(DynamicRotatingWorkTypeCreate):
+    """
+    form view for creating rotating work types in settings
+    """
+
+    is_dynamic_create_view = False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        form = self.form_class()
+
+        if self.form.instance.pk:
+            form = self.form_class(instance=self.form.instance)
+            self.form_class.verbose_name = _("Update Rotating Work Type")
+        context[form] = form
+        return context
+
+    def form_invalid(self, form: Any) -> HttpResponse:
+        if self.form.instance.pk:
+            self.form_class.verbose_name = _("Update Work Type")
+        if not form.is_valid():
+            errors = form.errors.as_data()
+            return render(
+                self.request, self.template_name, {"form": form, "errors": errors}
+            )
+        return super().form_invalid(form)
+
+    def form_valid(self, form: RotatingWorkTypeForm) -> HttpResponse:
+        if form.is_valid():
+            if form.instance.pk:
+                messages.success(self.request, _("Rotating Work Type Updated"))
+            else:
+                messages.success(self.request, _("Rotating Work Type Created"))
+            form.save()
+            return self.HttpResponse("")
+        return super().form_valid(form)
