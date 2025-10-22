@@ -60,18 +60,15 @@ class EmployeeTagListView(HorillaListView):
                         hx-swap="outerHTML"
                         hx-post="{get_delete_url}"
                         hx-target="#employeeTagTr{get_instance_id}"
-
-
                       """,
                 }
             )
 
     model = EmployeeTag
     filter_class = EmployeeTagFilter
+    show_toggle_form = False
 
-    row_attrs = """
-                id="employeeTagTr{get_instance_id}"
-                """
+    row_attrs = """ id="employeeTagTr{get_instance_id}" """
 
     columns = [
         (_("Title"), "title"),
@@ -79,8 +76,7 @@ class EmployeeTagListView(HorillaListView):
     ]
 
     header_attrs = {
-        "title": """ style="width:200px !important" """,
-        "color_span": """ style="width:200px !important" """,
+        "action": """ style="width:200px !important" """,
     }
 
 
