@@ -13,15 +13,12 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.cbv.rotating_shift import DynamicRotatingShiftTypeFormView
 from base.decorators import manager_can_enter
 from base.filters import RotatingShiftAssignFilters
-from base.forms import (
-    RotatingShiftAssignExportForm,
-    RotatingShiftAssignForm,
-    RotatingShiftForm,
-)
+from base.forms import RotatingShiftAssignExportForm, RotatingShiftAssignForm
 from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
-from base.models import RotatingShift, RotatingShiftAssign
+from base.models import RotatingShiftAssign
 from employee.models import Employee
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -290,57 +287,6 @@ class RotatingExportView(TemplateView):
         context["export_columns"] = export_columns
         context["export_filter"] = export_filter
         return context
-
-
-class DynamicRotatingShiftTypeFormView(HorillaFormView):
-    """
-    form view
-    """
-
-    model = RotatingShift
-    form_class = RotatingShiftForm
-    new_display_title = "Create Rotating Shift"
-    is_dynamic_create_view = True
-    template_name = "cbv/rotating_shift/rot_shift_form.html"
-
-    def form_valid(self, form: RotatingShiftForm) -> HttpResponse:
-        if form.is_valid():
-            form.save()
-            message = _("Rotating Shift Created")
-            messages.success(self.request, message)
-            return self.HttpResponse()
-        return super().form_valid(form)
-
-
-@method_decorator(login_required, name="dispatch")
-@method_decorator(manager_can_enter("base.add_rotatingshift"), name="dispatch")
-class RotatingShiftTypeCreateFormView(DynamicRotatingShiftTypeFormView):
-    """
-    form view
-    """
-
-    is_dynamic_create_view = False
-    template_name = "cbv/rotating_shift/rot_shift_form.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        form = self.form_class()
-        if self.form.instance.pk:
-            form = self.form_class(instance=self.form.instance)
-            self.form_class.verbose_name = _("Update Rotating Shift Type")
-        context[form] = form
-        return context
-
-    def form_valid(self, form: RotatingShiftForm) -> HttpResponse:
-        if form.is_valid():
-            form.save()
-            if self.form.instance.pk:
-                message = _("Rotating Shift Updated")
-            else:
-                message = _("Rotating Shift Created")
-            messages.success(self.request, message)
-            return self.HttpResponse()
-        return super().form_valid(form)
 
 
 @method_decorator(login_required, name="dispatch")
