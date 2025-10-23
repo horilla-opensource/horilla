@@ -5,6 +5,7 @@ This page handles grace time in settings page.
 from typing import Any
 
 from django.contrib import messages
+from django.forms import HiddenInput
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -42,21 +43,18 @@ class GenericGraceTimeListView(HorillaListView):
 
     columns = [
         (_("Allowed Time"), "allowed_time_col"),
-        (_("Is active"), "is_active_col"),
         (_("Applicable on clock-in"), "applicable_on_clock_in_col"),
         (_("Applicable on clock-out"), "applicable_on_clock_out_col"),
         (_("Assigned Shifts"), "get_shifts_display"),
+        (_("Is default"), "is_default_col"),
+        (_("Is active"), "is_active_col"),
     ]
 
     header_attrs = {
-        "allowed_time_col": """
-                   style = "width:200px !important"
-                   """,
+        "allowed_time_col": """ style = "width:200px !important" """,
     }
 
-    row_attrs = """
-                id = "graceTimeTr{get_instance_id}"
-                """
+    row_attrs = """ id = "graceTimeTr{get_instance_id}" """
 
     action_method = "action_col"
 
@@ -97,10 +95,6 @@ class GraceTimeList(GenericGraceTimeListView):
         self.view_id = "gracetime-container"
 
     selected_instances_key_id = "selectedInstancesData"
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.exclude(is_default=True)
 
 
 @method_decorator(login_required, name="dispatch")
@@ -173,8 +167,13 @@ class GraceTimeFormView(HorillaFormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        is_default = eval(self.request.GET.get("default"))
-        self.form.fields["is_default"].initial = is_default
+        # is_default = eval(self.request.GET.get("default"))
+        # self.form.fields["is_default"].initial = is_default
+        qs = self.model.objects.all()
+        default_object = qs.filter(is_default=True).first()
+        if default_object and self.form.instance != default_object:
+            self.form.fields["is_default"].widget = HiddenInput()
+
         if self.form.instance.pk:
             self.form.fields["shifts"].initial = self.form.instance.employee_shift.all()
             self.form_class.verbose_name = _("Update grace time")

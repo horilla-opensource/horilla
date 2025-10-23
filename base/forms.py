@@ -1287,14 +1287,6 @@ class EmployeeShiftForm(ModelForm):
     EmployeeShift Form
     """
 
-    cols = {
-        "employee_shift": 12,
-        "weekly_full_time": 12,
-        "full_time": 12,
-        "company_id": 12,
-        "grace_time_id": 12,
-    }
-
     class Meta:
         """
         Meta class for additional options
@@ -1302,7 +1294,7 @@ class EmployeeShiftForm(ModelForm):
 
         model = EmployeeShift
         fields = "__all__"
-        exclude = ["days", "is_active"]
+        exclude = ["days", "is_active", "weekly_full_time", "full_time"]
 
     def clean(self):
         full_time = self.data["full_time"]
@@ -1401,19 +1393,11 @@ class EmployeeShiftScheduleForm(ModelForm):
     EmployeeShiftSchedule model's form
     """
 
-    cols = {"day": 12, "company_id": 12}
+    cols = {"day": 12}
 
     day = forms.ModelMultipleChoiceField(
         queryset=EmployeeShiftDay.objects.all(),
     )
-
-    # day = forms.ModelMultipleChoiceField(
-    #     queryset=EmployeeShiftDay.objects.all(),
-    #     widget=forms.SelectMultiple(attrs={
-    #         "class": "oh-select oh-select2 w-100",
-    #         "style": "height:45px;"
-    #     })
-    # )
 
     class Meta:
         """
@@ -1433,30 +1417,14 @@ class EmployeeShiftScheduleForm(ModelForm):
         ]
         exclude = ["is_active", "day", "is_night_shift"]
         widgets = {
-            "start_time": DateInput(attrs={"type": "time"}),
-            "end_time": DateInput(attrs={"type": "time"}),
+            "start_time": forms.TimeInput(),
+            "end_time": forms.TimeInput(),
         }
 
     def __init__(self, *args, **kwargs):
-        if instance := kwargs.get("instance"):
-            # """
-            # django forms not showing value inside the date, time html element.
-            # so here overriding default forms instance method to set initial value
-            # """
-
-            initial = {
-                "start_time": instance.start_time.strftime("%H:%M"),
-                "end_time": instance.end_time.strftime("%H:%M"),
-            }
-            if apps.is_installed("attendance"):
-                initial["auto_punch_out_time"] = (
-                    instance.auto_punch_out_time.strftime("%H:%M")
-                    if instance.auto_punch_out_time
-                    else None
-                )
-            kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
 
+        self.fields["end_time"].initial = None
         if self.instance.pk:
             self.fields["day"] = forms.ModelChoiceField(
                 queryset=EmployeeShiftDay.objects.all(),
@@ -1604,10 +1572,10 @@ class RotatingShiftForm(ModelForm):
                 initial=initial,
             )
 
-        for field in self.fields:
-            if field.startswith("shift"):
-                shift_counts += 1
-                create_shift_field(field, shift_counts <= 2)
+        # for field in self.fields:
+        #     if field.startswith("shift"):
+        #         shift_counts += 1
+        #         create_shift_field(field, shift_counts <= 2)
 
         for key in self.data.keys():
             if key.startswith("shift") and self.data[key]:
@@ -1621,11 +1589,10 @@ class RotatingShiftForm(ModelForm):
         if additional_shifts:
             shift_counts = 3
             for shift_id in additional_shifts:
-                if shift_id:
-                    create_shift_field(
-                        f"shift{shift_counts}", shift_counts <= 2, initial=shift_id
-                    )
-                    shift_counts += 1
+                create_shift_field(
+                    f"shift{shift_counts}", shift_counts <= 2, initial=shift_id
+                )
+                shift_counts += 1
 
         self.shift_counts = shift_counts
 

@@ -4568,6 +4568,7 @@ def compensatory_leave_settings_view(request):
         is_compensatory_leave=True,
         defaults={"name": "Compensatory Leave Type", "payment": "paid"},
     )
+    request.session["ordered_ids_leavetype"] = []
     context = {"enabled_compensatory": enabled_compensatory, "leave_type": leave_type}
     return render(request, "compensatory_settings.html", context)
 
@@ -4582,9 +4583,9 @@ def enable_compensatory_leave(request):
     compensatory_leave = (
         compensatory_leave if compensatory_leave else LeaveGeneralSetting()
     )
-    compensatory_leave.compensatory_leave = "compensatory_leave" in request.GET.keys()
+    compensatory_leave.compensatory_leave = not compensatory_leave.compensatory_leave
     compensatory_leave.save()
-    if "compensatory_leave" in request.GET.keys():
+    if compensatory_leave.compensatory_leave:
         messages.success(request, _("Compensatory leave is enabled successfully!"))
     else:
         messages.success(request, _("Compensatory leave is disabled successfully!"))
