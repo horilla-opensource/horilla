@@ -1314,6 +1314,12 @@ class GraceTime(HorillaModel):
         """
         return f"{self.allowed_time} Hours"
 
+    def is_default_col(self):
+        """
+        Allowed time col
+        """
+        return "Yes" if self.is_default else "No"
+
     def action_col(self):
         """
         This method for get custome coloumn .

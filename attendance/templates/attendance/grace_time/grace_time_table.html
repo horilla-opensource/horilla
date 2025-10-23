@@ -1,23 +1,104 @@
-{% load static %}{% load i18n %}
-{% include "generic/components.html" %}
+{% load static %}{% load i18n %} {% include "generic/components.html" %}
 <div id="ohMessages"></div>
 {% if messages %}
 <div class="oh-wrapper">
-    {% for message in messages %}
-    <div class="oh-alert-container">
-        <div class="oh-alert oh-alert--animated {{message.tags}}">
-        {{ message }}
-        </div>
-    </div>
-    {% endfor %}
+	{% for message in messages %}
+	<div class="oh-alert-container">
+		<div class="oh-alert oh-alert--animated {{message.tags}}">
+			{{ message }}
+		</div>
+	</div>
+	{% endfor %}
 </div>
 {% endif %}
-<div class="oh-inner-sidebar-content mt-3">
+
+<div class="oh-inner-sidebar-content">
+	<div hx-get="{% url 'grace-time-nav' %}" hx-trigger="load"></div>
+
+	<div
+		class="oh-checkpoint-badge mb-2"
+		id="selectedInstancesData"
+		data-ids="[]"
+		data-clicked=""
+		style="display: none"
+	></div>
+
+	<div
+		class="oh-wrapper"
+		hx-get="{% url 'grace-time-list'  %}?{{request.GET.urlencode}}"
+		hx-trigger="load"
+		id="grace-time-container"
+	>
+		<div class="animated-background"></div>
+	</div>
+</div>
+
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+        }
+    function updateAllowedClockInOrOut(checkbox) {
+        // Using jQuery to check if the checkbox is checked
+        var isChecked = $(checkbox).prop('checked');
+        var gracetimeId = $(checkbox).data('id');
+        var update = $(checkbox).data('update');
+
+         $.ajax({
+          type: "POST",
+          url: "{% url 'update-gracetime-clock-in-clock-out' %}",
+          data: { 'isChecked': isChecked, 'gracetimeId':gracetimeId,'update':update,'csrfmiddlewaretoken': getCookie('csrftoken') },
+          dataType: "json",
+          success: function (response) {
+            $("#ohMessages").append(`
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                    ${response.message}
+                    </div>
+                </div>`);
+                duration = 1500;
+          }
+        });
+    }
+    function updateGracetimeIsActivate(checkbox) {
+        // Using jQuery to check if the checkbox is checked
+        var isChecked = $(checkbox).prop('checked');
+        var gracetimeId = $(checkbox).data('id');
+        $.ajax({
+          type: "POST",
+          url: "{% url 'update-isactive-gracetime' %}",
+          data: { 'isChecked': isChecked, 'gracetimeId':gracetimeId,'csrfmiddlewaretoken': getCookie('csrftoken') },
+          dataType: "json",
+          success: function (response) {
+            $("#ohMessages").append(`
+                <div class="oh-alert-container">
+                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
+                    ${response.message}
+                    </div>
+                </div>`);
+                duration = 1500;
+          }
+        });
+    }
+</script>
+
+{% comment %} <div class="oh-inner-sidebar-content mt-3">
 
     <div id="defaultGraceNav" hx-get="{% url "default-grace-time-nav" %}" hx-trigger="load,click" class="defaultGraceNav" >
 	</div>
 
-    {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center pb-3">
+     <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center pb-3">
         <h2 class="oh-inner-sidebar-content__title">{% trans 'Default Grace Time' %}</h2>
         {% if not default_grace_time and perms.attendance.add_gracetime %}
         <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-target="#objectCreateModalTarget" type="button"
@@ -27,11 +108,11 @@
             {% trans 'Create' %}
         </button>
         {% endif %}
-    </div> {% endcomment %}
+    </div>
 
 
 
-		<div
+		 <div
     class="oh-checkpoint-badge mb-2"
     id="selectedInstancesDefault"
     data-ids="[]"
@@ -48,7 +129,7 @@
   <div class="animated-background">
   </div>
 </div>
-    {% comment %} {% if default_grace_time %}
+     {% if default_grace_time %}
         <div class="oh-sticky-table">
             <div class="oh-sticky-table__table oh-table--sortable">
                 <div class="oh-sticky-table__thead">
@@ -146,15 +227,14 @@
                 src="{% static 'images/ui/Hour_glass.png' %}" class="" alt="Page not found. 404." />
             <h5 class="oh-404__subtitle">{% trans "There is no default grace time at this moment." %}</h5>
         </div>
-    {% endif %} {% endcomment %}
+    {% endif %}
 </div>
+
 <!--end of Defualt Grace time  -->
 
 <!--start of Grace time  -->
-<div class="oh-inner-sidebar-content">
-    <div hx-get="{% url "grace-time-nav" %}" hx-trigger="load" >
-	</div>
-    {% comment %} <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
+
+     <div class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center">
         <h2 class="oh-inner-sidebar-content__title">{% trans 'Grace Time' %}</h2>
         {% if perms.attendance.add_gracetime %}
         <button class="oh-btn oh-btn--secondary oh-btn--shadow" hx-target="#objectCreateModalTarget" type="button"
@@ -164,27 +244,9 @@
             {% trans 'Create' %}
         </button>
         {% endif %}
-    </div> {% endcomment %}
-
-
-		<div
-        class="oh-checkpoint-badge mb-2"
-        id="selectedInstancesData"
-        data-ids="[]"
-        data-clicked=""
-        style="display: none"
-      ></div>
-
-
-      <div
-      class="oh-wrapper"
-      hx-get="{% url "grace-time-list"  %}?{{request.GET.urlencode}}"
-      hx-trigger="load"
-      id="grace-time-container">
-      <div class="animated-background">
-      </div>
     </div>
-    {% comment %} {% if grace_times %}
+
+     {% if grace_times %}
     <div class="oh-sticky-table">
         <div class="oh-sticky-table__table oh-table--sortable">
             <div class="oh-sticky-table__thead">
@@ -303,66 +365,5 @@
             src="{% static 'images/ui/Hour_glass.png' %}" class="" alt="Page not found. 404." />
         <h5 class="oh-404__subtitle">{% trans "There is no grace time at this moment." %}</h5>
     </div>
-    {% endif %} {% endcomment %}
-</div>
+    {% endif %}  {% endcomment %}
 <!--end of Grace time  -->
-
-<script>
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-        }
-    function updateAllowedClockInOrOut(checkbox) {
-        // Using jQuery to check if the checkbox is checked
-        var isChecked = $(checkbox).prop('checked');
-        var gracetimeId = $(checkbox).data('id');
-        var update = $(checkbox).data('update');
-
-         $.ajax({
-          type: "POST",
-          url: "{% url 'update-gracetime-clock-in-clock-out' %}",
-          data: { 'isChecked': isChecked, 'gracetimeId':gracetimeId,'update':update,'csrfmiddlewaretoken': getCookie('csrftoken') },
-          dataType: "json",
-          success: function (response) {
-            $("#ohMessages").append(`
-                <div class="oh-alert-container">
-                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                    ${response.message}
-                    </div>
-                </div>`);
-                duration = 1500;
-          }
-        });
-    }
-    function updateGracetimeIsActivate(checkbox) {
-        // Using jQuery to check if the checkbox is checked
-        var isChecked = $(checkbox).prop('checked');
-        var gracetimeId = $(checkbox).data('id');
-        $.ajax({
-          type: "POST",
-          url: "{% url 'update-isactive-gracetime' %}",
-          data: { 'isChecked': isChecked, 'gracetimeId':gracetimeId,'csrfmiddlewaretoken': getCookie('csrftoken') },
-          dataType: "json",
-          success: function (response) {
-            $("#ohMessages").append(`
-                <div class="oh-alert-container">
-                    <div class="oh-alert oh-alert--animated oh-alert--${response.type}">
-                    ${response.message}
-                    </div>
-                </div>`);
-                duration = 1500;
-          }
-        });
-    }
-</script>
