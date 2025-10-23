@@ -2906,7 +2906,7 @@ def validate_ip_or_cidr(value):
 
 class AttendanceAllowedIPForm(forms.ModelForm):
     ip_addresses = forms.CharField(
-        widget=forms.Textarea(attrs={"rows": 3, "class": "form-control w-100"}),
+        widget=forms.Textarea(attrs={"rows": 3, "class": "form-control oh-input"}),
         label="Allowed IP Addresses or Network Prefixes",
         help_text="Enter multiple IP addresses or network prefixes, separated by commas.",
     )

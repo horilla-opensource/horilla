@@ -25,6 +25,7 @@ from attendance.cbv import (
     dashboard_offline_online,
     grace_time,
     hour_account,
+    ip_restriction,
     late_come_and_early_out,
     my_attendances,
 )
@@ -790,6 +791,16 @@ urlpatterns = [
         "allowed-ips/",
         views.allowed_ips,
         name="allowed-ips",
+    ),
+    path(
+        "allowed-ips-list/",
+        ip_restriction.IpRestrictionList.as_view(),
+        name="allowed-ips-list",
+    ),
+    path(
+        "allowed-ips-nav/",
+        ip_restriction.IpRestrictionnav.as_view(),
+        name="allowed-ips-nav",
     ),
     path(
         "settings/enable-ip-restriction/",
