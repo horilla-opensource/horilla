@@ -1,65 +1,85 @@
-# Production Dockerfile (multi-stage) for Horilla v2.0
-# Builds Python wheels in a builder image, then installs them into a slim runtime.
-
-FROM python:3.11-slim-bookworm AS builder
+# Build stage - for compiling dependencies
+FROM python:3.12-slim as builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# System deps required to build certain Python packages and render PDFs/images
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
-    libffi-dev \
-    libjpeg-dev \
-    zlib1g-dev \
-    libcairo2 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libmagic1 \
-    libssl-dev \
-    gettext \
-    git \
-  && rm -rf /var/lib/apt/lists/*
+# Install build dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        libpq-dev \
+        libjpeg-dev \
+        zlib1g-dev \
+        libcairo2-dev \
+        libpango1.0-dev \
+        libgdk-pixbuf-xlib-2.0-dev \
+        libxml2-dev \
+        libxslt1-dev \
+        libffi-dev \
+        pkg-config \
+        gcc \
+        g++ \
+    && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Leverage layer caching for deps
-COPY requirements.txt ./
-RUN python -m pip install --upgrade pip \
-  && pip wheel --no-cache-dir --no-deps -r requirements.txt -w /wheels
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt gunicorn psycopg2-binary
 
-# ---------------------------- Runtime image ----------------------------
-FROM python:3.11-slim-bookworm AS runtime
+# Production stage - minimal runtime image
+FROM python:3.12-slim as production
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PATH="/opt/venv/bin:$PATH"
 
-# Runtime libs only (no compilers)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libcairo2 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libjpeg62-turbo \
-    zlib1g \
-    libmagic1 \
-    libpq5 \
-    gettext \
-  && rm -rf /var/lib/apt/lists/*
+# Install only runtime dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libpq5 \
+        libjpeg62-turbo \
+        zlib1g \
+        libcairo2 \
+        libpango-1.0-0 \
+        libgdk-pixbuf-xlib-2.0-0 \
+        libxml2 \
+        libxslt1.1 \
+        libffi8 \
+        curl \
+        netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create non-root user
+RUN useradd --create-home --uid 1000 appuser
+
+# Copy virtual environment from builder stage
+COPY --from=builder /opt/venv /opt/venv
 
 WORKDIR /app
 
-# Install built wheels
-COPY --from=builder /wheels /wheels
-RUN pip install --no-cache-dir /wheels/*
+# Copy application code
+COPY --chown=appuser:appuser . .
 
-# Copy project source
-COPY . .
+# Copy entrypoint script
+COPY --chown=appuser:appuser docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-# Ensure entrypoint is executable
-RUN chmod +x /app/entrypoint.sh
+# Create necessary directories and set permissions
+RUN mkdir -p staticfiles media \
+    && chown -R appuser:appuser /app
+
+USER appuser
 
 EXPOSE 8000
 
-# Entrypoint runs migrations, collectstatic, admin creation, and gunicorn
-CMD ["sh", "./entrypoint.sh"]
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health/ || exit 1
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["gunicorn", "horilla.wsgi:application", "--config", "docker/gunicorn.conf.py"]
