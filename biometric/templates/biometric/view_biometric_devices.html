@@ -59,15 +59,9 @@
         </span>
     </div> {% endcomment %}
 
-
     <div id="biometricDeviceList">
-        {% if devices %}
-            <div class="oh-wrapper" hx-get="{% url "biometric-card-view" %}?is_active=True" hx-trigger="load" id="listContainer">
-            </div>
-            {% comment %} {% include 'biometric/card_biometric_devices.html' %}  {% endcomment %}
-        {% else %}
-            {% include 'biometric/empty_view_biometric.html' %}
-        {% endif %}
+        <div class="oh-wrapper" hx-get="{% url "biometric-card-view" %}?is_active=True" hx-trigger="load" id="listContainer">
+        </div>
     </div>
     <div class="oh-modal" id="BiometricDeviceModal" role="dialog" aria-labelledby="BiometricDeviceModal"
         aria-hidden="true">
