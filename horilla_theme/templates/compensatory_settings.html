@@ -30,7 +30,7 @@
                             data-widget="style-widget"
                             class="toggle-input"
                             {% if enabled_compensatory %}
-                                checked 
+                                checked
                             {% endif %}
                             id="is_enabled"
                             hx-post="{% url 'enable-compensatory-leave' %}"
@@ -47,7 +47,7 @@
 </div>
 {% if enabled_compensatory %}
     <div id="leave_type_div">
-        {% include "leave/compensatory_leave/compensatory_leave_type.html" %} 
+        {% include "leave/compensatory_leave/compensatory_leave_type.html" %}
     <div>
 {% endif %}
 {% endblock %}
