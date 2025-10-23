@@ -142,6 +142,11 @@ urlpatterns = [
         views.delete_asset_category,
         name="asset-category-delete",
     ),
+    path(
+        "generic-delete-asset-category",
+        asset_category.AssetDeleteConfirmationView.as_view(),
+        name="generic-delete-asset-category",
+    ),
     # path(
     #     "asset-request-creation",
     #     views.asset_request_creation,
@@ -151,6 +156,16 @@ urlpatterns = [
         "asset-request-creation",
         request_and_allocation.AssetRequestCreateForm.as_view(),
         name="asset-request-creation",
+    ),
+    path(
+        "asset-request-update/<int:pk>/",
+        request_and_allocation.AssetRequestCreateForm.as_view(),
+        name="asset-request-update",
+    ),
+    path(
+        "asset-request-delete/<int:pk>/",
+        request_and_allocation.AssetRequestDelete.as_view(),
+        name="asset-request-delete",
     ),
     # path(
     #     "asset-request-allocation-view/",
@@ -198,6 +213,16 @@ urlpatterns = [
         name="asset-allocate-creation",
     ),
     path(
+        "asset-allocate-update/<int:pk>/",
+        request_and_allocation.AssetAllocationFormView.as_view(),
+        name="asset-allocate-update",
+    ),
+    path(
+        "asset-allocate-delete/<int:pk>/",
+        request_and_allocation.AssetAllocationDelete.as_view(),
+        name="asset-allocate-delete",
+    ),
+    path(
         "asset-allocate-return/<int:asset_id>/",
         views.asset_allocate_return,
         name="asset-allocate-return",
@@ -241,9 +266,14 @@ urlpatterns = [
         asset_batch_no.AssetBatchDetailView.as_view(),
         name="asset-batch-detail-view",
     ),
+    # path(
+    #     "asset-batch-number-search",
+    #     views.asset_batch_number_search,
+    #     name="asset-batch-number-search",
+    # ),
     path(
         "asset-batch-number-search",
-        views.asset_batch_number_search,
+        asset_batch_no.AssetBatchNoListView.as_view(),
         name="asset-batch-number-search",
     ),
     # path(

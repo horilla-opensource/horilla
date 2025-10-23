@@ -1,0 +1,55 @@
+{% load i18n %}
+<div id="formContainer">
+	{% include "generic/horilla_form.html" %}
+	<div class="oh-modal__dialog-body oh-modal__dialog-relative">
+		<table class="oh-table custom-table border rounded-md w-full"
+            {% if not form.instance.id or form.instance.type == "reimbursement" or form.instance.type == "bonus_encashment" %}
+                id="availableTable"
+                style="display: none; padding: 10px;"
+            {% else %}
+                style="padding: 10px;"
+            {% endif %}
+        >
+			<thead>
+				<tr class="border-b border-[#ececec]">
+					<th class="text-sm p-3 text-[#666] text-left">{% trans "Leave Type" %}</th>
+					<th class="text-sm p-3 text-[#666] text-left">{% trans "Available Days" %}</th>
+					<th class="text-sm p-3 text-[#666] text-left" title="{% trans 'Carry Forward Days' %}">
+						{% trans "CFD" %}
+					</th>
+				</tr>
+			</thead>
+			<tbody
+				{% if not form.instance.id %}
+				    id="availableTableBody"
+				{% endif %}
+			>
+				{% for available_leave in form.assigned_leaves %}
+                    <tr class="toggle-highlight">
+                        <td class="text-sm text-left p-3 text-[#666] rounded-lg h-[45px] ">{{available_leave.leave_type_id}} </td>
+                        <td class="text-sm text-left p-3 text-[#666] rounded-lg h-[45px] ">{{available_leave.available_days}}</td>
+                        <td class="text-sm text-left p-3 text-[#666] rounded-lg h-[45px] ">{{available_leave.carryforward_days}}</td>
+                    </tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script>
+	toggleReimbursmentType($("#genericModalBody [name=type]").first());
+	removeHighlight();
+	var attachemntLabelElement = $("#genericModalBody [for=id_attachment]");
+	var attachemntlElement = $("#genericModalBody #id_attachment");
+	var attachemntParentlElement = $(
+		"#genericModalBody [for=id_attachment]"
+	).parent();
+
+	// Detach both elements from the DOM
+	attachemntLabelElement.detach();
+	attachemntlElement.detach();
+	attachemntParentlElement.html("");
+	// Append them in the desired order
+	attachemntParentlElement.append(attachemntLabelElement);
+	attachemntParentlElement.append(attachemntlElement);
+</script>

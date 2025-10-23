@@ -107,9 +107,9 @@
             x-bind:style="open ? 'max-height:' + $refs.panel.scrollHeight + 'px' : 'max-height:0'"
         >
             <div class="py-3">
-                <p class="text-sm text-[#565E6C]">
-                    {{ faq.answer|safe }}
-                </p>
+                <div class="text-sm text-[#565E6C]">
+                    {{ faq.answer|linebreaksbr }}
+                </div>
             </div>
         </div>
     </div>

@@ -13,17 +13,15 @@
             >
                 <ion-icon name="checkmark-outline"></ion-icon>{% trans 'Approve' %}
             </a>
-            <form
-                action="{% url 'asset-request-reject' req_id=instance.id %}"
-                onsubmit="event.stopPropagation(); return confirm('{% trans "Do you want to reject this request?" %}')"
-                method="post"
-                class="w-100"
+            <a
+                class="oh-btn oh-btn--danger w-50"
+                role="button"
+                href="{% url 'asset-request-reject' instance.id %}"
+                onclick="return confirm(`{% trans 'Do you want to reject this request?' %}`)"
+                title="{% trans 'Reject' %}"
             >
-                {% csrf_token %}
-                <button class="oh-btn oh-btn--danger w-100" onclick="event.stopPropagation();">
-                    <ion-icon name="close-outline"></ion-icon> {% trans 'Reject' %}
-                </button>
-            </form>
+                <ion-icon name="close-outline"></ion-icon> {% trans 'Reject' %}
+            </a>
         </div>
         {% endif %}
     {% endif %}

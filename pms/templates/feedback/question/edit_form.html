@@ -1,0 +1,136 @@
+{% load widget_tweaks i18n generic_template_filters %}
+<form
+	action="{% url 'question-update' temp_id=question_template.id q_id=form.instance.id %}"
+	method="post"
+>
+	{% csrf_token %}
+
+	<div
+		class="oh-general__tab-target oh-profile-section bg-[white] rounded-md border border-dark-50 p-[20px] w-full"
+		id="{{form.container_id}}"
+	>
+		<div class="oh-profile-section__card">
+			{% comment %}
+			<div class="row">
+				<div class="col-12" style="padding-right: 0">
+					{{ form.non_field_errors }}
+				</div>
+				{% for field in form.visible_fields %}
+				<div
+					class="col-12 col-md-{{field|col}}"
+					id="id_{{ field.name }}_parent_div"
+				>
+					<div class="flex oh-label" for="id_{{ field.name }}">
+						<label
+							class="{% if field.field.required %}required-star{% endif %}"
+							for="id_{{ field.name }}"
+							>{% trans field.label %}</label
+						>
+						{% if field.help_text != '' %}
+						<span
+							class="oh-info mr-2"
+							title="{{ field.help_text|safe }}"
+						></span>
+						{% endif %}
+					</div>
+
+					{% if field.field.widget.input_type == 'checkbox' %}
+					<div class="oh-switch" style="width: 30px">
+						{{ field|add_class:'oh-switch__checkbox' }}
+					</div>
+					{% else %}
+					<div id="dynamic_field_{{field.name}}">
+						{{ field|add_class:'form-control' }} {{ field.errors }}
+					</div>
+					{% endif %}
+				</div>
+				{% endfor %}
+			</div>
+			{% endcomment %}
+            {{ form.non_field_errors }} {{form.errors}}
+			<div class="row">
+				<div class="col-12" style="padding-right: 0"></div>
+
+				<div class="col-12 col-md-6" id="id_question_parent_div">
+					<div class="flex oh-label" for="id_question">
+						<label class="required-star" for="id_question"
+							>{% trans "Question" %}</label
+						>
+					</div>
+
+					{{form.question}}
+				</div>
+
+				<div class="col-12 col-md-6" id="id_question_type_parent_div">
+					<div class="flex oh-label" for="id_question_type">
+						<label class="" for="id_question_type"
+							>{% trans "Question type" %}</label
+						>
+					</div>
+
+					{{form.question_type}}
+				</div>
+			</div>
+			<div class="row" {% if form.question_type.value != "4" %}style="display:none;"{% endif %} id="options">
+				<div class="col-12 col-md-6" id="id_option_a_parent_div">
+					<div class="flex oh-label" for="id_option_a">
+						<label class="" for="id_option_a"
+							>{% trans "Option a" %}</label
+						>
+					</div>
+
+					{{form.option_a}}
+				</div>
+				<div class="col-12 col-md-6" id="id_option_b_parent_div">
+					<div class="flex oh-label" for="id_option_b">
+						<label class="" for="id_option_b"
+							>{% trans "Option b" %}</label
+						>
+					</div>
+
+					{{form.option_b}}
+				</div>
+				<div class="col-12 col-md-6" id="id_option_c_parent_div">
+					<div class="flex oh-label" for="id_option_c">
+						<label class="" for="id_option_c"
+							>{% trans "Option c" %}</label
+						>
+					</div>
+
+					{{form.option_c}}
+				</div>
+				<div class="col-12 col-md-6" id="id_option_d_parent_div">
+					<div class="flex oh-label" for="id_option_d">
+						<label class="" for="id_option_d"
+							>{% trans "Option d" %}</label
+						>
+					</div>
+
+					{{form.option_d}}
+				</div>
+			</div>
+
+			<div
+				class="d-flex flex gap-1 justify-end border-t border-dark-50 pt-3 mt-3"
+			>
+				<button
+					type="submit"
+					class="oh-btn oh-btn--secondary mt-2 mr-0 pl-4 pr-5 oh-btn--w-100-resp"
+					{{form.submit_button_attrs|safe}}
+				>
+					{% trans 'Save' %}
+				</button>
+			</div>
+		</div>
+	</div>
+</form>
+
+<script>
+    function questionTypeChange(elm) {
+        if (elm.val() == "4") {
+            $("#options").show()
+        } else {
+            $("#options").hide()
+        }
+    }
+</script>

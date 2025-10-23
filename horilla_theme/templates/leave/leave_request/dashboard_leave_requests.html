@@ -1,0 +1,259 @@
+{% load i18n %}
+{% load static %}
+{% load basefilters %}
+{% load horillafilters %}
+
+<div id="leaveRequestsView" class="hlv-container">
+    {% if leave_requests %}
+        <div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card relative">
+            <div class="max-h-[calc(100vh_-_380px)] overflow-hidden overflow-y-auto overflow-x-auto heightContainer">
+                <table class="fixed-table w-full border-separate">
+                    <thead class="sticky top-0 bg-[white] z-[1]">
+                        <tr class="border-b border-[#ececec]">
+                            <!-- Employee -->
+                            <th class="text-sm font-medium text-left min-w-[200px] p-3"
+                                id="leaveRequestsView-1-employee-header">
+                                <div class="flex gap-3 p-3
+                                    {% for sort_map in sortby_mapping %}{% if sort_map.0 == "Employee" %}cursor-pointer{% endif %}{% endfor %}"
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Employee" %}
+                                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
+                                            hx-target="#leaveRequestsView"
+                                        {% endif %}
+                                    {% endfor %}
+                                >
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Employee" %}
+                                            <span class="text-xs flex items-center text-primary-600">
+                                                {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% endif %}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="flex w-max">{% trans "Employee" %}</span>
+                                </div>
+                            </th>
+
+                            <!-- Leave Type -->
+                            <th class="text-sm font-medium text-left min-w-[150px] p-3"
+                                id="leaveRequestsView-2-leavetype-header">
+                                <div class="flex gap-3 p-3
+                                    {% for sort_map in sortby_mapping %}{% if sort_map.0 == "Leave Type" %}cursor-pointer{% endif %}{% endfor %}"
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Leave Type" %}
+                                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
+                                            hx-target="#leaveRequestsView"
+                                        {% endif %}
+                                    {% endfor %}
+                                >
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Leave Type" %}
+                                            <span class="text-xs flex items-center text-primary-600">
+                                                {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% endif %}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="flex w-max">{% trans "Leave Type" %}</span>
+                                </div>
+                            </th>
+
+                            <!-- Start Date -->
+                            <th class="text-sm font-medium text-left min-w-[150px] p-3"
+                                id="leaveRequestsView-3-startdate-header">
+                                <div class="flex gap-3 p-3
+                                    {% for sort_map in sortby_mapping %}{% if sort_map.0 == "Start Date" %}cursor-pointer{% endif %}{% endfor %}"
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Start Date" %}
+                                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
+                                            hx-target="#leaveRequestsView"
+                                        {% endif %}
+                                    {% endfor %}
+                                >
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Start Date" %}
+                                            <span class="text-xs flex items-center text-primary-600">
+                                                {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% endif %}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="flex w-max">{% trans "Start Date" %}</span>
+                                </div>
+                            </th>
+
+                            <!-- End Date -->
+                            <th class="text-sm font-medium text-left min-w-[150px] p-3"
+                                id="leaveRequestsView-4-enddate-header">
+                                <div class="flex gap-3 p-3
+                                    {% for sort_map in sortby_mapping %}{% if sort_map.0 == "End Date" %}cursor-pointer{% endif %}{% endfor %}"
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "End Date" %}
+                                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
+                                            hx-target="#leaveRequestsView"
+                                        {% endif %}
+                                    {% endfor %}
+                                >
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "End Date" %}
+                                            <span class="text-xs flex items-center text-primary-600">
+                                                {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% endif %}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="flex w-max">{% trans "End Date" %}</span>
+                                </div>
+                            </th>
+
+                            <!-- Requested Days -->
+                            <th class="text-sm font-medium text-center min-w-[120px] p-3"
+                                id="leaveRequestsView-5-days-header">
+                                <div class="flex gap-3 p-3 justify-center
+                                    {% for sort_map in sortby_mapping %}{% if sort_map.0 == "Requested Days" %}cursor-pointer{% endif %}{% endfor %}"
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Requested Days" %}
+                                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
+                                            hx-target="#leaveRequestsView"
+                                        {% endif %}
+                                    {% endfor %}
+                                >
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Requested Days" %}
+                                            <span class="text-xs flex items-center text-primary-600">
+                                                {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% endif %}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="flex w-max">{% trans "Requested Days" %}</span>
+                                </div>
+                            </th>
+
+                            <!-- Status -->
+                            <th class="text-sm font-medium text-left min-w-[180px] p-3"
+                                id="leaveRequestsView-6-status-header">
+                                <div class="flex gap-3 p-3
+                                    {% for sort_map in sortby_mapping %}{% if sort_map.0 == "Status" %}cursor-pointer{% endif %}{% endfor %}"
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Status" %}
+                                            hx-get="{{search_url}}?{{saved_filters.urlencode}}&{{sortby_key}}={{sort_map.1}}&filter_applied=on"
+                                            hx-target="#leaveRequestsView"
+                                        {% endif %}
+                                    {% endfor %}
+                                >
+                                    {% for sort_map in sortby_mapping %}
+                                        {% if sort_map.0 == "Status" %}
+                                            <span class="text-xs flex items-center text-primary-600">
+                                                {% if request.sort_order == "asc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% elif request.sort_order == "desc" and request.sort_key == sort_map.1 %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                {% else %}
+                                                    <i class="fa-solid fa-arrow-up"></i>
+                                                    <i class="fa-solid fa-arrow-down"></i>
+                                                {% endif %}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="flex w-max">{% trans "Status" %}</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for leave_request in leave_requests %}
+                        <tr
+                            class="border-b border-[#f3f3f3] hover:bg-gray-50 cursor-pointer {% if leave_request.status == 'cancelled' %} bg-red-50 {% endif %}"
+                            hx-get="{% url 'user-request-one' leave_request.id %}?instances_ids={{requests_ids}}"
+                            hx-target="#objectDetailsModalW25Target"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#objectDetailsModalW25"
+                        >
+                            <!-- Employee -->
+                            <td class="text-sm text-left p-3 text-[#333] h-[55px]">
+                                <div class="oh-profile oh-profile--md min-w-[200px] justify-normal">
+                                    <div class="oh-profile__avatar mr-1">
+                                        <img src="{{leave_request.employee_id.get_avatar}}" alt="" class="oh-profile__image oh-table-img" width="30"/>
+                                    </div>
+                                    <span class="font-medium">{{leave_request.employee_id}}</span>
+                                </div>
+                            </td>
+
+                            <!-- Leave Type -->
+                            <td class="text-sm text-left p-3 text-[#666] h-[55px]">
+                                {{leave_request.leave_type_id}}
+                            </td>
+
+                            <!-- Start Date -->
+                            <td class="text-sm text-left p-3 text-[#666] h-[55px] dateformat_changer">
+                                {{leave_request.start_date}}
+                            </td>
+
+                            <!-- End Date -->
+                            <td class="text-sm text-left p-3 text-[#666] h-[55px] dateformat_changer">
+                                {{leave_request.end_date}}
+                            </td>
+
+                            <!-- Requested Days -->
+                            <td class="text-sm text-center p-3 text-[#333] font-semibold h-[55px]">
+                                {{leave_request.requested_days}}
+                            </td>
+
+                            <!-- Status -->
+                            <td class="text-sm text-left p-3 text-[#666] h-[55px]">
+                                {% if leave_request.multiple_approvals and leave_request.status == "requested" %}
+                                    <div class="oh-checkpoint-badge oh-checkpoint-badge--secondary"
+                                         title="{% for manager in leave_request.multiple_approvals.managers %}{{ manager }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+                                        {{leave_request.multiple_approvals.approved|length}} / {{leave_request.multiple_approvals.managers|length}} {% trans "Approved" %}
+                                    </div>
+                                {% else %}
+                                    {{leave_request.get_status_display}}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="oh-wrapper h-full" align="center">
+            <div class="bg-white p-6 rounded-md shadow-card h-[70%] flex flex-col items-center justify-center">
+                <img src="{% static 'images/ui/attendance.png' %}" alt="" width="70" class="mb-4">
+                <p class="text-[#666] mb-2">{% trans "You have No leave requests for this month." %}</p>
+            </div>
+        </div>
+    {% endif %}
+</div>

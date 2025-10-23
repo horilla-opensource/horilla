@@ -31,22 +31,17 @@ class DashboardAttendanceToValidate(ValidateAttendancesList):
 
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Attendance Date"), "attendance_date"),
         (_("Worked Hours"), "attendance_worked_hour"),
     ]
 
     header_attrs = {
-        "attendance_worked_hour": """
-                    style="width:100px !important;"
-                    """,
-        "employee_id": """
-                            style="width:100px !important;"
-                            """,
-        "action": """
-                    style="width:100px !important;"
-                    """,
+        "attendance_worked_hour": """style="width:100px !important;" """,
+        "employee_id": """ style="width:100px !important;" """,
+        "action": """ style="width:100px !important;" """,
     }
 
-    records_per_page = 3
+    records_per_page = 5
     bulk_select_option = False
     show_toggle_form = False
 
@@ -81,22 +76,17 @@ class DashboardaAttendanceOT(OTAttendancesList):
 
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Attendance Date"), "attendance_date"),
         (_("Overtime"), "attendance_overtime"),
     ]
     header_attrs = {
-        "action": """
-            style="width:100px !important;"
-            """,
-        "attendance_overtime": """
-            style="width:100px !important;"
-            """,
-        "employee_id": """
-                            style="width:100px !important;"
-                            """,
+        "action": """ style="width:100px !important;" """,
+        "attendance_overtime": """ style="width:100px !important;" """,
+        "employee_id": """ style="width:100px !important;" """,
     }
 
     show_toggle_form = False
-    records_per_page = 3
+    records_per_page = 5
     bulk_select_option = False
 
 

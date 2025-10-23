@@ -527,12 +527,12 @@ urlpatterns = [
     ),
     path(
         "rotating-work-type-create-form/",
-        rotating_work_type.RotatingWorkTypesCreateForm.as_view(),
+        settings_rotatingwork.RotatingWorkTypesCreateForm.as_view(),
         name="rotating-work-type-create-form",
     ),
     path(
         "rotating-work-type-update-form/<int:pk>",
-        rotating_work_type.RotatingWorkTypesCreateForm.as_view(),
+        settings_rotatingwork.RotatingWorkTypesCreateForm.as_view(),
         name="rotating-work-type-update-form",
     ),
     path(
@@ -787,7 +787,7 @@ urlpatterns = [
     # ),
     path(
         "rotating-shift-create/",
-        rotating_shift_assign.RotatingShiftTypeCreateFormView.as_view(),
+        rotating_shift.RotatingShiftTypeCreateFormView.as_view(),
         name="rotating-shift-create",
     ),
     path(
@@ -825,7 +825,7 @@ urlpatterns = [
     # ),
     path(
         "settings/rotating-shift-update/<int:pk>/",
-        rotating_shift_assign.RotatingShiftTypeCreateFormView.as_view(),
+        rotating_shift.RotatingShiftTypeCreateFormView.as_view(),
         name="rotating-shift-update",
     ),
     path(
@@ -1654,9 +1654,9 @@ urlpatterns = [
         name="company-leave-view",
     ),
     path(
-        "company-leave-list/",
+        "company-leave-filter/",
         company_leaves.CompanyleaveListView.as_view(),
-        name="company-leave-list",
+        name="company-leave-filter",
     ),
     path(
         "company-leave-navbar/",
@@ -1688,9 +1688,9 @@ urlpatterns = [
         views.company_leave_delete,
         name="company-leave-delete",
     ),
-    path(
-        "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
-    ),
+    # path(
+    #     "company-leave-filter", views.company_leave_filter, name="company-leave-filter"
+    # ),
     # path("view-penalties", views.view_penalties, name="view-penalties"),
     path("view-penalties", penalty.ViewPenaltyList.as_view(), name="view-penalties"),
     path(

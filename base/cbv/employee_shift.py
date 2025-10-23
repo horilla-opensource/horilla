@@ -24,7 +24,6 @@ class EmployeeShiftListView(HorillaListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
-        # self.action_method = "actions_col"
         self.view_id = "shift_view"
         self.search_url = reverse("employee-shift-list")
         self.actions = []
@@ -59,6 +58,7 @@ class EmployeeShiftListView(HorillaListView):
 
     model = EmployeeShift
     filter_class = EmployeeShiftFilter
+    show_toggle_form = False
 
     bulk_update_fields = [
         "weekly_full_time",
@@ -67,19 +67,13 @@ class EmployeeShiftListView(HorillaListView):
 
     columns = [
         (_("Shift"), "employee_shift"),
-        (_("Weekly Full Time"), "weekly_full_time"),
-        (_("Full Time"), "full_time"),
     ]
 
     sortby_mapping = [
         ("Shift", "employee_shift"),
-        ("Weekly Full Time", "weekly_full_time"),
-        ("Full Time", "full_time"),
     ]
 
-    row_attrs = """
-                id = "shiftTr{get_instance_id}"
-                """
+    row_attrs = """ id = "shiftTr{get_instance_id}" """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -100,6 +94,6 @@ class EmployeeShiftNav(HorillaNavView):
                                 hx-get="{reverse('employee-shift-create-view')}"
                                 """
 
-    nav_title = _("Shift")
+    nav_title = _("Employee Shift")
     filter_instance = EmployeeShiftFilter()
     search_swap_target = "#listContainer"

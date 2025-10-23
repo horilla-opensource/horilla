@@ -320,6 +320,9 @@ class LeaveRequestsDetailView(HorillaDetailedView):
         (_("Description"), "description"),
         (_("View attachment"), "attachment_action", True),
     ]
+    cols = {
+        "description": 12,
+    }
     action_method = "leave_requests_detail_view_actions"
 
     def get_context_data(self, **kwargs):
@@ -338,6 +341,7 @@ class LeaveRequestsDetailView(HorillaDetailedView):
             body.insert(
                 insert_index, (_("Reason for Rejection"), "rejected_action", True)
             )
+            self.cols["rejected_action"] = 12
 
         context["body"] = body
         return context

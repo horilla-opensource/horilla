@@ -1,6 +1,4 @@
-{% load static %}
-{% load i18n %}
-{% load horillafilters taskfilters %}
+{% load static i18n horillafilters taskfilters %}
 
 {% if messages %}
 <div class="oh-alert-container" id='ohMessages'>
@@ -30,7 +28,7 @@
 
     <div class="accordion-wrapper space-y-2" id="projectStages">
         {% for stage in stages %}
-        <div class="accordion-item border border-primary-300 rounded-md overflow-hidden">
+        <div class="accordion-item border border-primary-300 rounded-md">
             <button class="accordion-btn-pr w-full flex justify-between items-center px-4 py-2 bg-[#fff5f1] text-[#e54f38] text-sm transition-all">
                 <div class="flex items-center gap-2">
                     <span class="w-6 h-6 bg-primary-600 rounded-full text-white flex items-center justify-center text-xs">{{ stage.tasks.count }}</span>
@@ -44,36 +42,34 @@
                         hx-get="{% url 'create-stage-task' stage.id %}"
                         hx-target="#genericModalBody"
                         onclick="event.stopPropagation();">
-                        {% trans "Add Task" %}</span>
-                    <span>
-                        <div class="inline-block dropdown-wrapper text-md relative" onclick="event.stopPropagation(); this.querySelector('.dropdown-menu').classList.toggle('hidden');">
-                            <a class="cursor-pointer dropdown-toggle">
-                                <i class="fa-solid fa-ellipsis-vertical"></i>
-                            </a>
-                            <div class="dropdown-menu fixed right-[100px] min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200">
-                                <ul class="text-xs">
-                                    <li>
-                                        <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
-                                           data-toggle="oh-modal-toggle" data-target="#TaskModal"
-                                           hx-get="{% url 'update-project-stage' stage.id %}"
-                                           hx-target="#TaskFormTarget">{% trans "Edit" %}</a>
-                                    </li>
-
-                                    <li>
-                                        <a
-                                            hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
-                                            hx-post="{% url 'delete-project-stage' stage.id %}?view=list"
-                                            hx-target="#deletemodal"
-                                            class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
-                                            >
-                                            {% trans "Delete" %}
-                                        </a>
-                                      </li>
-                                </ul>
-                            </div>
-                        </div>
+                        {% trans "Add Task" %}
                     </span>
-                    <span class="icon text-xl font-bold" data-toggle="oh-modal-toggle">+</span>
+                    <div class="inline-block dropdown-wrapper text-md relative" onclick="event.stopPropagation(); this.querySelector('.dropdown-menu').classList.toggle('hidden');">
+                        <a class="cursor-pointer dropdown-toggle inline-block w-3">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </a>
+                        <div class="dropdown-menu absolute right-[10px] min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200">
+                            <ul class="text-xs">
+                                <li>
+                                    <a class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                        data-toggle="oh-modal-toggle" data-target="#TaskModal"
+                                        hx-get="{% url 'update-project-stage' stage.id %}"
+                                        hx-target="#TaskFormTarget">{% trans "Edit" %}</a>
+                                </li>
+
+                                <li>
+                                    <a
+                                        hx-confirm="{% trans 'Are you sure you want to delete this stage?' %}"
+                                        hx-post="{% url 'delete-project-stage' stage.id %}?view=list"
+                                        hx-target="#deletemodal"
+                                        class="w-full flex text-left px-3 py-1 text-dark-600 hover:text-primary-600 transition duration-300"
+                                        >
+                                        {% trans "Delete" %}
+                                    </a>
+                                    </li>
+                            </ul>
+                        </div>
+                    </div>
                     {% endif %}
                 </div>
                 <div id="taskCreateForm{{stage.id}}"
@@ -86,19 +82,16 @@
                 <div class="py-3">
                     {% if stage.tasks.exists %}
                     <div class="overflow-x-auto">
-                        <table class="w-full">
+                        <table class="w-full table-fixed">
                             <thead class="sticky top-0 bg-white text-left text-sm">
                                 <tr class="border-b border-[#ececec]">
-                                    {% comment %} <th class="p-3 w-30">
-                                        <input type="checkbox" class="w-4 h-4 text-primary-600">
-                                    </th> {% endcomment %}
                                     <th class="p-3">{% trans "Tasks" %}</th>
                                     <th class="p-3">{% trans "Task Managers" %}</th>
                                     <th class="p-3">{% trans "End Date" %}</th>
                                     <th class="p-3">{% trans "Status" %}</th>
-                                    <th class="p-3">{% trans "Stage" %}</th>
-                                    <th class="p-3">{% trans "Document" %}</th>
-                                    <th class="p-3">{% trans "Description" %}</th>
+                                    {% comment %} <th class="p-3">{% trans "Stage" %}</th> {% endcomment %}
+                                    <th class="p-3 text-center">{% trans "Document" %}</th>
+                                    <th class="p-3 w-[320px]">{% trans "Description" %}</th>
                                     {% if request.user|is_project_manager:stage.project %}
                                     <th class="p-3">{% trans "Actions" %}</th>
                                     {% endif %}
@@ -106,60 +99,84 @@
                             </thead>
                             <tbody>
                                 {% for task in stage.tasks.all %}
-                                {% if task in tasks %}
-                                <tr class="border-b border-[#f3f3f3]">
-                                    {% comment %} <td class="p-3"><input type="checkbox" class="w-4 h-4"></td> {% endcomment %}
-                                    <td class="p-3">{{ task.title }}</td>
-                                    <td class="p-3">{% for m in task.task_managers.all %}{{ m }}, {% endfor %}</td>
-                                    <td class="p-3">{{ task.end_date }}</td>
-                                    <td class="p-3">
-                                        <span class="px-2.5 py-1 bg-[#8b7a7a21]  rounded-sm text-xs w-24 inline-block">
-                                            {{ task.get_status_display }}
-                                        </span>
-                                    </td>
-                                    <td class="p-3 relative" x-data="{ open: false }">
-                                        <div class="oh-sticky-table__td oh-table-config__td" onclick='event.stopPropagation();'>
-                                            <select class="flex dropdown-toggle cursor-pointer px-2.5 py-1 bg-[#8b7a7a21] rounded-sm text-xs justify-between"
-                                                hx-get="{% url 'update-project-task-status' task.id %}?view=list"
-                                                hx-trigger="change" hx-swap="afterend" tabindex="-1" aria-hidden="true"
-                                                name="status">
-                                                {% for option in task.TASK_STATUS %}
-                                                <option value="{{option.0}}" {% if option.0 == task.status %}selected{% endif %}>
-                                                    {{option.1}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </td>
-                                    <td class="p-3">
-                                        {% if task.document %}
-                                        <a href="{{ task.document.url }}" target="_blank" class="text-primary-600 underline">{% trans "View" %}</a>
-                                        {% else %}
-                                        {% trans "None" %}
-                                        {% endif %}
-                                    </td>
-                                    <td class="p-3">{{ task.description }}</td>
-                                    {% if request.user|is_project_manager:stage.project %}
-                                    <td class="p-3">
-                                        <div class="flex gap-1">
-                                            <button class="px-2 py-1 bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex justify-center items-center hover:bg-primary-600 hover:text-white transition duration-300"
-                                                data-toggle="oh-modal-toggle"
-                                                data-target="#TaskModal"
-                                                hx-get="{% url 'update-task' task.id %}?project_task=true"
-                                                hx-target="#TaskFormTarget">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </button>
+                                    {% if task in tasks %}
+                                        <tr class="border-b border-[#f3f3f3]"
+                                            data-target="#genericModal"
+                                            data-toggle="oh-modal-toggle"
+                                            hx-target="#genericModalBody"
+                                            hx-get="{% url 'task-detail-view' task.id %}?view=list"
+                                            onclick="event.stopPropagation()"
+                                        >
+                                            <td class="p-3">{{ task.title }}</td>
+                                            <td class="p-3">{{ task.task_managers.all|join:", " }}</td>
+                                            <td class="p-3">{{ task.end_date }}</td>
+                                            {% comment %} <td class="p-3">
+                                                <span class="oh-btn oh-btn--light cursor-default text-gray-700 hover:text-gray-700">
+                                                    {{ task.get_status_display }}
+                                                </span>
+                                            </td> {% endcomment %}
+                                            <td class="p-3 relative" x-data="{ open: false }">
+                                                <div class="oh-sticky-table__td oh-table-config__td" onclick='event.stopPropagation();'>
+                                                    <select class="oh-select"
+                                                        hx-get="{% url 'update-project-task-status' task.id %}?view=list"
+                                                        hx-trigger="change" hx-swap="afterend" tabindex="-1" aria-hidden="true"
+                                                        name="status">
+                                                        {% for option in task.TASK_STATUS %}
+                                                        <option value="{{option.0}}" {% if option.0 == task.status %}selected{% endif %}>
+                                                            {{option.1}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td class="p-3 text-center">
+                                                {% if task.document %}
+                                                    <a href="{{ task.document.url }}" target="_blank" class="text-primary-600 oh-btn oh-btn--light">
+                                                        <span class="oh-file-icon oh-file-icon--pdf"></span>
+                                                        {% trans "View" %}
+                                                    </a>
+                                                {% else %}
+                                                    {% trans "None" %}
+                                                {% endif %}
+                                            </td>
+                                            <td class="p-3">
+                                                <div class="w-[300px] overflow-hidden whitespace-nowrap truncate">
+                                                    {{ task.description }}
+                                                </div>
+                                            </td>
+                                            {% if request.user|is_project_manager:stage.project %}
+                                            <td class="p-3" onclick="event.stopPropagation()">
+                                                <div class="oh-btn-group">
+                                                    <button class="oh-btn oh-btn--light-bkg"
+                                                        data-toggle="oh-modal-toggle"
+                                                        data-target="#TaskModal"
+                                                        hx-get="{% url 'update-task' task.id %}?project_task=true"
+                                                        hx-target="#TaskFormTarget"
+                                                    >
+                                                        <ion-icon
+                                                            name="create-outline"
+                                                            role="img"
+                                                            class="md hydrated"
+                                                            aria-label="create outline"
+                                                        ></ion-icon>
+                                                    </button>
 
-                                            <a class="cursor-pointer px-2 py-1 bg-primary-300 text-primary-600 rounded-sm w-7 h-7 flex justify-center items-center hover:bg-primary-600 hover:text-white transition duration-300"
-                                                hx-confirm="{% trans 'Do you really want to delete this task?' %}"
-                                                hx-post="{% url 'delete-task' task.id %}?view=list"
-                                                hx-target="#taskCreateForm{{stage.id}}">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </a>
-                                        </div>
-                                    </td>
+                                                    <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg"
+                                                        hx-confirm="{% trans 'Do you really want to delete this task?' %}"
+                                                        hx-post="{% url 'delete-task' task.id %}?view=list"
+                                                        hx-target="#taskCreateForm{{stage.id}}"
+                                                    >
+                                                        <ion-icon
+                                                            name="trash-outline"
+                                                            role="img"
+                                                            class="md hydrated"
+                                                            aria-label="trash outline"
+                                                        ></ion-icon>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            {% endif %}
+                                        </tr>
                                     {% endif %}
-                                </tr>
-                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -194,7 +211,6 @@
                 // Collapse all others (optional — comment this block if you want multiple open)
                 document.querySelectorAll('.accordion-panel-pr').forEach(p => {
                     p.style.maxHeight = null;
-                    p.previousElementSibling.querySelector('.icon').textContent = '+';
                     p.previousElementSibling.classList.remove("bg-[#e54f38]", "text-white");
                     p.previousElementSibling.classList.add("bg-[#fff5f1]", "text-[#e54f38]");
                 });

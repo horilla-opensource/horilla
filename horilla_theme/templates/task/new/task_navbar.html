@@ -1,76 +1,111 @@
 {% load i18n taskfilters %}
-<form
-    hx-get='{% url "task-filter" project_id %}?view={{request.GET.view}}'
-    hx-target="#viewContainer"
-    hx-swap="innerHTML"
-    id="taskFilterForm">
 
-  <div class="flex flex-wrap justify-between items-center mb-3">
-    <h3 class="text-lg font-semibold">{{ project }}</h3>
-      <div class="flex items-center flex-wrap gap-2">
-      <div class="relative">
-        <input type="text"
-            name="search"
-            placeholder="{% trans 'Search by Task Name...' %}"
-            class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
-            onkeyup="$('#applyFilter').click()"
-            autocomplete="off"
-            hx-target="#viewContainer"/>
-        <i class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"></i>
-      </div>
+<div class="flex flex-wrap justify-between items-center mb-3">
+	<h3 class="text-lg font-semibold">{{ project }}</h3>
+	<div class="flex items-center flex-wrap gap-2">
+		<form
+			hx-get="{% url 'task-filter' project_id %}"
+			hx-target="#viewContainer"
+			hx-swap="innerHTML"
+			id="taskFilterForm"
+			onsubmit="event.preventDefault()"
+		>
+			<div class="flex items-center flex-wrap gap-2">
+				<div class="relative">
+					<input
+						type="text"
+						name="search"
+						id="projectDetailFilter"
+						placeholder="{% trans 'Search by Task Name...' %}"
+						class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+						onkeyup="$('#applyFilter').click()"
+						autocomplete="off"
+						hx-target="#viewContainer"
+					/>
+					<i
+						class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"
+					></i>
+				</div>
 
-      <input name="view" id="viewInput" hidden>
-      <button type="button" id="listBtn"
-          onclick="$('#viewInput').val('list');$('#applyFilter').click()"
-          class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 text-primary-600">
-          <ion-icon name="list-outline"></ion-icon>
-      </button>
-      <button type="button" id="gridBtn"
-          onclick="$('#viewInput').val('card');$('#applyFilter').click()"
-          class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 text-primary-600">
-          <ion-icon name="grid-outline"></ion-icon>
-      </button>
+				<input name="view" id="viewInput" hidden />
+				<button
+					type="button"
+					id="listBtn"
+					onclick="$('#viewInput').val('list');$('#applyFilter').click()"
+					class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 text-primary-600"
+				>
+					<ion-icon name="list-outline"></ion-icon>
+				</button>
+				<button
+					type="button"
+					id="gridBtn"
+					onclick="$('#viewInput').val('card');$('#applyFilter').click()"
+					class="tab-btn bg-white px-4 py-2 rounded-md text-xs flex items-center gap-2 border transition duration-300 border-primary-500 text-primary-600"
+				>
+					<ion-icon name="grid-outline"></ion-icon>
+				</button>
 
-      <div class="oh-dropdown" x-data="{open: false}">
-        <button class="ml-2 px-4 py-2 bg-white rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300" @click="open = !open"
-            onclick="event.preventDefault()"
-        >
-        <img src="/static/horilla_theme/assets/img/icons/sort.svg" alt="Filter" width="16" class="mt-[-1px]">{% trans "Filter" %}
-        </button>
-        <div class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4" x-show="open"
-            @click.outside="open = false" style="display: none; width: 395px;">
-            {% include 'task/new/filter_task.html' %}
-        </div>
-    </div>
+				<div class="oh-dropdown" x-data="{open: false}">
+					<button
+						class="ml-2 px-4 py-2 bg-white rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+						@click="open = !open"
+						onclick="event.preventDefault()"
+					>
+						<img
+							src="/static/horilla_theme/assets/img/icons/sort.svg"
+							alt="Filter"
+							width="16"
+							class="mt-[-1px]"
+						/>{% trans "Filter" %}
+					</button>
+					<div
+						class="oh-dropdown__menu oh-dropdown__menu--right oh-dropdown__filter p-4"
+						x-show="open"
+						@click.outside="open = false"
+						style="display: none; width: 395px"
+					>
+						{% include 'task/new/filter_task.html' %}
+					</div>
+				</div>
+			</div>
+		</form>
 
-      {% if perms.project.add_task or request.user|is_project_manager:project %}
-      <button type="button"
-          class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
-          hx-get='{% url "create-task" project_id %}' hx-target='#TaskFormTarget'
-          data-toggle="oh-modal-toggle" data-target="#TaskModal">
-          <img src="/static/horilla_theme/assets/img/icons/more.svg" alt="" width="13" class="filter brightness-0 invert">
-        {% trans "Create" %}
-      </button>
-      {% endif %}
-    </div>
-  </div>
-</form>
-
-<div
-  class="oh-modal"
-  id="TaskModal"
-  role="dialog"
-  aria-labelledby="TaskModal"
-  aria-hidden="true"
->
-  <div
-    class="oh-modal__dialog"
-    style="max-width: 550px"
-    id="TaskFormTarget"
-  ></div>
+		{% if perms.project.add_task or request.user|is_project_manager:project %}
+		<button
+			type="button"
+			class="px-4 py-2 bg-primary-600 text-white rounded-md text-xs flex items-center gap-2 hover:bg-primary-800 transition duration-300"
+			hx-get='{% url "create-task" project_id %}'
+			hx-target="#TaskFormTarget"
+			data-toggle="oh-modal-toggle"
+			data-target="#TaskModal"
+		>
+			<img
+				src="/static/horilla_theme/assets/img/icons/more.svg"
+				alt=""
+				width="13"
+				class="filter brightness-0 invert"
+			/>
+			{% trans "Create" %}
+		</button>
+		{% endif %}
+	</div>
 </div>
 
 <div
-  id="filterTagContainerSectionNav"
-  class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"
+	class="oh-modal"
+	id="TaskModal"
+	role="dialog"
+	aria-labelledby="TaskModal"
+	aria-hidden="true"
+>
+	<div
+		class="oh-modal__dialog"
+		style="max-width: 550px"
+		id="TaskFormTarget"
+	></div>
+</div>
+
+<div
+	id="filterTagContainerSectionNav"
+	class="oh-titlebar-container__filters mb-2 mt-0 oh-wrapper"
 ></div>

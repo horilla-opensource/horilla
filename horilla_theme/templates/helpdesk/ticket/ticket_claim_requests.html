@@ -1,0 +1,114 @@
+{% load static %}{% load i18n %}
+<script>
+    $("#reloadMessagesButton").click()
+</script>
+
+<div class="oh-card bg-white rounded-md shadow-md p-5">
+    <!-- Modal Header -->
+    <div class="flex justify-between items-center mb-5 border-b border-gray-200 pb-3 relative">
+    <h1 class="text-lg font-semibold text-gray-800">
+        {% trans "Claim Requests" %}
+    </h1>
+    <button
+        type="button"
+        class="oh-modal__close absolute top-0 right-0 text-gray-600 hover:text-gray-900"
+        data-dismiss="oh-modal"
+        aria-label="Close"
+        {% if refresh %}
+            onclick="event.stopPropagation(); window.location.reload();"
+        {% endif %}
+    >
+        <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+    </button>
+</div>
+
+
+    {% if claim_requests %}
+        <!-- List View Table -->
+        <div class="overflow-hidden bg-white border border-gray-200 rounded-md">
+            <table class="min-w-full divide-y divide-gray-100">
+                <thead class="bg-gray-50 text-xs font-medium text-gray-600 uppercase tracking-wider">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left">{% trans "Employee" %}</th>
+                        <th scope="col" class="px-6 py-3 text-center w-32">{% trans "Action" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-100 text-sm text-gray-700">
+                    {% for req in claim_requests %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <!-- Employee -->
+                        <td class="px-6 py-3 flex items-center gap-3">
+                            <img
+                                src="{{ req.employee_id.get_avatar }}"
+                                alt="{{ req.employee_id }}"
+                                class="w-9 h-9 rounded-full object-cover"
+                            />
+                            <span class="font-medium">{{ req.employee_id }}</span>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="px-6 py-3 text-center">
+                            <div class="flex justify-center gap-2">
+                                {% if not req.is_approved and not req.is_rejected %}
+                                    <button
+                                        class="oh-btn oh-btn--success flex items-center justify-center"
+                                        data-toggle="oh-modal-toggle"
+                                        data-target="#objectDetailsModal"
+                                        hx-get="{% url 'approve-claim-request' req.id %}?approve=True"
+                                        hx-target="#objectDetailsModalTarget"
+                                        title="{% trans 'Approve request' %}"
+                                    >
+                                        <ion-icon name="checkmark-outline"></ion-icon>
+                                    </button>
+                                {% else %}
+                                    <button
+                                        class="oh-btn oh-btn--success flex items-center justify-center opacity-50 cursor-not-allowed"
+                                        disabled
+                                        title="{% trans 'Approved' %}"
+                                    >
+                                        <ion-icon name="checkmark-outline"></ion-icon>
+                                    </button>
+                                {% endif %}
+
+                                {% if not req.is_rejected %}
+                                    <button
+                                        class="oh-btn oh-btn--danger flex items-center justify-center"
+                                        data-toggle="oh-modal-toggle"
+                                        data-target="#objectDetailsModal"
+                                        hx-get="{% url 'approve-claim-request' req.id %}?approve=False"
+                                        hx-target="#objectDetailsModalTarget"
+                                        title="{% trans 'Reject request' %}"
+                                    >
+                                        <ion-icon name="close-outline"></ion-icon>
+                                    </button>
+                                {% else %}
+                                    <button
+                                        class="oh-btn oh-btn--danger flex items-center justify-center opacity-50 cursor-not-allowed"
+                                        disabled
+                                        title="{% trans 'Rejected' %}"
+                                    >
+                                        <ion-icon name="close-outline"></ion-icon>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="flex flex-col items-center justify-center h-[60vh] text-center rounded-md">
+            <img
+                src="{% static 'images/ui/ticket.png' %}"
+                alt="No requests"
+                class="w-32 h-32 mb-4 opacity-80"
+            />
+            <h3 class="text-gray-700 text-base font-medium">
+                {% trans "There are no claim requests at the moment." %}
+            </h3>
+        </div>
+    {% endif %}
+</div>

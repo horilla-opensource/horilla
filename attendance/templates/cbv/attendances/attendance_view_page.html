@@ -5,8 +5,7 @@
 {% block content %}
 
 <meta name="csrf-token" content="{{ csrf_token }}">
-
-<div hx-get="{% url "attendances-navbar-view" %}" hx-trigger="load">
+<div hx-get="{% url 'attendances-navbar-view' %}?{{ request.GET.urlencode }}" hx-trigger="load">
 </div>
 
 {% include "generic/components.html" %}

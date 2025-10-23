@@ -25,6 +25,7 @@ class ProjectForm(ModelForm):
 
         model = Project
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}),
             "end_date": forms.DateInput(attrs={"type": "date"}),
@@ -161,6 +162,7 @@ class TaskAllForm(ModelForm):
 
         model = Task
         fields = "__all__"
+        exclude = ["is_active"]
 
         widgets = {
             "start_date": forms.DateInput(attrs={"type": "date"}),
@@ -176,11 +178,11 @@ class TaskAllForm(ModelForm):
         self.fields["project"].widget.attrs.update(
             {
                 "onchange": """
-        $('[name=dynamic_project]').val(this.value);
-        setTimeout(() => {
-            $('#getStageButton').click();
-        }, 100);
-"""
+                    $('[name=dynamic_project]').val(this.value);
+                    setTimeout(() => {
+                        $('#getStageButton').click();
+                    }, 100);
+                """
             }
         )
 
@@ -226,6 +228,7 @@ class TimeSheetForm(ModelForm):
 
         model = TimeSheet
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "date": forms.DateInput(attrs={"type": "date"}),
         }
@@ -296,7 +299,7 @@ class ProjectStageForm(ModelForm):
 
         model = ProjectStage
         fields = "__all__"
-        # exclude = ("project",)
+        exclude = ["is_active"]
 
         widgets = {"project": forms.HiddenInput()}
 
@@ -313,6 +316,7 @@ class TaskTimeSheetForm(ModelForm):
 
         model = Task
         fields = "__all__"
+        exclude = ["is_active"]
         widgets = {
             "end_date": forms.DateInput(attrs={"type": "date"}),
             "project": forms.HiddenInput(),

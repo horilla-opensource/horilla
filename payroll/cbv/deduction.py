@@ -146,7 +146,7 @@ class DeductionListView(HorillaListView):
         (_("Excluded Employees"), "excluded_employees_col"),
         (_("Is Pretax"), "get_is_pretax_display"),
         (_("Is Condition Based"), "get_is_condition_based_display"),
-        (_("Condition"), "condition_bsed_col"),
+        (_("Condition"), "condition_based_col"),
         (_("Is Fixed"), "get_is_fixed_display"),
         (_("Amount"), "amount"),
         (_("Based On"), "get_based_on_display"),
@@ -154,12 +154,8 @@ class DeductionListView(HorillaListView):
     ]
 
     header_attrs = {
-        "title": """
-                  style="width:180px !important;
-                  """,
-        "excluded_employees_col": """
-                  style="width:180px !important;
-                  """,
+        "title": """style="width:180px !important;" """,
+        "excluded_employees_col": """ style="width:180px !important;" """,
     }
 
     sortby_mapping = [

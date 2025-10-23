@@ -28,7 +28,12 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, FormView, ListView, TemplateView
 from xhtml2pdf import pisa
 
-from base.methods import closest_numbers, eval_validate, get_key_instances
+from base.methods import (
+    closest_numbers,
+    eval_validate,
+    get_key_instances,
+    get_pagination,
+)
 from horilla.filters import FilterSet
 from horilla.group_by import group_by_queryset
 from horilla.horilla_middlewares import _thread_locals
@@ -131,7 +136,7 @@ class HorillaListView(ListView):
     show_toggle_form: bool = True
     filter_keys_to_remove: list = []
 
-    records_per_page: int = 50
+    records_per_page: int = 0
     export_fields: list = []
     verbose_name: str = ""
     bulk_update_fields: list = []
@@ -162,59 +167,13 @@ class HorillaListView(ListView):
     def __init__(self, **kwargs: Any) -> None:
         if not self.view_id:
             self.view_id = get_short_uuid(4)
+        if not self.records_per_page:
+            self.records_per_page = get_pagination()
         super().__init__(**kwargs)
 
         self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
         request = getattr(_thread_locals, "request", None)
         self.request = request
-
-        self.visible_column = list(self.columns)
-
-        hidden_fields = []
-        existing_instance = None
-        if request:
-            existing_instance = models.ToggleColumn.objects.filter(
-                user_id=request.user, path=request.path_info
-            ).first()
-            if existing_instance:
-                hidden_fields = existing_instance.excluded_columns
-
-        if not self.default_columns:
-            self.default_columns = self.columns
-
-        self.toggle_form = ToggleColumnForm(
-            self.columns, self.default_columns, hidden_fields
-        )
-
-        # Remove hidden columns from visible_column
-        hidden_field_names = (
-            {
-                col[1] if isinstance(col, tuple) else col
-                for col in self.columns
-                if col[1] in hidden_fields
-            }
-            if existing_instance
-            else {col[1] for col in self.columns if col not in self.default_columns}
-        )
-        self.visible_column = [
-            col
-            for col in self.visible_column
-            if (col[1] if isinstance(col, tuple) else col) not in hidden_field_names
-        ]
-
-        # Add verbose names to fields if possible
-        updated_column = []
-        get_field = self.model()._meta.get_field
-        for col in self.visible_column:
-            if isinstance(col, str):
-                try:
-                    updated_column.append((get_field(col).verbose_name, col))
-                except FieldDoesNotExist:
-                    updated_column.append(col)
-            else:
-                updated_column.append(col)
-
-        self.visible_column = updated_column
 
     def bulk_update_accessibility(self) -> bool:
         """
@@ -1045,10 +1004,6 @@ class HorillaListView(ListView):
         if not self.search_url:
             self.search_url = self.request.path
         context["view_id"] = self.view_id
-        context["columns"] = self.visible_column
-        context["hidden_columns"] = list(set(self.columns) - set(self.visible_column))
-        context["toggle_form"] = self.toggle_form
-        context["show_toggle_form"] = self.show_toggle_form
         context["search_url"] = self.search_url
 
         context["action_method"] = self.action_method
@@ -1071,13 +1026,13 @@ class HorillaListView(ListView):
         context["quick_export"] = self.quick_export
         context["filter_selected"] = self.filter_selected
         context["bulk_update"] = self.bulk_update
-        if not self.verbose_name:
-            self.verbose_name = self.model.__class__
         context["model_name"] = self.verbose_name
         context["export_fields"] = self.export_fields
         context["custom_empty_template"] = self.custom_empty_template
         context["records_count_in_tab"] = self.records_count_in_tab
         referrer = self.request.GET.get("referrer", "")
+        if not self.verbose_name:
+            self.verbose_name = self.model.__class__
         if referrer:
             # Remove the protocol and domain part
             referrer = "/" + "/".join(referrer.split("/")[3:])
@@ -1090,7 +1045,61 @@ class HorillaListView(ListView):
             )
         ).distinct()
 
-        context["select_all_ids"] = self.select_all
+        # Add verbose names to fields if possible
+        updated_column = []
+        get_field = self.model()._meta.get_field
+        for col in self.columns:
+            if isinstance(col, str):
+                try:
+                    updated_column.append((get_field(col).verbose_name, col))
+                except FieldDoesNotExist:
+                    updated_column.append(col)
+            else:
+                updated_column.append(col)
+
+        self.columns = updated_column
+
+        self.visible_column = list(self.columns)
+
+        hidden_fields = []
+        existing_instance = None
+        if self.request:
+            existing_instance = models.ToggleColumn.objects.filter(
+                user_id=self.request.user, path=self.request.path_info
+            ).first()
+            if existing_instance:
+                hidden_fields = existing_instance.excluded_columns
+
+        if not self.default_columns:
+            self.default_columns = self.columns
+
+        self.toggle_form = ToggleColumnForm(
+            self.columns, self.default_columns, hidden_fields
+        )
+
+        # Remove hidden columns from visible_column
+        hidden_field_names = (
+            {
+                col[1] if isinstance(col, tuple) else col
+                for col in self.columns
+                if col[1] in hidden_fields
+            }
+            if existing_instance
+            else {col[1] for col in self.columns if col not in self.default_columns}
+        )
+        self.visible_column = [
+            col
+            for col in self.visible_column
+            if (col[1] if isinstance(col, tuple) else col) not in hidden_field_names
+        ]
+
+        context["columns"] = self.visible_column
+        context["hidden_columns"] = list(set(self.columns) - set(self.visible_column))
+        context["toggle_form"] = self.toggle_form
+        context["show_toggle_form"] = self.show_toggle_form
+
+        if self.bulk_select_option:
+            context["select_all_ids"] = self.select_all
         if self._saved_filters.get("field"):
             active_group = models.ActiveGroup.objects.filter(
                 created_by=self.request.user,
@@ -1138,9 +1147,13 @@ class HorillaListView(ListView):
             )
 
         ordered_ids = []
-        if not self._saved_filters.get("field"):
-            for instance in queryset:
-                ordered_ids.append(instance.pk)
+        try:
+            if not self._saved_filters.get("field"):
+                for instance in queryset:
+                    ordered_ids.append(str(instance.pk))
+        except:
+            pass
+
         self.request.session[self.ordered_ids_key] = ordered_ids
         context["queryset"] = paginator_qry(
             queryset, self._saved_filters.get("page"), self.records_per_page
@@ -1153,17 +1166,21 @@ class HorillaListView(ListView):
                 queryset = self.filter_class(
                     request.GET, queryset=queryset.object_list.model.objects.all()
                 ).qs
-            groups = group_by_queryset(
-                queryset, field, self._saved_filters.get("page"), "page"
-            )
-            context["groups"] = paginator_qry(
-                groups, self._saved_filters.get("page"), 10
-            )
+
+            try:
+                groups = group_by_queryset(
+                    queryset, field, self._saved_filters.get("page"), "page"
+                )
+                context["groups"] = paginator_qry(
+                    groups, self._saved_filters.get("page"), 10
+                )
+            except:
+                self.template_name = "generic/horilla_list_table.html"
 
             # for group in context["groups"]:
             #     for instance in group["list"]:
             #         instance.ordered_ids = ordered_ids
-            #         ordered_ids.append(instance.pk)
+            #         ordered_ids.append(str(instance.pk))
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
         from horilla.urls import path, urlpatterns
@@ -1752,7 +1769,7 @@ class HorillaCardView(ListView):
         ordered_ids = []
         if not self._saved_filters.get("field"):
             for instance in queryset:
-                ordered_ids.append(instance.pk)
+                ordered_ids.append(str(instance.pk))
         self.request.session[self.ordered_ids_key] = ordered_ids
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaCardView] = context
@@ -2199,7 +2216,11 @@ class HorillaNavView(TemplateView):
         context["empty_inputs"] = self.empty_inputs + ["nav_url"]
         context["last_filter"] = dict(last_filter)
         if self.filter_instance:
-            context[self.filter_form_context_name] = self.filter_instance.form
+            FilterClass = self.filter_instance.__class__
+            filterset = FilterClass(self.request.GET or None)
+            context[self.filter_form_context_name] = filterset.form
+            context[self.filter_instance_context_name] = filterset
+
         context["active_view"] = models.ActiveView.objects.filter(
             path=self.request.path
         ).first()
@@ -2209,7 +2230,9 @@ class HorillaNavView(TemplateView):
         for key, val in self.request.GET.items():
             extra_params[key] = val
 
-        extra_params["referrer"] = self.request.META.get("HTTP_REFERER", "")
+        extra_params["referrer"] = urlparse(
+            self.request.META.get("HTTP_REFERER", "")
+        ).path
 
         # Update each view's URL with query parameters
         for view in self.view_types:

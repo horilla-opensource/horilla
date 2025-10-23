@@ -675,6 +675,10 @@ $(".oh-password-input--toggle").on("click", function (e) {
     }
 });
 
+$(".oh-modal__close").on("click", function(){
+    $(this).closest(".oh-modal--show").removeClass("oh-modal--show")
+})
+
 $(document).on("click", ".oh-accordion-header", function(event) {
     event.stopImmediatePropagation();
     $(this).closest(".oh-accordion").toggleClass("oh-accordion--show");

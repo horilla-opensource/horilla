@@ -14,8 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
 from employee.models import Employee
-from horilla.horilla_middlewares import _thread_locals
-from horilla_views.cbv_methods import login_required, permission_required
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
     HorillaCardView,
     HorillaFormView,
@@ -26,12 +25,7 @@ from horilla_views.generic.cbv.views import (
 from project.cbv.cbv_decorators import is_projectmanager_or_member_or_perms
 from project.filters import ProjectFilter
 from project.forms import ProjectForm
-from project.methods import (
-    any_project_manager,
-    any_project_member,
-    is_project_manager_or_super_user,
-    you_dont_have_permission,
-)
+from project.methods import any_project_manager, any_project_member
 from project.models import Project
 
 
@@ -79,14 +73,14 @@ class ProjectsNavView(HorillaNavView):
                         data-toggle="oh-modal-toggle"
                         data-target="#projectImport"
                         style="cursor: pointer;"
-                        """,
+                    """,
                 },
                 {
                     "action": _("Export"),
                     "attrs": """
                         id="exportProject"
                         style="cursor: pointer;"
-                        """,
+                    """,
                 },
                 {
                     "action": _("Archive"),
@@ -95,7 +89,7 @@ class ProjectsNavView(HorillaNavView):
                         style="cursor: pointer;"
                         onclick="validateProjectIds(event);"
                         data-action="archive"
-                        """,
+                    """,
                 },
                 {
                     "action": _("Un-archive"),
@@ -104,7 +98,7 @@ class ProjectsNavView(HorillaNavView):
                         style="cursor: pointer;"
                         onclick="validateProjectIds(event);"
                         data-action="unarchive"
-                        """,
+                    """,
                 },
                 {
                     "action": _("Delete"),
@@ -114,7 +108,7 @@ class ProjectsNavView(HorillaNavView):
                         id="deleteProject"
                         onclick="validateProjectIds(event);"
                         style="cursor: pointer; color:red !important"
-                        """,
+                    """,
                 },
             ]
         self.view_types = [
@@ -123,26 +117,26 @@ class ProjectsNavView(HorillaNavView):
                 "icon": "list-outline",
                 "url": reverse("project-list-view"),
                 "attrs": """
-                        title ='List'
-                        """,
+                    title ='List'
+                """,
             },
             {
                 "type": "card",
                 "icon": "grid-outline",
                 "url": reverse("project-card-view"),
                 "attrs": """
-                          title ='Card'
-                          """,
+                    title ='Card'
+                """,
             },
         ]
         if self.request.user.has_perm("project.add_project"):
             self.create_attrs = f"""
-                                onclick = "event.stopPropagation();"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-target="#genericModalBody"
-                                hx-get="{reverse('create-project')}"
-                                """
+                onclick = "event.stopPropagation();"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+                hx-get="{reverse('create-project')}"
+            """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -159,6 +153,13 @@ class ProjectsList(HorillaListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        active = (
+            True
+            if self.request.GET.get("is_active", True)
+            in ["unknown", "True", "true", True]
+            else False
+        )
+        queryset = queryset.filter(is_active=active)
         if not self.request.user.has_perm("project.view_project"):
             employee = self.request.user.employee_get
             task_filter = queryset.filter(
@@ -215,7 +216,6 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -226,7 +226,6 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('completed');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -237,7 +236,6 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('on_hold');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -248,7 +246,6 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('cancelled');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -259,7 +256,6 @@ class ProjectsList(HorillaListView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('expired');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -267,9 +263,7 @@ class ProjectsList(HorillaListView):
 
     row_status_class = "status-{status}"
 
-    row_attrs = """
-                {redirect}
-                """
+    row_attrs = """ {redirect} """
 
 
 @method_decorator(login_required, name="dispatch")
@@ -336,6 +330,13 @@ class ProjectCardView(HorillaCardView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        active = (
+            True
+            if self.request.GET.get("is_active", True)
+            in ["unknown", "True", "true", True]
+            else False
+        )
+        queryset = queryset.filter(is_active=active)
         if not self.request.user.has_perm("project.view_project"):
             employee = self.request.user.employee_get
             task_filter = queryset.filter(
@@ -359,31 +360,31 @@ class ProjectCardView(HorillaCardView):
                     "action": "Edit",
                     "accessibility": "project.cbv.accessibility.project_manager_accessibility",
                     "attrs": """
-                            hx-get='{get_update_url}'
-                            hx-target='#genericModalBody'
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            class="oh-dropdown__link"
-                            """,
+                        hx-get='{get_update_url}'
+                        hx-target='#genericModalBody'
+                        data-toggle="oh-modal-toggle"
+                        data-target="#genericModal"
+                        class="oh-dropdown__link"
+                    """,
                 },
                 {
                     "action": "archive_status",
                     "accessibility": "project.cbv.accessibility.project_manager_accessibility",
                     "attrs": """
-                    href="{get_archive_url}"
-                    onclick="return confirm('Do you want to {archive_status} this project?')"
-                    class="oh-dropdown__link"
+                        href="{get_archive_url}"
+                        onclick="return confirm('Do you want to {archive_status} this project?')"
+                        class="oh-dropdown__link"
                     """,
                 },
                 {
                     "action": "Delete",
                     "accessibility": "project.cbv.accessibility.project_manager_accessibility",
                     "attrs": """
-                    onclick="
-                                event.stopPropagation()
-                                deleteItem({get_delete_url});
-                                "
-                    class="oh-dropdown__link oh-dropdown__link--danger"
+                        onclick="
+                            event.stopPropagation()
+                            deleteItem({get_delete_url});
+                        "
+                        class="oh-dropdown__link oh-dropdown__link--danger"
                     """,
                 },
             ]
@@ -391,8 +392,9 @@ class ProjectCardView(HorillaCardView):
     details = {
         "image_src": "get_avatar",
         "title": "{get_task_badge_html}",
-        "subtitle": "Status : {get_status_display} <br> Start date : {start_date} <br>End date : {end_date}",
+        "subtitle": "{get_card_view_subtitle}",
     }
+
     card_status_class = "status-{status}"
 
     card_status_indications = [
@@ -413,7 +415,6 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('in_progress');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -424,7 +425,6 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('completed');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -435,7 +435,6 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('on_hold');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -446,7 +445,6 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('cancelled');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -457,7 +455,6 @@ class ProjectCardView(HorillaCardView):
             onclick="
                 $('#applyFilter').closest('form').find('[name=status]').val('expired');
                 $('#applyFilter').click();
-
             "
             """,
         ),
@@ -499,10 +496,10 @@ class ProjectsTabView(ListView):
     def get_queryset(self):
         pk = self.kwargs.get("pk")
         queryset = Project.objects.filter(
-            Q(manager=pk)
+            Q(managers=pk)
             | Q(members=pk)
             | Q(task__task_members=pk)
-            | Q(task__task_manager=pk)
+            | Q(task__task_managers=pk)
         )
         return queryset.distinct()
 
@@ -516,15 +513,15 @@ class ProjectsTabView(ListView):
         return context
 
 
-# Remove the command lines after horilla converted into CBV
-# from employee.cbv.employee_profile import EmployeeProfileView
-# EmployeeProfileView.add_tab(
-#     tabs=[
-#         {
-#             "title": "Projects",
-#             # "view": projects_tab,
-#             "view": ProjectsTabView.as_view(),
-#             "accessibility": "employee.cbv.accessibility.workshift_accessibility",
-#         },
-#     ]
-# )
+from employee.cbv.employee_profile import EmployeeProfileView
+
+EmployeeProfileView.add_tab(
+    tabs=[
+        {
+            "title": "Projects",
+            # "view": projects_tab,
+            "view": ProjectsTabView.as_view(),
+            "accessibility": "employee.cbv.accessibility.workshift_accessibility",
+        },
+    ]
+)

@@ -1,0 +1,25 @@
+{% load i18n %}
+{% if task_id in request.managing_onboarding_tasks or perms.onboarding.change_candidatetask or perms.onboarding.change_onboardingtask or instance.onboarding_stage_id.pk in request.managing_onboarding_stages or instance.onboarding_stage_id.recruitment_id.pk in request.managing_recruitments %}
+  <div onclick="event.stopPropagation()" id="taskContainer{{ task_id }}{{ instance.pk }}">
+    {% if task %}
+      <select hx-post="{% url 'assign-task-pipeline' task_id instance.candidate_id.pk task.id %}" hx-target="#taskContainer{{ task_id }}{{ instance.pk }}" name="status" class="w-100" style="    background-color: hsl(0, 75%, 97%);
+    color: hsl(1, 100%, 61%);
+    padding: 0.4rem 0.6rem;
+    border-radius: 0.2rem;
+    margin-right: 0.2rem;
+    font-size: 0.8rem;">
+        {% for choice in task.choice %}
+          {% if choice.0 == task.status %}
+            <option value="{{ choice.0 }}" selected>{{ choice.1 }}</option>
+          {% else %}
+            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    {% else %}
+      <button class="oh-checkpoint-badge text-info" data-toggle="oh-modal-toggle" hx-get="{% url 'assign-task-pipeline' task_id instance.candidate_id.pk %}" hx-target="#taskContainer{{ task_id }}{{ instance.pk }}">{% trans 'Assign' %}</button>
+    {% endif %}
+  </div>
+{% else %}
+  {{ task.get_status_display }}
+{% endif %}

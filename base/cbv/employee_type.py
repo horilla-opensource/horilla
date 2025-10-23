@@ -64,19 +64,14 @@ class EmployeeTypeListView(HorillaListView):
 
     model = EmployeeType
     filter_class = EmployeeTypeFilter
+    show_toggle_form = False
 
     columns = [
         (_("Employee Type"), "employee_type"),
     ]
-    header_attrs = {
-        "employee_type": """
-                    style="width:400px !important;"
-                    """
-    }
+    header_attrs = {"employee_type": """ style="width:400px !important;" """}
 
-    row_attrs = """
-                id = "employeeTypeTr{get_instance_id}"
-                """
+    row_attrs = """ id = "employeeTypeTr{get_instance_id}" """
 
 
 @method_decorator(login_required, name="dispatch")

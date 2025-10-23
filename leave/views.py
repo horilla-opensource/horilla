@@ -2125,15 +2125,14 @@ def restrict_delete(request, id):
     hx_target = request.META.get("HTTP_HX_TARGET")
     if hx_target and hx_target == "genericModalBody":
         instances_ids = request.GET.get("instances_ids")
-        instances_list = json.loads(instances_ids)
-        if id in instances_list:
-            instances_list.remove(id)
-            previous_instance, next_instance = closest_numbers(
-                json.loads(instances_ids), id
+        if instances_ids:
+            instances_list = json.loads(instances_ids)
+            if id in instances_list:
+                previous_instance, next_instance = closest_numbers(instances_list, id)
+                instances_list.remove(id)
+            return redirect(
+                f"/leave/restricted-days-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
             )
-        return redirect(
-            f"/leave/restricted-days-detail-view/{next_instance}/?{previous_data}&instance_ids={instances_list}&deleted=true"
-        )
     if not RestrictLeave.objects.filter():
         return HttpResponse("<script>window.location.reload();</script>")
     return redirect(f"/leave/restrict-filter?{query_string}")
@@ -4569,6 +4568,7 @@ def compensatory_leave_settings_view(request):
         is_compensatory_leave=True,
         defaults={"name": "Compensatory Leave Type", "payment": "paid"},
     )
+    request.session["ordered_ids_leavetype"] = []
     context = {"enabled_compensatory": enabled_compensatory, "leave_type": leave_type}
     return render(request, "compensatory_settings.html", context)
 
@@ -4583,9 +4583,9 @@ def enable_compensatory_leave(request):
     compensatory_leave = (
         compensatory_leave if compensatory_leave else LeaveGeneralSetting()
     )
-    compensatory_leave.compensatory_leave = "compensatory_leave" in request.GET.keys()
+    compensatory_leave.compensatory_leave = not compensatory_leave.compensatory_leave
     compensatory_leave.save()
-    if "compensatory_leave" in request.GET.keys():
+    if compensatory_leave.compensatory_leave:
         messages.success(request, _("Compensatory leave is enabled successfully!"))
     else:
         messages.success(request, _("Compensatory leave is disabled successfully!"))

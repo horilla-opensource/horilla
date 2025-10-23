@@ -5,8 +5,8 @@
         }, 1000);">
     </span>
 {% endif %}
-<div class="oh-modal__dialog-header pb-0">
-    <span class="oh-modal__dialog-title" id="editDialogDialog">{% trans "Create" %} {{ form.verbose_name }}</span>
+<div class="oh-modal__dialog-header font-semibold">
+    <span class="oh-modal__dialog-title" id="editDialogDialog">{% if duplicate %}{% trans "Duplicate" %}{% else %}{% trans "Create" %} {{ form.verbose_name }}{% endif %}</span>
     <button class="oh-modal__close" aria-label="Close">
         <ion-icon name="close-outline"></ion-icon>
     </button>
@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-input__label" for="{{form.start_date.id_for_label}}">
+                    <label class="oh-label" for="{{form.start_date.id_for_label}}">
                         {{form.start_date.label}}
                     </label>
                     {{ form.start_date }} {{ form.start_date.errors }}
@@ -29,7 +29,7 @@
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-input__label" for="{{form.end_date.id_for_label}}">
+                    <label class="oh-label" for="{{form.end_date.id_for_label}}">
                         {{form.end_date.label}}
                     </label>
                     {{ form.end_date }} {{ form.end_date.errors }}
@@ -37,7 +37,7 @@
             </div>
             <div class="col-12 col-sm-12 col-md-6 col-lg-6">
                 <div class="oh-input__group">
-                    <label class="oh-input__label" for="{{form.company_id.id_for_label}}">
+                    <label class="oh-label" for="{{form.company_id.id_for_label}}">
                         {{form.company_id.label}}
                     </label>
                     {{ form.company_id }} {{ form.company_id.errors }}

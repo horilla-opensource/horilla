@@ -674,7 +674,7 @@ class AvailableLeave(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def forcasted_leaves(self):
         forecasted_leave = {}
@@ -1004,20 +1004,20 @@ class LeaveRequest(HorillaModel):
         """
         overlapping_requests = LeaveRequest.objects.filter(
             Q(
-                employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                employee_id__employee_work_info__department_id=self.employee_id.get_department()
             )
             | Q(
-                employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                employee_id__employee_work_info__job_position_id=self.employee_id.get_job_position()
             ),
             start_date__lte=self.end_date,
             end_date__gte=self.start_date,
         )
 
         clashed_due_to_department = overlapping_requests.filter(
-            employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+            employee_id__employee_work_info__department_id=self.employee_id.get_department()
         )
         clashed_due_to_job_position = overlapping_requests.filter(
-            employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+            employee_id__employee_work_info__job_position_id=self.employee_id.get_job_position()
         )
 
         return render_template(
@@ -1069,7 +1069,7 @@ class LeaveRequest(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def my_leave_request_detail_view(self):
         """
@@ -1731,14 +1731,14 @@ class LeaveRequest(HorillaModel):
                 .filter(
                     (
                         Q(
-                            employee_id__employee_work_info__department_id=self.employee_id.employee_work_info.department_id
+                            employee_id__employee_work_info__department_id=self.employee_id.get_department()
                         )
                         | Q(
-                            employee_id__employee_work_info__job_position_id=self.employee_id.employee_work_info.job_position_id
+                            employee_id__employee_work_info__job_position_id=self.employee_id.get_job_position()
                         )
                     )
                     & Q(
-                        employee_id__employee_work_info__company_id=self.employee_id.employee_work_info.company_id
+                        employee_id__employee_work_info__company_id=self.employee_id.get_company()
                     ),
                     start_date__lte=self.end_date,
                     end_date__gte=self.start_date,
@@ -1779,17 +1779,17 @@ class LeaveAllocationRequest(HorillaModel):
         blank=True, null=True, verbose_name=_("Requested days")
     )
     requested_date = models.DateField(default=timezone.now)
-    description = models.TextField(max_length=255, verbose_name=_("Description"))
     attachment = models.FileField(
         null=True,
         blank=True,
         upload_to=upload_path,
         verbose_name=_("Attachment"),
     )
+    description = models.TextField(verbose_name=_("Description"))
     status = models.CharField(
         max_length=30, choices=LEAVE_ALLOCATION_STATUS, default="requested"
     )
-    reject_reason = models.TextField(blank=True, max_length=255)
+    reject_reason = models.TextField(blank=True)
     history = HorillaAuditLog(
         related_name="history_set",
         bases=[
@@ -1935,7 +1935,7 @@ class LeaveAllocationRequest(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+        return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
     def leave_request_allocation_detail_view(self):
         """
@@ -2009,9 +2009,7 @@ class RestrictLeave(HorillaModel):
         help_text=_("Choose leave types to exclude from restriction."),
     )
 
-    description = models.TextField(
-        null=True, verbose_name=_("Description"), max_length=255
-    )
+    description = models.TextField(null=True, verbose_name=_("Description"))
     company_id = models.ForeignKey(
         Company,
         null=True,
@@ -2154,7 +2152,7 @@ if apps.is_installed("attendance"):
             """
             Return subtitle containing both department and job position information.
             """
-            return f"{self.employee_id.employee_work_info.department_id} / {self.employee_id.employee_work_info.job_position_id}"
+            return f"{self.employee_id.get_department()} / {self.employee_id.get_job_position()}"
 
         def my_compensatory_detail_actions(self):
             """

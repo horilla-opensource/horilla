@@ -6,8 +6,8 @@
     }
 </style>
 
-<div class="oh-general__tab-target oh-profile-sectionmb-4 p-10" id="personal" style="border:none;background-color: #ffffff;">
-    <div class="oh-profile-section__card p-10" style="border:1px solid #cdd5df; border-radius:10px; background-color: #ffffff;">
+<div class="rounded-xl bg-[#fff]" id="personal">
+    <div class="border rounded-xl p-4">
     {% if form.verbose_name %}
         <div class="oh-payslip__header">
             <div class="oh-payslip__header-left">
@@ -31,7 +31,7 @@
                     </div>
 
                     {% if field.field.widget.input_type == 'checkbox' %}
-                        <div class="oh-switch" style="width: 30px;">{{ field|add_class:'oh-switch__checkbox' }}</div>
+                        <div class="oh-switch w-[30px]">{{ field|add_class:'oh-switch__checkbox' }}</div>
                     {% else %}
                         {% comment %} {{ field|add_class:'form-control' }} {% endcomment %}
                         {{ field|add_class:"form-control oh-input"|attr:"data-widget:" }}

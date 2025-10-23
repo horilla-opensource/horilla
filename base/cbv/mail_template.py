@@ -111,7 +111,7 @@ class MailTemplateNavView(HorillaNavView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.create_attrs = f"""
-            hx-get="{reverse_lazy("create-mail-template")}"
+            hx-get="{reverse_lazy('mail-template-create-form')}"
             data-toggle="oh-modal-toggle"
             data-target="#objectCreateModal"
             hx-target="#objectCreateModalTarget"

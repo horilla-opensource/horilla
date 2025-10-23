@@ -44,8 +44,8 @@ class AssetBatchNoListView(HorillaListView):
     filter_class = AssetBatchNoFilter
     columns = [
         "lot_number",
-        "lot_description",
         (_("Assets"), "assets_column"),
+        "lot_description",
     ]
 
     def __init__(self, **kwargs: Any) -> None:
@@ -53,11 +53,7 @@ class AssetBatchNoListView(HorillaListView):
         self.search_url = reverse("asset-batch-list")
         self.view_id = "AssetBatchList"
 
-    header_attrs = {
-        "action": """
-            style = "width:180px !important"
-        """
-    }
+    header_attrs = {"action": """ style = "width:180px !important" """}
 
     action_method = "actions"
 
@@ -133,6 +129,8 @@ class DynamicCreateBatchNo(AssetBatchCreateFormView):
     is_dynamic_create_view = True
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("asset.view_assetlot"), name="dispatch")
 class AssetBatchDetailView(HorillaDetailedView):
     """
     detail view of the page
@@ -143,3 +141,6 @@ class AssetBatchDetailView(HorillaDetailedView):
     model = AssetLot
     body = ["lot_number", (_("Asset"), "assets_column"), "lot_description"]
     action_method = "detail_actions"
+    cols = {
+        "lot_description": 12,
+    }

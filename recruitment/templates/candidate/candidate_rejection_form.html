@@ -1,0 +1,23 @@
+{% load i18n %}
+{% include "generic/horilla_form.html" %}
+<script>
+{
+    const rejId = "{{ form.instance.id|default:'' }}";
+    if (rejId) {
+        // Build dynamic URL for deletion
+        const deleteUrlBase = "{% url 'delete-candidate-rejection' 0 %}";
+        const deleteUrl = deleteUrlBase.replace('0', rejId);
+
+        const button_container = `
+            <button class="oh-btn oh-btn--info mt-2 mr-2 pl-4 pr-5 oh-btn--w-100-resp"
+                hx-post="${deleteUrl}"
+                hx-confirm="Are you sure you want to cancel this rejection?"
+                onclick="event.preventDefault(); event.stopPropagation();">
+                {% trans 'Cancel Rejection' %}
+            </button>
+        `;
+        // Append the button to the form
+        $('#{{ view_id }}Form div.flex-row-reverse').append(button_container);
+    }
+}
+</script>

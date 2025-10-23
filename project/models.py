@@ -11,7 +11,6 @@ from datetime import date
 from django.apps import apps
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.templatetags.static import static
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.html import format_html
@@ -102,8 +101,8 @@ class Project(HorillaModel):
         """
         employees = self.managers.all()
         if employees:
-            employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
+            employee_names_string = ", ".join(
+                [str(employee.get_full_name()) for employee in employees]
             )
             return employee_names_string
 
@@ -113,8 +112,8 @@ class Project(HorillaModel):
         """
         employees = self.members.all()
         if employees:
-            employee_names_string = "<br>".join(
-                [str(employee) for employee in employees]
+            employee_names_string = ", ".join(
+                [str(employee.get_full_name()) for employee in employees]
             )
             return employee_names_string
 
@@ -128,14 +127,12 @@ class Project(HorillaModel):
     def get_document_html(self):
         if self.document:
             document_url = self.document.url
-            image_url = static("images/ui/project/document.png")
             return format_html(
                 '<a href="{0}" style="text-decoration: none" rel="noopener noreferrer" class="oh-btn oh-btn--light" target="_blank" onclick="event.stopPropagation();">'
                 '<span class="oh-file-icon oh-file-icon--pdf"></span>'
                 "&nbsp View"
                 "</a>",
                 document_url,
-                image_url,
             )
 
     def redirect(self):
@@ -192,6 +189,20 @@ class Project(HorillaModel):
             title,
             task_count,
         )
+
+    def get_card_view_subtitle(self):
+
+        col = format_html(
+            """
+                <div class="my-2">Status : <span class="font-semibold">{}</span></div>
+                <div class="mb-2">Start date : <span class="dateformat_changer font-semibold">{}</span></div>
+                <div>End date : <span class="dateformat_changer font-semibold">{}</span></div>
+            """,
+            self.get_status_display(),
+            self.start_date,
+            self.end_date,
+        )
+        return col
 
     def get_delete_url(self):
         """
@@ -404,6 +415,22 @@ class Task(HorillaModel):
         url = reverse("task-detail-view", kwargs={"pk": self.pk})
         return url
 
+    def card_view_subtitle(self):
+        """
+        subtitle for card view
+        """
+        col = format_html(
+            """
+                <div class="my-2">Project Name : <span class="font-semibold">{}</span></div>
+                <div class="mb-2">Stage Name : <span class="font-semibold">{}</span></div>
+                <div>End date : <span class="dateformat_changer font-semibold">{}</span></div>
+            """,
+            self.if_project(),
+            self.stage,
+            self.end_date,
+        )
+        return col
+
     def status_column(self):
         """
         to get status
@@ -416,7 +443,9 @@ class Task(HorillaModel):
         """
         managers = self.task_managers.all()
         if managers:
-            managers_name_string = "<br>".join([str(manager) for manager in managers])
+            managers_name_string = ", ".join(
+                [str(manager.get_full_name()) for manager in managers]
+            )
             return managers_name_string
         else:
             return ""
@@ -427,7 +456,9 @@ class Task(HorillaModel):
         """
         members = self.task_members.all()
         if members:
-            members_name_string = "<br>".join([str(member) for member in members])
+            members_name_string = ", ".join(
+                [str(member.get_full_name()) for member in members]
+            )
             return members_name_string
         else:
             return ""
@@ -436,21 +467,6 @@ class Task(HorillaModel):
         """
         This method for get custom column for action.
         """
-        # request = getattr(_thread_locals, "request", None)
-        # is_task_manager = self.task_manager == request.user
-        # print(self.title)
-        # is_project_manager = self.project.manager == request.user if self.project else False
-        # print(self.project)
-        # has_permission = request.user.has_perm('project.view_task')  # Replace 'your_app' with your app name
-
-        # if is_task_manager or is_project_manager or has_permission:
-        #     return render_template(
-        #         "cbv/tasks/task_actions.html",
-        #         {"instance": self}
-        #     )
-        # else:
-        #     return ""
-
         return render_template(
             path="cbv/tasks/task_actions.html",
             context={"instance": self},

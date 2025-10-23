@@ -348,7 +348,9 @@ def application_form(request):
         return redirect("open-recruitments")
 
     try:
-        recruitment = Recruitment.objects.filter(id=recruitment_id).first()
+        recruitment = Recruitment.objects.filter(
+            id=recruitment_id, is_published=True
+        ).first()  # Only create applications for published recruitments.
         if not recruitment:
             messages.error(request, _("Recruitment not found"))
             return redirect("open-recruitments")
@@ -375,7 +377,7 @@ def application_form(request):
             else:
                 candidate_obj.stage_id = stages.order_by("sequence").first()
             messages.success(request, _("Application saved."))
-
+            candidate_obj.save()  # 945
             request.session["candidate"] = serializers.serialize(
                 "json", [candidate_obj]
             )

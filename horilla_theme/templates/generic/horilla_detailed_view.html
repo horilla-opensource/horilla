@@ -6,7 +6,7 @@
     <div class="p-5" id="detailViewContainer">
         <div class="flex justify-between items-center mb-2">
             <h2 class="text-md font-semibold">{{ title }}</h2>
-            <button class="text-gray-500 hover:text-red-500 text-xl"
+            <button class="text-gray-500 hover:text-red-500 text-xl static oh-modal__close oh-modal__close--custom"
                 onclick="$(this).closest('.oh-modal--show').removeClass('oh-modal--show');">
                 <img src="{% static 'horilla_theme/assets/icons/close.svg' %} " alt="" />
             </button>
@@ -32,11 +32,11 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-5 mt-5">
             {% for col in body %}
                 {% if not col.2 %}
-                    <div class="col-span-1 md:col-span-{{ cols|get_item:col.1|default:6 }} mb-2 flex gap-5 items-center">
+                    <div class="col-span-1 md:col-span-{{ cols|get_item:col.1|default:6 }} mb-2 flex gap-5">
                         <span class="font-medium text-xs text-[#565E6C] w-32">
                             {{ col.0 }}
                         </span>
-                        <div class="text-xs font-semibold flex items-center gap-5">
+                        <div class="text-xs font-semibold flex gap-5">
                             : <span>
                                 {{ object|getattribute:col.1|selected_format:request.user.employee_get.employee_work_info.company_id|safe }}
                             </span>
@@ -63,6 +63,7 @@
             {% if actions or action_method %}
                 <div class="flex gap-1">
                     {% if actions and not action_method %}
+                        <div class="oh-btn-group">
                         {% for action in actions %}
                             <a {{action.attrs|format:object|safe}}>
                                 {% if action.icon|is_image_file %}
@@ -73,6 +74,7 @@
                                 {{action.action}}
                             </a>
                         {% endfor %}
+                        </div>
                     {% else %}
                         {{object|getattribute:action_method|safe}}
                     {% endif %}

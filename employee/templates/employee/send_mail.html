@@ -1,186 +1,190 @@
 {% load i18n %}
-<div id="ack-message-{{employee.id}}">
-</div>
-<form onsubmit="$(this).closest('.oh-modal--show').removeClass('oh-modal--show')"
-   hx-post='{% url "send-mail-to-employee" %} ' class="oh-general__tab-target oh-profile-section"
-  id='ack-form-{{employee.id}}' hx-target="#ack-message-{{employee.id}}" hx-encoding="multipart/form-data">
-  <input type="hidden" value="{{employee.id}}" name="id">
-  <div class="modal-body">
-    {% if employee %}
-    <div class="oh-timeoff-modal__profile-content">
-      <div class="oh-profile mb-2">
-        <div class="oh-profile__avatar">
-          <img src="{{employee.get_avatar}}"
-            class="oh-profile__image me-2">
+{% comment %} # 875 {% endcomment %}
+<button hidden id="previewHxButton"
+        hx-post="{% url 'get-employee-mail-preview' %}?{% if employee %}emp_id={{ employee.id }}&{% endif %}"
+        hx-target="#preview"
+        hx-include="#ack-form-{{ employee.id }}"
+        hx-on-htmx-before-request="if (!$('#template').val()) { event.preventDefault(); }">
+</button>
+
+<div id="ack-message-{{ employee.id }}"></div>
+
+<form id="ack-form-{{ employee.id }}" class="oh-general__tab-target oh-profile-section"
+      hx-post="{% url 'send-mail-to-employee' %}" hx-target="#ack-message-{{ employee.id }}"
+      hx-encoding="multipart/form-data" onsubmit="return handleFormSubmit(event, {{ employee.id }})">
+    <input type="hidden" name="id" value="{{ employee.id }}">
+
+    <div class="modal-body">
+
+        {% if employee %}
+            <div class="oh-timeoff-modal__profile-content">
+                <div class="oh-profile mb-2">
+                    <div class="oh-profile__avatar">
+                        <img src="{{ employee.get_avatar }}" class="oh-profile__image me-2" alt="Employee Avatar">
+                    </div>
+                    <div class="oh-timeoff-modal__profile-info">
+                        <span class="oh-timeoff-modal__user fw-bold">{{ employee.get_full_name }}</span>
+                        <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
+                            {{ employee.get_job_position }} / {{ employee.get_department }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Also Send To -->
+        <div class="form-group mt-2">
+            <label for="employees"><h6>{% trans "Also send to" %}</h6></label>
+            <select class="oh-select oh-select-2" name="employees" id="employees" multiple {% if not employee %} required {% endif %}>
+                {% for emp in employees %}
+                    <option value="{{ emp.id }}">{{ emp }}</option>
+                {% endfor %}
+            </select>
         </div>
-        <div class="oh-timeoff-modal__profile-info">
-          <span class="oh-timeoff-modal__user fw-bold">{{employee.get_full_name}}</span>
-          <span class="oh-timeoff-modal__user m-0" style="font-size: 18px; color: #4d4a4a">
-            {{employee.get_job_position}} /
-            {{employee.get_department}}</span>
+
+        <!-- Subject -->
+        <div class="form-group mt-2">
+            <label for="subject"><h6>{% trans "Subject" %}</h6></label>
+            <input required type="text" name="subject" class="oh-input w-100" id="subject" placeholder="Important Reminder">
         </div>
-      </div>
-    </div>
-    {% endif %}
-    <div class="form-group mt-2">
-      <label for="employees">
-        <h6>{% trans "Also send to" %}</h6>
-      </label>
-      <select class="oh-select oh-select-2" {% if not employee %} required {% endif %} name="employees" id="employees" multiple>
-        {% for employee in employees %}
-          <option value="{{employee.id}}">{{employee}}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="form-group mt-2">
-      <label for="subject">
-        <h6>{% trans "Subject" %}</h6>
-      </label>
-      <input required type="text" placeholder="Important Reminder" name='subject' class="oh-input w-100" id="subject"
-        placeholder="Subject">
-    </div>
-    <div class="form-group mt-2">
-      <label for="template">
-        <h6>{% trans "Template" %}</h6>
-      </label>
-      <select name="template" class="w-100 oh-select" id="template" onchange="templateChange($(this))">
-        <option value="">----</option>
-        {% for template in templates %}
-        <option value="{{template.id}}">{{template.title}}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="form-group mt-2">
-      <label for="body">
-        <h6>{% trans "Message Body" %}</h6>
-      </label>
-      <div class="oh-input__group">
-        <div class="oh-tabs__view-buttons mt-2">
-            <span class="tab-btn active" data-tab="write">
-                <span>{% trans "Write" %}</span>
-            </span>
-            <span class="tab-btn" onclick="previewMail()" data-tab="preview">
-                <span>{% trans "Preview" %}</span>
-            </span>
+
+        <!-- Template -->
+        <div class="form-group mt-2">
+            <label for="template"><h6>{% trans "Template" %}</h6></label>
+            <select name="template" class="w-100 oh-select" id="template" hx-on:change="loadTemplate(this)">
+                <option value="">----</option>
+                {% for template in templates %}
+                    <option value="{{ template.id }}">{{ template.title }}</option>
+                {% endfor %}
+            </select>
         </div>
-        <div id="write" class="oh-tabs__view active">
-            <textarea id="writeField" data-summernote name="body" required class="oh-input oh-input--textarea" placeholder="Type something here..."></textarea>
+
+        <!-- Message Body -->
+        <div class="form-group mt-2">
+            <label for="body"><h6>{% trans "Message Body" %}</h6></label>
+            <div class="oh-input__group">
+                <div class="oh-tabs__view-buttons mt-2">
+                    <span class="tab-btn active" data-tab="write"><span>{% trans "Write" %}</span></span>
+                    <span class="tab-btn" data-tab="preview" hx-on:click="$('#previewHxButton').click();"><span>{% trans "Preview" %}</span></span>
+                </div>
+                <div id="write" class="oh-tabs__view active">
+                    <textarea id="writeField" data-summernote name="body" required
+                              class="oh-input oh-input--textarea" placeholder="Type something here..."></textarea>
+                </div>
+                <div id="preview" class="oh-tabs__view">
+                    <div id="previewField" class="oh-input oh-input--textarea" placeholder="preview..."></div>
+                </div>
+            </div>
         </div>
-        <div id="preview" class="oh-tabs__view">
-            <div id="previewField" disabled class="oh-input oh-input--textarea" placeholder="preview..."></div>
+
+        <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
+            {% trans "Hint: Type '{' to get sender or receiver data" %}
         </div>
-    </div>
-    </div>
-    <div class="form-hint" style="margin-top: 10px; font-size: 14px; color: #888;">
-      {% trans "Hint: Type '{' to get sender or receiver data" %}
-    </div>
-    <div class="form-group mt-2">
-      <label for="template_attachments">
-        <h6>{% trans "Template as Attachment" %}</h6>
-      </label>
-      <select name="template_attachments" class="w-100 oh-select" id="template_attachments" multiple>
-        {% for template in templates %}
-        <option value="{{template.id}}">{{template.title}}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="form-group mt-2">
-      <label for="other_attachments">
-        <h6>{% trans "Other Attachments" %}</h6>
-      </label>
-      <input type="file" name="other_attachments" id="other_attachments" multiple style="display: block;">
-    </div>
-    <div class="modal-footer d-flex flex-row-reverse mt-3">
-      <input type="submit" class="oh-btn oh-btn--secondary submit-send" data-message-id="ack-message-{{employee.id}}"
-        name="submit" id="submit" onclick="sendMail()" value="{% trans 'Send Mail' %}">
+
+        <!-- Template as Attachment -->
+        <div class="form-group mt-2">
+            <label for="template_attachments"><h6>{% trans "Template as Attachment" %}</h6></label>
+            <select name="template_attachments" class="w-100 oh-select" id="template_attachments" multiple>
+                {% for template in templates %}
+                    <option value="{{ template.id }}">{{ template.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Other Attachments -->
+        <div class="form-group mt-2">
+            <label for="other_attachments"><h6>{% trans "Other Attachments" %}</h6></label>
+            <input type="file" name="other_attachments" id="other_attachments" multiple style="display: block;">
+        </div>
+
+        <div id="messages"></div>
+
+        <div class="modal-footer d-flex flex-row-reverse mt-3">
+            <button type="submit" class="oh-btn oh-btn--secondary submit-send">{% trans "Send Mail" %}</button>
+        </div>
     </div>
 </form>
 
-
 <script>
-  button = document.querySelector('.submit-send')
-  button.onclick = function (event) {
-    var element = event.target;
-    var valid = true
+    // ---------- UTILITIES ----------
+    function showError(message) {
+        $("#messages").html(`<div class="oh-alert oh-alert--animated oh-alert--danger" role="alert">${message}</div>`);
+    }
+    function clearErrors() { $("#messages").empty(); }
 
-    if (!$('#employees').val().length && "{{employee|default:'false'|safe}}"=="false") {
-      valid=false
-      $(`#messages`).html($(`
-      <div class="oh-alert oh-alert--animated oh-alert--danger" role="alert">
-        This field is required
-        </div>
-        `));
-    }
-    else if (!$("#subject").val().length) {
-      valid=false
-      $(`#messages`).html($(`
-      <div class="oh-alert oh-alert--animated oh-alert--danger" role="alert">
-        The message subject is required
-        </div>
-        `));
-    }
-    else if (!$("#body").val().length) {
-      valid=false
-      $(`#messages`).html($(`
-      <div class="oh-alert oh-alert--animated oh-alert--danger" role="alert">
-        The message body is required
-        </div>
-        `));
-    }
-    if (valid) {
-      Swal.fire({
-        title: "Processing",
-        text: "Mail will sent on the background",
-        icon: "info"
-      });
-    }
-  };
-
-  $(document).ready(function () {
-    var selectedIds = JSON.parse($("#selectedInstances").attr("data-ids"));
-    $("#employees[name=employees]select[multiple]").val(selectedIds).change()
-
-  });
-  function templateChange(e) {
-    var id = e.val();
-    if (id.length) {
-      $.ajax({
-        type: "get",
-        url: `/employee/get-template/${id}/`,
-        data: { "instance_id": "{{employee.id}}" },
-        dataType: "Json",
-        success: function (response) {
-          $('#ack-form-{{employee.id}} [name="body"]').html(response.body).change()
-          $('#ack-form-{{employee.id}} [class="note-editable"]').html(response.body)
+    // ---------- VALIDATION ----------
+    function validateForm(formId, hasEmployee) {
+        clearErrors();
+        let valid = true;
+        if (!$('#employees').val().length && !hasEmployee) {
+            showError("Please select at least one employee.");
+            valid = false;
+        } else if (!$("#subject").val().trim()) {
+            showError("The message subject is required.");
+            valid = false;
+        } else {
+            let body = $(`#writeField`).summernote('code');
+            if (!body || body === '<p><br></p>') {
+                showError("The message body is required.");
+                valid = false;
+            }
         }
-      });
+        return valid;
     }
-  };
-  function previewMail(){
-    var id = $('#template').val();
-    var body = $('#ack-form-{{employee.id}} [name="body"]').val()
-    if (body && body.trim() !== '') {
-      $.ajax({
-        type: "get",
-        url: "{% url 'get-employee-mail-preview' %}" ,
-        data: {"body":body,"emp_id":{{employee.id}} },
-        dataType: "Json",
-        success: function (response) {
-          $('#previewField').html(response.body)
-        }
-      });
-    }
-  }
-  initializeSummernote({{employee.id}},{{ searchWords|safe }});
-  const buttons = document.querySelectorAll(".tab-btn");
-    const contents = document.querySelectorAll(".oh-tabs__view ");
-    buttons.forEach((button) => {
-        button.addEventListener("click", () => {
-            buttons.forEach((btn) => btn.classList.remove("active"));
-            button.classList.add("active");
 
-            contents.forEach((content) => content.classList.remove("active"));
-            document.getElementById(button.dataset.tab).classList.add("active");
+    // ---------- FORM SUBMIT ----------
+    function handleFormSubmit(event, empId) {
+        event.preventDefault();
+        const hasEmployee = "{{employee|default:'false'|safe}}" !== "false";
+        if (!validateForm(empId, hasEmployee)) return false;
+
+        Swal.fire({
+            title: "Processing",
+            text: "Mail will be sent in the background",
+            icon: "info",
+            timer: 1500,
+            showConfirmButton: false
+        });
+        return true;
+    }
+
+    // ---------- TEMPLATE LOAD ----------
+    function loadTemplate(select) {
+        const id = $(select).val();
+        if (!id) return;
+        $.ajax({
+            type: "get",
+            url: `/employee/get-template/${id}/`,
+            dataType: "json",
+            beforeSend: () => { $('#writeField').summernote('disable'); },
+            success: function(response) { $('#writeField').summernote('code', response.body); },
+            complete: () => { $('#writeField').summernote('enable'); }
+        });
+    }
+
+    // ---------- INIT ----------
+    $(document).ready(function() {
+        // Load preselected employees if any
+        let selectedIds = JSON.parse($("#selectedInstances").attr("data-ids") || "[]");
+        $("#employees").val(selectedIds).change();
+
+        // Initialize Summernote conditionally
+        {% if employee %}
+            initializeSummernote({{ employee.id }}, {{ searchWords|safe }});
+        {% else %}
+            if (selectedIds.length > 0) {
+                initializeSummernote(selectedIds[0], {{ searchWords|safe }});
+            }
+        {% endif %}
+
+        // Tab switching
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                document.querySelectorAll(".oh-tabs__view").forEach(c => c.classList.remove("active"));
+                document.getElementById(btn.dataset.tab).classList.add("active");
+            });
         });
     });
 </script>

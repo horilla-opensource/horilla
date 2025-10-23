@@ -65,12 +65,8 @@ class LeaveAllocationRequestList(HorillaListView):
     ]
 
     header_attrs = {
-        "action": """
-                    style="width:180px !important;"
-                    """,
-        "description": """
-                    style="width:180px !important;"
-                    """,
+        "action": """ style="width:180px !important;" """,
+        "description": """ style="width:180px !important;" """,
     }
 
     sortby_mapping = [
@@ -157,7 +153,7 @@ class MyLeaveAllocationRequest(LeaveAllocationRequestList):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.search_url = reverse("leave-allocation-request-filter")
+        self.search_url = reverse("my-leave-allocation-request-tab")
         self.view_id = "my-leave-container"
 
     def get_queryset(self):
@@ -260,11 +256,16 @@ class LeaveAllocationRequestDetailView(HorillaDetailedView):
             (_("Leave Type"), "leave_type_id"),
             (_("Created Date"), "requested_date"),
             (_("Created By"), "created_by__employee_get"),
-            (_("Description"), "description"),
             (_("History"), "history_col", True),
-            (_("Reject Reason"), "reject_col", True),
             (_("Attachment"), "attachment_col", True),
+            (_("Description"), "description"),
+            (_("Reject Reason"), "reject_col", True),
         ]
+
+    cols = {
+        "description": 12,
+        "reject_col": 12,
+    }
 
     action_method = "detail_action"
 
@@ -306,9 +307,11 @@ class LeaveAllocationRequestFormView(HorillaFormView):
         self.form = choosesubordinates(
             self.request, self.form, "leave.add_leaveallocationrequest"
         )
-        self.form.fields["employee_id"].queryset = self.form.fields[
-            "employee_id"
-        ].queryset | Employee.objects.filter(employee_user_id=self.request.user)
+        self.form.fields["employee_id"].queryset = (
+            self.form.fields["employee_id"].queryset
+        ).distinct() | (
+            Employee.objects.filter(employee_user_id=self.request.user)
+        ).distinct()
         context["form"] = self.form
         return context
 

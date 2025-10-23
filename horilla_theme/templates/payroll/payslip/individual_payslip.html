@@ -19,9 +19,9 @@
                 <img src="{{employee.employee_work_info.company_id.icon.url}}" alt="{% trans 'Company' %}">
             </div>
             <div class="flex-1">
-                <p class="mb-1 font-semibold">{{employee.employee_work_info.company_id}}</p>
+                <p class="mb-1 font-semibold">{{employee.get_full_name}}</p>
                 <p class="text-sm flex">
-                    <span class="font-semibold">{% trans "Pay slip" %} : <span class="dateformat_changer">{{ start_date }}</span> {% trans "to" %} <span class="dateformat_changer">{{ end_date }}</span>
+                    <span class="font-semibold">{% trans "Payslip" %} : <span class="dateformat_changer">{{ start_date }}</span> {% trans "to" %} <span class="dateformat_changer">{{ end_date }}</span>
                 </p>
             </div>
         </div>
@@ -30,7 +30,6 @@
             <div class="flex items-center flex-wrap gap-2">
                 <a hx-confirm="{% trans 'Do you want to send the payslip by mail?' %}"
                     hx-get="{% url 'send-slip' %}?id={{instance.id}}&view=individual-payslip"
-                    hx-target="#payslips-table"
                     class="w-8 h-8 justify-center px-1 py-2 bg-[white]  rounded-md text-xs flex items-center gap-2  border border-primary-500 hover:border-primary-600 transition duration-300 cursor-pointer"
                     title="{% trans 'Send via mail' %}">
                     <img src="{% static 'horilla_theme/assets/img/icons/email1.svg' %}" alt="{% trans Mail %}"

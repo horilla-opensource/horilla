@@ -138,54 +138,96 @@ def users_count(self):
 Group.add_to_class("users_count", property(users_count))
 
 
-def filtersubordinates(request, queryset, perm=None, field="employee_id"):
+# def filtersubordinates(request, queryset, perm=None, field="employee_id"):
+#     """
+#     This method is used to filter out subordinates queryset element.
+#     """
+#     user = request.user
+#     if user.has_perm(perm):
+#         return queryset
+
+#     if not request:
+#         return queryset
+#     if NESTED_SUBORDINATE_VISIBILITY:
+#         current_managers = [
+#             request.user.employee_get.id,
+#         ]
+#         all_subordinates = Q(
+#             **{
+#                 f"{field}__employee_work_info__reporting_manager_id__in": current_managers
+#             }
+#         )
+
+#         while True:
+#             sub_managers = queryset.filter(
+#                 **{
+#                     f"{field}__employee_work_info__reporting_manager_id__in": current_managers
+#                 }
+#             ).values_list(f"{field}__id", flat=True)
+#             if not sub_managers.exists():
+#                 break
+#             current_managers = sub_managers
+#             all_subordinates |= Q(
+#                 **{
+#                     f"{field}__employee_work_info__reporting_manager_id__in": sub_managers
+#                 }
+#             )
+
+#         return queryset.filter(all_subordinates)
+
+#     manager = Employee.objects.filter(employee_user_id=user).first()
+
+#     if field:
+#         filter_expression = f"{field}__employee_work_info__reporting_manager_id"
+#         queryset = queryset.filter(**{filter_expression: manager})
+#         return queryset
+
+#     queryset = queryset.filter(
+#         employee_id__employee_work_info__reporting_manager_id=manager
+#     )
+#     return queryset
+
+
+def filtersubordinates(
+    request,
+    queryset,
+    perm=None,
+    field="employee_id",
+    nested=NESTED_SUBORDINATE_VISIBILITY,
+):
     """
-    This method is used to filter out subordinates queryset element.
+    Filters a queryset to include only the current user's subordinates.
+    Respects the user's permission: if the user has `perm`, returns full queryset.
+
+    Args:
+        request: HttpRequest
+        queryset: Django queryset to filter
+        perm: permission codename string
+        field: ForeignKey field pointing to Employee (default "employee_id")
+        nested: if True, include all nested subordinates; else only direct subordinates
+
+    Returns:
+        Filtered queryset
     """
     user = request.user
-    if user.has_perm(perm):
-        return queryset
 
-    if not request:
-        return queryset
-    if NESTED_SUBORDINATE_VISIBILITY:
-        current_managers = [
-            request.user.employee_get.id,
-        ]
-        all_subordinates = Q(
-            **{
-                f"{field}__employee_work_info__reporting_manager_id__in": current_managers
-            }
-        )
+    if perm and user.has_perm(perm):
+        return queryset  # User has permission to view all
 
-        while True:
-            sub_managers = queryset.filter(
-                **{
-                    f"{field}__employee_work_info__reporting_manager_id__in": current_managers
-                }
-            ).values_list(f"{field}__id", flat=True)
-            if not sub_managers.exists():
-                break
-            current_managers = sub_managers
-            all_subordinates |= Q(
-                **{
-                    f"{field}__employee_work_info__reporting_manager_id__in": sub_managers
-                }
-            )
+    if not hasattr(user, "employee_get") or user.employee_get is None:
+        return queryset.none()  # No employee associated, return empty
 
-        return queryset.filter(all_subordinates)
+    # Get subordinate employee IDs
+    sub_ids = get_subordinate_employee_ids(request, nested=nested)
 
-    manager = Employee.objects.filter(employee_user_id=user).first()
+    # Include own records explicitly
+    own_id = user.employee_get.id
 
-    if field:
-        filter_expression = f"{field}__employee_work_info__reporting_manager_id"
-        queryset = queryset.filter(**{filter_expression: manager})
-        return queryset
+    # Build filter
+    filter_ids = sub_ids + [own_id] if sub_ids else [own_id]
 
-    queryset = queryset.filter(
-        employee_id__employee_work_info__reporting_manager_id=manager
-    )
-    return queryset
+    # Return filtered queryset
+    return queryset.filter(**{f"{field}__id__in": filter_ids})
 
 
 def filter_own_records(request, queryset, perm=None):
@@ -265,18 +307,98 @@ def is_reportingmanager(request):
         return False
 
 
-def choosesubordinates(
-    request,
-    form,
-    perm,
-):
+# def choosesubordinates(
+#     request,
+#     form,
+#     perm,
+# ):
+#     user = request.user
+#     if user.has_perm(perm):
+#         return form
+#     manager = Employee.objects.filter(employee_user_id=user).first()
+#     queryset = Employee.objects.filter(employee_work_info__reporting_manager_id=manager)
+#     form.fields["employee_id"].queryset = queryset
+#     return form
+
+
+def choosesubordinates(request, form, perm):
+    """
+    Dynamically set subordinate choices for employee field based on permissions
+    and nested subordinate visibility.
+    """
     user = request.user
     if user.has_perm(perm):
         return form
     manager = Employee.objects.filter(employee_user_id=user).first()
-    queryset = Employee.objects.filter(employee_work_info__reporting_manager_id=manager)
-    form.fields["employee_id"].queryset = queryset
+    if not manager:
+        return form
+
+    # Start with direct subordinates
+    current_managers = [manager.id]
+    all_subordinates = Q(employee_work_info__reporting_manager_id__in=current_managers)
+
+    if NESTED_SUBORDINATE_VISIBILITY:
+        # Recursively find all subordinates in the chain
+        while True:
+            sub_managers = Employee.objects.filter(
+                employee_work_info__reporting_manager_id__in=current_managers
+            ).values_list("id", flat=True)
+
+            if not sub_managers.exists():
+                break
+
+            current_managers = sub_managers
+            all_subordinates |= Q(
+                employee_work_info__reporting_manager_id__in=sub_managers
+            )
+
+    queryset = Employee.objects.filter(all_subordinates).distinct()
+
+    # Assign to form field
+    if "employee_id" in form.fields:
+        form.fields["employee_id"].queryset = queryset
+
     return form
+
+
+def get_subordinate_employee_ids(request, nested=NESTED_SUBORDINATE_VISIBILITY):
+    """
+    Returns a list of subordinate Employee IDs under the current user.
+
+    If nested=True, includes all subordinates recursively across the reporting hierarchy.
+    If nested=False, includes only direct subordinates.
+    """
+    user = request.user
+    if not hasattr(user, "employee_get"):
+        return []
+
+    manager_id = user.employee_get.id
+
+    if nested:
+        # Recursive approach for all levels
+        current_managers = [manager_id]
+        all_sub_ids = set()
+
+        while current_managers:
+            sub_ids = list(
+                Employee.objects.filter(
+                    employee_work_info__reporting_manager_id__in=current_managers
+                ).values_list("id", flat=True)
+            )
+            if not sub_ids:
+                break
+            all_sub_ids.update(sub_ids)
+            current_managers = sub_ids
+
+        return list(all_sub_ids)
+    else:
+        # Only direct subordinates
+        direct_sub_ids = list(
+            Employee.objects.filter(
+                employee_work_info__reporting_manager_id=manager_id
+            ).values_list("id", flat=True)
+        )
+        return direct_sub_ids
 
 
 def choosesubordinatesemployeemodel(request, form, perm):
@@ -747,13 +869,44 @@ def reload_queryset(fields):
     return fields
 
 
-def check_manager(employee, instance):
+# def check_manager(employee, instance):
+
+
+#     try:
+#         if isinstance(instance, Employee):
+#             return instance.employee_work_info.reporting_manager_id == employee
+#         return employee == instance.employee_id.employee_work_info.reporting_manager_id
+#     except:
+#         return False
+
+
+def check_manager(employee, instance, nested=NESTED_SUBORDINATE_VISIBILITY):
+    """
+    Check if the given employee manages the instance employee.
+    Supports both direct and nested (indirect) checks.
+    """
 
     try:
-        if isinstance(instance, Employee):
-            return instance.employee_work_info.reporting_manager_id == employee
-        return employee == instance.employee_id.employee_work_info.reporting_manager_id
-    except:
+        # Get the target employee
+        target_employee = (
+            instance if isinstance(instance, Employee) else instance.employee_id
+        )
+
+        # Direct manager check
+        direct_manager = target_employee.employee_work_info.reporting_manager_id
+        if not nested:
+            return direct_manager == employee
+
+        # Recursive (nested) manager check
+        current_manager = direct_manager
+        while current_manager:
+            if current_manager == employee:
+                return True
+            current_manager = current_manager.employee_work_info.reporting_manager_id
+
+        return False
+
+    except Exception:
         return False
 
 
@@ -849,7 +1002,7 @@ def get_pagination():
     request = getattr(_thread_locals, "request", None)
     user = request.user
     page = DynamicPagination.objects.filter(user_id=user).first()
-    count = 50
+    count = 20
     if page:
         count = page.pagination
     return count

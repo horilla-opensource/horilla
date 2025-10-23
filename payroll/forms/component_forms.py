@@ -684,6 +684,9 @@ class LoanAccountForm(ModelForm):
     """
 
     verbose_name = "Loan / Advanced Sarlary"
+    cols = {
+        "description": 12,
+    }
 
     class Meta:
         model = LoanAccount
@@ -803,7 +806,7 @@ class ReimbursementForm(ModelForm):
     class Meta:
         model = Reimbursement
         fields = "__all__"
-        exclude = ["is_active"]
+        exclude = ["is_active", "status"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

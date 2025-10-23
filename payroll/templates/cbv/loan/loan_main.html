@@ -32,13 +32,11 @@
             $("[name='installment_amount']").on("change", function () {
                 var loanAmount = $("#id_loan_amount").val()
                 //var loanAmount = $("[name='loan_amount']").val();
-                console.log(loanAmount)
 
                 var installmentAmount = $(this).val();
 
 
                 var installments = loanAmount / installmentAmount;
-                console.log(installments)
                 $("[name='installments']").val(installments);
                 if (Math.round(installments) !== installments) {
                     installments = Math.round(installments);

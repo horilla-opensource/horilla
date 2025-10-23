@@ -58,7 +58,7 @@ class AssetLot(HorillaModel):
         verbose_name=_("Batch Number"),
     )
     lot_description = models.TextField(
-        null=True, blank=True, max_length=255, verbose_name=_("Description")
+        null=True, blank=True, verbose_name=_("Description")
     )
     company_id = models.ManyToManyField(Company, blank=True, verbose_name=_("Company"))
     objects = HorillaCompanyManager()
@@ -330,7 +330,7 @@ class AssetAssignment(HorillaModel):
     )
     return_date = models.DateField(null=True, blank=True, verbose_name=_("Return Date"))
     return_condition = models.TextField(
-        null=True, blank=True, max_length=255, verbose_name=_("Return Condition")
+        null=True, blank=True, verbose_name=_("Return Condition")
     )
     return_status = models.CharField(
         choices=STATUS,
@@ -428,6 +428,16 @@ class AssetAssignment(HorillaModel):
             context={"instance": self},
         )
 
+    def allocation_option(self):
+        """
+        This method for get custom column for asset tab action.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/allocation_option.html",
+            context={"instance": self},
+        )
+
     def asset_detail_action(self):
         """
         This method for get custom column for asset detail  actions.
@@ -498,7 +508,7 @@ class AssetAssignment(HorillaModel):
         """
         Return subtitle containing both department and job position information.
         """
-        return f"{self.assigned_to_employee_id.employee_work_info.department_id} / {self.assigned_to_employee_id.employee_work_info.job_position_id}"
+        return f"{self.assigned_to_employee_id.get_department()} / {self.assigned_to_employee_id.get_job_position()}"
 
     def status_display(self):
         status = self.asset_id.asset_status
@@ -519,6 +529,31 @@ class AssetAssignment(HorillaModel):
             color_class=color_class,
             date_col=date_col,
         )
+
+    def get_asset_of_offboarding_employee(self):
+        url = f"{reverse('asset-request-allocation-view')}?assigned_to_employee_id={self.assigned_to_employee_id.id}"
+        return url
+
+    def get_send_mail_employee_link(self):
+        if not self.assigned_to_employee_id:
+            return ""
+        url = reverse(
+            "send-mail-employee", kwargs={"emp_id": self.assigned_to_employee_id.id}
+        )
+        title = _("Send Mail")
+        html = f"""
+        <a
+            onclick="event.stopPropagation()"
+            hx-get="{url}"
+            data-toggle="oh-modal-toggle"
+            data-target="#sendMailModal"
+            title="{title}"
+            hx-target="#mail-content"
+        >
+            <ion-icon name="mail-outline"></ion-icon>
+        </a>
+        """
+        return format_html(html)
 
 
 class AssetRequest(HorillaModel):
@@ -587,6 +622,16 @@ class AssetRequest(HorillaModel):
 
         return render_template(
             path="cbv/request_and_allocation/asset_request_detail_action.html",
+            context={"instance": self},
+        )
+
+    def option_col(self):
+        """
+        This method for get custom coloumn for action.
+        """
+
+        return render_template(
+            path="cbv/request_and_allocation/asset_request_option.html",
             context={"instance": self},
         )
 
