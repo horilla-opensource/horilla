@@ -37,12 +37,11 @@ class SkillsListView(HorillaListView):
 
     model = Skill
     filter_class = SkillsFilter
+    show_toggle_form = False
 
-    columns = [(_("SI.No"), "get_sino"), (_("Skill"), "title")]
+    columns = [(_("Skill"), "title")]
 
-    row_attrs = """
-                    id="skillsTr{get_delete_instance}"
-                """
+    row_attrs = """ id="skillsTr{get_delete_instance}" """
 
     actions = [
         {
@@ -68,11 +67,6 @@ class SkillsListView(HorillaListView):
                       """,
         },
     ]
-
-    header_attrs = {
-        "title": """ style="width:200px !important" """,
-        "action": """ style="width:200px !important" """,
-    }
 
 
 @method_decorator(login_required, name="dispatch")

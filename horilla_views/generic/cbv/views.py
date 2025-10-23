@@ -1098,7 +1098,8 @@ class HorillaListView(ListView):
         context["toggle_form"] = self.toggle_form
         context["show_toggle_form"] = self.show_toggle_form
 
-        context["select_all_ids"] = self.select_all
+        if self.bulk_select_option:
+            context["select_all_ids"] = self.select_all
         if self._saved_filters.get("field"):
             active_group = models.ActiveGroup.objects.filter(
                 created_by=self.request.user,
@@ -1146,9 +1147,13 @@ class HorillaListView(ListView):
             )
 
         ordered_ids = []
-        if not self._saved_filters.get("field"):
-            for instance in queryset:
-                ordered_ids.append(instance.pk)
+        try:
+            if not self._saved_filters.get("field"):
+                for instance in queryset:
+                    ordered_ids.append(str(instance.pk))
+        except:
+            pass
+
         self.request.session[self.ordered_ids_key] = ordered_ids
         context["queryset"] = paginator_qry(
             queryset, self._saved_filters.get("page"), self.records_per_page
@@ -1175,7 +1180,7 @@ class HorillaListView(ListView):
             # for group in context["groups"]:
             #     for instance in group["list"]:
             #         instance.ordered_ids = ordered_ids
-            #         ordered_ids.append(instance.pk)
+            #         ordered_ids.append(str(instance.pk))
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
         from horilla.urls import path, urlpatterns
@@ -1757,7 +1762,7 @@ class HorillaCardView(ListView):
         ordered_ids = []
         if not self._saved_filters.get("field"):
             for instance in queryset:
-                ordered_ids.append(instance.pk)
+                ordered_ids.append(str(instance.pk))
         self.request.session[self.ordered_ids_key] = ordered_ids
 
         # CACHE.get(self.request.session.session_key + "cbv")[HorillaCardView] = context
