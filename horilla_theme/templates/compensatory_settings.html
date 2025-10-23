@@ -1,12 +1,12 @@
 {% extends 'settings.html' %}
-{% load i18n horillafilters widget_tweaks %}
+{% load i18n static %}
 
 {% block settings %}
 <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
     <h5
         class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333] flex items-center justify-between"
     >
-        {% trans "IP Restriction" %}
+        {% trans "Compensatory Leave" %}
     </h5>
 
     <div class="p-4">
@@ -15,27 +15,28 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex space-x-2">
                         <h3 class="text-sm font-medium">
-                            {% trans "IP Login Restriction" %}
+                            {% trans "Compensatory Leave Request" %}
                         </h3>
                         <span
                             class="oh-info mr-2"
-                            title="Enable this feature to restrict attendance marking to specific IP addresses only."
+                            title="{% trans 'By enabling this compensatory leave feature will avilable on Leave.' %}"
                         >
                         </span>
                     </div>
                     <label class="toggle-label">
                         <input
                             type="checkbox"
-                            name="is_enabled"
+                            name="compensatory_leave"
                             data-widget="style-widget"
                             class="toggle-input"
-                            {% if allowed_ips.is_enabled %}
-                                checked
+                            {% if enabled_compensatory %}
+                                checked 
                             {% endif %}
                             id="is_enabled"
-                            hx-post="{% url 'enable-ip-restriction' %}"
+                            hx-post="{% url 'enable-compensatory-leave' %}"
                             hx-target="#objectDetailsModalW25Target"
                             hx-trigger="change"
+                            hx-on-htmx-after-request="window.location.reload()"
                         />
                         <div class="toggle-switch"></div>
                     </label>
@@ -43,21 +44,10 @@
             </div>
         </div>
     </div>
-
-    {% if allowed_ips.is_enabled %}
-
-        <div
-            class="px-4"
-            hx-get="{% url 'allowed-ips-nav' %}"
-            hx-trigger="load"
-        ></div>
-
-        {% if allowed_ips.additional_data.allowed_ips %}
-            <div hx-get="{% url 'allowed-ips-list' %}" hx-trigger="load">
-                <div class="animated-background"></div>
-            </div>
-        {% endif %}
-    {% endif %}
 </div>
-
-{% endblock settings %}
+{% if enabled_compensatory %}
+    <div id="leave_type_div">
+        {% include "leave/compensatory_leave/compensatory_leave_type.html" %} 
+    <div>
+{% endif %}
+{% endblock %}
