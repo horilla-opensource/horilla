@@ -4139,7 +4139,7 @@ $(document).on("htmx:afterSettle", function (e) {
     $(`#${targetId} .oh-permission-table--toggle`).on("click", function (e) {
         e.stopPropagation();
         let clickedEl = $(e.target).closest(".oh-permission-table--toggle");
-        let parentRow = clickedEl.parents(".oh-permission-table__tr");
+        let parentRow = clickedEl.closest(".oh-permission-table__tr");
         // let collapsedPanel = parentRow.find(".oh-collapse-panel");
         let count = parentRow.data("count");
         let labelText = parentRow.data("label");
@@ -4147,7 +4147,7 @@ $(document).on("htmx:afterSettle", function (e) {
         // let permissionCount = collapsedPanel.length;
         let cellEl = parentRow
             .find(".oh-collapse-panel")
-            .parents(".oh-sticky-table__td");
+            .closest(".oh-sticky-table__td");
         // Label
         let labelEl = null;
         if (labelText) {
