@@ -746,25 +746,20 @@ class JobRoleForm(ModelForm):
 
     cols = {"job_position_id": 12, "job_role": 12}
 
-    job_position_id = forms.ModelMultipleChoiceField(
-        queryset=JobPosition.objects.all(),
-        label="Job Position",
-        widget=forms.SelectMultiple(
-            attrs={
-                "class": "w-100",
-                "style": "height:45px;",
-            }
-        ),
-    )
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance.pk:
-            self.fields["job_position_id"] = forms.ModelMultipleChoiceField(
-                queryset=self.fields["job_position_id"].queryset,
-                label=JobRole._meta.get_field("job_position_id").verbose_name,
+            job_position_id = forms.ModelMultipleChoiceField(
+                queryset=JobPosition.objects.all(),
+                label="Job Position",
+                widget=forms.SelectMultiple(
+                    attrs={
+                        "class": "w-100 oh-select",
+                        "style": "height:45px;",
+                    }
+                ),
             )
-            self.fields["job_position_id"].initial = self.instance.job_position_id
+            self.fields["job_position_id"] = job_position_id
 
     class Meta:
         """
@@ -772,8 +767,7 @@ class JobRoleForm(ModelForm):
         """
 
         model = JobRole
-        fields = "__all__"
-        exclude = ["is_active", "job_position_id", "company_id"]
+        fields = ["job_role", "job_position_id"]
 
     def clean(self):
         cleaned_data = super().clean()
