@@ -5250,12 +5250,17 @@ def employee_past_leave_restriction(request):
     if not enabled_restriction:
         enabled_restriction = EmployeePastLeaveRestrict.objects.create(enabled=True)
     if request.method == "POST":
-        enabled = request.POST.get("enabled")
-        if enabled:
-            enabled_restriction.enabled = True
-        else:
-            enabled_restriction.enabled = False
+        enabled_restriction.enabled = not enabled_restriction.enabled
         enabled_restriction.save()
+
+        if enabled_restriction.enabled:
+            messages.success(
+                request, "Past Date Leave Request Restriction has been enabled"
+            )
+        else:
+            messages.success(
+                request, "Past Date Leave Request Restriction has been disabled"
+            )
 
     return render(
         request,

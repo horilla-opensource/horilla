@@ -1,46 +1,68 @@
-<div>
-    {% include "generic/horilla_form.html" %}
-</div>
+<div>{% include "generic/horilla_form.html" %}</div>
 
 <style>
     #id_machine_ip_parent_div,
     #id_port_parent_div,
-    #id_cosec_username_parent_div,
-    #id_anviz_request_id_parent_div,
+    #id_zk_password_parent_div,
+    #id_bio_username_parent_div,
+    #id_bio_password_parent_div,
     #id_api_url_parent_div,
     #id_api_key_parent_div,
     #id_api_secret_parent_div,
+    #id_cosec_username_parent_div,
+    #id_anviz_request_id_parent_div,
     #id_api_token_parent_div,
     #id_api_expires_parent_div,
     #id_is_live_parent_div,
     #id_last_fetch_date_parent_div,
     #id_last_fetch_time_parent_div,
     #id_cosec_password_parent_div {
-      display: none;
+        display: none;
     }
-  </style>
+</style>
+
 <script>
-    $('#id_machine_type_parent_div').on('change', function() {
-        var selectedOption = $(this).find('option:selected').text();
-        if (selectedOption === 'ZKTeco Biometric') {
-          $("#id_machine_ip_parent_div, #id_port_parent_div").show();
+    function machineTypeChange(selectElement) {
+        var machineType = selectElement.val();
+        var allElements = [
+            "#id_zk_password_parent_div",
+            "#id_machine_ip_parent_div",
+            "#id_bio_username_parent_div",
+            "#id_bio_password_parent_div",
+            "#id_port_parent_div",
+            "#id_api_url_parent_div",
+            "#id_api_key_parent_div",
+            "#id_api_secret_parent_div",
+            "#id_anviz_request_id_parent_div",
+        ]
+
+        // Hide all elements initially
+        $(allElements.join(', ')).hide();
+
+        // Show relevant elements based on the selected machine type
+        switch (machineType) {
+            case "anviz":
+                $("input[name='api_url']").val("");
+                $("#id_api_url_parent_div, #id_api_key_parent_div, #id_api_secret_parent_div, #id_anviz_request_id_parent_div").show();
+                break;
+            case "zk":
+                $("#id_zk_password_parent_div, #id_machine_ip_parent_div, #id_port_parent_div").show();
+                break;
+            case "cosec":
+            case "dahua":
+                $("#id_machine_ip_parent_div, #id_bio_username_parent_div, #id_bio_password_parent_div, #id_port_parent_div").show();
+                break;
+            case "etimeoffice":
+                $("#id_api_url_parent_div, #id_bio_username_parent_div, #id_bio_password_parent_div").show();
+                if (!$("input[name='api_url']").val()) {
+                    $("input[name='api_url']").val("https://api.etimeoffice.com/api/");
+                }
+                break;
+            default:
+                // No elements need to be shown for unknown machine types
+                break;
         }
-        else {
-            $("#id_machine_ip_parent_div, #id_port_parent_div").hide();
-        }
-        if (selectedOption === 'Anviz Biometric'){
-            $("#id_anviz_request_id_parent_div, #id_api_url_parent_div, #id_api_key_parent_div, #id_api_secret_parent_div").show();
-        }
-        else {
-            $("#id_anviz_request_id_parent_div, #id_api_url_parent_div, #id_api_key_parent_div, #id_api_secret_parent_div").hide();
-        }
-        if (selectedOption === 'Matrix COSEC Biometric'){
-            $("#id_machine_ip_parent_div,#id_port_parent_div, #id_cosec_username_parent_div,#id_cosec_password_parent_div").show();
-        }
-        else {
-            $("#id_cosec_username_parent_div,#id_cosec_password_parent_div").hide();
-        }
-      });
+    }
 
     $(document).ready(function (e) {
         $('select[name="machine_type"]').change();
@@ -49,7 +71,7 @@
         passwordField.wrap('<div class="password-wrapper" style="position: relative;"></div>');
 
         var button = $(
-          '<button type="button" class="oh-btn oh-btn--transparent oh-password-input--toggle" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">' +
+          '<button type="button" class="oh-password-input--toggle" style="position: absolute; right: 10px; top: 40%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">' +
             '<ion-icon class="oh-passowrd-input__show-icon" title="Show Password" name="eye-outline"></ion-icon>' +
             '<ion-icon class="oh-passowrd-input__hide-icon d-none" title="Hide Password" name="eye-off-outline"></ion-icon>' +
           '</button>'
@@ -59,7 +81,6 @@
         passwordField.css({
           'padding-right': '30px'
         });
-
 
         $(".oh-password-input--toggle").click(function () {
             var passwordInput = $(this).prev('input[name="cosec_password"]');
