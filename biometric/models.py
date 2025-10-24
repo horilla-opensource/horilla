@@ -215,7 +215,7 @@ class BiometricDevices(HorillaModel):
         """
         This method to get update url
         """
-        url = reverse_lazy("biometric-device-edit", kwargs={"device_id": self.pk})
+        url = reverse_lazy("biometric-device-edit", kwargs={"pk": self.pk})
         return url
 
     def get_archive_url(self):

@@ -22,9 +22,17 @@ class LeaveAllocationRequestToApprove(LeaveAllocationRequests):
     List view of the page leave allocation to approve in dashboard
     """
 
+    columns = [
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Leave Type"), "leave_type_id"),
+        (_("Requested Days"), "requested_days"),
+    ]
+
     bulk_select_option = False
     row_status_indications = None
     option_method = None
+    show_toggle_form = False
+    records_per_page = 5
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -35,33 +43,23 @@ class LeaveAllocationRequestToApprove(LeaveAllocationRequests):
         queryset = queryset.filter(status="requested", employee_id__is_active=True)
         return queryset
 
-    columns = [
-        (_("Employee"), "employee_id", "employee_id__get_avatar"),
-        (_("Leave Type"), "leave_type_id"),
-        (_("Requested Days"), "requested_days"),
-    ]
-
-    header_attrs = {
-        "action": """
-                        style ="width:120px !important"
-                        """,
-        "employee_id": """
-                        style ="width:120px !important"
-                        """,
-        "leave_type_id": """
-                        style ="width:120px !important"
-                        """,
-        "requested_days": """
-                        style ="width:100px !important"
-                        """,
-    }
-
 
 @method_decorator(login_required, name="dispatch")
 class LeaveRequestsToApprove(LeaveRequestsListView):
     """
     List view of the page leave requests to approve in dashboard
     """
+
+    columns = [
+        (_("Employee"), "employee_id", "employee_id__get_avatar"),
+        (_("Period"), "get_period"),
+    ]
+
+    header_attrs = {
+        "action": 'style ="width:100px !important"',
+        "employee_id": 'style ="width:100px !important"',
+        "get_period": 'style ="width:100px !important"',
+    }
 
     bulk_select_option = False
     row_status_indications = None
@@ -84,22 +82,6 @@ class LeaveRequestsToApprove(LeaveRequestsListView):
         )
         return queryset
 
-    columns = [
-        (_("Employee"), "employee_id", "employee_id__get_avatar"),
-        (_("Period"), "get_period"),
-    ]
-    header_attrs = {
-        "action": """
-                        style ="width:100px !important"
-                        """,
-        "employee_id": """
-                        style ="width:100px !important"
-                        """,
-        "get_period": """
-                        style ="width:100px !important"
-                        """,
-    }
-
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(manager_can_enter("leave.view_leaverequest"), name="dispatch")
@@ -107,6 +89,10 @@ class DashboardOnLeave(HorillaListView):
     """
     list view for on leave in dashboard
     """
+
+    columns = [
+        ("Employee", "employee_id", "employee_id__get_avatar"),
+    ]
 
     model = LeaveRequest
     filter_class = UserLeaveRequestFilter
@@ -135,35 +121,12 @@ class DashboardOnLeave(HorillaListView):
         )
         return queryset
 
-    columns = [
-        ("Employee", "employee_id", "employee_id__get_avatar"),
-    ]
-
 
 @method_decorator(login_required, name="dispatch")
 class DashboardTotalLeaveRequest(MyLeaveRequestListView):
     """
     list view for total leave request in dashboard
     """
-
-    option_method = None
-    action_method = None
-    bulk_select_option = False
-    row_status_class = None
-    row_status_indications = None
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.search_url = reverse("dashboard-total-leave-request")
-
-    def get_queryset(self):
-        """
-        to filter data
-        """
-        queryset = super().get_queryset()
-        employee = self.request.user.employee_get
-        queryset = queryset.filter(employee_id=employee, status="approved")
-        return queryset
 
     columns = [
         ("Employee", "employee_id", "employee_id__get_avatar"),
@@ -184,22 +147,29 @@ class DashboardTotalLeaveRequest(MyLeaveRequestListView):
     ]
 
     header_attrs = {
-        "start_date": """
-                        style ="width:100px !important"
-                        """,
-        "employee_id": """
-                        style ="width:100px !important"
-                        """,
-        "leave_type_id": """
-                        style ="width:100px !important"
-                        """,
-        "end_date": """
-                        style ="width:100px !important"
-                        """,
-        "status": """
-                        style ="width:100px !important"
-                        """,
-        "requested_days": """
-                        style ="width:100px !important"
-                        """,
+        "start_date": 'style ="width:100px !important"',
+        "employee_id": 'style ="width:100px !important"',
+        "leave_type_id": 'style ="width:100px !important"',
+        "end_date": 'style ="width:100px !important"',
+        "status": 'style ="width:100px !important"',
+        "requested_days": 'style ="width:100px !important"',
     }
+
+    option_method = None
+    action_method = None
+    bulk_select_option = False
+    row_status_class = None
+    row_status_indications = None
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("dashboard-total-leave-request")
+
+    def get_queryset(self):
+        """
+        to filter data
+        """
+        queryset = super().get_queryset()
+        employee = self.request.user.employee_get
+        queryset = queryset.filter(employee_id=employee, status="approved")
+        return queryset

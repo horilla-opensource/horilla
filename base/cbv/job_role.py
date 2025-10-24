@@ -29,32 +29,29 @@ class JobRoleListView(HorillaListView):
     List view of the page
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.view_id = "job_role"
-        self.search_url = reverse("job-role-list")
-
-    model = JobPosition
-    filter_class = JobRoleFilter
-
     columns = [
         (_("Job Position"), "job_position_col"),
         (_("Job Role"), "job_role_col"),
     ]
     header_attrs = {
-        "job_position_col": """
-                             style="width:300px !important;"
-                             """,
-        "job_role_col": """
-                             style="width:300px !important;"
-                             """,
+        "job_position_col": 'style="width:300px !important;"',
+        "job_role_col": 'style="width:300px !important;"',
     }
 
     row_attrs = """
-                class = "oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
-                data-count="{get_data_count}"
-                data-label="Job Role"
-                """
+        class = "oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+        data-count="{get_data_count}"
+        data-label="Job Role"
+    """
+
+    model = JobPosition
+    filter_class = JobRoleFilter
+    show_toggle_form = False
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.view_id = "job_role"
+        self.search_url = reverse("job-role-list")
 
 
 @method_decorator(login_required, name="dispatch")
@@ -64,21 +61,21 @@ class JobRoleNav(HorillaNavView):
     Nav bar
     """
 
+    nav_title = _("Job Role")
+    filter_instance = JobRoleFilter()
+    search_swap_target = "#listContainer"
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("job-role-list")
         if self.request.user.has_perm("base.add_jobrole"):
             self.create_attrs = f"""
-                                onclick = "event.stopPropagation();"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-target="#genericModalBody"
-                                hx-get="{reverse('create-job-role')}"
-                                """
-
-    nav_title = _("Job Role")
-    filter_instance = JobRoleFilter()
-    search_swap_target = "#listContainer"
+                onclick = "event.stopPropagation();"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+                hx-get="{reverse('create-job-role')}"
+            """
 
 
 @method_decorator(login_required, name="dispatch")

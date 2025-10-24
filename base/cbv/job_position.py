@@ -29,29 +29,30 @@ class JobPositionListView(HorillaListView):
     list view for job positions in settings
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.search_url = reverse("job-position-list")
-        self.view_id = "job_position"
-
-    model = Department
-    filter_class = DepartmentViewFilter
-
     columns = [
         (_("Department"), "get_department_col"),
         (_("Job Position"), "get_job_position_col"),
     ]
 
     row_attrs = """
-                class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
-                data-label="Job Position"
-                data-count="{toggle_count}"
-                """
+        class="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+        data-label="Job Position"
+        data-count="{toggle_count}"
+    """
 
     header_attrs = {
-        "get_department_col": """ style="width:300px !important; " """,
-        "get_job_position_col": """ style="width:300px !important; " """,
+        "get_department_col": 'style="width:300px !important; "',
+        "get_job_position_col": 'style="width:300px !important; "',
     }
+
+    model = Department
+    filter_class = DepartmentViewFilter
+    show_toggle_form = False
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("job-position-list")
+        self.view_id = "job_position"
 
 
 @method_decorator(login_required, name="dispatch")
@@ -61,21 +62,21 @@ class JobPositionNavView(HorillaNavView):
     nav bar of the job position view
     """
 
+    nav_title = _("Job Position")
+    search_swap_target = "#listContainer"
+    filter_instance = DepartmentViewFilter()
+
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("job-position-list")
         if self.request.user.has_perm("base.add_jobposition"):
             self.create_attrs = f"""
-                                onclick = "event.stopPropagation();"
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-target="#genericModalBody"
-                                hx-get="{reverse('job-position-create-form')}"
-                                """
-
-    nav_title = _("Job Position")
-    search_swap_target = "#listContainer"
-    filter_instance = DepartmentViewFilter()
+                onclick = "event.stopPropagation();"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+                hx-target="#genericModalBody"
+                hx-get="{reverse('job-position-create-form')}"
+            """
 
 
 @method_decorator(login_required, name="dispatch")

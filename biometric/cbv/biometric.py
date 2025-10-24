@@ -69,6 +69,7 @@ class BiometricCardView(HorillaCardView):
 
     model = BiometricDevices
     filter_class = BiometricDeviceFilter
+    custom_empty_template = "biometric/empty_view_biometric.html"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -91,6 +92,8 @@ class BiometricCardView(HorillaCardView):
                     hx-post="{get_archive_url}"
                     class="oh-dropdown__link"
                     hx-target="#listContainer"
+                    hx-swap="none"
+                    hx-on-htmx-after-request="$('.reload-record').click()"
                     """,
             },
             {
@@ -100,6 +103,8 @@ class BiometricCardView(HorillaCardView):
                     hx-post="{get_delete_url}"
                     class="oh-dropdown__link oh-dropdown__link--danger"
                     hx-target="#biometricDeviceList"
+                    hx-swap="none"
+                    hx-on-htmx-after-request="$('.reload-record').click()"
                     """,
             },
         ]
@@ -141,6 +146,17 @@ class BiometricCardView(HorillaCardView):
             """,
         ),
     ]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        active = (
+            True
+            if self.request.GET.get("is_active", True)
+            in ["unknown", "True", "true", True]
+            else False
+        )
+        queryset = queryset.filter(is_active=active)
+        return queryset
 
 
 @method_decorator(login_required, name="dispatch")

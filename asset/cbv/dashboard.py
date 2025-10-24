@@ -39,24 +39,6 @@ class AssetRequestToApprove(AssetRequestList):
         )
         return queryset
 
-    header_attrs = {
-        "requested_employee_id": """
-                        style ="width:100px !important"
-                        """,
-        "asset_category_id": """
-                        style ="width:100px !important"
-                        """,
-        "asset_request_date": """
-                        style ="width:100px !important"
-                        """,
-        "status_col": """
-                        style ="width:100px !important"
-                        """,
-        "action": """
-                        style ="width:100px !important"
-                        """,
-    }
-
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("asset.view_assetcategory"), name="dispatch")
@@ -70,8 +52,10 @@ class AllocatedAssetsList(AssetAllocationList):
         for column in AssetAllocationList.columns
         if column[1] != "return_status_col"
     ]
+
     bulk_select_option = False
     show_toggle_form = False
+    action_method = None
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -79,5 +63,3 @@ class AllocatedAssetsList(AssetAllocationList):
             asset_id__asset_status="In use", assigned_to_employee_id__is_active=True
         )
         return queryset
-
-    action_method = None
