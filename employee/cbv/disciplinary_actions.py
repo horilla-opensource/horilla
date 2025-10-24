@@ -43,6 +43,30 @@ class DisciplinaryActionsList(HorillaListView):
     List view of disciplinary actions
     """
 
+    columns = [
+        (_("Employee"), "employee_column"),
+        (_("Action Taken"), "action_taken_col"),
+        (_("Login Block"), "block_option_col"),
+        (_("Action Date"), "action_date_col"),
+        (_("Attachments"), "attachments_col"),
+        (_("Description"), "description"),
+    ]
+
+    header_attrs = {"employee_column": 'style="width:300px !important;"'}
+
+    sortby_mapping = [
+        ("Action Taken", "action_taken_col"),
+        ("Action Date", "action_date_col"),
+    ]
+
+    row_attrs = """
+        class ="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
+        hx-get='{dis_action_detail_view}?instance_ids={ordered_ids}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
+
     model = DisciplinaryAction
     filter_class = DisciplinaryActionFilter
 
@@ -71,34 +95,6 @@ class DisciplinaryActionsList(HorillaListView):
             ]
         ):
             self.action_method = "actions"
-
-    columns = [
-        (_("Employee"), "employee_column"),
-        (_("Action Taken"), "action_taken_col"),
-        (_("Login Block"), "block_option_col"),
-        (_("Action Date"), "action_date_col"),
-        (_("Attachments"), "attachments_col"),
-        (_("Description"), "description"),
-    ]
-
-    header_attrs = {
-        "employee_column": """
-                            style="width:200px !important;"
-                            """
-    }
-
-    sortby_mapping = [
-        ("Action Taken", "action_taken_col"),
-        ("Action Date", "action_date_col"),
-    ]
-
-    row_attrs = """
-                class ="oh-sticky-table__tr oh-permission-table__tr oh-permission-table--collapsed"
-                hx-get='{dis_action_detail_view}?instance_ids={ordered_ids}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
 
 
 @method_decorator(login_required, name="dispatch")
