@@ -111,6 +111,7 @@ from base.methods import (
     filtersubordinatesemployeemodel,
     get_key_instances,
     get_pagination,
+    is_mercantile_or_poya_holiday
 )
 from base.models import (
     AttendanceAllowedIP,
@@ -2769,4 +2770,29 @@ def edit_allowed_ips(request):
         request,
         "attendance/ip_restriction/restrict_form.html",
         {"form": form, "id": id},
+    )
+
+
+
+def check_compensation(request):
+    """
+    Check if attendance_date is a mercantile holiday and render response snippet.
+    """
+    attendance_date = request.GET.get("attendance_date")
+    if not attendance_date:
+        return JsonResponse({"error": "No date provided"}, status=400)
+
+    try:
+        date = datetime.strptime(attendance_date, "%Y-%m-%d").date()
+    except ValueError:
+        return JsonResponse({"error": "Invalid date format"}, status=400)
+
+    result = is_mercantile_or_poya_holiday(date)
+
+    form = AttendanceForm()
+
+    return render(
+        request,
+        "attendance/attendance/_compensation_field.html",
+        {"show_field": result["is_mercantile_holiday"], "form": form},
     )
