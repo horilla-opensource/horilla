@@ -172,6 +172,7 @@ class Attendance(HorillaModel):
         max_length=10,
         validators=[validate_time_format],
         verbose_name=_("Worked Hours"),
+        help_text=_("Full day must be exactly 8 hours; half day must be exactly 4 hours.")
     )
     minimum_hour = models.CharField(
         max_length=10,
@@ -206,7 +207,7 @@ class Attendance(HorillaModel):
     is_validate_request = models.BooleanField(
         default=False, verbose_name=_("Is validate request")
     )
-    is_bulk_request = models.BooleanField(default=False, editable=False)
+    is_bulk_request = models.BooleanField(default=False, editable=False, help_text=("Indicates whether this attendance was added via a bulk request. When attendance is created in bulk, any work done on holidays will not be automatically marked or processed."))
     is_validate_request_approved = models.BooleanField(
         default=False, verbose_name=_("Is validate request approved")
     )
@@ -218,7 +219,16 @@ class Attendance(HorillaModel):
     )
     is_holiday = models.BooleanField(default=False)
     is_poya_holiday = models.BooleanField(default=False)
-    is_mercantile_holday = models.BooleanField(default=False)
+    is_mercantile_holiday = models.BooleanField(default=False)
+    is_get_compensation_leave = models.BooleanField(
+        verbose_name="Request Compensation Leave",
+        help_text=(
+            "Select this option if you want to take a compensation leave instead. "
+            "Otherwise, you will receive a compensation allowance for working on a "
+            "mercantile holiday, which will be added to your next payroll."
+        ),
+        default=False,
+    )
     requested_data = models.JSONField(null=True, editable=False)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
@@ -342,13 +352,24 @@ class Attendance(HorillaModel):
         if is_holiday(self.attendance_date) or is_company_leave(self.attendance_date):
             self.minimum_hour = "00:00"
             self.is_holiday = True
+            holiday_data = is_holiday(self.attendance_date)
+
+
+
+    def adjust_minimum_hour(self):
+        """
+        Set minimum_hour to 00:00 if the attendance date falls on a holiday or company leave.
+        """
+        if is_holiday(self.attendance_date) or is_company_leave(self.attendance_date):
+            self.minimum_hour = "00:00"
+            self.is_holiday = True
             holiday_data  = is_holiday(self.attendance_date)
 
     def check_mercantile_or_poya_holiday(self):
         holiday_data = is_mercantile_or_poya_holiday(self.attendance_date)
         if holiday_data:
-            if holiday_data.get("is_mercantile_holday"):
-                self.is_mercantile_holday = True
+            if holiday_data.get("is_mercantile_holiday"):
+                self.is_mercantile_holiday = True
             if holiday_data.get("is_poya_holiday"):
                 self.is_poya_holiday = True
 
