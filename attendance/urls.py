@@ -533,4 +533,9 @@ urlpatterns = [
         attendance.views.geofaceconfig.geofaceconfig,
         name="geo-face-config",
     ),
+    path(
+       "check-compensation/",
+        views.check_compensation,
+        name="check-compensation",
+    )
 ]
