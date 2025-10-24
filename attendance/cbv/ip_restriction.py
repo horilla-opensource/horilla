@@ -1,6 +1,7 @@
 from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+
 from base.models import AttendanceAllowedIP
 from horilla_views.cbv_methods import (
     login_required,
@@ -55,7 +56,6 @@ class IpRestrictionList(HorillaListView):
         sorted_qs = qs.additional_data.get("allowed_ips", [])
         self.queryset = [IP(ip, idx) for idx, ip in enumerate(sorted_qs)]
         return self.queryset
-
 
 
 @method_decorator(login_required, name="dispatch")
