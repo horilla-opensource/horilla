@@ -68,7 +68,7 @@ class MeetingsList(HorillaListView):
     model = Meetings
     filter_class = MeetingsFilter
 
-    header_attrs = {"mom_col": """style="width: 20%;" """}
+    header_attrs = {"mom_col": 'style="width: 20%;"', "action": 'style= "width: 320px"'}
 
     columns = [
         (_("Title"), "title_col"),
