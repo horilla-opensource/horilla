@@ -27,26 +27,8 @@ from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
 @method_decorator(login_required, name="dispatch")
 class DashboardWorkTypeRequest(WorkRequestListView):
     """
-    work type request view in dashboard
+    Work type request view in dashboard.
     """
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.search_url = reverse("dashboard-work-type-request")
-        self.request.dashboard = "dashboard"
-
-    def get_queryset(self):
-        """
-        queryset to filter data based on permission
-        """
-        queryset = HorillaListView.get_queryset(self)
-        queryset = queryset.filter(
-            employee_id__is_active=True, approved=False, canceled=False
-        )
-        queryset = filtersubordinates(
-            self.request, queryset, "base.add_worktyperequest"
-        )
-        return queryset
 
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
@@ -54,69 +36,75 @@ class DashboardWorkTypeRequest(WorkRequestListView):
     ]
 
     row_attrs = """
-                hx-get='{detail_view}?instance_ids={ordered_ids}&dashboard=true'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+        hx-get='{detail_view}?instance_ids={ordered_ids}&dashboard=true'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
+
     header_attrs = {
-        "action": """
-                        style ="width:100px !important"
-                        """,
-        "employee_id": """
-                        style ="width:100px !important"
-                        """,
-        "work_type_id": """
-                        style ="width:100px !important"
-                        """,
+        "action": 'style="width:100px !important"',
+        "employee_id": 'style="width:100px !important"',
+        "work_type_id": 'style="width:100px !important"',
     }
 
-    records_per_page = 3
-
+    records_per_page = 5
     option_method = None
     row_status_indications = None
-
+    show_toggle_form = False
     bulk_select_option = False
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("dashboard-work-type-request")
+        self.request.dashboard = "dashboard"
+
+    def get_queryset(self):
+        """Filter queryset based on permissions and request context."""
+
+        queryset = HorillaListView.get_queryset(self)
+        queryset = queryset.filter(
+            employee_id__is_active=True,
+            approved=False,
+            canceled=False,
+        )
+        queryset = filtersubordinates(
+            self.request, queryset, "base.add_worktyperequest"
+        )
+        return queryset
 
 
 @method_decorator(login_required, name="dispatch")
 class ShiftRequestToApprove(ShiftRequestList):
-
-    bulk_select_option = False
 
     columns = [
         (_("Employee"), "employee_id", "employee_id__get_avatar"),
         (_("Requested Shift"), "shift_id"),
     ]
 
+    row_attrs = """
+        hx-get='{shift_details}?instance_ids={ordered_ids}&dashboard=true'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
+
     header_attrs = {
-        "action": """
-                        style ="width:100px !important"
-                        """,
-        "employee_id": """
-                        style ="width:100px !important"
-                        """,
-        "shift_id": """
-                        style ="width:100px !important"
-                        """,
+        "action": 'style ="width:100px !important"',
+        "employee_id": 'style ="width:100px !important"',
+        "shift_id": 'style ="width:100px !important"',
     }
+
+    bulk_select_option = False
+    show_toggle_form = False
+    records_per_page = 5
+    option_method = None
+    row_status_indications = None
+    bulk_select_option = False
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("dashboard-shift-request")
-
-    row_attrs = """
-                hx-get='{shift_details}?instance_ids={ordered_ids}&dashboard=true'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
-
-    records_per_page = 3
-    option_method = None
-    row_status_indications = None
-
-    bulk_select_option = False
 
     def get_queryset(self):
         queryset = HorillaListView.get_queryset(self)
@@ -136,33 +124,29 @@ class EmployeeWorkInformationList(HorillaListView):
     Employee work information progress list
     """
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.view_id = "pending"
-        self.search_url = reverse("emp-workinfo-complete")
+    columns = [
+        (_("Employee"), "employee_id"),
+        (_("Progress"), "progress_col"),
+    ]
+
+    header_attrs = {"employee_id": 'style ="width:100px !important"'}
+
+    row_attrs = """
+        hx-get='{get_edit_url}'
+        hx-target="#genericModalBody"
+        data-target="#genericModal"
+        data-toggle="oh-modal-toggle"
+    """
 
     model = EmployeeWorkInformation
     filter_class = EmployeeWorkInformationFilter
     bulk_select_option = False
     show_toggle_form = False
 
-    columns = [
-        (_("Employee"), "employee_id"),
-        (_("Progress"), "progress_col"),
-    ]
-
-    header_attrs = {
-        "employee_id": """
-                        style ="width:100px !important"
-                        """
-    }
-
-    row_attrs = """
-                hx-get='{get_edit_url}'
-                hx-target="#genericModalBody"
-                data-target="#genericModal"
-                data-toggle="oh-modal-toggle"
-                """
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.view_id = "pending"
+        self.search_url = reverse("emp-workinfo-complete")
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -211,19 +195,18 @@ class DashboardAnnouncementView(HorillaListView):
     list view for dashboard announcement
     """
 
-    model = Announcement
-    filter_class = AnnouncementFilter
-    show_toggle_form = False
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
-        self.search_url = reverse("dashboard-announcement-list")
-
     columns = [
         (_("Title"), "announcement_custom_col"),
     ]
 
+    model = Announcement
+    filter_class = AnnouncementFilter
+    show_toggle_form = False
     bulk_select_option = False
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.search_url = reverse("dashboard-announcement-list")
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -241,14 +224,14 @@ class AnnouncementViewedByList(HorillaListView):
     List view for announcement viewed by on detail view
     """
 
+    columns = [
+        (_("Viewed By"), "announcement_viewed_by_col"),
+    ]
+
     model = AnnouncementView
     filter_class = AnnouncementViewFilter
     bulk_select_option = False
     show_toggle_form = False
-
-    columns = [
-        (_("Viewed By"), "announcement_viewed_by_col"),
-    ]
 
     def get_queryset(self):
         queryset = super().get_queryset()
