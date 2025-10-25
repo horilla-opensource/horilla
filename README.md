@@ -38,7 +38,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/horilla-opensource/horilla.git
+git clone -b release/v2.0.0-beta https://github.com/horilla-opensource/horilla.git
 cd horilla
 
 # Start with Docker Compose
@@ -52,7 +52,7 @@ open http://localhost:8000
 
 ```bash
 # Clone and setup
-git clone https://github.com/horilla-opensource/horilla.git
+git clone -b release/v2.0.0-beta https://github.com/horilla-opensource/horilla.git
 cd horilla
 
 # Create virtual environment
@@ -106,7 +106,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 
 ```bash
 # Fork and clone your fork
-git clone https://github.com/YOUR_USERNAME/horilla.git
+git clone -b release/v2.0.0-beta https://github.com/YOUR_USERNAME/horilla.git
 cd horilla
 
 # Add upstream remote
