@@ -1,0 +1,56 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - staticfiles:/app/staticfiles
+      - media:/app/media
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=dev-secret-key
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - CSRF_TRUSTED_ORIGINS=http://localhost:8000
+      - DATABASE_URL=postgres://horilla_user:horilla_pass@db:5432/horilla_db
+      - REDIS_URL=redis://:horilla_pass@redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: horilla_db
+      POSTGRES_USER: horilla_user
+      POSTGRES_PASSWORD: horilla_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass horilla_pass
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - staticfiles:/static:ro
+      - media:/media:ro
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    profiles: ["production"]
+
+volumes:
+  staticfiles:
+  media:
+  postgres_data:
+  redis_data:

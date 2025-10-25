@@ -1,5 +1,89 @@
-.github
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Django stuff:
+*.log
+local_settings.py
+media/
+staticfiles/
+static_root/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# MacOS
+.DS_Store
+
+# Node
+node_modules/
+
+# Git
+.git
 .gitignore
-*.md
-LICENSE
-docker-compose.yaml
+README.md
+Dockerfile
+.dockerignore
+docker-compose.yml
+.vscode
+.idea
+*.pyc
+__pycache__
+.pytest_cache
+.coverage
+*.log
+.env
+horillavenv
+node_modules
+.DS_Store
