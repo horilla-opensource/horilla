@@ -1,7 +1,7 @@
-{% if perms.payroll.change_PayslipAutoGenerate or perms.payroll.delete_PayslipAutoGenerate %}
+{% if perms.payroll.change_payslipautogenerate or perms.payroll.delete_payslipautogenerate %}
                         <div class="d-flex">
                             <div class="oh-switch">
-                                {% if  perms.payroll.change_PayslipAutoGenerate %}
+                                {% if  perms.payroll.change_payslipautogenerate %}
                                     <input type="checkbox" id="GTIsActivate" data-id ="{{instance.id}}" class="oh-switch__checkbox" {% if instance.auto_generate %} checked {% endif %} onchange="updateAutoPayslipIsActivate(this)">
                                 {% else %}
                                     <input type="checkbox" id="GTIsActivate" class="oh-switch__checkbox" {% if instance.auto_generate %} checked {% endif %} disabled>
