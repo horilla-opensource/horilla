@@ -79,127 +79,133 @@
 					id="mobileMenu"
 				>
 					<ul class="oh-inner-sidebar__items">
-						<li class="oh-inner-sidebar__item">
-							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">
-									<ion-icon name="settings-outline" class="me-2"></ion-icon>
-									{% trans "General" %}
-									</div>
-									<div class="oh-accordion-body">
-										<div class="row">
-										<div class="col-sm-12 col-md-12 col-lg-12">
-											<div class="oh-input-group">
-												<a
-													id="generalSettings"
-													href="{% url 'general-settings' %}"
-													class="oh-inner-sidebar__link oh-dropdown__link"
-													>{% trans "General Settings" %}
-												</a>
-											</div>
-											<div class="oh-input-group">
-												{% if perms.auth.view_permission %}
-													<a
-														id="employeePermission"
-														href="{% url 'employee-permission-assign' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Employee Permission" %}</a
-													>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												{% if perms.auth.view_permission %}
-													<a
-														id="defaultAccessibility"
-														href="{% url 'user-accessibility' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Accessibility Restriction" %}</a
-													>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												{% if perms.auth.view_group %}
-													<a
-														id="userGroup"
-														href="{% url 'user-group-view' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "User Group" %}</a
-													>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												{% if perms.base.view_company %}
-													<a
-														id="date"
-														href="{% url 'date-settings' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Date & Time Format" %}</a
-													>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												{% if perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag %}
-													<a
-														id="ticket_type"
-														href="{% url 'tag-view' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "History Tags" %}</a
-													>
-												{% endif %}
-											</div>
-											{% if perms.base.view_dynamicemailconfiguration and not "outlook_auth"|app_installed %}
-											<div class="oh-input-group">
-												<a
-													id="date"
-													href="{% url 'mail-server-conf' %}"
-													class="oh-inner-sidebar__link oh-dropdown__link"
-													>{% trans "Mail Server" %}</a
-												>
-											</div>
-											{% else %}
-											<div class="oh-input-group">
-													<a
-													id="date"
-													href="{% url 'outlook_view_records' %}"
-													class="oh-inner-sidebar__link oh-dropdown__link"
-													>{% trans "Outlook Mail" %}</a
-												>
-											</div>
-										{% endif %}
-											<div class="oh-input-group">
-												{% if perms.horilla_backup.view_googledrivebackup %}
-													<a
-														id="date"
-														href="{% url 'gdrive' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Gdrive Backup" %}</a
-													>
-												{% endif %}
-											</div>
-											{% if "horilla_ldap"|app_installed %}
-												{% if perms.horilla_ldap.add_ldapsettings or perms.horilla_ldap.update_ldapsettings %}
-													<div class="oh-input-group">
+						{% if general_section or perms.auth.view_permission or perms.auth.view_permission or perms.auth.view_group or perms.base.view_company or perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag or perms.base.view_dynamicemailconfiguration or perms.horilla_backup.view_googledrivebackup %}
+							<li class="oh-inner-sidebar__item">
+								<div class="oh-accordion ms-2">
+										<div class="oh-accordion-header" style="font-size:16px;">
+											<ion-icon name="settings-outline" class="me-2"></ion-icon>
+											{% trans "General" %}
+										</div>
+										<div class="oh-accordion-body">
+											<div class="row">
+											<div class="col-sm-12 col-md-12 col-lg-12">
+												<div class="oh-input-group">
+													{% if general_section %}
+														<a
+															id="generalSettings"
+															href="{% url 'general-settings' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "General Settings" %}
+														</a>
+													{% endif %}
+												</div>
+												<div class="oh-input-group">
+													{% if perms.auth.view_permission %}
+														<a
+															id="employeePermission"
+															href="{% url 'employee-permission-assign' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Employee Permission" %}</a
+														>
+													{% endif %}
+												</div>
+												<div class="oh-input-group">
+													{% if perms.auth.view_permission %}
+														<a
+															id="defaultAccessibility"
+															href="{% url 'user-accessibility' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Accessibility Restriction" %}</a
+														>
+													{% endif %}
+												</div>
+												<div class="oh-input-group">
+													{% if perms.auth.view_group %}
+														<a
+															id="userGroup"
+															href="{% url 'user-group-view' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "User Group" %}</a
+														>
+													{% endif %}
+												</div>
+												<div class="oh-input-group">
+													{% if perms.base.view_company %}
 														<a
 															id="date"
-															href="{% url 'ldap-settings' %}"
+															href="{% url 'date-settings' %}"
 															class="oh-inner-sidebar__link oh-dropdown__link"
-															>{% trans "LDAP Configuration" %}</a
+															>{% trans "Date & Time Format" %}</a
 														>
-													</div>
-												{% endif %}
+													{% endif %}
+												</div>
+												<div class="oh-input-group">
+													{% if perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag %}
+														<a
+															id="ticket_type"
+															href="{% url 'tag-view' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "History Tags" %}</a
+														>
+													{% endif %}
+												</div>
+												{% if perms.base.view_dynamicemailconfiguration and not "outlook_auth"|app_installed %}
+												<div class="oh-input-group">
+													<a
+														id="date"
+														href="{% url 'mail-server-conf' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Mail Server" %}</a
+													>
+												</div>
+												{% else %}
+												{% comment %} <div class="oh-input-group">
+														<a
+														id="date"
+														href="{% url 'outlook_view_records' %}"
+														class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Outlook Mail" %}</a
+													>
+												</div> {% endcomment %}
 											{% endif %}
+												<div class="oh-input-group">
+													{% if perms.horilla_backup.view_googledrivebackup %}
+														<a
+															id="date"
+															href="{% url 'gdrive' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Gdrive Backup" %}</a
+														>
+													{% endif %}
+												</div>
+												{% if "horilla_ldap"|app_installed %}
+													{% if perms.horilla_ldap.add_ldapsettings or perms.horilla_ldap.update_ldapsettings %}
+														<div class="oh-input-group">
+															<a
+																id="date"
+																href="{% url 'ldap-settings' %}"
+																class="oh-inner-sidebar__link oh-dropdown__link"
+																>{% trans "LDAP Configuration" %}</a
+															>
+														</div>
+													{% endif %}
+												{% endif %}
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-						</li>
-						<hr>
+							</li>
+							<hr>
+						{% endif %}
 
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">
-									<ion-icon name="apps" class="me-2"></ion-icon>
-									{% trans "Base" %}
-								</div>
+								{% if perms.base.view_department or perms.base.view_jobposition or perms.base.view_jobrole or perms.base.view_company %}
+									<div class="oh-accordion-header" style="font-size:16px;">
+										<ion-icon name="apps" class="me-2"></ion-icon>
+										{% trans "Base" %}
+									</div>
+								{% endif %}
 									<div class="oh-accordion-body">
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
@@ -248,72 +254,80 @@
 								</div>
 							</div>
 						</li>
-						<hr>
+						{% if perms.base.view_department or perms.base.view_jobposition or perms.base.view_jobrole or perms.base.view_company %}
+							<hr>
+						{% endif %}
 						{% if "recruitment"|app_installed %}
-						<li class="oh-inner-sidebar__item">
-							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">
-									<ion-icon name="clipboard-outline" class="me-2"></ion-icon>
-									{% trans "Recruitment" %}
-								</div>
-									<div class="oh-accordion-body">
-										<div class="row">
-										<div class="col-sm-12 col-md-12 col-lg-12">
-											<div class="oh-input-group">
-												{% if perms.recruitment.view_recruitment %}
+							<li class="oh-inner-sidebar__item">
+								<div class="oh-accordion ms-2">
+									{% if perms.recruitment.view_recruitment or perms.recruitment.view_rejectreason or perms.recruitment.add_recruitment or perms.recruitment.add_linkedinaccount %}
+										<div class="oh-accordion-header" style="font-size:16px;">
+											<ion-icon name="clipboard-outline" class="me-2"></ion-icon>
+											{% trans "Recruitment" %}
+										</div>
+									{% endif %}
+										<div class="oh-accordion-body">
+											<div class="row">
+											<div class="col-sm-12 col-md-12 col-lg-12">
 												<div class="oh-input-group">
-													<a
-														id="skills"
-														href="{% url 'self-tracking-feature' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-													>{% trans "Candidate Self Tracking" %}</a
-													>
+													{% if perms.recruitment.view_recruitment %}
+													<div class="oh-input-group">
+														<a
+															id="skills"
+															href="{% url 'self-tracking-feature' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+														>{% trans "Candidate Self Tracking" %}</a
+														>
+													</div>
+													{% endif %}
+													{% if perms.recruitment.view_rejectreason %}
+														<a
+															id="candidateRejectReasons"
+															href="{% url 'candidate-reject-reasons' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Candidate Reject Reason" %}</a
+														>
+													{% endif %}
 												</div>
-												{% endif %}
-												{% if perms.recruitment.view_rejectreason %}
-													<a
-														id="candidateRejectReasons"
-														href="{% url 'candidate-reject-reasons' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Candidate Reject Reason" %}</a
-													>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												{% if perms.recruitment.add_recruitment %}
-													<a
-														id="skills"
-														href="{% url 'skills-view' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Skills" %}</a
-													>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												{% comment %} {% if perms.recruitment.add_recruitment %} {% endcomment %}
-													<a
-														id="skills"
-														href="{% url 'linkedin-integration-setting' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Linkedin Integration" %}</a
-													>
-												{% comment %} {% endif %} {% endcomment %}
-											</div>
+												<div class="oh-input-group">
+													{% if perms.recruitment.add_recruitment %}
+														<a
+															id="skills"
+															href="{% url 'skills-view' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Skills" %}</a
+														>
+													{% endif %}
+												</div>
+												<div class="oh-input-group">
+													{% if perms.recruitment.add_linkedinaccount %}
+														<a
+															id="skills"
+															href="{% url 'linkedin-integration-setting' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Linkedin Integration" %}</a
+														>
+													{% endif %}
+												</div>
 
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-						</li>
-						<hr>
+							</li>
+							{% if perms.recruitment.view_recruitment or perms.recruitment.view_rejectreason or perms.recruitment.add_recruitment or perms.recruitment.add_linkedinaccount %}
+								<hr>
+							{% endif %}
 						{% endif %}
 
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">
-									<ion-icon name="people" class="me-2"></ion-icon>
-									{% trans "Employee" %}
-								</div>
+								{% if employee_section %}
+									<div class="oh-accordion-header" style="font-size:16px;">
+										<ion-icon name="people" class="me-2"></ion-icon>
+										{% trans "Employee" %}
+									</div>
+								{% endif %}
 									<div class="oh-accordion-body">
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
@@ -403,111 +417,119 @@
 								</div>
 							</div>
 						</li>
-						<hr>
+						{% if employee_section %}
+							<hr>
+						{% endif %}
 						{% if "attendance"|app_installed %}
-						<li class="oh-inner-sidebar__item">
-							<div class="oh-accordion ms-2">
-								<div class="oh-accordion-header" style="font-size:16px;">
-									<ion-icon name="checkmark-done-circle-outline" class="me-2"></ion-icon>
-									{% trans "Attendance" %}
-								</div>
-									<div class="oh-accordion-body">
-										<div class="row">
-										<div class="col-sm-12 col-md-12 col-lg-12">
-											<div class="oh-input-group">
-												{% if perms.attendance.view_attendancevalidationcondition %}
-													<a
-														id="trackLateComeEalryOut"
-														href="{% url 'track-late-come-early-out' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Track Late Come & Early Out" %}</a
-														>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												{% if perms.attendance.view_attendancevalidationcondition %}
-													<a
-														id="condition"
-														href="{% url 'attendance-settings-view' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Attendance Break Point" %}</a
-													>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												{% if perms.attendance.view_attendancevalidationcondition %}
-													<a
-														id="condition"
-														href="{% url 'check-in-check-out-setting' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Check In/Check Out" %}</a
-													>
-												{% endif %}
-											</div>
-											<div class="oh-input-group">
-												{% if perms.attendance.view_attendancevalidationcondition %}
-													<a
-														id="condition"
-														href="{% url 'grace-settings-view' %}"
-														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "Grace Time" %}</a
-													>
-												{% endif %}
-											</div>
-											{% if biometric_app_exists %}
-												{% if perms.base.view_biometricattendance %}
-													<div class="oh-input-group">
+							<li class="oh-inner-sidebar__item">
+								<div class="oh-accordion ms-2">
+									{% if perms.attendance.view_attendancevalidationcondition or perms.base.view_biometricattendance or perms.attendance.add_attendance or perms.geofencing.add_geofencing or perms.facedetection.add_facedetection %}
+										<div class="oh-accordion-header" style="font-size:16px;">
+											<ion-icon name="checkmark-done-circle-outline" class="me-2"></ion-icon>
+											{% trans "Attendance" %}
+										</div>
+									{% endif %}
+										<div class="oh-accordion-body">
+											<div class="row">
+											<div class="col-sm-12 col-md-12 col-lg-12">
+												<div class="oh-input-group">
+													{% if perms.attendance.view_attendancevalidationcondition %}
+														<a
+															id="trackLateComeEalryOut"
+															href="{% url 'track-late-come-early-out' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Track Late Come & Early Out" %}</a
+															>
+													{% endif %}
+												</div>
+												<div class="oh-input-group">
+													{% if perms.attendance.view_attendancevalidationcondition %}
 														<a
 															id="condition"
-															href="{% url 'enable-biometric-attendance' %}"
+															href="{% url 'attendance-settings-view' %}"
 															class="oh-inner-sidebar__link oh-dropdown__link"
-															>{% trans "Biometric Attendance" %}
+															>{% trans "Attendance Break Point" %}</a
+														>
+													{% endif %}
+												</div>
+												<div class="oh-input-group">
+													{% if perms.attendance.view_attendancevalidationcondition %}
+														<a
+															id="condition"
+															href="{% url 'check-in-check-out-setting' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Check In/Check Out" %}</a
+														>
+													{% endif %}
+												</div>
+												<div class="oh-input-group">
+													{% if perms.attendance.view_attendancevalidationcondition %}
+														<a
+															id="condition"
+															href="{% url 'grace-settings-view' %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "Grace Time" %}</a
+														>
+													{% endif %}
+												</div>
+												{% if biometric_app_exists %}
+													{% if perms.base.view_biometricattendance %}
+														<div class="oh-input-group">
+															<a
+																id="condition"
+																href="{% url 'enable-biometric-attendance' %}"
+																class="oh-inner-sidebar__link oh-dropdown__link"
+																>{% trans "Biometric Attendance" %}
+															</a>
+														</div>
+													{% endif %}
+												{% endif %}
+
+												{% if perms.attendance.add_attendance %}
+													<div class="oh-input-group">
+														<a
+															id="ip_resriction"
+															href="{% url "allowed-ips" %}"
+															class="oh-inner-sidebar__link oh-dropdown__link"
+															>{% trans "IP Restriction" %}
 														</a>
 													</div>
 												{% endif %}
-											{% endif %}
 
-											{% if perms.attendance.add_attendance %}
+												{% if perms.geofencing.add_geofencing or perms.facedetection.add_facedetection %}
 												<div class="oh-input-group">
 													<a
-														id="ip_resriction"
-														href="{% url "allowed-ips" %}"
+														id="geo_face_conf"
+														href="{% url "geo-face-config" %}"
 														class="oh-inner-sidebar__link oh-dropdown__link"
-														>{% trans "IP Restriction" %}
+														>{% trans "Geo & Face Config" %}
 													</a>
 												</div>
-											{% endif %}
+												{% endif %}
 
-											{% if perms.geofencing.add_geofencing or perms.facedetection.add_facedetection %}
-											<div class="oh-input-group">
-												<a
-													id="geo_face_conf"
-													href="{% url "geo-face-config" %}"
-													class="oh-inner-sidebar__link oh-dropdown__link"
-													>{% trans "Geo & Face Config" %}
-												</a>
 											</div>
-											{% endif %}
-
 										</div>
 									</div>
 								</div>
-							</div>
-						</li>
-						<hr>
+							</li>
+							{% if perms.attendance.view_attendancevalidationcondition or perms.base.view_biometricattendance or perms.attendance.add_attendance or perms.geofencing.add_geofencing or perms.facedetection.add_facedetection %}
+								<hr>
+							{% endif %}
 						{% endif %}
 						{% if "leave"|app_installed %}
 							<li class="oh-inner-sidebar__item">
 								<div class="oh-accordion ms-2">
-									<div class="oh-accordion-header" style="font-size:16px;">
-										<ion-icon name="close-circle-outline" class="me-2"></ion-icon>
-										{% trans "Leave" %}
-									</div>
+									{% if perms.leave.add_restrictleave or perms.attendance.view_attendancevalidationcondition %}
+										<div class="oh-accordion-header" style="font-size:16px;">
+											<ion-icon name="close-circle-outline" class="me-2"></ion-icon>
+											{% trans "Leave" %}
+										</div>
+									{% endif %}
 									<div class="oh-accordion-body">
 										<div class="row">
 											<div class="col-sm-12 col-md-12 col-lg-12">
 												<div class="oh-input-group">
-													{% if perms.attendance.view_attendancevalidationcondition %}
+													{% if perms.leave.add_restrictleave %}
 														<a
 															id="condition"
 															href="{% url 'employee-past-leave-restriction' %}"
@@ -535,15 +557,19 @@
 									</div>
 								</div>
 							</li>
-							<hr>
+							{% if perms.leave.add_restrictleave or perms.attendance.view_attendancevalidationcondition %}
+								<hr>
+							{% endif %}
 						{% endif %}
 						{% if "payroll"|app_installed %}
 							<li class="oh-inner-sidebar__item">
 								<div class="oh-accordion ms-2">
-									<div class="oh-accordion-header" style="font-size:16px;">
-										<ion-icon name="wallet-outline" class="me-2"></ion-icon>
-										{% trans "Payroll" %}
-									</div>
+									{% if perms.payroll.view_payslipautogenerate %}
+										<div class="oh-accordion-header" style="font-size:16px;">
+											<ion-icon name="wallet-outline" class="me-2"></ion-icon>
+											{% trans "Payroll" %}
+										</div>
+									{% endif %}
 										<div class="oh-accordion-body">
 											<div class="row">
 											<div class="col-sm-12 col-md-12 col-lg-12">
@@ -562,20 +588,24 @@
 									</div>
 								</div>
 							</li>
-							<hr>
+							{% if perms.payroll.view_payslipautogenerate %}
+								<hr>
+							{% endif %}
 						{% endif %}
 						{% if "pms"|app_installed %}
 							<li class="oh-inner-sidebar__item">
 								<div class="oh-accordion ms-2">
-									<div class="oh-accordion-header" style="font-size:16px;">
-										<ion-icon name="analytics-outline" class="me-2"></ion-icon>
-										{% trans "Performance" %}
-									</div>
+									{% if perms.pms.add_bonuspointsetting %}
+										<div class="oh-accordion-header" style="font-size:16px;">
+											<ion-icon name="analytics-outline" class="me-2"></ion-icon>
+											{% trans "Performance" %}
+										</div>
+									{% endif %}
 										<div class="oh-accordion-body">
 											<div class="row">
 											<div class="col-sm-12 col-md-12 col-lg-12">
 												<div class="oh-input-group">
-												{% if perms.pms.view_payslipautogenerate %}
+												{% if perms.pms.add_bonuspointsetting %}
 														<a
 															id="autoGeneratePayslip"
 															href="{% url 'bonus-point-setting' %}"
@@ -589,15 +619,19 @@
 									</div>
 								</div>
 							</li>
-							<hr>
+							{% if perms.pms.add_bonuspointsetting %}
+								<hr>
+							{% endif %}
 						{% endif %}
 						{% if "helpdesk"|app_installed %}
 							<li class="oh-inner-sidebar__item">
 								<div class="oh-accordion ms-2">
-									<div class="oh-accordion-header" style="font-size:16px;">
-										<ion-icon name="headset" class="me-2"></ion-icon>
-										{% trans "Help Desk" %}
-									</div>
+									{% if perms.helpdesk.view_departmentmanager or perms.helpdesk.view_tickettype or perms.employee.view_employeetag %}
+										<div class="oh-accordion-header" style="font-size:16px;">
+											<ion-icon name="headset" class="me-2"></ion-icon>
+											{% trans "Help Desk" %}
+										</div>
+									{% endif %}
 										<div class="oh-accordion-body">
 											<div class="row">
 											<div class="col-sm-12 col-md-12 col-lg-12">
@@ -622,7 +656,7 @@
 													{% endif %}
 												</div>
 												<div class="oh-input-group">
-													{% if perms.employee.view_emplyeetag %}
+													{% if perms.employee.view_employeetag %}
 														<a
 															id="ticket_type"
 															href="{% url 'helpdesk-tag-view' %}"
@@ -637,7 +671,9 @@
 									</div>
 								</div>
 							</li>
-							<hr>
+							{% if perms.helpdesk.view_departmentmanager or perms.helpdesk.view_tickettype or perms.employee.view_employeetag %}
+								<hr>
+							{% endif %}
 						{% endif %}
 						{% if "whatsapp"|app_installed %}
 							{% if perms.whatsapp.view_whatsappcredentials %}
