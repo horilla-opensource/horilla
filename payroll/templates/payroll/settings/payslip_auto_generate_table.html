@@ -5,10 +5,10 @@
 			<div class="oh-sticky-table__tr">
 				<div class="oh-sticky-table__th">{% trans "Payslip creation date" %}</div>
 				<div class="oh-sticky-table__th">{% trans "Company" %}</div>
-                {% if  perms.payroll.change_PayslipAutoGenerate %}
+                {% if  perms.payroll.change_payslipautogenerate %}
                     <div class="oh-sticky-table__th">{% trans "Is active" %}</div>
                 {% endif %}
-				{% if perms.payroll.change_PayslipAutoGenerate or perms.payroll.delete_PayslipAutoGenerate %}
+				{% if perms.payroll.change_payslipautogenerate or perms.payroll.delete_payslipautogenerate %}
 					<div class="oh-sticky-table__th">{% trans "Actions" %}</div>
 				{% endif %}
 			</div>
@@ -23,11 +23,11 @@
                     {% else %}
                         {{auto.company_id}}
                     {% endif %}</div>
-				{% if perms.payroll.change_PayslipAutoGenerate or perms.payroll.delete_PayslipAutoGenerate %}
+				{% if perms.payroll.change_payslipautogenerate or perms.payroll.delete_payslipautogenerate %}
                     <div class="oh-sticky-table__td">
                         <div class="d-flex">
                             <div class="oh-switch">
-                                {% if  perms.payroll.change_PayslipAutoGenerate %}
+                                {% if  perms.payroll.change_payslipautogenerate %}
                                     <input type="checkbox" id="PayslipAutoGenerateActivate" data-id ="{{auto.id}}" class="oh-switch__checkbox" {% if auto.auto_generate %} checked {% endif %} onchange="updateAutoPayslipIsActivate(this)">
                                 {% else %}
                                     <input type="checkbox" id="PayslipAutoGenerateActivate" class="oh-switch__checkbox" {% if auto.auto_generate %} checked {% endif %} disabled>
@@ -37,7 +37,7 @@
                     </div>
 					<div class="oh-sticky-table__td">
 						<div class="oh-btn-group">
-							{% if perms.payroll.change_PayslipAutoGenerate %}
+							{% if perms.payroll.change_payslipautogenerate %}
 							<a
 								hx-get="{% url 'update-auto-payslip' auto.id %}"
 								hx-target="#objectCreateModalTarget"
@@ -50,7 +50,7 @@
 								<ion-icon name="create-outline"></ion-icon
 							></a>
 							{% endif %}
-							{% if perms.payroll.delete_PayslipAutoGenerate %}
+							{% if perms.payroll.delete_payslipautogenerate %}
 							<form
                                 hx-get="{% url 'delete-auto-payslip' auto.id %}"
 								class="w-100"
