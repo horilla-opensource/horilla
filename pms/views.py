@@ -592,7 +592,7 @@ def objective_filter_pagination(request, objective_own):
 
     employee = request.user.employee_get
     manager = False
-
+    reporting_manager = False
     sub_employees = filtersubordinatesemployeemodel(
         request,
         queryset=Employee.objects.filter(is_active=True),
@@ -609,10 +609,10 @@ def objective_filter_pagination(request, objective_own):
     if request.user.has_perm("pms.view_objective"):
         objectives = Objective.objects.all()
         manager = True
-    elif Objective.objects.filter(managers=employee).exists() or is_reportingmanager(
-        request
-    ):
+    elif Objective.objects.filter(managers=employee).exists():
         manager = True
+    if is_reportingmanager(request):
+        reporting_manager = True
     objectives = ActualObjectiveFilter(
         request.GET or initial_data, queryset=objectives
     ).qs
@@ -637,6 +637,8 @@ def objective_filter_pagination(request, objective_own):
         "filter_dict": data_dict,
         "gp_fields": ObjectiveReGroup.fields,
         "field": field,
+        "reporting_manager": reporting_manager,
+        "subordinates": sub_employees,
     }
     return context
 
@@ -731,33 +733,54 @@ def objective_history(emp_obj_id):
 @login_required
 def objective_detailed_view(request, obj_id, **kwargs):
     """
-    this function is used to update the key result of objectives
-        args:
-            obj_id(int) : pimarykey of EmployeeObjective
-        return:
-            objects to objective_detailed_view
+    View to display and update key results of an objective.
+
+    Args:
+        request: The HTTP request object.
+        obj_id (int): Primary key of the Objective.
+
+    Returns:
+        Rendered template or redirect if no permission.
     """
 
-    objective = Objective.objects.get(id=obj_id)
+    try:
+        objective = Objective.objects.get(id=obj_id)
+    except Objective.DoesNotExist:
+        messages.error(request, _("Objective not found."))
+        return redirect("objective-list-view")
+
     emp_objectives = EmployeeObjective.objects.filter(
         objective_id=objective, archive=False
     )
+
+    user_employee = request.user.employee_get
+
+    # Determine if the user is a reporting manager of any employee in this objective
+    subordinates = filtersubordinatesemployeemodel(
+        request,
+        queryset=Employee.objects.filter(is_active=True),
+    )
+    is_reporting_manager = emp_objectives.filter(employee_id__in=subordinates).exists()
+
+    # Permission check
     if not (
-        request.user.employee_get in objective.managers.all()
+        user_employee in objective.managers.all()
         or request.user.has_perm("pms.view_employeeobjective")
-        or emp_objectives.filter(employee_id=request.user.employee_get).exists()
+        or emp_objectives.filter(employee_id=user_employee).exists()
+        or is_reporting_manager
     ):
-        messages.info(request, _("You dont have permission."))
+        messages.info(request, _("You don't have permission."))
         return redirect("objective-list-view")
 
     previous_data = request.GET.urlencode()
     data_dict = parse_qs(previous_data)
     now = datetime.datetime.now()
+
     context = {
+        "objective": objective,
         "emp_objectives": emp_objectives,
         "pd": previous_data,
         "filter_dict": data_dict,
-        "objective": objective,
         "key_result_form": KeyResultForm,
         "objective_key_result_status": EmployeeKeyResult.STATUS_CHOICES,
         "comment_form": ObjectiveCommentForm,
@@ -853,6 +876,23 @@ def emp_objective_search(request, obj_id):
     """
     objective = Objective.objects.get(id=obj_id)
     emp_objectives = objective.employee_objective.all()
+    # Limit objectives if user is a reporting manager but not a manager or assignee
+    user_employee = request.user.employee_get
+    # Determine if the user is a reporting manager of any employee in this objective
+    subordinates = filtersubordinatesemployeemodel(
+        request,
+        queryset=Employee.objects.filter(is_active=True),
+    )
+    is_reporting_manager = emp_objectives.filter(employee_id__in=subordinates).exists()
+    if (
+        not (
+            user_employee in objective.managers.all()
+            or request.user.has_perm("pms.view_employeeobjective")
+            or emp_objectives.filter(employee_id=user_employee).exists()
+        )
+        and is_reporting_manager
+    ):
+        emp_objectives = emp_objectives.filter(employee_id__in=subordinates)
     search_val = request.GET.get("search")
     if search_val is None:
         search_val = ""
@@ -870,6 +910,7 @@ def emp_objective_search(request, obj_id):
         "filter_dict": data_dict,
         "pg": previous_data,
         "objective": objective,
+        "is_reporting_manager": is_reporting_manager,
     }
     template = "okr/emp_objective/emp_objective_list.html"
     if request.GET.get("field") != "" and request.GET.get("field") is not None:
