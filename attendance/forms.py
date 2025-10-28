@@ -158,14 +158,14 @@ class AttendanceUpdateForm(BaseModelForm):
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-        self.fields["shift_id"].widget.attrs.update(
-            {
-                "id": str(uuid.uuid4()),
-                "hx-include": "#attendanceUpdateForm",
-                "hx-target": "#attendanceUpdateForm",
-                "hx-get": "/attendance/update-fields-based-shift",
-            }
-        )
+        # self.fields["shift_id"].widget.attrs.update(
+        #     {
+        #         "id": str(uuid.uuid4()),
+        #         "hx-include": "#attendanceUpdateForm",
+        #         "hx-target": "#attendanceUpdateForm",
+        #         "hx-get": "/attendance/update-fields-based-shift",
+        #     }
+        # )
         for field in [
             "attendance_clock_in_date",
             "attendance_clock_in",
