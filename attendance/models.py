@@ -237,6 +237,7 @@ class Attendance(HorillaModel):
         permissions = [
             ("change_validateattendance", "Validate Attendance"),
             ("change_approveovertime", "Change Approve Overtime"),
+            ("can_manual_login_logout", "Can use manual login/logout option"),
         ]
         ordering = [
             "-attendance_date",
