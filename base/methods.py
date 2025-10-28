@@ -791,12 +791,12 @@ def is_mercantile_or_poya_holiday(date):
     if holiday:
         return {
             "is_poya_holiday": holiday.is_poya_holiday,
-            "is_mercantile_holday": holiday.is_mercantile_holday
+            "is_mercantile_holiday": holiday.is_mercantile_holiday
         }
 
     return {
         "is_poya_holiday": False,
-        "is_mercantile_holday": False
+        "is_mercantile_holiday": False
     }
 
 

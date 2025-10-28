@@ -91,7 +91,7 @@ def get_leaves(employee, start_date, end_date):
                     if start_date <= date <= end_date
                 ]
 
-    half_day_data = find_half_day_leaves()
+    half_day_data = find_half_day_leaves(employee, start_date, end_date)
 
     unpaid_half = half_day_data["half_unpaid_leaves"]
     paid_half = half_day_data["half_paid_leaves"]
@@ -100,6 +100,15 @@ def get_leaves(employee, start_date, end_date):
     unpaid_leave_dates = list(set(unpaid_leave_dates) - set(company_leave_dates))
     paid_leave = len(paid_leave_dates) - paid_half
     unpaid_leave = len(unpaid_leave_dates) - unpaid_half
+
+    # print({
+    #     "paid_leave": paid_leave,
+    #     "unpaid_leaves": unpaid_leave,
+    #     "total_leaves": paid_leave + unpaid_leave,
+    #     "paid_leave_dates": paid_leave_dates,
+    #     "unpaid_leave_dates": unpaid_leave_dates,
+    #     "leave_dates": unpaid_leave_dates + paid_leave_dates,
+    # })
 
     return {
         "paid_leave": paid_leave,
@@ -198,30 +207,77 @@ def hourly_computation(employee, wage, start_date, end_date):
     }
 
 
-def find_half_day_leaves():
+def find_half_day_leaves(employee, start_date, end_date):
     """
-    This method is used to return the half day leave details
+    Return half-day leave details for the given employee within a date range.
 
     Args:
         employee (obj): Employee model instance
-        start_date (obj): start date of the period
-        end_date (obj): end date of the period
+        start_date (date): start date of the range
+        end_date (date): end date of the range
     """
-    paid_queryset = []
-    unpaid_queryset = []
 
-    paid_leaves = list(filter(None, list(set(paid_queryset))))
-    unpaid_leaves = list(filter(None, list(set(unpaid_queryset))))
+    if not apps.is_installed("leave"):
+        return {
+            "half_day_query_set": [],
+            "half_day_leaves": 0,
+            "half_paid_leaves": 0,
+            "half_unpaid_leaves": 0,
+        }
 
-    paid_half = len(paid_leaves) * 0.5
-    unpaid_half = len(unpaid_leaves) * 0.5
-    queryset = paid_leaves + unpaid_leaves
-    total_leaves = len(queryset) * 0.50
+    approved_leaves = employee.leaverequest_set.filter(status="approved")
+
+    paid_half_leaves = []
+    unpaid_half_leaves = []
+
+    for instance in approved_leaves:
+        if instance.end_date < start_date or instance.start_date > end_date:
+            continue
+
+        start_half = instance.start_date_breakdown in ["first_half", "second_half"]
+        end_half = instance.end_date_breakdown in ["first_half", "second_half"]
+
+        if start_half or end_half:
+            overlapping_dates = [
+                date
+                for date in instance.requested_dates()
+                if start_date <= date <= end_date
+            ]
+
+            if not overlapping_dates:
+                continue
+
+            half_count = 0
+            if start_half:
+                half_count += 0.5
+            if end_half and instance.end_date != instance.start_date:
+                half_count += 0.5
+            if instance.start_date == instance.end_date and (start_half or end_half):
+                half_count = 0.5
+
+            if instance.leave_type_id.payment == "paid":
+                paid_half_leaves.append({
+                    "instance": instance,
+                    "dates": overlapping_dates,
+                    "half_count": half_count,
+                })
+            else:
+                unpaid_half_leaves.append({
+                    "instance": instance,
+                    "dates": overlapping_dates,
+                    "half_count": half_count,
+                })
+
+
+    total_paid_half = sum(l["half_count"] for l in paid_half_leaves)
+    total_unpaid_half = sum(l["half_count"] for l in unpaid_half_leaves)
+    total_half = total_paid_half + total_unpaid_half
+
     return {
-        "half_day_query_set": queryset,
-        "half_day_leaves": total_leaves,
-        "half_paid_leaves": paid_half,
-        "half_unpaid_leaves": unpaid_half,
+        "half_day_query_set": paid_half_leaves + unpaid_half_leaves,
+        "half_day_leaves": total_half,
+        "half_paid_leaves": total_paid_half,
+        "half_unpaid_leaves": total_unpaid_half,
     }
 
 
@@ -518,15 +574,23 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
     contract = employee.contract_set.filter(contract_status="active").first()
     date_range = get_date_range(start_date, end_date)
 
-    # create list to store holiday  allowances and filtered days
+    # create list to store holiday allowances and filtered days
     holiday_allowances = []
     filtered_days = []
+    half_day_count = 0
 
     # get the attendance data between the range
     attendance_data = get_attendance(employee, start_date, end_date)
     attendance_days = list(attendance_data['attendances_on_period'])
+
     for attendance_day in attendance_days:
-        if attendance_day.is_mercantile_holday:
+        worked_hour_str = attendance_day.attendance_worked_hour
+        try:
+            hour = int(worked_hour_str.split(":")[0])
+        except (ValueError, AttributeError):
+            hour = 0
+
+        if attendance_day.is_mercantile_holiday and not attendance_day.is_get_compensation_leave:
             logger.info("Attendance marked on Mercantile Holiday: %s", attendance_day.attendance_date)
             holiday_allowances.append({
                 "title": "Mercantile Holiday Allowance",
@@ -546,22 +610,24 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
             filtered_days.append(attendance_day)
         elif attendance_day.is_holiday:
             logger.info("Attendance marked on Regular Holiday: %s", attendance_day.attendance_date)
-        else:
+        elif hour >= 8:
             filtered_days.append(attendance_day)
+        elif hour == 4:
+            half_day_count += 1
+            filtered_days.append(attendance_day)
+        else:
+            logger.info("Attendance marked with insufficient hours: %s", attendance_day.attendance_date)
+
     attended_dates = {att.attendance_date for att in attendance_days}
 
-    # add paid holidays as attended days
     for hday in holiday_dates:
         if hday not in attended_dates:
             filtered_days.append(hday)
 
-
-    # remove company leave dates from holiday dates to avoid double counting
     company_leave_dates = list(set(company_leave_dates) - set(holiday_dates))
 
-    number_of_attendance_days_with_holidays = len(filtered_days)
+    number_of_attendance_days_with_holidays = len(filtered_days) - half_day_count + (half_day_count * 0.5)
 
-    # calculate the paid days
     paid_days = number_of_attendance_days_with_holidays + len(company_leave_dates) + paid_leaves
 
     # calculate basic pay based on the working days and paid leaves
