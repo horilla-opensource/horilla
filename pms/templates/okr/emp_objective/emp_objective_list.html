@@ -12,7 +12,7 @@
     </div>
 {% endif %}
 {% for emp_objective in emp_objectives.object_list %}
-    {% if perms.pms.view_employeeobjective or emp_objective|is_manager_or_owner:request.user %}
+    {% if perms.pms.view_employeeobjective or emp_objective|is_manager_or_owner:request.user or is_reporting_manager %}
         <div class="oh-accordion-meta">
             <div class="oh-accordion-meta__item">
                 <div class="oh-accordion-meta__header"
