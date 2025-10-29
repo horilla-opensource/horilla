@@ -55,11 +55,11 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Create non-root user
+# Create non-root user FIRST
 RUN useradd --create-home --uid 1000 appuser
 
-# Copy virtual environment from builder stage
-COPY --from=builder /opt/venv /opt/venv
+# Copy virtual environment from builder stage WITH correct ownership
+COPY --from=builder --chown=appuser:appuser /opt/venv /opt/venv
 
 WORKDIR /app
 
