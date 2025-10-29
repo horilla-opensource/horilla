@@ -11,6 +11,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
+from base.models import IntegrationApps
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -79,9 +80,8 @@ class RecruitmentList(HorillaListView):
     action_method = "rec_actions"
 
     header_attrs = {
-        "recruitment_column": """
-                                style="width : 200px !important"
-                               """
+        "recruitment_column": 'style="width : 200px !important"',
+        "action": 'style="width : 300px !important"',
     }
 
     row_status_indications = [
@@ -209,6 +209,14 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             "optional_resume": _("Optional Resume?"),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not IntegrationApps.objects.filter(
+            app_label="linkedin", is_enabled=True
+        ).exists():
+            self.fields["publish_in_linkedin"].widget = forms.HiddenInput()
+            self.fields["linkedin_account_id"].widget = forms.HiddenInput()
+
 
 class RecruitmentNewSkillForm(HorillaFormView):
     """
@@ -242,7 +250,7 @@ class RecruitmentForm(HorillaFormView):
     form_class = RecruitmentCreationFormExtended
     new_display_title = _("Add Recruitment")
     dynamic_create_fields = [("skills", RecruitmentNewSkillForm)]
-    template_name = "cbv/recruitment/recruitment_form.html"
+    # template_name = "cbv/recruitment/recruitment_form.html"
 
     def get_context_data(self, **kwargs):
         """
