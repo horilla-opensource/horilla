@@ -10,7 +10,7 @@ from leave.models import LeaveType
 def get_asset_category_flow_json():
 
     flow_json = {
-        "version": "5.0",
+        "version": "7.3",
         "screens": [
             {
                 "id": "screen_one",
@@ -79,7 +79,7 @@ def get_asset_category_flow_json():
 def get_attendance_request_json():
 
     flow_json = {
-        "version": "5.0",
+        "version": "7.3",
         "screens": [
             {
                 "id": "screen_one",
@@ -267,7 +267,7 @@ def get_attendance_request_json():
 def get_shift_request_json():
 
     flow_json = {
-        "version": "5.0",
+        "version": "7.3",
         "screens": [
             {
                 "id": "screen_one",
@@ -358,7 +358,7 @@ def get_shift_request_json():
 def get_work_type_request_json():
 
     flow_json = {
-        "version": "5.0",
+        "version": "7.3",
         "screens": [
             {
                 "id": "screen_one",
@@ -448,7 +448,7 @@ def get_work_type_request_json():
 def get_leave_request_json():
 
     flow_json = {
-        "version": "5.0",
+        "version": "7.3",
         "screens": [
             {
                 "id": "screen_one",
@@ -565,7 +565,7 @@ def get_leave_request_json():
 def get_reimbursement_request_json():
 
     flow_json = {
-        "version": "5.0",
+        "version": "7.3",
         "screens": [
             {
                 "id": "screen_one",
@@ -642,7 +642,7 @@ def get_reimbursement_request_json():
 def get_bonus_point_json():
 
     flow_json = {
-        "version": "5.0",
+        "version": "7.3",
         "screens": [
             {
                 "id": "screen_one",
@@ -744,7 +744,7 @@ def get_ticket_json():
     tags_data = [{"id": str(tag.id), "title": tag.title} for tag in Tags.objects.all()]
 
     flow_json = {
-        "version": "5.0",
+        "version": "7.3",
         "screens": [
             {
                 "id": "screen_one",
