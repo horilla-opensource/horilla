@@ -173,3 +173,22 @@
     </div>
   </form>
 </div>
+<script>
+  function attendanceDateChange($el) {
+    const picked = $el.val();
+
+    const $clockInDate  = $("input[name='attendance_clock_in_date']");
+    const $clockOutDate = $("input[name='attendance_clock_out_date']");
+
+    if (picked) {
+      if ($clockInDate.length) {
+        $clockInDate.val(picked);
+        $clockInDate[0].dispatchEvent(new Event('change', { bubbles: true }));
+      }
+      if ($clockOutDate.length) {
+        $clockOutDate.val(picked);
+        $clockOutDate[0].dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+  }
+</script>
