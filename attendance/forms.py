@@ -364,6 +364,7 @@ class AttendanceForm(BaseModelForm):
         ]:
             self.update_worked_hour_hx_fields(field)
 
+
         self.fields["attendance_date"].widget.attrs.update(
             {
                 "onchange": "attendanceDateChange($(this))",
