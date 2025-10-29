@@ -144,7 +144,6 @@ if (keyResultStatusChartCtx != null) {
 }
 
 function keyResultStatusDataUpdate(data) {
-	console.log('keyresult',data)
 	keyResultStatusData.labels = data.key_result_label;
 	keyResultStatusData.datasets[0].data = data.key_result_value;
 	keyResultStatusData.message = data.message;

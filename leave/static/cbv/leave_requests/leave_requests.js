@@ -110,9 +110,7 @@ function bulkApproveLeaveRequests() {
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
             if (result.isConfirmed) {
-                console.log("worked")
                 var hxVals = JSON.stringify(ids);
-                console.log(hxVals)
                 $("#bulkApproveSpan").attr("hx-vals", `{"ids":${hxVals}}`);
                 $("#bulkApproveSpan").click();
             }

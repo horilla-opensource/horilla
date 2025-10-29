@@ -101,7 +101,6 @@ function handleRejectRequestsClick() {
             cancelButtonText: i18nMessages.cancel,
         }).then(function (result) {
             if (result.isConfirmed) {
-                console.log("hello")
                 ids = [];
                 ids.push($("#selectedInstances").attr("data-ids"));
                 ids = JSON.parse($("#selectedInstances").attr("data-ids"));

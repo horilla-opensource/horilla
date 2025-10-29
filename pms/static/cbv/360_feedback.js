@@ -143,7 +143,6 @@ $(document).on('click', '#deleteFeedback', function (e) {
     e.preventDefault();
 
     var ids = JSON.parse($("#selectedInstances").attr("data-ids")) || [];
-    console.log(ids)
     var announy_ids = JSON.parse($("#anounyselectedInstances").attr("data-ids")) || [];
 
     if (ids.length === 0 && announy_ids.length === 0) {

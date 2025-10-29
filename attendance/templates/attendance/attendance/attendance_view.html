@@ -96,7 +96,6 @@
 
     // Batch title change
     function batchTitleChange(element){
-        console.log(element)
         title = $(element).val()
         batchId = $(element).data('id')
         $('#updateTitleSpan').attr("hx-vals",`{"batch_id":"${batchId}","title":"${title}"}`)
