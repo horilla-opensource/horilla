@@ -92,7 +92,7 @@
 										>{% trans "Mail Server" %}
 									</a>
 								</li>
-								{% else %}
+								{% elif perms.base.view_dynamicemailconfiguratio and "outlook_auth"|app_installed %}
 								<li class="py-1">
 									<a
 										id="date"
@@ -570,7 +570,6 @@
 					</div>
 				</div>
 				{% endif %}
-				{% comment %} {% if "whatsapp"|app_installed %} {% endcomment %}
 				<div
 					class="accordion-item border border-primary-300 rounded-md overflow-hidden"
 				>
@@ -598,7 +597,7 @@
 								{% endif %}
 								<li class="py-1">
 									<a
-										id="skills"
+										id="linkedin"
 										href="{% url 'linkedin-integration-setting' %}"
 										class="hover:text-primary-600 transition duration-300 text-[13px]"
 										>{% trans "Linkedin" %}
@@ -608,7 +607,7 @@
 								{% if "horilla_ldap"|app_installed %}
 									<li class="py-1">
 										<a
-											id="date"
+											id="ldap"
 											href="{% url 'ldap-settings' %}"
 											class="hover:text-primary-600 transition duration-300 text-[13px]"
 											>{% trans "LDAP" %}
@@ -616,32 +615,34 @@
 									</li>
 								{% endif %}
 
-								<li class="py-1">
-									<a
-										id="google_meet"
-										href="{% url 'gmeet-setting' %}"
-										class="hover:text-primary-600 transition duration-300 text-[13px]"
-										>{% trans "Google Meet" %}</a
-									>
-								</li>
-
-								{% if perms.whatsapp.add_whatsappcredentials %}
+								{% if "horilla_meet"|app_installed %}
 									<li class="py-1">
 										<a
-											id="whatsapp_credentials"
-											href="#"
-											{% comment %} href="{% url 'whatsapp-credential-view' %}" {% endcomment %}
+											id="google_meet"
+											href="{% url 'gmeet-setting' %}"
 											class="hover:text-primary-600 transition duration-300 text-[13px]"
-											>{% trans "Whatsapp" %}</a
+											>{% trans "Google Meet" %}</a
 										>
 									</li>
+								{% endif %}
+
+								{% if "whatsapp"|app_installed %}
+									{% if perms.whatsapp.add_whatsappcredentials %}
+										<li class="py-1">
+											<a
+												id="whatsapp_credentials"
+												href="{% url 'whatsapp-credential-view' %}"
+												class="hover:text-primary-600 transition duration-300 text-[13px]"
+												>{% trans "Whatsapp" %}</a
+											>
+										</li>
+									{% endif %}
 								{% endif %}
 
 							</ul>
 						</div>
 					</div>
 				</div>
-				{% comment %} {% endif %} {% endcomment %}
 			</div>
 		</div>
 	</div>
