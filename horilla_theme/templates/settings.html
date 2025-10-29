@@ -595,6 +595,8 @@
 										</a>
 									</li>
 								{% endif %}
+
+								{% if recruitment.view_linkedinaccount %}
 								<li class="py-1">
 									<a
 										id="linkedin"
@@ -603,8 +605,10 @@
 										>{% trans "Linkedin" %}
 									</a>
 								</li>
+								{% endif %}
 
 								{% if "horilla_ldap"|app_installed %}
+									{% if perms.horilla_ldap.add_ldapsettings or perms.horilla_ldap.update_ldapsettings %}
 									<li class="py-1">
 										<a
 											id="ldap"
@@ -613,9 +617,11 @@
 											>{% trans "LDAP" %}
 										</a>
 									</li>
+									{% endif %}
 								{% endif %}
 
 								{% if "horilla_meet"|app_installed %}
+									{% if perms.horilla_meet.view_googlecloudcredential %}
 									<li class="py-1">
 										<a
 											id="google_meet"
@@ -624,6 +630,7 @@
 											>{% trans "Google Meet" %}</a
 										>
 									</li>
+									{% endif %}
 								{% endif %}
 
 								{% if "whatsapp"|app_installed %}
