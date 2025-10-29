@@ -1,0 +1,11 @@
+<div class="col-md-6 mb-3" id="id_attendance_worked_hour_parent_div">
+  <label for="id_attendance_worked_hour" class="form-label fw-semibold">
+    {{ form.attendance_worked_hour.label }}
+  </label>
+  <div class="oh-input-wrapper">
+    {{ form.attendance_worked_hour }}
+  </div>
+  {% for error in form.attendance_worked_hour.errors %}
+    <div class="text-danger small">{{ error }}</div>
+  {% endfor %}
+</div>
