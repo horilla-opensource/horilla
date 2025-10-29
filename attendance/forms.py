@@ -294,7 +294,7 @@ class AttendanceForm(BaseModelForm):
                 "hx-target": "#id_attendance_worked_hour_parent_div",
                 "hx-swap": "outerHTML",
                 "hx-select": "#id_attendance_worked_hour_parent_div",
-                "hx-get": "/attendance/update-worked-hour-field",
+                "hx-get": "/attendance/update-worked-hour-admin-portal",
                 "hx-trigger": "change delay:300ms",  # Delay added here for 500ms
             }
         )
