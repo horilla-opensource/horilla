@@ -14,7 +14,6 @@
         keyResultRow = $(element).closest('tr');
         empKeyResultId = keyResultRow.attr("data-kr-id")
         var targetValue = keyResultRow.find('[data-value]').attr("data-value")
-        console.log(targetValue)
 
         // Extract only the numeric part using a regular expression
         var numericValue = parseFloat(targetValue.replace(/[^\d.]/g, ''));
