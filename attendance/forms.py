@@ -295,14 +295,13 @@ class AttendanceForm(BaseModelForm):
                 "hx-swap": "outerHTML",
                 "hx-select": "#id_attendance_worked_hour_parent_div",
                 "hx-get": "/attendance/update-worked-hour-admin-portal",
-                "hx-trigger": "change delay:300ms",  # Delay added here for 500ms
+                "hx-trigger": "change delay:300ms",
             }
         )
 
     def __init__(self, *args, **kwargs):
         # Get the initial data passed from the view
         view_initial = kwargs.pop("initial", {})
-
         # Default initial values
         initial = {
             "attendance_clock_out_date": datetime.datetime.today()
@@ -846,6 +845,7 @@ class NewRequestForm(AttendanceRequestForm):
         attendances = Attendance.objects.filter(
             employee_id=employee, attendance_date=attendance_date
         )
+
 
         if employee and not hasattr(employee, "employee_work_info"):
             raise ValidationError(_("Employee work info not found"))
