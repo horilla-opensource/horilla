@@ -1004,6 +1004,7 @@ def home(request):
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
         "charts": employee_charts.charts,
         "is_birthday": is_birthday,
+        "total_employees": total_employees,
         "show_section": show_section,
     }
 
