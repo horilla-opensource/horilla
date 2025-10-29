@@ -1,5 +1,6 @@
 import inspect
 import json
+from datetime import datetime
 
 import requests
 from django.contrib.messages.storage.fallback import FallbackStorage
@@ -49,6 +50,13 @@ class CustomRequestFactory(RequestFactory):
         request._messages = FallbackStorage(request)
 
 
+def get_meta_url(id, service):
+    """
+    return the meta grap API url
+    """
+    return f"https://graph.facebook.com/v24.0/{id}/{service}"
+
+
 def get_meta_details_from_number(number):
     emp_company = Employee.objects.filter(phone=number).first().get_company()
     company = emp_company if emp_company else Company.objects.filter(hq=True).first()
@@ -59,9 +67,7 @@ def get_meta_details_from_number(number):
         if credentials.get(is_primary=True)
         else credentials.first()
     )
-    url = (
-        f"https://graph.facebook.com/v21.0/{credentials.meta_phone_number_id}/messages"
-    )
+    url = get_meta_url(credentials.meta_phone_number_id, "messages")
     data = {
         "token": credentials.meta_token,
         "url": url,
@@ -74,14 +80,14 @@ def get_meta_details_from_number(number):
 
 def get_meta_details_from_id(cred_id):
     credentials = WhatsappCredientials.objects.get(id=cred_id)
-    url = (
-        f"https://graph.facebook.com/v21.0/{credentials.meta_phone_number_id}/messages"
-    )
+    url = get_meta_url(credentials.meta_phone_number_id, "messages")
+
     data = {
         "token": credentials.meta_token,
         "url": url,
         "business_id": credentials.meta_business_id,
     }
+
     return data
 
 
@@ -96,7 +102,7 @@ def create_template_buttons(cred_id):
         dict: The JSON response from the API containing the status of the request.
     """
     data = get_meta_details_from_id(cred_id)
-    api_url = f'https://graph.facebook.com/v21.0/{data.get("business_id","")}/message_templates'
+    api_url = get_meta_url(data.get("business_id", ""), "message_templates")
     token = data.get("token", "")
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
@@ -125,16 +131,13 @@ def create_template_buttons(cred_id):
             {"type": "BUTTONS", "buttons": quick_reply_buttons},
         ],
     }
-
-    try:
-        response = requests.post(api_url, headers=headers, json=payload)
-        print(response.json())
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return {"status": response.json()}
-    except requests.exceptions.RequestException as e:
-        return {"status": "error", "message": str(e)}
+    response = requests.post(api_url, headers=headers, json=payload)
+    data = response.json()
+    if "error" in data:
+        raise Exception(f"error: {data['error'].get('message')}")
+    if response.status_code not in (200, 201):
+        raise Exception(f"Request failed with status {response.status_code}: {data}")
+    return data
 
 
 def create_welcome_message(cred_id):
@@ -148,7 +151,7 @@ def create_welcome_message(cred_id):
         dict: The JSON response from the API containing the status of the request.
     """
     data = get_meta_details_from_id(cred_id)
-    api_url = f'https://graph.facebook.com/v21.0/{data.get("business_id","")}/message_templates'
+    api_url = get_meta_url(data.get("business_id", ""), "message_templates")
     token = data.get("token", "")
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
@@ -164,15 +167,14 @@ def create_welcome_message(cred_id):
         ],
     }
 
-    try:
-        response = requests.post(api_url, headers=headers, json=payload)
-        print(response.json())
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return {"status": response.json()}
-    except requests.exceptions.RequestException as e:
-        return {"status": "error", "message": str(e)}
+    response = requests.post(api_url, headers=headers, json=payload)
+    data = response.json()
+
+    if "error" in data:
+        raise Exception(f"error: {data['error'].get('message')}")
+    if response.status_code not in (200, 201):
+        raise Exception(f"Request failed with status {response.status_code}: {data}")
+    return data
 
 
 def create_help_message(cred_id):
@@ -186,7 +188,7 @@ def create_help_message(cred_id):
         dict: The JSON response from the API containing the status of the request.
     """
     data = get_meta_details_from_id(cred_id)
-    api_url = f'https://graph.facebook.com/v21.0/{data.get("business_id","")}/message_templates'
+    api_url = get_meta_url(data.get("business_id", ""), "message_templates")
     token = data.get("token", "")
     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
@@ -212,15 +214,14 @@ def create_help_message(cred_id):
         ],
     }
 
-    try:
-        response = requests.post(api_url, headers=headers, json=payload)
-        print(response.json())
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return {"status": response.json()}
-    except requests.exceptions.RequestException as e:
-        return {"status": "error", "message": str(e)}
+    response = requests.post(api_url, headers=headers, json=payload)
+    data = response.json()
+
+    if "error" in data:
+        raise Exception(f"error: {data['error'].get('message')}")
+    if response.status_code not in (200, 201):
+        raise Exception(f"Request failed with status {response.status_code}: {data}")
+    return data
 
 
 def send_image_message(number, link):
@@ -248,10 +249,16 @@ def send_image_message(number, link):
             "link": link,
         },
     }
-    response = requests.post(data.get("url", ""), json=payload, headers=headers)
 
-    print(response.json())
-    return response.status_code == 200
+    api_url = data.get("url", "")
+    response = requests.post(api_url, headers=headers, json=payload)
+    data = response.json()
+
+    if "error" in data:
+        raise Exception(f"error: {data['error'].get('message')}")
+    if response.status_code not in (200, 201):
+        raise Exception(f"Request failed with status {response.status_code}: {data}")
+    return data
 
 
 def send_document_message(number, link):
@@ -281,10 +288,15 @@ def send_document_message(number, link):
             "link": link,
         },
     }
-    response = requests.post(url, json=payload, headers=headers)
 
-    print(response.json())
-    return response.status_code == 200
+    response = requests.post(url, headers=headers, json=payload)
+    data = response.json()
+
+    if "error" in data:
+        raise Exception(f"error: {data['error'].get('message')}")
+    if response.status_code not in (200, 201):
+        raise Exception(f"Request failed with status {response.status_code}: {data}")
+    return data
 
 
 def send_text_message(number, message, header=None):
@@ -317,9 +329,14 @@ def send_text_message(number, message, header=None):
         },
     }
 
-    response = requests.post(url, json=payload, headers=headers)
-    print(response.json())
-    return response.status_code == 200
+    response = requests.post(url, headers=headers, json=payload)
+    data = response.json()
+
+    if "error" in data:
+        raise Exception(f"error: {data['error'].get('message')}")
+    if response.status_code not in (200, 201):
+        raise Exception(f"Request failed with status {response.status_code}: {data}")
+    return data
 
 
 def send_template_message(number, template_name, ln_code="en_US"):
@@ -354,8 +371,13 @@ def send_template_message(number, template_name, ln_code="en_US"):
         },
     }
     response = requests.post(url, headers=headers, json=payload)
-    print(response.json())
-    return response
+    data = response.json()
+
+    if "error" in data:
+        raise Exception(f"error: {data['error'].get('message')}")
+    if response.status_code not in (200, 201):
+        raise Exception(f"Request failed with status {response.status_code}: {data}")
+    return data
 
 
 def send_flow_message(to, template_name):
@@ -416,9 +438,13 @@ def send_flow_message(to, template_name):
     }
 
     response = requests.post(url, headers=headers, json=payload)
+    data = response.json()
 
-    print(response.json())
-    return response.json()
+    if "error" in data:
+        raise Exception(f"error: {data['error'].get('message')}")
+    if response.status_code not in (200, 201):
+        raise Exception(f"Request failed with status {response.status_code}: {data}")
+    return data
 
 
 def flow_message_details(template_name, employee):
@@ -561,7 +587,7 @@ def create_request(
         function = inspect.unwrap(view_function)
         _response = function(request=request)
     except Exception as e:
-        print(f"Error in {view_function.__name__}: {e}")
+        message = f"Error in {view_function.__name__}: {e}"
 
     return message
 
@@ -657,7 +683,13 @@ def leave_request_create(employee, flow_response):
         if flow_response.get("document_picker")
         else None
     )
-    attachment_file = get_whatsapp_media_file(media_id, file_name) if media_id else None
+
+    data = get_meta_details_from_number(employee.phone)
+    attachment_file = (
+        get_whatsapp_media_file(media_id, file_name, data.get("token", ""))
+        if media_id
+        else None
+    )
 
     data = {
         "employee_id": employee.id,
@@ -724,6 +756,17 @@ def attendance_request_create(employee, flow_response):
 
     from attendance.forms import NewRequestForm
     from attendance.views.requests import request_new as attendance_request_creation
+
+    for key in ["check_in_time", "check_out_time"]:
+        value = flow_response.get(key)
+        if isinstance(value, str):
+            try:
+                flow_response[key] = datetime.strptime(value, "%H:%M:%S").time()
+            except ValueError:
+                try:
+                    flow_response[key] = datetime.strptime(value, "%H:%M").time()
+                except ValueError:
+                    flow_response[key] = None
 
     data = {
         "employee_id": employee.id,
@@ -816,7 +859,7 @@ def reimbursement_create(employee, flow_response):
         data,
         ReimbursementForm,
         create_reimbursement,
-        "Reimbursemnt",
+        "Reimbursment",
         attachments,
     )
 
@@ -833,7 +876,7 @@ def get_whatsapp_media_file(media_id, file_name, token):
         ContentFile: A Django ContentFile object containing the media data, or None if the fetch fails.
     """
 
-    url = f"https://graph.facebook.com/v21.0/{media_id}"
+    url = f"https://graph.facebook.com/v24.0/{media_id}"
     headers = {"Authorization": f"Bearer {token}"}
 
     response = requests.get(url, headers=headers)
@@ -891,30 +934,28 @@ def create_flow(flow_name, template_name, cred_id):
         "Content-Type": "application/json",
     }
     data = {"name": flow_name, "categories": "OTHER"}
-    response = requests.post(
-        f"https://graph.facebook.com/v21.0/{credential.meta_business_id}/flows",
-        json=data,
-        headers=headers,
+    api_url = get_meta_url(credential.meta_business_id, "flows")
+
+    response = requests.post(api_url, json=data, headers=headers)
+    data = response.json()
+
+    if response.status_code not in (200, 201):
+        raise Exception(f"Flow creation failed: {data}")
+
+    flow_id = data.get("id")
+    if not flow_id:
+        raise Exception(f"Flow creation failed: Missing flow ID in response: {data}")
+
+    obj, created = WhatsappFlowDetails.objects.get_or_create(
+        template=template_name,
+        whatsapp_id=credential,
+        defaults={"flow_id": flow_id},
     )
+    if not created:
+        obj.flow_id = flow_id
+        obj.save()
 
-    if response.status_code != 200:
-        print(f"Error in creating flow: {response.json()}")
-        return response
-
-    try:
-        flow_id = response.json().get("id")
-        obj, created = WhatsappFlowDetails.objects.get_or_create(
-            template=template_name,
-            whatsapp_id=credential,
-            defaults={"flow_id": flow_id},
-        )
-        if not created:
-            obj.flow_id = flow_id
-            obj.save()
-        return response
-    except KeyError:
-        print("Error: 'id' not found in response")
-        return response
+    return data
 
 
 def update_flow(flow_id, flow_json, token):
@@ -928,8 +969,7 @@ def update_flow(flow_id, flow_json, token):
     Returns:
         Response: The JSON response from the API, or error details if the update fails.
     """
-
-    url = f"https://graph.facebook.com/v21.0/{flow_id}/assets"
+    url = get_meta_url(flow_id, "assets")
     headers = {"Authorization": f"Bearer {token}"}
 
     with open("flow.json", "w") as file:
@@ -943,10 +983,15 @@ def update_flow(flow_id, flow_json, token):
         }
         response = requests.post(url, headers=headers, files=files)
 
-    if response.status_code != 200:
-        print(f"Error in updating flow: {response.json()}")
+    data = response.json()
 
-    return response
+    if response.status_code not in (200, 201):
+        raise Exception(f"Flow update failed: {data}")
+
+    if data.get("validation_error"):
+        raise Exception(f"Flow validation error: {data['validation_error']}")
+
+    return data
 
 
 def publish_flow(flow_id, token):
@@ -961,11 +1006,15 @@ def publish_flow(flow_id, token):
     """
 
     headers = {"Authorization": f"Bearer {token}"}
-    response = requests.post(
-        f"https://graph.facebook.com/v21.0/{flow_id}/publish", headers=headers
-    )
+    api_url = get_meta_url(flow_id, "publish")
 
-    if response.status_code != 200:
-        print(f"Error in publishing flow: {response.json()}")
+    response = requests.post(api_url, headers=headers)
+    data = response.json()
 
-    return response
+    if response.status_code not in (200, 201):
+        raise Exception(f"Flow publish failed: {data}")
+
+    if data.get("error"):
+        raise Exception(f"Flow publish error: {data['error']}")
+
+    return data
