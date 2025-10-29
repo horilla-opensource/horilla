@@ -55,7 +55,6 @@
     {% if filter_selected %}
       <span id="filter_selected_{{ view_id }}" class="d-none quick-bulk-action px-4 py-2 bg-[#a4933b] text-white rounded-md text-xs hover:bg-primary-800 transition duration-300" onclick="
       ids = $('#{{ selected_instances_key_id }}').attr('data-ids');
-      console.log(ids);
       $('#filterSelectedForm{{ view_id }}').find('[name=selected_ids]').val(ids);
       $('#filterSelectedForm{{ view_id }}').find('[type=submit]').click();
     "><span class="label">{% trans 'Filter' %}</span> (<span class="count_{{ view_id }}">0</span>)</span>
