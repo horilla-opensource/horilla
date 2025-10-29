@@ -868,7 +868,7 @@ class ReimbursementForm(ModelForm):
         self.fields["attachment"] = MultipleFileField(label="Attachments")
         self.fields["attachment"].widget.attrs["accept"] = ".jpg, .jpeg, .png, .pdf"
 
-        # self.exclude_fields_by_type(exclude_fields)
+        self.exclude_fields_by_type(exclude_fields)
 
         for field in exclude_fields:
             self.fields.pop(field, None)
@@ -899,7 +899,7 @@ class ReimbursementForm(ModelForm):
         )
         is_edit = self.instance and self.instance.pk
 
-        if type == "reimbursement" and is_edit:
+        if type == "reimbursement" and (is_edit or self.data):
             exclude_fields += [
                 "leave_type_id",
                 "cfd_to_encash",
