@@ -150,7 +150,7 @@
                             <!-- End of check in/out button in nav bar -->
                         {% endif %}
 
-                        {% if request.user|any_permission:'base' or perms.attendance.view_attendancevalidationcondition %}
+                        {% if request.user|any_permission:'base' or show_section %}
                             <!-- Start of settings button in nav bar -->
                             <div class="oh-navbar__action-icons" title="Settings">
                                 <a href="{% url 'general-settings' %}" id="settingsMenu" class="oh-navbar__action-icons-link">

@@ -1841,7 +1841,7 @@ def initial_notice_period(request):
 
 
 @login_required
-@permission_required("payroll.view_PayslipAutoGenerate")
+@permission_required("payroll.view_payslipautogenerate")
 def auto_payslip_settings_view(request):
     payslip_auto_generate = PayslipAutoGenerate.objects.all()
 
@@ -1851,7 +1851,7 @@ def auto_payslip_settings_view(request):
 
 @login_required
 @hx_request_required
-@permission_required("payroll.change_PayslipAutoGenerate")
+@permission_required("payroll.change_payslipautogenerate")
 def create_or_update_auto_payslip(request, auto_id=None):
     auto_payslip = None
     if auto_id:
@@ -1874,7 +1874,7 @@ def create_or_update_auto_payslip(request, auto_id=None):
 
 
 @login_required
-@permission_required("payroll.change_PayslipAutoGenerate")
+@permission_required("payroll.change_payslipautogenerate")
 def activate_auto_payslip_generate(request):
     """
     ajax function to update is active field in PayslipAutoGenerate.
@@ -1903,7 +1903,7 @@ def activate_auto_payslip_generate(request):
 
 @login_required
 @hx_request_required
-@permission_required("payroll.delete_PayslipAutoGenerate")
+@permission_required("payroll.delete_payslipautogenerate")
 def delete_auto_payslip(request, auto_id):
     """
     Delete a PayslipAutoGenerate object.

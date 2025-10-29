@@ -25,7 +25,7 @@ from payroll.models.models import PayslipAutoGenerate
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required(perm="payroll.view_PayslipAutoGenerate"), name="dispatch"
+    permission_required(perm="payroll.view_payslipautogenerate"), name="dispatch"
 )
 class PaySlipAutomationListView(HorillaListView):
     """
@@ -90,7 +90,7 @@ class PaySlipAutomationListView(HorillaListView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required(perm="payroll.view_PayslipAutoGenerate"), name="dispatch"
+    permission_required(perm="payroll.view_payslipautogenerate"), name="dispatch"
 )
 class PaySlipAutomationNav(HorillaNavView):
     """
@@ -115,7 +115,7 @@ class PaySlipAutomationNav(HorillaNavView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required(perm="payroll.change_PayslipAutoGenerate"), name="dispatch"
+    permission_required(perm="payroll.change_payslipautogenerate"), name="dispatch"
 )
 class PaySlipAutomationFormView(HorillaFormView):
     """
@@ -163,7 +163,7 @@ class PaySlipAutomationFormView(HorillaFormView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required(perm="payroll.delete_PayslipAutoGenerate"), name="dispatch"
+    permission_required(perm="payroll.delete_payslipautogenerate"), name="dispatch"
 )
 class DeleteAutoPayslipView(View):
     """
