@@ -660,7 +660,6 @@
     function validateComment(event) {
         var comment = $(".comment-form [name='comment']").val().trim();
         var fileInput = $(".comment-form [name='file']")[0];
-        console.log(fileInput);
         var filesSelected = fileInput.files && fileInput.files.length > 0;
 
         if (comment === '' && !filesSelected) {

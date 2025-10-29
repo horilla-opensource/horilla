@@ -1,5 +1,5 @@
-{% extends 'settings.html' %} 
-{% load i18n horillafilters %} 
+{% extends 'settings.html' %}
+{% load i18n horillafilters %}
 {% block settings %}
 
 <div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
@@ -21,9 +21,9 @@
 					</div>
 					<label class="toggle-label" for="is_enabled">
 						<input type="checkbox" class="toggle-input"
-                            name="is_enabled" id="is_enabled" 
+                            name="is_enabled" id="is_enabled"
                             hx-post="{% url 'enable-integration'%}?app_label=linkedin"
-                            hx-trigger="change" 
+                            hx-trigger="change"
                             {% if "linkedin"|integration_installed %} checked {% endif %}
                         />
 
