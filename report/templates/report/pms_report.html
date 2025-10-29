@@ -292,8 +292,6 @@
 
             $.getJSON(`pms-pivot?model=${selectedModel}&${formData}`, function (data) {
 
-                console.log("Filtered data:", data);
-
                 const plotlyRenderers = $.pivotUtilities.plotly_renderers;
 
                 $("#" + containerId).pivotUI(data, {

@@ -6,7 +6,7 @@ from typing import Iterable
 
 from bs4 import BeautifulSoup
 from django.contrib import messages
-from django.db.models.signals import post_save
+from django.db.models.signals import m2m_changed, post_save
 from django.dispatch import receiver
 from django.http.response import HttpResponse
 from django.shortcuts import render
@@ -14,6 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from base.models import Announcement
 from employee.models import Employee
+from horilla.decorators import check_integration_enabled
 from horilla.horilla_middlewares import _thread_locals
 from notifications.signals import notify
 from whatsapp.flows import (
@@ -109,6 +110,7 @@ def clean_string(s):
 
 
 @csrf_exempt
+@check_integration_enabled(app_name="whatsapp")
 def whatsapp(request):
     """
     Handles incoming WhatsApp webhook requests.
@@ -169,7 +171,7 @@ def whatsapp(request):
                             if text == "helloworld":
                                 send_template_message(from_number, "hello_world")
                             elif text == "help":
-                                send_template_message(from_number, "help_50")
+                                send_template_message(from_number, "help_text")
                             elif text in ["asset", "assetrequest"]:
                                 send_flow_message(from_number, "asset")
                             elif text in ["shift", "shiftrequest"]:
@@ -193,7 +195,7 @@ def whatsapp(request):
                                 "goodnight",
                                 "hlo",
                             ]:
-                                send_template_message(from_number, "welcome_message_50")
+                                send_template_message(from_number, "welcome_message")
                             elif text == "image":
                                 try:
                                     image_relative_url = (
@@ -229,7 +231,7 @@ def whatsapp(request):
                             else:
                                 if text:
                                     send_template_message(
-                                        from_number, "button_template_50"
+                                        from_number, "button_template"
                                     )
 
                         except KeyError as e:
@@ -244,6 +246,7 @@ def whatsapp(request):
     return HttpResponse("error", status=200)
 
 
+@check_integration_enabled(app_name="whatsapp")
 def create_generic_templates(request, id):
     """
     Creates generic message templates for WhatsApp.
@@ -255,23 +258,105 @@ def create_generic_templates(request, id):
         HttpResponse: A response indicating the success or failure of template creation.
     """
 
+    flag = True
     try:
         create_template_buttons(id)
-        create_welcome_message(id)
-        create_help_message(id)
-        create_flows(id)
+    except Exception as e:
+        flag = False
+        messages.error(request, e)
 
+    try:
+        create_welcome_message(id)
+    except Exception as e:
+        flag = False
+        messages.error(request, e)
+
+    try:
+        create_help_message(id)
+    except Exception as e:
+        flag = False
+        messages.error(request, e)
+
+    try:
+        create_flows(id)
+    except Exception as e:
+        flag = False
+        messages.error(request, e)
+
+    if flag:
         credential = WhatsappCredientials.objects.get(id=id)
         credential.created_templates = True
         credential.save()
 
         messages.success(request, "Message templates and flows created successfully.")
-    except:
-        messages.error(request, "Message templates and flows creation failed.")
     return HttpResponse("<script>window.location.reload();</script>")
 
 
-@csrf_exempt
+# @csrf_exempt
+# def create_flows(cred_id):
+#     """
+#     Creates and publishes flows based on predefined details.
+
+#     Args:
+#         request (HttpRequest): The incoming HTTP request.
+
+#     Returns:
+#         HttpResponse: A response indicating the success or failure of flow creation.
+#     """
+
+#     try:
+#         for flow in DETAILED_FLOW:
+#             template_name = flow["template_name"]
+#             flow_name = flow["flow_name"]
+#             flow_json = flow["flow_json"]
+#             credential = WhatsappCredientials.objects.get(id=cred_id)
+
+#             # Create flow
+#             create_response = create_flow(flow_name, template_name, cred_id)
+#             create_response_data = create_response.json()
+
+#             flow_id = create_response_data.get("id")
+#             if not flow_id:
+#                 return HttpResponse(
+#                     json.dumps(create_response_data),
+#                     status=create_response.status_code,
+#                     content_type="application/json",
+#                 )
+
+#             # Update flow
+#             update_response = update_flow(flow_id, flow_json,credential.meta_token)
+#             update_response_data = update_response.json()
+#             if update_response_data.get("validation_error", {}):
+#                 return HttpResponse(
+#                     json.dumps(update_response_data),
+#                     status=update_response.status_code,
+#                     content_type="application/json",
+#                 )
+
+#             # Publish flow
+#             publish_response = publish_flow(flow_id,credential.meta_token)
+#             publish_response_data = publish_response.json()
+#             if publish_response_data.get("error", {}):
+#                 return HttpResponse(
+#                     json.dumps(publish_response_data),
+#                     status=publish_response.status_code,
+#                     content_type="application/json",
+#                 )
+
+#         return HttpResponse(
+#             json.dumps({"message": "Flow created successfully"}),
+#             status=200,
+#             content_type="application/json",
+#         )
+
+#     except Exception as e:
+#         print(f"Unexpected error: {e}")
+#         return HttpResponse(
+#             json.dumps({"error": str(e)}), status=500, content_type="application/json"
+#         )
+
+
+@check_integration_enabled(app_name="whatsapp")
 def create_flows(cred_id):
     """
     Creates and publishes flows based on predefined details.
@@ -282,65 +367,32 @@ def create_flows(cred_id):
     Returns:
         HttpResponse: A response indicating the success or failure of flow creation.
     """
+    for flow in DETAILED_FLOW:
+        template_name = flow["template_name"]
+        flow_name = flow["flow_name"]
+        flow_json = flow["flow_json"]
+        credential = WhatsappCredientials.objects.get(id=cred_id)
 
-    try:
-        for flow in DETAILED_FLOW:
-            template_name = flow["template_name"]
-            flow_name = flow["flow_name"]
-            flow_json = flow["flow_json"]
-            credential = WhatsappCredientials.objects.get(id=cred_id)
+        # 1. Create flow
+        create_data = create_flow(flow_name, template_name, cred_id)
+        flow_id = create_data.get("id")
+        if not flow_id:
+            raise Exception(f"Flow ID missing after creation: {create_data}")
 
-            # Create flow
-            create_response = create_flow(flow_name, template_name, cred_id)
-            create_response_data = create_response.json()
+        # 2. Update flow
+        update_data = update_flow(flow_id, flow_json, credential.meta_token)
 
-            flow_id = create_response_data.get("id")
-            if not flow_id:
-                return HttpResponse(
-                    json.dumps(create_response_data),
-                    status=create_response.status_code,
-                    content_type="application/json",
-                )
+        # 3. Publish flow
+        publish_data = publish_flow(flow_id, credential.meta_token)
 
-            # Update flow
-            update_response = update_flow(flow_id, flow_json, credential.meta_token)
-            update_response_data = update_response.json()
-            if update_response_data.get("validation_error", {}):
-                return HttpResponse(
-                    json.dumps(update_response_data),
-                    status=update_response.status_code,
-                    content_type="application/json",
-                )
-
-            # Publish flow
-            publish_response = publish_flow(flow_id, credential.meta_token)
-            publish_response_data = publish_response.json()
-            if publish_response_data.get("error", {}):
-                return HttpResponse(
-                    json.dumps(publish_response_data),
-                    status=publish_response.status_code,
-                    content_type="application/json",
-                )
-
-        return HttpResponse(
-            json.dumps({"message": "Flow created successfully"}),
-            status=200,
-            content_type="application/json",
-        )
-
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        return HttpResponse(
-            json.dumps({"error": str(e)}), status=500, content_type="application/json"
-        )
+    return {"message": "Flows created, updated, and published successfully."}
 
 
-def send_notification_task(recipient, verb, redirect, icon):
+def send_notification_task(request, recipient, verb, redirect, icon):
     """
     Background task to send a notification message via WhatsApp.
     """
     try:
-        request = getattr(_thread_locals, "request", None)
         link = request.build_absolute_uri(redirect) if redirect else None
         message = f"{verb}\nFor more details, \n{link}." if link else verb
 
@@ -361,11 +413,13 @@ def send_notification_task(recipient, verb, redirect, icon):
         print(f"Error in notification task: {e}")
 
 
-# @receiver(notify)
+@receiver(notify)
+@check_integration_enabled(app_name="whatsapp")
 def send_notification_on_whatsapp(sender, recipient, verb, redirect, icon, **kwargs):
 
+    request = getattr(_thread_locals, "request", None)
     thread = threading.Thread(
-        target=send_notification_task, args=(recipient, verb, redirect, icon)
+        target=send_notification_task, args=(request, recipient, verb, redirect, icon)
     )
     thread.start()
 
@@ -428,17 +482,57 @@ def send_announcement_task(instance, request):
             send_document_message(number, document_link)
 
 
-# @receiver(post_save, sender=Announcement)
-def send_announcement_on_whatsapp(sender, instance, created, **kwargs):
-    if not created:
+def send_announcement(instance):
+    """
+    Helper: send announcement only once after both M2Ms are set.
+    """
+    if (
+        getattr(instance, "_created", False)
+        and getattr(instance, "_employees_added", False)
+        and getattr(instance, "_attachments_added", False)
+    ):
         request = getattr(_thread_locals, "request", None)
 
         thread = threading.Thread(
-            target=send_announcement_task, args=(instance, request)
+            target=send_announcement_task,
+            args=(instance, request),
+            daemon=True,
         )
         thread.start()
 
+        # Reset flags
+        instance._created = False
+        instance._employees_added = False
+        instance._attachments_added = False
 
+
+# @receiver(post_save, sender=Announcement)
+@check_integration_enabled(app_name="whatsapp")
+def mark_announcement_created(sender, instance, created, **kwargs):
+    if created:
+        # Temporary flags to track both M2M relations
+        instance._created = True
+        instance._employees_added = False
+        instance._attachments_added = False
+
+
+# @receiver(m2m_changed, sender=Announcement.employees.through)
+@check_integration_enabled(app_name="whatsapp")
+def employees_m2m_changed(sender, instance, action, **kwargs):
+    if action == "post_add" and getattr(instance, "_created", False):
+        instance._employees_added = True
+        send_announcement(instance)
+
+
+# @receiver(m2m_changed, sender=Announcement.attachments.through)
+@check_integration_enabled(app_name="whatsapp")
+def attachments_m2m_changed(sender, instance, action, **kwargs):
+    if action == "post_add" and getattr(instance, "_created", False):
+        instance._attachments_added = True
+        send_announcement(instance)
+
+
+@check_integration_enabled(app_name="whatsapp")
 def flow_conversion(number, flow_response_json):
     """
     Processes a flow response based on the type of request.
@@ -473,17 +567,3 @@ def flow_conversion(number, flow_response_json):
 
     response = send_text_message(number, message)
     return response
-
-
-def whatsapp_credential_view(request):
-    """
-    Renders the WhatsApp credentials view.
-
-    Args:
-        request (HttpRequest): The incoming HTTP request.
-
-    Returns:
-        HttpResponse: The rendered credentials view.
-    """
-
-    return render(request, "whatsapp/credentials_view.html", {})

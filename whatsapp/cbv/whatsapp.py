@@ -4,8 +4,10 @@ from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _trans
 
+from horilla.decorators import check_integration_enabled, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaFormView,
     HorillaListView,
@@ -17,7 +19,14 @@ from whatsapp.models import WhatsappCredientials
 from whatsapp.utils import send_text_message
 
 
+@method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
+@method_decorator(
+    permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
+)
 class CredentialListView(HorillaListView):
+    """
+    List view for Whatsapp credential settings view
+    """
 
     model = WhatsappCredientials
     filter_class = CredentialsViewFilter
@@ -82,7 +91,14 @@ class CredentialListView(HorillaListView):
         """
 
 
+@method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
+@method_decorator(
+    permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
+)
 class CredentialNav(HorillaNavView):
+    """
+    Nav view for Whatsapp credential settings view
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -99,7 +115,15 @@ class CredentialNav(HorillaNavView):
     filter_instance = CredentialsViewFilter()
 
 
+@method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
+@method_decorator(
+    permission_required("whatsapp.add_whatsappcredentials"), name="dispatch"
+)
 class CredentialForm(HorillaFormView):
+    """
+    Form view for Whatsapp credential settings view
+    """
+
     model = WhatsappCredientials
     form_class = WhatsappForm
     new_display_title = "Create whatsapp"
@@ -121,7 +145,15 @@ class CredentialForm(HorillaFormView):
         return super().form_valid(form)
 
 
+@check_integration_enabled(app_name="whatsapp")
+@method_decorator(
+    permission_required("whatsapp.delete_whatsappcredentials"), name="dispatch"
+)
 def delete_credentials(request):
+    """
+    delete for Whatsapp credential settings view
+    """
+
     id = request.GET.get("id")
     crediential = WhatsappCredientials.objects.filter(id=id).first()
     count = WhatsappCredientials.objects.count()
@@ -132,12 +164,19 @@ def delete_credentials(request):
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
+@check_integration_enabled(app_name="whatsapp")
+@method_decorator(
+    permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
+)
 def send_test_message(request):
+    """
+    Test message from Whatsapp credential settings view
+    """
+
     message = "This is a test message"
     if request.method == "POST":
         number = request.POST.get("number")
         response = send_text_message(number, message)
-        print(response)
         if response:
             messages.success(request, "Message sent successfully")
         else:

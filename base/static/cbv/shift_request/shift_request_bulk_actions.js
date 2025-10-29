@@ -152,8 +152,6 @@ function shiftRequestDelete() {
     // addIdsTab("allocatedselectedInstances");
     ids.push($("#selectedInstances").attr("data-ids"));
     ids = JSON.parse($("#selectedInstances").attr("data-ids"));
-    console.log(ids)
-    console.log('__________________________________________________________________________')
     if (ids.length === 0) {
         Swal.fire({
             text: i18nMessages.noRowsSelected,

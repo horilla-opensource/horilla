@@ -158,6 +158,8 @@
 														>{% trans "Mail Server" %}</a
 													>
 												</div>
+												{% elif perms.base.view_dynamicemailconfiguratio and "outlook_auth"|app_installed %}
+												<div class="oh-input-group">
 												{% else %}
 												{% comment %} <div class="oh-input-group">
 														<a
@@ -166,6 +168,8 @@
 														class="oh-inner-sidebar__link oh-dropdown__link"
 														>{% trans "Outlook Mail" %}</a
 													>
+												</div>
+												{% endif %}
 												</div> {% endcomment %}
 											{% endif %}
 												<div class="oh-input-group">

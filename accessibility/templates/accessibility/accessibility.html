@@ -85,12 +85,9 @@
                       $(this).closest('form').find('input[type=submit]').click();
                       value = $(this).is(':checked');
                       container = $('#{{accessibility}}formcontainer')
-                      console.log(typeof value)
                       if (value=='true') {
                         container.hide();
                       }else{
-                        console.log('false');
-
                         $(container).show();
                       }
                       ">
@@ -120,7 +117,6 @@
                       $.ajax({
                         url: "{% url 'get-initial-accessibility-data' %}?feature={{accessibility}}",
                         success: function (response) {
-                                console.log(response)
                                 for (let key in response) {
                                     if (response.hasOwnProperty(key)) {
                                         let values = response[key];

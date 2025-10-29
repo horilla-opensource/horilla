@@ -964,25 +964,19 @@ def home(request):
     today_weekday = today.weekday()
     first_day_of_week = today - timedelta(days=today_weekday)
     last_day_of_week = first_day_of_week + timedelta(days=6)
-    total_employees = Employee.objects.filter(is_active=True).count()
-    current_employee = request.user.employee_get
 
-    employee_charts = DashboardEmployeeCharts.objects.filter(
-        employee=current_employee
-    ).first()
+    employee_charts = DashboardEmployeeCharts.objects.get_or_create(
+        employee=request.user.employee_get
+    )[0]
 
-    chart_list = [chart[0] for chart in check_chart_permission(request, CHARTS)]
-
-    if employee_charts and employee_charts.charts is not None:
-        chart_list = employee_charts.charts
-
-    today = timezone.now().date()
+    user = request.user
+    today = timezone.now().date()  # Get today's date
     is_birthday = None
 
-    if current_employee.dob != None:
+    if user.employee_get.dob != None:
         is_birthday = (
-            current_employee.dob.month == today.month
-            and current_employee.dob.day == today.day
+            user.employee_get.dob.month == today.month
+            and user.employee_get.dob.day == today.day
         )
 
     show_section = any(
@@ -1008,7 +1002,7 @@ def home(request):
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
-        "charts": chart_list,
+        "charts": employee_charts.charts,
         "is_birthday": is_birthday,
         "total_employees": total_employees,
         "show_section": show_section,

@@ -307,8 +307,25 @@
 	<!-- end of empty page -->
 {% endif %}
 <script>
-	$(document).ready(function () {
+$(document).ready(function () {
+    // Show the first accordion by default
 		$(".oh-accordion-meta__body").first().removeClass('d-none');
 		$(".oh-accordion-meta__header").first().addClass('oh-accordion-meta__header--show');
-	})
+
+    // Accordion toggle behavior
+    $(".oh-accordion-meta__header").on("click", function () {
+        let body = $(this).closest(".oh-accordion-meta__item").next(".oh-accordion-meta__body");
+
+        // Toggle the clicked accordion
+        if (body.hasClass("d-none")) {
+            $(".oh-accordion-meta__body").addClass("d-none");
+            $(".oh-accordion-meta__header").removeClass("oh-accordion-meta__header--show");
+            body.removeClass("d-none");
+            $(this).removeClass("oh-accordion-meta__header--show");
+        } else {
+			body.addClass("d-none");
+            $(this).addClass("oh-accordion-meta__header--show");
+        }
+    });
+});
 </script>
