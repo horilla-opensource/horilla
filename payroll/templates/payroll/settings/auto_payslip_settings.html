@@ -3,7 +3,7 @@
 <meta name="csrf-token" content="{{ csrf_token }}">
 <div id="ohMessages"></div>
 <div class="oh-inner-sidebar-content">
-  {% if perms.payroll.view_PayslipAutoGenerate %}
+  {% if perms.payroll.view_payslipautogenerate %}
 
   <div hx-get="{% url "pay-slip-automation-nav" %}" hx-trigger="load" >
 	</div>
@@ -11,7 +11,7 @@
     class="oh-inner-sidebar-content__header d-flex justify-content-between align-items-center"
   >
     <h2 class="oh-inner-sidebar-content__title">{% trans "Payslip Automation" %}</h2>
-    {% if perms.payroll.add_PayslipAutoGenerate %}
+    {% if perms.payroll.add_payslipautogenerate %}
       <button
         class="oh-btn oh-btn--secondary oh-btn--shadow"
         data-toggle="oh-modal-toggle"

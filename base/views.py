@@ -985,12 +985,33 @@ def home(request):
             and current_employee.dob.day == today.day
         )
 
+    show_section = any(
+        [
+            request.user.has_perm("attendance.view_attendancevalidationcondition"),
+            request.user.has_perm("helpdesk.view_departmentmanager"),
+            request.user.has_perm("helpdesk.view_tickettype"),
+            request.user.has_perm("employee.view_employeetag"),
+            request.user.has_perm("pms.add_bonuspointsetting"),
+            request.user.has_perm("payroll.view_payslipautogenerate"),
+            request.user.has_perm("leave.add_restrictleave"),
+            request.user.has_perm("base.view_biometricattendance"),
+            request.user.has_perm("attendance.add_attendance"),
+            request.user.has_perm("geofencing.add_geofencing"),
+            request.user.has_perm("facedetection.add_facedetection"),
+            request.user.has_perm("recruitment.view_recruitment"),
+            request.user.has_perm("recruitment.view_rejectreason"),
+            request.user.has_perm("recruitment.add_recruitment"),
+            request.user.has_perm("recruitment.add_linkedinaccount"),
+        ]
+    )
+
     context = {
         "first_day_of_week": first_day_of_week.strftime("%Y-%m-%d"),
         "last_day_of_week": last_day_of_week.strftime("%Y-%m-%d"),
         "charts": chart_list,
         "is_birthday": is_birthday,
         "total_employees": total_employees,
+        "show_section": show_section,
     }
 
     return render(request, "index.html", context)
@@ -1078,7 +1099,39 @@ def common_settings(request):
     """
     This method is used to render setting page template
     """
-    return render(request, "settings.html")
+    general_section = any(
+        [
+            request.user.has_perm("base.change_announcementexpire"),
+            request.user.has_perm("base.view_dynamicpagination"),
+            request.user.has_perm("horilla_audit.view_accountblockunblock"),
+            request.user.has_perm("offboarding.change_offboardinggeneralsetting"),
+            request.user.has_perm("attendance.change_attendancegeneralsetting"),
+            request.user.has_perm("payroll.change_payrollgeneralsetting"),
+            request.user.has_perm("employee.change_employeegeneralsetting"),
+            request.user.has_perm("payroll.change_encashmentgeneralsetting"),
+            request.user.has_perm("base.view_historytrackingfields"),
+            request.user.has_perm("payroll.view_payrollsettings"),
+        ]
+    )
+    employee_section = any(
+        [
+            request.user.has_perm("base.view_worktype"),
+            request.user.has_perm("base.view_rotatingworktype"),
+            request.user.has_perm("base.view_employeeshift"),
+            request.user.has_perm("base.view_rotatingshift"),
+            request.user.has_perm("base.view_employeeshiftschedule"),
+            request.user.has_perm("base.view_employeetype"),
+            request.user.has_perm("employee.view_actiontype"),
+            request.user.has_perm("employee.view_employeetag"),
+        ]
+    )
+
+    context = {
+        "general_section": general_section,
+        "employee_section": employee_section,
+    }
+
+    return render(request, "settings.html", context)
 
 
 @login_required

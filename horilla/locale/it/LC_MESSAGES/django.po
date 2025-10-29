@@ -12115,4 +12115,3 @@ msgstr "Carica un file XLSX valido."
 
 msgid "Progress"
 msgstr "Avanzamento"
-

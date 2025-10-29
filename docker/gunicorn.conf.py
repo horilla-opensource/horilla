@@ -1,16 +1,20 @@
 # Gunicorn configuration for Horilla-HR
 # This file provides advanced configuration options for the WSGI server
 
-import os
 import multiprocessing
+import os
 
 # Bind settings
 bind = f"0.0.0.0:{os.environ.get('PORT', '8000')}"
 host = "0.0.0.0"
-port = int(os.environ.get('PORT', '8000'))
+port = int(os.environ.get("PORT", "8000"))
 
 # Worker settings
-workers = int(os.environ.get('GUNICORN_WORKERS', max(2, min(multiprocessing.cpu_count() * 2 + 1, 8))))
+workers = int(
+    os.environ.get(
+        "GUNICORN_WORKERS", max(2, min(multiprocessing.cpu_count() * 2 + 1, 8))
+    )
+)
 worker_class = "gthread"
 threads = 4
 worker_connections = 1000
@@ -25,7 +29,7 @@ keepalive = 5
 # Logging
 accesslog = "-"
 errorlog = "-"
-loglevel = os.environ.get('GUNICORN_LOG_LEVEL', 'info')
+loglevel = os.environ.get("GUNICORN_LOG_LEVEL", "info")
 access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(D)s'
 
 # Process naming
@@ -38,7 +42,7 @@ group = None
 tmp_upload_dir = None
 
 # Development settings
-reload = os.environ.get('GUNICORN_RELOAD', 'false').lower() == 'true'
+reload = os.environ.get("GUNICORN_RELOAD", "false").lower() == "true"
 
 # SSL settings (if needed)
 # ssl_keyfile = os.environ.get('SSL_KEYFILE')
