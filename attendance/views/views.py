@@ -1670,6 +1670,34 @@ def update_worked_hour_field(request):
         {"request": request, "form": form},
     )
 
+@login_required
+@hx_request_required
+def update_worked_hour_field_admin_portal(request):
+    clock_in = parse_datetime(
+        now().strftime("%Y-%m-%d") if request.GET.get("create_bulk") else request.GET.get("attendance_clock_in_date"),
+        request.GET.get("attendance_clock_in"),
+    )
+    clock_out = parse_datetime(
+        now().strftime("%Y-%m-%d") if request.GET.get("create_bulk") else request.GET.get("attendance_clock_out_date"),
+        request.GET.get("attendance_clock_out"),
+    )
+
+    total_seconds = (clock_out - clock_in).total_seconds() if clock_in and clock_out else -1
+    if total_seconds < 0:
+        worked_hours_str = "00:00"
+    else:
+        h = int(total_seconds // 3600)
+        m = int((total_seconds % 3600) // 60)
+        worked_hours_str = f"{h:02}:{m:02}"
+
+
+    form = AttendanceForm(initial={"attendance_worked_hour": worked_hours_str})
+    form.fields["attendance_worked_hour"].widget.attrs.update({
+        "class": "oh-input w-100",
+        "id": "id_attendance_worked_hour",
+    })
+
+    return render(request, "attendance/attendance/_worked_hours_field.html", {"form": form})
 
 @login_required
 def form_date_checking(request):
