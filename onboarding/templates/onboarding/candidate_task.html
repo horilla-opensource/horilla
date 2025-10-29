@@ -106,7 +106,6 @@ function updateSingleStatus(selectElement,event) {
   var taskId = $(selectElement).data("task-id");
   var candId = $(selectElement).data('candidate-id');
   var status = $(selectElement).val();
-  console.log(status)
   $.ajax({
       type: "POST",
       url: "{% url 'candidate-task-update' 0 %}".replace('0', taskId),

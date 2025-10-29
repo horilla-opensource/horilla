@@ -1,0 +1,66 @@
+{% extends 'settings.html' %}
+{% load i18n horillafilters %}
+{% block settings %}
+
+<div class="border border-[#ebebeb] rounded-md overflow-hidden mb-5">
+	<h2 class="text-sm font-semibold bg-[#f3f3f3] px-4 py-3 text-[#333]">
+		{% trans "LinkedIn Integration" %}
+	</h2>
+	<div class="p-4">
+		<div class="grid grid-cols-12 gap-4 myform">
+			<div class="col-span-12 lg:col-span-6">
+				<div class="flex items-center justify-between mb-4">
+					<div class="flex space-x-2">
+						<h3 class="text-sm font-medium">
+							{% trans "Enable Linkedin" %}
+						</h3>
+						<span
+							class="oh-info"
+							title="{% trans 'Enable this to integrate linkedin to Horilla.' %}"
+						></span>
+					</div>
+					<label class="toggle-label" for="is_enabled">
+						<input type="checkbox" class="toggle-input"
+                            name="is_enabled" id="is_enabled"
+                            hx-post="{% url 'enable-integration'%}?app_label=linkedin"
+                            hx-trigger="change"
+                            {% if "linkedin"|integration_installed %} checked {% endif %}
+                        />
+
+						<div class="toggle-switch"></div>
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="px-4">
+		{% if "linkedin"|integration_installed %}
+
+		<div
+			class="oh-checkpoint-badge mb-2"
+			id="selectedInstances"
+			data-ids="[]"
+			data-clicked=""
+			style="display: none"
+		></div>
+
+		<div hx-get="{{nav_url}}?{{request.GET.urlencode}}" hx-trigger="load">
+			<div
+				class="mt-5 oh-wrapper animated-background"
+				style="height: 80px"
+			></div>
+		</div>
+
+		<div
+			class="oh-wrapper"
+			hx-get="{{view_url}}?{{request.GET.urlencode}}"
+			hx-trigger="load"
+			id="{{view_container_id}}"
+		>
+			<div class="mt-4 animated-background" style="height: 600px"></div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+
+{% endblock %}

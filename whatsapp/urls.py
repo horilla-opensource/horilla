@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import TemplateView
 
 from whatsapp.cbv import whatsapp
 
@@ -16,19 +17,9 @@ urlpatterns = [
         views.create_generic_templates,
         name="generic-template-creation",
     ),
-    # path(
-    #     "end-point/",
-    #     views.end_point,
-    #     name="end-point",
-    # ),
-    # path(
-    #     "leave-request/",
-    #     views.end_point,
-    #     name="leave-request",
-    # ),
     path(
         "whatsapp-credential-view/",
-        views.whatsapp_credential_view,
+        TemplateView.as_view(template_name="whatsapp/credentials_view.html"),
         name="whatsapp-credential-view",
     ),
     path(

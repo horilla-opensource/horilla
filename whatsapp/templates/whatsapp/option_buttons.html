@@ -1,9 +1,12 @@
-{% load static i18n %} {% if not instance.created_templates %}
+{% load static i18n %}
+
+{% if not instance.created_templates %}
 <a
     title="Create Message Template and Flows"
     class="oh-btn oh-btn--light-bkg w-100"
     data-toggle="oh-modal-toggle"
     data-target="#whatsappModal"
+    hx-confirm="{% trans 'Do you want to create Templates and Flows in whatsapp manager?' %}"
     hx-get="{% url 'generic-template-creation' instance.id %}"
     aria-describedby="ui-id-2"
 >
@@ -18,8 +21,6 @@
 <a
     title="Create Message Template and Flows"
     class="oh-btn oh-btn--light-bkg w-100 oh-btn--disabled"
-    data-toggle="oh-modal-toggle"
-    data-target="#whatsappModal"
     aria-describedby="ui-id-2"
 >
     <ion-icon
