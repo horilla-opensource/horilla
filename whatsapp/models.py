@@ -8,7 +8,7 @@ from horilla_views.cbv_methods import render_template
 
 
 class WhatsappCredientials(HorillaModel):
-    meta_token = models.CharField(max_length=255)
+    meta_token = models.TextField()
     meta_business_id = models.CharField(max_length=255)
     meta_phone_number_id = models.CharField(max_length=255)
     meta_phone_number = models.CharField(max_length=20)
