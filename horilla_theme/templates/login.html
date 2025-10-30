@@ -113,7 +113,7 @@
                     {% endif %}
                     <button
                         type="submit"
-                        class="p-3 bg-primary-600 hover:bg-secondary-600 w-full flex gap-3 justify-center rounded-md text-[white] [transition:.3s]"
+                        class="p-3 mt-3 bg-primary-600 hover:bg-secondary-600 w-full flex gap-3 justify-center rounded-md text-[white] [transition:.3s]"
                     >
                         <img src="{% static "horilla_theme/assets/icons/sign.svg" %}" alt="" /> {% trans "Sign In" %}
                     </button>
@@ -123,7 +123,7 @@
                     <div class="d-flex gap-2">
                         <a
                             href="{% url 'initialize-database' %}"
-                            class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                            class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-full mb-4"
                             role="button"
                             style="
                                 background-color: rgba(229, 79, 56, 0.1);
@@ -138,7 +138,7 @@
                         </a>
                         <a
                             onclick="$('#dataLoadAuthentication').toggleClass('oh-modal--show');"
-                            class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-100 mb-4"
+                            class="oh-btn oh-onboarding-card__button mt-4 oh-btn--secondary oh-btn--shadow w-full mb-4"
                             style="background-color: #31b46e1f; color: #1fad61"
                             role="button"
                         >
