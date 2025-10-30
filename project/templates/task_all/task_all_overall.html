@@ -112,7 +112,6 @@
                     newURL = currentURL + separator + "view="+view;
                 }
                 history.pushState({}, "", newURL);
-                console.log(view)
                 $("#taskAllFilterForm").attr("hx-vals", `{"view":"${view}"}`);
                 $('#filter-task-all').attr("hx-vals", `{"view":"${view}"}`);
             }
