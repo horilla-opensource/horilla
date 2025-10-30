@@ -479,11 +479,14 @@ class EmployeeNav(HorillaNavView):
             self.actions = [
                 {
                     "action": _("Import"),
-                    "attrs": """
-                    id="work-info-import"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#workInfoImport"
-                    style="cursor: pointer;"
+                    "attrs": f"""
+                        href="#"
+                        data-toggle="oh-modal-toggle"
+                        data-target="#objectCreateModal"
+                        hx-get="{reverse('work-info-import')}"
+                        hx-target="#objectCreateModalTarget"
+                        hx-on-htmx-after-request="setTimeout(() => {{template_download(event);}},100);"
+                        style="cursor: pointer;"
                     """,
                 },
                 {
