@@ -3,13 +3,13 @@ import os
 from functools import wraps
 from urllib.parse import urlencode
 
+from django.apps import apps
 from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from base import apps
 from horilla import settings
 from horilla.settings import BASE_DIR, TEMPLATES
 
