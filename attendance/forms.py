@@ -603,9 +603,14 @@ class AttendanceRequestForm(BaseModelForm):
                 ),
             }
             if instance.attendance_clock_out_date is not None:
-                initial["attendance_clock_out"] = (
-                    instance.attendance_clock_out.strftime("%H:%M")
-                )
+                if isinstance(instance.attendance_clock_out_date, str):
+                    instance.attendance_clock_out_date = datetime.datetime.strptime(
+                        instance.attendance_clock_out_date, "%Y-%m-%d"
+                    ).date()
+                if instance.attendance_clock_out:
+                    initial["attendance_clock_out"] = (
+                        instance.attendance_clock_out.strftime("%H:%M")
+                    )
                 initial["attendance_clock_out_date"] = (
                     instance.attendance_clock_out_date.strftime("%Y-%m-%d")
                 )
