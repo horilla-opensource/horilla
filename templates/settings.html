@@ -160,8 +160,6 @@
 												</div>
 												{% elif perms.base.view_dynamicemailconfiguration and "outlook_auth"|app_installed %}
 												<div class="oh-input-group">
-												{% else %}
-												{% comment %} <div class="oh-input-group">
 														<a
 														id="date"
 														href="{% url 'outlook_view_records' %}"
@@ -170,8 +168,6 @@
 													>
 												</div>
 												{% endif %}
-												</div> {% endcomment %}
-											{% endif %}
 												<div class="oh-input-group">
 													{% if perms.horilla_backup.view_googledrivebackup %}
 														<a
