@@ -91,10 +91,6 @@ def get_simple_relation_paths(source_model, target_model, max_depth=5):
             else:
                 accessor = field.name
 
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-            print(accessor)
-            print(field)
-
             new_path = f"{path}__{accessor}" if path else accessor
 
             if related_model == target_model:

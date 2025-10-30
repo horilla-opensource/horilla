@@ -10,8 +10,10 @@ repos:
     hooks:
       - id: black
         language_version: python3.10
+        exclude: '**/migrations/**'
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
       - id: isort
         args: ["--profile", "black", "--filter-files"]
+        exclude: '**/migrations/**'

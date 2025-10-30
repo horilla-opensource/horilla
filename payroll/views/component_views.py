@@ -1286,6 +1286,7 @@ def add_bonus(request):
         )
     else:
         form = forms.BonusForm(initial={"employee_id": employee_id})
+
     if request.method == "POST":
         form = forms.BonusForm(request.POST, initial={"employee_id": employee_id})
         contract = Contract.objects.filter(
@@ -1324,8 +1325,6 @@ def add_bonus(request):
                         ).format(employee),
                     )
             return HttpResponse("<script>window.location.reload()</script>")
-    else:
-        print(form.errors)
 
     return render(
         request,

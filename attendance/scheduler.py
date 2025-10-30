@@ -40,11 +40,8 @@ def create_work_record():
     if records_to_create:
         try:
             WorkRecords.objects.bulk_create(records_to_create)
-            print(f"Created {len(records_to_create)} work records for {date}.")
         except Exception as e:
             logger.error(f"Failed to bulk create work records: {e}")
-    else:
-        print(f"No new work records to create for {date}.")
 
 
 if not any(
