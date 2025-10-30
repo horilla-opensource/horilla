@@ -1934,7 +1934,6 @@ def delete_auto_payslip(request, auto_id):
         delete_error = True
         messages.error(request, _("Payslip auto generate not found."))
     if delete_error or count == 1:
-        print("==============================================")
         return HttpResponse("<script>$('.reload-record').click();</script>")
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
