@@ -19,10 +19,10 @@ from whatsapp.models import WhatsappCredientials
 from whatsapp.utils import send_text_message
 
 
-@method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
 @method_decorator(
     permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
 )
+@method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
 class CredentialListView(HorillaListView):
     """
     List view for Whatsapp credential settings view
@@ -91,10 +91,10 @@ class CredentialListView(HorillaListView):
         """
 
 
-@method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
 @method_decorator(
     permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
 )
+@method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
 class CredentialNav(HorillaNavView):
     """
     Nav view for Whatsapp credential settings view
@@ -115,10 +115,10 @@ class CredentialNav(HorillaNavView):
     filter_instance = CredentialsViewFilter()
 
 
-@method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
 @method_decorator(
     permission_required("whatsapp.add_whatsappcredentials"), name="dispatch"
 )
+@method_decorator(check_integration_enabled(app_name="whatsapp"), name="dispatch")
 class CredentialForm(HorillaFormView):
     """
     Form view for Whatsapp credential settings view
@@ -145,10 +145,10 @@ class CredentialForm(HorillaFormView):
         return super().form_valid(form)
 
 
+permission_required("whatsapp.delete_whatsappcredentials")
+
+
 @check_integration_enabled(app_name="whatsapp")
-@method_decorator(
-    permission_required("whatsapp.delete_whatsappcredentials"), name="dispatch"
-)
 def delete_credentials(request):
     """
     delete for Whatsapp credential settings view
@@ -164,10 +164,8 @@ def delete_credentials(request):
     return HttpResponse("<script>$('#reloadMessagesButton').click();</script>")
 
 
+@permission_required("whatsapp.view_whatsappcredentials")
 @check_integration_enabled(app_name="whatsapp")
-@method_decorator(
-    permission_required("whatsapp.view_whatsappcredentials"), name="dispatch"
-)
 def send_test_message(request):
     """
     Test message from Whatsapp credential settings view
@@ -176,11 +174,15 @@ def send_test_message(request):
     message = "This is a test message"
     if request.method == "POST":
         number = request.POST.get("number")
-        response = send_text_message(number, message)
-        if response:
-            messages.success(request, "Message sent successfully")
-        else:
-            messages.error(request, "message not send")
+        try:
+            response = send_text_message(number, message)
+            if response:
+                messages.success(request, "Message sent successfully")
+            else:
+                messages.error(request, "message not send")
+        except Exception as e:
+            messages.error(request, e)
+
         return HttpResponse("<script>window.location.reload()</script>")
 
     return render(request, "whatsapp/send_test_message_form.html")
