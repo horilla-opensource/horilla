@@ -1709,6 +1709,9 @@ class LeaveRequest(HorillaModel):
         """
         leave_requests_to_update = LeaveRequest.objects.exclude(
             Q(id=self.id) | Q(status="cancelled") | Q(status="rejected")
+        ).filter(
+            Q(start_date__lte=self.end_date)
+            & (Q(end_date__gte=self.start_date) | Q(end_date__isnull=True))
         )
 
         for leave_request in leave_requests_to_update:
