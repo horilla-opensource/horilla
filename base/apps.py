@@ -20,25 +20,6 @@ class BaseConfig(AppConfig):
 
         super().ready()
         check_for_no_permissions_models()
-        try:
-            from base.models import EmployeeShiftDay
-
-            if not EmployeeShiftDay.objects.exists():
-                days = [
-                    ("monday", "Monday"),
-                    ("tuesday", "Tuesday"),
-                    ("wednesday", "Wednesday"),
-                    ("thursday", "Thursday"),
-                    ("friday", "Friday"),
-                    ("saturday", "Saturday"),
-                    ("sunday", "Sunday"),
-                ]
-
-                EmployeeShiftDay.objects.bulk_create(
-                    [EmployeeShiftDay(day=day[0]) for day in days]
-                )
-        except Exception as e:
-            print(e)
 
 
 def check_for_no_permissions_models():
