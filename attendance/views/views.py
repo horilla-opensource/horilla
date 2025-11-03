@@ -85,6 +85,7 @@ from attendance.methods.utils import (
     parse_time,
     sort_activity_dicts,
     strtime_seconds,
+    allocate_compensation_leave,
 )
 from attendance.models import (
     Attendance,
@@ -1365,6 +1366,8 @@ def validate_this_attendance(request, obj_id):
         attendance = Attendance.objects.get(id=obj_id)
         attendance.attendance_validated = True
         attendance.save()
+        allocate_compensation_leave(request, attendance)
+        print("attendance validate ran")
         urlencode = request.GET.urlencode()
         modified_url = f"/attendance/attendance-view/?{urlencode}"
         messages.success(
