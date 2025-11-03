@@ -10,7 +10,7 @@ from datetime import date, datetime, time
 from urllib.parse import parse_qs
 
 from django.contrib import messages
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
@@ -178,16 +178,24 @@ def request_new(request):
     else:
         form = NewRequestForm()
     form = choosesubordinates(request, form, "attendance.change_attendance")
-    form.fields["employee_id"].queryset = form.fields[
-        "employee_id"
-    ].queryset | Employee.objects.filter(employee_user_id=request.user)
+    employees_qs = Employee.objects.filter(
+        Q(id__in=form.fields["employee_id"].queryset.values_list("id", flat=True))
+        | Q(employee_user_id=request.user)
+    )
+
+    form.fields["employee_id"].queryset = employees_qs.distinct()
     form.fields["employee_id"].initial = request.user.employee_get.id
+    if request.GET.get("emp_id"):
+        emp_id = request.GET.get("emp_id")
+        form.fields["employee_id"].queryset = Employee.objects.filter(id=emp_id)
+        form.fields["employee_id"].initial = emp_id
     if request.method == "POST":
         form = NewRequestForm(request.POST)
-        form = choosesubordinates(request, form, "attendance.change_attendance")
-        form.fields["employee_id"].queryset = form.fields[
-            "employee_id"
-        ].queryset | Employee.objects.filter(employee_user_id=request.user)
+        employees_qs = Employee.objects.filter(
+            Q(id__in=form.fields["employee_id"].queryset.values_list("id", flat=True))
+            | Q(employee_user_id=request.user)
+        )
+        form.fields["employee_id"].queryset = employees_qs.distinct()
         if form.is_valid():
             if form.new_instance is not None:
                 form.new_instance.save()
