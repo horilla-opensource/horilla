@@ -13539,7 +13539,7 @@ msgstr ""
 msgid "Help Desk"
 msgstr ""
 
-msgid "My Company"
+msgid "HRM System"
 msgstr ""
 
 msgid "Configuration"

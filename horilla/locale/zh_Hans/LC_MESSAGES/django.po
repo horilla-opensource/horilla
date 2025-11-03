@@ -12953,7 +12953,7 @@ msgstr "工资单自动生成"
 msgid "Help Desk"
 msgstr "帮助台"
 
-msgid "My Company"
+msgid "HRM System"
 msgstr "我的公司"
 
 msgid "Configuration"

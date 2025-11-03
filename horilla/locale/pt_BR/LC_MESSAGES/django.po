@@ -12098,7 +12098,7 @@ msgstr "Payslip Auto Generation"
 msgid "Help Desk"
 msgstr "Central de ajuda"
 
-msgid "My Company"
+msgid "HRM System"
 msgstr "Minha Empresa"
 
 msgid "Configuration"

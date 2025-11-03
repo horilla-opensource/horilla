@@ -76,7 +76,7 @@ class CompanyMiddleware:
             if company_id == "all":
                 text = "All companies"
             elif company_id == user_company_id:
-                text = "My Company"
+                text = "HRM System"
             else:
                 text = "Other Company"
 
