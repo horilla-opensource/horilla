@@ -21,6 +21,7 @@ class YourForm(forms.Form):
         pass
 """
 
+from datetime import datetime
 from typing import Any
 
 from django import forms
@@ -167,6 +168,30 @@ class TicketForm(ModelForm):
         if is_reportingmanager(request) or request.user.has_perm("base.add_tags"):
             self.fields["tags"].choices = list(self.fields["tags"].choices)
             self.fields["tags"].choices.append(("create_new_tag", "Create new tag"))
+
+    def clean(self, *args, **kwargs):
+        cleaned_data = super().clean(*args, **kwargs)
+        deadline = cleaned_data.get("deadline")
+        today = datetime.today().date()
+        request = getattr(horilla_middlewares._thread_locals, "request", None)
+        user = getattr(request, "user", None)
+
+        if deadline and deadline < today:
+            if self.instance and self.instance.pk:
+                if not (
+                    user.has_perm("helpdesk.change_ticket")
+                    or user.has_perm(
+                        "helpdesk.add_ticket"
+                        or self.instance.employee_id == user.employee_get
+                    )
+                ):
+                    raise forms.ValidationError(
+                        _("Deadline should be greater than today")
+                    )
+            else:
+                raise forms.ValidationError(_("Deadline should be greater than today"))
+
+        return cleaned_data
 
 
 class TicketTagForm(ModelForm):
