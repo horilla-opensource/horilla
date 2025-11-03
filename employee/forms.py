@@ -515,6 +515,8 @@ excel_columns = [
     ("country", trans("Country")),
     ("state", trans("State")),
     ("city", trans("City")),
+    ("nic_number", trans("NIC Number")),
+    ("passport_number", trans("Passport Number")),
     ("address", trans("Address")),
     ("zip", trans("Zip Code")),
     ("marital_status", trans("Marital Status")),

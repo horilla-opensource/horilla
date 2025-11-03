@@ -105,6 +105,7 @@ celerybeat.pid
 .env
 .venv
 env/
+hr.vinasai.ca/
 venv/
 ENV/
 env.bak/

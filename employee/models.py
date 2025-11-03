@@ -88,6 +88,10 @@ class Employee(models.Model):
     state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
     zip = models.CharField(max_length=20, null=True, blank=True)
+    nic_number = models.CharField(max_length=30, verbose_name=_("NIC Number"))
+    passport_number = models.CharField(
+        max_length=30, null=True, blank=True, verbose_name=_("Passport Number")
+    )
     dob = models.DateField(null=True, blank=True)
     gender = models.CharField(
         max_length=10, null=True, choices=choice_gender, default="male"
@@ -132,6 +136,14 @@ class Employee(models.Model):
 
         if errors:
             raise ValidationError(errors)
+
+    def clean(self):
+        super().clean()
+        if not (self.nic_number or "").strip():
+            raise ValidationError({"nic_number": _("NIC Number is required.")})
+        self.nic_number = self.nic_number.strip()
+        if self.passport_number:
+            self.passport_number = self.passport_number.strip()
 
     def get_image(self):
         """

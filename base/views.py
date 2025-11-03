@@ -327,6 +327,11 @@ def initialize_database_user(request):
         badge_id = form_data.get("badge_id")
         email = form_data.get("email")
         phone = form_data.get("phone")
+        nic_number = (form_data.get("nic_number") or "").strip()
+        passport_number = (form_data.get("passport_number") or "").strip()
+        if not nic_number:
+            messages.warning(request, _("NIC Number is required."))
+            return render(request, "initialize_database/horilla_user_signup.html")
         user = User.objects.filter(username=username).first()
         if user and not hasattr(user, "employee_get"):
             user.delete()
@@ -340,6 +345,8 @@ def initialize_database_user(request):
         employee.employee_last_name = last_name
         employee.email = email
         employee.phone = phone
+        employee.nic_number = nic_number
+        employee.passport_number = passport_number or None
         employee.save()
         user = authenticate(request, username=username, password=password)
         login(request, user)

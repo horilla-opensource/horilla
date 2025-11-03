@@ -326,6 +326,8 @@ class EmployeeCreationForm(ModelForm):
     employee_first_name = forms.CharField(required=True, label=_("First Name"))
     employee_last_name = forms.CharField(required=False, label=_("Last Name"))
     phone = forms.CharField(required=True, label=_("Phone"))
+    nic_number = forms.CharField(required=True, label=_("NIC Number"))
+    passport_number = forms.CharField(required=False, label=_("Passport Number"))
     address = forms.CharField(required=True, label=_("Address"))
     country = forms.CharField(required=True, label=_("Country"))
     state = forms.CharField(required=True, label=_("State"))
