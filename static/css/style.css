@@ -105,7 +105,7 @@ ion-icon {
     border-radius: 5px;
 }
 
-.row-status--yellow {
+.row-status--yellowgreen {
     border-left: 4px solid yellowgreen;
     border-radius: 5px;
 }
@@ -136,7 +136,7 @@ ion-icon {
 }
 
 .row-status--yellow {
-    border-left: 4px solid yellowgreen;
+    border-left: 4px solid yellow;
     border-radius: 5px;
 }
 
