@@ -28,7 +28,7 @@ from attendance.methods.utils import (
     get_diff_dict,
     get_employee_last_name,
     paginator_qry,
-    shift_schedule_today,
+    shift_schedule_today, allocate_compensation_leave,
 )
 from attendance.models import (
     Attendance,
@@ -462,6 +462,7 @@ def approve_validate_attendance_request(request, attendance_id):
     attendance.is_validate_request = False
     attendance.request_description = None
     attendance.save()
+    allocate_compensation_leave(request,attendance)
     if attendance.requested_data is not None:
         requested_data = json.loads(attendance.requested_data)
         requested_data["attendance_clock_out"] = (
