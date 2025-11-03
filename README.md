@@ -6,7 +6,7 @@
 [![Stars](https://img.shields.io/github/stars/horilla-opensource/horilla)](https://github.com/horilla-opensource/horilla/stargazers)
 [![Forks](https://img.shields.io/github/forks/horilla-opensource/horilla)](https://github.com/horilla-opensource/horilla/network/members)
 
-> **A comprehensive, free, and open-source Human Resource Management System (HRMS) designed to streamline HR operations and enhance organizational efficiency.**
+> **A comprehensive Human Resource Management System (HRMS) designed to streamline HR operations and enhance organizational efficiency.**
 
 ## 🚀 Features
 
