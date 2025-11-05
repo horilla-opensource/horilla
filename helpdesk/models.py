@@ -172,13 +172,6 @@ class Ticket(HorillaModel):
         verbose_name = _("Ticket")
         verbose_name_plural = _("Tickets")
 
-    def clean(self, *args, **kwargs):
-        super().clean(*args, **kwargs)
-        deadline = self.deadline
-        today = datetime.today().date()
-        if deadline < today:
-            raise ValidationError(_("Deadline should be greater than today"))
-
     def get_raised_on(self):
         obj_id = self.raised_on
         if self.assigning_type == "department":
@@ -205,6 +198,9 @@ class Ticket(HorillaModel):
         """
         today = date.today()
         ticket_id = f"{self.ticket_type.prefix}-{self.pk:03d}"
+
+        if self.status == "resolved":
+            return ticket_id
 
         if self.deadline == today:
             due_text = "Due today"
