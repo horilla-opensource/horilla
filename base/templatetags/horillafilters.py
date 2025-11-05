@@ -339,3 +339,12 @@ def is_check_in_enabled(request):
 
     # Check if check-in is enabled
     return bool(attendance_settings and attendance_settings.enable_check_in)
+
+
+@register.filter
+def verbose_name(instance, field_name):
+    """Return verbose name of a model field."""
+    try:
+        return instance._meta.get_field(field_name).verbose_name
+    except Exception:
+        return field_name
