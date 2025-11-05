@@ -79,7 +79,7 @@
 					id="mobileMenu"
 				>
 					<ul class="oh-inner-sidebar__items">
-						{% if general_section or perms.auth.view_permission or perms.auth.view_permission or perms.auth.view_group or perms.base.view_company or perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag or perms.base.view_dynamicemailconfiguration or perms.horilla_backup.view_googledrivebackup %}
+						{% comment %} {% if general_section or perms.auth.view_permission or perms.auth.view_permission or perms.auth.view_group or perms.base.view_company or perms.base.view_tags or perms.employee.view_emplyeetag or perms.horilla_audit.view_audittag or perms.base.view_dynamicemailconfiguration or perms.horilla_backup.view_googledrivebackup %} {% endcomment %}
 							<li class="oh-inner-sidebar__item">
 								<div class="oh-accordion ms-2">
 										<div class="oh-accordion-header" style="font-size:16px;">
@@ -90,14 +90,14 @@
 											<div class="row">
 											<div class="col-sm-12 col-md-12 col-lg-12">
 												<div class="oh-input-group">
-													{% if general_section %}
+													{% comment %} {% if general_section %} {% endcomment %}
 														<a
 															id="generalSettings"
 															href="{% url 'general-settings' %}"
 															class="oh-inner-sidebar__link oh-dropdown__link"
 															>{% trans "General Settings" %}
 														</a>
-													{% endif %}
+													{% comment %} {% endif %} {% endcomment %}
 												</div>
 												<div class="oh-input-group">
 													{% if perms.auth.view_permission %}
@@ -196,7 +196,7 @@
 								</div>
 							</li>
 							<hr>
-						{% endif %}
+						{% comment %} {% endif %} {% endcomment %}
 
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
