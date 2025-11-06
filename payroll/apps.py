@@ -20,19 +20,10 @@ class PayrollConfig(AppConfig):
 
         from horilla.horilla_settings import APPS
         from horilla.urls import urlpatterns
-        from payroll import signals
+        from payroll import scheduler, signals
 
         APPS.append("payroll")
         urlpatterns.append(
             path("payroll/", include("payroll.urls.urls")),
         )
-        try:
-            from payroll.scheduler import auto_payslip_generate
-
-            auto_payslip_generate()
-        except:
-            """
-            Migrations are not affected
-            """
-
         return ready

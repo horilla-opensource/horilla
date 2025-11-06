@@ -169,9 +169,9 @@ class OnboardingCandidatesNav(HorillaNavView):
         self.create_attrs = f"""
                                 href="{reverse_lazy('candidate-create')}?onboarding=True"
                                 """
+        self.filter_instance = CandidateFilter()
 
     nav_title = _("Hired Candidates")
-    filter_instance = CandidateFilter()
     filter_body_template = "cbv/onboarding_candidates/filter.html"
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
