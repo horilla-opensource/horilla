@@ -606,6 +606,9 @@ def allocate_compensation_leave(request, attendance):
     """
     try:
         # print(f"START allocate_compensation_leave for Attendance ID: {attendance.id}")
+
+        is_comp_leave = getattr(attendance, "is_get_compensation_leave", False)
+        is_merc_holiday = getattr(attendance, "is_mercantile_holiday", False)
         employee = attendance.employee_id
         company = getattr(employee, "company_id", None) or (
             employee.get_company() if hasattr(employee, "get_company") else None
@@ -622,7 +625,7 @@ def allocate_compensation_leave(request, attendance):
 
         print(f"is_get_compensation_leave={attendance.is_get_compensation_leave}, is_mercantile_holiday={attendance.is_mercantile_holiday}")
 
-        if getattr(attendance, "is_get_compensation_leave", False) and getattr(attendance, "is_mercantile_holiday", False):
+        if is_comp_leave and is_merc_holiday:
             # print("Condition met for ALLOCATING new compensation leave")
 
             comp_leave_type, created_type = LeaveType.objects.get_or_create(
@@ -692,7 +695,8 @@ def allocate_compensation_leave(request, attendance):
                     # print("Success message sent.")
 
 
-        elif not getattr(attendance, "is_get_compensation_leave", False):
+
+        elif not is_comp_leave:
 
 
             comp_leave_type = LeaveType.objects.filter(
