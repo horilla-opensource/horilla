@@ -605,7 +605,6 @@ def allocate_compensation_leave(request, attendance):
     - If previously allocated but is_get_compensation_leave=False → remove and adjust balance.
     """
     try:
-        # print(f"START allocate_compensation_leave for Attendance ID: {attendance.id}")
 
         is_comp_leave = getattr(attendance, "is_get_compensation_leave", False)
         is_merc_holiday = getattr(attendance, "is_mercantile_holiday", False)
@@ -616,17 +615,14 @@ def allocate_compensation_leave(request, attendance):
 
 
         description_text = f"Auto compensation leave for working on {attendance.attendance_date.strftime('%d %b %Y')}"
-        # print(f"Description text: {description_text}")
 
         # Check for missing employee or company
         if not employee or not company:
-            # print("Missing employee or company, skipping allocation.")
             return
 
         print(f"is_get_compensation_leave={attendance.is_get_compensation_leave}, is_mercantile_holiday={attendance.is_mercantile_holiday}")
 
         if is_comp_leave and is_merc_holiday:
-            # print("Condition met for ALLOCATING new compensation leave")
 
             comp_leave_type, created_type = LeaveType.objects.get_or_create(
                 company_id=company,
@@ -644,14 +640,12 @@ def allocate_compensation_leave(request, attendance):
                     "payment": "paid",
                 },
             )
-            # print(f"Comp Leave Type: {comp_leave_type} (created={created_type})")
 
             if LeaveAllocationRequest.objects.filter(
                 employee_id=employee,
                 leave_type_id=comp_leave_type,
                 description__icontains=description_text
             ).exists():
-                # print("Duplicate leave found, skipping allocation.")
                 logger.info("Duplicate compensation leave allocation found, skipping.")
                 return
 
@@ -667,7 +661,6 @@ def allocate_compensation_leave(request, attendance):
                         "modified_by": request.user,
                     },
                 )
-                # print(f"Allocation created={created_alloc}: {allocation}")
 
                 if created_alloc:
                     available_leave, _ = AvailableLeave.objects.get_or_create(
@@ -686,13 +679,11 @@ def allocate_compensation_leave(request, attendance):
                     available_leave.available_days += 1
                     available_leave.total_leave_days += 1
                     available_leave.save()
-                    # print(f"After update: available_days={available_leave.available_days}, total_leave_days={available_leave.total_leave_days}")
 
                     messages.success(
                         request,
                         f"1-day compensation leave automatically added to {employee} for working on {attendance.attendance_date.strftime('%d %b %Y')}."
                     )
-                    # print("Success message sent.")
 
 
 
@@ -705,7 +696,6 @@ def allocate_compensation_leave(request, attendance):
             ).first()
 
             if not comp_leave_type:
-                # print("No compensatory leave type found, nothing to remove.")
                 logger.warning("No compensatory leave type found, skipping removal.")
                 return
 
@@ -714,13 +704,11 @@ def allocate_compensation_leave(request, attendance):
                 leave_type_id=comp_leave_type,
                 description__icontains=description_text
             )
-            # print(f"Found {allocated_leaves.count()} allocations to remove.")
 
             if allocated_leaves.exists():
                 with transaction.atomic():
                     count = allocated_leaves.count()
                     allocated_leaves.delete()
-                    # print(f"Deleted {count} LeaveAllocationRequest record(s).")
 
                     available_leave = AvailableLeave.objects.filter(
                         employee_id=employee,
@@ -728,25 +716,20 @@ def allocate_compensation_leave(request, attendance):
                     ).first()
 
                     if available_leave:
-                        # print(f"Before removal: available_days={available_leave.available_days}, total_leave_days={available_leave.total_leave_days}")
                         available_leave.available_days = max(available_leave.available_days - count, 0)
                         available_leave.total_leave_days = max(available_leave.total_leave_days - count, 0)
                         available_leave.save()
-                        # print(f"After removal: available_days={available_leave.available_days}, total_leave_days={available_leave.total_leave_days}")
 
                 messages.info(
                     request,
                     f"Removed {count}-day compensation leave previously added for {employee} ({attendance.attendance_date.strftime('%d %b %Y')})."
                 )
-                # print("Info message sent.")
 
-                # print("END allocate_compensation_leave\n")
         else:
             logger.info(f"No action needed for compensation leave for attendance {attendance.id}")
 
 
     except Exception as e:
-        # print(f"Exception in allocate_compensation_leave: {e}")
         logger.exception(f"Error in allocate_compensation_leave for attendance {attendance.id}: {e}")
         messages.error(request, f"Error allocating compensation leave: {e}")
 
