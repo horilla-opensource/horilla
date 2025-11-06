@@ -598,12 +598,6 @@ def sort_activity_dicts(activity_dicts):
     return sorted_activity_dicts
 
 
-
-
-
-
-
-
 def allocate_compensation_leave(request, attendance):
     """
     Automatically allocate or remove a compensation leave based on attendance flags.
