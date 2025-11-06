@@ -1,3 +1,4 @@
+
 {% load i18n %} {% load horillafilters %} {% load basefilters %} {% load static %}
 {% include 'generic/components.html'%}
 {% include 'filter_tags.html' %}
@@ -174,9 +175,10 @@
 												type="submit"
 												hx-get="{% url 'document-reject' document.id %}"
 												{% comment %} hx-confirm="{% trans 'Do you want to reject this request' %}" {% endcomment %}
-												hx-target="#genericModalBody"
+												hx-target="#objectCreateModalTarget"
+
 												data-toggle="oh-modal-toggle"
-												data-target="#rejectFileModal"
+												data-target="#objectCreateModal"
 												title="{% trans 'Reject' %}"
 												class="oh-btn oh-btn--danger w-100"
 												onclick="event.stopPropagation()"

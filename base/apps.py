@@ -17,22 +17,3 @@ class BaseConfig(AppConfig):
         from base import signals
 
         super().ready()
-        try:
-            from base.models import EmployeeShiftDay
-
-            if not EmployeeShiftDay.objects.exists():
-                days = [
-                    ("monday", "Monday"),
-                    ("tuesday", "Tuesday"),
-                    ("wednesday", "Wednesday"),
-                    ("thursday", "Thursday"),
-                    ("friday", "Friday"),
-                    ("saturday", "Saturday"),
-                    ("sunday", "Sunday"),
-                ]
-
-                EmployeeShiftDay.objects.bulk_create(
-                    [EmployeeShiftDay(day=day[0]) for day in days]
-                )
-        except Exception as e:
-            pass
