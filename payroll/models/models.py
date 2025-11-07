@@ -170,13 +170,6 @@ class Contract(HorillaModel):
         ("expired", _("Expired")),
         ("terminated", _("Terminated")),
     )
-    try:
-        # Here would be not filing status model at the initial/empty db
-        FILING_STATUS_CHOICES = [("", _("None"))] + list(
-            FilingStatus.objects.values_list("id", "filing_status")
-        )
-    except:
-        pass
 
     contract_name = models.CharField(
         max_length=250, help_text=_("Contract Title."), verbose_name=_("Contract")
