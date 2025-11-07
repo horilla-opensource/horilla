@@ -214,6 +214,7 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
         if not IntegrationApps.objects.filter(
             app_label="linkedin", is_enabled=True
         ).exists():
+            self.fields["publish_in_linkedin"].initial = False
             self.fields["publish_in_linkedin"].widget = forms.HiddenInput()
             self.fields["linkedin_account_id"].widget = forms.HiddenInput()
 
