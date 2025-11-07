@@ -153,11 +153,11 @@ def send_outlook_email(request, email_data=None):
         response.raise_for_status()  # Raise an exception for bad status codes (4xx or 5xx)
         messages.success(request, _("Mail sent"))
         # Email sent successfully!
-        return email_data
+        return response, email_data
     except Exception as e:
         messages.error(_("Something went wrong"))
         messages.info(_("Outlook authentication required/expired"))
-        return email_data
+        return None, email_data
 
 
 @login_required
