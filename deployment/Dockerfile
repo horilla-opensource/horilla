@@ -21,15 +21,20 @@ RUN apt-get update \
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-# Assuming requirements.txt is in the root directory
-COPY . /app/
-
-# Install Python dependencies
+# Copy requirements first for better Docker caching
+COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make entrypoint script executable
-RUN chmod +x /app/entrypoint.sh && \
+# Copy the application code
+COPY . /app/
+
+# Copy deployment files
+COPY deployment/entrypoint.sh /app/deployment/
+COPY deployment/init-db.sh /app/deployment/
+
+# Make scripts executable and create directories
+RUN chmod +x /app/deployment/entrypoint.sh && \
+    chmod +x /app/deployment/init-db.sh && \
     mkdir -p /app/staticfiles /app/media
 
 # Create a non-root user for running the application
@@ -43,4 +48,4 @@ USER horilla
 EXPOSE 8000
 
 # Use entrypoint script for initialization and running the app
-CMD ["/app/entrypoint.sh"]
+CMD ["/app/deployment/entrypoint.sh"]

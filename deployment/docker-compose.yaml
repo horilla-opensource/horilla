@@ -1,8 +1,8 @@
 services:
   server:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: deployment/Dockerfile
     container_name: horilla-web
     ports:
       - "8000:8000"
@@ -19,10 +19,10 @@ services:
       - DATABASE_URL=postgres://${DB_USER:-horilla_dba}:${DB_PASSWORD}@db:5432/${DB_NAME:-horilla}
       - DJANGO_SETTINGS_MODULE=horilla.settings
       - PYTHONUNBUFFERED=1
-    command: bash ./entrypoint.sh
+    command: /app/deployment/entrypoint.sh
     volumes:
-      - ./horilla:/app/horilla
-      - ./media:/app/media
+      - ../media:/app/media
+      - ../staticfiles:/app/staticfiles
     depends_on:
       db:
         condition: service_healthy
@@ -30,8 +30,9 @@ services:
       - horilla-network
 
   db:
-    image: postgres:16-trixie
+    image: postgres:16-alpine
     container_name: horilla-db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-horilla}
       POSTGRES_USER: postgres
@@ -39,7 +40,6 @@ services:
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       PGDATA: /var/lib/postgresql/data/pgdata
       DB_PASSWORD: ${DB_PASSWORD}
-      restart: unless-stopped
     volumes:
       - horilla-data:/var/lib/postgresql/data
       - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
