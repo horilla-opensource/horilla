@@ -59,7 +59,7 @@ class PipelineNav(HorillaNavView):
     search_swap_target = "#pipelineContainer"
     apply_first_filter = False
     filter_body_template = "cbv/pipeline/onboarding/filters.html"
-    filter_instance = onboarding_filters.RecruitmentFilter
+    filter_instance = onboarding_filters.RecruitmentFilter()
     # filter_instance_context_name = "filter"
     filter_form_context_name = "form"
 
