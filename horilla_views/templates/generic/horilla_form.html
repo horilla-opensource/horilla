@@ -9,7 +9,7 @@
     {% endfor %}
 </div>
 
-<form id="{{ view_id }}Form" hx-post="{{ request.path }}?{{ request.GET.urlencode }}" hx-target="#{{ hx_target }}"
+<form id="{{ view_id }}Form" hx-post="{{ request.path }}?{{ request.GET.urlencode }}" {% if request.META.HTTP_HX_TARGET %}hx-target="#{{request.META.HTTP_HX_TARGET}}"{% endif %}
     hx-swap="{% if hx_target == 'this' %}outerHTML{% else %}innerHTML{% endif %}" hx-encoding="multipart/form-data"
     {% if hx_confirm %} hx-confirm="{{ hx_confirm }}" {% endif %}>
     {{ form.structured }}
