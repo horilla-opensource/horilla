@@ -757,10 +757,10 @@ class CandidateNav(HorillaNavView):
                             """,
             },
         ]
+        self.filter_instance = CandidateFilter()
 
     nav_title = "Candidates"
     filter_body_template = "cbv/candidates/filter.html"
-    filter_instance = CandidateFilter()
     filter_form_context_name = "form"
     search_swap_target = "#listContainer"
     group_by_fields = [
