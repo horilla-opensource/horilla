@@ -357,7 +357,6 @@ class UserGroupForm(ModelForm):
 
     try:
         permissions = forms.MultipleChoiceField(
-            choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
             required=False,
             error_messages={
                 "required": "Please choose a permission.",
@@ -373,6 +372,16 @@ class UserGroupForm(ModelForm):
 
         model = Group
         fields = ["name", "permissions"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            self.fields["permissions"].choices = [
+                (perm.codename, perm.name) for perm in Permission.objects.all()
+            ]
+        except Exception:
+            # Safe fallback when DB is not ready
+            self.fields["permissions"].choices = []
 
     def save(self, commit=True):
         """
@@ -481,7 +490,6 @@ class AssignPermission(Form):
     )
     try:
         permissions = forms.MultipleChoiceField(
-            choices=[(perm.codename, perm.name) for perm in Permission.objects.all()],
             error_messages={
                 "required": "Please choose a permission.",
             },
@@ -492,6 +500,15 @@ class AssignPermission(Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
+
+        # Dynamically load permission choices only when DB is ready
+        try:
+            self.fields["permissions"].choices = [
+                (perm.codename, perm.name) for perm in Permission.objects.all()
+            ]
+        except Exception:
+            # Fallback in case the DB isn't ready yet
+            self.fields["permissions"].choices = []
 
     def clean(self):
         emps = self.data.getlist("employee")
@@ -1289,13 +1306,6 @@ class EmployeeShiftForm(ModelForm):
         model = EmployeeShift
         fields = "__all__"
         exclude = ["days", "is_active", "weekly_full_time", "full_time"]
-
-    def clean(self):
-        full_time = self.data["full_time"]
-        validate_time_format(full_time)
-        full_time = self.data["weekly_full_time"]
-        validate_time_format(full_time)
-        return super().clean()
 
 
 class EmployeeShiftScheduleUpdateForm(ModelForm):
