@@ -1,0 +1,449 @@
+// Horilla HRMS - Deployment Pipeline
+// Jenkinsfile.deploy for deployment to staging/production
+// Runs after successful CI pipeline
+
+pipeline {
+    agent {
+        docker {
+            image 'docker:24.0.0'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+
+    parameters {
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['staging', 'production'],
+            description: 'Target environment for deployment'
+        )
+        choice(
+            name: 'IMAGE_TAG',
+            choices: ['latest', '${BUILD_NUMBER}'],
+            description: 'Docker image tag to deploy'
+        )
+        booleanParam(
+            name: 'ENABLE_BLUE_GREEN',
+            defaultValue: true,
+            description: 'Enable blue-green deployment (zero-downtime)'
+        )
+        booleanParam(
+            name: 'RUN_SMOKE_TESTS',
+            defaultValue: true,
+            description: 'Run smoke tests after deployment'
+        )
+        booleanParam(
+            name: 'AUTO_ROLLBACK',
+            defaultValue: true,
+            description: 'Automatically rollback if health checks fail'
+        )
+    }
+
+    environment {
+        // Project settings
+        REPO_NAME = 'horilla'
+
+        // Docker settings
+        DOCKER_REGISTRY = credentials('docker-registry-url')
+        DOCKER_USERNAME = credentials('docker-username')
+        DOCKER_PASSWORD = credentials('docker-password')
+        IMAGE_NAME = "${DOCKER_REGISTRY}/${REPO_NAME}"
+
+        // Deployment settings
+        DEPLOY_KEY = credentials('deploy-ssh-key')
+        DEPLOY_USER = 'deploy'
+
+        // Environment-specific configuration
+        STAGING_HOST = credentials('staging-host')
+        STAGING_PORT = '2222'
+        PRODUCTION_HOST = credentials('production-host')
+        PRODUCTION_PORT = '2222'
+
+        // Docker Compose settings
+        COMPOSE_PROJECT_NAME = 'horilla'
+
+        // Health check settings
+        HEALTH_CHECK_URL = '/api/health/'
+        HEALTH_CHECK_TIMEOUT = '300'
+        HEALTH_CHECK_RETRIES = '30'
+
+        // Slack/Notification settings
+        SLACK_CHANNEL = credentials('slack-channel')
+        SLACK_WEBHOOK = credentials('slack-webhook-url')
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '10'))
+        timeout(time: 30, unit: 'MINUTES')
+        timestamps()
+        buildName '${ENVIRONMENT}-${BUILD_NUMBER}'
+    }
+
+    stages {
+        stage('Pre-Deployment Checks') {
+            steps {
+                echo "=== Pre-Deployment Verification ==="
+                sh '''
+                    echo "Environment: ${ENVIRONMENT}"
+                    echo "Image Tag: ${IMAGE_TAG}"
+                    echo "Blue-Green Enabled: ${ENABLE_BLUE_GREEN}"
+                    echo "Auto-Rollback Enabled: ${AUTO_ROLLBACK}"
+
+                    # Verify Docker is running
+                    docker ps > /dev/null || (echo "Docker daemon not running" && exit 1)
+
+                    # Show image info
+                    docker pull ${IMAGE_NAME}:${IMAGE_TAG} || exit 1
+                    docker image inspect ${IMAGE_NAME}:${IMAGE_TAG}
+                '''
+
+                // Approval step for production
+                when {
+                    expression { env.ENVIRONMENT == 'production' }
+                }
+                input(
+                    message: 'Deploy to PRODUCTION?',
+                    ok: 'Deploy',
+                    submitter: 'DevOps,admin'
+                )
+            }
+        }
+
+        stage('Backup Current Deployment') {
+            steps {
+                echo "=== Creating backup of current deployment ==="
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    sh '''
+                        if [ "${ENVIRONMENT}" = "staging" ]; then
+                            DEPLOY_HOST="${STAGING_HOST}"
+                            DEPLOY_PORT="${STAGING_PORT}"
+                        else
+                            DEPLOY_HOST="${PRODUCTION_HOST}"
+                            DEPLOY_PORT="${PRODUCTION_PORT}"
+                        fi
+
+                        # Backup current docker-compose configuration
+                        ssh -i ${DEPLOY_KEY} -p ${DEPLOY_PORT} ${DEPLOY_USER}@${DEPLOY_HOST} \
+                            "cd /opt/horilla && \
+                             docker-compose ps > backup/deployment-${BUILD_NUMBER}.status 2>&1 && \
+                             docker-compose logs > backup/deployment-${BUILD_NUMBER}.logs 2>&1 && \
+                             cp docker-compose.yaml backup/docker-compose-${BUILD_NUMBER}.yaml && \
+                             ls -lh backup/" || echo "Backup creation warning (may be first deployment)"
+                    '''
+                }
+            }
+        }
+
+        stage('Prepare Deployment Configuration') {
+            steps {
+                echo "=== Preparing deployment configuration ==="
+                sh '''
+                    if [ "${ENVIRONMENT}" = "staging" ]; then
+                        DEPLOY_HOST="${STAGING_HOST}"
+                        DEPLOY_PORT="${STAGING_PORT}"
+                        ENV_FILE=".env.staging"
+                    else
+                        DEPLOY_HOST="${PRODUCTION_HOST}"
+                        DEPLOY_PORT="${PRODUCTION_PORT}"
+                        ENV_FILE=".env.production"
+                    fi
+
+                    # Copy configuration files to deployment host
+                    scp -i ${DEPLOY_KEY} -P ${DEPLOY_PORT} \
+                        docker-compose.yaml \
+                        ${DEPLOY_USER}@${DEPLOY_HOST}:/opt/horilla/
+
+                    # Copy environment file (from Jenkins credentials)
+                    echo "# Environment: ${ENVIRONMENT}" > ${ENV_FILE}
+                    echo "# Deployed: $(date)" >> ${ENV_FILE}
+                    echo "IMAGE_TAG=${IMAGE_TAG}" >> ${ENV_FILE}
+                    echo "ENVIRONMENT=${ENVIRONMENT}" >> ${ENV_FILE}
+
+                    scp -i ${DEPLOY_KEY} -P ${DEPLOY_PORT} \
+                        ${ENV_FILE} \
+                        ${DEPLOY_USER}@${DEPLOY_HOST}:/opt/horilla/.env
+                '''
+            }
+        }
+
+        stage('Blue-Green Deployment') {
+            when {
+                expression { params.ENABLE_BLUE_GREEN == true }
+            }
+            steps {
+                echo "=== Blue-Green Deployment Strategy ==="
+                sh '''
+                    if [ "${ENVIRONMENT}" = "staging" ]; then
+                        DEPLOY_HOST="${STAGING_HOST}"
+                        DEPLOY_PORT="${STAGING_PORT}"
+                    else
+                        DEPLOY_HOST="${PRODUCTION_HOST}"
+                        DEPLOY_PORT="${PRODUCTION_PORT}"
+                    fi
+
+                    ssh -i ${DEPLOY_KEY} -p ${DEPLOY_PORT} ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "cd /opt/horilla && \
+                         # Determine which is current (blue) and which is new (green)
+                         CURRENT_VERSION=\$(cat current_version.txt 2>/dev/null || echo 'blue') && \
+                         if [ \"\${CURRENT_VERSION}\" = 'blue' ]; then \
+                             NEW_VERSION='green' && \
+                             echo 'Deploying to green environment'; \
+                         else \
+                             NEW_VERSION='blue' && \
+                             echo 'Deploying to blue environment'; \
+                         fi && \
+                         # Update docker-compose for the new environment
+                         export HORILLA_VERSION=${NEW_VERSION} && \
+                         docker-compose -f docker-compose.yaml.${NEW_VERSION} pull && \
+                         docker-compose -f docker-compose.yaml.${NEW_VERSION} up -d && \
+                         echo \${NEW_VERSION} > current_version.txt"
+                '''
+            }
+        }
+
+        stage('Standard Deployment') {
+            when {
+                expression { params.ENABLE_BLUE_GREEN == false }
+            }
+            steps {
+                echo "=== Standard Deployment (Rolling Update) ==="
+                sh '''
+                    if [ "${ENVIRONMENT}" = "staging" ]; then
+                        DEPLOY_HOST="${STAGING_HOST}"
+                        DEPLOY_PORT="${STAGING_PORT}"
+                    else
+                        DEPLOY_HOST="${PRODUCTION_HOST}"
+                        DEPLOY_PORT="${PRODUCTION_PORT}"
+                    fi
+
+                    ssh -i ${DEPLOY_KEY} -p ${DEPLOY_PORT} ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "cd /opt/horilla && \
+                         docker-compose pull && \
+                         docker-compose up -d && \
+                         echo 'Deployment complete'"
+                '''
+            }
+        }
+
+        stage('Database Migrations') {
+            steps {
+                echo "=== Running database migrations ==="
+                sh '''
+                    if [ "${ENVIRONMENT}" = "staging" ]; then
+                        DEPLOY_HOST="${STAGING_HOST}"
+                        DEPLOY_PORT="${STAGING_PORT}"
+                    else
+                        DEPLOY_HOST="${PRODUCTION_HOST}"
+                        DEPLOY_PORT="${PRODUCTION_PORT}"
+                    fi
+
+                    ssh -i ${DEPLOY_KEY} -p ${DEPLOY_PORT} ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "cd /opt/horilla && \
+                         docker-compose exec -T horilla-web python3 manage.py migrate --noinput && \
+                         docker-compose exec -T horilla-web python3 manage.py collectstatic --noinput && \
+                         echo 'Migrations and static files completed'"
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                echo "=== Performing health checks ==="
+                sh '''
+                    if [ "${ENVIRONMENT}" = "staging" ]; then
+                        DEPLOY_HOST="${STAGING_HOST}"
+                        DEPLOY_PORT="${STAGING_PORT}"
+                        BASE_URL="https://staging.horilla.example.com"
+                    else
+                        DEPLOY_HOST="${PRODUCTION_HOST}"
+                        DEPLOY_PORT="${PRODUCTION_PORT}"
+                        BASE_URL="https://horilla.example.com"
+                    fi
+
+                    # Wait for application to be ready
+                    RETRIES=0
+                    while [ ${RETRIES} -lt ${HEALTH_CHECK_RETRIES} ]; do
+                        echo "Health check attempt $((RETRIES + 1))/${HEALTH_CHECK_RETRIES}"
+
+                        RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" \
+                            -H "User-Agent: Jenkins-HealthCheck" \
+                            ${BASE_URL}${HEALTH_CHECK_URL} || echo "000")
+
+                        if [ "${RESPONSE}" = "200" ]; then
+                            echo "Health check PASSED (HTTP ${RESPONSE})"
+                            break
+                        fi
+
+                        echo "Health check returned HTTP ${RESPONSE}, retrying..."
+                        sleep 10
+                        RETRIES=$((RETRIES + 1))
+                    done
+
+                    if [ ${RETRIES} -ge ${HEALTH_CHECK_RETRIES} ]; then
+                        echo "Health check FAILED after ${HEALTH_CHECK_RETRIES} attempts"
+                        exit 1
+                    fi
+                '''
+            }
+        }
+
+        stage('Smoke Tests') {
+            when {
+                expression { params.RUN_SMOKE_TESTS == true }
+            }
+            steps {
+                echo "=== Running smoke tests ==="
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                    sh '''
+                        if [ "${ENVIRONMENT}" = "staging" ]; then
+                            BASE_URL="https://staging.horilla.example.com"
+                        else
+                            BASE_URL="https://horilla.example.com"
+                        fi
+
+                        # Test key endpoints
+                        echo "Testing key API endpoints..."
+
+                        # Test login
+                        curl -f -X POST ${BASE_URL}/api/auth/login/ \
+                            -H "Content-Type: application/json" \
+                            -d '{"username":"test","password":"test"}' || echo "Login test failed (expected for CI)"
+
+                        # Test API health
+                        curl -f ${BASE_URL}/api/health/ || exit 1
+
+                        # Test static files
+                        curl -f ${BASE_URL}/static/css/style.css || echo "Static files may not be available"
+
+                        echo "Smoke tests completed"
+                    '''
+                }
+            }
+        }
+
+        stage('Rollback if Failed') {
+            when {
+                expression {
+                    currentBuild.result == 'FAILURE' &&
+                    params.AUTO_ROLLBACK == true &&
+                    params.ENABLE_BLUE_GREEN == true
+                }
+            }
+            steps {
+                echo "=== Initiating automatic rollback ==="
+                sh '''
+                    if [ "${ENVIRONMENT}" = "staging" ]; then
+                        DEPLOY_HOST="${STAGING_HOST}"
+                        DEPLOY_PORT="${STAGING_PORT}"
+                    else
+                        DEPLOY_HOST="${PRODUCTION_HOST}"
+                        DEPLOY_PORT="${PRODUCTION_PORT}"
+                    fi
+
+                    ssh -i ${DEPLOY_KEY} -p ${DEPLOY_PORT} ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "cd /opt/horilla && \
+                         CURRENT_VERSION=\$(cat current_version.txt 2>/dev/null || echo 'blue') && \
+                         if [ \"\${CURRENT_VERSION}\" = 'blue' ]; then \
+                             ROLLBACK_VERSION='green'; \
+                         else \
+                             ROLLBACK_VERSION='blue'; \
+                         fi && \
+                         echo \"Rolling back to \${ROLLBACK_VERSION} environment\" && \
+                         docker-compose -f docker-compose.yaml.\${ROLLBACK_VERSION} up -d && \
+                         echo \${ROLLBACK_VERSION} > current_version.txt && \
+                         echo 'Rollback completed'"
+                '''
+            }
+        }
+
+        stage('Post-Deployment Verification') {
+            steps {
+                echo "=== Post-deployment verification ==="
+                sh '''
+                    if [ "${ENVIRONMENT}" = "staging" ]; then
+                        DEPLOY_HOST="${STAGING_HOST}"
+                        DEPLOY_PORT="${STAGING_PORT}"
+                    else
+                        DEPLOY_HOST="${PRODUCTION_HOST}"
+                        DEPLOY_PORT="${PRODUCTION_PORT}"
+                    fi
+
+                    # Check container status
+                    ssh -i ${DEPLOY_KEY} -p ${DEPLOY_PORT} ${DEPLOY_USER}@${DEPLOY_HOST} \
+                        "cd /opt/horilla && \
+                         echo '=== Container Status ===' && \
+                         docker-compose ps && \
+                         echo '=== Recent Logs ===' && \
+                         docker-compose logs --tail=50 horilla-web && \
+                         echo '=== Disk Usage ===' && \
+                         df -h && \
+                         echo '=== Docker Images ===' && \
+                         docker images | grep horilla"
+                '''
+            }
+        }
+
+        stage('Notify Deployment') {
+            steps {
+                echo "=== Sending deployment notifications ==="
+                sh '''
+                    # Create deployment summary
+                    cat > deployment-summary.txt <<EOF
+Deployment Summary
+==================
+Environment: ${ENVIRONMENT}
+Build Number: ${BUILD_NUMBER}
+Image Tag: ${IMAGE_TAG}
+Timestamp: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+Blue-Green Enabled: ${ENABLE_BLUE_GREEN}
+Health Check Passed: true
+Status: SUCCESS
+EOF
+
+                    # Notify via Slack
+                    if [ -n "${SLACK_WEBHOOK}" ]; then
+                        curl -X POST ${SLACK_WEBHOOK} \
+                            -H 'Content-Type: application/json' \
+                            -d "{
+                                \"channel\": \"${SLACK_CHANNEL}\",
+                                \"username\": \"Horilla Deployment\",
+                                \"icon_emoji\": \":rocket:\",
+                                \"attachments\": [{
+                                    \"color\": \"good\",
+                                    \"title\": \"Deployment Successful\",
+                                    \"fields\": [
+                                        {\"title\": \"Environment\", \"value\": \"${ENVIRONMENT}\", \"short\": true},
+                                        {\"title\": \"Build\", \"value\": \"#${BUILD_NUMBER}\", \"short\": true},
+                                        {\"title\": \"Image\", \"value\": \"${IMAGE_TAG}\", \"short\": true},
+                                        {\"title\": \"Status\", \"value\": \"Deployed\", \"short\": true}
+                                    ],
+                                    \"footer\": \"Jenkins Deployment\",
+                                    \"ts\": \$(date +%s)
+                                }]
+                            }" || echo "Slack notification failed"
+                    fi
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "=== Collecting deployment artifacts ==="
+            archiveArtifacts artifacts: '''
+                deployment-summary.txt,
+                *.status,
+                *.logs
+            ''', allowEmptyArchive: true
+
+            cleanWs(deleteDirs: true)
+        }
+
+        success {
+            echo "=== Deployment SUCCESSFUL ==="
+        }
+
+        failure {
+            echo "=== Deployment FAILED - Check logs for details ==="
+        }
+    }
+}

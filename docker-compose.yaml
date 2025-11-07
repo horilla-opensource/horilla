@@ -3,37 +3,57 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: horilla-web
     ports:
-      - 8000:8000
+      - "8000:8000"
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      DATABASE_URL: "postgres://postgres:postgres@db:5432/horilla"
-    command: sh ./entrypoint.sh
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-horilla}
+      - DB_USER=${DB_USER:-horilla_dba}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_INIT_PASSWORD=${DB_INIT_PASSWORD:-postgres}
+      - DATABASE_URL=postgres://${DB_USER:-horilla_dba}:${DB_PASSWORD}@db:5432/${DB_NAME:-horilla}
+      - DJANGO_SETTINGS_MODULE=horilla.settings
+      - PYTHONUNBUFFERED=1
+    command: bash ./entrypoint.sh
     volumes:
       - ./horilla:/app/horilla
       - ./media:/app/media
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - horilla-network
 
   db:
-    image: postgres:16-bullseye
+    image: postgres:16-trixie
+    container_name: horilla-db
     environment:
-      POSTGRES_DB: horilla
+      POSTGRES_DB: ${DB_NAME:-horilla}
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${DB_INIT_PASSWORD:-postgres}
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       PGDATA: /var/lib/postgresql/data/pgdata
-    ports:
-      - 5432:5432
-    restart: unless-stopped
+      DB_PASSWORD: ${DB_PASSWORD}
+      restart: unless-stopped
     volumes:
       - horilla-data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres"]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "${DB_NAME:-horilla}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - horilla-network
 
 volumes:
   horilla-data:
+
+networks:
+  horilla-network:
+    driver: bridge
