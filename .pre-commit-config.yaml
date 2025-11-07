@@ -4,18 +4,17 @@ repos:
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
-        exclude: ^.*/migrations/.*$
+        exclude: ^.*/migrations/
       - id: trailing-whitespace
-        exclude: ^.*/migrations/.*$
+        exclude: ^.*/migrations/
   - repo: https://github.com/psf/black-pre-commit-mirror
     rev: 24.4.2
     hooks:
       - id: black
-        language_version: python3.10
-        exclude: ^.*/migrations/.*$
+        exclude: ^.*/migrations/
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
       - id: isort
         args: ["--profile", "black", "--filter-files"]
-        exclude: ^.*/migrations/.*$
+        exclude: ^.*/migrations/
