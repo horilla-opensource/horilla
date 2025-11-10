@@ -1,7 +1,7 @@
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 
-from base.methods import is_reportingmanager
+from base.methods import filtersubordinates, is_reportingmanager
 from helpdesk.filter import TicketFilter, TicketReGroup
 from helpdesk.models import TICKET_STATUS, Ticket
 from horilla_views.cbv_methods import login_required
@@ -257,7 +257,12 @@ class TicketListView(HorillaListView):
             return queryset.distinct()
 
         elif ticket_tab == "all_tickets":
-            return queryset.all()
+            queryset = filtersubordinates(
+                self.request,
+                queryset,
+                "helpdesk.view_ticket",
+            )
+            return queryset
 
 
 class TicketCardView(HorillaKanbanView):
