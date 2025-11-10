@@ -1,0 +1,15 @@
+name: Trigger GitLab Sync
+
+on:
+  push:
+    branches:
+      - up/bhathiya  # triggers on pushes to up/bhathiya
+  workflow_dispatch:   # allows manual trigger
+
+jobs:
+  call-sync:
+    uses: wireappsltd/GitHub-Backup-Failover/.github/workflows/.yml@main
+    with:
+      repo_name: ${{ secrets.TARGET_REPO_NAME }}
+      default_branch: up/bhathiya  # now using your actual default branch
+    secrets: inherit
