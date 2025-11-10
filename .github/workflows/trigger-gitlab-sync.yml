@@ -3,16 +3,10 @@ name: Trigger GitLab Sync
 on:
   push:
     branches:
-      - up/bhathiya
-  workflow_dispatch:
+      - main        # triggers on any push to main
+  workflow_dispatch: 
 
 jobs:
   call-sync:
     uses: wireappsltd/GitHub-Backup-Failover/.github/workflows/gitlab.yml@main
-    with:
-      repo_name: horilla-hrm          
-      default_branch: up/bhathiya
-    secrets:
-      TARGET_TOKEN: ${{ secrets.TARGET_TOKEN }}
-      TARGET_USERNAME: ${{ secrets.TARGET_USERNAME }}
-      TARGET_REPO_NAME: ${{ secrets.TARGET_REPO_NAME }}   # if you still need it in reusable workflow
+    secrets: inherit
