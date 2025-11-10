@@ -8,9 +8,9 @@ on:
 
 jobs:
   call-sync:
-    uses: wireappsltd/GitHub-Backup-Failover/.github/workflows/gitlab-sync.yml@main
+    uses: wireappsltd/GitHub-Backup-Failover/.github/workflows/gitlab.yml@main
     with:
-      repo_name: horilla-hrm          # pass the repo name directly or from env if you want
+      repo_name: horilla-hrm          
       default_branch: up/bhathiya
     secrets:
       TARGET_TOKEN: ${{ secrets.TARGET_TOKEN }}
