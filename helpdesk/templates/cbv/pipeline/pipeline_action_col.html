@@ -55,71 +55,47 @@
     {% endif %}
     {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
         {% if ticket.is_active %}
-            <form
-                action="{% url 'ticket-archive' ticket.id %}"
-                class="w-50"
-                onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to archive this ticket?" %}');"
-                method="post"
-                style="display: contents"
+            <a
+                href="{% url 'ticket-archive' ticket.id %}"
+                class="oh-btn oh-btn--light-bkg oh-btn--danger-outline p-3 w-100"
+                title="{% trans 'Archive' %}"
             >
-                {% csrf_token %}
-                <button
-                    class="oh-btn oh-btn--danger-outline p-3 w-100"
-                    title="{% trans 'Archive' %}"
-                >
                 <ion-icon
                     name="archive-sharp"
                     role="img"
                     class="md hydrated"
                     aria-label="archive sharp"
                 ></ion-icon>
-                </button>
-            </form>
+            </a>
         {% else %}
-            <form
-                action="{% url 'ticket-archive' ticket.id %}"
-                class="w-100"
-                onsubmit="event.stopPropagation();return confirm('{% trans "Do you want to un-archive this ticket?" %}');"
-                method="post"
-                style="display: contents"
+            <a
+                href="{% url 'ticket-archive' ticket.id %}"
+                class="oh-btn oh-btn--light-bkg oh-btn--danger-outline p-3 w-100"
+                title="{% trans 'Un-archive' %}"
             >
-                {% csrf_token %}
-                <button
-                    class="oh-btn oh-btn--danger-outline p-3 w-50"
-                    title="{% trans 'Un-archive' %}"
-                >
-                    <ion-icon
-                        name="archive-sharp"
-                        role="img"
-                        class="md hydrated"
-                        aria-label="archive sharp"
-                    ></ion-icon>
-                </button>
-            </form>
+                <ion-icon
+                    name="archive-sharp"
+                    role="img"
+                    class="md hydrated"
+                    aria-label="archive sharp"
+                ></ion-icon>
+            </a>
         {% endif %}
     {% endif %}
     {% if perms.helpdesk.delete_ticket %}
         {% if ticket.status == 'new' %}
-            <form
-                action="{% url 'ticket-delete' ticket.id %}"
-                class="w-100"
-                onsubmit="return confirm('{% trans 'Are you sure you want to delete	this Ticket?' %}');"
-                method='post' onclick="event.stopPropagation()"
+            <a
+                href = "{% url 'ticket-delete' ticket.id %}"
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg p-3"
+                title="{% trans 'Delete' %}"
             >
-                {% csrf_token %}
-                <button
-                    type="submit"
-                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg p-3"
-                    title="{% trans 'Delete' %}"
-                >
-                    <ion-icon
-                        class="me-1 md hydrated"
-                        name="trash-outline"
-                        role="img"
-                        aria-label="trash outline"
-                    ></ion-icon>
-                </button>
-            </form>
+                <ion-icon
+                    class="me-1 md hydrated"
+                    name="trash-outline"
+                    role="img"
+                    aria-label="trash outline"
+                ></ion-icon>
+            </a>
         {% else %}
             <button
                 class="oh-btn oh-btn--danger-outline oh-btn--light-bkg p-3 w-100"
