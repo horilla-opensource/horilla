@@ -477,25 +477,27 @@ def check_integration_enabled(func, app_name):
     from base.models import IntegrationApps
 
     @wraps(func)
-    def wrapper(request, *args, **kwargs):
+    def wrapper(request=None, *args, **kwargs):
         if not IntegrationApps.objects.filter(
             app_label=app_name, is_enabled=True
         ).exists():
-            try:
-                app_config = apps.get_app_config(app_name)
-                app_verbose_name = app_config.verbose_name
-            except LookupError:
-                app_verbose_name = app_name
+            if request:
+                try:
+                    app_config = apps.get_app_config(app_name)
+                    app_verbose_name = app_config.verbose_name
+                except LookupError:
+                    app_verbose_name = app_name
 
-            messages.error(request, f"Access to '{app_verbose_name}' is disabled.")
+                messages.error(request, f"Access to '{app_verbose_name}' is disabled.")
 
-            previous_url = request.META.get("HTTP_REFERER", "/")
+                previous_url = request.META.get("HTTP_REFERER", "/")
 
-            if "HTTP_HX_REQUEST" in request.META:
-                return render(request, "decorator_404.html")
+                if "HTTP_HX_REQUEST" in request.META:
+                    return render(request, "decorator_404.html")
 
-            script = f'<script>window.location.href = "{previous_url}";</script>'
-            return HttpResponse(script)
+                script = f'<script>window.location.href = "{previous_url}";</script>'
+                return HttpResponse(script)
+            return None
 
         return func(request, *args, **kwargs)
 
