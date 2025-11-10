@@ -1252,6 +1252,15 @@ class LeaveAllocationRequest(HorillaModel):
         related_company_field="employee_id__employee_work_info__company_id"
     )
 
+    attendance_id = models.ForeignKey(
+        'attendance.Attendance',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="leave_allocation",
+        verbose_name=_("Attendance"),
+    )
+
     class Meta:
         ordering = ["-id"]
         verbose_name = _("Leave Allocation Request")

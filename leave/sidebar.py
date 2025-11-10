@@ -102,15 +102,6 @@ def restrict_leave_accessibility(request, submenu, user_perms, *args, **kwargs):
         "leave.view_restrictleave"
     )
 
+## Hide this since automated the workflow and this option is no longer needed
 
-if apps.is_installed("attendance"):
-    SUBMENUS.append(
-        {
-            "menu": trans("Compensatory Leave Requests"),
-            "redirect": reverse("view-compensatory-leave"),
-            "accessibility": "leave.sidebar.componstory_accessibility",
-        }
-    )
 
-    def componstory_accessibility(request, submenu, user_perms, *args, **kwargs):
-        return is_compensatory(request.user)
