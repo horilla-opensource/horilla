@@ -1,7 +1,9 @@
 name: Horilla EC2 Deploy
 
-
 on:
+  push:
+    branches:
+      - up/bhathiya
   workflow_dispatch:
   
 
