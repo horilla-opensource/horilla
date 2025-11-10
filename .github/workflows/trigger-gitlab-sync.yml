@@ -1,12 +1,85 @@
-name: Trigger GitLab Sync
+name: GitLab Sync
 
 on:
   push:
     branches:
-      - main        # triggers on any push to main
-  workflow_dispatch: 
+      - up/bhathiya   # runs on pushes to this branch
+  workflow_dispatch:   # allows manual trigger
 
 jobs:
-  call-sync:
-    uses: wireappsltd/GitHub-Backup-Failover/.github/workflows/gitlab.yml@main
-    secrets: inherit
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set GitLab repo name and default branch
+        run: |
+          echo "REPO_NAME=horilla-hrm" >> $GITHUB_ENV
+          echo "DEFAULT_BRANCH=up/bhathiya" >> $GITHUB_ENV
+
+      - name: Create GitLab repo if not exists
+        env:
+          GITLAB_TOKEN: ${{ secrets.TARGET_TOKEN }}
+          GITLAB_USERNAME: ${{ secrets.TARGET_USERNAME }}
+          REPO_NAME: ${{ env.REPO_NAME }}
+          DEFAULT_BRANCH: ${{ env.DEFAULT_BRANCH }}
+        run: |
+          echo "Checking GitLab repo '$REPO_NAME'..."
+          PROJECT_URL_ENCODED=$(echo -n "$GITLAB_USERNAME/$REPO_NAME" | jq -s -R -r @uri)
+
+          RAW_RESPONSE=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+            "https://gitlab.com/api/v4/projects/${PROJECT_URL_ENCODED}")
+          EXISTS=$(echo "$RAW_RESPONSE" | jq -r '.id // empty')
+
+          if [ -n "$EXISTS" ]; then
+            echo "✅ Repo already exists. Skipping creation."
+          else
+            echo "🚀 Creating repo '$REPO_NAME'..."
+            NAMESPACE_ID=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+              "https://gitlab.com/api/v4/namespaces?search=$GITLAB_USERNAME" | jq -r '.[0].id')
+
+            CREATE_RESPONSE=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+              --header "Content-Type: application/json" \
+              --data "{\"name\":\"$REPO_NAME\",\"namespace_id\":$NAMESPACE_ID}" \
+              https://gitlab.com/api/v4/projects)
+
+            if echo "$CREATE_RESPONSE" | grep -q "has already been taken"; then
+              echo "ℹ Repo already exists in GitLab namespace, continuing..."
+            elif echo "$CREATE_RESPONSE" | jq -e 'has("id")' > /dev/null 2>&1; then
+              echo "✅ Repo created successfully"
+            else
+              echo "❌ Failed to create repo:"
+              echo "$CREATE_RESPONSE"
+              exit 1
+            fi
+
+            echo "Setting GitLab default branch to $DEFAULT_BRANCH"
+            curl -s --request PUT \
+              --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+              --header "Content-Type: application/json" \
+              --data "{\"default_branch\":\"$DEFAULT_BRANCH\"}" \
+              "https://gitlab.com/api/v4/projects/${PROJECT_URL_ENCODED}" > /dev/null
+          fi
+
+      - name: Fetch and checkout default branch
+        run: |
+          echo "Fetching $DEFAULT_BRANCH branch from GitHub..."
+          git fetch origin $DEFAULT_BRANCH
+          git checkout $DEFAULT_BRANCH
+
+      - name: Add GitLab remote
+        env:
+          GITLAB_TOKEN: ${{ secrets.TARGET_TOKEN }}
+          REPO_NAME: ${{ env.REPO_NAME }}
+        run: |
+          git remote remove gitlab 2>/dev/null || true
+          git remote add gitlab https://oauth2:${GITLAB_TOKEN}@gitlab.com/${{ secrets.TARGET_USERNAME }}/${REPO_NAME}.git
+
+      - name: Push branch to GitLab
+        run: |
+          echo "🚀 Pushing $DEFAULT_BRANCH branch to GitLab..."
+          git push gitlab $DEFAULT_BRANCH --force
+          echo "✅ $DEFAULT_BRANCH branch synced to GitLab."
