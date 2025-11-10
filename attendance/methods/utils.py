@@ -608,19 +608,18 @@ def allocate_compensation_leave(request, attendance):
 
         is_comp_leave = getattr(attendance, "is_get_compensation_leave", False)
         is_merc_holiday = getattr(attendance, "is_mercantile_holiday", False)
+
         employee = attendance.employee_id
         company = getattr(employee, "company_id", None) or (
             employee.get_company() if hasattr(employee, "get_company") else None
         )
 
+        attendance_id = attendance
 
         description_text = f"Auto compensation leave for working on {attendance.attendance_date.strftime('%d %b %Y')}"
 
-        # Check for missing employee or company
         if not employee or not company:
             return
-
-        print(f"is_get_compensation_leave={attendance.is_get_compensation_leave}, is_mercantile_holiday={attendance.is_mercantile_holiday}")
 
         if is_comp_leave and is_merc_holiday:
 
@@ -641,11 +640,13 @@ def allocate_compensation_leave(request, attendance):
                 },
             )
 
-            if LeaveAllocationRequest.objects.filter(
+            existing_allocation = LeaveAllocationRequest.objects.filter(
                 employee_id=employee,
                 leave_type_id=comp_leave_type,
-                description__icontains=description_text
-            ).exists():
+                attendance_id=attendance_id
+            ).exists()
+
+            if existing_allocation:
                 logger.info("Duplicate compensation leave allocation found, skipping.")
                 return
 
@@ -654,6 +655,7 @@ def allocate_compensation_leave(request, attendance):
                     employee_id=employee,
                     leave_type_id=comp_leave_type,
                     description=description_text,
+                    attendance_id=attendance_id,
                     defaults={
                         "requested_days": 1,
                         "status": "approved",
@@ -663,7 +665,7 @@ def allocate_compensation_leave(request, attendance):
                 )
 
                 if created_alloc:
-                    available_leave, _ = AvailableLeave.objects.get_or_create(
+                    available_leave, created_avail = AvailableLeave.objects.get_or_create(
                         employee_id=employee,
                         leave_type_id=comp_leave_type,
                         defaults={
@@ -685,10 +687,7 @@ def allocate_compensation_leave(request, attendance):
                         f"1-day compensation leave automatically added to {employee} for working on {attendance.attendance_date.strftime('%d %b %Y')}."
                     )
 
-
-
         elif not is_comp_leave:
-
 
             comp_leave_type = LeaveType.objects.filter(
                 company_id=company,
@@ -702,7 +701,7 @@ def allocate_compensation_leave(request, attendance):
             allocated_leaves = LeaveAllocationRequest.objects.filter(
                 employee_id=employee,
                 leave_type_id=comp_leave_type,
-                description__icontains=description_text
+                attendance_id=attendance_id,
             )
 
             if allocated_leaves.exists():
