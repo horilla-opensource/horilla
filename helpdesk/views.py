@@ -18,6 +18,8 @@ from django.views.decorators.http import require_http_methods
 
 from base.forms import TagsForm
 from base.methods import (
+    closest_numbers,
+    eval_validate,
     filtersubordinates,
     get_key_instances,
     get_pagination,
@@ -946,6 +948,9 @@ def ticket_detail(request, ticket_id, **kwargs):
         else:
             rating = "3"
 
+        ids = eval_validate(request.session.get("ordered_ids_ticket", []))
+        prev_id, next_id = closest_numbers(ids, ticket_id)
+
         context = {
             "ticket": ticket,
             "c_form": c_form,
@@ -958,6 +963,8 @@ def ticket_detail(request, ticket_id, **kwargs):
             "color": color,
             "remaining": remaining,
             "rating": rating,
+            "prev_id": prev_id,
+            "next_id": next_id,
         }
         return render(request, "helpdesk/ticket/ticket_detail.html", context=context)
     else:

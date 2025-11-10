@@ -1307,13 +1307,6 @@ class EmployeeShiftForm(ModelForm):
         fields = "__all__"
         exclude = ["days", "is_active", "weekly_full_time", "full_time"]
 
-    def clean(self):
-        full_time = self.data["full_time"]
-        validate_time_format(full_time)
-        full_time = self.data["weekly_full_time"]
-        validate_time_format(full_time)
-        return super().clean()
-
 
 class EmployeeShiftScheduleUpdateForm(ModelForm):
     """
