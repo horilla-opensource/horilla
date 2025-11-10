@@ -33,11 +33,10 @@ class TicketSendThread(Thread):
         self.host = request.get_host()
         self.protocol = "https" if request.is_secure() else "http"
         raised_on = ticket.get_raised_on_object()
+        self.department_manager = None
         if isinstance(raised_on, Department):
             if raised_on.dept_manager.all():
                 self.department_manager = raised_on.dept_manager.all().first().manager
-            else:
-                self.department_manager = None
 
     def send_email(self, subject, content, recipients, ticket_id="#"):
         host = self.host
@@ -90,10 +89,13 @@ class TicketSendThread(Thread):
             owner = self.ticket.employee_id
             manager = self.department_manager
 
-            content_manager = f"This is to inform you that a ticket has been raised on your department. Take the necessary actions to address the issue or request outlined in the ticket. Should you have any additional information or updates, please feel free to communicate directly with the {owner}."
-            subject_manager = "Ticket created raised on your department"
+            if manager:
+                content_manager = f"This is to inform you that a ticket has been raised on your department. Take the necessary actions to address the issue or request outlined in the ticket. Should you have any additional information or updates, please feel free to communicate directly with the {owner}."
+                subject_manager = "Ticket created raised on your department"
 
-            self.send_email(subject_manager, content_manager, [manager], self.ticket.id)
+                self.send_email(
+                    subject_manager, content_manager, [manager], self.ticket.id
+                )
 
             content_owner = "This is to inform you that the ticket you created has been successfully logged into our system. The assigned team/individual will now take the necessary actions to address the issue or request outlined in the ticket. Should you have any additional information or updates, please feel free to communicate directly with the Support/Helpdesk team."
             subject_owner = "Ticket created successfully"
@@ -101,9 +103,10 @@ class TicketSendThread(Thread):
             self.send_email(subject_owner, content_owner, [owner], self.ticket.id)
 
         elif self.type == "status_change":
-            assignees = self.assignees
+            assignees = set(self.assignees or [])
             owner = self.ticket.employee_id
             manager = self.department_manager
+            recipients = assignees | {x for x in [owner, manager] if x}
 
             tracking = self.ticket.tracking()
             updated_by = tracking[0]["updated_by"]
@@ -113,19 +116,18 @@ class TicketSendThread(Thread):
             subject = "The Status of the Ticket has been updated"
             content = f"This is to inform you that the status of the following ticket has been updated by {updated_by} from {old_status} to {new_status}. If you have any questions or require further information, feel free to reach out to the Support/Helpdesk team."
 
-            self.send_email(
-                subject, content, set(assignees) | {owner} | {manager}, self.ticket.id
-            )
+            self.send_email(subject, content, recipients, self.ticket.id)
 
         elif self.type == "delete":
-            assignees = self.assignees
+            assignees = set(self.assignees or [])
             owner = self.ticket.employee_id
             manager = self.department_manager
+            recipients = assignees | {x for x in [owner, manager] if x}
 
             subject = "The Ticket has been deleted"
             content = f'This is to inform you that the Ticket "{self.ticket.title}" has been deleted. If you have any questions or require further information, feel free to reach out to the Support/Helpdesk team.'
 
-            self.send_email(subject, content, set(assignees) | {owner} | {manager})
+            self.send_email(subject, content, recipients)
 
         return
 
