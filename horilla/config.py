@@ -11,13 +11,11 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.context_processors import PermWrapper
 
-from horilla.horilla_apps import SIDEBARS
-
 logger = logging.getLogger(__name__)
 
 
 def get_apps_in_base_dir():
-    return SIDEBARS
+    return settings.SIDEBARS
 
 
 def import_method(accessibility):
@@ -89,3 +87,32 @@ def get_MENUS(request):
     ALL_MENUS[request.session.session_key] = []
     sidebar(request)
     return {"sidebar": ALL_MENUS.get(request.session.session_key)}
+
+
+def load_ldap_settings():
+    """
+    Fetch LDAP settings dynamically from the database after Django is ready.
+    """
+    try:
+        from django.db import connection
+
+        from horilla_ldap.models import LDAPSettings
+
+        # Ensure DB is ready before querying
+        if not connection.introspection.table_names():
+            print("⚠️ Database is empty. Using default LDAP settings.")
+            return settings.DEFAULT_LDAP_CONFIG
+
+        ldap_config = LDAPSettings.objects.first()
+        if ldap_config:
+            return {
+                "LDAP_SERVER": ldap_config.ldap_server,
+                "BIND_DN": ldap_config.bind_dn,
+                "BIND_PASSWORD": ldap_config.bind_password,
+                "BASE_DN": ldap_config.base_dn,
+            }
+    except Exception as e:
+        print(f"⚠️ Warning: Could not load LDAP settings ({e})")
+        return settings.DEFAULT_LDAP_CONFIG  # Return default on error
+
+    return settings.DEFAULT_LDAP_CONFIG  # Fallback in case of an issue
