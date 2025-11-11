@@ -1,7 +1,7 @@
 {% load static i18n helpdeskfilters %}
 <div class="oh-btn-group" style="border:none">
     {% if tab != 'my_tickets' %}
-        {% if perms.helpdesk.change_ticket or perms.helpdesk.change_claimrequest or request.user.employee_get|is_department_manager:ticket %}
+        {% if perms.helpdesk.change_ticket or perms.helpdesk.change_claimrequest or perms.helpdesk.view_claimrequest or request.user.employee_get|is_department_manager:ticket %}
             <button
                 hx-get = "{% url "view-ticket-claim-request" ticket.id %}"
                 hx-target="#objectDetailsModalTarget"
@@ -12,7 +12,8 @@
             >
                 <ion-icon name="eye-outline"></ion-icon>
             </button>
-        {% else %}
+        {% endif %}
+        {% if tab != 'all_tickets' %}
             {% if claim_request or request.user.employee_get in ticket.assigned_to.all %}
                 <a
                     href="#"
@@ -41,7 +42,7 @@
         {% endif %}
     {% endif %}
 
-    {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
+    {% if request.user.employee_get == ticket.employee_id or perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket %}
         <button
             class="oh-btn oh-btn--light-bkg p-3 w-100"
             title="{% trans 'Edit' %}"

@@ -995,6 +995,7 @@ def view_ticket_claim_request(request, ticket_id):
     ticket = Ticket.objects.filter(id=ticket_id).first()
     if (
         request.user.has_perm("helpdesk.change_claimrequest")
+        or request.user.has_perm("helpdesk.view_claimrequest")
         or request.user.has_perm("helpdesk.change_ticket")
         or is_department_manager(request, ticket)
     ):
