@@ -19,10 +19,8 @@ from django.views.decorators.http import require_http_methods
 from base.forms import TagsForm
 from base.methods import (
     closest_numbers,
-    eval_validate,
     filtersubordinates,
     get_key_instances,
-    get_pagination,
     is_reportingmanager,
     paginator_qry,
     sortby,
@@ -948,7 +946,8 @@ def ticket_detail(request, ticket_id, **kwargs):
         else:
             rating = "3"
 
-        ids = eval_validate(request.session.get("ordered_ids_ticket", []))
+        value = request.session.get("ordered_ids_ticket", [])
+        ids = list(map(int, value))
         prev_id, next_id = closest_numbers(ids, ticket_id)
 
         context = {
