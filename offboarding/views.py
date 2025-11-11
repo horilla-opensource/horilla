@@ -65,6 +65,11 @@ from offboarding.models import (
 
 )
 
+from payroll.models.models import Contract
+from logging import getLogger
+
+logger = getLogger(__name__)
+
 
 def any_manager(employee: Employee):
     """
@@ -426,6 +431,26 @@ def change_stage(request):
     for employee in employees:
         employee.stage_id = stage
         employee.save()
+
+    if stage.type == "fnf":
+
+        real_employee_ids = employees.values_list("employee_id__id", flat=True)
+
+        contracts = Contract.objects.filter(
+            employee_id__in=real_employee_ids,
+            contract_status="active"
+        )
+
+        if contracts.exists():
+            contracts.update(
+                contract_status='terminated',
+                contract_end_date=datetime.today().date()
+            )
+            logger.info("Terminated %d contract(s) for FNF process.", contracts.count())
+        else:
+            logger.info("No active contracts found for FNF process.")
+
+
 
     target_state = False if stage.type == "archived" else True
     employee_ids = employees.values_list("employee_id__id", flat=True)
