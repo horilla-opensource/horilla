@@ -86,6 +86,16 @@ class BiometricCardView(HorillaCardView):
                     """,
             },
             {
+                "action": "Fetch Logs",
+                "attrs": """
+                    hx-get="{get_fetch_url}"
+                    class="oh-dropdown__link"
+                    data-toggle="oh-modal-toggle"
+                    data-target="#BiometricDeviceTestModal"
+                    hx-target="#BiometricDeviceTestFormTarget"
+                    """,
+            },
+            {
                 "action": "archive_status",
                 "attrs": """
                     hx-confirm="Do you want to {archive_status} this device?"
