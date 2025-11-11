@@ -156,7 +156,7 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": env("DB_ENGINE", default="django.db.backends.sqlite3"),
-            "NAME": env("DB_NAME", default=os.path.join(BASE_DIR, "db.sqlite3")),
+            "NAME": env("DB_NAME", default=os.path.join(BASE_DIR, "TestDB.sqlite3")),
             "USER": env("DB_USER", default=""),
             "PASSWORD": env("DB_PASSWORD", default=""),
             "HOST": env("DB_HOST", default=""),
