@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 
@@ -194,6 +196,20 @@ class TicketListView(HorillaListView):
 
     action_method = """ticket_action_col"""
     header_attrs = {"action": "style='width:200px'"}
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        if self.request.GET.get("ticket_tab") == "all_tickets":
+            if (
+                self.request.user.has_perm("helpdesk.view_claimrequest")
+                or self.request.user.has_perm("helpdesk.change_claimrequest")
+                or self.request.user.has_perm("helpdesk.change_ticket")
+                or self.request.user.has_perm("helpdesk.delete_ticket")
+                or self.request.user.has_perm("helpdesk.view_ticket")
+            ):
+                self.action_method = "ticket_action_col"
+            else:
+                self.action_method = None
 
     def get_queryset(self):
         queryset = super().get_queryset()

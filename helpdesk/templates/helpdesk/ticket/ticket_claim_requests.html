@@ -28,11 +28,13 @@
                             >
                                 {% trans "Employee" %}
                             </div>
-                            <div
-                                class="oh-sticky-table__th"
-                            >
-                                {% trans "Action" %}
-                            </div>
+                            {% if perms.helpdesk.change_claimrequest or perms.helpdesk.change_ticket %}
+                                <div
+                                    class="oh-sticky-table__th"
+                                >
+                                    {% trans "Action" %}
+                                </div>
+                            {% endif %}
 
                         </div>
                     </div>
@@ -58,51 +60,53 @@
                                     >
                                 </div>
                             </div>
-                            <div class="oh-sticky-table__td">
-                                <div class="oh-btn-group">
-                                    {% if not req.is_approved and not req.is_rejected %}
-                                        <button
-                                            class="oh-btn oh-btn--success w-100"
-                                            data-toggle="oh-modal-toggle"
-                                    		data-target="#objectDetailsModal"
-                                            hx-get="{% url 'approve-claim-request' req.id %}?approve=True"
-                                            hx-target="#objectDetailsModalTarget"
-                                            title="Approve request"
-                                        >
-                                            <ion-icon name="checkmark-outline"></ion-icon>
-                                        </button>
-                                    {% else %}
-                                        <button
-                                            class="oh-btn oh-btn--success w-100"
-                                            disabled
-                                            title="Approve request"
-                                        >
-                                            <ion-icon name="checkmark-outline"></ion-icon>
-                                        </button>
-                                    {% endif %}
-                                    {% if not req.is_rejected %}
-                                        <button
-                                            class="oh-btn oh-btn--danger w-100"
-                                            titile = "{% trans 'Reject' %}"
-                                            data-toggle="oh-modal-toggle"
-                                            data-target="#objectDetailsModal"
-                                            hx-get="{% url 'approve-claim-request' req.id %}?approve=False"
-                                            hx-target="#objectDetailsModalTarget"
-                                        >
-                                            <ion-icon name="close-outline"></ion-icon>
-                                        </button>
-                                    {% else %}
-                                        <button
-                                            class="oh-btn oh-btn--danger w-100"
-                                            titile = "{% trans 'Reject' %}"
-                                            disabled
+                            {% if perms.helpdesk.change_claimrequest or perms.helpdesk.change_ticket %}
+                                <div class="oh-sticky-table__td">
+                                    <div class="oh-btn-group">
+                                        {% if not req.is_approved and not req.is_rejected %}
+                                            <button
+                                                class="oh-btn oh-btn--success w-100"
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#objectDetailsModal"
+                                                hx-get="{% url 'approve-claim-request' req.id %}?approve=True"
+                                                hx-target="#objectDetailsModalTarget"
+                                                title="Approve request"
                                             >
-                                            <ion-icon name="close-outline"></ion-icon>
-                                        </button>
-                                    {% endif %}
+                                                <ion-icon name="checkmark-outline"></ion-icon>
+                                            </button>
+                                        {% else %}
+                                            <button
+                                                class="oh-btn oh-btn--success w-100"
+                                                disabled
+                                                title="Approve request"
+                                            >
+                                                <ion-icon name="checkmark-outline"></ion-icon>
+                                            </button>
+                                        {% endif %}
+                                        {% if not req.is_rejected %}
+                                            <button
+                                                class="oh-btn oh-btn--danger w-100"
+                                                titile = "{% trans 'Reject' %}"
+                                                data-toggle="oh-modal-toggle"
+                                                data-target="#objectDetailsModal"
+                                                hx-get="{% url 'approve-claim-request' req.id %}?approve=False"
+                                                hx-target="#objectDetailsModalTarget"
+                                            >
+                                                <ion-icon name="close-outline"></ion-icon>
+                                            </button>
+                                        {% else %}
+                                            <button
+                                                class="oh-btn oh-btn--danger w-100"
+                                                titile = "{% trans 'Reject' %}"
+                                                disabled
+                                                >
+                                                <ion-icon name="close-outline"></ion-icon>
+                                            </button>
+                                        {% endif %}
 
+                                    </div>
                                 </div>
-                            </div>
+                            {% endif %}
                         </div>
                         {% endfor %}
                     </div>
