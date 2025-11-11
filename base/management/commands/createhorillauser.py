@@ -4,10 +4,10 @@ Horilla management command to create a new user and associated employee.
 
 import uuid
 
-from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 
 from employee.models import Employee
+from horilla_auth.models import HorillaUser
 
 
 class Command(BaseCommand):
@@ -41,14 +41,14 @@ class Command(BaseCommand):
             email = options["email"]
             phone = options["phone"]
 
-        if User.objects.filter(username=username).exists():
+        if HorillaUser.objects.filter(username=username).exists():
             self.stdout.write(
                 self.style.WARNING(f'User with username "{username}" already exists')
             )
             return
 
         try:
-            user = User.objects.create_superuser(
+            user = HorillaUser.objects.create_superuser(
                 username=username, email=email, password=password
             )
             employee = Employee()
@@ -59,9 +59,9 @@ class Command(BaseCommand):
             employee.phone = phone
             employee.save()
 
-            bot = User.objects.filter(username="Horilla Bot").first()
+            bot = HorillaUser.objects.filter(username="Horilla Bot").first()
             if bot is None:
-                User.objects.create_user(
+                HorillaUser.objects.create_user(
                     username="Horilla Bot",
                     password=str(uuid.uuid4()),
                 )

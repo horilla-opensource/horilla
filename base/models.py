@@ -8,7 +8,6 @@ from datetime import date, datetime
 import django
 from django.apps import apps
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_delete, post_save
@@ -24,6 +23,7 @@ from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel, NoPermissionModel, upload_path
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_auth.models import HorillaUser
 from horilla_views.cbv_methods import render_template
 
 # Create your models here.
@@ -1588,7 +1588,7 @@ class ShiftRequest(HorillaModel):
 
     def user_availability(self):
         """
-        This method for get custome coloumn for User availability.
+        This method for get custome coloumn for HorillaUser availability.
         """
 
         return render_template(
@@ -2200,11 +2200,12 @@ class DynamicPagination(models.Model):
     model for storing pagination for employees
     """
 
-    from django.contrib.auth.models import User
     from django.core.validators import MinValueValidator
 
+    from horilla_auth.models import HorillaUser
+
     user_id = models.OneToOneField(
-        User,
+        HorillaUser,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
@@ -2353,7 +2354,7 @@ class AnnouncementView(models.Model):
     Announcement View Model
     """
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(HorillaUser, on_delete=models.CASCADE)
     announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
     viewed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
@@ -2428,7 +2429,7 @@ class DriverViewed(models.Model):
         ("pipeline", "pipeline"),
         ("settings", "settings"),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(HorillaUser, on_delete=models.CASCADE)
     viewed = models.CharField(max_length=10, choices=choices)
 
     def user_viewed(self):
@@ -2945,4 +2946,4 @@ def delete_deduction_cutleave_from_penalty(sender, instance, **kwargs):
             available.save()
 
 
-User.add_to_class("is_new_employee", models.BooleanField(default=False))
+# User.add_to_class("is_new_employee", models.BooleanField(default=False))

@@ -7,7 +7,6 @@ This module is used to register search/filter views methods
 import json
 from urllib.parse import parse_qs
 
-from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.shortcuts import render
 
@@ -20,6 +19,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset
 from horilla.group_by import group_by_queryset as general_group_by
+from horilla_auth.models import HorillaUser
 from recruitment.filters import (
     CandidateFilter,
     RecruitmentFilter,
@@ -133,9 +133,9 @@ def candidate_search(request):
     candidates = paginator_qry(candidates, request.GET.get("page"))
 
     mails = list(Candidate.objects.values_list("email", flat=True))
-    # Query the User model to check if any email is present
+    # Query the HorillaUser model to check if any email is present
     existing_emails = list(
-        User.objects.filter(username__in=mails).values_list("email", flat=True)
+        HorillaUser.objects.filter(username__in=mails).values_list("email", flat=True)
     )
 
     return render(

@@ -14,7 +14,6 @@ from urllib.parse import parse_qs, urlencode, urlparse
 from dateutil.relativedelta import relativedelta
 from django import forms
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.db.models import ProtectedError, Q
 from django.db.utils import IntegrityError
@@ -46,6 +45,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla_auth.models import HorillaUser
 from horilla_automations.methods.methods import generate_choices
 from horilla_automations.methods.serialize import serialize_form
 from notifications.signals import notify
@@ -3077,7 +3077,7 @@ def anonymous_feedback_add(request):
             if feedback.based_on == "employee":
                 try:
                     notify.send(
-                        User.objects.filter(username="Horilla Bot").first(),
+                        HorillaUser.objects.filter(username="Horilla Bot").first(),
                         recipient=feedback.employee_id.employee_user_id,
                         verb="You received an anonymous feedback!",
                         verb_ar="لقد تلقيت تقييمًا مجهولًا!",

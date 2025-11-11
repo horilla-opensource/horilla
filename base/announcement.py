@@ -6,7 +6,6 @@ import json
 from datetime import datetime, timedelta
 
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -24,6 +23,7 @@ from base.models import (
 )
 from employee.models import Employee
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla_auth.models import HorillaUser
 from notifications.signals import notify
 
 
@@ -117,7 +117,7 @@ def create_announcement(request):
             announcement.employees.add(*all_employees)
 
             all_emps = employees_from_dept | employees_from_job | employees
-            user_map = User.objects.filter(employee_get__in=all_emps).distinct()
+            user_map = HorillaUser.objects.filter(employee_get__in=all_emps).distinct()
 
             dept_emp_ids = set(employees_from_dept.values_list("id", flat=True))
             job_emp_ids = set(employees_from_job.values_list("id", flat=True))
@@ -158,10 +158,10 @@ def create_announcement(request):
             messages.success(request, _("Announcement created successfully."))
             form = AnnouncementForm()  # Reset the form
 
-            emp_dep = User.objects.filter(
+            emp_dep = HorillaUser.objects.filter(
                 employee_get__employee_work_info__department_id__in=departments
             )
-            emp_jobs = User.objects.filter(
+            emp_jobs = HorillaUser.objects.filter(
                 employee_get__employee_work_info__job_position_id__in=job_positions
             )
             employees = employees | Employee.objects.filter(
@@ -263,10 +263,10 @@ def update_announcement(request, anoun_id):
             anou.company_id.set(company)
             messages.success(request, _("Announcement updated successfully."))
 
-            emp_dep = User.objects.filter(
+            emp_dep = HorillaUser.objects.filter(
                 employee_get__employee_work_info__department_id__in=departments
             )
-            emp_jobs = User.objects.filter(
+            emp_jobs = HorillaUser.objects.filter(
                 employee_get__employee_work_info__job_position_id__in=job_positions
             )
             employees = employees | Employee.objects.filter(

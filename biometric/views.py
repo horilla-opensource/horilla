@@ -14,6 +14,7 @@ from urllib.parse import parse_qs, unquote
 
 import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
+from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -36,7 +37,6 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.filters import HorillaPaginator
-from horilla.horilla_settings import BIO_DEVICE_THREADS
 from horilla.settings import TIME_ZONE
 
 from .anviz import CrossChexCloudAPI
@@ -484,10 +484,10 @@ def biometric_device_schedule(request, device_id):
                 device.scheduler_duration = duration
                 device.save()
                 scheduler = BackgroundScheduler()
-                existing_thread = BIO_DEVICE_THREADS.get(device.id)
+                existing_thread = settings.BIO_DEVICE_THREADS.get(device.id)
                 if existing_thread:
                     existing_thread.stop()
-                    del BIO_DEVICE_THREADS[device.id]
+                    del settings.BIO_DEVICE_THREADS[device.id]
                 scheduler.add_job(
                     lambda: cosec_biometric_attendance_scheduler(device.id),
                     "interval",
@@ -2078,7 +2078,7 @@ def biometric_device_live(request):
                     device.save()
                     thread = COSECBioAttendanceThread(device.id)
                     thread.start()
-                    BIO_DEVICE_THREADS[device.id] = thread
+                    settings.BIO_DEVICE_THREADS[device.id] = thread
                 else:
                     raise TimeoutError
             else:
@@ -2122,10 +2122,10 @@ def biometric_device_live(request):
         device.is_live = False
         device.save()
         if device.machine_type == "cosec":
-            existing_thread = BIO_DEVICE_THREADS.get(device.id)
+            existing_thread = settings.BIO_DEVICE_THREADS.get(device.id)
             if existing_thread:
                 existing_thread.stop()
-                del BIO_DEVICE_THREADS[device.id]
+                del settings.BIO_DEVICE_THREADS[device.id]
 
         script = """
            <script>

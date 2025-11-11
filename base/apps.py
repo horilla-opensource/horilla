@@ -3,8 +3,7 @@ This module contains the configuration for the 'base' app.
 """
 
 from django.apps import AppConfig, apps
-
-from horilla.horilla_settings import NO_PERMISSION_MODALS
+from django.conf import settings
 
 
 class BaseConfig(AppConfig):
@@ -29,4 +28,4 @@ def check_for_no_permissions_models():
         if getattr(model, "_no_permission_model", False):
             model_names.add(model._meta.model_name)
 
-    NO_PERMISSION_MODALS.extend(list(model_names))
+    settings.NO_PERMISSION_MODALS.extend(list(model_names))

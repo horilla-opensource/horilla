@@ -10,9 +10,9 @@ import uuid
 
 from django import template
 from django.apps import apps
-from django.contrib.auth.models import User
 from django.template.defaultfilters import register
 
+from horilla_auth.models import HorillaUser
 from recruitment.models import CandidateRating
 
 # from django.forms.boundfield
@@ -97,7 +97,7 @@ def employee(uid):
     Returns:
         user object
     """
-    return User.objects.get(id=uid).employee_get if uid is not None else None
+    return HorillaUser.objects.get(id=uid).employee_get if uid is not None else None
 
 
 @register.filter(name="media_path")

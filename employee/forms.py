@@ -27,7 +27,6 @@ from datetime import date, datetime
 from typing import Any
 
 from django import forms
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.forms import DateInput, TextInput
 from django.template.loader import render_to_string
@@ -51,6 +50,7 @@ from employee.models import (
 )
 from horilla import horilla_middlewares
 from horilla_audit.models import AccountBlockUnblock
+from horilla_auth.models import HorillaUser
 
 logger = logging.getLogger(__name__)
 
@@ -174,7 +174,7 @@ class ModelForm(forms.ModelForm):
 
 class UserForm(ModelForm):
     """
-    Form for User model
+    Form for HorillaUser model
     """
 
     class Meta:
@@ -183,12 +183,12 @@ class UserForm(ModelForm):
         """
 
         fields = ("groups",)
-        model = User
+        model = HorillaUser
 
 
 class UserPermissionForm(ModelForm):
     """
-    Form for User model
+    Form for HorillaUser model
     """
 
     class Meta:
@@ -197,7 +197,7 @@ class UserPermissionForm(ModelForm):
         """
 
         fields = ("groups", "user_permissions")
-        model = User
+        model = HorillaUser
 
 
 class EmployeeForm(ModelForm):

@@ -3,7 +3,6 @@ Accessibility page for card functions
 """
 
 from django.contrib.auth.context_processors import PermWrapper
-from django.contrib.auth.models import User
 
 from base.methods import check_manager
 from employee.models import Employee

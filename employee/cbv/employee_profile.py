@@ -3,7 +3,6 @@ This page handles the cbv methods of employee individual view
 """
 
 from django.contrib import messages
-from django.contrib.auth.models import Group
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy

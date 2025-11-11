@@ -11,6 +11,7 @@ from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaListView, HorillaProfileView
 from onboarding.filters import CandidateTaskFilter
 from onboarding.models import CandidateTask
+from recruitment.cbv import skill_zone
 from recruitment.cbv.candidate_mail_log import CandidateMailLogTabList
 from recruitment.cbv_decorators import all_manager_can_enter
 from recruitment.filters import CandidateFilter
@@ -161,6 +162,11 @@ CandidateProfileView.add_tab(
             "title": "Scheduled Interviews",
             "view": views.candidate_interview_tab,
             "accessibility": "recruitment.cbv.accessibility.empl_scheduled_interview_accessibility",
+        },
+        {
+            "title": "Skill Zone",
+            "view": skill_zone.SkillZoneProfileListView.as_view(),
+            "accessibility": "recruitment.cbv.accessibility.if_manager_accessibility",
         },
     ]
 )

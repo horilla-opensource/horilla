@@ -10,7 +10,6 @@ from datetime import timedelta
 from urllib.parse import parse_qs
 
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -34,6 +33,7 @@ from employee.models import (
     PolicyMultipleFile,
 )
 from horilla.decorators import hx_request_required, login_required, permission_required
+from horilla_auth.models import HorillaUser
 from notifications.signals import notify
 
 
@@ -241,7 +241,7 @@ def employee_account_block_unblock(emp_id, result):
     employee = get_object_or_404(Employee, id=emp_id)
     if not employee:
         return redirect(disciplinary_actions)
-    user = get_object_or_404(User, id=employee.employee_user_id.id)
+    user = get_object_or_404(HorillaUser, id=employee.employee_user_id.id)
     if not user:
         return redirect(disciplinary_actions)
     user.is_active = result
@@ -344,7 +344,7 @@ def remove_employee_disciplinary_action(request, action_id, emp_id):
 
     if action_type == "dismissal" or action_type == "suspension":
         emp = get_object_or_404(Employee, id=emp_id)
-        user = get_object_or_404(User, id=emp.employee_user_id.id)
+        user = get_object_or_404(HorillaUser, id=emp.employee_user_id.id)
         if user.is_active:
             pass
         else:
@@ -386,7 +386,7 @@ def delete_actions(request, action_id):
 
         if action_type == "dismissal" or action_type == "suspension":
             employee = get_object_or_404(Employee, id=dis_emp.id)
-            user = get_object_or_404(User, id=employee.employee_user_id.id)
+            user = get_object_or_404(HorillaUser, id=employee.employee_user_id.id)
             if user.is_active:
                 pass
             else:

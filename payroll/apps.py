@@ -3,6 +3,7 @@ App configuration for the 'payroll' app.
 """
 
 from django.apps import AppConfig
+from django.conf import settings
 from django.db.models.signals import post_migrate
 
 
@@ -18,11 +19,10 @@ class PayrollConfig(AppConfig):
         ready = super().ready()
         from django.urls import include, path
 
-        from horilla.horilla_settings import APPS
         from horilla.urls import urlpatterns
         from payroll import scheduler, signals
 
-        APPS.append("payroll")
+        settings.APPS.append("payroll")
         urlpatterns.append(
             path("payroll/", include("payroll.urls.urls")),
         )

@@ -23,9 +23,7 @@ from django.utils.translation import gettext as _
 
 from base.models import Company, CompanyLeaves, DynamicPagination, Holidays
 from employee.models import Employee, EmployeeWorkInformation
-from horilla.horilla_apps import NESTED_SUBORDINATE_VISIBILITY
 from horilla.horilla_middlewares import _thread_locals
-from horilla.horilla_settings import HORILLA_DATE_FORMATS, HORILLA_TIME_FORMATS
 
 CHART_CONFIG = {
     "offline_employees": {
@@ -193,7 +191,7 @@ def filtersubordinates(
     queryset,
     perm=None,
     field="employee_id",
-    nested=NESTED_SUBORDINATE_VISIBILITY,
+    nested=settings.NESTED_SUBORDINATE_VISIBILITY,
 ):
     """
     Filters a queryset to include only the current user's subordinates.
@@ -265,7 +263,7 @@ def filtersubordinatesemployeemodel(request, queryset, perm=None):
     if not request:
         return queryset
 
-    if NESTED_SUBORDINATE_VISIBILITY:
+    if settings.NESTED_SUBORDINATE_VISIBILITY:
         # Initialize the set of subordinates with the current manager(s)
         current_managers = [
             request.user.employee_get.id,
@@ -337,7 +335,7 @@ def choosesubordinates(request, form, perm):
     current_managers = [manager.id]
     all_subordinates = Q(employee_work_info__reporting_manager_id__in=current_managers)
 
-    if NESTED_SUBORDINATE_VISIBILITY:
+    if settings.NESTED_SUBORDINATE_VISIBILITY:
         # Recursively find all subordinates in the chain
         while True:
             sub_managers = Employee.objects.filter(
@@ -361,7 +359,9 @@ def choosesubordinates(request, form, perm):
     return form
 
 
-def get_subordinate_employee_ids(request, nested=NESTED_SUBORDINATE_VISIBILITY):
+def get_subordinate_employee_ids(
+    request, nested=settings.NESTED_SUBORDINATE_VISIBILITY
+):
     """
     Returns a list of subordinate Employee IDs under the current user.
 
@@ -726,7 +726,7 @@ def format_export_value(value, employee):
         check_in_time = datetime.strptime(str(value).split(".")[0], "%H:%M:%S").time()
 
         # Print the formatted time for each format
-        for format_name, format_string in HORILLA_TIME_FORMATS.items():
+        for format_name, format_string in settings.HORILLA_TIME_FORMATS.items():
             if format_name == time_format:
                 value = check_in_time.strftime(format_string)
 
@@ -734,7 +734,7 @@ def format_export_value(value, employee):
         # Convert the string to a datetime.date object
         start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
         # Print the formatted date for each format
-        for format_name, format_string in HORILLA_DATE_FORMATS.items():
+        for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
             if format_name == date_format:
                 value = start_date.strftime(format_string)
 
@@ -880,7 +880,7 @@ def reload_queryset(fields):
 #         return False
 
 
-def check_manager(employee, instance, nested=NESTED_SUBORDINATE_VISIBILITY):
+def check_manager(employee, instance, nested=settings.NESTED_SUBORDINATE_VISIBILITY):
     """
     Check if the given employee manages the instance employee.
     Supports both direct and nested (indirect) checks.
@@ -1220,7 +1220,7 @@ def get_subordinates(request):
 def format_date(date_str):
     # List of possible date formats to try
 
-    for format_name, format_string in HORILLA_DATE_FORMATS.items():
+    for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
         try:
             return datetime.strptime(date_str, format_string).strftime("%Y-%m-%d")
         except ValueError:

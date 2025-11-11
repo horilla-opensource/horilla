@@ -21,7 +21,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
@@ -176,7 +176,6 @@ from employee.models import (
     EmployeeWorkInformation,
     ProfileEditFeature,
 )
-from horilla import horilla_apps
 from horilla.decorators import (
     delete_permission,
     duplicate_permission,
@@ -186,16 +185,10 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import (
-    APPS,
-    DB_INIT_PASSWORD,
-    DYNAMIC_URL_PATTERNS,
-    FILE_STORAGE,
-    NO_PERMISSION_MODALS,
-)
 from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
+from horilla_auth.models import HorillaUser
 from notifications.models import Notification
 from notifications.signals import notify
 
@@ -260,10 +253,10 @@ def initialize_database_condition():
     Returns:
         bool: True if the database needs to be initialized, False otherwise.
     """
-    init_database = not User.objects.exists()
+    init_database = not HorillaUser.objects.exists()
     if not init_database:
         init_database = True
-        superusers = User.objects.filter(is_superuser=True)
+        superusers = HorillaUser.objects.filter(is_superuser=True)
         for user in superusers:
             if hasattr(user, "employee_get"):
                 init_database = False
@@ -274,7 +267,7 @@ def initialize_database_condition():
 def load_demo_database(request):
     if initialize_database_condition():
         if request.method == "POST":
-            if request.POST.get("load_data_password") == DB_INIT_PASSWORD:
+            if request.POST.get("load_data_password") == settings.DB_INIT_PASSWORD:
                 data_files = [
                     "user_data.json",
                     "employee_info_data.json",
@@ -327,7 +320,7 @@ def initialize_database(request):
     if initialize_database_condition():
         if request.method == "POST":
             password = request._post.get("password")
-            if DB_INIT_PASSWORD == password:
+            if settings.DB_INIT_PASSWORD == password:
                 return redirect(initialize_database_user)
             else:
                 messages.warning(
@@ -363,10 +356,10 @@ def initialize_database_user(request):
         badge_id = form_data.get("badge_id")
         email = form_data.get("email")
         phone = form_data.get("phone")
-        user = User.objects.filter(username=username).first()
+        user = HorillaUser.objects.filter(username=username).first()
         if user and not hasattr(user, "employee_get"):
             user.delete()
-        user = User.objects.create_superuser(
+        user = HorillaUser.objects.create_superuser(
             username=username, email=email, password=password
         )
         employee = Employee()
@@ -615,7 +608,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
 
         if not user:
-            user_object = User.objects.filter(username=username).first()
+            user_object = HorillaUser.objects.filter(username=username).first()
             if user_object and not user_object.is_active:
                 messages.warning(request, _("Access Denied: Your account is blocked."))
             else:
@@ -698,7 +691,7 @@ class HorillaPasswordResetView(PasswordResetView):
             return redirect("forgot-password")
 
         username = form.cleaned_data["email"]
-        user = User.objects.filter(username=username).first()
+        user = HorillaUser.objects.filter(username=username).first()
         if user:
             opts = {
                 "use_https": self.request.is_secure(),
@@ -744,7 +737,7 @@ class EmployeePasswordResetView(PasswordResetView):
                 return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
 
             username = form.cleaned_data["email"]
-            user = User.objects.filter(username=username).first()
+            user = HorillaUser.objects.filter(username=username).first()
             if user:
                 opts = {
                     "use_https": self.request.is_secure(),
@@ -866,7 +859,7 @@ def two_factor_auth(request):
             messages.error(request, "Invalid OTP.")
             return render(request, "base/auth/two_factor_auth.html")
 
-    if not horilla_apps.TWO_FACTORS_AUTHENTICATION:
+    if not settings.TWO_FACTORS_AUTHENTICATION:
         return redirect("/")
 
     if otp is None:
@@ -1103,8 +1096,8 @@ def user_group_table(request):
     Group assign htmx view
     """
     permissions = []
-    apps = APPS
-    no_permission_models = NO_PERMISSION_MODALS
+    apps = settings.APPS
+    no_permission_models = settings.NO_PERMISSION_MODALS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -1172,8 +1165,8 @@ def user_group(request):
     """
     permissions = []
 
-    apps = APPS
-    no_permission_models = NO_PERMISSION_MODALS
+    apps = settings.APPS
+    no_permission_models = settings.NO_PERMISSION_MODALS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -1208,8 +1201,8 @@ def user_group_search(request):
     """
     permissions = []
 
-    apps = APPS
-    no_permission_models = NO_PERMISSION_MODALS
+    apps = settings.APPS
+    no_permission_models = settings.NO_PERMISSION_MODALS
     form = UserGroupForm()
     for app_name in apps:
         app_models = []
@@ -1327,7 +1320,7 @@ def group_remove_user(request, uid, gid):
         gid: group instance id
     """
     group = Group.objects.get(id=gid)
-    user = User.objects.get(id=uid)
+    user = HorillaUser.objects.get(id=uid)
     group.user_set.remove(user)
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
@@ -1563,7 +1556,7 @@ def mail_server_conf(request):
 @permission_required("base.view_dynamicemailconfiguration")
 def mail_server_test_email(request):
     instance_id = request.GET.get("instance_id")
-    white_labelling = getattr(horilla_apps, "WHITE_LABELLING", False)
+    white_labelling = getattr(settings, "WHITE_LABELLING", False)
     image_path = path.join(settings.STATIC_ROOT, "images/ui/horilla-logo.png")
     company_name = "Horilla"
 
@@ -3560,13 +3553,13 @@ def employee_permission_assign(request, pk=None):
                     "model_name": model._meta.model_name,
                 }
                 for model in get_models_in_app(app_name)
-                if model._meta.model_name not in NO_PERMISSION_MODALS
+                if model._meta.model_name not in settings.NO_PERMISSION_MODALS
             ],
         }
-        for app_name in APPS
+        for app_name in settings.APPS
     ]
     context["permissions"] = permissions
-    context["no_permission_models"] = NO_PERMISSION_MODALS
+    context["no_permission_models"] = settings.NO_PERMISSION_MODALS
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
@@ -3601,13 +3594,13 @@ def employee_permission_search(request, codename=None, uid=None):
                     "model_name": model._meta.model_name,
                 }
                 for model in get_models_in_app(app_name)
-                if model._meta.model_name not in NO_PERMISSION_MODALS
+                if model._meta.model_name not in settings.NO_PERMISSION_MODALS
             ],
         }
-        for app_name in APPS
+        for app_name in settings.APPS
     ]
     context["permissions"] = permissions
-    context["no_permission_models"] = NO_PERMISSION_MODALS
+    context["no_permission_models"] = settings.NO_PERMISSION_MODALS
     context["employees"] = paginator_qry(employees, request.GET.get("page"))
     return render(
         request,
@@ -3648,10 +3641,10 @@ def permission_table(request):
     This method is used to render the permission table
     """
     permissions = []
-    apps = APPS
+    apps = settings.APPS
     form = AssignPermission()
 
-    no_permission_models = NO_PERMISSION_MODALS
+    no_permission_models = settings.NO_PERMISSION_MODALS
 
     for app_name in apps:
         app_models = []
@@ -6988,7 +6981,7 @@ def activate_biometric_attendance(request):
 
 @login_required
 def get_horilla_installed_apps(request):
-    return JsonResponse({"installed_apps": APPS})
+    return JsonResponse({"installed_apps": settings.APPS})
 
 
 def generate_error_report(error_list, error_data, file_name):
@@ -7028,7 +7021,7 @@ def generate_error_report(error_list, error_data, file_name):
     # Create a unique path for the error file download
     path_info = f"error-sheet-{uuid.uuid4()}"
     urlpatterns.append(path(path_info, get_error_sheet, name=path_info))
-    DYNAMIC_URL_PATTERNS.append(path_info)
+    settings.DYNAMIC_URL_PATTERNS.append(path_info)
     for key in error_data:
         error_data[key] = []
     return path_info
@@ -7114,8 +7107,10 @@ def csv_holiday_import(file):
     - "Recurring": Indicates whether the holiday recurs ("yes" or "no")
     """
     holiday_list, error_list = [], []
-    file_name = FILE_STORAGE.save("holiday_import.csv", ContentFile(file.read()))
-    holiday_file = FILE_STORAGE.path(file_name)
+    file_name = settings.FILE_STORAGE.save(
+        "holiday_import.csv", ContentFile(file.read())
+    )
+    holiday_file = settings.FILE_STORAGE.path(file_name)
 
     with open(holiday_file, errors="ignore") as csv_file:
         save = True

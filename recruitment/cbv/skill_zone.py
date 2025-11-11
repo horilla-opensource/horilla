@@ -8,10 +8,10 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from horilla_views.cbv_methods import login_required
-from horilla_views.generic.cbv.views import HorillaFormView
+from horilla_views.generic.cbv.views import HorillaFormView, HorillaListView
 from recruitment.cbv_decorators import manager_can_enter
 from recruitment.forms import SkillZoneCandidateForm, SkillZoneCreateForm
-from recruitment.models import SkillZone, SkillZoneCandidate
+from recruitment.models import Candidate, SkillZone, SkillZoneCandidate
 
 
 @method_decorator(login_required, name="dispatch")
@@ -62,6 +62,11 @@ class SkillZoneCandidateFormView(HorillaFormView):
         context = super().get_context_data(**kwargs)
         id = self.kwargs.get("sz_id")
         self.form.fields["skill_zone_id"].initial = id
+        if cand_id := self.request.GET.get("candidate"):
+            self.form.fields["candidate_id"].queryset = self.form.fields[
+                "candidate_id"
+            ].queryset.filter(id=cand_id)
+
         # if self.form.instance.pk:
         #     self.form_class.verbose_name = _("Update Skill Zone")
         return context
@@ -76,3 +81,36 @@ class SkillZoneCandidateFormView(HorillaFormView):
             messages.success(self.request, _(message))
             return self.HttpResponse("<script>window.location.reload()</script>")
         return super().form_valid(form)
+
+
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    manager_can_enter("recruitment.add_skillzonecandidate"), name="dispatch"
+)
+class SkillZoneProfileListView(HorillaListView):
+    """
+    Skill Zone Candidate profile List View
+    """
+
+    model = SkillZoneCandidate
+    show_filter_tags = False
+    filter_selected = False
+    bulk_select_option = False
+    template_name = "skill_zone/candidate_profile_tab.html"
+    show_toggle_form = False
+
+    columns = [
+        (_("Title"), "skill_zone_id__title"),
+        "added_on",
+        "reason",
+    ]
+
+    def get_queryset(self):
+        qureryset = super().get_queryset()
+        cand_id = self.kwargs.get("pk")
+        return qureryset.filter(candidate_id=cand_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["candidate"] = Candidate.objects.get(id=self.kwargs.get("pk"))
+        return context

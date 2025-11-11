@@ -1,10 +1,10 @@
 import ldap
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
 from employee.models import Employee
+from horilla_auth.models import HorillaUser
 
 
 class Command(BaseCommand):
@@ -49,18 +49,18 @@ class Command(BaseCommand):
                     },
                 )
 
-                # Retrieve the associated User if it exists
+                # Retrieve the associated HorillaUser if it exists
                 try:
-                    user = User.objects.get(
+                    user = HorillaUser.objects.get(
                         Q(username=email) | Q(username=user_id) | Q(email=email)
                     )
                     user.username = user_id
                     user.set_password(
                         ldap_password
                     )  # Hash and set the password securely
-                    user.save()  # Save the changes to the User instance
+                    user.save()  # Save the changes to the HorillaUser instance
                     action = "Updated"
-                except User.DoesNotExist:
+                except HorillaUser.DoesNotExist:
                     # If the user does not exist, handle it accordingly (e.g., log a message or create a new user)
                     self.stdout.write(
                         self.style.WARNING(f"User for employee {name} does not exist.")

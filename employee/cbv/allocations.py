@@ -8,6 +8,7 @@ import ast
 import logging
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib import messages
 from django.db.models import Q
 from django.db.models.signals import post_save
@@ -27,7 +28,6 @@ from employee.methods.methods import get_model_class
 from employee.models import Employee, EmployeeBankDetails, EmployeeWorkInformation
 from employee.models import models as django_models
 from horilla.horilla_middlewares import _thread_locals
-from horilla.horilla_settings import APPS, NO_PERMISSION_MODALS
 from horilla_views.cbv_methods import login_required, render_template
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -792,8 +792,8 @@ class Groups(TemplateView):
         emoloyee = employees.first()
         context["employee"] = emoloyee
         permissions = []
-        no_permission_models = NO_PERMISSION_MODALS
-        for app_name in APPS:
+        no_permission_models = settings.NO_PERMISSION_MODALS
+        for app_name in settings.APPS:
             app_models = []
             for model in get_models_in_app(app_name):
                 if model._meta.model_name not in no_permission_models:
