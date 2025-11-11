@@ -1,7 +1,9 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
+
 from horilla_auth.models import HorillaUser, LegacyUser
+
 
 class Command(BaseCommand):
     help = "Migrate users from LegacyUser (auth_user) to HorillaUser, including groups and permissions."
@@ -46,6 +48,8 @@ class Command(BaseCommand):
 
                 created_count += 1
 
-        self.stdout.write(self.style.SUCCESS(
-            f"✅ Migration complete: {created_count} users migrated, {skipped_count} skipped (with groups & permissions)."
-        ))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"✅ Migration complete: {created_count} users migrated, {skipped_count} skipped (with groups & permissions)."
+            )
+        )
