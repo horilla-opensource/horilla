@@ -225,6 +225,13 @@ class BiometricDevices(HorillaModel):
         url = reverse_lazy("biometric-device-archive", kwargs={"device_id": self.pk})
         return url
 
+    def get_fetch_url(self):
+        """
+        This method to get Fetch Logs url
+        """
+        url = reverse_lazy("biometric-device-fetch-logs", kwargs={"device_id": self.pk})
+        return url
+
     def get_delete_url(self):
         """
         This method to get delete url
