@@ -27,7 +27,6 @@ from typing import Any
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm as UserForm
-from django.contrib.auth.models import User
 from django.forms import DateInput, ValidationError
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
@@ -36,6 +35,7 @@ from base.forms import ModelForm
 from base.methods import reload_queryset
 from employee.filters import EmployeeFilter
 from employee.models import Employee, EmployeeBankDetails
+from horilla_auth.models import HorillaUser
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 from onboarding.models import (
@@ -141,7 +141,7 @@ class OnboardingCandidateForm(ModelForm):
 
 class UserCreationForm(UserCreationFormCustom):
     """
-    Form for User model
+    Form for HorillaUser model
     """
 
     class Meta:
@@ -149,7 +149,7 @@ class UserCreationForm(UserCreationFormCustom):
         Meta class to add some additional options
         """
 
-        model = User
+        model = HorillaUser
         fields = ["password1", "password2"]
 
 

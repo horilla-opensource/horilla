@@ -12,6 +12,7 @@ from urllib.parse import parse_qs
 
 import pandas as pd
 import pdfkit
+from django.conf import settings
 from django.contrib import messages
 from django.db.models import ProtectedError, Q
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
@@ -39,7 +40,6 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import HORILLA_DATE_FORMATS
 from notifications.signals import notify
 from payroll.context_processors import get_active_employees
 from payroll.filters import ContractFilter, ContractReGroup, PayslipFilter
@@ -574,11 +574,11 @@ def view_payslip_pdf(request, payslip_id):
             month_end_name = end_date.strftime("%B %d, %Y")
 
             # Formatted date for each format
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)
 
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_end_date = end_date.strftime(format_string)
             data["month_start_name"] = month_start_name
@@ -1037,11 +1037,11 @@ def payslip_export(request):
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)
 
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_end_date = end_date.strftime(format_string)
 
@@ -1524,7 +1524,7 @@ def payslip_pdf(request, id):
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
 
             # Format the start and end dates
-            for format_name, format_string in HORILLA_DATE_FORMATS.items():
+            for format_name, format_string in settings.HORILLA_DATE_FORMATS.items():
                 if format_name == date_format:
                     formatted_start_date = start_date.strftime(format_string)
                     formatted_end_date = end_date.strftime(format_string)

@@ -24,7 +24,6 @@ import pandas as pd
 from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -117,9 +116,9 @@ from horilla.decorators import (
 )
 from horilla.filters import HorillaPaginator
 from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import HORILLA_DATE_FORMATS
 from horilla.methods import dynamic_attr, get_horilla_model_class
 from horilla_audit.models import AccountBlockUnblock, HistoryTrackingFields
+from horilla_auth.models import HorillaUser
 from horilla_documents.forms import (
     DocumentForm,
     DocumentRejectForm,
@@ -1116,7 +1115,7 @@ def employee_user_group_assign_delete(_, obj_id):
     """
     This method is used to delete user group assign
     """
-    user = User.objects.get(id=obj_id)
+    user = HorillaUser.objects.get(id=obj_id)
     user.groups.clear()
     return redirect("/employee/employee-user-group-assign-view")
 
@@ -1465,7 +1464,7 @@ def employee_account_block_unblock(request, emp_id):
     if not employee:
         messages.info(request, _("Employee not found"))
         return redirect(employee_view)
-    user = get_object_or_404(User, id=employee.employee_user_id.id)
+    user = get_object_or_404(HorillaUser, id=employee.employee_user_id.id)
     if not user:
         messages.info(request, _("Employee not found"))
         return redirect(employee_view)
@@ -2534,7 +2533,7 @@ def employee_import(request):
                 phone = employee_dict["phone"]
                 email = employee_dict["email"]
                 employee_full_name = employee_dict["employee_full_name"]
-                existing_user = User.objects.filter(username=email).first()
+                existing_user = HorillaUser.objects.filter(username=email).first()
                 if existing_user is None:
                     employee_first_name = employee_full_name
                     employee_last_name = ""
@@ -2544,7 +2543,7 @@ def employee_import(request):
                             employee_last_name,
                         ) = employee_full_name.split(" ", 1)
 
-                    user = User.objects.create_user(
+                    user = HorillaUser.objects.create_user(
                         username=email,
                         email=email,
                         password=str(phone).strip(),
@@ -2831,7 +2830,7 @@ def work_info_export(request):
             if isinstance(value, date):
                 try:
                     data = value.strftime(
-                        HORILLA_DATE_FORMATS.get(date_format, "%Y-%m-%d")
+                        settings.HORILLA_DATE_FORMATS.get(date_format, "%Y-%m-%d")
                     )
                 except Exception:
                     data = str(value)
@@ -3326,7 +3325,7 @@ def bonus_points_tab(request, pk):
                     "date": history["pair"][0].history_date,
                     "points": history["pair"][0].points - history["pair"][1].points,
                     "user": getattr(
-                        User.objects.filter(
+                        HorillaUser.objects.filter(
                             id=history["pair"][0].history_user_id
                         ).first(),
                         "employee_get",

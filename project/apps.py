@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.conf import settings
 
 
 class ProjectConfig(AppConfig):
@@ -8,12 +9,11 @@ class ProjectConfig(AppConfig):
     def ready(self):
         from django.urls import include, path
 
-        from horilla.horilla_settings import APP_URLS, APPS
         from horilla.urls import urlpatterns
 
-        APPS.append("project")
+        settings.APPS.append("project")
         urlpatterns.append(
             path("project/", include("project.urls")),
         )
-        APP_URLS.append("project.urls")
+        settings.APP_URLS.append("project.urls")
         super().ready()

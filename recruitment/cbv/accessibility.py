@@ -3,10 +3,10 @@ Accessibility
 """
 
 from django.contrib.auth.context_processors import PermWrapper
-from django.contrib.auth.models import User
 
 from base.methods import check_manager
 from employee.models import Employee
+from horilla_auth.models import HorillaUser
 from recruitment.methods import (
     in_all_managers,
     is_recruitmentmanager,
@@ -22,7 +22,7 @@ def convert_emp(request, instance, user_perm):
     """
     mails = list(Candidate.objects.values_list("email", flat=True))
     existing_emails = list(
-        User.objects.filter(username__in=mails).values_list("email", flat=True)
+        HorillaUser.objects.filter(username__in=mails).values_list("email", flat=True)
     )
     if not instance.email in existing_emails and not instance.start_onboard:
         return True
@@ -35,7 +35,7 @@ def add_skill_zone(request, instance, user_perm):
 
     mails = list(Candidate.objects.values_list("email", flat=True))
     existing_emails = list(
-        User.objects.filter(username__in=mails).values_list("email", flat=True)
+        HorillaUser.objects.filter(username__in=mails).values_list("email", flat=True)
     )
     if not instance.email in existing_emails and request.user.has_perm(
         "recruitment.add_skillzonecandidate"
@@ -50,7 +50,7 @@ def add_reject(request, instance, user_perm):
     first = RejectedCandidate.objects.filter(candidate_id=instance).first()
     mails = list(Candidate.objects.values_list("email", flat=True))
     existing_emails = list(
-        User.objects.filter(username__in=mails).values_list("email", flat=True)
+        HorillaUser.objects.filter(username__in=mails).values_list("email", flat=True)
     )
     if not instance.email in existing_emails:
         if request.user.has_perm(
@@ -67,7 +67,7 @@ def edit_reject(request, instance, user_perm):
     first = RejectedCandidate.objects.filter(candidate_id=instance).first()
     mails = list(Candidate.objects.values_list("email", flat=True))
     existing_emails = list(
-        User.objects.filter(username__in=mails).values_list("email", flat=True)
+        HorillaUser.objects.filter(username__in=mails).values_list("email", flat=True)
     )
     if not instance.email in existing_emails:
         if request.user.has_perm(

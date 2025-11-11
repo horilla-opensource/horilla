@@ -19,7 +19,7 @@ from django.apps import apps
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMultiAlternatives
@@ -177,6 +177,7 @@ from horilla.horilla_settings import (
 from horilla.methods import get_horilla_model_class, remove_dynamic_url
 from horilla_audit.forms import HistoryTrackingFieldsForm
 from horilla_audit.models import AccountBlockUnblock, AuditTag, HistoryTrackingFields
+from horilla_auth.models import HorillaUser
 from notifications.models import Notification
 from notifications.signals import notify
 
@@ -215,10 +216,10 @@ def initialize_database_condition():
     Returns:
         bool: True if the database needs to be initialized, False otherwise.
     """
-    initialize_database = not User.objects.exists()
+    initialize_database = not HorillaUser.objects.exists()
     if not initialize_database:
         initialize_database = True
-        superusers = User.objects.filter(is_superuser=True)
+        superusers = HorillaUser.objects.filter(is_superuser=True)
         for user in superusers:
             if hasattr(user, "employee_get"):
                 initialize_database = False
@@ -317,10 +318,10 @@ def initialize_database_user(request):
         badge_id = form_data.get("badge_id")
         email = form_data.get("email")
         phone = form_data.get("phone")
-        user = User.objects.filter(username=username).first()
+        user = HorillaUser.objects.filter(username=username).first()
         if user and not hasattr(user, "employee_get"):
             user.delete()
-        user = User.objects.create_superuser(
+        user = HorillaUser.objects.create_superuser(
             username=username, email=email, password=password
         )
         employee = Employee()
@@ -569,7 +570,7 @@ def login_user(request):
         params = f"{urlencode(query_params)}"
         user = authenticate(request, username=username, password=password)
         if user is None:
-            user_object = User.objects.filter(username=username).first()
+            user_object = HorillaUser.objects.filter(username=username).first()
             is_active = user_object.is_active if user_object else None
             if is_active is True or is_active is None:
                 messages.error(request, _("Invalid username or password."))
@@ -640,7 +641,7 @@ class HorillaPasswordResetView(PasswordResetView):
             return redirect("forgot-password")
 
         username = form.cleaned_data["email"]
-        user = User.objects.filter(username=username).first()
+        user = HorillaUser.objects.filter(username=username).first()
         if user:
             opts = {
                 "use_https": self.request.is_secure(),
@@ -686,7 +687,7 @@ class EmployeePasswordResetView(PasswordResetView):
                 return HttpResponseRedirect(self.request.META.get("HTTP_REFERER", "/"))
 
             username = form.cleaned_data["email"]
-            user = User.objects.filter(username=username).first()
+            user = HorillaUser.objects.filter(username=username).first()
             if user:
                 opts = {
                     "use_https": self.request.is_secure(),
@@ -1163,7 +1164,7 @@ def group_remove_user(request, uid, gid):
         gid: group instance id
     """
     group = Group.objects.get(id=gid)
-    user = User.objects.get(id=uid)
+    user = HorillaUser.objects.get(id=uid)
     group.user_set.remove(user)
     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 

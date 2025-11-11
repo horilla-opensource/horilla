@@ -7,6 +7,7 @@ This module is used to register context processor`
 import re
 
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import path, reverse
@@ -20,7 +21,6 @@ from employee.models import (
     EmployeeWorkInformation,
     ProfileEditFeature,
 )
-from horilla import horilla_apps
 from horilla.decorators import hx_request_required, login_required, permission_required
 from horilla.methods import get_horilla_model_class
 
@@ -157,7 +157,7 @@ urlpatterns.append(
 
 
 def white_labelling_company(request):
-    white_labelling = getattr(horilla_apps, "WHITE_LABELLING", False)
+    white_labelling = getattr(settings, "WHITE_LABELLING", False)
     if white_labelling:
         hq = Company.objects.filter(hq=True).last()
         try:

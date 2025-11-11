@@ -3,7 +3,6 @@ Announcement page
 """
 
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.urls import resolve, reverse
 from django.utils.decorators import method_decorator
@@ -13,6 +12,7 @@ from base.forms import AnnouncementForm
 from base.methods import closest_numbers
 from base.models import Announcement, AnnouncementView
 from employee.models import Employee
+from horilla_auth.models import HorillaUser
 from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import (
     HorillaDetailedView,
@@ -67,10 +67,10 @@ class AnnouncementFormView(HorillaFormView):
             anou.attachments.set(attachment_ids)
             anou.department.set(departments)
             anou.job_position.set(job_positions)
-            emp_dep = User.objects.filter(
+            emp_dep = HorillaUser.objects.filter(
                 employee_get__employee_work_info__department_id__in=departments
             )
-            emp_jobs = User.objects.filter(
+            emp_jobs = HorillaUser.objects.filter(
                 employee_get__employee_work_info__job_position_id__in=job_positions
             )
             employees = employees | Employee.objects.filter(

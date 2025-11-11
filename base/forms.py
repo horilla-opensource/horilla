@@ -16,7 +16,7 @@ from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import SetPasswordForm, _unicode_ci_compare
-from django.contrib.auth.models import Group, Permission, User
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
@@ -74,6 +74,7 @@ from horilla import horilla_middlewares
 from horilla.horilla_middlewares import _thread_locals
 from horilla.methods import get_horilla_model_class
 from horilla_audit.models import AuditTag
+from horilla_auth.models import HorillaUser
 from horilla_widgets.widgets.horilla_multi_select_field import HorillaMultiSelectField
 from horilla_widgets.widgets.select_widgets import HorillaMultiSelectWidget
 
@@ -526,7 +527,7 @@ class AssignPermission(Form):
         ).values_list("employee_user_id", flat=True)
         permissions = self.cleaned_data["permissions"]
         permissions = Permission.objects.filter(codename__in=permissions)
-        users = User.objects.filter(id__in=user_ids)
+        users = HorillaUser.objects.filter(id__in=user_ids)
         for user in users:
             user.user_permissions.set(permissions)
 
@@ -2220,7 +2221,7 @@ class ChangeUsernameForm(forms.Form):
 
     def clean_password(self):
         username = self.cleaned_data.get("username")
-        if User.objects.filter(username=username).exists():
+        if HorillaUser.objects.filter(username=username).exists():
             raise forms.ValidationError("Username already exists.")
         password = self.cleaned_data.get("password")
         if not self.user.check_password(password):
@@ -2857,7 +2858,7 @@ class PassWordResetForm(forms.Form):
         user.
         """
         username = self.cleaned_data["email"]
-        user = User.objects.get(username=username)
+        user = HorillaUser.objects.get(username=username)
         employee = user.employee_get
         email = employee.email
         work_mail = None

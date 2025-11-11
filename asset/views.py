@@ -10,6 +10,7 @@ from datetime import date, datetime
 from urllib.parse import parse_qs
 
 import pandas as pd
+from django.conf import settings
 from django.contrib import messages
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
@@ -70,7 +71,6 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
-from horilla.horilla_settings import HORILLA_DATE_FORMATS
 from horilla.methods import horilla_users_with_perms
 from notifications.signals import notify
 
@@ -1373,7 +1373,10 @@ def asset_export_excel(request):
                     start_date = datetime.strptime(str(value), "%Y-%m-%d").date()
 
                     # The formatted date for each format
-                    for format_name, format_string in HORILLA_DATE_FORMATS.items():
+                    for (
+                        format_name,
+                        format_string,
+                    ) in settings.HORILLA_DATE_FORMATS.items():
                         if format_name == date_format:
                             value = start_date.strftime(format_string)
 

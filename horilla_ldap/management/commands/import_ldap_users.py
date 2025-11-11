@@ -2,11 +2,11 @@ import platform
 import re
 import sys
 
-from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 from django.db.models import Q
 
 from employee.models import Employee
+from horilla_auth.models import HorillaUser
 from horilla_ldap.models import LDAPSettings
 
 if platform.system() == "Linux":
@@ -136,14 +136,14 @@ class Command(BaseCommand):
         )
 
         try:
-            user = User.objects.get(
+            user = HorillaUser.objects.get(
                 Q(username=email) | Q(username=user_id) | Q(email=email)
             )
             user.username = email
             user.set_password(ldap_password)  # Hash and store password securely
             user.save()
             action = "Updated"
-        except User.DoesNotExist:
+        except HorillaUser.DoesNotExist:
             self.stdout.write(
                 self.style.WARNING(
                     f"User for employee {first_name} {last_name} does not exist."

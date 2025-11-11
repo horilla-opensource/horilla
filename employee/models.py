@@ -9,7 +9,7 @@ from datetime import date, datetime, timedelta
 
 from django.apps import apps
 from django.conf import settings
-from django.contrib.auth.models import Permission, User
+from django.contrib.auth.models import Permission
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.db import models
@@ -40,6 +40,7 @@ from horilla.methods import get_horilla_model_class
 from horilla.models import HorillaModel, has_xss, upload_path
 from horilla_audit.methods import get_diff
 from horilla_audit.models import HorillaAuditInfo, HorillaAuditLog
+from horilla_auth.models import HorillaUser
 from horilla_views.cbv_methods import render_template
 
 # create your model
@@ -69,7 +70,7 @@ class Employee(models.Model):
     )
     badge_id = models.CharField(max_length=50, null=True, blank=True)
     employee_user_id = models.OneToOneField(
-        User,
+        HorillaUser,
         on_delete=models.CASCADE,
         blank=True,
         null=True,
@@ -649,14 +650,14 @@ class Employee(models.Model):
                 if employee.employee_user_id
                 else True
             )
-            user = User.objects.create_user(
+            user = HorillaUser.objects.create_user(
                 username=username,
                 email=username,
                 password=password,
                 is_new_employee=is_new_employee_flag,
             )
             if not user:
-                user = User.objects.create_user(
+                user = HorillaUser.objects.create_user(
                     username=username, email=username, password=password
                 )
             self.employee_user_id = user

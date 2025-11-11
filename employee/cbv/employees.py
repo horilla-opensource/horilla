@@ -8,7 +8,6 @@ from typing import Any
 
 from django import forms
 from django.contrib.auth.hashers import identify_hasher, make_password
-from django.contrib.auth.models import User
 from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 from django.dispatch import receiver
@@ -27,6 +26,7 @@ from employee.templatetags.employee_filter import edit_accessibility
 from employee.views import _check_reporting_manager
 from horilla.horilla_middlewares import _thread_locals
 from horilla.signals import post_generic_delete, post_generic_import
+from horilla_auth.models import HorillaUser
 from horilla_views.cbv_methods import login_required
 from horilla_views.forms import DynamicBulkUpdateForm
 from horilla_views.generic.cbv.views import (
@@ -193,7 +193,7 @@ class EmployeesList(HorillaListView):
     }
 
     import_related_model_column_mapping = {
-        "employee_user_id": base_models.User,
+        "employee_user_id": base_models.HorillaUser,
         # "test": base_models.Department,
         "employee_work_info": EmployeeWorkInformation,
         "employee_bank_details": EmployeeBankDetails,
@@ -581,7 +581,7 @@ class EmployeeNav(HorillaNavView):
     ]
 
 
-@receiver(post_generic_import, sender=User)
+@receiver(post_generic_import, sender=HorillaUser)
 def user_generic_import_or_update(sender, **kwargs):
     """
     Handle bulk user imports
@@ -605,7 +605,7 @@ def user_generic_import_or_update(sender, **kwargs):
         if users_to_update:
             # Bulk update only the users that were changed
             with transaction.atomic():
-                User.objects.bulk_update(users_to_update, ["password"])
+                HorillaUser.objects.bulk_update(users_to_update, ["password"])
                 logger.info(
                     f"{len(users_to_update)} user passwords were successfully updated."
                 )

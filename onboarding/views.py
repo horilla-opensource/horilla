@@ -22,7 +22,6 @@ from urllib.parse import parse_qs
 from django import template
 from django.contrib import messages
 from django.contrib.auth import login
-from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.mail import EmailMessage, send_mail
 from django.core.paginator import Paginator
@@ -54,6 +53,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset as general_group_by
+from horilla_auth.models import HorillaUser
 from horilla_documents.models import Document
 from notifications.signals import notify
 from onboarding.decorators import (
@@ -962,7 +962,7 @@ def user_creation(request, token):
         if onboarding_portal.count == 3:
             return redirect("employee-bank-details", token)
         candidate = onboarding_portal.candidate_id
-        user = User.objects.filter(username=candidate.email).first()
+        user = HorillaUser.objects.filter(username=candidate.email).first()
         form = UserCreationForm(instance=user)
         try:
             if request.method == "POST":
@@ -1150,7 +1150,9 @@ def employee_bank_details(request, token):
     POST : return employee_bank_details_save function
     """
     onboarding_portal = OnboardingPortal.objects.get(token=token)
-    user = User.objects.filter(username=onboarding_portal.candidate_id.email).first()
+    user = HorillaUser.objects.filter(
+        username=onboarding_portal.candidate_id.email
+    ).first()
     employee = Employee.objects.filter(employee_user_id=user).first()
     bank_info = EmployeeBankDetails.objects.filter(employee_id=employee).first()
     form = BankDetailsCreationForm(instance=bank_info)

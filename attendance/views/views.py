@@ -14,7 +14,6 @@ provide the main entry points for interacting with the application's functionali
 import logging
 import uuid
 
-from horilla.horilla_settings import DYNAMIC_URL_PATTERNS, HORILLA_DATE_FORMATS
 from horilla.methods import remove_dynamic_url
 
 logger = logging.getLogger(__name__)
@@ -1086,7 +1085,7 @@ def handle_activity_import_error(error_data):
     # Create a unique path for the error file download
     path_info = f"activity-error-sheet-{uuid.uuid4()}"
     urlpatterns.append(path(path_info, get_activity_error_sheet, name=path_info))
-    DYNAMIC_URL_PATTERNS.append(path_info)
+    settings.DYNAMIC_URL_PATTERNS.append(path_info)
 
     # Return the path information
     path_info = f"attendance/{path_info}"
@@ -2615,7 +2614,7 @@ def work_record_export(request):
             record_lookup[record_key] = record.work_record_type
 
     date_format = request.user.employee_get.get_date_format()
-    format_string = HORILLA_DATE_FORMATS.get(date_format)
+    format_string = settings.HORILLA_DATE_FORMATS.get(date_format)
     formatted_dates = [day.strftime(format_string) for day in all_date_objects]
     data_rows = []
 

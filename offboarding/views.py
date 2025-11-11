@@ -4,7 +4,6 @@ from urllib.parse import parse_qs
 
 from django.apps import apps
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -25,6 +24,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset as group_by
 from horilla.methods import get_horilla_model_class
+from horilla_auth.models import HorillaUser
 from notifications.signals import notify
 from offboarding.decorators import (
     any_manager_can_enter,
@@ -403,7 +403,7 @@ def delete_employee(request):
         messages.success(request, _("Offboarding employee deleted"))
         notify.send(
             request.user.employee_get,
-            recipient=User.objects.filter(
+            recipient=HorillaUser.objects.filter(
                 id__in=instances.values_list("employee_id__employee_user_id", flat=True)
             ),
             verb=f"You have been removed from the offboarding",
@@ -468,7 +468,7 @@ def change_stage(request):
     )
     notify.send(
         request.user.employee_get,
-        recipient=User.objects.filter(
+        recipient=HorillaUser.objects.filter(
             id__in=employees.values_list("employee_id__employee_user_id", flat=True)
         ),
         verb=f"Offboarding stage has been changed",
@@ -520,7 +520,7 @@ def change_offboarding_stage(request):
     )
     notify.send(
         request.user.employee_get,
-        recipient=User.objects.filter(
+        recipient=HorillaUser.objects.filter(
             id__in=employees.values_list("employee_id__employee_user_id", flat=True)
         ),
         verb=f"Offboarding stage has been changed",
@@ -686,7 +686,7 @@ def update_task_status(request, *args, **kwargs):
     messages.success(request, _("Task status updated successfully..."))
     notify.send(
         request.user.employee_get,
-        recipient=User.objects.filter(
+        recipient=HorillaUser.objects.filter(
             id__in=employee_task.values_list(
                 "task_id__managers__employee_user_id", flat=True
             )

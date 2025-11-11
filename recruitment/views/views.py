@@ -26,7 +26,6 @@ import fitz  # type: ignore
 from django import template
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.core import serializers
 from django.core.cache import cache as CACHE
 from django.core.mail import EmailMessage
@@ -63,6 +62,7 @@ from horilla.decorators import (
     permission_required,
 )
 from horilla.group_by import group_by_queryset
+from horilla_auth.models import HorillaUser
 from horilla_documents.models import Document
 from notifications.signals import notify
 from recruitment.auth import CandidateAuthenticationBackend
@@ -1420,9 +1420,9 @@ def candidate_view(request):
     recruitments = Recruitment.objects.filter(closed=False, is_active=True)
 
     mails = list(Candidate.objects.values_list("email", flat=True))
-    # Query the User model to check if any email is present
+    # Query the HorillaUser model to check if any email is present
     existing_emails = list(
-        User.objects.filter(username__in=mails).values_list("email", flat=True)
+        HorillaUser.objects.filter(username__in=mails).values_list("email", flat=True)
     )
 
     filter_obj = CandidateFilter(request.GET, queryset=candidates)
@@ -1790,9 +1790,9 @@ def candidate_view_individual(request, cand_id, **kwargs):
     # #     return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
     # mails = list(Candidate.objects.values_list("email", flat=True))
-    # # Query the User model to check if any email is present
+    # # Query the HorillaUser model to check if any email is present
     # existing_emails = list(
-    #     User.objects.filter(username__in=mails).values_list("email", flat=True)
+    #     HorillaUser.objects.filter(username__in=mails).values_list("email", flat=True)
     # )
     # ratings = candidate_obj.candidate_rating.all()
     # documents = CandidateDocument.objects.filter(candidate_id=cand_id)
@@ -1908,7 +1908,7 @@ def candidate_conversion(request, cand_id, **kwargs):
         messages.info(request, "This candidate is already converted to an employee.")
         return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
-    user_exists = User.objects.filter(username=candidate_obj.email).exists()
+    user_exists = HorillaUser.objects.filter(username=candidate_obj.email).exists()
     employee_exists = Employee.objects.filter(
         employee_user_id__username=candidate_obj.email
     ).exists()

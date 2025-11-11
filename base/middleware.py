@@ -3,6 +3,7 @@ middleware.py
 """
 
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.core.cache import cache
@@ -20,8 +21,6 @@ from employee.models import (
     EmployeeBankDetails,
     EmployeeWorkInformation,
 )
-from horilla.horilla_apps import TWO_FACTORS_AUTHENTICATION
-from horilla.horilla_settings import APPS
 from horilla.methods import get_horilla_model_class
 from horilla_documents.models import DocumentRequest
 
@@ -192,7 +191,9 @@ class CompanyMiddleware:
             self._set_company_session(request, company_id)
 
             app_models = [
-                model for model in apps.get_models() if model._meta.app_label in APPS
+                model
+                for model in apps.get_models()
+                if model._meta.app_label in settings.APPS
             ]
             for model in app_models:
                 self._add_company_filter(model, company_id)
@@ -241,7 +242,7 @@ class TwoFactorAuthMiddleware:
         if request.path.rstrip("/") in excluded_paths:
             return self.get_response(request)
 
-        if TWO_FACTORS_AUTHENTICATION:
+        if settings.TWO_FACTORS_AUTHENTICATION:
             try:
                 if ConfiguredEmailBackend().configuration is not None:
                     if hasattr(request, "user") and request.user.is_authenticated:
