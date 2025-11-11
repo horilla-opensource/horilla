@@ -1,10 +1,10 @@
 import contextlib
 import importlib
 
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 
-from horilla.horilla_settings import APP_URLS, DYNAMIC_URL_PATTERNS
+from horilla_auth.models import HorillaUser
 
 
 def get_horilla_model_class(app_label, model):
@@ -63,12 +63,12 @@ def horilla_users_with_perms(permissions):
         permissions = [permissions]
 
     # Start with a queryset that includes all superusers
-    users_with_permissions = User.objects.filter(is_superuser=True)
+    users_with_permissions = HorillaUser.objects.filter(is_superuser=True)
 
     # Filter users based on the permissions list
     for perm in permissions:
         app_label, codename = perm.split(".")
-        users_with_permissions |= User.objects.filter(
+        users_with_permissions |= HorillaUser.objects.filter(
             user_permissions__codename=codename,
             user_permissions__content_type__app_label=app_label,
         )
@@ -87,7 +87,7 @@ def remove_dynamic_url(path_info):
     """Function to remove a dynamically added URL from any app's urlpatterns."""
 
     # Iterate over all app URL patterns
-    for app_urls in APP_URLS:
+    for app_urls in settings.APP_URLS:
         try:
             # Dynamically import the app's urls.py module
             urls_module = importlib.import_module(app_urls)
@@ -105,5 +105,5 @@ def remove_dynamic_url(path_info):
             print(f"Module {app_urls} not found. Skipping...")
 
     # Also remove it from the tracked dynamic paths
-    if path_info in DYNAMIC_URL_PATTERNS:
-        DYNAMIC_URL_PATTERNS.remove(path_info)
+    if path_info in settings.DYNAMIC_URL_PATTERNS:
+        settings.DYNAMIC_URL_PATTERNS.remove(path_info)
