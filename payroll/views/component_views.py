@@ -159,7 +159,7 @@ def payroll_calculation(employee, start_date, end_date):
         allowances["allowances"].append(ha)
     # finding the total allowance
     total_allowance = sum(allowance["amount"] for allowance in allowances["allowances"])
-
+    print("Total Allowance", total_allowance)
     updated_loss_off_pay_with_allowance = loss_of_pay_amount + ((total_allowance/30)*unpaid_days)
 
     kwargs["allowances"] = allowances
@@ -263,7 +263,7 @@ def payroll_calculation(employee, start_date, end_date):
         "tax_deductions": tax_deductions["tax_deductions"],
         "net_deductions": net_pay_deduction_list,
         "total_deductions": total_deductions,
-        "loss_of_pay": loss_of_pay,
+        "loss_of_pay": updated_loss_off_pay_with_allowance,
         "federal_tax": federal_tax,
         "start_date": start_date,
         "end_date": end_date,
