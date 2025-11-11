@@ -7,7 +7,7 @@ from .base import *
 
 # Import client overrides (if file exists)
 try:
-    from .local_settings import *
     from .addons import *
+    from .local_settings import *
 except ImportError:
     pass

@@ -3,9 +3,10 @@ base.py — Main Django settings for Horilla
 """
 
 import os
+from datetime import timedelta
 from os.path import join
 from pathlib import Path
-from datetime import timedelta
+
 import environ
 from django.contrib.messages import constants as messages
 from django.core.files.storage import FileSystemStorage
@@ -178,13 +179,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 # AUTHENTICATION & SECURITY
 # ========================================
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-AUTH_USER_MODEL = 'horilla_auth.HorillaUser'
+AUTH_USER_MODEL = "horilla_auth.HorillaUser"
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
@@ -219,13 +222,10 @@ TEMPLATES = [
             "loaders": [
                 (
                     "django.template.loaders.filesystem.Loader",
-                    [BASE_DIR / THEME_APP / "templates"]
+                    [BASE_DIR / THEME_APP / "templates"],
                 ),
                 "django.template.loaders.app_directories.Loader",
-                (
-                    "django.template.loaders.filesystem.Loader",
-                    [BASE_DIR / "templates"]
-                ),
+                ("django.template.loaders.filesystem.Loader", [BASE_DIR / "templates"]),
             ],
         },
     },
@@ -312,8 +312,8 @@ EMAIL_BACKEND = "base.backends.ConfiguredEmailBackend"
 """
 DB_INIT_PASSWORD: str
 
-The password used for database setup and initialization. This password is a 
-48-character alphanumeric string generated using a UUID to ensure high entropy and security. 
+The password used for database setup and initialization. This password is a
+48-character alphanumeric string generated using a UUID to ensure high entropy and security.
 """
 DB_INIT_PASSWORD = env(
     "DB_INIT_PASSWORD", default="d3f6a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d"
