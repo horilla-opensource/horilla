@@ -77,7 +77,7 @@
                     <label for="password" class="text-sm text-color-600"
                         >{% trans "Password" %}</label
                     >
-                    <div class="relative">
+                    <div class="oh-password-input-container relative">
                         <input
                             type="password"
                             id="password"
@@ -155,7 +155,6 @@
                     id="dataLoadAuthentication"
                     role="dialog"
                     aria-labelledby="dataLoadAuthenticationLabel"
-                    aria-hidden="true"
                     style="backdrop-filter: blur(8px)"
                 >
                     <div class="oh-modal__dialog">
@@ -165,23 +164,33 @@
                 {% endif %}
             </div>
         </div>
+
         <script type="module"  src="{% static 'images/ionicons/ui_icons/ionicons/ionicons.esm.js' %}"></script>
         <script>
-            document.querySelector('.oh-password-input--toggle').addEventListener('click', function (e) {
-                e.preventDefault();
-                const passwordInput = document.querySelector('.oh-input--password');
-                const showIcon = document.querySelector('.oh-password-input__show-icon');
-                const hideIcon = document.querySelector('.oh-password-input__hide-icon');
+            document.querySelectorAll('.oh-password-input--toggle').forEach(toggle => {
+                toggle.addEventListener('click', function (e) {
+                    console.log("ppppppppppppppp")
+                    e.preventDefault();
+                    const container = this.closest('.oh-password-input-container');
 
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    showIcon.classList.add('hidden');
-                    hideIcon.classList.remove('hidden');
-                } else {
-                    passwordInput.type = 'password';
-                    showIcon.classList.remove('hidden');
-                    hideIcon.classList.add('hidden');
-                }
+                    if (!container) return;
+
+                    const passwordInput = container.querySelector('.oh-input--password');
+                    const showIcon = container.querySelector('.oh-password-input__show-icon, .oh-passowrd-input__show-icon');
+                    const hideIcon = container.querySelector('.oh-password-input__hide-icon, .oh-passowrd-input__hide-icon');
+
+                    if (!passwordInput || !showIcon || !hideIcon) return;
+
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        showIcon.classList.add('hidden', 'd-none');
+                        hideIcon.classList.remove('hidden', 'd-none');
+                    } else {
+                        passwordInput.type = 'password';
+                        showIcon.classList.remove('hidden', 'd-none');
+                        hideIcon.classList.add('hidden', 'd-none');
+                    }
+                });
             });
         </script>
     </body>
