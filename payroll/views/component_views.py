@@ -159,7 +159,9 @@ def payroll_calculation(employee, start_date, end_date):
         allowances["allowances"].append(ha)
     # finding the total allowance
     total_allowance = sum(allowance["amount"] for allowance in allowances["allowances"])
-    print("Total Allowance", total_allowance)
+
+    # print("Total Allowance", total_allowance)
+
     updated_loss_off_pay_with_allowance = loss_of_pay_amount + ((total_allowance/30)*unpaid_days)
 
     kwargs["allowances"] = allowances
