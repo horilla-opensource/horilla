@@ -85,7 +85,7 @@ def pipeline_grouper(filters={}, offboardings=[]):
         employees = []
         stages = PipelineStageFilter(
             filters, queryset=offboarding.offboardingstage_set.all()
-        ).qs.order_by("id")
+        ).qs.order_by("sequence")
         all_stages_grouper = []
         data = {"offboarding": offboarding, "stages": [], "employees": []}
         for stage in stages:
