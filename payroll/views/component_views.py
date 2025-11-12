@@ -160,15 +160,6 @@ def payroll_calculation(employee, start_date, end_date):
     # finding the total allowance
     total_allowance = sum(allowance["amount"] for allowance in allowances["allowances"])
 
-    # print("Total Allowance", total_allowance)
-
-    # updated_loss_off_pay_with_allowance = loss_of_pay_amount + ((total_allowance/30)*unpaid_days)
-
-    lop_allowance_deductions = []
-
-
-
-
     kwargs["allowances"] = allowances
     kwargs["total_allowance"] = total_allowance
     updated_gross_pay_data = calculate_gross_pay(**kwargs)
@@ -200,6 +191,8 @@ def payroll_calculation(employee, start_date, end_date):
         "title": "Payee Tax",
         "amount": payee_tax,
     })
+
+    lop_allowance_deductions = []
 
     if unpaid_days > 0:
         for allowance in allowances["allowances"]:
