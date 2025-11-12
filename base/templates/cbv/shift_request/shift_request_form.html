@@ -2,19 +2,23 @@
     {% include "generic/horilla_form.html" %}
 </div>
 <script>
-    function toggleFunctionShiftRequestForm(element){
-      if (element.is(":checked")){
-        $("[id=id_requested_till_parent_div]").hide();
-      } else {
-        $("[id=id_requested_till_parent_div]").show();
-      }id_requested_till
+    function toggleFunctionShiftRequestForm(element) {
+        const requestedTill = $("[id=id_requested_till]");
+        const parent = requestedTill.parent();
+
+        if (element.is(":checked")) {
+            requestedTill.val("");
+            parent.hide();
+        } else {
+            parent.show();
+        }
     }
 
-      $(document).ready(function(){
-          $("[type=checkbox]").change(function (e) {
-          e.preventDefault();
-          toggleFunctionShiftRequestForm($(this));
-          });
-      })
-      toggleFunctionShiftRequestForm($("#genericModalBody #id_is_permanent_shift"));
-  </script>
+    $(document).ready(function () {
+        $("[type=checkbox]").change(function (e) {
+            e.preventDefault();
+            toggleFunctionShiftRequestForm($(this));
+        });
+    })
+    toggleFunctionShiftRequestForm($("#genericModalBody #id_is_permanent_shift"));
+</script>

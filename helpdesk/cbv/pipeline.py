@@ -205,7 +205,6 @@ class TicketListView(HorillaListView):
                 or self.request.user.has_perm("helpdesk.change_claimrequest")
                 or self.request.user.has_perm("helpdesk.change_ticket")
                 or self.request.user.has_perm("helpdesk.delete_ticket")
-                or self.request.user.has_perm("helpdesk.view_ticket")
             ):
                 self.action_method = "ticket_action_col"
             else:
