@@ -414,6 +414,7 @@ def calculate_allowance(**kwargs):
             "title": allowance.title,
             "is_taxable": allowance.is_taxable,
             "amount": amount,
+            "include_in_lop":allowance.include_in_lop
         }
         serialized_allowances.append(serialized_allowance)
 
@@ -424,6 +425,7 @@ def calculate_allowance(**kwargs):
             "title": allowance.title,
             "is_taxable": allowance.is_taxable,
             "amount": amount,
+            "include_in_lop": allowance.include_in_lop
         }
         serialized_allowances.append(serialized_allowance)
     return {"allowances": serialized_allowances}
