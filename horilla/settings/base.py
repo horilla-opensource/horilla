@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     "horilla_meet",
     "report",
     "whatsapp",
+    "horilla_ldap",
 ]
 
 # ========================================
