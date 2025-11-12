@@ -597,7 +597,7 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
                 "code": "mercantile_holiday",
                 "amount": salary_per_day * 2,
                 "is_taxable": False,
-                "include_in_lop": True,
+                "include_in_lop": False,
             })
             filtered_days.append(attendance_day)
         elif attendance_day.is_poya_holiday:
@@ -607,7 +607,7 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
                 "code": "poya_holiday",
                 "amount": salary_per_day * 1.5,
                 "is_taxable": False,
-                "include_in_lop": True,
+                "include_in_lop": False,
             })
             filtered_days.append(attendance_day)
         elif attendance_day.is_holiday:
