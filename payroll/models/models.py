@@ -792,6 +792,7 @@ class Allowance(HorillaModel):
         default=True,
         help_text=_("This field is used to calculate the taxable allowances"),
     )
+
     is_condition_based = models.BooleanField(
         default=False,
         help_text=_(
@@ -799,6 +800,8 @@ class Allowance(HorillaModel):
         to the specific employees when the condition satisfies with the employee's information"
         ),
     )
+    include_in_lop = models.BooleanField(default=False)
+
     # If condition based
     field = models.CharField(
         max_length=255,

@@ -159,8 +159,6 @@ def payroll_calculation(employee, start_date, end_date):
         allowances["allowances"].append(ha)
     # finding the total allowance
     total_allowance = sum(allowance["amount"] for allowance in allowances["allowances"])
-    print("Total Allowance", total_allowance)
-    updated_loss_off_pay_with_allowance = loss_of_pay_amount + ((total_allowance/30)*unpaid_days)
 
     kwargs["allowances"] = allowances
     kwargs["total_allowance"] = total_allowance
@@ -168,7 +166,7 @@ def payroll_calculation(employee, start_date, end_date):
     gross_pay = updated_gross_pay_data["gross_pay"]
 
     # Calculate Payee Tax deductions on gross pay
-    payee_tax_base_amount = gross_pay - updated_loss_off_pay_with_allowance
+    payee_tax_base_amount = gross_pay - loss_of_pay_amount
     payee_tax = calculate_payee_tax_deduction(payee_tax_base_amount)
 
     gross_pay_deductions = updated_gross_pay_data["deductions"]
@@ -194,6 +192,24 @@ def payroll_calculation(employee, start_date, end_date):
         "amount": payee_tax,
     })
 
+    lop_allowance_deductions = []
+
+    if unpaid_days > 0:
+        for allowance in allowances["allowances"]:
+            if allowance.get("include_in_lop", True):
+                allowance_deduction_amount = round(
+                    (allowance["amount"] / 30) * unpaid_days, 2
+                )
+
+                if allowance_deduction_amount > 0:
+                    lop_allowance_deductions.append({
+                        "title": f"{allowance['title']} (LOP deduction)",
+                        "amount": allowance_deduction_amount,
+                    })
+
+    post_tax_deductions["post_tax_deductions"].extend(lop_allowance_deductions)
+
+
     total_allowance = sum(item["amount"] for item in allowances["allowances"])
     total_pretax_deduction = sum(
         item["amount"] for item in pretax_deductions["pretax_deductions"]
@@ -210,7 +226,7 @@ def payroll_calculation(employee, start_date, end_date):
         + total_post_tax_deduction
         + total_tax_deductions
         + federal_tax
-        + updated_loss_off_pay_with_allowance
+        + loss_of_pay_amount
     )
 
     net_pay = gross_pay - total_deductions
@@ -224,7 +240,7 @@ def payroll_calculation(employee, start_date, end_date):
         total_post_tax_deduction=total_post_tax_deduction,
         total_tax_deductions=total_tax_deductions,
         federal_tax=federal_tax,
-        loss_of_pay_amount=updated_loss_off_pay_with_allowance,
+        loss_of_pay_amount=loss_of_pay_amount,
         loss_of_pay=loss_of_pay,
     )
     updated_net_pay_data = update_compensation_deduction(
@@ -263,7 +279,7 @@ def payroll_calculation(employee, start_date, end_date):
         "tax_deductions": tax_deductions["tax_deductions"],
         "net_deductions": net_pay_deduction_list,
         "total_deductions": total_deductions,
-        "loss_of_pay": updated_loss_off_pay_with_allowance,
+        "loss_of_pay": loss_of_pay_amount,
         "federal_tax": federal_tax,
         "start_date": start_date,
         "end_date": end_date,

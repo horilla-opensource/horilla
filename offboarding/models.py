@@ -82,7 +82,10 @@ class OffboardingStage(HorillaModel):
     type = models.CharField(max_length=13, choices=types)
     offboarding_id = models.ForeignKey(Offboarding, on_delete=models.CASCADE)
     managers = models.ManyToManyField(Employee)
-    sequence = models.IntegerField(default=0, editable=False)
+    sequence = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["sequence"]
 
     def __str__(self) -> str:
         return str(self.title)
