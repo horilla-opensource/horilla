@@ -134,6 +134,7 @@ class OffboardingEmployee(HorillaModel):
     unit = models.CharField(max_length=10, choices=UNIT, default="month", null=True)
     notice_period_starts = models.DateField(null=True)
     notice_period_ends = models.DateField(null=True, blank=True)
+    last_working_date = models.DateField(null=True, blank=True)
     objects = HorillaCompanyManager(
         related_company_field="employee_id__employee_work_info__company_id"
     )
@@ -248,7 +249,7 @@ class OffboardingTask(HorillaModel):
     OffboardingTask model
     """
 
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=100)
     managers = models.ManyToManyField(Employee)
     stage_id = models.ForeignKey(
         OffboardingStage,
