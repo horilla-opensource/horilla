@@ -43,10 +43,38 @@
             </div>
             <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_starts }}</div>
             <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_ends }}</div>
+      <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+    <form
+        hx-post="{% url 'offboarding-update-last-working-date' %}"
+        hx-target="#offboardingBody{{ offboarding.offboarding.id }}"
+        hx-include="this"
+        hx-trigger="change from:input[name='last_working_date']"
+    >
+        <input type="hidden" name="employee_id" value="{{ employee.id }}">
+        <input type="hidden" name="notice_period_ends" value="{{ employee.notice_period_ends|date:'Y-m-d' }}">
+        <input type="hidden" name="contract_end_date" value="{{ employee.contract_end_date|date:'Y-m-d' }}">
+        <input type="hidden" name="stage_id" value="{{ employee.stage_id.id }}">
+        <input type="hidden" name="notice_period_starts" value="{{ employee.notice_period_starts|date:'Y-m-d' }}">
+
+        <input
+            type="date"
+            name="last_working_date"
+            value="{{ employee.last_working_date|date:'Y-m-d' }}"
+            class="oh-input dateformat_changer"
+            style="padding: 4px"
+        >
+    </form>
+</div>
+
+
+
             {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or	perms.offboarding.change_offboardingemployee %}
             <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                 <form hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
                     hx-target="#offboardingBody{{offboarding.offboarding.id}}">
+<input type="hidden" name="notice_period_ends" value="{{ employee.notice_period_ends|date:'Y-m-d' }}">
+                        <input type="hidden" name="contract_end_date" value="{{ employee.last_working_date|date:'Y-m-d' }}"/>
+
                     {{ stage_forms|stages:employee.stage_id }}
                     <input type="submit" hidden />
                 </form>
