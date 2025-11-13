@@ -28,6 +28,9 @@ urlpatterns = [
         "offboarding-change-stage", views.change_stage, name="offboarding-change-stage"
     ),
     path(
+        "offboarding-update-last-working-date",views.update_last_working_date, name="offboarding-update-last-working-date"
+    ),
+    path(
         "view-offboarding-note/<int:employee_id>/",
         views.view_notes,
         name="view-offboarding-note",
