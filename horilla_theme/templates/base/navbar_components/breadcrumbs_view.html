@@ -1,12 +1,22 @@
 {% load static i18n %}
 <ul class="breadcrumb ms-4">
     {% for breadcrumb in breadcrumbs %}
-        <li>
-            {% if breadcrumb.found %}
-                <a href="{{ breadcrumb.url }}">{{ breadcrumb.name }}</a>
-            {% else %}
-                <a href="#">{{ breadcrumb.name }}</a>
-            {% endif %}
-        </li>
+        {% if forloop.last %}
+            <li>
+                {% if breadcrumb.found %}
+                    <a href="{{breadcrumb.url}}">{% trans breadcrumb.name %}</a>
+                {% else %}
+                    <a href="#">{% trans breadcrumb.name %}</a>
+                {% endif %}
+            </li>
+        {% else %}
+            <li>
+                {% if breadcrumb.found %}
+                    <a href="{{breadcrumb.url}}">{% trans breadcrumb.name %}</a>
+                {% else %}
+                    <a href="#">{% trans breadcrumb.name %}</a>
+                {% endif %}
+            </li>
+        {% endif %}
     {% endfor %}
 </ul>
