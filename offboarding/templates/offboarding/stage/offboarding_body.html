@@ -66,6 +66,7 @@
                 <div class="oh-sticky-table__th">{% trans "Notice Period" %}</div>
                 <div class="oh-sticky-table__th">{% trans "Start Date" %}</div>
                 <div class="oh-sticky-table__th">{% trans "End Date" %}</div>
+                <div class="oh-sticky-table__th">{% trans "Last Working Date" %}</div>
                 {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
                 <div class="oh-sticky-table__th">{% trans "Stage" %}</div>
                 {% endif %}
