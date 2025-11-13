@@ -168,6 +168,10 @@ sidebar_urls = [
     "asset-pivot",
     "pms-report",
     "pms-pivot",
+    "linkedin-integration-setting",
+    "ldap-settings",
+    "gmeet-setting",
+    "whatsapp-credential-view",
 ]
 remove_urls = [
     "feedback-detailed-view",
