@@ -74,11 +74,19 @@
                     </span>
                 </div>
                 <div class="oh-timeoff-modal__stat">
+                    <span class="oh-timeoff-modal__stat-title">{% trans "Last Working Date" %}</span>
+                    <span class="oh-timeoff-modal__stat-count dateformat_changer">
+                        {{employee.notice_period_ends}}
+                    </span>
+                </div>
+                <div class="oh-timeoff-modal__stat" style="margin-top: 5px">
                     <span class="oh-timeoff-modal__stat-title">{% trans "Stage" %}</span>
                     <span class="oh-timeoff-modal__stat-count">
                         {% if perms.offboarding.change_offboardingstage or request.user.employee_get|any_manager %}
                             <form id="stage_change" hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
-                            hx-target="#offboardingBody{{employee.stage_id.offboarding_id.id}}">
+                            hx-target="#offboardingBody{{employee.stage_id.offboarding_id.id}}" hx-include="this">
+<input type="hidden" name="notice_period_ends"
+       value="{{ employee.notice_period_ends|date:'Y-m-d' }}">
                                 {{ stage_forms|individual_view_stages:employee.stage_id }}
                                 <input type="submit" hidden />
                             </form>
