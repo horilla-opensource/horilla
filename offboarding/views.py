@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -51,6 +51,7 @@ from offboarding.forms import (
     TaskForm,
     ResignationReasonForm,
 )
+from offboarding.methods import compute_resignation_balance
 from offboarding.models import (
     EmployeeTask,
     Offboarding,
@@ -66,6 +67,8 @@ from offboarding.models import (
 )
 
 from payroll.models.models import Contract
+from payroll.methods.methods import compute_salary_on_period
+
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -432,6 +435,9 @@ def change_stage(request):
         employee.stage_id = stage
         employee.save()
 
+    notice_period_end_date = request.GET.get("notice_period_ends")
+    print("Notice period ends:", notice_period_end_date)
+
     if stage.type == "fnf":
 
         real_employee_ids = employees.values_list("employee_id__id", flat=True)
@@ -444,7 +450,7 @@ def change_stage(request):
         if contracts.exists():
             contracts.update(
                 contract_status='terminated',
-                contract_end_date=datetime.today().date()
+                contract_end_date=notice_period_end_date
             )
             logger.info("Terminated %d contract(s) for FNF process.", contracts.count())
         else:
@@ -486,6 +492,70 @@ def change_stage(request):
             "offboarding": groups[0],
             "stage_forms": stage_forms,
             "response_message": _("stage changed successfully."),
+            "today": datetime.today().date(),
+        },
+    )
+
+
+@any_manager_can_enter("offboarding.change_offboardingemployee")
+def update_last_working_date(request):
+    """
+    Updates the last working date for an employee during offboarding.
+    """
+    employee_id = request.POST.get("employee_id")
+    last_working_date = request.POST.get("last_working_date")
+    notice_period_ends = request.POST.get("notice_period_ends")
+    contract_end_date = request.POST.get("contract_end_date")
+    stage_id = request.POST.get("stage_id")
+    notice_period_starts = request.POST.get("notice_period_starts")
+
+    try:
+        off_emp = OffboardingEmployee.objects.get(id=employee_id)
+    except OffboardingEmployee.DoesNotExist:
+        return HttpResponseBadRequest("Employee not found")
+
+    try:
+        start_date = datetime.strptime(last_working_date, "%Y-%m-%d").date()
+        end_date = datetime.strptime(notice_period_ends, "%Y-%m-%d").date()
+    except ValueError:
+        return HttpResponseBadRequest("Invalid date format (expected YYYY-MM-DD)")
+
+    fine_amount = compute_resignation_balance(off_emp.employee_id, start_date, end_date)
+    print("FINE DATA SET" , fine_amount)
+
+    try:
+        stage = OffboardingStage.objects.get(id=int(stage_id))
+        print("Stage" , stage)
+    except OffboardingStage.DoesNotExist:
+        return HttpResponseBadRequest("Invalid stage_id")
+
+    print("Updating last working date for employee:", employee_id)
+    print("New last working date:", last_working_date)
+    print("Notice period ends:", notice_period_ends)
+    print("Contract end date:", contract_end_date)
+
+    try:
+        employee = OffboardingEmployee.objects.get(id=employee_id)
+        employee.last_working_date = last_working_date
+        employee.save(update_fields=["last_working_date"])
+    except OffboardingEmployee.DoesNotExist:
+        return HttpResponseBadRequest("Employee not found")
+
+    stage_forms = {}
+    stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
+        offboarding=stage.offboarding_id
+    )
+    groups = pipeline_grouper({}, [stage.offboarding_id])
+    for item in groups:
+        setattr(item["offboarding"], "stages", item["stages"])
+
+    return render(
+        request,
+        "offboarding/stage/offboarding_body.html",
+        {
+            "offboarding": groups[0],
+            "stage_forms": stage_forms,
+            "response_message": _("Last Working Date Changed Successfully."),
             "today": datetime.today().date(),
         },
     )
