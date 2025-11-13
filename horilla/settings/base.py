@@ -144,7 +144,6 @@ MIDDLEWARE = [
     "horilla.horilla_middlewares.ThreadLocalMiddleware",
     "horilla.horilla_middlewares.SVGSecurityMiddleware",
     "auditlog.middleware.AuditlogMiddleware",
-    "horilla_crumbs.context_processors.breadcrumbs",
 ]
 
 ROOT_URLCONF = "horilla.urls"
