@@ -19,6 +19,9 @@ COPY --from=builder /install /usr/local
 
 COPY . .
 
+# Fix line endings for entrypoint.sh (convert CRLF to LF)
+RUN sed -i 's/\r$//' /app/entrypoint.sh
+
 RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000
