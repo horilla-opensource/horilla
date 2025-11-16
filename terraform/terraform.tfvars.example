@@ -1,0 +1,14 @@
+aws_region         = "us-east-1"
+availability_zone  = "us-east-1a"
+container_power    = "nano"
+container_scale    = 1
+db_bundle_id       = "micro_1_0"
+allowed_hosts      = "hr.sahdiagnostics.com"
+domain_name        = "hr.sahdiagnostics.com"
+
+# You need to set these values:
+# container_image   = "280648354859.dkr.ecr.us-east-1.amazonaws.com/horilla:latest"
+# db_username       = "horilla"
+# db_password       = "SAH@HR@HORILLA#2#0#2#5"
+# django_secret_key = "7ga5=-d9-2yyd6%wqpcp8k5x*2_b-r)o!qusy#q$)&q7fja0u9"
+

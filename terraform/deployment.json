@@ -1,0 +1,31 @@
+{
+  "containers": {
+    "horilla-app": {
+      "image": "your-account.dkr.ecr.us-east-1.amazonaws.com/horilla:latest",
+      "command": ["sh", "./entrypoint.sh"],
+      "environment": {
+        "DATABASE_URL": "postgres://horilla:password@host:5432/horilla",
+        "DEBUG": "False",
+        "SECRET_KEY": "your-secret-key",
+        "ALLOWED_HOSTS": "hr.sahdiagnostics.com",
+        "CSRF_TRUSTED_ORIGINS": "https://hr.sahdiagnostics.com"
+      },
+      "ports": {
+        "8000": "HTTP"
+      }
+    }
+  },
+  "publicEndpoint": {
+    "containerName": "horilla-app",
+    "containerPort": 8000,
+    "healthCheck": {
+      "healthyThreshold": 2,
+      "unhealthyThreshold": 2,
+      "timeoutSeconds": 5,
+      "intervalSeconds": 30,
+      "path": "/",
+      "successCodes": "200-499"
+    }
+  }
+}
+
