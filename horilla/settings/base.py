@@ -219,6 +219,7 @@ TEMPLATES = [
                 "base.context_processors.biometric_app_exists",
                 "base.context_processors.enable_late_come_early_out_tracking",
                 "base.context_processors.enable_profile_edit",
+                "horilla_crumbs.context_processors.breadcrumbs",
             ],
             "loaders": [
                 (
