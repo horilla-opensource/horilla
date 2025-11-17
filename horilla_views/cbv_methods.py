@@ -467,7 +467,7 @@ def get_field_class_map(model_class: models.Model, bulk_update_fields: list) -> 
     field_class_map = {}
     for field_name in bulk_update_fields:
         field = get_nested_field(model_class, field_name)
-        field_class_map[field_name] = field.field
+        field_class_map[field_name] = field
     return field_class_map
 
 
