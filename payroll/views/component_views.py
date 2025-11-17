@@ -814,12 +814,21 @@ def generate_payslip(request):
             end_date = form.cleaned_data["end_date"]
 
             group_name = form.cleaned_data["group_name"]
+            emp_count = employees.count()
             for employee in employees:
                 contract = Contract.objects.filter(
                     employee_id=employee, contract_status="active"
                 ).first()
                 if start_date < contract.contract_start_date:
                     start_date = contract.contract_start_date
+
+                if end_date < start_date:
+                    messages.error(
+                        request, _(f"{employee}'s contract has not started yet.")
+                    )
+                    emp_count -= 1
+                    continue
+
                 payslip = payroll_calculation(employee, start_date, end_date)
                 payslips.append(payslip)
                 json_data.append(payslip["json_data"])
@@ -854,7 +863,7 @@ def generate_payslip(request):
                     ),
                     icon="close",
                 )
-            messages.success(request, f"{employees.count()} payslip saved as draft")
+            messages.success(request, f"{emp_count} payslip saved as draft")
             return redirect(
                 f"/payroll/view-payslip?group_by=group_name&active_group={group_name}"
             )
