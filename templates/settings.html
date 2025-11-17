@@ -322,12 +322,10 @@
 
 						<li class="oh-inner-sidebar__item">
 							<div class="oh-accordion ms-2">
-								{% if employee_section %}
 									<div class="oh-accordion-header" style="font-size:16px;">
 										<ion-icon name="people" class="me-2"></ion-icon>
 										{% trans "Employee" %}
 									</div>
-								{% endif %}
 									<div class="oh-accordion-body">
 										<div class="row">
 										<div class="col-sm-12 col-md-12 col-lg-12">
@@ -417,9 +415,7 @@
 								</div>
 							</div>
 						</li>
-						{% if employee_section %}
-							<hr>
-						{% endif %}
+						<hr>
 						{% if "attendance"|app_installed %}
 							<li class="oh-inner-sidebar__item">
 								<div class="oh-accordion ms-2">
