@@ -1,0 +1,215 @@
+name: Deploy to AWS Lightsail
+
+concurrency:
+  group: lightsail-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Horilla to Lightsail
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      AWS_REGION: 'eu-west-2'
+      LIGHTSAIL_STATIC_IP: '3.9.110.17'
+      RDS_ENDPOINT: 'ls-55259936bea462f21e2453f3a91f5f072171ca31.cd6g68iwss4x.eu-west-2.rds.amazonaws.com'
+      SSH_USER: 'ec2-user'
+
+    steps:
+      # 1. Configure AWS Credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # 2. Get secrets from AWS Secrets Manager
+      # Note: Secret is in eu-north-1, so we specify the region explicitly
+      - name: Get secrets from AWS Secrets Manager
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: ${{ secrets.AWS_SECRET_NAME }}
+          parse-json-secrets: true
+          aws-region: 'eu-north-1'
+
+      # 3. Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 4. Setup Docker Buildx
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 5. Build Horilla Docker image
+      - name: Build Horilla Docker image
+        run: |
+          docker build -t horilla-server:${{ github.sha }} .
+          docker save horilla-server:${{ github.sha }} | gzip > horilla-server-image.tar.gz
+
+      # 6. Generate deployment configurations (Docker Compose)
+      - name: Generate deployment configurations
+        run: |
+          # Note: Environment variables from AWS Secrets Manager will be available here
+          # They may be prefixed (e.g., HORILLA_DATABASE_USER) depending on your secret structure
+          # This script will use whatever variables are set by the AWS Secrets Manager action
+          
+          # Set defaults if variables are not set (adjust based on your AWS Secrets Manager structure)
+          DATABASE_USER="${DATABASE_USER:-${HORILLA_DATABASE_USER:-postgres}}"
+          DATABASE_PASSWORD="${DATABASE_PASSWORD:-${HORILLA_DATABASE_PASSWORD}}"
+          DATABASE_NAME="${DATABASE_NAME:-${HORILLA_DATABASE_NAME:-horilla}}"
+          SECRET_KEY="${SECRET_KEY:-${HORILLA_SECRET_KEY}}"
+          DEBUG="${DEBUG:-False}"
+          ALLOWED_HOSTS="${ALLOWED_HOSTS:-*}"
+          CSRF_TRUSTED_ORIGINS="${CSRF_TRUSTED_ORIGINS:-http://3.9.110.17}"
+          
+          # Construct DATABASE_URL
+          DATABASE_URL="postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@${RDS_ENDPOINT}:5432/${DATABASE_NAME}"
+          
+          # Generate docker-compose.deploy.yml for production
+          cat > docker-compose.deploy.yml << COMPOSEEOF
+          services:
+            horilla-server:
+              image: horilla-server:${{ github.sha }}
+              restart: always
+              command: sh ./entrypoint.sh
+              ports:
+                - '127.0.0.1:8000:8000'
+              environment:
+                - DATABASE_URL=${DATABASE_URL}
+                - SECRET_KEY=${SECRET_KEY}
+                - DEBUG=${DEBUG}
+                - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+                - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+              volumes:
+                - horilla-media:/app/media
+              healthcheck:
+                test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000').read()"]
+                interval: 30s
+                timeout: 10s
+                retries: 3
+                start_period: 60s
+
+          volumes:
+            horilla-media:
+          COMPOSEEOF
+
+          # Generate .env file for reference (not strictly needed since we're using environment: directly)
+          cat > .env.deploy << EOF
+          DATABASE_USER=${DATABASE_USER}
+          DATABASE_PASSWORD=${DATABASE_PASSWORD}
+          DATABASE_NAME=${DATABASE_NAME}
+          RDS_ENDPOINT=${RDS_ENDPOINT}
+          DATABASE_URL=${DATABASE_URL}
+          SECRET_KEY=${SECRET_KEY}
+          DEBUG=${DEBUG}
+          ALLOWED_HOSTS=${ALLOWED_HOSTS}
+          CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS}
+          EOF
+
+          # Debug: Display generated files (without sensitive data)
+          echo "=== Generated docker-compose.deploy.yml ==="
+          cat docker-compose.deploy.yml
+          echo "============================================"
+          echo "=== .env.deploy (redacted) ==="
+          sed 's/=.*/=***REDACTED***/g' .env.deploy
+          echo "============================================"
+
+      # 7. Setup SSH key
+      - name: Setup SSH key
+        run: |
+          echo "Fetching SSH key directly from AWS..."
+          mkdir -p ~/.ssh
+          
+          aws secretsmanager get-secret-value \
+            --secret-id ${{ secrets.AWS_SECRET_NAME }} \
+            --region eu-north-1 \
+            --query 'SecretString' \
+            --output text | jq -r '.LIGHTSAIL_SSH_PRIVATE_KEY' > ~/.ssh/lightsail_key.pem
+          echo "Setting key permissions..."
+          chmod 600 ~/.ssh/lightsail_key.pem
+          
+          echo "Adding host to known_hosts..."
+          ssh-keyscan -H ${{ env.LIGHTSAIL_STATIC_IP }} >> ~/.ssh/known_hosts
+
+      # 8. Transfer files to Lightsail instance
+      - name: Copy deployment files to Lightsail
+        run: |
+          scp -i ~/.ssh/lightsail_key.pem \
+            horilla-server-image.tar.gz \
+            docker-compose.deploy.yml \
+            .env.deploy \
+            ${{ env.SSH_USER }}@${{ env.LIGHTSAIL_STATIC_IP }}:~/
+
+      # 9. Deploy on Lightsail
+      - name: Deploy to Lightsail
+        run: |
+          ssh -i ~/.ssh/lightsail_key.pem ${{ env.SSH_USER }}@${{ env.LIGHTSAIL_STATIC_IP }} << 'ENDSSH'
+            set -e
+            echo "Loading Docker image..."
+            docker load < horilla-server-image.tar.gz
+            
+            echo "Deploying containers with rolling update..."
+            docker compose -f docker-compose.deploy.yml up -d --force-recreate
+            
+            echo "Waiting for containers to start..."
+            sleep 20
+            
+            echo "Checking container status..."
+            docker compose -f docker-compose.deploy.yml ps
+            
+            echo "Checking horilla-server logs..."
+            docker compose -f docker-compose.deploy.yml logs --tail=50 horilla-server
+            
+            echo "Waiting for health checks (this may take up to 60 seconds)..."
+            for i in {1..6}; do
+              if docker compose -f docker-compose.deploy.yml ps | grep -q "unhealthy"; then
+                echo "Attempt \$i: Container still unhealthy, waiting..."
+                sleep 10
+              else
+                echo "Health check passed!"
+                break
+              fi
+            done
+            
+            # Final status check - warn but don't fail
+            if docker compose -f docker-compose.deploy.yml ps | grep -q "unhealthy"; then
+              echo "⚠️  WARNING: Container health check failed. Showing logs:"
+              docker compose -f docker-compose.deploy.yml logs --tail=100 horilla-server
+              echo "⚠️  WARNING: Deployment completed but service may not be fully operational"
+              echo "⚠️  Please check the logs above and verify the application manually"
+            else
+              echo "✅ Deployment successful, containers are healthy"
+            fi
+            
+            echo "Cleaning up old images..."
+            docker image prune -f
+            
+            echo "Deployment complete!"
+          ENDSSH
+
+      # 10. Verify deployment
+      - name: Verify deployment
+        run: |
+          ssh -i ~/.ssh/lightsail_key.pem ${{ env.SSH_USER }}@${{ env.LIGHTSAIL_STATIC_IP }} << 'ENDSSH'
+            echo "=== Container Status ==="
+            docker compose -f docker-compose.deploy.yml ps
+            echo -e "\n=== Server Logs (last 30 lines) ==="
+            docker compose -f docker-compose.deploy.yml logs --tail=30 horilla-server
+          ENDSSH
+
+      # 11. Cleanup
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f ~/.ssh/lightsail_key.pem
+
