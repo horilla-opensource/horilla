@@ -173,4 +173,9 @@ urlpatterns = [
         component_views.payslip_detailed_export,
         name="payslip-detailed-export",
     ),
+    path(
+        "payslip-super-detailed-export",
+        component_views.payslip_super_detailed_export,
+        name="payslip-super-detailed-export",
+    )
 ]
