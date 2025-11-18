@@ -600,6 +600,9 @@ def compute_salary_on_30_day_wage(employee, wage, start_date, end_date, *args, *
                 "include_in_lop": False,
             })
             filtered_days.append(attendance_day)
+        elif attendance_day.is_get_compensation_leave and attendance_day.is_mercantile_holiday:
+            logger.info("Attendance marked on Mercantile Holiday with Compensation Leave: %s", attendance_day.attendance_date)
+            filtered_days.append(attendance_day)
         elif attendance_day.is_poya_holiday:
             logger.info("Attendance marked on Poya Holiday: %s", attendance_day.attendance_date)
             holiday_allowances.append({
