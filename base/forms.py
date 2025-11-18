@@ -231,6 +231,21 @@ class ModelForm(forms.ModelForm):
                     }
                 )
 
+            # DateTime field
+            elif isinstance(widget, forms.DateTimeInput):
+                field.initial = now.strftime("%Y-%m-%d %H:%M")
+                widget.input_type = "datetime-local"
+                widget.format = "%Y-%m-%dT%H:%M"
+                field.input_formats = ["%Y-%m-%dT%H:%M"]
+
+                existing_class = widget.attrs.get("class", default_input_class)
+                widget.attrs.update(
+                    {
+                        "class": f"{existing_class} form-control",
+                        "placeholder": label,
+                    }
+                )
+
             # Number, Email, Text, File, URL fields
             elif isinstance(
                 widget,
