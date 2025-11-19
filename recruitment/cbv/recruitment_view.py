@@ -219,6 +219,7 @@ class RecruitmentCreationFormExtended(RecruitmentCreationForm):
             self.fields["linkedin_account_id"].widget = forms.HiddenInput()
 
 
+@method_decorator(login_required, name="dispatch")
 class RecruitmentNewSkillForm(HorillaFormView):
     """
     form view for add new skill
@@ -296,6 +297,7 @@ class RecruitmentForm(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class AddCandidateFormView(HorillaFormView):
     """
     form view for add candidate
