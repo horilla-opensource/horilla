@@ -1,0 +1,125 @@
+{% load static i18n %}
+<style>
+    #bulkResumeUploadBody {
+        position: relative;
+    }
+
+    #enlargeImageContainer {
+        display:none; 
+        position: absolute; 
+        width: 300px; 
+        height: 400px; 
+        z-index: 1000;
+    }
+	.diff-cell {
+		background: rgba(255, 166, 0, 0.158);
+	}
+    .oh-modal .oh-modal__dialog-title {
+        font-weight: 600;
+        color: #4f4a4a;
+    }
+</style>
+
+<div>
+    <table
+        class="fixed-table w-full border-separate"
+    >
+        <thead class="sticky top-0 bg-[white] z-[1]">
+            <tr class="border-b border-[#ececec]">
+                <th class="text-sm font-medium text-left min-w-[150px]">
+                    {% trans "Resume" %}
+                </th>
+                <th class="text-sm font-medium text-left min-w-[100px]">
+                    {% trans "Score" %}
+                </th>
+                {% if perms.recruitment.change_recruitment or perms.recruitment.delete_recruitment or perms.recruitment.add_recruitment %}
+                    <th class="text-sm font-medium text-left min-w-[150px]">
+                        {% trans "Resume" %}
+                    </th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for resume in matched_resumes %}
+            <tr class="border-b border-[#f3f3f3] cursor-pointer">
+                <td class="text-sm text-left p-3 text-[#666] h-[45px]">
+                    <a
+                        href="{{ resume.resume.file.url }}"
+                        onmouseover="enlargeImage('{{ resume.resume.file.url }}',$(this))"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                    >
+                        {{resume.resume}}
+                    </a>
+                </td>
+                <td class="text-sm text-left p-3 text-[#666] h-[45px]">
+                    {% if resume.image_pdf %}
+                        <p class="text-danger">{% trans "Need verification" %}</p>
+                    {% else %}
+                        {{resume.matching_skills_count}}
+                    {% endif %}
+                </td>
+                {% if perms.base.change_department or perms.base.delete_department %}
+                    <td class="text-sm text-left p-3 text-[#666] h-[45px]">
+                        {% if resume.resume.is_candidate %}
+                            <a class="oh-btn oh-btn--success" href="#">
+                                {% trans "Candidated Added" %}
+                            </a>
+                        {% else %}
+                            <a
+                                class="oh-btn oh-btn--info"
+                                target="_blank"
+                                href="{% url 'application-form' %}?recruitmentId={{rec_id}}&resumeId={{resume.resume.pk}}"
+                            >
+                                {% trans "Create Candidate" %}
+                            </a>
+                        {% endif %}
+                    </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+	function enlargeImage(src, element) {
+        var enlargeImageContainer = $("#enlargeImageContainer");
+        enlargeImageContainer.empty(); // Clear any previous content
+
+        var enlargedImage = $("<iframe>").attr({
+            src: src,
+            style: "width:100%; height:100%; border: none; background:white;",
+        });
+
+        enlargeImageContainer.append(enlargedImage);
+
+        // Calculate the position of the hovered element
+        var elementOffset = $(element).offset();
+        var elementWidth = $(element).outerWidth();
+
+        var topPosition = elementOffset.top - 30; 
+        var leftPosition = elementWidth + 10; 
+
+        // Position the enlarge image container dynamically
+        enlargeImageContainer.css({
+            top: topPosition + 'px',
+            left: leftPosition + 'px',
+            display: 'block',
+        });
+    }
+
+    function hideEnlargeImage() {
+        // Hide the enlarge image container when mouse leaves
+        var enlargeImageContainer = $("#enlargeImageContainer");
+        enlargeImageContainer.empty();
+        enlargeImageContainer.hide();
+    }
+
+	$(document).on("click", function (event) {
+		if (!$(event.target).closest("#enlargeImageContainer").length) {
+			hideEnlargeImage();
+		}
+	});
+</script>
