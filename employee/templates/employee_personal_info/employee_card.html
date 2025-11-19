@@ -86,7 +86,7 @@
                         <a href="{% url 'employee-view-update' emp.id %}" class="oh-dropdown__link">{% trans "Edit" %}</a>
                       </li>
                       <li class="oh-dropdown__item">
-                        <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#agreementModal" onclick="event.stopPropagation(); populateAgreementModal('{{ emp.get_full_name|escapejs }}', '{{ emp.email|escapejs }}', '{{ emp.address|escapejs }}', '{{ emp.country|escapejs }}', '{{ emp.state|escapejs }}', '{{ emp.city|escapejs }}', '{{ emp.zip|escapejs }}', '{{ emp.nic_number|escapejs }}', '{{ emp.employee_work_info.department_id|escapejs }}', '{{ emp.employee_work_info.job_position_id|escapejs }}')">{% trans "Agreement" %}</a>
+                        <a href="#" class="oh-dropdown__link" data-toggle="oh-modal-toggle" data-target="#agreementModal" onclick="event.stopPropagation(); populateAgreementModal('{{ emp.get_full_name|escapejs }}', '{{ emp.email|escapejs }}', '{{ emp.address|escapejs }}', '{{ emp.country|escapejs }}', '{{ emp.state|escapejs }}', '{{ emp.city|escapejs }}', '{{ emp.zip|escapejs }}', '{{ emp.nic_number|escapejs }}', '{{ emp.employee_work_info.department_id|escapejs }}', '{{ emp.employee_work_info.job_position_id|escapejs }}', '{{ emp.employee_work_info.basic_salary|default:10000 }}')">{% trans "Agreement" %}</a>
                       </li>
                     {% endif %}
                     {% if profile_edit_enabled %}
@@ -226,9 +226,10 @@
 </div>
 
 <script>
-function populateAgreementModal(name, email, address, country, state, city, zip, nic, department, position) {
-    // Store employee name globally for PDF download
+function populateAgreementModal(name, email, address, country, state, city, zip, nic, department, position, basicSalary) {
+    // Store employee name and salary globally for PDF download
     window.currentEmployeeName = name;
+    window.currentEmployeeSalary = basicSalary;
     // Format address properly for formal letter
     let formattedAddress = '';
     if (address) {
@@ -349,7 +350,7 @@ function populateAgreementModal(name, email, address, country, state, city, zip,
         Upon full appointment, the Employee shall work 40 hours per week, scheduled as 5 days of 8 hours each.
       </p>
       <p>
-        For this, the Employee shall receive a basic monthly salary of <strong>LKR 10,000</strong> during the first month of employment. From the second month onward, the monthly salary shall be <strong>LKR 15,000</strong>. Subsequent salary increments will be determined based on the Employee's performance.
+        For this, the Employee shall receive a basic monthly salary of <strong>LKR ${basicSalary ? basicSalary.toLocaleString() : '10,000'}</strong>,during the first month of employment.
       </p>
 
       <div class="section-title">Performance Reviews</div>
