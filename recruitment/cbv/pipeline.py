@@ -105,20 +105,7 @@ class RecruitmentTabView(HorillaTabView):
                         },
                     )
 
-                    tab["actions"].append(
-                        {
-                            "action": _("Manage Stage Order"),
-                            "attrs": f"""
-                                data-toggle="oh-modal-toggle"
-                                data-target="#genericModal"
-                                hx-get="{reverse("rec-update-stage-seq", kwargs={"pk": rec.pk})}"
-                                hx-target="#genericModalBody"
-                                style="cursor: pointer;"
-                            """,
-                        }
-                    )
-
-                if change_perm or rec_manager_perm or change_perm:
+                if change_perm or rec_manager_perm:
                     tab["actions"].append(
                         {
                             "action": _("Edit"),
@@ -144,6 +131,20 @@ class RecruitmentTabView(HorillaTabView):
                                 style="cursor: pointer;"
                             """,
                         },
+                    )
+
+                if add_stage_perm or rec_manager_perm or change_perm:
+                    tab["actions"].append(
+                        {
+                            "action": _("Manage Stage Order"),
+                            "attrs": f"""
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                hx-get="{reverse("rec-update-stage-seq", kwargs={"pk": rec.pk})}"
+                                hx-target="#genericModalBody"
+                                style="cursor: pointer;"
+                            """,
+                        }
                     )
 
                 if change_perm or rec_manager_perm:
