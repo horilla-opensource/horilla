@@ -453,5 +453,17 @@ if apps.is_installed("attendance"):
                 views.delete_comment_compensatory_file,
                 name="delete-compensatory-comment-file",
             ),
+            path(
+                "monthly-leave-report-form",
+                views.monthly_leave_report_form,
+                name="monthly-leave-report-form"
+            ),
+
+            path(
+                "monthly-leave-report",
+                views.monthly_leave_report,
+                name="monthly-leave-report"
+            ),
+
         ]
     )
