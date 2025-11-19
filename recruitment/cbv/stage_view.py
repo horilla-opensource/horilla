@@ -38,6 +38,8 @@ class StageView(TemplateView):
     template_name = "cbv/stages/stages.html"
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required(perm="recruitment.view_stage"), name="dispatch")
 class StageList(HorillaListView):
     """
     List view of stage
@@ -143,6 +145,8 @@ class StageList(HorillaListView):
     }
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required(perm="recruitment.view_stage"), name="dispatch")
 class StageNav(HorillaNavView):
     """
     For nav bar
@@ -169,6 +173,8 @@ class StageNav(HorillaNavView):
     group_by_fields = [("recruitment_id", "Recruitment")]
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required(perm="recruitment.add_stage"), name="dispatch")
 class StageFormView(HorillaFormView):
     """
     Form View
@@ -247,6 +253,8 @@ class StageFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required(perm="recruitment.change_stage"), name="dispatch")
 class StageDuplicateForm(HorillaFormView):
     """
     Duplicate form view
@@ -292,6 +300,8 @@ class StageDuplicateForm(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required(perm="recruitment.view_stage"), name="dispatch")
 class StageDetailView(HorillaDetailedView):
     """
     detail view of page

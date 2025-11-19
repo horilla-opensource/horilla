@@ -910,6 +910,10 @@ class CandidateDetail(HorillaDetailedView):
             )
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    all_manager_can_enter(perm="recruitment.change_candidate"), name="dispatch"
+)
 class ToSkillZoneFormView(HorillaFormView):
     """
     Form View
@@ -980,6 +984,10 @@ class ToSkillZoneFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(
+    all_manager_can_enter(perm="recruitment.change_candidate"), name="dispatch"
+)
 class RejectReasonFormView(HorillaFormView):
     """
     Form View
