@@ -194,6 +194,7 @@
         {% trans "Selected Employees" %}
     </div>
     <div class="d-flex flex-row-reverse oh-wrapper mb-2">
+
         <span
             class="me-3"
             onclick="$('[name=contract_status]').val('terminated'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
@@ -204,6 +205,17 @@
                 style="background-color: black"
             ></span>
             {% trans "Terminated" %}
+        </span>
+            <span
+            class="me-3"
+            onclick="$('[name=contract_status]').val('termination_in_progress'); $('[name=contract_status]').first().change(); $('.filterButton').click()"
+            style="cursor: pointer"
+        >
+            <span
+                class="oh-dot oh-dot--small me-1"
+                style="background-color: orange"
+            ></span>
+            {% trans "Termination In Progress" %}
         </span>
         <span
             class="me-3"
