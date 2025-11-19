@@ -21,7 +21,9 @@ from recruitment.models import Candidate
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="candidate.view_candidate"), name="dispatch")
+@method_decorator(
+    permission_required(perm="recruitment.view_candidate"), name="dispatch"
+)
 class OnboardingCandidatesView(TemplateView):
     """
     onboarding candidates view
@@ -43,7 +45,9 @@ class OnboardingCandidatesView(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="candidate.view_candidate"), name="dispatch")
+@method_decorator(
+    permission_required(perm="recruitment.view_candidate"), name="dispatch"
+)
 class OnboardingCandidatesList(HorillaListView):
     """
     List view
@@ -157,7 +161,9 @@ class OnboardingCandidatesList(HorillaListView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required(perm="candidate.view_candidate"), name="dispatch")
+@method_decorator(
+    permission_required(perm="recruitment.view_candidate"), name="dispatch"
+)
 class OnboardingCandidatesNav(HorillaNavView):
     """
     Nav bar
