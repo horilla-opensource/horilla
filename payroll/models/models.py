@@ -152,6 +152,7 @@ class Contract(HorillaModel):
         ("draft", _("Draft")),
         ("active", _("Active")),
         ("expired", _("Expired")),
+        ("termination_in_progress", _("Termination In Progress")),
         ("terminated", _("Terminated")),
     )
     try:
