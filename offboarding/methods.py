@@ -35,7 +35,7 @@ def compute_resignation_balance(employee,  last_working_date , notice_end_date):
     print("leave_data", leave_data)
 
     contract = Contract.objects.filter(
-        employee_id=employee, contract_status="terminated"
+        employee_id=employee, contract_status="termination_in_progress"
     ).first()
     if contract is None:
         return contract
@@ -87,7 +87,7 @@ def compute_resignation_balance(employee,  last_working_date , notice_end_date):
                     if created:
                         print(f"Offboarding task created for {employee}: {emp_task.description}")
                     else:
-                        print(f"⚠Task already exists for {employee}")
+                        print(f"Task already exists for {employee}")
         except Exception as e:
             print(f" Error creating offboarding task: {e}")
 
