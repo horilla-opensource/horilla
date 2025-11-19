@@ -449,7 +449,7 @@ def change_stage(request):
 
         if contracts.exists():
             contracts.update(
-                contract_status='terminated',
+                contract_status='termination_in_progress',
                 contract_end_date=notice_period_end_date
             )
             logger.info("Terminated %d contract(s) for FNF process.", contracts.count())
