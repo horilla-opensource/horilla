@@ -233,6 +233,18 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+# Email configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True  # Changed from EMAIL_USE_TLS
+EMAIL_HOST_USER = 'satalanarun@vinasai.ca'
+EMAIL_HOST_PASSWORD = 'emjf dmet ytnl nbpe'
+DEFAULT_FROM_EMAIL = 'noreply@yourdomain.com'
+
+
+
 # Production settings
 if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
@@ -244,3 +256,5 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+
