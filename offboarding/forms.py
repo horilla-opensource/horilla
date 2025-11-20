@@ -83,6 +83,7 @@ class OffboardingEmployeeForm(ModelForm):
         widgets = {
             "notice_period_starts": forms.DateInput(attrs={"type": "date"}),
             "notice_period_ends": forms.DateInput(attrs={"type": "date"}),
+            "last_working_date": forms.DateInput(attrs={"type": "date"}),
         }
 
     def as_p(self):
