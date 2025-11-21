@@ -111,26 +111,6 @@ def create_shift_days(sender, **kwargs):
         )
 
 
-@receiver(post_migrate)
-def create_shift_days(sender, **kwargs):
-    from base.models import EmployeeShiftDay
-
-    if not EmployeeShiftDay.objects.exists():
-        days = [
-            ("monday", "Monday"),
-            ("tuesday", "Tuesday"),
-            ("wednesday", "Wednesday"),
-            ("thursday", "Thursday"),
-            ("friday", "Friday"),
-            ("saturday", "Saturday"),
-            ("sunday", "Sunday"),
-        ]
-
-        EmployeeShiftDay.objects.bulk_create(
-            [EmployeeShiftDay(day=day[0]) for day in days]
-        )
-
-
 @receiver(m2m_changed, sender=Announcement.employees.through)
 def filtered_employees(sender, instance, action, **kwargs):
     """
