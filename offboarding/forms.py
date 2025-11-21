@@ -182,10 +182,34 @@ class NoteForm(ModelForm):
 
 class TaskForm(ModelForm):
     """
-    TaskForm model form
+    TaskForm model form — only creates task, no employee assignment.
     """
 
     verbose_name = "Offboarding Task"
+
+    class Meta:
+        model = OffboardingTask
+        fields = "__all__"
+        exclude = ["status", "is_active" , "is_fine"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["stage_id"].empty_label = "All Stages in Offboarding"
+        self.fields["managers"].empty_label = None
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+        context = {"form": self}
+        return render_to_string("common_form.html", context)
+
+class EmployeeTaskForm(ModelForm):
+    """
+    TaskForm model form
+    """
+
+    verbose_name = "Employee Offboarding Task"
     tasks_to = forms.ModelMultipleChoiceField(
         queryset=OffboardingEmployee.objects.all(),
         required=False,
@@ -194,7 +218,7 @@ class TaskForm(ModelForm):
     class Meta:
         model = OffboardingTask
         fields = "__all__"
-        exclude = ["status", "is_active"]
+        exclude = ["status", "is_active" , "is_fine"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -227,7 +251,6 @@ class TaskForm(ModelForm):
                     employee_id=employee,
                     task_id=self.instance,
                 )
-
 
 class ResignationLetterForm(ModelForm):
     """
