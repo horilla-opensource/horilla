@@ -27,6 +27,40 @@
                     <div class="grid grid-cols-4 gap-4">
                         {% for instance in queryset %}
                             <div class="border border-[#ebebeb] p-4 rounded-md shadow-card cursor-pointer {{card_status_class|format:instance|safe}}" {{card_attrs|format:instance|safe}}>
+                                {% if custom_body_template %}
+                                    <div class="relative h-full">
+                                        <div
+                                            class="absolute inline-block right-0 -top-1" onclick="event.stopPropagation();"
+                                        >
+                                            <div class="cursor-pointer dropdown-toggle w-[20px]">
+                                                <i
+                                                    class="fa-solid fa-ellipsis-vertical text-black ms-[10px]"
+                                                ></i>
+                                            </div>
+
+                                            {% if actions %}
+                                                <div
+                                                    class="dropdown-menu absolute right-0 min-w-[100px] bg-white rounded-lg shadow-card py-2 hidden z-50 transition-all duration-200"
+                                                >
+                                                    <ul class="text-xs">
+                                                        {% for action in actions %}
+                                                            {% if action.accessibility|accessibility:instance %}
+                                                                <li>
+                                                                    <p
+                                                                        class="w-full text-left px-3 py-1 hover:text-primary-600 transition duration-300"
+                                                                    >
+                                                                        <a {{action.attrs|format:instance|safe}}>{{instance|getattribute:action.action|default:action.action}}</a>
+                                                                    </p>
+                                                                </li>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        {% include custom_body_template %}
+                                    </div>
+                                {% else %}
                                 <div class="flex gap-5 relative">
                                     <div
                                         class="absolute inline-block right-0 -top-1" onclick="event.stopPropagation();"
@@ -75,6 +109,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div>
