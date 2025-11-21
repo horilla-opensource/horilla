@@ -1,0 +1,68 @@
+{% load static i18n %}
+<div class="flex flex-wrap justify-between items-center mb-3">
+	<h3 class="text-lg font-semibold">{% trans "Employees" %}</h3>
+	<div class="flex flex-wrap gap-1">
+		<div class="relative">
+			<input
+				type="text"
+				class="text-color-600 ps-8 p-1.5 pb-2 placeholder:text-xs w-full border border-dark-50 rounded-md focus-visible:outline-0 placeholder:text-dark-100 text-sm [transition:.3s] focus:border-primary-600"
+				name="search"
+				aria-label="Search Input"
+				placeholder="Search"
+				hx-get="{% url 'search-employee-in-device' %}?device={{device_id}}"
+				name="search"
+				hx-trigger="keyup changed delay:.2s"
+				hx-target="#eTimeOfficeUsersList"
+				hx-vals='{"view":"{{request.GET.view}}"}'
+				autocomplete="false"
+				autofocus="true"
+			/>
+			<i
+				class="fas fa-search absolute left-3 top-[1px] bottom-0 m-auto flex items-center opacity-50 text-xs"
+			></i>
+		</div>
+
+		<div class="relative dropdown-wrapper">
+			<button
+				class="px-5 py-2 h-full bg-[white] rounded-md text-xs flex items-center gap-2 border border-primary-500 hover:border-primary-600 transition duration-300"
+			>
+				<img
+					src="{% static 'horilla_theme/assets/img/icons/setting-line.svg' %}"
+					alt="{% trans 'Actions' %}"
+					width="15"
+					class="mt-[-1px]"
+				/>
+				{% trans "Actions" %}
+			</button>
+
+			<div
+				class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[150px] py-2 right-0"
+			>
+				<ul class="text-sm">
+					<li class="oh-dropdown__item">
+						<a href="#" class="px-4 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full" 
+							data-toggle="oh-modal-toggle"
+							data-target="#objectCreateModal" 
+							hx-get="{% url 'map-biometric-users' device_id %}"
+							hx-target="#objectCreateModalTarget">
+							{% trans "Map Employee" %}
+						</a>
+					</li>
+					{% if perms.biometric.delete_biometricemployees %}
+					<li>
+						<a
+							href="#"
+							class="px-4 hover:text-primary-600 transition duration-300 text-xs gap-4 items-center flex w-full"
+							id="deleteETimeOfficeUsers(this)"
+							data-action="delete"
+						>
+							{% trans "Delete" %}
+						</a>
+					</li>
+					{% endif %}
+				</ul>
+			</div>
+		</div>
+
+	</div>
+</div>

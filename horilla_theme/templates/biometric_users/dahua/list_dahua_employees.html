@@ -1,0 +1,147 @@
+{% load i18n %}
+
+<div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card">
+    {% if employees %}
+    <table class="w-full border-separate">
+        <thead class="sticky top-0 bg-[white] z-[1]">
+            <tr class="border-b border-[#ececec]">
+                <th class="text-sm font-medium text-left p-3 w-[30px]">
+                    <input
+                        type="checkbox"
+                        class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] all-bio-employee"
+                        title="Select All"
+                        data-device="{{device_id}}"
+                        id="allBioEmployee"
+                    />
+                </th>
+                <th class="text-sm font-medium text-left min-w-[150px] pl-3">
+                    {% trans "Employee" %}
+                </th>
+                <th class="text-sm font-medium text-left min-w-[100px] pl-3">
+                    {% trans "User ID" %}
+                </th>
+                <th class="text-sm font-medium text-left min-w-[100px] pl-3">
+                    {% trans "Badge ID" %}
+                </th>
+                <th class="text-sm font-medium text-left min-w-[100px] pl-3">
+                    {% trans "Work Email" %}
+                </th>
+                <th class="text-sm font-medium text-left min-w-[100px] pl-3">
+                    {% trans "Job Position" %}
+                </th>
+                <th class="text-sm font-medium text-center min-w-[100px]">
+                    {% trans "Actions" %}
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for employee in employees %}
+            <tr class="border-b border-[#f3f3f3] fade-me-out" id="dahuaUser{{employee.id}}">
+                <td class="text-sm text-left p-3 text-[#666] h-[45px]">
+                    <input
+                        type="checkbox"
+                        id="{{employee.user_id}}"
+                        class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer all-bio-employee-row"
+                    />
+                </td>
+                <td class="text-sm text-left p-3 text-[#666] h-[45px]">
+                    {{employee.employee_id.get_full_name|title}}
+                </td>
+                <td class="text-sm text-left p-3 text-[#666] h-[45px]">
+                    {{employee.user_id}}
+                </td>
+                <td class="text-sm text-left p-3 text-[#666] h-[45px]">
+                    {{employee.employee_id.badge_id}}
+                </td>
+                <td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
+                    {{employee.employee_id.get_mail}}
+                </td>
+                <td class="text-sm text-left p-3 text-[#666] h-[45px]">
+                    {{employee.employee_id.get_job_position}}
+                </td>
+                <td class="text-sm text-left p-3 text-[#666] h-[45px]">
+                    <div class="oh-btn-group">
+                        {% if perms.biometric.delete_biometricemployees %}
+                        <a
+                            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+                            hx-confirm="{% trans 'Are you sure you want to delete this user?' %}"
+                            hx-post="{% url 'delete-dahua-user' employee.id %}"
+                            hx-target="#dahuaUser{{employee.id}}"
+                            hx-swap="outerHTML swap:.5s"
+                        >
+                            <ion-icon
+                                name="trash-outline"
+                                role="img"
+                                class="md hydrated"
+                                aria-label="trash outline"
+                            >
+                            </ion-icon>
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="oh-wrapper h-full" align="center">
+        <div
+            class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]"
+        >
+            <div class="flex flex-col items-center justify-center h-full">
+                <img
+                    src="/static/horilla_theme/assets/img/no-records.svg"
+                    alt=""
+                    width="300"
+                    class="mb-4"
+                />
+                <p class="text-[#666] mb-5">
+                    {% trans "No records available at the moment" %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if employees.has_previous or employees.has_next %}
+<div class="flex justify-between items-center mt-4 w-full inset-0">
+    <p class="text-xs text-[#666]">
+        {% trans "Page" %} {{ employees.number }} {% trans "of" %} 
+        {{ employees.paginator.num_pages }}
+    </p>
+    <div class="flex gap-3 text-[#666] items-center">
+        {% if employees.has_previous %}
+        <button
+            class="text-xs hover:text-primary-600 transition duration-300"
+            hx-target="#section"
+            hx-get="{% url 'search-employee-in-device' %}?{{pd}}&view=list&page={{ employees.previous_page_number }}&device={{device_id}}"
+        >
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        {% endif %} 
+        {{ employees.number }} / {{ employees.paginator.num_pages }} 
+        {% if employees.has_next %}
+        <button
+            class="text-xs hover:text-primary-600 transition duration-300"
+            hx-target="#section"
+            hx-get="{% url 'search-employee-in-device' %}?{{pd}}&view=list&page={{ employees.next_page_number }}&device={{device_id}}"
+        >
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+	$(document).ready(function(){
+		$("thead [type='checkbox']").on("change", function() {
+			let isChecked = $(this).is(':checked')
+			$("tbody [type='checkbox']").prop('checked', isChecked)
+			
+		})
+	})
+</script>

@@ -1,0 +1,229 @@
+{% load i18n %}
+
+<div class="bg-white p-5 pe-2 pt-3 rounded-md shadow-card">
+	{% if employees.users %}
+	<table class="w-full border-separate">
+		<thead class="sticky top-0 bg-[white] z-[1]">
+			<tr class="border-b border-[#ececec]">
+				<th class="text-sm font-medium text-left p-3 w-[30px]">
+					<input
+						type="checkbox"
+						class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] all-bio-employee"
+						title="Select All"
+						data-device="{{device_id}}"
+						id="allBioEmployee"
+					/>
+				</th>
+				<th class="text-sm font-medium text-left min-w-[150px] pl-3">
+					{% trans "Employee" %}
+				</th>
+				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
+					{% trans "User ID" %}
+				</th>
+				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
+					{% trans "Reference ID" %}
+				</th>
+				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
+					{% trans "Active" %}
+				</th>
+				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
+					{% if employees.users %} 
+                        {% if employees.users.0.finger_count %} 
+                            {% trans "Finger Count" %}
+                        {% else %} 
+                            {% trans "Face Count" %} 
+                        {% endif %} 
+                    {% else %}
+					    {% trans "Biometric Template" %} 
+                    {% endif %}
+				</th>
+				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
+					{% trans "Card Count" %}
+				</th>
+				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
+					{% trans "Valid Active" %}
+				</th>
+				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
+					{% trans "Valid End Date" %}
+				</th>
+				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
+					{% trans "Work Email" %}
+				</th>
+				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
+					{% trans "Job Position" %}
+				</th>
+				<th class="text-sm font-medium text-center min-w-[100px]">
+					{% trans "Actions" %}
+				</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for employee in employees.users %}
+			<tr class="border-b border-[#f3f3f3]">
+				<td class="text-sm text-left p-3 text-[#666] h-[45px]">
+					<input
+						type="checkbox"
+						id="{{employee.user_id}}"
+						class="w-4 h-4 bg-[#E9EDF7] rounded-sm text-[#e54f38] cursor-pointer all-bio-employee-row"
+					/>
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px]">
+					{{employee.employee_id.get_full_name|title}}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px]">
+					{{employee.user_id}}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px]">
+					{{employee.ref_user_id}}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px]">
+					{% if employee.user_active == "1" %} 
+                        {% trans "Yes" %} 
+                    {% else %} 
+                        {% trans "No" %} 
+                    {% endif %}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
+					{% if employee.finger_count or employee.face_count %} 
+                        {% if employee.finger_count %}
+                            {{employee.finger_count}} 
+                        {% else %} 
+                            {{employee.face_count}} 
+                        {% endif %} 
+                    {% else %} 
+                        {% trans "Not Enrolled" %} 
+                    {% endif %}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
+					{{employee.card_count}}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
+					{% if employee.validity_enable == "1" %} 
+                        {% trans "Yes" %}
+					{% else %} 
+                        {% trans "No" %} 
+                    {% endif %}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
+					{{employee.validity_date_dd}}/{{employee.validity_date_mm}}/{{employee.validity_date_yyyy}}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
+					{{employee.employee_id.get_mail}}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px]">
+					{{employee.employee_id.get_job_position}}
+				</td>
+				<td class="text-sm text-left p-3 text-[#666] h-[45px]">
+					<div class="oh-btn-group">
+						{% if employee.face_count %}
+						<a
+							class="oh-btn oh-btn--light-bkg w-100"
+							href="{% url 'enable-cosec-face-recognition' user_id=employee.user_id device_id=device_id %}"
+							onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this user from the biometric device?' %}`)"
+							title="{% trans 'Enable Face' %}"
+						>
+							<ion-icon name="person-circle-outline"></ion-icon>
+						</a>
+						{% endif %}
+                        {% if perms.biometric.change_biometricemployees %}
+						<a
+							onclick="event.stopPropagation();"
+							class="oh-btn oh-btn--light-bkg w-100"
+							data-toggle="oh-modal-toggle"
+							data-target="#objectUpdateModal"
+							hx-target="#objectUpdateModalTarget"
+							hx-get="{% url 'edit-cosec-user' user_id=employee.user_id device_id=device_id %}"
+							title="{% trans 'Edit' %}"
+						>
+							<ion-icon
+								name="create-outline"
+								role="img"
+								class="md hydrated"
+								aria-label="create outline"
+							></ion-icon>
+						</a>
+                        {% endif %}
+                        {% if perms.biometric.delete_biometricemployees %}
+						<a
+							class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
+							href="{% url 'delete-cosec-user' user_id=employee.user_id device_id=device_id %}"
+							onclick="event.preventDefault();event.stopPropagation(); confirm(`{% trans 'Do you want to delete this user from the biometric device?' %}`)"
+							title="{% trans 'Delete' %}"
+						>
+							<ion-icon
+								name="trash-outline"
+								role="img"
+								class="md hydrated"
+								aria-label="trash outline"
+							></ion-icon>
+						</a>
+                        {% endif %}
+					</div>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% else %}
+	<div class="oh-wrapper h-full" align="center">
+		<div
+			class="xl:col-span-4 md:col-span-6 col-span-12 bg-white p-6 rounded-md shadow-card h-[70%]"
+		>
+			<div class="flex flex-col items-center justify-center h-full">
+				<img
+					src="/static/horilla_theme/assets/img/no-records.svg"
+					alt=""
+					width="300"
+					class="mb-4"
+				/>
+				<p class="text-[#666] mb-5">
+					{% trans "No records available at the moment" %}
+				</p>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+</div>
+
+{% if employees.paginator.has_previous or employees.paginator.has_next %}
+<div class="flex justify-between items-center mt-4 w-full inset-0">
+	<p class="text-xs text-[#666]">
+		{% trans "Page" %} {{ employees.paginator.number }} {% trans "of" %} 
+        {{ employees.paginator.num_pages }}
+	</p>
+	<div class="flex gap-3 text-[#666] items-center">
+		{% if employees.paginator.has_previous %}
+		<button
+			class="text-xs hover:text-primary-600 transition duration-300"
+			hx-target="#section"
+			hx-get="{% url 'search-employee-in-device' %}?{{pd}}&view=list&page={{ employees.paginator.previous_page_number }}&device={{device_id}}"
+		>
+			<i class="fa-solid fa-arrow-left"></i>
+		</button>
+		{% endif %} 
+
+        {{ employees.paginator.number }} / {{ employees.paginator.num_pages }} 
+
+        {% if employees.paginator.has_next %}
+		<button
+			class="text-xs hover:text-primary-600 transition duration-300"
+			hx-target="#section"
+			hx-get="{% url 'search-employee-in-device' %}?{{pd}}&view=list&page={{ employees.paginator.next_page_number }}&device={{device_id}}"
+		>
+			<i class="fa-solid fa-arrow-right"></i>
+		</button>
+		{% endif %}
+	</div>
+</div>
+{% endif %}
+
+<script>
+	$(document).ready(function(){
+		$("thead [type='checkbox']").on("change", function() {
+			let isChecked = $(this).is(':checked')
+			$("tbody [type='checkbox']").prop('checked', isChecked)
+			
+		})
+	})
+</script>
