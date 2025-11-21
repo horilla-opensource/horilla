@@ -591,6 +591,7 @@ if apps.is_installed("attendance"):
         DashboardaAttendanceOT,
         DashboardAttendanceToValidate,
     )
+    from biometric.cbv.biometric import BiometricCardView
 
     _overtime_attendance_init_orig = DashboardaAttendanceOT.__init__
 
@@ -604,8 +605,15 @@ if apps.is_installed("attendance"):
         _validate_attendance_init_orig(self, **kwargs)
         self.header_attrs = {}
 
+    _biometric_device_card_init_orig = BiometricCardView.__init__
+
+    def _biometric_card_init(self, **kwargs):
+        _biometric_device_card_init_orig(self, **kwargs)
+        self.custom_body_template = "cbv/biometric_card_body.html"
+
     DashboardaAttendanceOT.__init__ = _overtime_attendance_init
     DashboardAttendanceToValidate.__init__ = _validate_attendance_init
+    BiometricCardView.__init__ = _biometric_card_init
 
 
 if apps.is_installed("leave"):
