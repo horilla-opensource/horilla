@@ -258,6 +258,7 @@ class OffboardingTask(HorillaModel):
         null=True,
         blank=True,
     )
+    is_fine = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ["title", "stage_id"]
@@ -276,6 +277,7 @@ class EmployeeTask(HorillaModel):
         ("in_progress", _("In progress")),
         ("stuck", _("Stuck")),
         ("completed", _("Completed")),
+        ("not_applicable", _("Not Applicable")),
     ]
     employee_id = models.ForeignKey(
         OffboardingEmployee,
