@@ -1,0 +1,34 @@
+{% load static i18n %}
+<div class="mt-auto" >
+    <div class="oh-kanban-card__biometric-actions flex gap-3" style="{% if device.machine_type == 'anviz' or device.machine_type == 'cosec' %} margin-top: 0px; {% endif %}">
+        <!-- Test Button -->
+        <a href="#" hx-get="{% url 'biometric-device-test' device.id %}" data-toggle="oh-modal-toggle"
+            data-target="#BiometricDeviceTestModal" hx-target="#BiometricDeviceTestFormTarget"
+            class="oh-checkpoint-badge text-success mr-2" style="border: 2px solid #28a745; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #28a745;">
+            {% trans "Test" %}
+        </a>
+
+        <!-- Schedule / Unschedule Button -->
+        {% if is_scheduler %}
+            <a hx-confirm="Do you want to unschedule the device attendance fetching?"
+                hx-post="{% url 'biometric-device-unschedule' device.id %}" hx-target="#biometricDeviceList"
+                class="oh-checkpoint-badge text-info" style="border: 2px solid #17a2b8; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #17a2b8;">
+                {% trans "Unschedule" %}
+            </a>
+        {% else %}
+            <a href="#" hx-get="{% url 'biometric-device-schedule' device.id %}" data-toggle="oh-modal-toggle"
+                data-target="#BiometricDeviceModal" hx-target="#BiometricDeviceFormTarget"
+                class="oh-checkpoint-badge text-info" style="border: 2px solid #17a2b8; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #17a2b8;">
+                {% trans "Schedule" %}
+            </a>
+        {% endif %}
+
+        <!-- Employee Button (Only for specific machine types) -->
+        {% if device.machine_type == "zk" or device.machine_type == "cosec" or device.machine_type == "dahua" or device.machine_type == "etimeoffice" %}
+            <a href="{% url 'biometric-device-employees' device.id %}" class="oh-checkpoint-badge text-secondary bio-user-list"
+                style="border: 2px solid #6c757d; padding: 5px 10px; border-radius: 4px; display: inline-block; color: #6c757d;">
+                {% trans "Employee" %}
+            </a>
+        {% endif %}
+    </div>
+</div>

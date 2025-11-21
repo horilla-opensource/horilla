@@ -202,6 +202,15 @@ class BiometricDevices(HorillaModel):
 
         return html
 
+    def card_action(self):
+        """
+        render card data
+        """
+        return render_template(
+            path="cbv/biometric_card_action.html",
+            context={"device": self},
+        )
+
     def archive_status(self):
         """
         archive status

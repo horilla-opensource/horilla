@@ -16,6 +16,7 @@ import pytz
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
 from django.contrib import messages
+from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
@@ -1314,7 +1315,8 @@ def search_employee_device(request):
         employees = zk_employees_fetch(device)
         if search:
             search_employees = BiometricEmployees.objects.filter(
-                employee_id__employee_first_name__icontains=search
+                Q(employee_id__employee_first_name__icontains=search)
+                | Q(employee_id__employee_last_name__icontains=search)
             )
             search_uids = search_employees.values_list("uid", flat=True)
             employees = [
@@ -1330,8 +1332,9 @@ def search_employee_device(request):
     elif device.machine_type == "dahua" or device.machine_type == "etimeoffice":
         search_employees = BiometricEmployees.objects.filter(device_id=device)
         if search:
-            search_employees = BiometricEmployees.objects.filter(
-                employee_id__employee_first_name__icontains=search, device_id=device
+            search_employees = search_employees.filter(
+                Q(employee_id__employee_first_name__icontains=search)
+                | Q(employee_id__employee_last_name__icontains=search)
             )
         template = (
             "biometric_users/dahua/list_dahua_employees.html"
@@ -1347,7 +1350,8 @@ def search_employee_device(request):
         employees = cosec_employee_fetch(device_id)
         if search:
             search_employees = BiometricEmployees.objects.filter(
-                employee_id__employee_first_name__icontains=search, device_id=device
+                Q(employee_id__employee_first_name__icontains=search)
+                | Q(employee_id__employee_last_name__icontains=search)
             )
         else:
             search_employees = BiometricEmployees.objects.filter(device_id=device)
