@@ -12,7 +12,7 @@ from leave.models import LeaveRequest
 
 if apps.is_installed("attendance"):
 
-    @receiver(pre_save, sender=LeaveRequest)
+    @receiver(post_save, sender=LeaveRequest)
     def leaverequest_pre_save(sender, instance, **_kwargs):
         """
         Overriding LeaveRequest model save method
