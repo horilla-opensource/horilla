@@ -1,0 +1,40 @@
+{% extends "index.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div id="commonTasksContainer">
+    {% include "offboarding/task/common_task_list.html" %}
+</div>
+
+<div class="oh-modal" id="taskModal">
+    <div class="oh-modal__dialog" style="max-width: 650px">
+        <div class="oh-modal__dialog-header">
+            <button type="button" class="oh-modal__close" aria-label="Close">
+                <ion-icon name="close-outline"></ion-icon>
+            </button>
+        </div>
+        <div class="oh-modal__dialog-body" id="taskModalBody">
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("click", function(e) {
+    const openBtn = e.target.closest("[data-open-modal]");
+    if (openBtn) {
+        document.querySelector(openBtn.dataset.openModal).classList.add("show");
+    }
+
+    if (e.target.closest(".oh-modal__close")) {
+        e.target.closest(".oh-modal").classList.remove("show");
+    }
+});
+</script>
+
+<style>
+.oh-modal { opacity: 0; pointer-events: none; transition: .3s; }
+.oh-modal.show { opacity: 1; pointer-events: auto; }
+</style>
+
+{% endblock %}
