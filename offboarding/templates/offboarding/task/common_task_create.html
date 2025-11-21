@@ -1,0 +1,10 @@
+{% extends "index.html" %}
+{% load static i18n %}
+
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="oh-btn oh-btn--primary">{% trans "Save" %}</button>
+</form>
+{% endblock %}
