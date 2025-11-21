@@ -1,0 +1,15 @@
+{% load i18n %}
+
+<div class="flex flex-col flex-grow h-full">
+    <h5 class="mb-1 font-medium text-sm">
+        {{instance.name}}
+    </h5>
+
+    <div class="text-xs text-[#565E6C] mb-1 flex flex-col gap-2 flex-grow">
+        {% trans "Device:" %} {{instance.get_machine_type}} <br />
+        {% trans "Direction:" %} {{instance.get_device_direction_display}} <br />
+        {{instance.get_card_details|safe}} <br />
+        {{instance.render_live_capture_html|safe}} <br />
+        {{instance.card_action|safe}}
+    </div>
+</div>

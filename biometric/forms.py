@@ -8,6 +8,7 @@ employee biometric data, COSEC users, and related configurations.
 
 from django import forms
 from django.db.models import Q
+from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
 from base.forms import Form, ModelForm
@@ -296,6 +297,15 @@ class DahuaUserForm(Form):
             }
         )
 
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+
+        context = {"form": self}
+        table_html = render_to_string("normal_form.html", context)
+        return table_html
+
     def clean(self):
         cleaned_data = super().clean()
         device = None
@@ -356,6 +366,15 @@ class MapBioUsers(ModelForm):
                 Q(id__in=already_mapped_employees) | Q(is_active=False)
             )
         self.fields["user_id"].required = True
+
+    def as_p(self):
+        """
+        Render the form fields as HTML table rows with Bootstrap styling.
+        """
+
+        context = {"form": self}
+        table_html = render_to_string("normal_form.html", context)
+        return table_html
 
     def clean(self):
         cleaned_data = super().clean()
