@@ -82,6 +82,7 @@ class DocumentRequestCreateForm(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class DocumentCreateForm(HorillaFormView):
     """
     form view for upload document
@@ -135,6 +136,7 @@ class DocumentRejectCbvForm(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class DocumentUploadForm(HorillaFormView):
     """
     form view for upload documents on document request and employee individual view

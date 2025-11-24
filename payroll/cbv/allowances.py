@@ -173,9 +173,10 @@ class AllowanceNavView(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("allowances-list-view")
 
-        self.create_attrs = f"""
-                            href="{reverse_lazy('create-allowance')}"
-                            """
+        if self.request.user.has_perm("payroll.add_allowance"):
+            self.create_attrs = f"""
+                                href="{reverse_lazy('create-allowance')}"
+                                """
 
         self.view_types = [
             {

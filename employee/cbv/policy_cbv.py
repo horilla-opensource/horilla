@@ -14,6 +14,8 @@ from horilla_views.cbv_methods import login_required, permission_required
 from horilla_views.generic.cbv.views import HorillaFormView
 
 
+@method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required(perm="employee.add_policy"), name="dispatch")
 class PolicyFormView(HorillaFormView):
     """
     form view for create policy

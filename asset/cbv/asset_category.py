@@ -224,14 +224,14 @@ class AssetCategoryNav(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("asset-category-view-search-filter")
         self.actions = []
-        if self.request.user.has_perm("add_assetcategory"):
+        if self.request.user.has_perm("asset.add_assetcategory"):
             self.create_attrs = f"""
                             data-toggle="oh-modal-toggle"
                             data-target="#genericModal"
                             hx-get="{reverse('asset-category-creation')}"
                             hx-target="#genericModalBody"
                             """
-        if self.request.user.has_perm("add_assetcategory"):
+        if self.request.user.has_perm("asset.add_assetcategory"):
             self.actions.append(
                 {
                     "action": _("Import"),
@@ -246,7 +246,7 @@ class AssetCategoryNav(HorillaNavView):
                 },
             )
 
-        if self.request.user.has_perm("view_asset"):
+        if self.request.user.has_perm("asset.view_asset"):
             self.actions.append(
                 {
                     "action": _("Export"),

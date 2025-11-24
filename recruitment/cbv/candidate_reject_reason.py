@@ -93,12 +93,13 @@ class RejectReasonNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("candidate-reject-reasons-list")
-        self.create_attrs = f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get="{reverse('create-reject-reason-view')}"
-                            """
+        if self.request.user.has_perm("recruitment.add_rejectreason"):
+            self.create_attrs = f"""
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                hx-target="#genericModalBody"
+                                hx-get="{reverse('create-reject-reason-view')}"
+                                """
 
     nav_title = _("Reject Reasons")
     filter_instance = RejectReasonFilter()
