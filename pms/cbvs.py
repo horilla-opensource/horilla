@@ -53,12 +53,13 @@ class BonusPointSettingNavView(views.HorillaNavView):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.create_attrs = f"""
-            hx-get="{reverse_lazy("create-bonus-point-setting")}"
-            hx-target="#genericModalBody"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-        """
+        if self.request.user.has_perm("pms.add_bonuspointsetting"):
+            self.create_attrs = f"""
+                hx-get="{reverse_lazy("create-bonus-point-setting")}"
+                hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+            """
 
     nav_title = _("Bonus Point Setting")
     search_url = reverse_lazy("bonus-point-setting-list-view")
@@ -66,7 +67,7 @@ class BonusPointSettingNavView(views.HorillaNavView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("pms.change_bonuspointsetting"), name="dispatch")
+@method_decorator(permission_required("pms.add_bonuspointsetting"), name="dispatch")
 class BonusPointSettingFormView(views.HorillaFormView):
     """
     BonusPointSettingForm View

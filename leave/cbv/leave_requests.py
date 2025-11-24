@@ -243,12 +243,13 @@ class LeaveRequestsNavView(HorillaNavView):
             },
         ]
 
-        self.create_attrs = f"""
-             hx-get="{reverse_lazy("request-creation")}"
-             hx-target="#genericModalBody"
-             data-target="#genericModal"
-             data-toggle="oh-modal-toggle"
-         """
+        if self.request.user.has_perm("leave.add_leaverequest"):
+            self.create_attrs = f"""
+                hx-get="{reverse_lazy("request-creation")}"
+                hx-target="#genericModalBody"
+                data-target="#genericModal"
+                data-toggle="oh-modal-toggle"
+            """
 
     nav_title = _("Leave Requests")
     filter_instance = LeaveRequestFilter()

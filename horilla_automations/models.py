@@ -63,7 +63,7 @@ class MailAutomation(HorillaModel):
         default="email",
         max_length=50,
         choices=SEND_OPTIONS,
-        verbose_name=_("Choose Delivary Channel"),
+        verbose_name=_("Choose Delivery Channel"),
     )
     template_attachments = models.ManyToManyField(
         HorillaMailTemplate,

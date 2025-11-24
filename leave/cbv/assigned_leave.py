@@ -124,12 +124,13 @@ class AssignedLeaveNavView(HorillaNavView):
             },
         ]
 
-        self.create_attrs = f"""
-                data-toggle="oh-modal-toggle"
-                data-target="#objectCreateModal"
-                hx-target="#objectCreateModalTarget"
-                hx-get="{reverse_lazy('assign')}"
-            """
+        if self.request.user.has_perm("leave.add_availableleave"):
+            self.create_attrs = f"""
+                    data-toggle="oh-modal-toggle"
+                    data-target="#objectCreateModal"
+                    hx-target="#objectCreateModalTarget"
+                    hx-get="{reverse_lazy('assign')}"
+                """
 
     nav_title = _("All Assigned Leaves")
     filter_instance = AssignedLeaveFilter()

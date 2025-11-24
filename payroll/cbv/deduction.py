@@ -32,9 +32,10 @@ class DeductionNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("deduction-view-list")
-        self.create_attrs = f"""
-                          href={reverse('create-deduction')}
-                          """
+        if self.request.user.has_perm("payroll.add_deduction"):
+            self.create_attrs = f"""
+                            href={reverse('create-deduction')}
+                            """
         self.view_types = [
             {
                 "type": "list",
