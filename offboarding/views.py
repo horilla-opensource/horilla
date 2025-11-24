@@ -1430,7 +1430,7 @@ def common_offboarding_tasks_view(request):
 
     task_list = OffboardingTask.objects.filter(is_active=True , is_fine=False).order_by("-id")
 
-    paginator = Paginator(task_list, 100)
+    paginator = Paginator(task_list, 5)
 
     page_number = request.GET.get("page", 1)
     tasks = paginator.get_page(page_number)
@@ -1438,7 +1438,7 @@ def common_offboarding_tasks_view(request):
     if request.headers.get("Hx-Request"):
         return render(
             request,
-            "offboarding/task/common_task.html",
+            "offboarding/task/common_task_list.html",
             {"tasks": tasks},
         )
 
