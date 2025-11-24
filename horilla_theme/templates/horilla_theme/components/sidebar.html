@@ -2,7 +2,15 @@
 <div class="fixed inset-y-0 left-0 w-auto bg-white border-r border-r-dark-50 z-50">
   <div class="p-4">
     <div class="flex items-center justify-center gap-2 mb-6">
-      <img src="/static/horilla_theme/assets/img/horilla-logo.png" alt="Logo" class="w-10 h-10" />
+      {% if request.session.selected_company_instance %}
+        <img
+          src="{{request.session.selected_company_instance.icon}}"
+          class="w-10 h-10 rounded-full"
+          title="{{request.session.selected_company_instance.company}}"
+        />
+      {% else %}
+        <img src="/static/horilla_theme/assets/img/horilla-logo.png" alt="Logo" class="w-10 h-10" />
+      {% endif %}
     </div>
 
     <nav class="space-y-2 overflow-hidden overflow-y-auto h-[calc(100vh_-_95px)] sidebar-scroll">
