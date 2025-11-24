@@ -290,7 +290,7 @@
 {% if employees.has_previous or employees.has_next %}
 <div class="flex justify-between items-center mt-4 w-full inset-0">
 	<p class="text-xs text-[#666]">
-		{% trans "Page" %} {{ employees.number }} {% trans "of" %} 
+		{% trans "Page" %} {{ employees.number }} {% trans "of" %}
         {{ employees.paginator.num_pages }}
 	</p>
 	<div class="flex gap-3 text-[#666] items-center">
@@ -302,7 +302,7 @@
 		>
 			<i class="fa-solid fa-arrow-left"></i>
 		</button>
-		{% endif %} 
+		{% endif %}
 		{{ employees.number }} / {{ employees.paginator.num_pages }}
 		{% if employees.has_next %}
 		<button

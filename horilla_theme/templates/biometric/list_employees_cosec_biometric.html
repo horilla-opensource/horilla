@@ -27,14 +27,14 @@
 					{% trans "Active" %}
 				</th>
 				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
-					{% if employees.users %} 
-                        {% if employees.users.0.finger_count %} 
+					{% if employees.users %}
+                        {% if employees.users.0.finger_count %}
                             {% trans "Finger Count" %}
-                        {% else %} 
-                            {% trans "Face Count" %} 
-                        {% endif %} 
+                        {% else %}
+                            {% trans "Face Count" %}
+                        {% endif %}
                     {% else %}
-					    {% trans "Biometric Template" %} 
+					    {% trans "Biometric Template" %}
                     {% endif %}
 				</th>
 				<th class="text-sm font-medium text-left min-w-[100px] pl-3">
@@ -78,31 +78,31 @@
 					{{employee.ref_user_id}}
 				</td>
 				<td class="text-sm text-left p-3 text-[#666] h-[45px]">
-					{% if employee.user_active == "1" %} 
-                        {% trans "Yes" %} 
-                    {% else %} 
-                        {% trans "No" %} 
+					{% if employee.user_active == "1" %}
+                        {% trans "Yes" %}
+                    {% else %}
+                        {% trans "No" %}
                     {% endif %}
 				</td>
 				<td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
-					{% if employee.finger_count or employee.face_count %} 
+					{% if employee.finger_count or employee.face_count %}
                         {% if employee.finger_count %}
-                            {{employee.finger_count}} 
-                        {% else %} 
-                            {{employee.face_count}} 
-                        {% endif %} 
-                    {% else %} 
-                        {% trans "Not Enrolled" %} 
+                            {{employee.finger_count}}
+                        {% else %}
+                            {{employee.face_count}}
+                        {% endif %}
+                    {% else %}
+                        {% trans "Not Enrolled" %}
                     {% endif %}
 				</td>
 				<td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
 					{{employee.card_count}}
 				</td>
 				<td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
-					{% if employee.validity_enable == "1" %} 
+					{% if employee.validity_enable == "1" %}
                         {% trans "Yes" %}
-					{% else %} 
-                        {% trans "No" %} 
+					{% else %}
+                        {% trans "No" %}
                     {% endif %}
 				</td>
 				<td class="text-sm text-left p-3 text-[#666] h-[45px] truncate">
@@ -189,7 +189,7 @@
 {% if employees.paginator.has_previous or employees.paginator.has_next %}
 <div class="flex justify-between items-center mt-4 w-full inset-0">
 	<p class="text-xs text-[#666]">
-		{% trans "Page" %} {{ employees.paginator.number }} {% trans "of" %} 
+		{% trans "Page" %} {{ employees.paginator.number }} {% trans "of" %}
         {{ employees.paginator.num_pages }}
 	</p>
 	<div class="flex gap-3 text-[#666] items-center">
@@ -201,9 +201,9 @@
 		>
 			<i class="fa-solid fa-arrow-left"></i>
 		</button>
-		{% endif %} 
+		{% endif %}
 
-        {{ employees.paginator.number }} / {{ employees.paginator.num_pages }} 
+        {{ employees.paginator.number }} / {{ employees.paginator.num_pages }}
 
         {% if employees.paginator.has_next %}
 		<button
@@ -223,7 +223,7 @@
 		$("thead [type='checkbox']").on("change", function() {
 			let isChecked = $(this).is(':checked')
 			$("tbody [type='checkbox']").prop('checked', isChecked)
-			
+
 		})
 	})
 </script>
