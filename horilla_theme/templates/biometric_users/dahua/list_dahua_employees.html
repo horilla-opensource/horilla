@@ -109,7 +109,7 @@
 {% if employees.has_previous or employees.has_next %}
 <div class="flex justify-between items-center mt-4 w-full inset-0">
     <p class="text-xs text-[#666]">
-        {% trans "Page" %} {{ employees.number }} {% trans "of" %} 
+        {% trans "Page" %} {{ employees.number }} {% trans "of" %}
         {{ employees.paginator.num_pages }}
     </p>
     <div class="flex gap-3 text-[#666] items-center">
@@ -121,8 +121,8 @@
         >
             <i class="fa-solid fa-arrow-left"></i>
         </button>
-        {% endif %} 
-        {{ employees.number }} / {{ employees.paginator.num_pages }} 
+        {% endif %}
+        {{ employees.number }} / {{ employees.paginator.num_pages }}
         {% if employees.has_next %}
         <button
             class="text-xs hover:text-primary-600 transition duration-300"
@@ -141,7 +141,7 @@
 		$("thead [type='checkbox']").on("change", function() {
 			let isChecked = $(this).is(':checked')
 			$("tbody [type='checkbox']").prop('checked', isChecked)
-			
+
 		})
 	})
 </script>
