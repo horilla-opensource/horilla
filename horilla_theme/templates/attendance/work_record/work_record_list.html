@@ -146,3 +146,14 @@
         </div>
     </div>
 {% endif %}
+
+<script>
+    $(document).ready(function(){
+        {% if request.GET.start_date or request.GET.end_date %}
+            $("#monthYearField").val("");
+        {% elif request.GET.month %}
+            $("#startDate").val("");
+            $("#endDate").val("");
+        {% endif %}
+    })
+</script>
