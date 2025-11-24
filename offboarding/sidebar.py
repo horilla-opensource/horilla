@@ -23,13 +23,13 @@ SUBMENUS = [
         "accessibility": "offboarding.sidebar.dashboard_accessibility",
     },
     {
-        "menu": _("Exit Process"),
-        "redirect": reverse("offboarding-pipeline"),
-    },
-    {
         "menu": _("Tasks"),
         "redirect": reverse("common-offboarding-tasks-view"),
         "accessibility": "offboarding.sidebar.resignation_letter_accessibility",
+    },
+    {
+        "menu": _("Exit Process"),
+        "redirect": reverse("offboarding-pipeline"),
     },
     {
         "menu": _("Resignation Letters"),
