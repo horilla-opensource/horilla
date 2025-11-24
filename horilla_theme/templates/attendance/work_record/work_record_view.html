@@ -1,5 +1,7 @@
-{% extends 'index.html' %} {% block content %} {% load i18n static %}
+{% extends 'index.html' %}
+{% load i18n static %}
 
+{% block content %}
 <div class="">
     <div class="bg-white p-3 rounded-md shadow-card">
         <div class="flex gap-2 md:gap-0 flex-wrap justify-between items-end mb-2 border-b border-dark-50 pb-3">
@@ -20,7 +22,7 @@
                             id="monthYearField"
                             value="{{ current_date|date:"Y-m" }}"
                             name="month"
-                            onchange="$('#employeeFilter').click()"
+                            onchange="$('#startDate').val('');$('#endDate').val('');$('#employeeFilter').click();"
                         />
 
                         <div class="relative dropdown-wrapper">
@@ -29,22 +31,40 @@
                                 onclick="event.preventDefault();"
                             >
                                 <div class="flex items-center gap-2 ">
-                                    <img src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}" alt="" width="17"
-                                    >
+                                    <img src="{% static 'horilla_theme/assets/img/icons/sort.svg' %}" alt="" width="17">
                                     {% trans "Filter" %}
                                 </div>
                             </button>
                             <div class="dropdown-content absolute z-10 bg-white rounded-lg [box-shadow:0px_0px_20px_0px_rgb(0_0_0_/_8%)] min-w-[400px] p-3 right-0">
                                 <div class="accordion-wrapper space-y-2">
-                                        {% include 'employee_filters.html' %}
-                                        <div class="oh-dropdown__filter-footer">
-                                            <button
-                                                class="oh-btn oh-btn--secondary oh-btn--small w-100"
-                                                id="employeeFilter"
-                                            >
-                                                {% trans "Filter" %}
-                                            </button>
+                                    {% include 'employee_filters.html' %}
+                                    <div class="oh-accordion">
+                                        <div class="oh-accordion-header">{% trans "Date Range" %}</div>
+                                        <div class="oh-accordion-body">
+                                            <div class="row">
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="input-group">
+                                                        <label class="oh-label" for="startDate">{% trans "Start Date" %}:</label>
+                                                        <input type="date" name="start_date" id="startDate" class="oh-input" onchange="$('#monthYearField').val('')">
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12 col-md-12 col-lg-6">
+                                                    <div class="input-group">
+                                                        <label class="oh-label" for="endDate">{% trans "End Date" %}:</label>
+                                                        <input type="date" name="end_date" id="endDate" class="oh-input" max="{{ today|date:'Y-m-d' }}" onchange="$('#monthYearField').val('')">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+                                    </div>
+                                    <div class="oh-dropdown__filter-footer">
+                                        <button
+                                            class="oh-btn oh-btn--secondary oh-btn--small w-100 float-end"
+                                            id="employeeFilter"
+                                        >
+                                            {% trans "Filter" %}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -78,4 +98,4 @@
         });
     });
 </script>
-{% endblock content %}
+{% endblock %}
