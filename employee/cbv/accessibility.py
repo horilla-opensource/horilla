@@ -171,3 +171,20 @@ def history_accessibility(
     ) or check_manager(request.user.employee_get, instance):
         return True
     return False
+
+
+def project_accessibility(
+    request, instance: object = None, user_perms: PermWrapper = [], *args, **kwargs
+) -> bool:
+    """
+    permission for work type and shift tab in employee profile
+    """
+    employee = Employee.objects.get(id=instance.pk)
+    check_manages = check_manager(request.user.employee_get, instance)
+    if (
+        request.user == employee.employee_user_id
+        or check_manages
+        or request.user.has_perm("project.view_project")
+    ):
+        return True
+    return False
