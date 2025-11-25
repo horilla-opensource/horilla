@@ -39,6 +39,7 @@ class AssetListView(HorillaListView):
     """
 
 
+@method_decorator(login_required, name="dispatch")
 class AssetInformationView(HorillaDetailedView):
     """
     Detail view of the page
