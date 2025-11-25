@@ -1,7 +1,7 @@
-{% load i18n %}
+{% load i18n %} {% load basefilters %}
 <div class="oh-modal__button-container text-center mt-3 w-100">
     <div class="oh-btn oh-btn-group">
-        {% if instance.is_approved and instance.status == 'requested' %}
+        {% if instance.is_approved and instance.status == 'requested' and perms.leave.change_leaverequest or request.user|is_reportingmanager %}
             {% if instance.employee_id == request.user.employee_get and not request.user.is_superuser %}
                 <a type="submit" href="#" title="{% trans 'Approve' %}"
                     class="oh-btn oh-btn-group oh-btn--success oh-btn--disabled
@@ -21,15 +21,22 @@
                 <ion-icon class="me-1" name="checkmark-outline"></ion-icon>
             </a>
         {% endif %}
-        <button data-toggle="oh-modal-toggle"
-        data-target="#penaltyModal"
-        hx-target="#penaltyModalBody"
-        hx-get="{% url 'leave-cut-penalty' instance.id %}"
-        type="submit" class="oh-btn oh-btn--info w-100"
-        title="Penalty" id="penaltyButton">
-            <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
-        </button>
-        {% if instance.status != 'rejected' and instance.end_date >= current_date %}
+        {% if perms.leave.change_leaverequest or request.user|is_reportingmanager %}
+            <button data-toggle="oh-modal-toggle"
+            data-target="#penaltyModal"
+            hx-target="#penaltyModalBody"
+            hx-get="{% url 'leave-cut-penalty' instance.id %}"
+            type="submit" class="oh-btn oh-btn--info w-100"
+            title="Penalty" id="penaltyButton">
+                <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
+            </button>
+        {% else %}
+            <button type="submit" class="oh-btn oh-btn-group oh-btn--info oh-btn--disabled w-100"
+            title="Penalty" id="penaltyButton">
+                <ion-icon name="information-circle-outline" role="img" class="md hydrated" aria-label="information circle outline"></ion-icon>
+            </button>
+        {% endif %}
+        {% if instance.status != 'rejected' and instance.end_date >= current_date and perms.leave.change_leaverequest or request.user|is_reportingmanager %}
       {% comment %} {% if instance.status != 'cancelled' %} {% endcomment %}
         <a type="submit" data-toggle="oh-modal-toggle"
             data-target="#rejectModal" hx-get="{% url 'request-cancel' instance.id %}" hx-target="#rejectForm" title="{% trans 'Reject' %}"
