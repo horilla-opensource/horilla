@@ -84,7 +84,7 @@ class CompanyLeaveNavView(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("company-leave-filter")
-        if self.request.user.has_perm("add_companyleave"):
+        if self.request.user.has_perm("base.add_companyleave"):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy('company-leave-creation')}"
                 hx-target="#genericModalBody"
@@ -117,7 +117,7 @@ class CompanyLeaveDetailView(HorillaDetailedView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("leave.add_companyleave"), name="dispatch")
+@method_decorator(permission_required("base.add_companyleave"), name="dispatch")
 class CompanyleaveFormView(HorillaFormView):
     """
     form view for create button

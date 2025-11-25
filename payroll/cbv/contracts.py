@@ -148,9 +148,10 @@ class ContractsNav(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("contract-filter")
-        self.create_attrs = f"""
-                          href={reverse('contract-create')}
-                          """
+        if self.request.user.has_perm("payroll.add_contract"):
+            self.create_attrs = f"""
+                            href={reverse('contract-create')}
+                            """
         self.actions = [
             {
                 "action": _("Export"),
