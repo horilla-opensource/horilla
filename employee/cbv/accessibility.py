@@ -141,8 +141,8 @@ def workshift_accessibility(
     if (
         request.user == employee.employee_user_id
         or check_manages
-        or request.user.has_perm("attendance.view_worktyperequest")
-        or request.user.has_perm("attendance.view_shiftrequest")
+        or request.user.has_perm("base.view_worktyperequest")
+        or request.user.has_perm("base.view_shiftrequest")
     ):
         return True
     return False

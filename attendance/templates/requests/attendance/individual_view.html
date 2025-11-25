@@ -89,11 +89,13 @@
 </table>
 <div class="oh-modal__button-container text-center">
     <div class="oh-btn-group d-flex flex-row-reverse">
-        <a href="{% url 'cancel-validate-attendance-request' attendance.id %}" data-toggle="oh-modal-toggle"
-            class="oh-btn oh-btn--secondary w-100">
-            <ion-icon name="close-circle-outline"></ion-icon>
-            {% trans "Reject" %}
-        </a>
+        {% if request.user.is_superuser or perms.attendance.change_attendance %}
+            <a href="{% url 'cancel-validate-attendance-request' attendance.id %}" data-toggle="oh-modal-toggle"
+                class="oh-btn oh-btn--secondary w-100">
+                <ion-icon name="close-circle-outline"></ion-icon>
+                {% trans "Reject" %}
+            </a>
+        {% endif %}
         {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
             {% comment %} <a href="{% url 'approve-validate-attendance-request' attendance.id %}" class="oh-btn oh-btn--success w-100">
                 <ion-icon name="checkmark-outline"></ion-icon>
@@ -111,7 +113,7 @@
                 </a>
             {% endif %}
         {% endif %}
-        {% if request.user|is_reportingmanager or perms.attendance.change_attendance %}
+        {% if request.user|is_reportingmanager or perms.attendance.change_attendance or attendance.employee_id == request.user.employee_get%}
         <a hx-get="{% url 'update-attendance-request' attendance.id %}?detail_view=true"
             hx-target="#genericModalEditBody" data-target="#genericModalEdit"
             data-toggle="oh-modal-toggle" class="oh-btn oh-btn--info w-100">
