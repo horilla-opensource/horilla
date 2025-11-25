@@ -158,22 +158,336 @@ class HorillaListView(ListView):
 
         return view
 
+    def __init__(self, **kwargs: Any) -> None:
+        if not self.view_id:
+            self.view_id = get_short_uuid(4)
+        super().__init__(**kwargs)
+
+        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
+        request = getattr(_thread_locals, "request", None)
+        self.request = request
+
     def post(self, *args, **kwargs):
         """
         POST method to handle post submissions
         """
         return self.get(self, *args, **kwargs)
 
-    def __init__(self, **kwargs: Any) -> None:
-        if not self.view_id:
-            self.view_id = get_short_uuid(4)
+    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
+        if not self.queryset:
+            self.queryset = super().get_queryset() if not queryset else queryset
+            self._saved_filters = QueryDict("", mutable=True)
+            if self.filter_class:
+                query_dict = self.request.GET
+                selected_ids = eval_validate(
+                    self.request.POST.get("selected_ids", "[]")
+                )
+
+                if (
+                    self.request.session.get("prev_path")
+                    and self.request.session.get("prev_path") != self.request.path
+                ):
+                    selected_ids = []
+                    self.request.session["hlv_selected_ids"] = selected_ids
+                    self.request.session["prev_path"] = self.request.path
+
+                if selected_ids and selected_ids != self.request.session.get(
+                    "hlv_selected_ids", []
+                ):
+                    self.request.session["hlv_selected_ids"] = selected_ids
+                    self.request.session["prev_path"] = self.request.path
+
+                if "filter_applied" in query_dict.keys():
+                    update_saved_filter_cache(self.request, CACHE)
+                elif CACHE.get(
+                    str(self.request.session.session_key) + self.request.path + "cbv"
+                ):
+                    query_dict = CACHE.get(
+                        str(self.request.session.session_key)
+                        + self.request.path
+                        + "cbv"
+                    )["query_dict"]
+
+                default_filter = models.SavedFilter.objects.filter(
+                    path=self.request.path,
+                    created_by=self.request.user,
+                    is_default=True,
+                ).first()
+                if not bool(query_dict) and default_filter:
+                    data = eval_validate(default_filter.filter)
+                    query_dict = QueryDict("", mutable=True)
+                    for key, value in data.items():
+                        query_dict[key] = value
+
+                    query_dict._mutable = False
+                self._saved_filters = query_dict
+                self.request.exclude_filter_form = True
+                if not filtered:
+                    self.queryset = self.filter_class(
+                        data=query_dict, queryset=self.queryset, request=self.request
+                    ).qs
+                else:
+                    self.queryset = queryset
+                if self.request.GET.get(
+                    "show_all"
+                ) == "true" and self.request.session.get("hlv_selected_ids"):
+                    del self.request.session["hlv_selected_ids"]
+                if self.request.session.get("hlv_selected_ids"):
+                    self.request.actual_ids = list(
+                        self.queryset.values_list("id", flat=True)
+                    )
+                    self.queryset = self.queryset.filter(
+                        id__in=self.request.session["hlv_selected_ids"]
+                    )
+        return self.queryset
+
+    def get_context_data(self, **kwargs: Any):
+        context = super().get_context_data(**kwargs)
+        if not self.search_url:
+            self.search_url = self.request.path
+        context["view_id"] = self.view_id
+        context["search_url"] = self.search_url
+
+        context["action_method"] = self.action_method
+        context["actions"] = self.actions
+
+        context["option_method"] = self.option_method
+        context["options"] = self.options
+        context["row_attrs"] = self.row_attrs
+
+        context["header_attrs"] = self.header_attrs
+
+        context["show_filter_tags"] = self.show_filter_tags
+        context["bulk_select_option"] = self.bulk_select_option
+        context["row_status_class"] = self.row_status_class
+        context["sortby_key"] = self.sortby_key
+        context["sortby_mapping"] = self.sortby_mapping
+        context["selected_instances_key_id"] = self.selected_instances_key_id
+        context["row_status_indications"] = self.row_status_indications
+        context["saved_filters"] = self._saved_filters
+        context["quick_export"] = self.quick_export
+        context["filter_selected"] = self.filter_selected
+        context["bulk_update"] = self.bulk_update
+        context["model_name"] = self.verbose_name
+        context["export_fields"] = self.export_fields
+        context["custom_empty_template"] = self.custom_empty_template
+        context["records_count_in_tab"] = self.records_count_in_tab
+        referrer = self.request.GET.get("referrer", "")
+        if not self.verbose_name:
+            self.verbose_name = self.model.__class__
+        if referrer:
+            # Remove the protocol and domain part
+            referrer = "/" + "/".join(referrer.split("/")[3:])
+        context["stored_filters"] = (
+            models.SavedFilter.objects.filter(
+                path=self.request.path, created_by=self.request.user
+            )
+            | models.SavedFilter.objects.filter(
+                referrer=referrer, created_by=self.request.user
+            )
+        ).distinct()
+
+        # Set default pagination if not set
         if not self.records_per_page:
             self.records_per_page = get_pagination()
-        super().__init__(**kwargs)
 
-        self.ordered_ids_key = f"ordered_ids_{self.model.__name__.lower()}"
-        request = getattr(_thread_locals, "request", None)
-        self.request = request
+        # Add verbose names to fields if possible
+        updated_column = []
+        get_field = self.model()._meta.get_field
+        for col in self.columns:
+            if isinstance(col, str):
+                try:
+                    updated_column.append((get_field(col).verbose_name, col))
+                except FieldDoesNotExist:
+                    updated_column.append(col)
+            else:
+                updated_column.append(col)
+
+        self.columns = updated_column
+
+        self.visible_column = list(self.columns)
+
+        hidden_fields = []
+        existing_instance = None
+        if self.request:
+            existing_instance = models.ToggleColumn.objects.filter(
+                user_id=self.request.user, path=self.request.path_info
+            ).first()
+            if existing_instance:
+                hidden_fields = existing_instance.excluded_columns
+
+        if not self.default_columns:
+            self.default_columns = self.columns
+
+        self.toggle_form = ToggleColumnForm(
+            self.columns, self.default_columns, hidden_fields
+        )
+
+        # Remove hidden columns from visible_column
+        hidden_field_names = (
+            {
+                col[1] if isinstance(col, tuple) else col
+                for col in self.columns
+                if col[1] in hidden_fields
+            }
+            if existing_instance
+            else {col[1] for col in self.columns if col not in self.default_columns}
+        )
+        self.visible_column = [
+            col
+            for col in self.visible_column
+            if (col[1] if isinstance(col, tuple) else col) not in hidden_field_names
+        ]
+
+        context["columns"] = self.visible_column
+        context["hidden_columns"] = list(set(self.columns) - set(self.visible_column))
+        context["toggle_form"] = self.toggle_form
+        context["show_toggle_form"] = self.show_toggle_form
+
+        if self.bulk_select_option:
+            context["select_all_ids"] = self.select_all
+        if self._saved_filters.get("field"):
+            active_group = models.ActiveGroup.objects.filter(
+                created_by=self.request.user,
+                path=self.request.path,
+                group_by_field=self._saved_filters["field"],
+            ).first()
+            if active_group:
+                context["active_target"] = active_group.group_target
+
+        queryset = self.get_queryset()
+
+        if self.show_filter_tags:
+            data_dict = parse_qs(self._saved_filters.urlencode())
+            data_dict = get_key_instances(self.model, data_dict)
+            keys_to_remove = [
+                key
+                for key, value in data_dict.items()
+                if key in ["filter_applied", "nav_url"] + self.filter_keys_to_remove
+            ]
+
+            for key in (
+                keys_to_remove + ["referrer", "nav_url"] + self.filter_keys_to_remove
+            ):
+                if key in data_dict.keys():
+                    data_dict.pop(key)
+            context["filter_dict"] = data_dict
+            context["keys_to_remove"] = keys_to_remove
+
+        request = self.request
+        is_first_sort = False
+        query_dict = self.request.GET
+        if (
+            not request.GET.get(self.sortby_key)
+            and not self._saved_filters.get(self.sortby_key)
+        ) or (
+            not request.GET.get(self.sortby_key)
+            and self._saved_filters.get(self.sortby_key)
+        ):
+            is_first_sort = True
+            query_dict = self._saved_filters
+
+        if query_dict.get(self.sortby_key):
+            queryset = sortby(
+                query_dict, queryset, self.sortby_key, is_first_sort=is_first_sort
+            )
+
+        ordered_ids = []
+        try:
+            if not self._saved_filters.get("field"):
+                for instance in queryset:
+                    ordered_ids.append(str(instance.pk))
+        except:
+            pass
+
+        self.request.session[self.ordered_ids_key] = ordered_ids
+        context["queryset"] = paginator_qry(
+            queryset, self._saved_filters.get("page"), self.records_per_page
+        )
+
+        if request and self._saved_filters.get("field"):
+            field = self._saved_filters.get("field")
+            self.template_name = "generic/group_by_table.html"
+            if isinstance(queryset, Page):
+                queryset = self.filter_class(
+                    request.GET, queryset=queryset.object_list.model.objects.all()
+                ).qs
+
+            try:
+                groups = group_by_queryset(
+                    queryset, field, self._saved_filters.get("page"), "page"
+                )
+                context["groups"] = paginator_qry(
+                    groups, self._saved_filters.get("page"), 10
+                )
+            except:
+                self.template_name = "generic/horilla_list_table.html"
+
+            # for group in context["groups"]:
+            #     for instance in group["list"]:
+            #         instance.ordered_ids = ordered_ids
+            #         ordered_ids.append(str(instance.pk))
+
+        # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
+        from horilla.urls import path, urlpatterns
+
+        self.export_path = (
+            reverse("export-list", kwargs={"short_id": self.view_id})
+            + f"?model={self.model.__module__}.{self.model.__name__}"
+        )
+        context["export_path"] = self.export_path
+
+        if self.import_fields:
+            get_import_sheet_path = (
+                f"get-import-sheet-{self.view_id}-{self.request.session.session_key}/"
+            )
+            post_import_sheet_path = (
+                f"post-import-sheet-{self.view_id}-{self.request.session.session_key}/"
+            )
+            urlpatterns.append(
+                path(
+                    get_import_sheet_path,
+                    self.serve_import_sheet,
+                )
+            )
+            urlpatterns.append(
+                path(
+                    post_import_sheet_path,
+                    self.import_records,
+                )
+            )
+
+            session_key = self.request.session.session_key
+
+            context["get_import_sheet_path"] = get_import_sheet_path
+            context["post_import_sheet_path"] = post_import_sheet_path
+        context["import_fields"] = self.import_fields
+        if self.bulk_update_fields and self.bulk_update_accessibility():
+            get_bulk_path = (
+                f"get-bulk-update-{self.view_id}-{self.request.session.session_key}/"
+            )
+            post_bulk_path = (
+                f"post-bulk-update-{self.view_id}-{self.request.session.session_key}/"
+            )
+            self.post_bulk_path = post_bulk_path
+            urlpatterns.append(
+                path(
+                    get_bulk_path,
+                    self.serve_bulk_form,
+                )
+            )
+            urlpatterns.append(
+                path(
+                    post_bulk_path,
+                    self.handle_bulk_submission,
+                )
+            )
+            context["bulk_update_fields"] = self.bulk_update_fields
+            context["bulk_path"] = get_bulk_path
+        context["export_formats"] = self.export_formats
+        context["import_help"] = self.import_help
+        context["import_accessibility"] = self.import_accessibility()
+        return context
 
     def bulk_update_accessibility(self) -> bool:
         """
@@ -930,318 +1244,6 @@ class HorillaListView(ListView):
                 "traceback_message": traceback_message,  # Optional: truncate if too large
             },
         )
-
-    def get_queryset(self, queryset=None, filtered=False, *args, **kwargs):
-        if not self.queryset:
-            self.queryset = super().get_queryset() if not queryset else queryset
-            self._saved_filters = QueryDict("", mutable=True)
-            if self.filter_class:
-                query_dict = self.request.GET
-                selected_ids = eval_validate(
-                    self.request.POST.get("selected_ids", "[]")
-                )
-
-                if (
-                    self.request.session.get("prev_path")
-                    and self.request.session.get("prev_path") != self.request.path
-                ):
-                    selected_ids = []
-                    self.request.session["hlv_selected_ids"] = selected_ids
-                    self.request.session["prev_path"] = self.request.path
-
-                if selected_ids and selected_ids != self.request.session.get(
-                    "hlv_selected_ids", []
-                ):
-                    self.request.session["hlv_selected_ids"] = selected_ids
-                    self.request.session["prev_path"] = self.request.path
-
-                if "filter_applied" in query_dict.keys():
-                    update_saved_filter_cache(self.request, CACHE)
-                elif CACHE.get(
-                    str(self.request.session.session_key) + self.request.path + "cbv"
-                ):
-                    query_dict = CACHE.get(
-                        str(self.request.session.session_key)
-                        + self.request.path
-                        + "cbv"
-                    )["query_dict"]
-
-                default_filter = models.SavedFilter.objects.filter(
-                    path=self.request.path,
-                    created_by=self.request.user,
-                    is_default=True,
-                ).first()
-                if not bool(query_dict) and default_filter:
-                    data = eval_validate(default_filter.filter)
-                    query_dict = QueryDict("", mutable=True)
-                    for key, value in data.items():
-                        query_dict[key] = value
-
-                    query_dict._mutable = False
-                self._saved_filters = query_dict
-                self.request.exclude_filter_form = True
-                if not filtered:
-                    self.queryset = self.filter_class(
-                        data=query_dict, queryset=self.queryset, request=self.request
-                    ).qs
-                else:
-                    self.queryset = queryset
-                if self.request.GET.get(
-                    "show_all"
-                ) == "true" and self.request.session.get("hlv_selected_ids"):
-                    del self.request.session["hlv_selected_ids"]
-                if self.request.session.get("hlv_selected_ids"):
-                    self.request.actual_ids = list(
-                        self.queryset.values_list("id", flat=True)
-                    )
-                    self.queryset = self.queryset.filter(
-                        id__in=self.request.session["hlv_selected_ids"]
-                    )
-        return self.queryset
-
-    def get_context_data(self, **kwargs: Any):
-        context = super().get_context_data(**kwargs)
-        if not self.search_url:
-            self.search_url = self.request.path
-        context["view_id"] = self.view_id
-        context["search_url"] = self.search_url
-
-        context["action_method"] = self.action_method
-        context["actions"] = self.actions
-
-        context["option_method"] = self.option_method
-        context["options"] = self.options
-        context["row_attrs"] = self.row_attrs
-
-        context["header_attrs"] = self.header_attrs
-
-        context["show_filter_tags"] = self.show_filter_tags
-        context["bulk_select_option"] = self.bulk_select_option
-        context["row_status_class"] = self.row_status_class
-        context["sortby_key"] = self.sortby_key
-        context["sortby_mapping"] = self.sortby_mapping
-        context["selected_instances_key_id"] = self.selected_instances_key_id
-        context["row_status_indications"] = self.row_status_indications
-        context["saved_filters"] = self._saved_filters
-        context["quick_export"] = self.quick_export
-        context["filter_selected"] = self.filter_selected
-        context["bulk_update"] = self.bulk_update
-        context["model_name"] = self.verbose_name
-        context["export_fields"] = self.export_fields
-        context["custom_empty_template"] = self.custom_empty_template
-        context["records_count_in_tab"] = self.records_count_in_tab
-        referrer = self.request.GET.get("referrer", "")
-        if not self.verbose_name:
-            self.verbose_name = self.model.__class__
-        if referrer:
-            # Remove the protocol and domain part
-            referrer = "/" + "/".join(referrer.split("/")[3:])
-        context["stored_filters"] = (
-            models.SavedFilter.objects.filter(
-                path=self.request.path, created_by=self.request.user
-            )
-            | models.SavedFilter.objects.filter(
-                referrer=referrer, created_by=self.request.user
-            )
-        ).distinct()
-
-        # Add verbose names to fields if possible
-        updated_column = []
-        get_field = self.model()._meta.get_field
-        for col in self.columns:
-            if isinstance(col, str):
-                try:
-                    updated_column.append((get_field(col).verbose_name, col))
-                except FieldDoesNotExist:
-                    updated_column.append(col)
-            else:
-                updated_column.append(col)
-
-        self.columns = updated_column
-
-        self.visible_column = list(self.columns)
-
-        hidden_fields = []
-        existing_instance = None
-        if self.request:
-            existing_instance = models.ToggleColumn.objects.filter(
-                user_id=self.request.user, path=self.request.path_info
-            ).first()
-            if existing_instance:
-                hidden_fields = existing_instance.excluded_columns
-
-        if not self.default_columns:
-            self.default_columns = self.columns
-
-        self.toggle_form = ToggleColumnForm(
-            self.columns, self.default_columns, hidden_fields
-        )
-
-        # Remove hidden columns from visible_column
-        hidden_field_names = (
-            {
-                col[1] if isinstance(col, tuple) else col
-                for col in self.columns
-                if col[1] in hidden_fields
-            }
-            if existing_instance
-            else {col[1] for col in self.columns if col not in self.default_columns}
-        )
-        self.visible_column = [
-            col
-            for col in self.visible_column
-            if (col[1] if isinstance(col, tuple) else col) not in hidden_field_names
-        ]
-
-        context["columns"] = self.visible_column
-        context["hidden_columns"] = list(set(self.columns) - set(self.visible_column))
-        context["toggle_form"] = self.toggle_form
-        context["show_toggle_form"] = self.show_toggle_form
-
-        if self.bulk_select_option:
-            context["select_all_ids"] = self.select_all
-        if self._saved_filters.get("field"):
-            active_group = models.ActiveGroup.objects.filter(
-                created_by=self.request.user,
-                path=self.request.path,
-                group_by_field=self._saved_filters["field"],
-            ).first()
-            if active_group:
-                context["active_target"] = active_group.group_target
-
-        queryset = self.get_queryset()
-
-        if self.show_filter_tags:
-            data_dict = parse_qs(self._saved_filters.urlencode())
-            data_dict = get_key_instances(self.model, data_dict)
-            keys_to_remove = [
-                key
-                for key, value in data_dict.items()
-                if key in ["filter_applied", "nav_url"] + self.filter_keys_to_remove
-            ]
-
-            for key in (
-                keys_to_remove + ["referrer", "nav_url"] + self.filter_keys_to_remove
-            ):
-                if key in data_dict.keys():
-                    data_dict.pop(key)
-            context["filter_dict"] = data_dict
-            context["keys_to_remove"] = keys_to_remove
-
-        request = self.request
-        is_first_sort = False
-        query_dict = self.request.GET
-        if (
-            not request.GET.get(self.sortby_key)
-            and not self._saved_filters.get(self.sortby_key)
-        ) or (
-            not request.GET.get(self.sortby_key)
-            and self._saved_filters.get(self.sortby_key)
-        ):
-            is_first_sort = True
-            query_dict = self._saved_filters
-
-        if query_dict.get(self.sortby_key):
-            queryset = sortby(
-                query_dict, queryset, self.sortby_key, is_first_sort=is_first_sort
-            )
-
-        ordered_ids = []
-        try:
-            if not self._saved_filters.get("field"):
-                for instance in queryset:
-                    ordered_ids.append(str(instance.pk))
-        except:
-            pass
-
-        self.request.session[self.ordered_ids_key] = ordered_ids
-        context["queryset"] = paginator_qry(
-            queryset, self._saved_filters.get("page"), self.records_per_page
-        )
-
-        if request and self._saved_filters.get("field"):
-            field = self._saved_filters.get("field")
-            self.template_name = "generic/group_by_table.html"
-            if isinstance(queryset, Page):
-                queryset = self.filter_class(
-                    request.GET, queryset=queryset.object_list.model.objects.all()
-                ).qs
-
-            try:
-                groups = group_by_queryset(
-                    queryset, field, self._saved_filters.get("page"), "page"
-                )
-                context["groups"] = paginator_qry(
-                    groups, self._saved_filters.get("page"), 10
-                )
-            except:
-                self.template_name = "generic/horilla_list_table.html"
-
-            # for group in context["groups"]:
-            #     for instance in group["list"]:
-            #         instance.ordered_ids = ordered_ids
-            #         ordered_ids.append(str(instance.pk))
-
-        # CACHE.get(self.request.session.session_key + "cbv")[HorillaListView] = context
-        from horilla.urls import path, urlpatterns
-
-        self.export_path = (
-            reverse("export-list", kwargs={"short_id": self.view_id})
-            + f"?model={self.model.__module__}.{self.model.__name__}"
-        )
-        context["export_path"] = self.export_path
-
-        if self.import_fields:
-            get_import_sheet_path = (
-                f"get-import-sheet-{self.view_id}-{self.request.session.session_key}/"
-            )
-            post_import_sheet_path = (
-                f"post-import-sheet-{self.view_id}-{self.request.session.session_key}/"
-            )
-            urlpatterns.append(
-                path(
-                    get_import_sheet_path,
-                    self.serve_import_sheet,
-                )
-            )
-            urlpatterns.append(
-                path(
-                    post_import_sheet_path,
-                    self.import_records,
-                )
-            )
-
-            session_key = self.request.session.session_key
-
-            context["get_import_sheet_path"] = get_import_sheet_path
-            context["post_import_sheet_path"] = post_import_sheet_path
-        context["import_fields"] = self.import_fields
-        if self.bulk_update_fields and self.bulk_update_accessibility():
-            get_bulk_path = (
-                f"get-bulk-update-{self.view_id}-{self.request.session.session_key}/"
-            )
-            post_bulk_path = (
-                f"post-bulk-update-{self.view_id}-{self.request.session.session_key}/"
-            )
-            self.post_bulk_path = post_bulk_path
-            urlpatterns.append(
-                path(
-                    get_bulk_path,
-                    self.serve_bulk_form,
-                )
-            )
-            urlpatterns.append(
-                path(
-                    post_bulk_path,
-                    self.handle_bulk_submission,
-                )
-            )
-            context["bulk_update_fields"] = self.bulk_update_fields
-            context["bulk_path"] = get_bulk_path
-        context["export_formats"] = self.export_formats
-        context["import_help"] = self.import_help
-        context["import_accessibility"] = self.import_accessibility()
-        return context
 
     def select_all(self, *args, **kwargs):
         """
