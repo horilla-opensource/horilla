@@ -296,6 +296,7 @@ class LastAppliedFilter(View):
         return HttpResponse("success")
 
 
+@method_decorator(login_required, name="dispatch")
 class DynamiListView(HorillaListView):
     """
     DynamicListView for Generic Delete
@@ -312,6 +313,7 @@ class DynamiListView(HorillaListView):
         return filter(_search_filter, self.instances)
 
 
+@method_decorator(login_required, name="dispatch")
 class HorillaDeleteConfirmationView(View):
     """
     Generic Delete Confirmation View
@@ -325,9 +327,13 @@ class HorillaDeleteConfirmationView(View):
         """
         from horilla.urls import path, urlpatterns
 
-        pk = self.request.GET["pk"]
+        pk = self.request.GET.get("pk")
+        try:
+            app, MODEL_NAME = self.request.GET.get("model").split(".")
+        except:
+            messages.error(self.request, "Invalid model parameter format.")
+            return HorillaFormView.HttpResponse()
 
-        app, MODEL_NAME = self.request.GET["model"].split(".")
         if not self.request.user.has_perm(app + ".delete_" + MODEL_NAME.lower()):
             return render(self.request, "no_perm.html")
         model = apps.get_model(app, MODEL_NAME)

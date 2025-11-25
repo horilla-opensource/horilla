@@ -497,7 +497,9 @@ def filter_pagination_asset_category(request):
         asset_category_filtered_form = None
 
     # Pagination
-    asset_category_paginator = Paginator(asset_category_queryset, get_pagination())
+    asset_category_paginator = Paginator(
+        asset_category_queryset.order_by("id"), get_pagination()
+    )
     page_number = request.GET.get("page")
     asset_categories = asset_category_paginator.get_page(page_number)
 
@@ -732,7 +734,12 @@ def asset_request_reject(request, req_id):
         asset request detail view with an error message if the asset request is not
         found or already rejected
     """
-    asset_request = AssetRequest.objects.get(id=req_id)
+    try:
+        asset_request = AssetRequest.objects.get(id=req_id)
+    except AssetRequest.DoesNotExist:
+        messages.error(request, _("Asset request not found."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
     asset_request.asset_request_status = "Rejected"
     asset_request.save()
     messages.info(request, _("Asset request has been rejected."))
@@ -795,7 +802,12 @@ def asset_allocate_return_request(request, asset_id):
     Handle the initiation of a return request for an allocated asset.
     """
     previous_data = request.GET.urlencode()
-    asset_assign = AssetAssignment.objects.get(id=asset_id)
+    try:
+        asset_assign = AssetAssignment.objects.get(id=asset_id)
+    except AssetAssignment.DoesNotExist:
+        messages.error(request, _("Asset assignment not found."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
     asset_assign.return_request = True
     asset_assign.save()
     message = _("Return request for {} initiated.").format(asset_assign.asset_id)
@@ -1751,7 +1763,12 @@ def asset_history_single_view(request, asset_id):
     Returns:
         html: Returns asset history single view template
     """
-    asset_assignment = get_object_or_404(AssetAssignment, id=asset_id)
+    try:
+        asset_assignment = AssetAssignment.objects.get(id=asset_id)
+    except AssetAssignment.DoesNotExist:
+        messages.error(request, _("Asset assignment not found."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
     context = {"asset_assignment": asset_assignment}
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
@@ -1831,7 +1848,12 @@ def asset_tab(request, pk):
     Returns: return asset-tab template
 
     """
-    employee = Employee.objects.get(id=pk)
+    try:
+        employee = Employee.objects.get(id=pk)
+    except Employee.DoesNotExist:
+        messages.error(request, _("Employee not found."))
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
+
     assets_requests = employee.requested_employee.all()
     assets = employee.allocated_employee.all()
     assets_ids = (
