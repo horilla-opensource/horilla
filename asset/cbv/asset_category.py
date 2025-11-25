@@ -173,6 +173,7 @@ class AssetDuplicateFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class AssetReportFormView(HorillaFormView):
     """
     form view for create button

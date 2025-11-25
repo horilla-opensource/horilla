@@ -50,7 +50,7 @@ urlpatterns = [
         name="asset-creation",
     ),
     # path("asset-list/<int:cat_id>", views.asset_list, name="asset-list"),
-    path("asset-list/<int:cat_id>", asset.AssetListView.as_view(), name="asset-list"),
+    path("asset-list/<int:cat_id>/", asset.AssetListView.as_view(), name="asset-list"),
     # path("asset-update/<int:asset_id>/", views.asset_update, name="asset-update"),
     path(
         "asset-update/<int:pk>/",
@@ -138,7 +138,7 @@ urlpatterns = [
         name="asset-category-update",
     ),
     path(
-        "asset-category-delete/<int:cat_id>",
+        "asset-category-delete/<int:cat_id>/",
         views.delete_asset_category,
         name="asset-category-delete",
     ),
@@ -173,17 +173,17 @@ urlpatterns = [
     #     name="asset-request-allocation-view",
     # ),
     path(
-        "asset-request-individual-view/<int:asset_request_id>",
+        "asset-request-individual-view/<int:asset_request_id>/",
         views.asset_request_individual_view,
         name="asset-request-individual-view",
     ),
     path(
-        "own-asset-individual-view/<int:asset_id>",
+        "own-asset-individual-view/<int:asset_id>/",
         views.own_asset_individual_view,
         name="own-asset-individual-view",
     ),
     path(
-        "asset-allocation-individual-view/<int:asset_allocation_id>",
+        "asset-allocation-individual-view/<int:asset_allocation_id>/",
         views.asset_allocation_individual_view,
         name="asset-allocation-individual-view",
     ),
@@ -287,7 +287,7 @@ urlpatterns = [
         name="asset-batch-update",
     ),
     path(
-        "asset-batch-number-delete/<int:batch_id>",
+        "asset-batch-number-delete/<int:batch_id>/",
         views.asset_batch_number_delete,
         name="asset-batch-number-delete",
     ),
@@ -328,7 +328,7 @@ urlpatterns = [
     #     name="asset-history",
     # ),
     path(
-        "asset-history-single-view/<int:asset_id>",
+        "asset-history-single-view/<int:asset_id>/",
         views.asset_history_single_view,
         name="asset-history-single-view",
     ),
@@ -409,12 +409,12 @@ urlpatterns = [
     ),
     path("asset-tab/<int:pk>", views.asset_tab, name="asset-tab"),
     path(
-        "profile-asset-tab/<int:emp_id>",
+        "profile-asset-tab/<int:emp_id>/",
         views.profile_asset_tab,
         name="profile-asset-tab",
     ),
     path(
-        "asset-request-tab/<int:emp_id>",
+        "asset-request-tab/<int:emp_id>/",
         views.asset_request_tab,
         name="asset-request-tab",
     ),

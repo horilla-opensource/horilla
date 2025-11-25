@@ -10,6 +10,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 from django.views.generic.edit import DeleteView
 
 from asset.filters import AssetAllocationFilter, AssetRequestFilter, CustomAssetFilter
@@ -216,6 +217,7 @@ class AssetRequestList(HorillaListView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(require_http_methods(["POST"]), name="dispatch")
 @method_decorator(
     permission_required(perm="asset.delete_assetassignment"), name="dispatch"
 )
@@ -235,6 +237,7 @@ class AssetAllocationDelete(DeleteView):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(require_http_methods(["POST"]), name="dispatch")
 @method_decorator(
     permission_required(perm="asset.delete_assetrequest"), name="dispatch"
 )
@@ -515,6 +518,7 @@ class AssetAllocationFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class AssetApproveFormView(HorillaFormView):
     """
     Create Asset Allocation
