@@ -80,7 +80,7 @@ class AssetBatchNoNav(HorillaNavView):
         super().__init__(**kwargs)
         self.search_url = reverse("asset-batch-list")
 
-        if self.request.user.has_perm("asset.view_assetlot"):
+        if self.request.user.has_perm("asset.add_assetlot"):
             self.create_attrs = f"""
                 data-toggle="oh-modal-toggle"
                 data-target="#genericModal"

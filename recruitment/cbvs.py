@@ -45,12 +45,13 @@ class LinkedInSettingNavView(views.HorillaNavView):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.create_attrs = f"""
-            hx-get="{reverse_lazy("create-linkedin-account")}"
-            hx-target="#genericModalBody"
-            data-toggle="oh-modal-toggle"
-            data-target="#genericModal"
-        """
+        if self.request.user.has_perm("recruitment.add_linkedinaccount"):
+            self.create_attrs = f"""
+                hx-get="{reverse_lazy("create-linkedin-account")}"
+                hx-target="#genericModalBody"
+                data-toggle="oh-modal-toggle"
+                data-target="#genericModal"
+            """
 
     nav_title = _("LinkedIn Accounts")
     search_url = reverse_lazy("linkedin-setting-list")
@@ -59,7 +60,7 @@ class LinkedInSettingNavView(views.HorillaNavView):
 
 @method_decorator(login_required, name="dispatch")
 @method_decorator(
-    permission_required("recruitment.change_linkedinaccount"), name="dispatch"
+    permission_required("recruitment.add_linkedinaccount"), name="dispatch"
 )
 class LinkedInAccountFormView(views.HorillaFormView):
     """

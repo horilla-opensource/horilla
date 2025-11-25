@@ -43,13 +43,13 @@ class BiometricNavBar(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("biometric-card-view")
-
-        self.create_attrs = f"""
-                            data-toggle="oh-modal-toggle"
-                            data-target="#genericModal"
-                            hx-target="#genericModalBody"
-                            hx-get="{reverse('biometric-device-add')}"
-                            """
+        if self.request.user.has_perm("biometric.add_biometricdevices"):
+            self.create_attrs = f"""
+                                data-toggle="oh-modal-toggle"
+                                data-target="#genericModal"
+                                hx-target="#genericModalBody"
+                                hx-get="{reverse('biometric-device-add')}"
+                                """
 
     nav_title = _("Biometric Devices")
     filter_body_template = "cbv/biometric_filter.html"
