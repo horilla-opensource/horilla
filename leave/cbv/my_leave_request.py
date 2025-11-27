@@ -175,6 +175,7 @@ class MyLeaveRequestListView(MainParentListView):
         return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class MyLeaveRequestNavView(HorillaNavView):
     """
     nav bar
@@ -219,6 +220,7 @@ class MyLeaveRequestNavView(HorillaNavView):
     ]
 
 
+@method_decorator(login_required, name="dispatch")
 class MyLeaveRequestDetailView(HorillaDetailedView):
     """
     detail view of page
@@ -245,6 +247,7 @@ class MyLeaveRequestDetailView(HorillaDetailedView):
     action_method = "detail_leave_actions"
 
 
+@method_decorator(login_required, name="dispatch")
 class MyLeaveRequestForm(HorillaFormView):
     """
     form view

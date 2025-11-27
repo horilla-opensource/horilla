@@ -189,6 +189,7 @@ class TicketTabView(HorillaTabView):
 #         return self.queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class TicketListView(HorillaListView):
     """
     Pipeline List View

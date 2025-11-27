@@ -568,6 +568,7 @@ class TaskCardView(HorillaCardView):
     card_status_class = "status-{status}"
 
 
+@method_decorator(login_required, name="dispatch")
 class TasksInIndividualView(TaskListView):
 
     def __init__(self, **kwargs: Any) -> None:
