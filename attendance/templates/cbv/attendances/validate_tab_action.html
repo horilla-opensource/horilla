@@ -1,54 +1,44 @@
 {% load i18n %}
 {% load static %}
 {% load basefilters %}
-
-{% if perms.attendance.change_attendance and perms.attendance.delete_attendance or request.user|is_reportingmanager %}
-    <a class="oh-btn oh-btn-group oh-btn--info"
-       hx-get="{% url 'attendance-update' instance.id %}"
-       onclick="event.stopPropagation()"
-       hx-target="#genericModalBody"
-       hx-swap="innerHTML"
-       data-toggle="oh-modal-toggle"
-       data-target="#genericModal"
-       style="width: 50%;">
-        <button style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit;">
-            <ion-icon name="create-outline"></ion-icon>
-            {% trans 'Edit' %}
-        </button>
-    </a>
-
-    {% comment %} {% if request.user.employee_get != instance.employee_id and request.user|is_reportingmanager or perms.attendance.change_attendance or request.user|is_self_reporting_manager %} {% endcomment %}
-    {% if instance.employee_id == request.user.employee_get and not request.user.is_superuser %}
-        <a type="submit" href="#" class="oh-btn oh-btn--success w-50 oh-btn--disabled">
-            <ion-icon name="checkmark-done-outline"></ion-icon>
-            {% trans "Validate" %}
+{% is_manager_of request.user instance as can_manage %}
+{% with can_change=perms.attendance.change_attendance can_delete=perms.attendance.delete_attendance %}
+{% if can_change or can_delete or can_manage %}
+    {% if can_change or can_manage %}
+        <a class="oh-btn oh-btn-group oh-btn--info" hx-get="{% url 'attendance-update' instance.id %}"
+            onclick="event.stopPropagation()" hx-target="#genericModalBody" hx-swap="innerHTML" data-toggle="oh-modal-toggle"
+            data-target="#genericModal" style="width: 50%;">
+            <button
+                style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit;">
+                <ion-icon name="create-outline"></ion-icon>
+                {% trans 'Edit' %}
+            </button>
         </a>
-    {% else %}
-        <a href='{% url "validate-this-attendance" instance.id %}'
-           hx-target="#updateAttendanceBody"
-           data-req="/attendance/request-attendance-view/?id={{instance.id}}"
-           onclick="event.stopPropagation(); {% if instance.is_validate_request %}  event.preventDefault(); showApproveAlert($(this).data('req')); {% endif %}"
-           class="oh-btn oh-btn--success"
-           style="width: 50%;">
-            <button style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit;">
+
+        <a href="{% url 'validate-this-attendance' instance.id %}" hx-target="#updateAttendanceBody"
+            data-req="/attendance/request-attendance-view/?id={{instance.id}}"
+            onclick="event.stopPropagation(); {% if instance.is_validate_request %}  event.preventDefault(); showApproveAlert($(this).data('req')); {% endif %}"
+            class="oh-btn oh-btn--success" style="width: 50%;">
+            <button
+                style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit;">
                 <ion-icon name="checkmark-done-outline"></ion-icon>
                 {% trans 'Validate' %}
             </button>
         </a>
     {% endif %}
 
-{% comment %} {% if perms.attendance.delete_attendance  %} {% endcomment %}
-    <form action="{% url 'attendance-delete' instance.id %}"
-          onclick="event.stopPropagation()"
-          onsubmit="return confirm('{% trans "Are you sure want to delete this attendance?" %}')"
-          hx-target="#tab_contents"
-          method='post'
-          style="width: 50%;"
-          class="oh-btn oh-btn-group oh-btn--danger">
-        {% csrf_token %}
-        <button type="submit" style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit;">
-            <ion-icon name="trash-outline"></ion-icon>
-            {% trans 'Delete' %}
-        </button>
-    </form>
+
+    {% if can_delete or can_manage %}
+        <form action="{% url 'attendance-delete' instance.id %}" onclick="event.stopPropagation()"
+            onsubmit="return confirm('{% trans " Are you sure want to delete this attendance?" %}')"
+            method='post' style="width: 50%;" class="oh-btn oh-btn-group oh-btn--danger">
+            {% csrf_token %}
+            <button type="submit"
+                style="background: none; color: inherit; border: none; padding: 0; font: inherit; cursor: pointer; outline: inherit;">
+                <ion-icon name="trash-outline"></ion-icon>
+                {% trans 'Delete' %}
+            </button>
+        </form>
+    {% endif %}
 {% endif %}
+{% endwith %}
