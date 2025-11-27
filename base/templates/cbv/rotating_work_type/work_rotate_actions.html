@@ -1,37 +1,39 @@
 {% load i18n %}
 {% load basefilters %}
-
+{% is_manager_of request.user instance as can_manage %}
+{% with can_change=perms.base.change_rotatingworktypeassign can_delete=perms.base.delete_rotatingworktypeassign %}
+{% if can_change or can_delete or can_manage %}
 <div class="oh-btn-group" onclick="event.stopPropagation()">
-    {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
+    {% if can_change or can_manage %}
         <a hx-get="{% url 'rotating-work-type-assign-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
             hx-target="#genericModalBody" data-target="#genericModal" data-toggle="oh-modal-toggle" type="button"
             class="oh-btn oh-btn--light-bkg small-button w-100" title="{% trans 'Edit' %}">
             <ion-icon name="create-outline"></ion-icon>
         </a>
     {% endif %}
-    {% if perms.base.change_rotatingworktypeassign or request.user|is_reportingmanager %}
+    {% if can_change or can_manage %}
         {% if instance.is_active %}
-        <a title="{% trans 'Archive' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100"
-            hx-confirm="{% trans 'Do you want to archive this rotating work type assign?' %}"
-            hx-get="{% url 'rotating-work-type-assign-archive' instance.id %}" hx-target="#rotating-work-container">
-
-            <ion-icon name="archive"></ion-icon>
-        </a>
+            <a title="{% trans 'Archive' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100"
+                hx-confirm="{% trans 'Do you want to archive this rotating work type assign?' %}"
+                hx-get="{% url 'rotating-work-type-assign-archive' instance.id %}" hx-target="#rotating-work-container">
+                <ion-icon name="archive"></ion-icon>
+            </a>
         {% else %}
-        <a title="{% trans 'Un-Archive' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100"
-            hx-confirm="{% trans 'Do you want to un-archive this rotating work type assign?' %}"
-            hx-get="{% url 'rotating-work-type-assign-archive' instance.id %}" hx-target="#rotating-work-container">
-
-            <ion-icon name="archive"></ion-icon>
-
-        </a>
+            <a title="{% trans 'Un-Archive' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100"
+                hx-confirm="{% trans 'Do you want to un-archive this rotating work type assign?' %}"
+                hx-get="{% url 'rotating-work-type-assign-archive' instance.id %}" hx-target="#rotating-work-container">
+                <ion-icon name="archive"></ion-icon>
+            </a>
         {% endif %}
     {% endif %}
-    {% if perms.base.delete_rotatingworktypeassign or request.user|is_reportingmanager %}
-        <a title="{% trans 'Remove' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100" hx-confirm="{% trans 'Are you sure you want to delete this rotating work type assign?' %}"
+    {% if can_delete or can_manage %}
+        <a title="{% trans 'Remove' %}" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg small-button w-100"
+            hx-confirm="{% trans 'Are you sure you want to delete this rotating work type assign?' %}"
             hx-post="{% url 'rotating-work-type-assign-delete' instance.id %}?{{pd}}" hx-target="#rotating-work-container">
-                <ion-icon name="trash-outline"></ion-icon>
+            <ion-icon name="trash-outline"></ion-icon>
             </button>
         </a>
     {% endif %}
 </div>
+{% endif %}
+{% endwith %}
