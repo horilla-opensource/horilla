@@ -201,7 +201,6 @@ def payroll_calculation(employee, start_date, end_date):
     total_lop_allowance_deductions = sum(
         item["amount"] for item in lop_allowance_deductions
     )
-    print("Total LOP Allowance Deductions", total_lop_allowance_deductions)
 
     payee_tax_base_amount = gross_pay - loss_of_pay_amount - total_lop_allowance_deductions
 
