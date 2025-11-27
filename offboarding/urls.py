@@ -14,7 +14,7 @@ from offboarding.models import OffboardingGeneralSetting
 
 urlpatterns = [
     path(
-        "individual-resignation-tab-list/<int:pk>",
+        "individual-resignation-tab-list/<int:pk>/",
         resignation_tab.ResignationTabView.as_view(),
         name="individual-resignation-tab-list",
     ),
@@ -35,7 +35,7 @@ urlpatterns = [
         name="update-offboarding",
     ),
     path(
-        "delete-offboarding/<int:id>",
+        "delete-offboarding/<int:id>/",
         views.delete_offboarding,
         name="delete-offboarding",
     ),
@@ -162,20 +162,20 @@ urlpatterns = [
         resignation.ResignationListView.as_view(),
         name="list-resignation-request",
     ),
+    path(
+        "tab-resignation-requests/<int:pk>/",
+        resignation_tab.ResignationTabView.as_view(),
+        name="tab-resignation-requests",
+    ),
     # path(
     #     "tab-resignation-requests/<int:pk>",
-    #     resignation_tab.ResignationTabView.as_view(),
+    #     check_feature_enabled("resignation_request", OffboardingGeneralSetting)(
+    #         resignation_tab.ResignationTabView.as_view()
+    #     ),
     #     name="tab-resignation-requests",
     # ),
     path(
-        "tab-resignation-requests/<int:pk>",
-        check_feature_enabled("resignation_request", OffboardingGeneralSetting)(
-            resignation_tab.ResignationTabView.as_view()
-        ),
-        name="tab-resignation-requests",
-    ),
-    path(
-        "tab-resignation-requests-detail-view/<int:pk>",
+        "tab-resignation-requests-detail-view/<int:pk>/",
         resignation_tab.ResignationTabDetailView.as_view(),
         name="tab-resignation-requests-detail-view",
     ),
@@ -190,12 +190,17 @@ urlpatterns = [
         name="resignation-requests-create",
     ),
     path(
-        "resignation-requests-update/<int:pk>",
+        "resignation-requests-update/<int:pk>/",
         resignation.ResignationLettersFormView.as_view(),
         name="resignation-request-update",
     ),
     path(
-        "resignation-requests-detail-view/<int:pk>",
+        "resignation-requests-detail-view/<int:pk>/",
+        resignation.ResignationLetterDetailView.as_view(),
+        name="resignation-requests-detail-view",
+    ),
+    path(
+        "resignation-requests-detail-view/<int:pk>/",
         resignation.ResignationLetterDetailView.as_view(),
         name="resignation-requests-detail-view",
     ),

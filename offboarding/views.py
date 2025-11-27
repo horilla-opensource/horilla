@@ -25,6 +25,7 @@ from horilla.decorators import (
 )
 from horilla.group_by import group_by_queryset as group_by
 from horilla.methods import get_horilla_model_class
+from horilla_views.generic.cbv.views import HorillaFormView
 from notifications.signals import notify
 from offboarding.decorators import (
     any_manager_can_enter,
@@ -534,7 +535,6 @@ def change_offboarding_stage(request):
     groups = pipeline_grouper({}, [stage.offboarding_id])
     for item in groups:
         setattr(item["offboarding"], "stages", item["stages"])
-    from horilla_views.generic.cbv.views import HorillaFormView
 
     return HorillaFormView.HttpResponse()
 
@@ -577,7 +577,7 @@ def add_note(request):
     """
     This method is used to create note for the offboarding employee
     """
-    employee_id = request.GET["employee_id"]
+    employee_id = request.GET.get("employee_id")
     employee = OffboardingEmployee.objects.get(id=employee_id)
     form = NoteForm()
     if request.method == "POST":
@@ -725,7 +725,7 @@ def task_assign(request):
     This method is used to assign task to employees
     """
     employee_ids = request.GET.getlist("employee_ids")
-    task_id = request.GET["task_id"]
+    task_id = request.GET.get("task_id")
     employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
     task = OffboardingTask.objects.get(id=task_id)
     for employee in employees:
@@ -812,8 +812,8 @@ def request_view(request):
     """
     This method is used to view the resignation request
     """
-    defatul_filter = {"status": "requested"}
-    filter_instance = LetterFilter()
+    default_filter = {"status": "requested"}
+    filter_instance = LetterFilter(default_filter)
     letters = ResignationLetter.objects.all()
     offboardings = Offboarding.objects.all()
 
@@ -1078,7 +1078,7 @@ def get_notice_period(request):
     """
     This method is used to get initial details for notice period
     """
-    employee_id = request.GET["employee_id"]
+    employee_id = request.GET.get("employee_id")
     if apps.is_installed("payroll"):
         Contract = get_horilla_model_class(app_label="payroll", model="contract")
         employee_contract = (
@@ -1107,12 +1107,16 @@ def get_notice_period(request):
     return JsonResponse(response)
 
 
+@login_required
 def get_notice_period_end_date(request):
     """
     Calculates and returns the end date of the notice period based on the provided start date.
     """
     start_date = request.GET.get("start_date")
-    start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+    try:
+        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+    except (TypeError, ValueError):
+        start_date = datetime.today().date()
     notice_period = intial_notice_period(request)["get_initial_notice_period"]
     end_date = start_date + timedelta(days=notice_period)
     response = {

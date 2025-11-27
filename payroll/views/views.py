@@ -795,6 +795,7 @@ def dashboard_employee_chart(request):
         return JsonResponse(response)
 
 
+@login_required
 def payslip_details(request):
     """
     payroll dashboard payslip details data
@@ -925,6 +926,7 @@ def contract_ending(request):
     return JsonResponse(response)
 
 
+@login_required
 def payslip_export(request):
     """
     payroll dashboard exporting to excell data

@@ -1,44 +1,50 @@
-{%load i18n %}
+{% load i18n %}
 {% load basefilters %}
-<div onclick="event.stopPropagation()">
-    <div class="oh-btn-group">
-        {% if request.user|is_reportingmanager or perms.attendance.chanage_penaltyaccount or request.user|is_leave_approval_manager %}
-        <button
-            data-toggle="oh-modal-toggle"
-            data-target="#penaltyModal"
-            hx-target="#penaltyModalBody"
-            hx-get="{% url "leave-cut-penalty" instance.id %}"
-            type='submit'
-            class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-            title="{% trans 'Penalty' %}">
-            <ion-icon name="information-circle-outline"></ion-icon>
-        </button>
-        {% endif %}
-        {% if request.user|is_reportingmanager or perms.leave.change_leaverequest or perms.leave.delete_leaverequest or request.user|is_leave_approval_manager %}
-        {% if instance.status == 'requested' %}
-            <button  class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
-                data-target="#genericModal" hx-get="{% url 'request-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
-                hx-target="#genericModalBody"><ion-icon name="create-outline"></ion-icon></button>
-                {% else %}
-                <button class="oh-btn oh-btn--light-bkg w-50" disabled>
-                  <ion-icon name="create-outline"></ion-icon>
-                </button>
+{% is_manager_of request.user instance as can_manage %}
+{% with can_change=perms.leave.change_leaverequest can_delete=perms.leave.delete_leaverequest can_penalty=perms.base.chanage_penaltyaccounts leave_manager=request.user|is_leave_approval_manager %}
+{% if can_change or can_delete or can_penalty or can_manage or leave_manager %}
+    <div onclick="event.stopPropagation()">
+        <div class="oh-btn-group">
 
-          {% endif %}
-          {% if instance.status == 'requested' %}
-            <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-            title="{% trans 'Delete' %}" id="delete-link"
-            hx-confirm="{% trans 'Are you sure you want to delete?' %}"
-            hx-get="{% url 'request-delete' instance.id %}"
-            hx-target="#leaveRequest"
-            >
-            <ion-icon name="trash-outline"></ion-icon>
-        </a>
-          {% else %}
-            <button class="oh-btn oh-btn--light-bkg w-50" disabled>
-              <ion-icon name="trash-outline"></ion-icon>
+            {# Penalty Button #}
+            {% if can_manage or can_penalty or leave_manager %}
+                <button data-toggle="oh-modal-toggle" data-target="#penaltyModal" hx-target="#penaltyModalBody"
+                    hx-get="{% url 'leave-cut-penalty' instance.id %}" type="button"
+                    class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Penalty' %}">
+                    <ion-icon name="information-circle-outline"></ion-icon>
+                </button>
+            {% endif %}
+
+            {# Edit Button #}
+            {% if can_manage or can_change or leave_manager %}
+                <button class="oh-btn oh-btn--light-bkg w-100 {% if instance.status != 'requested' %}disabled{% endif %}"
+                    title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle" data-target="#genericModal"
+                    {% if instance.status == 'requested' %}
+                        hx-get="{% url 'request-update' instance.id %}?instance_ids={{ instance.ordered_ids }}"
+                        hx-target="#genericModalBody"
+                    {% endif %}
+                    >
+                    <ion-icon name="create-outline"></ion-icon>
+                </button>
+            {% endif %}
+
+            {# Delete Button #}
+            {% if can_manage or can_delete or leave_manager %}
+            <button
+                class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100 {% if instance.status != 'requested' %}disabled{% endif %}"
+                title="{% trans 'Delete' %}"
+                id="delete-link"
+                {% if instance.status == 'requested' %}
+                    hx-confirm="{% trans 'Are you sure you want to delete?' %}"
+                    hx-get="{% url 'request-delete' instance.id %}"
+                    hx-target="#leaveRequest"
+                {% endif %}
+                >
+                <ion-icon name="trash-outline"></ion-icon>
             </button>
-          {% endif %}
-          {% endif %}
+            {% endif %}
+
+        </div>
     </div>
-</div>
+{% endif %}
+{% endwith %}

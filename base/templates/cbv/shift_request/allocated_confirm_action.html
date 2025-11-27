@@ -1,8 +1,9 @@
 {% load i18n basefilters static %}
-
+{% is_manager_of request.user instance reallocate_to as can_manage %}
+{% with is_owner=request.user.employee_get|equals:instance.reallocate_to can_change=perms.base.change_shiftrequest %}
 <div class="oh-sticky-table__right" onclick="event.stopPropagation();">
 	<div class="oh-btn-group">
-		{% if request.user.employee_get == instance.reallocate_to and not request.user|is_reportingmanager %}
+		{% if is_owner and not can_manage %}
 			{% if instance.approved or instance.reallocate_canceled or instance.reallocate_approved %}
 				<button class="oh-btn oh-btn--success w-100" disabled>
 					<ion-icon name="checkmark-outline"></ion-icon>
@@ -19,7 +20,7 @@
 			{% endif %}
 		{% endif %}
 
-		{% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+		{% if can_change or can_manage %}
 			{% if instance.reallocate_approved or instance.approved or instance.reallocate_canceled %}
 				<button class="oh-btn oh-btn--success w-100" disabled>
 					<ion-icon class="me-1" name="checkmark-outline"></ion-icon>
@@ -36,7 +37,7 @@
 			{% endif %}
 		{% endif %}
 
-		{% if request.user.employee_get == instance.reallocate_to and not request.user|is_reportingmanager %}
+		{% if is_owner and not can_manage %}
 			{% if instance.reallocate_canceled or instance.approved or instance.reallocate_approved %}
 				<button class="oh-btn oh-btn--danger w-100" disabled>
 					<ion-icon name="close-circle-outline"></ion-icon>
@@ -53,7 +54,7 @@
 			{% endif %}
 		{% endif %}
 
-		{% if request.user.employee_get == instance.employee_id and not request.user|is_reportingmanager %}
+		{% if request.user.employee_get == instance.employee_id and not can_manage %}
 			{% if instance.approved or instance.reallocate_canceled or instance.reallocate_approved %}
 				<button class="oh-btn oh-btn--light-bkg w-50" disabled>
 					<ion-icon name="create-outline"></ion-icon>
@@ -94,7 +95,7 @@
 			{% endif %}
 		{% endif %}
 
-		{% if request.user|is_reportingmanager %}
+		{% if can_manage %}
 			{% if instance.reallocate_canceled or instance.approved or instance.reallocate_approved %}
 				<button disabled class="oh-btn oh-btn--danger w-100">
 					<ion-icon class="me-1" name="close-circle-outline"></ion-icon>
@@ -112,3 +113,4 @@
 		{% endif %}
 	</div>
 </div>
+{% endwith %}

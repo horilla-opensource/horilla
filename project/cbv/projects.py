@@ -488,6 +488,7 @@ class ProjectCardView(HorillaCardView):
 #     )
 
 
+@method_decorator(login_required, name="dispatch")
 class ProjectsTabView(ListView):
     model = Project
     template_name = "cbv/projects/project_tab.html"

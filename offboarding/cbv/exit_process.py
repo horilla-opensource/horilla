@@ -89,6 +89,7 @@ class OffboardingStageFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(
     any_manager_can_enter("offboarding.add_offboardingemployee"), name="dispatch"
 )
@@ -299,8 +300,8 @@ class PipeLineTabView(HorillaTabView):
     Pipeline List View
     """
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         offboardings = PipelineFilter(self.request.GET).qs.filter(is_active=True)
 
         self.tabs = []
@@ -369,6 +370,9 @@ class PipeLineTabView(HorillaTabView):
                 )
 
             self.tabs.append(tab)
+
+        context["tabs"] = self.tabs
+        return context
 
 
 @method_decorator(login_required, name="dispatch")
@@ -491,6 +495,10 @@ class OffboardingEmployeeList(HorillaListView):
         self.view_id = (
             f"offboardingStageContainer{self.request.GET.get('offboarding_stage_id')}"
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         self.managing_offboarding_tasks = OffboardingTask.objects.filter(
             managers__employee_user_id=self.request.user
         ).values_list("pk", flat=True)
@@ -506,10 +514,8 @@ class OffboardingEmployeeList(HorillaListView):
         ).values_list("pk", flat=True)
         self.request.managing_offboardings = self.managing_offboardings
 
-    def get_context_data(self, **kwargs):
         stage_id = self.request.GET["offboarding_stage_id"]
         tasks = OffboardingTask.objects.filter(stage_id=stage_id)
-        context = super().get_context_data(**kwargs)
         for task in tasks:
             context["columns"].append(
                 (

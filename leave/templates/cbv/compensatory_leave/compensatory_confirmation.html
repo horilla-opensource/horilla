@@ -1,8 +1,8 @@
 {% load i18n %}
 {% load basefilters %}
-<div class="oh-btn-group" onclick="event.stopPropagation();">
-
-    {% if perms.leave.change_leaveallocationrequest or request.user|is_reportingmanager %}
+{% is_manager_of request.user instance as can_manage %}
+{% if perms.leave.change_leaveallocationrequest or can_manage %}
+    <div class="oh-btn-group" onclick="event.stopPropagation();">
         {% if instance.status == 'requested' %}
             <a type="submit"
                 hx-confirm="{% trans 'Are you sure you want to approve ?' %}"
@@ -34,5 +34,5 @@
                 <ion-icon class="me-1" name="close-circle-outline"></ion-icon>
             </a>
         {% endif %}
-    {% endif %}
-</div>
+    </div>
+{% endif %}

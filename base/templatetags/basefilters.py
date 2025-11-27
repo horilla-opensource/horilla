@@ -12,30 +12,23 @@ from employee.models import Employee, EmployeeWorkInformation
 register = template.Library()
 
 
-@register.filter(name="cancel_request")
-def cancel_request(user, request):
-    employee = user.employee_get
-    employee_manages = employee.reporting_manager.all()
-    return bool(
-        request.employee_id == employee
-        or user.has_perm("perms.base.cancel_worktyperequest")
-        or user.has_perm("perms.base.cancel_shiftrequest")
-        or employee_manages.exists()
-    )
+@register.filter
+def equals(value, arg):
+    """Check if value equals arg"""
+    return value == arg
 
 
-@register.filter(name="update_request")
-def update_request(user, request):
-    employee = user.employee_get
-    return bool(
-        not request.canceled
-        and not request.approved
-        and (
-            employee == request.employee_id
-            or user.has_perm("perms.base.change_worktyperequest")
-            or user.has_perm("perms.base.change_shiftrequest")
-        )
+@register.simple_tag
+def is_manager_of(user, instance, field_name=None):
+    employee = Employee.objects.filter(employee_user_id=user).first()
+
+    target_employee = (
+        getattr(instance, field_name, None) if field_name else instance.employee_id
     )
+
+    return EmployeeWorkInformation.objects.filter(
+        reporting_manager_id=employee, employee_id=target_employee
+    ).exists()
 
 
 @register.filter(name="is_reportingmanager")
@@ -48,18 +41,6 @@ def is_reportingmanager(user):
     return EmployeeWorkInformation.objects.filter(
         reporting_manager_id=employee
     ).exists()
-
-
-@register.filter(name="is_self_reporting_manager")
-def is_self_reporting_manager(user):
-    """
-    This method returns true if the user employee reporting manager to himself
-    args:
-        user    : request.user
-    """
-    employee = user.employee_get
-    employee_manages = employee.reporting_manager.all()
-    return employee_manages.filter(employee_id=employee).exists()
 
 
 @register.filter(name="is_leave_approval_manager")
@@ -100,18 +81,6 @@ def filtersubordinates(user):
     employee = user.employee_get
     employee_manages = employee.reporting_manager.all()
     return employee_manages.exists()
-
-
-@register.filter(name="is_self_reporting_manager")
-def is_self_reporting_manager(user):
-    """
-    This method returns true if the user employee reporting manager to himself
-    args:
-        user    : request.user
-    """
-    employee = user.employee_get
-    employee_manages = employee.reporting_manager.all()
-    return employee_manages.filter(employee_id=employee).exists()
 
 
 @register.filter(name="filter_field")

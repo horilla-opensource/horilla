@@ -1,19 +1,15 @@
 {% load i18n %} {% load basefilters %}
+{% is_manager_of request.user instance as can_manage %}
 <div class="oh-btn-group">
-    <a data-toggle="oh-modal-toggle"
-     data-target="#validateAttendanceRequest"
-     hx-get="{% url 'validate-attendance-request' instance.id %}" hx-trigger="click" hx-target="#validateAttendanceRequestModalBody"
-      class="oh-btn oh-btn--light-bkg w-100"
-      title="{% trans 'View' %}"><ion-icon name="eye-outline" role="img"></ion-icon></a>
-    {% if request.user.is_superuser or perms.attendance.change_attendance or request.user|is_reportingmanager %}
-      <a
-        type="submit"
-        class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
-        title="{% trans 'Cancel / Reject' %}"
-        onclick="event.stopPropagation();return confirm('{% trans "Are you sure want to cancel the request?" %}');"
-        href="{% url 'cancel-validate-attendance-request' instance.id %}"
-      >
-      <ion-icon name="close-circle-outline"></ion-icon>
-      </a>
+    <a data-toggle="oh-modal-toggle" data-target="#validateAttendanceRequest"
+        hx-get="{% url 'validate-attendance-request' instance.id %}" hx-trigger="click"
+        hx-target="#validateAttendanceRequestModalBody" class="oh-btn oh-btn--light-bkg w-100"
+        title="{% trans 'View' %}"><ion-icon name="eye-outline" role="img"></ion-icon></a>
+    {% if perms.attendance.change_attendance or can_manage %}
+        <a type="submit" class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100" title="{% trans 'Cancel / Reject' %}"
+            onclick="event.stopPropagation();return confirm('{% trans "Are you sure want to cancel the request?" %}');"
+            href="{% url 'cancel-validate-attendance-request' instance.id %}">
+            <ion-icon name="close-circle-outline"></ion-icon>
+        </a>
     {% endif %}
-  </div>
+</div>
