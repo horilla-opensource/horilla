@@ -73,7 +73,6 @@ def extract_payslip_row(payslip, allowance_titles, deduction_titles):
         row[title] = amount
         total_post_tax += amount
 
-    print(total_post_tax)
 
     row["Total Post-Tax Deductions"] = total_post_tax
     row["Total Deductions"] = data.get("total_deductions", 0)
