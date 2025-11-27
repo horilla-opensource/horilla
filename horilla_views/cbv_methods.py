@@ -8,14 +8,21 @@ import uuid
 from io import BytesIO
 from typing import Any
 from urllib.parse import urlencode
-from venv import logger
 
 from django import forms, template
+from django.apps import apps
 from django.contrib import messages
 from django.core.cache import cache as CACHE
+from django.core.exceptions import FieldDoesNotExist
 from django.core.paginator import Paginator
 from django.db import models
-from django.db.models.fields.related import ForeignKey
+from django.db.models.fields.related import (
+    ForeignKey,
+    ManyToManyRel,
+    ManyToOneRel,
+    OneToOneField,
+    OneToOneRel,
+)
 from django.db.models.fields.related_descriptors import (
     ForwardManyToOneDescriptor,
     ReverseOneToOneDescriptor,
@@ -37,6 +44,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 from horilla import settings
+from horilla.config import logger
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.templatetags.generic_template_filters import getattribute
 
@@ -235,7 +243,7 @@ def hx_request_required(function):
     def _function(request, *args, **kwargs):
         key = "HTTP_HX_REQUEST"
         if key not in request.META.keys():
-            return render(request, "405.html")
+            return render(request, "405.html", status=405)
         return function(request, *args, **kwargs)
 
     return _function
@@ -715,19 +723,6 @@ def export_xlsx(json_data, columns, file_name="quick_export", extra_info=None):
     )
     response["Content-Disposition"] = f'attachment; filename="{file_name}.xlsx"'
     return response
-
-
-from django.apps import apps
-from django.core.exceptions import FieldDoesNotExist
-from django.db.models import Model
-from django.db.models.fields.related import (
-    ForeignKey,
-    ManyToManyRel,
-    ManyToOneRel,
-    OneToOneField,
-    OneToOneRel,
-)
-from openpyxl import Workbook
 
 
 def get_verbose_name_from_field_path(model, field_path, import_mapping):

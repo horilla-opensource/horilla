@@ -291,7 +291,7 @@ def hx_request_required(view_func):
     def wrapped_view(request, *args, **kwargs):
         key = "HTTP_HX_REQUEST"
         if key not in request.META.keys():
-            return render(request, "405.html")
+            return render(request, "405.html", status=405)
         return view_func(request, *args, **kwargs)
 
     return wrapped_view
