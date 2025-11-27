@@ -1,0 +1,53 @@
+{% load static %}
+{% load i18n %}
+
+<style>
+    .oh-onboarding-card {
+        width: 100%;
+        max-width: 600px;
+        margin: 40px auto;
+        border: none !important;
+        box-shadow: none !important;
+    }
+</style>
+
+<div class="oh-onboarding-card">
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="oh-onboarding-card__section-title">
+            {% trans "Monthly Leave Report" %}
+        </h2>
+
+       <button type="button" class="oh-modal__close" onclick="hideMonthlyLeaveReportModal()">
+            <span class="oh-modal__close-icon" style="margin-right: 20px">&times;</span>
+        </button>
+    </div>
+
+    <form action="{% url 'monthly-leave-report' %}" method="post">
+        {% csrf_token %}
+
+        <div class="row mt-3">
+            <div class="col-sm-6">
+                <label class="oh-label">{% trans "Start Date" %}</label>
+                <input type="date" name="start_date" required class="oh-input">
+            </div>
+
+            <div class="col-sm-6">
+                <label class="oh-label">{% trans "End Date" %}</label>
+                <input type="date" name="end_date" required class="oh-input">
+            </div>
+        </div>
+
+        <button type="submit"
+            class="oh-btn oh-btn--secondary oh-btn--shadow w-100 mt-4">
+            {% trans "Generate Report" %}
+        </button>
+    </form>
+
+</div>
+<script>
+function hideMonthlyLeaveReportModal() {
+    const modal = document.getElementById("monthlyLeaveReportModal");
+    if (modal) modal.classList.remove("show");
+}
+</script>

@@ -74,6 +74,7 @@ from payroll.methods.payslip_calc import (
     calculate_tax_deduction,
     calculate_taxable_gross_pay,
 )
+from payroll.methods.payslip_report_helper import extract_payslip_row
 from payroll.methods.tax_calc import (calculate_taxable_amount ,  calculate_payee_tax_deduction)
 from payroll.models.models import (
     Allowance,
@@ -166,10 +167,11 @@ def payroll_calculation(employee, start_date, end_date):
     gross_pay = updated_gross_pay_data["gross_pay"]
 
     # Calculate Payee Tax deductions on gross pay
-    payee_tax_base_amount = gross_pay - loss_of_pay_amount
-    payee_tax = calculate_payee_tax_deduction(payee_tax_base_amount)
 
-    gross_pay_deductions = updated_gross_pay_data["deductions"]
+
+
+
+
 
     kwargs["gross_pay"] = gross_pay
     pretax_deductions = calculate_pre_tax_deduction(**kwargs)
@@ -178,19 +180,6 @@ def payroll_calculation(employee, start_date, end_date):
     installments = (
         pretax_deductions["installments"] | post_tax_deductions["installments"]
     )
-
-    taxable_gross_pay = calculate_taxable_gross_pay(**kwargs)
-    # print("This is taxable gross pay",taxable_gross_pay)
-    tax_deductions = calculate_tax_deduction(**kwargs)
-    federal_tax = calculate_taxable_amount(**kwargs)
-    post_tax_deductions["post_tax_deductions"].append({
-        "title": "EPF (Employee 8%)",
-        "amount": employee_epf_amount,
-    })
-    post_tax_deductions["post_tax_deductions"].append({
-        "title": "Payee Tax",
-        "amount": payee_tax,
-    })
 
     lop_allowance_deductions = []
 
@@ -207,7 +196,35 @@ def payroll_calculation(employee, start_date, end_date):
                         "amount": allowance_deduction_amount,
                     })
 
-    post_tax_deductions["post_tax_deductions"].extend(lop_allowance_deductions)
+    pretax_deductions["pretax_deductions"].extend(lop_allowance_deductions)
+
+    total_lop_allowance_deductions = sum(
+        item["amount"] for item in lop_allowance_deductions
+    )
+    print("Total LOP Allowance Deductions", total_lop_allowance_deductions)
+
+    payee_tax_base_amount = gross_pay - loss_of_pay_amount - total_lop_allowance_deductions
+
+    print("Payee Tax Base Amount", payee_tax_base_amount)
+    payee_tax = calculate_payee_tax_deduction(payee_tax_base_amount)
+
+    gross_pay_deductions = updated_gross_pay_data["deductions"]
+
+
+    taxable_gross_pay = calculate_taxable_gross_pay(**kwargs)
+    # print("This is taxable gross pay",taxable_gross_pay)
+    tax_deductions = calculate_tax_deduction(**kwargs)
+    federal_tax = calculate_taxable_amount(**kwargs)
+    post_tax_deductions["post_tax_deductions"].append({
+        "title": "EPF (Employee 8%)",
+        "amount": employee_epf_amount,
+    })
+    post_tax_deductions["post_tax_deductions"].append({
+        "title": "Payee Tax",
+        "amount": payee_tax,
+    })
+
+
 
 
     total_allowance = sum(item["amount"] for item in allowances["allowances"])
@@ -2316,6 +2333,74 @@ def payslip_detailed_export(request):
         content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     response["Content-Disposition"] = f"attachment; filename={file_name}.xlsx"
+    wb.save(response)
+
+    return response
+
+
+@login_required
+@permission_required("payroll.change_payslip")
+def payslip_super_detailed_export(request):
+
+    payslips = PayslipFilter(request.GET).qs
+
+    all_allowance_titles = set()
+    all_deduction_titles = set()
+
+    for p in payslips:
+        data = p.pay_head_data
+
+        for a in data.get("allowances", []):
+            all_allowance_titles.add(a.get("title"))
+
+        for d in data.get("pretax_deductions", []):
+            title = d.get("title")
+            if not title.endswith("(LOP deduction)"):
+                all_deduction_titles.add(title)
+        for d in data.get("post_tax_deductions", []):
+            title = d.get("title")
+            if not title.endswith("(LOP deduction)"):
+                all_deduction_titles.add(title)
+
+    headers = (
+        ["Employee", "Basic Pay" , "Loss of Pay" , "Total for EPF"]
+        + sorted(all_allowance_titles)
+        + ["Total Allowance LOP Deductions"]
+        + ["Total for Tax"]
+        + sorted(all_deduction_titles)
+        + [
+            "Total Post-Tax Deductions",
+            "Net Pay",
+            "EPF Employer 12%",
+            "ETF Employer 3%",
+        ]
+    )
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Super Detailed Payslips"
+
+    ws.append(headers)
+
+    for payslip in payslips:
+        row = extract_payslip_row(payslip, all_allowance_titles, all_deduction_titles)
+        ws.append([row[h] for h in headers])
+
+    for col in ws.columns:
+        max_len = 0
+        col_letter = col[0].column_letter
+        for cell in col:
+            if cell.value:
+                max_len = max(max_len, len(str(cell.value)))
+        ws.column_dimensions[col_letter].width = max_len + 2
+
+    today = date.today().strftime("%Y-%m-%d")
+    file_name = f"Payslip_Super_Detailed_{today}.xlsx"
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = f'attachment; filename="{file_name}"'
     wb.save(response)
 
     return response

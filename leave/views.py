@@ -65,7 +65,7 @@ from leave.models import *
 from leave.models import leave_requested_dates
 from leave.threading import LeaveMailSendThread
 from notifications.signals import notify
-
+from openpyxl import Workbook
 
 def generate_error_report(error_list, error_data, file_name):
     """
@@ -5311,23 +5311,81 @@ def leave_request_and_approve(request):
 def leave_allocation_approve(request):
     previous_data = request.GET.urlencode()
     page_number = request.GET.get("page")
-    allocation_reqests = LeaveAllocationRequest.objects.filter(
+    allocation_requests = LeaveAllocationRequest.objects.filter(
         status="requested", employee_id__is_active=True
     )
-    allocation_reqests = filtersubordinates(
-        request, allocation_reqests, "leave.view_leaveallocationrequest"
+    allocation_requests = filtersubordinates(
+        request, allocation_requests, "leave.view_leaveallocationrequest"
     )
-    allocation_reqests = paginator_qry(allocation_reqests, page_number)
+    allocation_requests = paginator_qry(allocation_requests, page_number)
     allocation_reqests_ids = json.dumps(
-        [instance.id for instance in allocation_reqests]
+        [instance.id for instance in allocation_requests]
     )
     return render(
         request,
         "leave/dashboard/leave_allocation_approve.html",
         {
-            "allocation_reqests": allocation_reqests,
+            "allocation_requests": allocation_requests,
             "reqests_ids": allocation_reqests_ids,
             "pd": previous_data,
             # "current_date":date.today(),
         },
     )
+
+def monthly_leave_report_form(request):
+    return render(request, "leave/monthly_leave_report_form.html")
+
+
+
+def monthly_leave_report(request):
+    start = request.POST.get("start_date")
+    end = request.POST.get("end_date")
+
+    leaves = LeaveRequest.objects.filter(
+        start_date__gte=start,
+        end_date__lte=end,
+        is_active=True
+    ).select_related("employee_id", "leave_type_id")
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Leave Report"
+
+    headers = [
+        "Number",
+        "Name",
+        "Department",
+        "Leave Type",
+        "Leave Reason",
+        "Status",
+        "Start Date",
+        "End Date",
+        "Session Time",
+        "No Of Days",
+        "Remarks"
+    ]
+
+    ws.append(headers)
+
+    for leave in leaves:
+        ws.append([
+            leave.employee_id.badge_id,
+            leave.employee_id.get_full_name(),
+            leave.employee_id.get_department(),
+            leave.leave_type_id.name,
+            leave.description or "",
+            leave.status,
+            leave.start_date.strftime("%Y-%m-%d"),
+            leave.end_date.strftime("%Y-%m-%d"),
+            leave.start_date_breakdown or "",
+            leave.requested_days,
+            leave.reject_reason or "",
+        ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="monthly_leave_report.xlsx"'
+
+    wb.save(response)
+    return response
