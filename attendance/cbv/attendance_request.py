@@ -193,6 +193,18 @@ class AttendanceRequestListTab(AttendancesRequestListView):
         return queryset
 
 
+def change_accessibility(request, instance: object = None, *args, **kwargs) -> bool:
+
+    if (
+        request.user.has_perm("attendance.change_attendance")
+        or is_reportingmanager(request)
+        or request.user == instance.employee_id.employee_user_id
+    ):
+        return True
+    else:
+        return False
+
+
 @method_decorator(login_required, name="dispatch")
 class AttendanceListTab(AttendancesRequestListView):
     """
@@ -219,6 +231,7 @@ class AttendanceListTab(AttendancesRequestListView):
         {
             "action": _("Edit"),
             "icon": "create-outline",
+            "accessibility": "attendance.cbv.attendance_request.change_accessibility",
             "attrs": """
                 class="oh-btn oh-btn--light-bkg w-100"
                 data-toggle="oh-modal-toggle"
@@ -334,21 +347,29 @@ class AttendanceListTabDetailView(HorillaDetailedView):
         (_("Activities"), "attendance_detail_activity_col", True),
     ]
 
-    actions = [
-        {
-            "action": _("Edit"),
-            "icon": "create-outline",
-            "attrs": """
-                    onclick="event.stopPropagation();"
-                    class="oh-btn oh-btn--info w-100"
-                    data-toggle="oh-modal-toggle"
-                    data-target="#genericModalEdit"
-                    hx-get="{change_attendance}?all_attendance=true"
-                    hx-target="#genericModalEditBody"
+    def get_context_data(self, **kwargs):
+        if (
+            self.request.user.has_perm("attendance.change_attendance")
+            or is_reportingmanager(self.request)
+            or self.request.user == self.get_object().employee_id.employee_user_id
+        ):
 
-                """,
-        }
-    ]
+            self.actions = [
+                {
+                    "action": _("Edit"),
+                    "icon": "create-outline",
+                    "attrs": """
+                            onclick="event.stopPropagation();"
+                            class="oh-btn oh-btn--info w-100"
+                            data-toggle="oh-modal-toggle"
+                            data-target="#genericModalEdit"
+                            hx-get="{change_attendance}?all_attendance=true"
+                            hx-target="#genericModalEditBody"
+
+                        """,
+                }
+            ]
+        return super().get_context_data(**kwargs)
 
 
 class NewAttendanceRequestFormView(HorillaFormView):

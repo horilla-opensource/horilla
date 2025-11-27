@@ -488,6 +488,7 @@ class ProjectCardView(HorillaCardView):
 #     )
 
 
+@method_decorator(login_required, name="dispatch")
 class ProjectsTabView(ListView):
     model = Project
     template_name = "cbv/projects/project_tab.html"
@@ -521,7 +522,7 @@ EmployeeProfileView.add_tab(
             "title": "Projects",
             # "view": projects_tab,
             "view": ProjectsTabView.as_view(),
-            "accessibility": "employee.cbv.accessibility.workshift_accessibility",
+            "accessibility": "employee.cbv.accessibility.project_accessibility",
         },
     ]
 )
