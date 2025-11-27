@@ -19,11 +19,10 @@ class ResignationTabView(ResignationListView):
     List view of resignation Tab in profile
     """
 
-    records_per_page = 1
-
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.action_method = None
+        self.bulk_select_option = False
         self.view_id = "resignation-container"
         pk = self.request.resolver_match.kwargs.get("pk")
         self.search_url = reverse("individual-resignation-tab-list", kwargs={"pk": pk})
@@ -31,6 +30,10 @@ class ResignationTabView(ResignationListView):
     template_name = "cbv/resignation/resignation_tab.html"
 
     @method_decorator(login_required, name="dispatch")
+    @method_decorator(
+        check_feature_enabled("resignation_request", OffboardingGeneralSetting),
+        name="dispatch",
+    )
     def dispatch(self, *args, **kwargs):
         return super(ResignationListView, self).dispatch(*args, **kwargs)
 
@@ -60,6 +63,10 @@ class ResignationTabDetailView(ResignationLetterDetailView):
     """
 
     @method_decorator(login_required, name="dispatch")
+    @method_decorator(
+        check_feature_enabled("resignation_request", OffboardingGeneralSetting),
+        name="dispatch",
+    )
     def dispatch(self, *args, **kwargs):
         return super(ResignationLetterDetailView, self).dispatch(*args, **kwargs)
 

@@ -1,7 +1,7 @@
 {% load i18n basefilters %}
-
-{% with dates=instance.month_days %}
-	{% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
+{% is_manager_of request.user instance as can_manage %}
+{% with dates=instance.month_days can_view=perms.attendance.view_attendance is_owner=request.user.employee_get|equals:instance.employee_id %}
+	{% if can_view or can_manage %}
 		<a
 			class="oh-btn oh-btn--warning"
 			style="width: 50%"
@@ -10,7 +10,7 @@
 			{{ instance.not_validated_hrs }} {% trans "Hours to validate" %}
 		</a>
 
-	{% else %}
+	{% elif is_owner %}
 		<a
 			class="oh-btn oh-btn--warning"
 			style="width: 50%"
@@ -20,7 +20,7 @@
 		</a>
 	{% endif %}
 
-	{% if perms.attendance.view_attendance or request.user|is_reportingmanager %}
+	{% if can_view or can_manage %}
 		<a
 			class="oh-btn oh-btn--success"
 			style="width: 50%"
@@ -28,7 +28,7 @@
 		>
 			{{ instance.not_approved_ot_hrs }} hrs {% trans "OT to Approve" %}
 		</a>
-	{% else %}
+	{% elif is_owner %}
 		<a
 			class="oh-btn oh-btn-group oh-btn--success"
 			style="width: 50%"

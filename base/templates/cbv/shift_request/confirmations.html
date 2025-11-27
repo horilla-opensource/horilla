@@ -4,8 +4,8 @@
 		display:none;
 	}
 </style>
-
-{% if perms.base.change_shiftrequest or request.user|is_reportingmanager %}
+{% is_manager_of request.user instance as can_manage %}
+{% if perms.base.change_shiftrequest or can_manage %}
 	<div class="oh-btn-group w-100">
 		{% if instance.approved and instance.canceled %}
 			<a

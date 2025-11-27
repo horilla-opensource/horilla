@@ -26,6 +26,7 @@ from horilla_views.generic.cbv.views import HorillaProfileView
 Employee.cbv_employee_profile_edi_url = reverse_lazy("edit-profile")
 
 
+@method_decorator(login_required, name="dispatch")
 class EmployeeProfileView(HorillaProfileView):
     """
     EmployeeProfileView

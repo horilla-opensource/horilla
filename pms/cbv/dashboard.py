@@ -65,6 +65,7 @@ class DashboardFeedbackView(RequestedFeedbackTab):
     bulk_select_option = False
 
 
+@method_decorator(login_required, name="dispatch")
 class KeyResultStatus(HorillaListView):
 
     def __init__(self, **kwargs: Any) -> None:
@@ -106,6 +107,7 @@ class KeyResultStatus(HorillaListView):
         return super(HorillaListView, self).dispatch(*args, **kwargs)
 
 
+@method_decorator(login_required, name="dispatch")
 class DasboardObjectivesRisk(HorillaListView):
     """
     list view for objectives at risk

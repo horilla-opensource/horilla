@@ -817,7 +817,7 @@ class JobRoleForm(ModelForm):
                 raise ValidationError(
                     f"{job_role} already exists under this job position"
                 )
-
+        cleaned_data.pop("job_position_id", None)
         return cleaned_data
 
     def save(self, commit, *args, **kwargs) -> Any:

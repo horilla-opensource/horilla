@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load basefilters %}
-{% if request.user.employee_get != instance.employee_id and request.user|is_reportingmanager or perms.leave.change_leaverequest or request.user|is_self_reporting_manager %}
+{% is_manager_of request.user instance as can_manage %}
+{% if perms.leave.change_leaverequest or can_manage %}
 <div class="oh-btn-group" onclick="event.stopPropagation();">
         {% if instance.status == 'cancelled' %}
             {% if instance.end_date >= current_date %}
@@ -67,7 +68,7 @@
             {% endif %}
         {% endif %}
     </div>
-{% else %}
+    {% comment %} {% else %}
     <div class="oh-btn-group" onclick="event.stopPropagation();">
         {% if instance.status == 'cancelled' %}
             {% if instance.end_date >= current_date %}
@@ -110,5 +111,5 @@
                 </button>
             {% endif %}
         {% endif %}
-    </div>
+    </div> {% endcomment %}
 {% endif %}
