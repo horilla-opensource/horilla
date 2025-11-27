@@ -43,6 +43,7 @@ class HourAccountList(HorillaListView):
 
     model = AttendanceOverTime
     filter_class = AttendanceOverTimeFilter
+    action_method = "hour_actions"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
