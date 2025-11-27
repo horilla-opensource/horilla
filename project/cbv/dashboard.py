@@ -63,6 +63,7 @@ class ProjectsDueInMonth(HorillaListView):
     """
 
 
+@method_decorator(login_required, name="dispatch")
 class ProjectDetailView(HorillaDetailedView):
     """
     detail view of the projects

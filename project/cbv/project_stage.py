@@ -87,6 +87,7 @@ class ProjectStageCreateForm(HorillaFormView):
 from django import forms
 
 
+@method_decorator(login_required, name="dispatch")
 class StageDynamicCreateForm(ProjectStageCreateForm):
     """
     dynamic create form for stage

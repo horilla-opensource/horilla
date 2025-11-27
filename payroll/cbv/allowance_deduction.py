@@ -35,6 +35,7 @@ operator_mapping = {
 }
 
 
+@method_decorator(login_required, name="dispatch")
 class AllowanceDeductionTabView(HorillaTabView):
     """
     generic tab view for allowance and deduction
@@ -71,6 +72,7 @@ class AllowanceDeductionTabView(HorillaTabView):
         return context
 
 
+@method_decorator(login_required, name="dispatch")
 class AllowanceTabList(AllowanceListView):
     """
     list view for allowance tab
@@ -188,6 +190,7 @@ class AllowanceTabList(AllowanceListView):
         return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class DeductionTab(DeductionListView):
     """
     list view for deduction tab
@@ -300,6 +303,7 @@ class DeductionTab(DeductionListView):
         return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class DeductionDetailView(HorillaDetailedView):
     """
     Detail View
@@ -326,6 +330,7 @@ class DeductionDetailView(HorillaDetailedView):
     action_method = "deduct_detail_actions"
 
 
+@method_decorator(login_required, name="dispatch")
 class AllowanceDetailView(HorillaDetailedView):
     """
     detail view for allowance tab

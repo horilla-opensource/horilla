@@ -214,6 +214,7 @@ class TaskUpdateFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class OnboardingCandidateDetailView(HorillaDetailedView):
     """
     detail view of onboarding view
