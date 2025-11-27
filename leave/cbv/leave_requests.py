@@ -17,7 +17,7 @@ from django.utils.translation import gettext_lazy as _
 from base.cbv.penalty import ViewPenaltyList
 from base.decorators import manager_can_enter
 from base.filters import PenaltyFilter
-from base.methods import choosesubordinates, filtersubordinates
+from base.methods import choosesubordinates, filtersubordinates, is_reportingmanager
 from base.models import PenaltyAccounts
 from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import (
@@ -243,7 +243,9 @@ class LeaveRequestsNavView(HorillaNavView):
             },
         ]
 
-        if self.request.user.has_perm("leave.add_leaverequest"):
+        if self.request.user.has_perm("leave.add_leaverequest") or is_reportingmanager(
+            self.request
+        ):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy("request-creation")}"
                 hx-target="#genericModalBody"
