@@ -467,6 +467,7 @@ class OffboardingPipelineStage(Pipeline):
         return self.queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class OffboardingKanbanView(HorillaKanbanView):
     """
     Offboarding Kanban View
