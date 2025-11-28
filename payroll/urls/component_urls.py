@@ -124,18 +124,22 @@ urlpatterns = [
         name="allowances-card-view",
     ),
     path(
-        "allowances-deductions-tab/<int:emp_id>",
+        "allowances-deductions-tab/<int:emp_id>/",
         component_views.allowances_deductions_tab,
         name="allowances-deductions-tab",
     ),
-    path("create-allowance", component_views.create_allowance, name="create-allowance"),
+    path(
+        "create-allowance/", component_views.create_allowance, name="create-allowance"
+    ),
     # path("view-allowance/", component_views.view_allowance, name="view-allowance"),
     path(
-        "single-allowance-view/<int:allowance_id>",
+        "single-allowance-view/<int:allowance_id>/",
         component_views.view_single_allowance,
         name="single-allowance-view",
     ),
-    path("filter-allowance", component_views.filter_allowance, name="filter-allowance"),
+    path(
+        "filter-allowance/", component_views.filter_allowance, name="filter-allowance"
+    ),
     path(
         "update-allowance/<int:allowance_id>/",
         component_views.update_allowance,
@@ -143,7 +147,7 @@ urlpatterns = [
         kwargs={"model": Allowance},
     ),
     path(
-        "delete-allowance/<int:allowance_id>",
+        "delete-allowance/<int:allowance_id>/",
         component_views.delete_allowance,
         name="delete-allowance",
     ),
@@ -157,7 +161,9 @@ urlpatterns = [
         component_views.delete_allowance,
         name="delete-employee-allowance",
     ),
-    path("create-deduction", component_views.create_deduction, name="create-deduction"),
+    path(
+        "create-deduction/", component_views.create_deduction, name="create-deduction"
+    ),
     # path("view-deduction/", component_views.view_deduction, name="view-deduction"),
     path(
         "deduction-view-list/",
@@ -176,11 +182,13 @@ urlpatterns = [
     ),
     path("view-deduction/", deduction.DeductionView.as_view(), name="view-deduction"),
     path(
-        "single-deduction-view/<int:deduction_id>",
+        "single-deduction-view/<int:deduction_id>/",
         component_views.view_single_deduction,
         name="single-deduction-view",
     ),
-    path("filter-deduction", component_views.filter_deduction, name="filter-deduction"),
+    path(
+        "filter-deduction/", component_views.filter_deduction, name="filter-deduction"
+    ),
     path(
         "update-deduction/<int:deduction_id>/",
         component_views.update_deduction,
@@ -197,21 +205,23 @@ urlpatterns = [
         component_views.delete_deduction,
         name="delete-deduction",
     ),
-    path("create-payslip", component_views.create_payslip, name="create-payslip"),
+    path("create-payslip/", component_views.create_payslip, name="create-payslip"),
     path(
-        "check-contract-start-date",
+        "check-contract-start-date/",
         component_views.check_contract_start_date,
         name="check-contract-start-date",
     ),
-    path("generate-payslip", component_views.generate_payslip, name="generate-payslip"),
     path(
-        "validate-start-date",
+        "generate-payslip/", component_views.generate_payslip, name="generate-payslip"
+    ),
+    path(
+        "validate-start-date/",
         component_views.validate_start_date,
         name="validate-start-date",
     ),
-    path("filter-payslip", component_views.filter_payslip, name="filter-payslip"),
+    path("filter-payslip/", component_views.filter_payslip, name="filter-payslip"),
     path(
-        "payslip-info-export",
+        "payslip-info-export/",
         component_views.payslip_export,
         name="payslip-info-export",
     ),
@@ -222,11 +232,11 @@ urlpatterns = [
     ),
     # path("view-payslip/", component_views.view_payslip, name="view-payslip"),
     path(
-        "hx-create-allowance",
+        "hx-create-allowance/",
         component_views.hx_create_allowance,
         name="hx-create-allowance",
     ),
-    path("send-slip", component_views.send_slip, name="send-slip"),
+    path("send-slip/", component_views.send_slip, name="send-slip"),
     path("add-bonus/", component_views.add_bonus, name="add-bonus"),
     path(
         "add-payslip-deduction/",
@@ -263,12 +273,12 @@ urlpatterns = [
     #     name="view-reimbursement",
     # ),
     path(
-        "create-reimbursement",
+        "create-reimbursement/",
         component_views.create_reimbursement,
         name="create-reimbursement",
     ),
     path(
-        "search-reimbursement",
+        "search-reimbursement/",
         component_views.search_reimbursement,
         name="search-reimbursement",
     ),
@@ -278,12 +288,12 @@ urlpatterns = [
         name="get-assigned-leaves",
     ),
     path(
-        "approve-reimbursements",
+        "approve-reimbursements/",
         component_views.approve_reimbursements,
         name="approve-reimbursements",
     ),
     path(
-        "delete-reimbursements",
+        "delete-reimbursements/",
         component_views.delete_reimbursements,
         name="delete-reimbursement",
     ),
@@ -303,27 +313,27 @@ urlpatterns = [
         name="delete-attachments",
     ),
     path(
-        "get-contribution-report",
+        "get-contribution-report/",
         component_views.get_contribution_report,
         name="get-contribution-report",
     ),
     path(
-        "payslip-detailed-export",
+        "payslip-detailed-export/",
         component_views.payslip_detailed_export,
         name="payslip-detailed-export",
     ),
     path(
-        "view-reimbursement",
+        "view-reimbursement/",
         reimbursements.ReimbursementsView.as_view(),
         name="view-reimbursement",
     ),
     path(
-        "reimbursement-nav",
+        "reimbursement-nav/",
         reimbursements.ReimbursementsNav.as_view(),
         name="reimbursement-nav",
     ),
     path(
-        "tab-reimbursement",
+        "tab-reimbursement/",
         reimbursements.ReimbursementsAndEncashmentsTabView.as_view(),
         name="tab-reimbursement",
     ),
@@ -343,27 +353,27 @@ urlpatterns = [
         name="detail-view-bonus-encashment",
     ),
     path(
-        "list-reimbursement",
+        "list-reimbursement/",
         reimbursements.ReimbursementsListView.as_view(),
         name="list-reimbursement",
     ),
     path(
-        "list-leave-encash",
+        "list-leave-encash/",
         reimbursements.LeaveEncashmentsListView.as_view(),
         name="list-leave-encash",
     ),
     path(
-        "list-bonus-encash",
+        "list-bonus-encash/",
         reimbursements.BonusEncashmentsListView.as_view(),
         name="list-bonus-encash",
     ),
     path(
-        "reimbursement-create",
+        "reimbursement-create/",
         reimbursements.ReimbursementsFormView.as_view(),
         name="reimbursement-create",
     ),
     path(
-        "reimbursement-update/<int:pk>",
+        "reimbursement-update/<int:pk>/",
         reimbursements.ReimbursementsFormView.as_view(),
         name="reimbursement-update",
     ),

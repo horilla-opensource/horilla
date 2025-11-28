@@ -13,7 +13,7 @@ urlpatterns = [
         name="user-accessibility",
     ),
     path(
-        "get-initial-accessibility-data",
+        "get-initial-accessibility-data/",
         accessibility.get_accessibility_data,
         name="get-initial-accessibility-data",
     ),

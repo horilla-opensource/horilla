@@ -12,17 +12,17 @@ urlpatterns = [
         name="gmeet-setting",
     ),
     path(
-        "gmeet-setting-nav",
+        "gmeet-setting-nav/",
         cbv.GmeetCredentialNavView.as_view(),
         name="gmeet-setting-nav",
     ),
     path(
-        "gmeet-setting-list-view",
+        "gmeet-setting-list-view/",
         cbv.GmeetCredentialListView.as_view(),
         name="gmeet-setting-list-view",
     ),
     path(
-        "create-gmeet-credentials",
+        "create-gmeet-credentials/",
         cbv.GoogleCredentialsFormView.as_view(),
         name="create-gmeet-credentials",
     ),
@@ -42,12 +42,12 @@ urlpatterns = [
         name="gmeet-view",
     ),
     path(
-        "gmeet-list-view",
+        "gmeet-list-view/",
         cbv.GmeetListView.as_view(),
         name="gmeet-list-view",
     ),
     path(
-        "gmeet-nav-view",
+        "gmeet-nav-view/",
         cbv.GmeetNavView.as_view(),
         name="gmeet-nav-view",
     ),
@@ -87,7 +87,7 @@ urlpatterns = [
         name="create-google-meet",
     ),
     path(
-        "delete-google-meet/<int:id>",
+        "delete-google-meet/<int:id>/",
         views.delete_google_meet,
         name="delete-google-meet",
     ),
@@ -96,7 +96,7 @@ urlpatterns = [
 if apps.is_installed("recruitment"):
     urlpatterns += [
         path(
-            "create-interview-google-meeting",
+            "create-interview-google-meeting/",
             views.create_inteview_google_meeting,
             name="create-interview-google-meeting",
         ),
@@ -105,7 +105,7 @@ if apps.is_installed("recruitment"):
 if apps.is_installed("pms"):
     urlpatterns += [
         path(
-            "create-pms-google-meeting",
+            "create-pms-google-meeting/",
             views.create_pms_google_meeting,
             name="create-pms-google-meeting",
         ),

@@ -9,11 +9,11 @@ from horilla_views.generic.cbv import history
 from horilla_views.generic.cbv.views import HorillaListView, ReloadMessages
 
 urlpatterns = [
-    path("toggle-columns", views.ToggleColumn.as_view(), name="toggle-columns"),
-    path("active-tab", views.ActiveTab.as_view(), name="active-tab"),
-    path("active-group", views.ActiveGroup.as_view(), name="cbv-active-group"),
-    path("reload-field", views.ReloadField.as_view(), name="reload-field"),
-    path("reload-messages", ReloadMessages.as_view(), name="reload-messages"),
+    path("toggle-columns/", views.ToggleColumn.as_view(), name="toggle-columns"),
+    path("active-tab/", views.ActiveTab.as_view(), name="active-tab"),
+    path("active-group/", views.ActiveGroup.as_view(), name="cbv-active-group"),
+    path("reload-field/", views.ReloadField.as_view(), name="reload-field"),
+    path("reload-messages/", ReloadMessages.as_view(), name="reload-messages"),
     path("saved-filter/", views.SavedFilter.as_view(), name="saved-filter"),
     path(
         "saved-filter/<int:pk>/",
@@ -31,17 +31,17 @@ urlpatterns = [
         name="active-hnv-view-type",
     ),
     path(
-        "search-in-instance-ids",
+        "search-in-instance-ids/",
         views.SearchInIds.as_view(),
         name="search-in-instance-ids",
     ),
     path(
-        "last-applied-filter",
+        "last-applied-filter/",
         views.LastAppliedFilter.as_view(),
         name="last-applied-filter",
     ),
     path(
-        "generic-delete",
+        "generic-delete/",
         views.HorillaDeleteConfirmationView.as_view(),
         name="generic-delete",
     ),

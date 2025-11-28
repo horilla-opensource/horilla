@@ -43,12 +43,12 @@ urlpatterns = [
         name="whatsapp-credential-update",
     ),
     path(
-        "whatsapp-credential-delete",
+        "whatsapp-credential-delete/",
         whatsapp.delete_credentials,
         name="whatsapp-credential-delete",
     ),
     path(
-        "send-test-message",
+        "send-test-message/",
         whatsapp.send_test_message,
         name="send-test-message",
     ),

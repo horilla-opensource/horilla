@@ -19,13 +19,13 @@ urlpatterns = [
         name="individual-resignation-tab-list",
     ),
     path(
-        "offboarding-pipeline",
+        "offboarding-pipeline/",
         exit_process.OffboardingPipelineView.as_view(),
         name="offboarding-pipeline",
     ),
-    # path("create-offboarding", views.create_offboarding, name="create-offboarding"),
+    # path("create-offboarding/", views.create_offboarding, name="create-offboarding"),
     path(
-        "create-offboarding",
+        "create-offboarding/",
         exit_process.OffboardingCreateFormView.as_view(),
         name="create-offboarding",
     ),
@@ -53,17 +53,17 @@ urlpatterns = [
         name="get-offboarding-kanban-stage",
     ),
     path(
-        "get-offboarding-employees-cbv",
+        "get-offboarding-employees-cbv/",
         exit_process.OffboardingEmployeeList.as_view(),
         name="get-offboarding-employees-cbv",
     ),
     path(
-        "get-offboarding-tab",
+        "get-offboarding-tab/",
         exit_process.PipeLineTabView.as_view(),
         name="get-offboarding-tab",
     ),
     path(
-        "create-offboarding-stage",
+        "create-offboarding-stage/",
         exit_process.OffboardingStageFormView.as_view(),
         name="create-offboarding-stage",
     ),
@@ -82,14 +82,14 @@ urlpatterns = [
         exit_process.OffboardingPipelineNav.as_view(),
         name="offboarding-pipeline-nav",
     ),
-    # path("add-employee", views.add_employee, name="add-employee"),
+    # path("add-employee/", views.add_employee, name="add-employee"),
     path(
-        "add-employee",
+        "add-employee/",
         exit_process.OffboardingStageAddEmployeeForm.as_view(),
         name="add-employee",
     ),
     path(
-        "add-offboarding-employee",
+        "add-offboarding-employee/",
         exit_process.OffboardingStageAddEmployeeForm.as_view(),
         name="add-offboarding-employee",
     ),
@@ -99,13 +99,13 @@ urlpatterns = [
         name="add-employee",
     ),
     path(
-        "delete-offboarding-stage", views.delete_stage, name="delete-offboarding-stage"
+        "delete-offboarding-stage/", views.delete_stage, name="delete-offboarding-stage"
     ),
     path(
-        "offboarding-change-stage", views.change_stage, name="offboarding-change-stage"
+        "offboarding-change-stage/", views.change_stage, name="offboarding-change-stage"
     ),
     path(
-        "change-offboarding-stage",
+        "change-offboarding-stage/",
         views.change_offboarding_stage,
         name="change-offboarding-stage",
     ),
@@ -114,13 +114,15 @@ urlpatterns = [
         views.view_notes,
         name="view-offboarding-note",
     ),
-    path("add-offboarding-note", views.add_note, name="add-offboarding-note"),
+    path("add-offboarding-note/", views.add_note, name="add-offboarding-note"),
     path(
-        "delete-note-attachment", views.delete_attachment, name="delete-note-attachment"
+        "delete-note-attachment/",
+        views.delete_attachment,
+        name="delete-note-attachment",
     ),
-    # path("offboarding-add-task", views.add_task, name="offboarding-add-task"),
+    # path("offboarding-add-task/", views.add_task, name="offboarding-add-task"),
     path(
-        "offboarding-add-task",
+        "offboarding-add-task/",
         exit_process.OffboardingTaskFormView.as_view(),
         name="offboarding-add-task",
     ),
@@ -129,14 +131,14 @@ urlpatterns = [
         exit_process.OffboardingTaskFormView.as_view(),
         name="offboarding-update-task",
     ),
-    path("update-task-status", views.update_task_status, name="update-task-status"),
-    path("offboarding-assign-task", views.task_assign, name="offboarding-assign-task"),
+    path("update-task-status/", views.update_task_status, name="update-task-status"),
+    path("offboarding-assign-task/", views.task_assign, name="offboarding-assign-task"),
     path(
-        "delete-offboarding-employee",
+        "delete-offboarding-employee/",
         views.delete_employee,
         name="delete-offboarding-employee",
     ),
-    path("delete-offboarding-task", views.delete_task, name="delete-offboarding-task"),
+    path("delete-offboarding-task/", views.delete_task, name="delete-offboarding-task"),
     # path(
     #     "offboarding-individual-view/<int:emp_id>/",
     #     views.offboarding_individual_view,
@@ -215,54 +217,54 @@ urlpatterns = [
         name="resignation-request-single-view",
     ),
     path(
-        "create-resignation-request",
+        "create-resignation-request/",
         views.create_resignation_request,
         name="create-resignation-request",
     ),
     path(
-        "search-resignation-request",
+        "search-resignation-request/",
         views.search_resignation_request,
         name="search-resignation-request",
     ),
     path(
-        "delete-resignation-request",
+        "delete-resignation-request/",
         views.delete_resignation_request,
         name="delete-resignation-request",
     ),
-    path("update-letter-status", views.update_status, name="update-letter-status"),
+    path("update-letter-status/", views.update_status, name="update-letter-status"),
     path(
-        "enable-resignation-request",
+        "enable-resignation-request/",
         views.enable_resignation_request,
         name="enable-resignation-request",
     ),
-    path("get-notice-period", views.get_notice_period, name="get-notice-period"),
+    path("get-notice-period/", views.get_notice_period, name="get-notice-period"),
     path(
-        "get-notice-period-end-date",
+        "get-notice-period-end-date/",
         views.get_notice_period_end_date,
         name="get-notice-period-end-date",
     ),
     path(
-        "offboarding-pipeline-filter",
+        "offboarding-pipeline-filter/",
         views.filter_pipeline,
         name="offboarding-pipeline-filter",
     ),
     path(
-        "dashboard",
+        "dashboard/",
         views.offboarding_dashboard,
         name="offboarding-dashboard",
     ),
     path(
-        "dashboard-task-table",
+        "dashboard-task-table/",
         views.dashboard_task_table,
         name="dashboard-task-table",
     ),
     path(
-        "dashboard-department-chart",
+        "dashboard-department-chart/",
         views.department_job_postion_chart,
         name="dashboard-department-chart",
     ),
     path(
-        "dashboard-join-chart",
+        "dashboard-join-chart/",
         views.dashboard_join_chart,
         name="dashboard-join-chart",
     ),
@@ -276,12 +278,12 @@ urlpatterns = [
 if apps.is_installed("asset"):
     urlpatterns += [
         path(
-            "dashboard-asset-table",
+            "dashboard-asset-table/",
             views.dashboard_asset_table,
             name="dashboard-asset-table",
         ),
         path(
-            "dashboard-asset-table-cbv",
+            "dashboard-asset-table-cbv/",
             exit_process.DashboardNotReturndAsssets.as_view(),
             name="dashboard-asset-table-cbv",
         ),
@@ -290,7 +292,7 @@ if apps.is_installed("asset"):
 if apps.is_installed("pms"):
     urlpatterns += [
         path(
-            "dashboard-feedback-table",
+            "dashboard-feedback-table/",
             views.dashboard_feedback_table,
             name="dashboard-feedback-table",
         ),
