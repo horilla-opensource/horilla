@@ -199,7 +199,7 @@ class Ticket(HorillaModel):
         today = date.today()
         ticket_id = f"{self.ticket_type.prefix}-{self.pk:03d}"
 
-        if self.status == "resolved":
+        if self.status == "resolved" or self.status == "canceled":
             return ticket_id
 
         if self.deadline == today:

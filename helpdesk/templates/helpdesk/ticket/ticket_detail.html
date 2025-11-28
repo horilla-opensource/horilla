@@ -91,7 +91,7 @@
                 <div class="d-flex justify-content-between align-items-center">
                     <p class="oh-helpdesk__header-title">{{ticket.title}}</p>
 
-                    <span class="helpdesk__card-value me-3">
+                    <span class="helpdesk__card-value" style="margin-right: 15px;width: 100px;">
                         {% if perms.helpdesk.change_ticket or request.user.employee_get|is_department_manager:ticket or request.user.employee_get in ticket.assigned_to.all or request.user.employee_get == ticket.employee_id %}
                             <select name="status_update" title='{% trans "Status" %}' class="oh-select"
                                 onchange="updateStatus()" style=" width:190px; align-items: center; border: 1px solid #aaa; border-radius: 2px; background-color: #fff; ">
@@ -409,7 +409,9 @@
                 <div class="oh-helpdesk__card">
                     <div class="oh-helpdesk__card-header d-flex justify-content-between">
                         <span class="oh-helpdesk__card-title">{% trans "Responsibility" %}</span>
-                        <span class="oh-helpdesk__card-title text-{{color}}">{{remaining}} </span>
+                        {% if ticket.status == 'new' or ticket.status == 'in_progress' or ticket.status == 'on_hold' %}
+                            <span class="oh-helpdesk__card-title text-{{color}}">{{remaining}} </span>
+                        {% endif %}
                     </div>
                     <div class="oh-helpdesk__card-body">
                         <div class="oh-helpdesk__subcard">
