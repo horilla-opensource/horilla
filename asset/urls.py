@@ -86,7 +86,7 @@ urlpatterns = [
     ),
     path("asset-category-view/", views.asset_category_view, name="asset-category-view"),
     path(
-        "asset-category-view-search-filter",
+        "asset-category-view-search-filter/",
         views.asset_category_view_search_filter,
         name="asset-category-view-search-filter",
     ),
@@ -123,7 +123,7 @@ urlpatterns = [
     #     name="asset-category-creation",
     # ),
     path(
-        "asset-category-creation",
+        "asset-category-creation/",
         asset_category.AssetCategoryFormView.as_view(),
         name="asset-category-creation",
     ),
@@ -133,7 +133,7 @@ urlpatterns = [
     #     name="asset-category-update",
     # ),
     path(
-        "asset-category-update/<int:pk>",
+        "asset-category-update/<int:pk>/",
         asset_category.AssetCategoryFormView.as_view(),
         name="asset-category-update",
     ),
@@ -143,7 +143,7 @@ urlpatterns = [
         name="asset-category-delete",
     ),
     path(
-        "generic-delete-asset-category",
+        "generic-delete-asset-category/",
         asset_category.AssetDeleteConfirmationView.as_view(),
         name="generic-delete-asset-category",
     ),
@@ -153,7 +153,7 @@ urlpatterns = [
     #     name="asset-request-creation",
     # ),
     path(
-        "asset-request-creation",
+        "asset-request-creation/",
         request_and_allocation.AssetRequestCreateForm.as_view(),
         name="asset-request-creation",
     ),
@@ -188,7 +188,7 @@ urlpatterns = [
         name="asset-allocation-individual-view",
     ),
     path(
-        "asset-request-allocation-view-search-filter",
+        "asset-request-allocation-view-search-filter/",
         views.asset_request_alloaction_view_search_filter,
         name="asset-request-allocation-view-search-filter",
     ),
@@ -208,7 +208,7 @@ urlpatterns = [
     #     name="asset-allocate-creation",
     # ),
     path(
-        "asset-allocate-creation",
+        "asset-allocate-creation/",
         request_and_allocation.AssetAllocationFormView.as_view(),
         name="asset-allocate-creation",
     ),
@@ -232,9 +232,9 @@ urlpatterns = [
         views.asset_allocate_return_request,
         name="asset-allocate-return-request",
     ),
-    path("asset-excel", views.asset_excel, name="asset-excel"),
-    path("asset-import", views.asset_import, name="asset-import"),
-    path("asset-export-excel", views.asset_export_excel, name="asset-export-excel"),
+    path("asset-excel/", views.asset_excel, name="asset-excel"),
+    path("asset-import/", views.asset_import, name="asset-import"),
+    path("asset-export-excel/", views.asset_export_excel, name="asset-export-excel"),
     # path(
     #     "asset-batch-number-creation",
     #     views.asset_batch_number_creation,
@@ -242,22 +242,22 @@ urlpatterns = [
     # ),
     # path("asset-batch-view", views.asset_batch_view, name="asset-batch-view"),
     path(
-        "asset-batch-number-creation",
+        "asset-batch-number-creation/",
         asset_batch_no.AssetBatchCreateFormView.as_view(),
         name="asset-batch-number-creation",
     ),
     path(
-        "asset-batch-view",
+        "asset-batch-view/",
         asset_batch_no.AssetBatchNoView.as_view(),
         name="asset-batch-view",
     ),
     path(
-        "asset-batch-list",
+        "asset-batch-list/",
         asset_batch_no.AssetBatchNoListView.as_view(),
         name="asset-batch-list",
     ),
     path(
-        "asset-batch-nav",
+        "asset-batch-nav/",
         asset_batch_no.AssetBatchNoNav.as_view(),
         name="asset-batch-nav",
     ),
@@ -272,7 +272,7 @@ urlpatterns = [
     #     name="asset-batch-number-search",
     # ),
     path(
-        "asset-batch-number-search",
+        "asset-batch-number-search/",
         asset_batch_no.AssetBatchNoListView.as_view(),
         name="asset-batch-number-search",
     ),
@@ -282,7 +282,7 @@ urlpatterns = [
     #     name="asset-batch-update",
     # ),
     path(
-        "asset-batch-update/<int:pk>",
+        "asset-batch-update/<int:pk>/",
         asset_batch_no.AssetBatchCreateFormView.as_view(),
         name="asset-batch-update",
     ),
@@ -291,7 +291,7 @@ urlpatterns = [
         views.asset_batch_number_delete,
         name="asset-batch-number-delete",
     ),
-    path("asset-count-update", views.asset_count_update, name="asset-count-update"),
+    path("asset-count-update/", views.asset_count_update, name="asset-count-update"),
     path("add-asset-report/", views.add_asset_report, name="add-asset-report"),
     # path(
     #     "add-asset-report/<int:asset_id>",
@@ -333,7 +333,7 @@ urlpatterns = [
         name="asset-history-single-view",
     ),
     path(
-        "asset-history-search",
+        "asset-history-search/",
         views.asset_history_search,
         name="asset-history-search",
     ),
@@ -343,32 +343,32 @@ urlpatterns = [
         name="asset-request-allocation-view",
     ),
     path(
-        "list-asset-request-allocation",
+        "list-asset-request-allocation/",
         request_and_allocation.AllocationList.as_view(),
         name="list-asset-request-allocation",
     ),
     path(
-        "list-asset",
+        "list-asset/",
         request_and_allocation.AssetList.as_view(),
         name="list-asset",
     ),
     path(
-        "tab-asset-request-allocation",
+        "tab-asset-request-allocation/",
         request_and_allocation.RequestAndAllocationTab.as_view(),
         name="tab-asset-request-allocation",
     ),
     path(
-        "list-asset-request",
+        "list-asset-request/",
         request_and_allocation.AssetRequestList.as_view(),
         name="list-asset-request",
     ),
     path(
-        "list-asset-allocation",
+        "list-asset-allocation/",
         request_and_allocation.AssetAllocationList.as_view(),
         name="list-asset-allocation",
     ),
     path(
-        "nav-asset-request-allocation",
+        "nav-asset-request-allocation/",
         request_and_allocation.RequestAndAllocationNav.as_view(),
         name="nav-asset-request-allocation",
     ),
@@ -407,7 +407,7 @@ urlpatterns = [
         request_and_allocation.AssetApproveFormView.as_view(),
         name="asset-request-approve-form",
     ),
-    path("asset-tab/<int:pk>", views.asset_tab, name="asset-tab"),
+    path("asset-tab/<int:pk>/", views.asset_tab, name="asset-tab"),
     path(
         "profile-asset-tab/<int:emp_id>/",
         views.profile_asset_tab,
@@ -424,12 +424,12 @@ urlpatterns = [
     #     name="dashboard-asset-request-approve",
     # ),
     path(
-        "dashboard-asset-request-approve",
+        "dashboard-asset-request-approve/",
         dashboard.AssetRequestToApprove.as_view(),
         name="dashboard-asset-request-approve",
     ),
     path(
-        "dashboard-allocated-asset",
+        "dashboard-allocated-asset/",
         dashboard.AllocatedAssetsList.as_view(),
         name="dashboard-allocated-asset",
     ),
