@@ -85,7 +85,7 @@ def contract_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, _("Contract Created"))
-            return redirect(contract_view)
+            return redirect("view-contract")
     return render(request, "payroll/common/form.html", {"form": form})
 
 
