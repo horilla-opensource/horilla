@@ -11,6 +11,7 @@ from urllib.parse import urlencode
 
 from django import forms, template
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache as CACHE
 from django.core.exceptions import FieldDoesNotExist
@@ -43,7 +44,6 @@ from openpyxl.drawing.image import Image
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
-from horilla import settings
 from horilla.config import logger
 from horilla.horilla_middlewares import _thread_locals
 from horilla_views.templatetags.generic_template_filters import getattribute
@@ -181,7 +181,8 @@ def login_required(view_func):
         except Exception as e:
             logger.exception(e)
             if not settings.DEBUG:
-                return render(request, "went_wrong.html")
+                messages.error(request, str(e))
+                return render(request, "went_wrong.html", status=404)
             return view_func(self, *args, **kwargs)
         return func
 
