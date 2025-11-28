@@ -30,33 +30,35 @@ urlpatterns = [
         name="allocation-view",
     ),
     path(
-        "allocation-employee-forms",
+        "allocation-employee-forms/",
         allocations.EmployeeForms.as_view(),
         name="allocation-employee-forms",
     ),
-    path("personal-form", allocations.PersonalFormView.as_view(), name="personal-form"),
-    path("work-form", allocations.WorkFormView.as_view(), name="work-form"),
-    path("bank-form", allocations.BankFormView.as_view(), name="bank-form"),
     path(
-        "allocation-user-group-view",
+        "personal-form/", allocations.PersonalFormView.as_view(), name="personal-form"
+    ),
+    path("work-form/", allocations.WorkFormView.as_view(), name="work-form"),
+    path("bank-form/", allocations.BankFormView.as_view(), name="bank-form"),
+    path(
+        "allocation-user-group-view/",
         allocations.GroupsView.as_view(),
         name="allocation-user-group-view",
     ),
     path(
-        "allocation-user-groups",
+        "allocation-user-groups/",
         allocations.Groups.as_view(),
         name="allocation-user-groups",
     ),
     path(
-        "allocation-assign-group-user",
+        "allocation-assign-group-user/",
         allocations.GroupAssignView.as_view(),
         name="allocation-assign-group-user",
     ),
     path(
-        "allocation-summary", allocations.Summary.as_view(), name="allocation-summary"
+        "allocation-summary/", allocations.Summary.as_view(), name="allocation-summary"
     ),
     path(
-        "toggle-user-dashboard-access",
+        "toggle-user-dashboard-access/",
         allocations.ToggleDashboardAccess.as_view(),
         name="toggle-user-dashboard-access",
     ),
@@ -93,7 +95,7 @@ urlpatterns = [
     #     name="employee-profile",
     #     kwargs={"model": Employee},
     # ),
-    path("edit-profile", views.self_info_update, name="edit-profile"),
+    path("edit-profile/", views.self_info_update, name="edit-profile"),
     path(
         "profile-edit-access/<int:emp_id>/",
         views.profile_edit_access,
@@ -105,7 +107,7 @@ urlpatterns = [
         name="update-profile-image",
     ),
     path(
-        "update-own-profile-image",
+        "update-own-profile-image/",
         views.update_own_profile_image,
         name="update-own-profile-image",
     ),
@@ -115,17 +117,17 @@ urlpatterns = [
         name="remove-profile-image",
     ),
     path(
-        "remove-own-profile-image",
+        "remove-own-profile-image/",
         views.remove_own_profile_image,
         name="remove-own-profile-image",
     ),
     path(
-        "employee-profile-bank-details",
+        "employee-profile-bank-details/",
         views.employee_profile_bank_details,
         name="employee-profile-bank-update",
     ),
     # path("employee-view/", views.employee_view, name="employee-view"),
-    path("employee-view-new", views.employee_view_new, name="employee-view-new"),
+    path("employee-view-new/", views.employee_view_new, name="employee-view-new"),
     path(
         "employee-view-update/<int:obj_id>/",
         views.employee_view_update,
@@ -133,7 +135,7 @@ urlpatterns = [
         kwargs={"model": Employee},
     ),
     path(
-        "employee-create-personal-info",
+        "employee-create-personal-info/",
         views.employee_create_update_personal_info,
         name="employee-create-personal-info",
     ),
@@ -143,7 +145,7 @@ urlpatterns = [
         name="employee-update-personal-info",
     ),
     path(
-        "employee-create-work-info",
+        "employee-create-work-info/",
         views.employee_update_work_info,
         name="employee-create-work-info",
     ),
@@ -153,7 +155,7 @@ urlpatterns = [
         name="employee-update-work-info",
     ),
     path(
-        "employee-create-bank-details",
+        "employee-create-bank-details/",
         views.employee_update_bank_details,
         name="employee-create-bank-details",
     ),
@@ -163,11 +165,11 @@ urlpatterns = [
         name="employee-update-bank-details",
     ),
     path(
-        "employee-filter-view", views.employee_filter_view, name="employee-filter-view"
+        "employee-filter-view/", views.employee_filter_view, name="employee-filter-view"
     ),
-    path("employee-view-card", views.employee_card, name="employee-view-card"),
-    path("employee-view-list", views.employee_list, name="employee-view-list"),
-    path("search-employee", views.employee_search, name="search-employee"),
+    path("employee-view-card/", views.employee_card, name="employee-view-card"),
+    path("employee-view-list/", views.employee_list, name="employee-view-list"),
+    path("search-employee/", views.employee_search, name="search-employee"),
     path(
         "employee-update/<int:obj_id>/", views.employee_update, name="employee-update"
     ),
@@ -175,12 +177,12 @@ urlpatterns = [
         "employee-delete/<int:obj_id>/", views.employee_delete, name="employee-delete"
     ),
     path(
-        "employee-bulk-update",
+        "employee-bulk-update/",
         views.view_employee_bulk_update,
         name="employee-bulk-update",
     ),
     path(
-        "save-employee-bulk-update",
+        "save-employee-bulk-update/",
         views.save_employee_bulk_update,
         name="save-employee-bulk-update",
     ),
@@ -190,10 +192,10 @@ urlpatterns = [
         name="employee-account-block-unblock",
     ),
     path(
-        "employee-bulk-delete", views.employee_bulk_delete, name="employee-bulk-delete"
+        "employee-bulk-delete/", views.employee_bulk_delete, name="employee-bulk-delete"
     ),
     path(
-        "employee-bulk-archive",
+        "employee-bulk-archive/",
         views.employee_bulk_archive,
         name="employee-bulk-archive",
     ),
@@ -237,40 +239,40 @@ urlpatterns = [
         views.employee_work_information_delete,
         name="employee-work-information-delete",
     ),
-    path("employee-import", views.employee_import, name="employee-import"),
-    path("employee-export", views.employee_export, name="employee-export"),
-    path("work-info-import", views.work_info_import, name="work-info-import"),
+    path("employee-import/", views.employee_import, name="employee-import"),
+    path("employee-export/", views.employee_export, name="employee-export"),
+    path("work-info-import/", views.work_info_import, name="work-info-import"),
     path(
-        "work-info-import-file",
+        "work-info-import-file/",
         views.work_info_import_file,
         name="work-info-import-file",
     ),
-    path("work-info-export", views.work_info_export, name="work-info-export"),
-    path("get-birthday", views.get_employees_birthday, name="get-birthday"),
-    path("dashboard", views.dashboard, name="dashboard"),
+    path("work-info-export/", views.work_info_export, name="work-info-export"),
+    path("get-birthday/", views.get_employees_birthday, name="get-birthday"),
+    path("dashboard/", views.dashboard, name="dashboard"),
     path(
-        "total-employees-count",
+        "total-employees-count/",
         views.total_employees_count,
         name="total-employees-count",
     ),
-    path("joining-today-count", views.joining_today_count, name="joining-today-count"),
-    path("leave-today-count", views.leave_today_count, name="leave-today-count"),
-    path("joining-week-count", views.joining_week_count, name="joining-week-count"),
-    path("dashboard-employee", views.dashboard_employee, name="dashboard-employee"),
+    path("joining-today-count/", views.joining_today_count, name="joining-today-count"),
+    path("leave-today-count/", views.leave_today_count, name="leave-today-count"),
+    path("joining-week-count/", views.joining_week_count, name="joining-week-count"),
+    path("dashboard-employee/", views.dashboard_employee, name="dashboard-employee"),
     path(
-        "dashboard-employee-gender",
+        "dashboard-employee-gender/",
         views.dashboard_employee_gender,
         name="dashboard-employee-gender",
     ),
     path(
-        "dashboard-employee-department",
+        "dashboard-employee-department/",
         views.dashboard_employee_department,
         name="dashboard-employee-department",
     ),
-    path("employee-widget-filter", views.widget_filter, name="employee-widget-filter"),
-    path("note-tab/<int:pk>", views.note_tab, name="note-tab"),
+    path("employee-widget-filter/", views.widget_filter, name="employee-widget-filter"),
+    path("note-tab/<int:pk>/", views.note_tab, name="note-tab"),
     path("add-employee-note/<int:emp_id>/", views.add_note, name="add-employee-note"),
-    path("add-employee-note-post", views.add_note, name="add-employee-note-post"),
+    path("add-employee-note-post/", views.add_note, name="add-employee-note-post"),
     path(
         "employee-note-update/<int:note_id>/",
         views.employee_note_update,
@@ -292,39 +294,41 @@ urlpatterns = [
         name="employee-note-delete",
     ),
     path(
-        "allowances-deductions-tab/<int:emp_id>",
+        "allowances-deductions-tab/<int:emp_id>/",
         views.allowances_deductions_tab,
         name="allowances-deductions-tab",
     ),
-    path("shift-tab/<int:pk>", views.shift_tab, name="shift-tab"),
+    path("shift-tab/<int:pk>/", views.shift_tab, name="shift-tab"),
     # path(
     #     "about-tab/<int:obj_id>",
     #     views.about_tab,
     #     name="about-tab",
     #     kwargs={"model": Employee},
     # ),
-    path("shift-tab/<int:emp_id>", views.shift_tab, name="shift-tab"),
+    path("shift-tab/<int:emp_id>/", views.shift_tab, name="shift-tab"),
     path(
-        "about-tab/<int:pk>",
+        "about-tab/<int:pk>/",
         views.about_tab,
         name="about-tab",
         kwargs={"model": Employee},
     ),
-    path("document-tab/<int:pk>", views.document_tab, name="document-tab"),
-    path("bonus-points-tab/<int:pk>", views.bonus_points_tab, name="bonus-points-tab"),
+    path("document-tab/<int:pk>/", views.document_tab, name="document-tab"),
+    path("bonus-points-tab/<int:pk>/", views.bonus_points_tab, name="bonus-points-tab"),
     path(
-        "add-bonus-points/<int:emp_id>", views.add_bonus_points, name="add-bonus-points"
+        "add-bonus-points/<int:emp_id>/",
+        views.add_bonus_points,
+        name="add-bonus-points",
     ),
-    path("redeem-points/<int:emp_id>", views.redeem_points, name="redeem-points"),
+    path("redeem-points/<int:emp_id>/", views.redeem_points, name="redeem-points"),
     path("employee-select/", views.employee_select, name="employee-select"),
     path(
         "employee-select-filter/",
         views.employee_select_filter,
         name="employee-select-filter",
     ),
-    path("work-tab", employees.WorkTab.as_view(), name="work-tab"),
+    path("work-tab/", employees.WorkTab.as_view(), name="work-tab"),
     path(
-        "employee-work-tab",
+        "employee-work-tab/",
         employees.TabEmployeeWorkList.as_view(),
         name="employee-work-tab",
     ),
@@ -346,10 +350,10 @@ urlpatterns = [
         name="export-data-employee",
     ),
     path(
-        "employee-bulk-mail", not_in_out_dashboard.send_mail, name="employee-bulk-mail"
+        "employee-bulk-mail/", not_in_out_dashboard.send_mail, name="employee-bulk-mail"
     ),
     path(
-        "send-mail",
+        "send-mail/",
         not_in_out_dashboard.send_mail_to_employee,
         name="send-mail-to-employee",
     ),
@@ -359,31 +363,31 @@ urlpatterns = [
         name="get-template-employee",
     ),
     path(
-        "get-employee-mail-preview",
+        "get-employee-mail-preview/",
         not_in_out_dashboard.get_mail_preview,
         name="get-employee-mail-preview",
     ),
     path("view-policies/", policies.view_policies, name="view-policies"),
-    path("search-policies", policies.search_policies, name="search-policies"),
-    # path("create-policy", policies.create_policy, name="create-policy"),
-    path("create-policy", policy_cbv.PolicyFormView.as_view(), name="create-policy"),
+    path("search-policies/", policies.search_policies, name="search-policies"),
+    # path("create-policy/", policies.create_policy, name="create-policy"),
+    path("create-policy/", policy_cbv.PolicyFormView.as_view(), name="create-policy"),
     path(
         "create-policy/<int:pk>/",
         policy_cbv.PolicyFormView.as_view(),
         name="create-policy",
     ),
     path("policy-nav/", policy_cbv.PoliciesNav.as_view(), name="policy-nav"),
-    path("view-policy", policies.view_policy, name="view-policy"),
+    path("view-policy/", policies.view_policy, name="view-policy"),
     path(
-        "add-attachment-policy", policies.add_attachment, name="add-attachment-policy"
+        "add-attachment-policy/", policies.add_attachment, name="add-attachment-policy"
     ),
     path(
-        "remove-attachment-policy",
+        "remove-attachment-policy/",
         policies.remove_attachment,
         name="remove-attachment-policy",
     ),
     path(
-        "get-attachments-policy",
+        "get-attachments-policy/",
         policies.get_attachments,
         name="get-attachments-policy",
     ),
@@ -393,8 +397,8 @@ urlpatterns = [
         name="file-upload",
     ),
     # path("file-upload/<int:id>", views.file_upload, name="file-upload"),
-    path("view-file/<int:id>", views.view_file, name="view-file"),
-    path("document-create", views.document_create, name="document-create"),
+    path("view-file/<int:id>/", views.view_file, name="view-file"),
+    path("document-create/", views.document_create, name="document-create"),
     path(
         "get-notify-field/",
         views.get_notify_field,
@@ -407,18 +411,18 @@ urlpatterns = [
     ),
     # path("document-create/<int:emp_id>", views.document_create, name="document-create"),
     path(
-        "update-document-title/<int:id>",
+        "update-document-title/<int:id>/",
         views.update_document_title,
         name="update-document-title",
     ),
-    path("document-approve/<int:id>", views.document_approve, name="document-approve"),
+    path("document-approve/<int:id>/", views.document_approve, name="document-approve"),
     path(
-        "document-bulk-approve",
+        "document-bulk-approve/",
         views.document_bulk_approve,
         name="document-bulk-approve",
     ),
     path(
-        "document-bulk-reject", views.document_bulk_reject, name="document-bulk-reject"
+        "document-bulk-reject/", views.document_bulk_reject, name="document-bulk-reject"
     ),
     path(
         "document-reject/<int:pk>/",
@@ -486,7 +490,7 @@ urlpatterns = [
         name="document-delete",
     ),
     path("organisation-chart/", views.organisation_chart, name="organisation-chart"),
-    path("delete-policies", policies.delete_policies, name="delete-policies"),
+    path("delete-policies/", policies.delete_policies, name="delete-policies"),
     # path(
     #     "disciplinary-actions/",
     #     policies.disciplinary_actions,
@@ -544,7 +548,7 @@ urlpatterns = [
         name="update-actions",
     ),
     path(
-        "remove-employee-disciplinary-action/<int:action_id>/<int:emp_id>",
+        "remove-employee-disciplinary-action/<int:action_id>/<int:emp_id>/",
         policies.remove_employee_disciplinary_action,
         name="remove-employee-disciplinary-action",
     ),
@@ -554,41 +558,41 @@ urlpatterns = [
         name="delete-actions",
     ),
     path(
-        "action-type-details",
+        "action-type-details/",
         policies.action_type_details,
         name="action-type-details",
     ),
     path(
-        "action-type-name",
+        "action-type-name/",
         policies.action_type_name,
         name="action-type-name",
     ),
     path(
-        "disciplinary-filter-view",
+        "disciplinary-filter-view/",
         policies.disciplinary_filter_view,
         name="disciplinary-filter-view",
     ),
     path(
-        "search-disciplinary", policies.search_disciplinary, name="search-disciplinary"
+        "search-disciplinary/", policies.search_disciplinary, name="search-disciplinary"
     ),
     path(
-        "encashment-condition-create",
+        "encashment-condition-create/",
         views.encashment_condition_create,
         name="encashment-condition-create",
     ),
-    path("initial-prefix", views.initial_prefix, name="initial-prefix"),
+    path("initial-prefix/", views.initial_prefix, name="initial-prefix"),
     path(
-        "get-first-last-badge-id",
+        "get-first-last-badge-id/",
         views.first_last_badge,
         name="get-first-last-badge-id",
     ),
     path(
-        "employee-get-mail-log",
+        "employee-get-mail-log/",
         views.employee_get_mail_log,
         name="employee-get-mail-log",
     ),
     path(
-        "get-manage-in",
+        "get-manage-in/",
         views.get_manager_in,
         name="get-manager-in",
     ),
@@ -617,21 +621,21 @@ urlpatterns = [
         disciplinary_actions.DisciplinaryActionsDetailView.as_view(),
         name="disciplinary-actions-detail-view",
     ),
-    path("get-job-positions", views.get_job_positions, name="get-job-positions"),
+    path("get-job-positions/", views.get_job_positions, name="get-job-positions"),
     path(
-        "get-job-positions-hx", views.get_job_positions_hx, name="get-job-positions-hx"
+        "get-job-positions-hx/", views.get_job_positions_hx, name="get-job-positions-hx"
     ),
-    path("get-job-roles", views.get_job_roles, name="get-job-roles"),
+    path("get-job-roles/", views.get_job_roles, name="get-job-roles"),
     path(
-        "get-job-position-department",
+        "get-job-position-department/",
         views.get_position_department,
         name="get-job-position-department",
     ),
-    path("get-job-roles-hx", views.get_job_roles_hx, name="get-job-roles-hx"),
+    path("get-job-roles-hx/", views.get_job_roles_hx, name="get-job-roles-hx"),
     path("employee-tag-view/", views.employee_tag_view, name="employee-tag-view"),
-    path("employee-tag-create", views.employee_tag_create, name="employee-tag-create"),
+    path("employee-tag-create/", views.employee_tag_create, name="employee-tag-create"),
     path(
-        "employee-tag-update/<int:tag_id>",
+        "employee-tag-update/<int:tag_id>/",
         views.employee_tag_update,
         name="employee-tag-update",
     ),
@@ -665,10 +669,10 @@ urlpatterns = [
 if app_installed("asset"):
     urlpatterns += [
         path(
-            "allocation-assets", allocations.Assets.as_view(), name="allocation-assets"
+            "allocation-assets/", allocations.Assets.as_view(), name="allocation-assets"
         ),
         path(
-            "allocation-asset-list",
+            "allocation-asset-list/",
             allocations.AssetAllocationList.as_view(),
             name="allocation-asset-list",
         ),
@@ -682,12 +686,12 @@ if app_installed("asset"):
 if app_installed("leave"):
     urlpatterns += [
         path(
-            "allocation-leave-type",
+            "allocation-leave-type/",
             allocations.LeaveTypeView.as_view(),
             name="allocation-leave-type",
         ),
         path(
-            "allocation-leave-type-list",
+            "allocation-leave-type-list/",
             allocations.LeaveTypeAllocationList.as_view(),
             name="allocation-leave-type-list",
         ),
@@ -696,22 +700,22 @@ if app_installed("leave"):
 if app_installed("payroll"):
     urlpatterns += [
         path(
-            "allocation-allowance",
+            "allocation-allowance/",
             allocations.AllowanceView.as_view(),
             name="allocation-allowance",
         ),
         path(
-            "allocation-allowance-list",
+            "allocation-allowance-list/",
             allocations.AllowanceList.as_view(),
             name="allocation-allowance-list",
         ),
         path(
-            "allocation-deduction",
+            "allocation-deduction/",
             allocations.DeductionView.as_view(),
             name="allocation-deduction",
         ),
         path(
-            "allocation-deduction-list",
+            "allocation-deduction-list/",
             allocations.DeductionList.as_view(),
             name="allocation-deduction-list",
         ),

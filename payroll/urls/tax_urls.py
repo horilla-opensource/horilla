@@ -39,7 +39,7 @@ urlpatterns = [
     #     name="filing-status-update",
     # ),
     path(
-        "filing-status-delete/<int:filing_status_id>",
+        "filing-status-delete/<int:filing_status_id>/",
         tax_views.filing_status_delete,
         name="filing-status-delete",
     ),
@@ -59,12 +59,12 @@ urlpatterns = [
         name="filing-status-list",
     ),
     path(
-        "tax-bracket-list/<int:filing_status_id>",
+        "tax-bracket-list/<int:filing_status_id>/",
         tax_views.tax_bracket_list,
         name="tax-bracket-list",
     ),
     path(
-        "tax-bracket-create/<int:filing_status_id>",
+        "tax-bracket-create/<int:filing_status_id>/",
         federal_tax.TaxBracketCreateForm.as_view(),
         name="tax-bracket-create",
     ),

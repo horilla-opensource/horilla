@@ -20,7 +20,7 @@ urlpatterns = [
         name="ticket-create-form",
     ),
     path(
-        "ticket-update-form/<int:pk>",
+        "ticket-update-form/<int:pk>/",
         ticket_type.TicketTypeCreateForm.as_view(),
         name="ticket-update-form",
     ),
@@ -58,7 +58,7 @@ urlpatterns = [
     ),
     # path("faq-create/<int:cat_id>/", views.create_faq, name="faq-create"),
     path("faq-update/<int:pk>/", faq.FaqCreateFormView.as_view(), name="faq-update"),
-    # path("faq-update/<int:id>", views.faq_update, name="faq-update"),
+    # path("faq-update/<int:id>/", views.faq_update, name="faq-update"),
     path("faq-search/", views.faq_search, name="faq-search"),
     path("faq-filter/<int:id>/", views.faq_filter, name="faq-filter"),
     path("faq-suggestion/", views.faq_suggestion, name="faq-suggestion"),
@@ -74,24 +74,26 @@ urlpatterns = [
         pipeline.TicketPipelineNav.as_view(),
         name="ticket-pipeline-nav",
     ),
-    path("get-ticket-tabs", pipeline.TicketTabView.as_view(), name="get-ticket-tabs"),
+    path("get-ticket-tabs/", pipeline.TicketTabView.as_view(), name="get-ticket-tabs"),
     path("ticket-tab/", pipeline.TicketTabView.as_view(), name="ticket-tab"),
     path("ticket-tab-list/", pipeline.TicketListView.as_view(), name="ticket-tab-list"),
     path("ticket-tab-card/", pipeline.TicketCardView.as_view(), name="ticket-tab-card"),
     # path("ticket-pipeline-view/", pipeline.TicketPipelineTabView.as_view(), name="ticket-pipeline-view"),
     path(
-        "ticket-create",
+        "ticket-create/",
         ticket_type.TicketsCreateFormView.as_view(),
         name="ticket-create",
     ),
-    # path("ticket-create", views.ticket_create, name="ticket-create"),
+    # path("ticket-create/", views.ticket_create, name="ticket-create"),
     path(
         "ticket-update/<int:pk>/",
         ticket_type.TicketsCreateFormView.as_view(),
         name="ticket-update",
     ),
-    # path("ticket-update/<int:ticket_id>", views.ticket_update, name="ticket-update"),
-    path("ticket-archive/<int:ticket_id>", views.ticket_archive, name="ticket-archive"),
+    # path("ticket-update/<int:ticket_id>/", views.ticket_update, name="ticket-update"),
+    path(
+        "ticket-archive/<int:ticket_id>/", views.ticket_archive, name="ticket-archive"
+    ),
     path(
         "change-ticket-status/<int:ticket_id>/",
         views.change_ticket_status,
@@ -102,8 +104,8 @@ urlpatterns = [
         views.ticket_status_change,
         name="ticket-status-change",
     ),
-    path("ticket-delete/<int:ticket_id>", views.ticket_delete, name="ticket-delete"),
-    path("ticket-filter", views.ticket_filter, name="ticket-filter"),
+    path("ticket-delete/<int:ticket_id>/", views.ticket_delete, name="ticket-delete"),
+    path("ticket-filter/", views.ticket_filter, name="ticket-filter"),
     path(
         "ticket-detail/<int:ticket_id>/",
         views.ticket_detail,
@@ -111,54 +113,56 @@ urlpatterns = [
         kwargs={"model": Ticket},
     ),
     path(
-        "ticket-individual-view/<int:ticket_id>",
+        "ticket-individual-view/<int:ticket_id>/",
         views.ticket_individual_view,
         name="ticket-individual-view",
     ),
     path(
-        "view-ticket-claim-request/<int:ticket_id>",
+        "view-ticket-claim-request/<int:ticket_id>/",
         views.view_ticket_claim_request,
         name="view-ticket-claim-request",
     ),
-    path("ticket-change-tag", views.ticket_update_tag, name="ticket-change-tag"),
+    path("ticket-change-tag/", views.ticket_update_tag, name="ticket-change-tag"),
     path(
-        "ticket-change-raised-on/<int:ticket_id>",
+        "ticket-change-raised-on/<int:ticket_id>/",
         views.ticket_change_raised_on,
         name="ticket-change-raised-on",
     ),
     path(
-        "ticket-change-assignees/<int:ticket_id>",
+        "ticket-change-assignees/<int:ticket_id>/",
         views.ticket_change_assignees,
         name="ticket-change-assignees",
     ),
-    path("ticket-create-tag", views.create_tag, name="ticket-create-tag"),
-    path("remove-tag", views.remove_tag, name="remove-tag"),
+    path("ticket-create-tag/", views.create_tag, name="ticket-create-tag"),
+    path("remove-tag/", views.remove_tag, name="remove-tag"),
     path(
-        "view-ticket-document/<int:doc_id>",
+        "view-ticket-document/<int:doc_id>/",
         views.view_ticket_document,
         name="view-ticket-document",
     ),
-    path("comment-create/<int:ticket_id>", views.comment_create, name="comment-create"),
+    path(
+        "comment-create/<int:ticket_id>/", views.comment_create, name="comment-create"
+    ),
     path("comment-edit/", views.comment_edit, name="comment-edit"),
     path(
         "comment-delete/<int:comment_id>/", views.comment_delete, name="comment-delete"
     ),
-    path("get-raised-on", views.get_raised_on, name="get-raised-on"),
-    path("claim-ticket/<int:id>", views.claim_ticket, name="claim-ticket"),
+    path("get-raised-on/", views.get_raised_on, name="get-raised-on"),
+    path("claim-ticket/<int:id>/", views.claim_ticket, name="claim-ticket"),
     path(
-        "approve-claim-request/<int:req_id>",
+        "approve-claim-request/<int:req_id>/",
         views.approve_claim_request,
         name="approve-claim-request",
     ),
     path(
-        "tickets-select-filter",
+        "tickets-select-filter/",
         views.tickets_select_filter,
         name="tickets-select-filter",
     ),
     path(
-        "tickets-bulk-archive", views.tickets_bulk_archive, name="tickets-bulk-archive"
+        "tickets-bulk-archive/", views.tickets_bulk_archive, name="tickets-bulk-archive"
     ),
-    path("tickets-bulk-delete", views.tickets_bulk_delete, name="tickets-bulk-delete"),
+    path("tickets-bulk-delete/", views.tickets_bulk_delete, name="tickets-bulk-delete"),
     # path(
     #     "department-manager-create/",
     #     views.create_department_manager,
@@ -200,7 +204,7 @@ urlpatterns = [
         name="department-manager-nav",
     ),
     path(
-        "department-manager-update/<int:dep_id>",
+        "department-manager-update/<int:dep_id>/",
         views.update_department_manager,
         name="department-manager-update",
     ),
@@ -210,24 +214,24 @@ urlpatterns = [
         name="department-manager-update-view",
     ),
     path(
-        "department-manager-delete/<int:dep_id>",
+        "department-manager-delete/<int:dep_id>/",
         views.delete_department_manager,
         name="department-manager-delete",
     ),
     path(
-        "update-priority/<int:ticket_id>",
+        "update-priority/<int:ticket_id>/",
         views.update_priority,
         name="update-priority",
     ),
     path("ticket-type-view/", views.ticket_type_view, name="ticket-type-view"),
-    path("ticket-type-create", views.ticket_type_create, name="ticket-type-create"),
+    path("ticket-type-create/", views.ticket_type_create, name="ticket-type-create"),
     path(
-        "ticket-type-update/<int:t_type_id>",
+        "ticket-type-update/<int:t_type_id>/",
         views.ticket_type_update,
         name="ticket-type-update",
     ),
     path(
-        "ticket-type-delete/<int:t_type_id>",
+        "ticket-type-delete/<int:t_type_id>/",
         views.ticket_type_delete,
         name="ticket-type-delete",
     ),
@@ -237,12 +241,12 @@ urlpatterns = [
         name="department-manager-view",
     ),
     path(
-        "get-department-employee",
+        "get-department-employee/",
         views.get_department_employees,
         name="get-department-employee",
     ),
     path(
-        "delete-ticket-document/<int:doc_id>",
+        "delete-ticket-document/<int:doc_id>/",
         views.delete_ticket_document,
         name="delete-ticket-document",
     ),

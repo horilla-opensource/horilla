@@ -50,7 +50,7 @@ urlpatterns = [
         name="view-biometric-devices",
     ),
     path(
-        "biometric-device-live-capture",
+        "biometric-device-live-capture/",
         views.biometric_device_live,
         name="biometric-device-live-capture",
     ),
@@ -106,12 +106,12 @@ urlpatterns = [
         kwargs={"model": BiometricDevices},
     ),
     path(
-        "search-employee-in-device",
+        "search-employee-in-device/",
         views.search_employee_device,
         name="search-employee-in-device",
     ),
     path(
-        "find-employee-badge-id",
+        "find-employee-badge-id/",
         views.find_employee_badge_id,
         name="find-employee-badge-id",
     ),
@@ -131,22 +131,22 @@ urlpatterns = [
         name="add-dahua-biometric-user",
     ),
     path(
-        "delete-dahua-user/<uuid:obj_id>",
+        "delete-dahua-user/<uuid:obj_id>/",
         views.delete_dahua_user,
         name="delete-dahua-user",
     ),
     path(
-        "delete-dahua-user",
+        "delete-dahua-user/",
         views.delete_dahua_user,
         name="delete-dahua-user",
     ),
     path(
-        "delete-etimeoffice-user",
+        "delete-etimeoffice-user/",
         views.delete_etimeoffice_user,
         name="delete-etimeoffice-user",
     ),
     path(
-        "delete-etimeoffice-user/<uuid:obj_id>",
+        "delete-etimeoffice-user/<uuid:obj_id>/",
         views.delete_etimeoffice_user,
         name="delete-etimeoffice-user",
     ),
@@ -171,12 +171,12 @@ urlpatterns = [
         name="delete-cosec-user",
     ),
     path(
-        "biometric-users-bulk-delete",
+        "biometric-users-bulk-delete/",
         views.bio_users_bulk_delete,
         name="biometric-users-bulk-delete",
     ),
     path(
-        "cosec-users-bulk-delete",
+        "cosec-users-bulk-delete/",
         views.cosec_users_bulk_delete,
         name="cosec-users-bulk-delete",
     ),
