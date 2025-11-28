@@ -17,11 +17,6 @@ from . import models, views
 
 urlpatterns = [
     path(
-        "ekr-history/<int:pk>",
-        key_result.EKRHistory.as_view(),
-        name="ekr-history",
-    ),
-    path(
         "individual-performance-tab-list/<int:pk>/",
         feedback.PerformanceTab.as_view(),
         name="individual-performance-tab-list",
@@ -69,7 +64,7 @@ urlpatterns = [
         name="objective-creation",
     ),
     path(
-        "objective-update/<int:pk>",
+        "objective-update/<int:pk>/",
         objectives.CreateObjectiveFormView.as_view(),
         name="objective-update",
     ),
@@ -78,7 +73,7 @@ urlpatterns = [
     # ),
     # path("add-assignees/<int:obj_id>", views.add_assignees, name="add-assignees"),
     path(
-        "add-assignees/<int:pk>",
+        "add-assignees/<int:pk>/",
         objectives.AddAssigneesFormView.as_view(),
         name="add-assignees",
     ),
@@ -128,6 +123,11 @@ urlpatterns = [
         views.archive_key_result,
         name="archive-key-result",
     ),
+    path(
+        "ekr-history/<int:pk>/",
+        key_result.EKRHistory.as_view(),
+        name="ekr-history",
+    ),
     # path("view-key-result/", views.view_key_result, name="view-key-result"),
     # path("filter-key-result/", views.filter_key_result, name="filter-key-result"),
     # path("create-key-result/", views.kr_create_or_update, name="create-key-result"),
@@ -142,71 +142,73 @@ urlpatterns = [
         name="delete-key-result",
         kwargs={"model": models.KeyResult, "redirect_path": "/pms/filter-key-result/"},
     ),
-    path("key-result-creation", views.key_result_create, name="key-result-creation"),
+    path("key-result-creation/", views.key_result_create, name="key-result-creation"),
     path(
-        "key-reult-remove/<int:obj_id>/<int:kr_id>",
+        "key-reult-remove/<int:obj_id>/<int:kr_id>/",
         views.key_result_remove,
         name="key-result-remove",
     ),
     path(
-        "objective-list-search",
+        "objective-list-search/",
         views.objective_list_search,
         name="objective-list-search",
     ),
     path(
-        "objective-dashboard-view",
+        "objective-dashboard-view/",
         views.objective_dashboard_view,
         name="objective-dashboard-view",
     ),
     path(
-        "objective-delete/<int:obj_id>", views.objective_delete, name="objective-delete"
+        "objective-delete/<int:obj_id>/",
+        views.objective_delete,
+        name="objective-delete",
     ),
     path(
-        "objective-archive/<int:id>", views.objective_archive, name="objective-archive"
+        "objective-archive/<int:id>/", views.objective_archive, name="objective-archive"
     ),
     path(
-        "objective-detailed-view/<int:obj_id>",
+        "objective-detailed-view/<int:obj_id>/",
         views.objective_detailed_view,
         name="objective-detailed-view",
         kwargs={"model": models.EmployeeObjective},
     ),
     path(
-        "objective-detailed-view-objective-status/<int:id>",
+        "objective-detailed-view-objective-status/<int:id>/",
         views.objective_detailed_view_objective_status,
         name="objective-detailed-view-objective-status",
     ),
     path(
-        "objective-detailed-view-key-result-status/<int:obj_id>/<int:kr_id>",
+        "objective-detailed-view-key-result-status/<int:obj_id>/<int:kr_id>/",
         views.objective_detailed_view_key_result_status,
         name="objective-detailed-view-key-result-status",
     ),
     path(
-        "objective-detailed-view-current-value/<int:kr_id>",
+        "objective-detailed-view-current-value/<int:kr_id>/",
         views.objective_detailed_view_current_value,
         name="objective-detailed-view-current-value",
     ),
     path(
-        "objective-detailed-view-activity/<int:id>",
+        "objective-detailed-view-activity/<int:id>/",
         views.objective_detailed_view_activity,
         name="objective-detailed-view-activity",
     ),
     path(
-        "emp-objective-search/<int:obj_id>",
+        "emp-objective-search/<int:obj_id>/",
         views.emp_objective_search,
         name="emp-objective-search",
     ),
     path(
-        "objective-manager-remove/<int:obj_id>/<int:manager_id>",
+        "objective-manager-remove/<int:obj_id>/<int:manager_id>/",
         views.objective_manager_remove,
         name="objective-manager-remove",
     ),
     path(
-        "assignees-remove/<int:obj_id>/<int:emp_id>",
+        "assignees-remove/<int:obj_id>/<int:emp_id>/",
         views.assignees_remove,
         name="assignees-remove",
     ),
     path(
-        "objective-detailed-view-comment/<int:id>",
+        "objective-detailed-view-comment/<int:id>/",
         views.objective_detailed_view_comment,
         name="objective-detailed-view-comment",
     ),
@@ -226,28 +228,28 @@ urlpatterns = [
     #     name="key-result-view",
     # ),
     path(
-        "key-result-view",
+        "key-result-view/",
         dashboard.KeyResultStatus.as_view(),
         name="key-result-view",
     ),
     path(
-        "key-result-creation/<str:obj_id>/<str:obj_type>",
+        "key-result-creation/<str:obj_id>/<str:obj_type>/",
         views.key_result_creation,
         name="key-result-creation",
     ),
     path(
-        "key-result-creation-htmx/<int:id>",
+        "key-result-creation-htmx/<int:id>/",
         views.key_result_creation_htmx,
         name="key-result-creation-htmx",
     ),
     path(
-        "key-result-update/<int:id>", views.key_result_update, name="key-result-update"
+        "key-result-update/<int:id>/", views.key_result_update, name="key-result-update"
     ),
     # path("feedback-view/", views.feedback_list_view, name="feedback-view"),
     path(
-        "feedback-list-search", views.feedback_list_search, name="feedback-list-search"
+        "feedback-list-search/", views.feedback_list_search, name="feedback-list-search"
     ),
-    path("feedback-creation", views.feedback_creation, name="feedback-creation"),
+    path("feedback-creation/", views.feedback_creation, name="feedback-creation"),
     # path(
     #     "feedback-creation-ajax",
     #     views.feedback_creation_ajax,
@@ -260,75 +262,75 @@ urlpatterns = [
     ),
     # path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
     path(
-        "bulk-feedback-create",
+        "bulk-feedback-create/",
         cbvs.BulkFeedbackFormView.as_view(),
         name="bulk-feedback-create",
     ),
-    path("feedback-update/<int:id>", views.feedback_update, name="feedback-update"),
-    path("feedback-delete/<int:id>", views.feedback_delete, name="feedback-delete"),
-    path("feedback-archive/<int:id>", views.feedback_archive, name="feedback-archive"),
-    path("get-collegues", views.get_collegues, name="get-collegues"),
+    path("feedback-update/<int:id>/", views.feedback_update, name="feedback-update"),
+    path("feedback-delete/<int:id>/", views.feedback_delete, name="feedback-delete"),
+    path("feedback-archive/<int:id>/", views.feedback_archive, name="feedback-archive"),
+    path("get-collegues/", views.get_collegues, name="get-collegues"),
     path(
         "share-feedback/<int:pk>/",
         cbvs.FeedbackEmployeeFormView.as_view(),
         name="share-feedback",
     ),
     path(
-        "feedback-answer-get/<int:id>",
+        "feedback-answer-get/<int:id>/",
         views.feedback_answer_get,
         name="feedback-answer-get",
         kwargs={"model": models.Feedback},
     ),
     path(
-        "feedback-answer-post/<int:id>",
+        "feedback-answer-post/<int:id>/",
         views.feedback_answer_post,
         name="feedback-answer-post",
     ),
     path(
-        "feedback-answer-view/<int:id>",
+        "feedback-answer-view/<int:id>/",
         views.feedback_answer_view,
         name="feedback-answer-view",
         kwargs={"model": models.Feedback},
     ),
     path(
-        "feedback-detailed-view/<int:id>",
+        "feedback-detailed-view/<int:id>/",
         views.feedback_detailed_view,
         name="feedback-detailed-view",
         kwargs={"model": models.Feedback},
     ),
     path(
-        "feedback-detailed-view-answer/<int:id>/<int:emp_id>",
+        "feedback-detailed-view-answer/<int:id>/<int:emp_id>/",
         views.feedback_detailed_view_answer,
         name="feedback-detailed-view-answer",
     ),
     path(
-        "feedback-detailed-view-status/<int:id>",
+        "feedback-detailed-view-status/<int:id>/",
         views.feedback_detailed_view_status,
         name="feedback-detailed-view-status",
     ),
     path(
-        "get-feedback-overview/<int:obj_id>",
+        "get-feedback-overview/<int:obj_id>/",
         views.get_feedback_overview,
         name="get-feedback-overview",
     ),
-    path("feedback-status", views.feedback_status, name="feedback-status"),
+    path("feedback-status/", views.feedback_status, name="feedback-status"),
     path(
-        "question-creation/<int:id>", views.question_creation, name="question-creation"
+        "question-creation/<int:id>/", views.question_creation, name="question-creation"
     ),
-    path("question-view/<int:id>", views.question_view, name="question-view"),
+    path("question-view/<int:id>/", views.question_view, name="question-view"),
     path(
-        "question-update/<int:temp_id>/<int:q_id>",
+        "question-update/<int:temp_id>/<int:q_id>/",
         views.question_update,
         name="question-update",
     ),
-    path("question-delete/<int:id>", views.question_delete, name="question-delete"),
+    path("question-delete/<int:id>/", views.question_delete, name="question-delete"),
     # path(
     #     "question-template-creation",
     #     views.question_template_creation,
     #     name="question-template-creation",
     # ),
     path(
-        "question-template-creation",
+        "question-template-creation/",
         question_template.QuestionTemplateFormView.as_view(),
         name="question-template-creation",
     ),
@@ -343,7 +345,7 @@ urlpatterns = [
     #     name="question-template-hx-view",
     # ),
     path(
-        "question-template-detailed-view/<int:template_id>",
+        "question-template-detailed-view/<int:template_id>/",
         views.question_template_detailed_view,
         name="question-template-detailed-view",
         kwargs={"model": models.QuestionTemplate},
@@ -359,73 +361,73 @@ urlpatterns = [
         name="question-template-update",
     ),
     path(
-        "question-template-delete/<int:template_id>",
+        "question-template-delete/<int:template_id>/",
         views.question_template_delete,
         name="question-template-delete",
     ),
     # path("period-create", views.period_create, name="period-create"),
-    path("period-create", period.PeriodFormView.as_view(), name="period-create"),
+    path("period-create/", period.PeriodFormView.as_view(), name="period-create"),
     # path("period-view/", views.period_view, name="period-view"),
     # path("period-hx-view", views.period_hx_view, name="period-hx-view"),
-    path("period-delete/<int:period_id>", views.period_delete, name="period-delete"),
+    path("period-delete/<int:period_id>/", views.period_delete, name="period-delete"),
     # path("period-update/<int:period_id>", views.period_update, name="period-update"),
     path(
-        "period-update/<int:pk>", period.PeriodFormView.as_view(), name="period-update"
+        "period-update/<int:pk>/", period.PeriodFormView.as_view(), name="period-update"
     ),
-    path("period-change", views.period_change, name="period-change"),
-    path("dashboard-view", views.dashboard_view, name="dashboard-view"),
+    path("period-change/", views.period_change, name="period-change"),
+    path("dashboard-view/", views.dashboard_view, name="dashboard-view"),
     path(
-        "dashboard-risk-objectives",
+        "dashboard-risk-objectives/",
         dashboard.DasboardObjectivesRisk.as_view(),
         name="dashboard-risk-objectives",
     ),
     path(
-        "dashboard-objective-status",
+        "dashboard-objective-status/",
         views.dashboard_objective_status,
         name="dashboard-objective-status",
     ),
     path(
-        "dashbord-key-result-status",
+        "dashbord-key-result-status/",
         views.dashboard_key_result_status,
         name="dashbord-key-result-status",
     ),
     path(
-        "dashboard-feedback-status",
+        "dashboard-feedback-status/",
         views.dashboard_feedback_status,
         name="dashboard-feedback-status",
     ),
     path(
-        "create-period",
+        "create-period/",
         views.create_period,
         name="create-period",
     ),
     path(
-        "objective-bulk-archive",
+        "objective-bulk-archive/",
         views.objective_bulk_archive,
         name="objective-bulk-archive",
     ),
     path(
-        "objective-bulk-delete",
+        "objective-bulk-delete/",
         views.objective_bulk_delete,
         name="objective-bulk-delete",
     ),
     path(
-        "feedback-bulk-archive",
+        "feedback-bulk-archive/",
         views.feedback_bulk_archive,
         name="feedback-bulk-archive",
     ),
     path(
-        "feedback-bulk-delete",
+        "feedback-bulk-delete/",
         views.feedback_bulk_delete,
         name="feedback-bulk-delete",
     ),
     path(
-        "objective-select",
+        "objective-select/",
         views.objective_select,
         name="objective-select",
     ),
     path(
-        "objective-select-filter",
+        "objective-select-filter/",
         views.objective_select_filter,
         name="objective-select-filter",
     ),
@@ -435,7 +437,7 @@ urlpatterns = [
     #     name="add-anonymous-feedback",
     # ),
     path(
-        "add-anonymous-feedback",
+        "add-anonymous-feedback/",
         feedback.AddAnonymousFeedbackForm.as_view(),
         name="add-anonymous-feedback",
     ),
@@ -515,7 +517,7 @@ urlpatterns = [
         name="delete-employee-objective",
     ),
     path(
-        "change-employee-objective-status",
+        "change-employee-objective-status/",
         views.change_employee_objective_status,
         name="change-employee-objective-status",
     ),
@@ -525,7 +527,7 @@ urlpatterns = [
     #     name="employee-key-result-creation",
     # ),
     path(
-        "employee-key-result-creation/<int:emp_obj_id>",
+        "employee-key-result-creation/<int:emp_obj_id>/",
         objectives.CreateEmployeeKeyResultFormView.as_view(),
         name="employee-key-result-creation",
     ),
@@ -540,17 +542,17 @@ urlpatterns = [
         name="employee-key-result-update",
     ),
     path(
-        "delete-employee-keyresult/<int:kr_id>",
+        "delete-employee-keyresult/<int:kr_id>/",
         views.delete_employee_keyresult,
         name="delete-employee-keyresult",
     ),
     path(
-        "employee-keyresult-update-status/<int:kr_id>",
+        "employee-keyresult-update-status/<int:kr_id>/",
         views.employee_keyresult_update_status,
         name="employee-keyresult-update-status",
     ),
     path(
-        "key-result-current-value-update",
+        "key-result-current-value-update/",
         views.key_result_current_value_update,
         name="key-result-current-value-update",
     ),
@@ -564,9 +566,9 @@ urlpatterns = [
     #     views.create_meetings,
     #     name="create-meeting",
     # ),
-    path("get-keyresult-data", views.get_keyresult_data, name="get-keyresult-data"),
+    path("get-keyresult-data/", views.get_keyresult_data, name="get-keyresult-data"),
     path(
-        "create-meeting",
+        "create-meeting/",
         meetings.MeetingsFormView.as_view(),
         name="create-meeting",
     ),
@@ -587,7 +589,7 @@ urlpatterns = [
         name="archive-meeting",
     ),
     path(
-        "filter-meeting",
+        "filter-meeting/",
         views.filter_meetings,
         name="filter-meeting",
     ),
@@ -602,37 +604,37 @@ urlpatterns = [
         name="add-response",
     ),
     path(
-        "meeting-answer-get/<int:id>",
+        "meeting-answer-get/<int:id>/",
         views.meeting_answer_get,
         name="meeting-answer-get",
     ),
     path(
-        "meeting-answer-post/<int:id>",
+        "meeting-answer-post/<int:id>/",
         views.meeting_answer_post,
         name="meeting-answer-post",
     ),
     path(
-        "meeting-answer-view/<int:id>/<int:emp_id>",
+        "meeting-answer-view/<int:id>/<int:emp_id>/",
         views.meeting_answer_view,
         name="meeting-answer-view",
     ),
     path(
-        "meeting-question-template-view/<int:meet_id>",
+        "meeting-question-template-view/<int:meet_id>/",
         views.meeting_question_template_view,
         name="meeting-question-template-view",
     ),
     path(
-        "meeting-single-view/<int:id>",
+        "meeting-single-view/<int:id>/",
         views.meeting_single_view,
         name="meeting-single-view",
     ),
     path(
-        "meeting-manager-remove/<int:meet_id>/<int:manager_id>",
+        "meeting-manager-remove/<int:meet_id>/<int:manager_id>/",
         views.meeting_manager_remove,
         name="meeting-manager-remove",
     ),
     path(
-        "meeting-employee-remove/<int:meet_id>/<int:employee_id>",
+        "meeting-employee-remove/<int:meet_id>/<int:employee_id>/",
         views.meeting_employee_remove,
         name="meeting-employee-remove",
     ),
@@ -709,14 +711,14 @@ urlpatterns = [
         period.PeriodDetailView.as_view(),
         name="period-detail-view",
     ),
-    path("performance-tab/<int:pk>", views.performance_tab, name="performance-tab"),
+    path("performance-tab/<int:pk>/", views.performance_tab, name="performance-tab"),
     # path(
     #     "dashboard-feedback-answer",
     #     views.dashboard_feedback_answer,
     #     name="dashboard-feedback-answer",
     # ),
     path(
-        "dashboard-feedback-answer",
+        "dashboard-feedback-answer/",
         dashboard.DashboardFeedbackView.as_view(),
         name="dashboard-feedback-answer",
     ),
@@ -727,12 +729,12 @@ urlpatterns = [
         name="bonus-point-setting",
     ),
     path(
-        "bonus-point-setting-nav",
+        "bonus-point-setting-nav/",
         cbvs.BonusPointSettingNavView.as_view(),
         name="bonus-point-setting-nav",
     ),
     path(
-        "create-bonus-point-setting",
+        "create-bonus-point-setting/",
         cbvs.BonusPointSettingFormView.as_view(),
         name="create-bonus-point-setting",
     ),
@@ -747,38 +749,38 @@ urlpatterns = [
         name="delete-bonus-point-setting",
     ),
     path(
-        "bonus-point-setting-list-view",
+        "bonus-point-setting-list-view/",
         cbvs.BonusPointSettingListView.as_view(),
         name="bonus-point-setting-list-view",
     ),
     path(
-        "bonus-setting-form-values",
+        "bonus-setting-form-values/",
         views.bonus_setting_form_values,
         name="bonus-setting-form-values",
     ),
     path(
-        "update-isactive-bonuspoint-setting/<int:obj_id>",
+        "update-isactive-bonuspoint-setting/<int:obj_id>/",
         views.update_isactive_bonuspoint_setting,
         name="update-isactive-bonuspoint-setting",
     ),
     # ===========Employee bonus point============
     path(
-        "employee-bonus-point",
+        "employee-bonus-point/",
         cbvs.EmployeeBonusPointSectionView.as_view(),
         name="employee-bonus-point",
     ),
     path(
-        "employee-bonus-point-nav",
+        "employee-bonus-point-nav/",
         cbvs.EmployeeBonusPointNavView.as_view(),
         name="employee-bonus-point-nav",
     ),
     path(
-        "create-employee-bonus-point",
+        "create-employee-bonus-point/",
         cbvs.EmployeeBonusPointFormView.as_view(),
         name="create-employee-bonus-point",
     ),
     path(
-        "employee-bonus-point-list-view",
+        "employee-bonus-point-list-view/",
         cbvs.EmployeeBonusPointListView.as_view(),
         name="employee-bonus-point-list-view",
     ),
