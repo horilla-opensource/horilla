@@ -981,7 +981,7 @@ def ticket_detail(request, ticket_id, **kwargs):
 
 @login_required
 def ticket_individual_view(request, ticket_id):
-    ticket = Ticket.objects.filter(id=ticket_id).first()
+    ticket = Ticket.objects.get(id=ticket_id)
     context = {
         "ticket": ticket,
     }
@@ -1023,7 +1023,7 @@ def ticket_update_tag(request):
     method to update the tags of ticket
     """
     data = request.GET
-    ticket = Ticket.objects.get(id=data["ticketId"])
+    ticket = Ticket.objects.get(id=data.get("ticketId"))
     if (
         request.user.has_perm("helpdesk.view_ticket")
         or request.user.employee_get == ticket.employee_id
@@ -1144,6 +1144,7 @@ def ticket_change_assignees(request, ticket_id):
 
 
 @login_required
+@require_http_methods(["POST"])
 def create_tag(request):
     """
     This is an ajax method to return json response to create tag in the change tag form.
@@ -1172,8 +1173,8 @@ def remove_tag(request):
     """
 
     data = request.GET
-    ticket_id = data["ticket_id"]
-    tag_id = data["tag_id"]
+    ticket_id = data.get("ticket_id")
+    tag_id = data.get("tag_id")
     try:
         ticket = Ticket.objects.get(id=ticket_id)
         tag = Tags.objects.get(id=tag_id)
@@ -1183,6 +1184,7 @@ def remove_tag(request):
         type = "success"
     except:
         message = messages.error(request, _("Failed"))
+        type = "failed"
 
     return JsonResponse({"message": message, "type": type})
 
@@ -1268,7 +1270,7 @@ def comment_create(request, ticket_id):
 def comment_edit(request):
     comment_id = request.POST.get("comment_id")
     new_comment = request.POST.get("new_comment")
-    if len(new_comment) > 1:
+    if new_comment and len(new_comment) > 1:
         comment = Comment.objects.get(id=comment_id)
         comment.comment = new_comment
         comment.save()
@@ -1300,7 +1302,8 @@ def get_raised_on(request):
     This is an ajax method to return list for raised on field.
     """
     data = request.GET
-    assigning_type = data["assigning_type"]
+    assigning_type = data.get("assigning_type")
+    raised_on = []
 
     if assigning_type == "department":
         # Retrieve data from the Department model and format it as a list of dictionaries
@@ -1450,6 +1453,7 @@ def tickets_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
     table = request.GET.get("tableName")
     user = request.user.employee_get
+    context = {}
 
     tickets_filter = TicketFilter(
         filters, queryset=Ticket.objects.filter(is_active=True)
@@ -1473,7 +1477,7 @@ def tickets_select_filter(request):
 
         context = {"ticket_ids": ticket_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -1482,7 +1486,7 @@ def tickets_bulk_archive(request):
     """
     This is a ajax method used to archive bulk of Ticket instances
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids", "[]")
     ids = json.loads(ids)
     is_active = False
     if request.GET.get("is_active") == "True":
@@ -1504,7 +1508,7 @@ def tickets_bulk_delete(request):
     """
     This is a ajax method used to delete bulk of Ticket instances
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids", "[]")
     ids = json.loads(ids)
     for ticket_id in ids:
         try:

@@ -96,7 +96,10 @@ class BreakPointCreateForm(HorillaFormView):
         if self.form.instance.pk:
             form = self.form_class(instance=self.form.instance)
             self.form_class.verbose_name = _("Update Attendance condition")
-        context[form] = self.form
+        else:
+            form = self.form  # By default empty form
+
+        context[form] = form
         return context
 
     def form_invalid(self, form: Any) -> HttpResponse:

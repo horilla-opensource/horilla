@@ -110,6 +110,122 @@
         padding: 2rem 0;
     }
 }
+
+.oh-alert-container {
+    top: 75px;
+    right: 2rem;
+    position: fixed;
+    z-index: 9999 !important;
+    max-width: 500px;
+    width: 95%;
+    pointer-events: none;
+}
+
+@media (max-width: 575.98px) {
+    .oh-alert-container {
+        left: auto;
+        right: auto;
+        width: 95%;
+    }
+}
+
+.oh-alert {
+    opacity: 0;
+    width: 100%;
+    padding: 1rem;
+    background-color: hsl(0, 0%, 100%);
+    box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.oh-alert:last-child {
+    margin-bottom: 0;
+}
+
+.oh-alert::before {
+    content: "";
+    position: relative;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-right: 0.75rem;
+}
+
+.oh-alert--animated {
+    animation: slide-right-in-pop-animation 3.5s 0s ease-in-out forwards;
+}
+
+@keyframes slide-right-in-pop-animation {
+    0% {
+        transform: translate3d(100%, 0, 0);
+        visibility: hidden;
+        opacity: 0;
+    }
+
+    30% {
+        transform: translate3d(0, 0, 0);
+        visibility: visible;
+        opacity: 1;
+    }
+
+    80% {
+        transform: translate3d(0, 0, 0);
+        visibility: visible;
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate3d(-10%, 0, 0);
+        visibility: hidden;
+        opacity: 0;
+    }
+}
+
+.oh-alert--danger {
+    background-color: hsl(0, 75%, 97%);
+    border: 1px solid hsl(357, 72%, 89%);
+    border-left: 5px solid hsl(0, 71%, 54%);
+}
+
+.oh-alert--danger::before {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDYiIGhlaWdodD0iNDYiIGZpbGw9IiNkZDM2MzYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTIgMi4yNWMtNS4zNzYgMC05Ljc1IDQuMzc0LTkuNzUgOS43NXM0LjM3NCA5Ljc1IDkuNzUgOS43NSA5Ljc1LTQuMzc0IDkuNzUtOS43NVMxNy4zNzYgMi4yNSAxMiAyLjI1Wm0uOTM4IDE0Ljk5NmgtMS44NzZWMTUuMzdoMS44NzZ2MS44NzVabS0uMTg4LTIuOTk2aC0xLjVsLS4yODEtNy41aDIuMDYybC0uMjgxIDcuNVoiPjwvcGF0aD4KPC9zdmc+");
+}
+
+.oh-alert--warning {
+    background-color: hsl(48, 100%, 94%);
+    border: 1px solid hsl(46, 97%, 88%);
+    border-left: 5px solid hsl(44, 89%, 62%);
+}
+
+.oh-alert--warning::before {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDYiIGhlaWdodD0iNDYiIGZpbGw9IiNmNGM3NDkiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTIgMi4yNWMtNS4zNzYgMC05Ljc1IDQuMzc0LTkuNzUgOS43NXM0LjM3NCA5Ljc1IDkuNzUgOS43NSA5Ljc1LTQuMzc0IDkuNzUtOS43NVMxNy4zNzYgMi4yNSAxMiAyLjI1Wm0uOTM4IDE0Ljk5NmgtMS44NzZWMTUuMzdoMS44NzZ2MS44NzVabS0uMTg4LTIuOTk2aC0xLjVsLS4yODEtNy41aDIuMDYybC0uMjgxIDcuNVoiPjwvcGF0aD4KPC9zdmc+");
+}
+
+.oh-alert--info {
+    background-color: hsl(212, 89%, 96%);
+    border: 1px solid hsl(218, 75%, 87%);
+    border-left: 5px solid hsl(225, 72%, 48%);
+}
+
+.oh-alert--info::before {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDYiIGhlaWdodD0iNDYiIGZpbGw9IiMwNDQ0Y2UiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTIgMi4yNWMtNS4zNzYgMC05Ljc1IDQuMzc0LTkuNzUgOS43NXM0LjM3NCA5Ljc1IDkuNzUgOS43NSA5Ljc1LTQuMzc0IDkuNzUtOS43NVMxNy4zNzYgMi4yNSAxMiAyLjI1Wm0uOTM4IDE0Ljk5NmgtMS44NzZWMTUuMzdoMS44NzZ2MS44NzVabS0uMTg4LTIuOTk2aC0xLjVsLS4yODEtNy41aDIuMDYybC0uMjgxIDcuNVoiPjwvcGF0aD4KPC9zdmc+");
+}
+
+.oh-alert--success {
+    background-color: hsl(137, 78%, 93%);
+    border: 1px solid hsl(136, 51%, 84%);
+    border-left: 5px solid hsl(119, 39.1304347826%, 46%);
+}
+
+.oh-alert--success::before {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDYiIGhlaWdodD0iNDYiIGZpbGw9IiM0OWEyNDgiIHZpZXdCb3g9IjAgMCAyNCAyNCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTIgMi4yNWMtNS4zNzYgMC05Ljc1IDQuMzc0LTkuNzUgOS43NXM0LjM3NCA5Ljc1IDkuNzUgOS43NSA5Ljc1LTQuMzc0IDkuNzUtOS43NVMxNy4zNzYgMi4yNSAxMiAyLjI1Wm0uOTM4IDE0Ljk5NmgtMS44NzZWMTUuMzdoMS44NzZ2MS44NzVabS0uMTg4LTIuOTk2aC0xLjVsLS4yODEtNy41aDIuMDYybC0uMjgxIDcuNVoiPjwvcGF0aD4KPC9zdmc+");
+}
+
 </style>
 
 <!DOCTYPE html>
@@ -124,6 +240,17 @@
 </head>
 
 <body>
+    {% if messages %}
+        <div class="oh-wrapper">
+        {% for message in messages %}
+        <div class="oh-alert-container">
+            <div class="oh-alert oh-alert--animated {{message.tags}}">
+            {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+    {% endif %}
     <section class="hr-error_container">
         <div class="hr-error">
             <div class="hr-error_img hr-error_bg">
