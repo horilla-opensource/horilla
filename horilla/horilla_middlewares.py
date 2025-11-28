@@ -6,7 +6,14 @@ This module is used to register horilla's middlewares without affecting the hori
 
 import threading
 
-from django.http import HttpResponseNotAllowed
+from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
+from django.http import (
+    Http404,
+    HttpResponseNotAllowed,
+    HttpResponseRedirect,
+    JsonResponse,
+)
 from django.shortcuts import render
 
 _thread_locals = threading.local()
@@ -33,7 +40,7 @@ class MethodNotAllowedMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         if isinstance(response, HttpResponseNotAllowed):
-            return render(request, "405.html")
+            return render(request, "405.html", status=405)
         return response
 
 
