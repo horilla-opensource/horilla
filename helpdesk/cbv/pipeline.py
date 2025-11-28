@@ -281,6 +281,7 @@ class TicketListView(HorillaListView):
             return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class TicketCardView(HorillaKanbanView):
     model = Ticket
     filter_class = TicketFilter
@@ -295,9 +296,7 @@ class TicketCardView(HorillaKanbanView):
         "Priority": "{get_priority_stars}",
     }
 
-    kanban_attrs = """
-        onclick="window.location.href = `{get_ticket_detail_url}`"
-    """
+    kanban_attrs = """ onclick="window.location.href = `{get_ticket_detail_url}`" """
 
     action_method = "kanban_action_method"
 
