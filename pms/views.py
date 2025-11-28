@@ -24,6 +24,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.http import require_http_methods
 
 from base.methods import (
     closest_numbers,
@@ -2141,6 +2142,11 @@ def get_feedback_overview(request, obj_id):
             "feedback/feedback_overview.html",
             context={"feedback_overview": feedback_overview},
         )
+    if feedback:
+        messages.info(request, _("You dont have permission."))
+    else:
+        messages.info(request, _("Feedback does not exist."))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER", "/"))
 
 
 @login_required
@@ -2236,11 +2242,12 @@ def feedback_status(request):
             answer = Answer.objects.filter(employee_id=employee, feedback_id=feedback)
             status = _("Completed") if answer else _("Not-completed")
             return JsonResponse({"status": status})
-        return JsonResponse({"status": "Invalid request"}, status=400)
+    return JsonResponse({"status": "Invalid request"}, status=400)
 
 
 @login_required
 @manager_can_enter(perm="pms.add_question")
+@require_http_methods(["POST"])
 def question_creation(request, id):
     """
     This view is used to  create  question object.
@@ -2322,6 +2329,7 @@ def question_view(request, id):
 
 @login_required
 @manager_can_enter(perm="pms.change_question")
+@require_http_methods(["POST"])
 def question_update(request, temp_id, q_id):
     """
     This view is used to  update  question object.
@@ -2373,7 +2381,7 @@ def question_update(request, temp_id, q_id):
                     ]
                 ),
             )
-            return redirect(question_template_detailed_view, temp_id)
+        return redirect(question_template_detailed_view, temp_id)
 
 
 @login_required
@@ -2476,7 +2484,7 @@ def question_template_detailed_view(request, template_id, **kwargs):
     question_template = QuestionTemplate.objects.filter(id=template_id).first()
     if not question_template:
         messages.error(request, _("Question template does not exist"))
-        return redirect(question_template_view)
+        return redirect("question-template-view")
     questions = question_template.question.all().order_by("-id")
     question_types = ["text", "ratings", "boolean", "multi-choices", "likert"]
     options = QuestionOptions.objects.filter(question_id__in=questions)
@@ -2723,9 +2731,9 @@ def dashboard_view(request):
 def dashboard_objective_status(request):
     """objective dashboard data"""
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    data = {"message": _("No records available at the moment.")}
     if is_ajax and request.method == "GET":
         objective_status = EmployeeObjective.STATUS_CHOICES
-        data = {"message": _("No records available at the moment.")}
         for status in objective_status:
             objectives = EmployeeObjective.objects.filter(
                 status=status[0], archive=False
@@ -2736,16 +2744,16 @@ def dashboard_objective_status(request):
             if objectives_count:
                 data.setdefault("objective_label", []).append(status[1])
                 data.setdefault("objective_value", []).append(objectives_count)
-        return JsonResponse(data)
+    return JsonResponse(data)
 
 
 @login_required
 def dashboard_key_result_status(request):
     """key result dashboard data"""
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    data = {"message": _("No records available at the moment.")}
     if is_ajax and request.method == "GET":
         key_result_status = EmployeeKeyResult.STATUS_CHOICES
-        data = {"message": _("No records available at the moment.")}
         for i in key_result_status:
             key_results = EmployeeKeyResult.objects.filter(status=i[0])
             key_results_count = filtersubordinates(
@@ -2757,16 +2765,16 @@ def dashboard_key_result_status(request):
             if key_results_count:
                 data.setdefault("key_result_label", []).append(i[1])
                 data.setdefault("key_result_value", []).append(key_results_count)
-        return JsonResponse(data)
+    return JsonResponse(data)
 
 
 @login_required
 def dashboard_feedback_status(request):
     """feedback dashboard data"""
     is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
+    data = {"message": _("No records available at the moment.")}
     if is_ajax and request.method == "GET":
         feedback_status = Feedback.STATUS_CHOICES
-        data = {"message": _("No records available at the moment.")}
         for i in feedback_status:
             feedbacks = Feedback.objects.filter(status=i[0])
             feedback_count = filtersubordinates(
@@ -2775,7 +2783,7 @@ def dashboard_feedback_status(request):
             if feedback_count:
                 data.setdefault("feedback_label", []).append(i[1])
                 data.setdefault("feedback_value", []).append(feedback_count)
-        return JsonResponse(data)
+    return JsonResponse(data)
 
 
 def filtersubordinates(request, queryset, perm=None, field=None):
@@ -2840,7 +2848,7 @@ def objective_bulk_archive(request):
     """
     This method is used to archive/un-archive bulk objectivs
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids", "[]")
     ids = json.loads(ids)
     is_active = False
     message = _("un-archived")
@@ -2866,7 +2874,7 @@ def objective_bulk_delete(request):
     """
     This method is used to bulk delete objective
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids", "[]")
     ids = json.loads(ids)
     for objective_id in ids:
         try:
@@ -2899,8 +2907,8 @@ def feedback_bulk_archive(request):
     This method is used to archive/un-archive bulk feedbacks
     """
 
-    ids = request.POST["ids"]
-    announy_ids = request.POST["announy_ids"]
+    ids = request.POST.get("ids", "[]")
+    announy_ids = request.POST.get("announy_ids", "[]")
     ids = json.loads(ids)
     announy_ids = json.loads(announy_ids)
     is_active = False
@@ -2936,9 +2944,9 @@ def feedback_bulk_delete(request):
     """
     This method is used to bulk delete feedbacks
     """
-    ids = request.POST["ids"]
+    ids = request.POST.get("ids", "[]")
+    announy_ids = request.POST.get("announy_ids", "[]")
     ids = json.loads(ids)
-    announy_ids = request.POST["announy_ids"]
     announy_ids = json.loads(announy_ids)
     for feedback_id in ids:
         try:
@@ -3020,6 +3028,7 @@ def objective_select_filter(request):
     filters = json.loads(filtered) if filtered else {}
     table = request.GET.get("tableName")
     user = request.user.employee_get
+    context = {}
 
     employee_filter = ObjectiveFilter(filters, queryset=EmployeeObjective.objects.all())
     if page_number == "all":
@@ -3047,7 +3056,7 @@ def objective_select_filter(request):
 
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -3456,6 +3465,7 @@ def get_keyresult_data(request):
             return HttpResponse(
                 f'<input type="date" name="end_date" value="" class="oh-input w-100 form-control" placeholder="End Date" id="id_end_date">'
             )
+    return HttpResponse("")
 
 
 @login_required
@@ -3826,7 +3836,7 @@ def meeting_question_template_view(request, meet_id):
 
 @login_required
 def meeting_single_view(request, id):
-    meeting = Meetings.objects.filter(id=id).first()
+    meeting = Meetings.objects.get(id=id)
     context = {"meeting": meeting}
     requests_ids_json = request.GET.get("requests_ids")
     if requests_ids_json:
@@ -3897,7 +3907,7 @@ def delete_bonus_point_setting(request, pk):
         BonusPointSetting.objects.get(id=pk).delete()
         messages.success(request, "Bonus Point Setting deleted")
     except Exception as e:
-        logger(e)
+        logger.error(e)
         messages.error(request, "Something went wrong")
     return redirect(reverse("bonus-point-setting-list-view"))
 
@@ -3913,18 +3923,25 @@ def delete_employee_bonus_point(request, pk):
         bonus.delete()
         messages.success(request, _(f"{bonus} deleted"))
     except Exception as e:
-        logger(e)
+        logger.error(e)
         messages.error(request, _("Something went wrong"))
     return redirect(reverse("employee-bonus-point-list-view"))
 
 
 @login_required
 def bonus_setting_form_values(request):
-    model = request.GET["model"]
     """
     This method is to render `mail to` fields
     """
-    model_path = request.GET["model"]
+    model_path = request.GET.get("model")
+    if model_path is None:
+        return JsonResponse(
+            {
+                "choices": [],
+                "mail_details_choice": [],
+                "serialized_form": {},
+            }
+        )
     to_fields, mail_details_choice, model_class = generate_choices(model_path)
 
     class InstantModelForm(forms.ModelForm):

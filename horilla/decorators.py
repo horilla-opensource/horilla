@@ -278,7 +278,8 @@ def login_required(view_func):
                 )
 
             if not settings.DEBUG:
-                return render(request, "went_wrong.html")
+                messages.error(request, str(e))
+                return render(request, "went_wrong.html", status=404)
             return view_func(request, *args, **kwargs)
         return func
 
