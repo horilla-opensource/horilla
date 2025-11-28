@@ -1957,10 +1957,19 @@ def employee_delete(request, obj_id):
                     if contract.contract_status != "active":
                         contract.delete()
         user = employee.employee_user_id
-        try:
+        # try:
+        #     user.delete()
+        # except AttributeError:
+        #     employee.delete()
+        # messages.success(request, _("Employee deleted"))
+
+        # Delete employee FIRST
+        employee.delete()
+
+        # Delete auth user next (only if exists)
+        if user:
             user.delete()
-        except AttributeError:
-            employee.delete()
+
         messages.success(request, _("Employee deleted"))
 
     except Employee.DoesNotExist:
