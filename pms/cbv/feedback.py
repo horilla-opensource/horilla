@@ -357,6 +357,7 @@ class AnonymousFeedbackTab(HorillaListView):
                 """
 
 
+@method_decorator(login_required, name="dispatch")
 class FeedbacknavView(HorillaNavView):
     """
     navbar
@@ -420,6 +421,7 @@ class FeedbacknavView(HorillaNavView):
     search_swap_target = "#listContainer"
 
 
+@method_decorator(login_required, name="dispatch")
 class AddAnonymousFeedbackForm(HorillaFormView):
     """
     form view
@@ -477,6 +479,7 @@ class AddAnonymousFeedbackForm(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class PerformanceTab(SelfFeedbacktab):
     """
     performance tab in employee profile
@@ -563,6 +566,7 @@ class FeedbackUpdateFormView(HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class AnounyFeedbackDetailView(HorillaDetailedView):
 
     model = AnonymousFeedback

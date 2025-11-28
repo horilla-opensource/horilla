@@ -151,6 +151,7 @@ class EmployeeBonusPointSectionView(views.HorillaSectionView):
     template_name = "bonus/employee_bonus_point_section.html"
 
 
+@method_decorator(login_required, name="dispatch")
 class EmployeeBonusPointNavView(views.HorillaNavView):
     """
     BonusPoint nav view
@@ -234,6 +235,7 @@ class EmployeeBonusPointFormView(views.HorillaFormView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required, name="dispatch")
 class EmployeeBonusPointListView(views.HorillaListView):
     """
     BnusPoint list view

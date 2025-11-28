@@ -167,16 +167,16 @@ class ObjectivesTab(HorillaTabView):
 
     template_name = "cbv/objectives/extended_objectives.html"
 
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.view_id = "objContainer"
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         employee = self.request.user.employee_get
         context["instance"] = employee
-        return context
 
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
         self.view_id = "objContainer"
-        employee = self.request.user.employee_get
         manager = False
         if Objective.objects.filter(managers=employee).exists():
             manager = True
@@ -207,6 +207,9 @@ class ObjectivesTab(HorillaTabView):
                     ],
                 },
             )
+
+        context["tabs"] = self.tabs
+        return context
 
 
 @method_decorator(login_required, name="dispatch")
@@ -501,12 +504,14 @@ class CreateEmployeeKeyResultFormView(HorillaFormView):
         emp_obj_id = kwargs.get("emp_obj_id")
 
         if emp_obj_id:
-            self.emp_objective = EmployeeObjective.objects.get(id=emp_obj_id)
+            self.emp_objective = EmployeeObjective.find(emp_obj_id)
         else:
             pk = kwargs.get("pk")
             if pk:
-                key_result = EmployeeKeyResult.objects.get(pk=pk)
-                self.emp_objective = key_result.employee_objective_id
+                key_result = EmployeeKeyResult.objects.filter(pk=pk).first()
+                self.emp_objective = (
+                    key_result.employee_objective_id if key_result else None
+                )
             else:
                 self.emp_objective = None
         return super().dispatch(request, *args, **kwargs)
@@ -654,13 +659,17 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.selected_instances_key_id = (
+            f'ekrIds{self.request.GET.get("employee_objective_id")}'
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         self.search_url = self.request.path
         emp_objective = EmployeeObjective.objects.filter(
             pk=self.request.GET.get("employee_objective_id")
         ).first()
-        self.selected_instances_key_id = (
-            f'ekrIds{self.request.GET.get("employee_objective_id")}'
-        )
+
         self.actions = []
         if (
             self.request.user.has_perm("pms.change_objective")
@@ -722,6 +731,9 @@ class EmployeeObjectiveKeyResultDetailListView(HorillaListView):
                 """,
                 }
             )
+
+        context["actions"] = self.actions
+        return context
 
     header_attrs = {
         "title_col": """
