@@ -2798,3 +2798,84 @@ class PenaltyAccountForm(ModelForm):
                 id__in=available_leaves.values_list("leave_type_id", flat=True)
             )
             self.fields["leave_type_id"].queryset = assigned_leave_types
+
+
+class CompanyRegistrationForm(forms.Form):
+    """
+    Form for self-service company registration
+    """
+
+    company_name = forms.CharField(
+        label=_("Company Name"),
+        max_length=255,
+        widget=forms.TextInput(
+            attrs={
+                "class": "tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-bg-slate-50 tw-border-0 tw-rounded-lg tw-text-sm tw-text-slate-800 placeholder:tw-text-slate-400 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-bg-white tw-transition-all",
+                "placeholder": _("Company Name"),
+            }
+        ),
+    )
+    username = forms.CharField(
+        label=_("Admin Username"),
+        max_length=150,
+        widget=forms.TextInput(
+            attrs={
+                "class": "tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-bg-slate-50 tw-border-0 tw-rounded-lg tw-text-sm tw-text-slate-800 placeholder:tw-text-slate-400 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-bg-white tw-transition-all",
+                "placeholder": _("Admin Username"),
+            }
+        ),
+    )
+    email = forms.EmailField(
+        label=_("Admin Email"),
+        widget=forms.EmailInput(
+            attrs={
+                "class": "tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-bg-slate-50 tw-border-0 tw-rounded-lg tw-text-sm tw-text-slate-800 placeholder:tw-text-slate-400 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-bg-white tw-transition-all",
+                "placeholder": _("Admin Email"),
+            }
+        ),
+    )
+    password = forms.CharField(
+        label=_("Password"),
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-bg-slate-50 tw-border-0 tw-rounded-lg tw-text-sm tw-text-slate-800 placeholder:tw-text-slate-400 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-bg-white tw-transition-all",
+                "placeholder": _("Password"),
+            }
+        ),
+    )
+    confirm_password = forms.CharField(
+        label=_("Confirm Password"),
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-bg-slate-50 tw-border-0 tw-rounded-lg tw-text-sm tw-text-slate-800 placeholder:tw-text-slate-400 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-primary-500 focus:tw-bg-white tw-transition-all",
+                "placeholder": _("Confirm Password"),
+            }
+        ),
+    )
+
+    def clean_company_name(self):
+        company_name = self.cleaned_data["company_name"]
+        if Company.objects.filter(company=company_name).exists():
+            raise ValidationError(_("Company with this name already exists."))
+        return company_name
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        if User.objects.filter(username=username).exists():
+            raise ValidationError(_("Username already exists."))
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        if User.objects.filter(email=email).exists():
+            raise ValidationError(_("Email already registered."))
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password and confirm_password and password != confirm_password:
+            raise ValidationError(_("Passwords do not match."))
+        return cleaned_data

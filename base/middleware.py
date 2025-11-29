@@ -247,3 +247,40 @@ class TwoFactorAuthMiddleware:
                 return self.get_response(request)
 
         return self.get_response(request)
+
+
+class TrialMiddleware:
+    """
+    Middleware to enforce trial period restrictions.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        excluded_paths = [
+            "/upgrade",
+            "/logout",
+            "/login",
+            "/change-password",
+            "/static/",
+            "/media/",
+        ]
+        
+        # Check if path starts with any excluded path
+        if any(request.path.startswith(path) for path in excluded_paths):
+            return self.get_response(request)
+
+        if hasattr(request, "user") and request.user.is_authenticated:
+            try:
+                employee = request.user.employee_get
+                company = employee.employee_work_info.company_id
+                
+                # If company has trial_start_date and trial is expired
+                if company and company.trial_start_date:
+                    if not company.is_trial_valid:
+                        return redirect("upgrade")
+            except Exception:
+                pass
+
+        return self.get_response(request)

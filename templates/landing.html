@@ -1,0 +1,430 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marsel Force - Modern HR Management System</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-pattern {
+            background-color: #f0fdf4;
+            background-image: radial-gradient(#22c55e 0.5px, transparent 0.5px), radial-gradient(#22c55e 0.5px, #f0fdf4 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.5;
+        }
+
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+
+<body class="font-sans text-slate-800 antialiased">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
+                        <ion-icon name="people" class="text-2xl"></ion-icon>
+                    </div>
+                    <span class="font-heading font-bold text-2xl text-slate-800 tracking-tight">Marsel<span
+                            class="text-primary-600">Force</span></span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features"
+                        class="text-slate-600 hover:text-primary-600 font-medium transition-colors">Features</a>
+                    <a href="#pricing"
+                        class="text-slate-600 hover:text-primary-600 font-medium transition-colors">Pricing</a>
+                    <a href="#testimonials"
+                        class="text-slate-600 hover:text-primary-600 font-medium transition-colors">Testimonials</a>
+                    <a href="{% url 'login' %}"
+                        class="text-slate-600 hover:text-primary-600 font-medium transition-colors">Login</a>
+                    <a href="{% url 'register' %}"
+                        class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-2.5 rounded-full font-medium transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        Try Demo
+                    </a>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button class="text-slate-600 hover:text-primary-600 focus:outline-none">
+                        <ion-icon name="menu-outline" class="text-3xl"></ion-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="absolute inset-0 hero-pattern z-0"></div>
+        <div
+            class="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-primary-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob">
+        </div>
+        <div
+            class="absolute top-0 left-0 -mt-20 -ml-20 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000">
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-4xl mx-auto">
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-50 border border-primary-100 text-primary-700 text-sm font-medium mb-8 animate-fade-in-up">
+                    <span class="relative flex h-2 w-2">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
+                    </span>
+                    New: AI-Powered Recruitment Module
+                </div>
+                <h1 class="text-5xl lg:text-7xl font-heading font-bold text-slate-900 leading-tight mb-8">
+                    Manage your workforce <br />
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-emerald-600">with
+                        confidence</span>
+                </h1>
+                <p class="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+                    The all-in-one HR platform designed for modern businesses. Streamline attendance, payroll,
+                    recruitment, and performance management in a single, intuitive dashboard.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="{% url 'register' %}"
+                        class="w-full sm:w-auto px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-lg shadow-lg shadow-primary-600/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                        Start Free 14-Day Trial
+                        <ion-icon name="arrow-forward-outline"></ion-icon>
+                    </a>
+                    <a href="#features"
+                        class="w-full sm:w-auto px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-xl font-semibold text-lg transition-all flex items-center justify-center gap-2">
+                        <ion-icon name="play-circle-outline" class="text-xl"></ion-icon>
+                        Watch Demo
+                    </a>
+                </div>
+                <p class="mt-6 text-sm text-slate-500">No credit card required · Cancel anytime</p>
+            </div>
+
+            <!-- Dashboard Preview -->
+            <div class="mt-20 relative mx-auto max-w-5xl">
+                <div
+                    class="rounded-2xl bg-slate-900/5 p-2 ring-1 ring-inset ring-slate-900/10 lg:-m-4 lg:rounded-3xl lg:p-4">
+                    <img src="https://placehold.co/1200x800/f8fafc/e2e8f0?text=Dashboard+Preview" alt="App Screenshot"
+                        class="rounded-xl shadow-2xl ring-1 ring-slate-900/10 w-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-primary-600 font-semibold tracking-wide uppercase text-sm mb-3">Features</h2>
+                <h3 class="text-3xl lg:text-4xl font-heading font-bold text-slate-900 mb-6">Everything you need to run
+                    your team</h3>
+                <p class="text-lg text-slate-600">Powerful tools to help you manage your entire employee lifecycle, from
+                    hiring to retiring.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card p-8 rounded-2xl bg-slate-50 border border-slate-100">
+                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-6">
+                        <ion-icon name="people-outline" class="text-3xl"></ion-icon>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Employee Management</h4>
+                    <p class="text-slate-600">Centralized database for all your employee records, documents, and
+                        history. Secure and accessible.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card p-8 rounded-2xl bg-slate-50 border border-slate-100">
+                    <div
+                        class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 mb-6">
+                        <ion-icon name="time-outline" class="text-3xl"></ion-icon>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Attendance & Leave</h4>
+                    <p class="text-slate-600">Automated attendance tracking with biometric integration and simplified
+                        leave management workflows.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card p-8 rounded-2xl bg-slate-50 border border-slate-100">
+                    <div
+                        class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 mb-6">
+                        <ion-icon name="cash-outline" class="text-3xl"></ion-icon>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Payroll Processing</h4>
+                    <p class="text-slate-600">Accurate payroll calculation with tax deductions, allowances, and
+                        automated payslip generation.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card p-8 rounded-2xl bg-slate-50 border border-slate-100">
+                    <div
+                        class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600 mb-6">
+                        <ion-icon name="briefcase-outline" class="text-3xl"></ion-icon>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Recruitment</h4>
+                    <p class="text-slate-600">Streamline your hiring process with job postings, candidate tracking, and
+                        interview scheduling.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card p-8 rounded-2xl bg-slate-50 border border-slate-100">
+                    <div class="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center text-pink-600 mb-6">
+                        <ion-icon name="trending-up-outline" class="text-3xl"></ion-icon>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Performance</h4>
+                    <p class="text-slate-600">Set goals, track progress, and conduct appraisals to keep your team
+                        motivated and aligned.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card p-8 rounded-2xl bg-slate-50 border border-slate-100">
+                    <div class="w-14 h-14 bg-cyan-100 rounded-xl flex items-center justify-center text-cyan-600 mb-6">
+                        <ion-icon name="phone-portrait-outline" class="text-3xl"></ion-icon>
+                    </div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-3">Mobile App</h4>
+                    <p class="text-slate-600">Empower your employees with a self-service mobile app for attendance,
+                        leaves, and requests.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-primary-600 font-semibold tracking-wide uppercase text-sm mb-3">Pricing</h2>
+                <h3 class="text-3xl lg:text-4xl font-heading font-bold text-slate-900 mb-6">Simple, transparent pricing
+                </h3>
+                <p class="text-lg text-slate-600">Start with a 14-day free trial. No hidden fees.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Starter Plan -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+                    <h4 class="text-xl font-bold text-slate-900 mb-2">Starter</h4>
+                    <p class="text-slate-500 mb-6">For small teams getting started.</p>
+                    <div class="flex items-baseline mb-6">
+                        <span class="text-4xl font-bold text-slate-900">$29</span>
+                        <span class="text-slate-500 ml-2">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Up to 10 Employees
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Core HR Features
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Leave Management
+                        </li>
+                    </ul>
+                    <a href="{% url 'register' %}"
+                        class="block w-full py-3 px-6 text-center rounded-xl border-2 border-slate-200 text-slate-700 font-semibold hover:border-primary-600 hover:text-primary-600 transition-colors">Start
+                        Free Trial</a>
+                </div>
+
+                <!-- Pro Plan -->
+                <div
+                    class="bg-white rounded-2xl p-8 shadow-xl border-2 border-primary-500 relative transform md:-translate-y-4">
+                    <div
+                        class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                        Most Popular</div>
+                    <h4 class="text-xl font-bold text-slate-900 mb-2">Professional</h4>
+                    <p class="text-slate-500 mb-6">For growing companies.</p>
+                    <div class="flex items-baseline mb-6">
+                        <span class="text-4xl font-bold text-slate-900">$79</span>
+                        <span class="text-slate-500 ml-2">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Up to 50 Employees
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Payroll & Attendance
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Recruitment Module
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Mobile App Access
+                        </li>
+                    </ul>
+                    <a href="{% url 'register' %}"
+                        class="block w-full py-3 px-6 text-center rounded-xl bg-primary-600 text-white font-semibold hover:bg-primary-700 transition-colors shadow-lg shadow-primary-600/30">Start
+                        Free Trial</a>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+                    <h4 class="text-xl font-bold text-slate-900 mb-2">Enterprise</h4>
+                    <p class="text-slate-500 mb-6">For large organizations.</p>
+                    <div class="flex items-baseline mb-6">
+                        <span class="text-4xl font-bold text-slate-900">$199</span>
+                        <span class="text-slate-500 ml-2">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Unlimited Employees
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            All Features Included
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Dedicated Support
+                        </li>
+                        <li class="flex items-center text-slate-600">
+                            <ion-icon name="checkmark-circle" class="text-primary-500 mr-3 text-xl"></ion-icon>
+                            Custom Integrations
+                        </li>
+                    </ul>
+                    <a href="{% url 'register' %}"
+                        class="block w-full py-3 px-6 text-center rounded-xl border-2 border-slate-200 text-slate-700 font-semibold hover:border-primary-600 hover:text-primary-600 transition-colors">Contact
+                        Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-slate-900 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+        </div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <h2 class="text-3xl lg:text-4xl font-heading font-bold text-white mb-6">Ready to transform your HR?</h2>
+            <p class="text-xl text-slate-300 mb-10">Join thousands of companies that trust Marsel Force to manage their
+                workforce.</p>
+            <a href="{% url 'register' %}"
+                class="inline-flex items-center gap-2 px-8 py-4 bg-primary-600 hover:bg-primary-500 text-white rounded-xl font-semibold text-lg shadow-lg shadow-primary-600/30 transition-all transform hover:-translate-y-1">
+                Get Started Now
+                <ion-icon name="rocket-outline"></ion-icon>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white">
+                            <ion-icon name="people" class="text-lg"></ion-icon>
+                        </div>
+                        <span class="font-heading font-bold text-xl text-slate-900">Marsel<span
+                                class="text-primary-600">Force</span></span>
+                    </div>
+                    <p class="text-slate-500 text-sm leading-relaxed">
+                        Making HR management simple, efficient, and human-centric for businesses of all sizes.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                        <li><a href="#" class="hover:text-primary-600">Features</a></li>
+                        <li><a href="#" class="hover:text-primary-600">Pricing</a></li>
+                        <li><a href="#" class="hover:text-primary-600">Security</a></li>
+                        <li><a href="#" class="hover:text-primary-600">Roadmap</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                        <li><a href="#" class="hover:text-primary-600">About Us</a></li>
+                        <li><a href="#" class="hover:text-primary-600">Careers</a></li>
+                        <li><a href="#" class="hover:text-primary-600">Blog</a></li>
+                        <li><a href="#" class="hover:text-primary-600">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm text-slate-600">
+                        <li><a href="#" class="hover:text-primary-600">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-primary-600">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-primary-600">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-slate-400 text-sm">© 2024 Marsel Force. All rights reserved.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-slate-400 hover:text-primary-600 text-xl"><ion-icon
+                            name="logo-twitter"></ion-icon></a>
+                    <a href="#" class="text-slate-400 hover:text-primary-600 text-xl"><ion-icon
+                            name="logo-linkedin"></ion-icon></a>
+                    <a href="#" class="text-slate-400 hover:text-primary-600 text-xl"><ion-icon
+                            name="logo-facebook"></ion-icon></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
