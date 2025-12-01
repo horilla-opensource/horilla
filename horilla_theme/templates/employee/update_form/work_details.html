@@ -107,8 +107,7 @@
 
     let url, dropdownId, createText, emptyText;
     const data =
-      id === "#dynamicDept" ? { department_id: value } : { job_id: value };
-
+      id === "#dynamicDept" ? { department_id: value } : { job_position_id: value };
     if (id === "#dynamicDept") {
       url = '{% url "get-job-positions" %}';
       dropdownId = "#id_job_position_id";
@@ -207,7 +206,7 @@
         url: '{% url "get-job-roles" %}',
         method: "GET",
         data: {
-          job_id: selectedJobPosition,
+          job_position_id: selectedJobPosition,
         },
         success: function (data) {
           $("#id_job_role_id").empty();
