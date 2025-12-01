@@ -17,9 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 def compute_resignation_balance(employee, last_working_date, notice_end_date):
-
-
-
     working_days = get_working_days(last_working_date, notice_end_date)
     payable_days = working_days.get("total_working_days", 0)
 
