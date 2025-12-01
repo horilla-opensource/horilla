@@ -29,14 +29,14 @@ def compute_resignation_balance(employee, last_working_date, notice_end_date):
     basic_pay = contract.wage
 
     working_days_details = months_between_range(basic_pay, last_working_date, notice_end_date)
-    kwargs = {
+    allowance_data_set = {
         "employee": employee,
         "start_date": last_working_date,
         "end_date": notice_end_date,
         "basic_pay": basic_pay,
         "day_dict": working_days_details,
     }
-    allowance_data = calculate_allowance(**kwargs)
+    allowance_data = calculate_allowance(**allowance_data_set)
 
     total_includable_allowances = sum(
         allowance["amount"]
