@@ -50,25 +50,49 @@ def get_last_section(path):
 
 def get_companies(request):
     """
-    This method will return the history additional field form
+    This method will return the companies available to the user
+    Superusers see all companies, regular users see only their assigned company
     """
-    companies = list(
-        [company.id, company.company, company.icon.url, False]
-        for company in Company.objects.all()
-    )
-    companies = [
-        [
-            "all",
-            "All Company",
-            "https://ui-avatars.com/api/?name=All+Company&background=random",
-            False,
-        ],
-    ] + companies
+    # Get user's assigned company
+    user_company = None
+    try:
+        employee = request.user.employee_get
+        user_company = getattr(
+            getattr(employee, "employee_work_info", None), "company_id", None
+        )
+    except:
+        pass
+    
+    # Superusers see all companies
+    if request.user.is_superuser:
+        companies = list(
+            [company.id, company.company, company.icon.url, False]
+            for company in Company.objects.all()
+        )
+        # Add "All Company" option for superusers
+        companies = [
+            [
+                "all",
+                "All Company",
+                "https://ui-avatars.com/api/?name=All+Company&background=random",
+                False,
+            ],
+        ] + companies
+    else:
+        # Regular users only see their assigned company
+        if user_company:
+            companies = [
+                [user_company.id, user_company.company, user_company.icon.url, False]
+            ]
+        else:
+            companies = []
+    
     selected_company = request.session.get("selected_company")
     company_selected = False
     if selected_company and selected_company == "all":
-        companies[0][3] = True
-        company_selected = True
+        if companies:  # Only if "all" exists in the list
+            companies[0][3] = True
+            company_selected = True
     else:
         for company in companies:
             if str(company[0]) == selected_company:
@@ -89,6 +113,16 @@ def update_selected_company(request):
     user_company = getattr(
         getattr(user, "employee_work_info", None), "company_id", None
     )
+    
+    # Security: Prevent non-superusers from accessing "All Company"
+    if company_id == "all" and not request.user.is_superuser:
+        # Redirect to user's assigned company instead
+        company_id = str(user_company.id) if user_company else company_id
+        messages.warning(
+            request,
+            _("You don't have permission to access 'All Company' view. Showing your company instead.")
+        )
+    
     request.session["selected_company"] = company_id
     company = (
         AllCompany()
@@ -170,12 +204,12 @@ def white_labelling_company(request):
             company = hq
 
         return {
-            "white_label_company_name": company.company if company else "Horilla",
+            "white_label_company_name": company.company if company else "Marsel Force",
             "white_label_company": company,
         }
     else:
         return {
-            "white_label_company_name": "Horilla",
+            "white_label_company_name": "Marsel Force",
             "white_label_company": None,
         }
 
