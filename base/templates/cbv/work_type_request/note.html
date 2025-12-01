@@ -1,6 +1,6 @@
 {% load basefilters %}
 {% is_manager_of request.user instance as can_manage %}
-{% with is_owner=request.user.employee_get|equals:instance.employee_id or can_view=perms.base.view_worktyperequestcomment %}
+{% with is_owner=request.user.employee_get|equals:instance.employee_id can_view=perms.base.view_worktyperequestcomment %}
 {% if is_owner or can_view or can_manage %}
     <div class="" onclick="event.stopPropagation();">
         <button type="button" hx-get="{% url 'view-work-type-comment' instance.id %}" hx-target="#commentContainer"
