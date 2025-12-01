@@ -531,18 +531,12 @@ def update_last_working_date(request):
         return HttpResponseBadRequest("Invalid date format (expected YYYY-MM-DD)")
 
     fine_amount = compute_resignation_balance(off_emp.employee_id, start_date, end_date)
-    print("FINE DATA SET" , fine_amount)
 
     try:
         stage = OffboardingStage.objects.get(id=int(stage_id))
         print("Stage" , stage)
     except OffboardingStage.DoesNotExist:
         return HttpResponseBadRequest("Invalid stage_id")
-
-    print("Updating last working date for employee:", employee_id)
-    print("New last working date:", last_working_date)
-    print("Notice period ends:", notice_period_ends)
-    print("Contract end date:", contract_end_date)
 
     try:
         employee = OffboardingEmployee.objects.get(id=employee_id)
