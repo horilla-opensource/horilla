@@ -27,7 +27,6 @@ def compute_resignation_balance(employee, last_working_date, notice_end_date):
         return None
 
     basic_pay = contract.wage
-    print("basic_pay:", basic_pay)
 
     working_days_details = months_between_range(basic_pay, last_working_date, notice_end_date)
     kwargs = {
