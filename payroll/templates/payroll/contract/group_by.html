@@ -64,7 +64,10 @@
 								<div class="oh-sticky-table__sd  {% if contract.contract_status == "active" %} row-status--yellow
 									{% elif contract.contract_status == 'draft' %} row-status--purple
 									{% elif contract.contract_status == 'expired' %} row-status--red
-									{% elif contract.contract_status == 'terminated' %} row-status--black {% endif %}" onclick="event.stopPropagation()">
+									{% elif contract.contract_status == 'terminated' %} row-status--black
+									{% elif contract.contract_status == 'termination_in_progress' %} row-status--orange
+                                    {% endif %}" onclick="event.stopPropagation()">
+<div class="centered-div"> {{ contract.contract_status }} </div>
 									<div class="centered-div">
 										<input
 										type="checkbox"

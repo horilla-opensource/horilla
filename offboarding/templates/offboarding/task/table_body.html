@@ -43,10 +43,48 @@
             </div>
             <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_starts }}</div>
             <div class="oh-sticky-table__td dateformat_changer">{{ employee.notice_period_ends }}</div>
+     {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or perms.offboarding.change_offboardingemployee %}
+         {% if stage.grouper.type == "fnf" %}
+                <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
+                    <form
+                        hx-post="{% url 'offboarding-update-last-working-date' %}"
+                        hx-target="#offboardingBody{{ offboarding.offboarding.id }}"
+                        hx-include="this"
+                        hx-trigger="change from:input[name='last_working_date']"
+                    >
+                        <input type="hidden" name="employee_id" value="{{ employee.id }}">
+                        <input type="hidden" name="notice_period_ends" value="{{ employee.notice_period_ends|date:'Y-m-d' }}">
+                        <input type="hidden" name="contract_end_date" value="{{ employee.contract_end_date|date:'Y-m-d' }}">
+                        <input type="hidden" name="stage_id" value="{{ employee.stage_id.id }}">
+                        <input type="hidden" name="notice_period_starts" value="{{ employee.notice_period_starts|date:'Y-m-d' }}">
+
+                        <input
+                            type="date"
+                            name="last_working_date"
+                            value="{{ employee.last_working_date|date:'Y-m-d' }}"
+                            class="oh-input dateformat_changer"
+                            style="padding: 4px"
+                        >
+                    </form>
+                </div>
+            {% else %}
+               <div class="oh-sticky-table__td dateformat_changer">
+                {{ employee.last_working_date }}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="oh-sticky-table__td dateformat_changer">
+                {{ employee.last_working_date }}
+            </div>
+        {% endif %}
+
             {% if request.user.employee_get|is_any_stage_manager or perms.offboarding.change_offboarding or	perms.offboarding.change_offboardingemployee %}
             <div class="oh-sticky-table__td" onclick="event.stopPropagation()">
                 <form hx-get="{% url "offboarding-change-stage" %}?employee_ids={{employee.id}}"
                     hx-target="#offboardingBody{{offboarding.offboarding.id}}">
+<input type="hidden" name="notice_period_ends" value="{{ employee.notice_period_ends|date:'Y-m-d' }}">
+                        <input type="hidden" name="contract_end_date" value="{{ employee.last_working_date|date:'Y-m-d' }}"/>
+
                     {{ stage_forms|stages:employee.stage_id }}
                     <input type="submit" hidden />
                 </form>
@@ -154,45 +192,45 @@
                     {% endif %}
                 </div>
             </div>
-            {% for task in stage.grouper.offboardingtask_set.all %}
-            {% if task|have_task:employee %}
-                <div class="oh-sticky-table__td">
-                {% for assinged_tasks in employee|get_assigned_task:task %}
-                <select
-                    hx-get="{% url "update-task-status" %}?stage_id={{stage.grouper.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"
-                    hx-target="#offboardingBody{{offboarding.offboarding.id}}"
-                    name="task_status"
-                    id="task_status{{assinged_tasks.id}}"
-                    class="oh-select-custom w-100"
-                    onclick="event.stopPropagation()"
-                >
-                    {% for assinged_task in assinged_tasks.statuses %}
-                    {% if assinged_tasks.status == assinged_task.0 %}
-                    <option value="{{ assinged_task.0 }}" selected>
-                        {{ assinged_task.1 }}
-                    </option>
-                    {% else %}
-                    <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>
-                    {% endif %} {% endfor %}
-                </select>
-                {% endfor %}
-                </div>
-                {% else %}
-                {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}
-                    <div class="oh-sticky-table__td">
-                    <button
-                        hx-get="{% url "offboarding-assign-task" %}?employee_ids={{employee.id}}&task_id={{task.id}}"
-                        hx-target="#offboardingBody{{offboarding.offboarding.id}}"
-                        class="oh-checkpoint-badge text-info"
-                        data-toggle="oh-modal-toggle"
-                        onclick="event.stopPropagation()"
-                    >
-                        {% trans 'Assign' %}
-                    </button>
-                    </div>
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
+{#            {% for task in stage.grouper.offboardingtask_set.all %}#}
+{#            {% if task|have_task:employee %}#}
+{#                <div class="oh-sticky-table__td">#}
+{#                {% for assinged_tasks in employee|get_assigned_task:task %}#}
+{#                <select#}
+{#                    hx-get="{% url "update-task-status" %}?stage_id={{stage.grouper.id}}&employee_ids={{employee.id}}&task_id={{assinged_tasks.task_id.id}}"#}
+{#                    hx-target="#offboardingBody{{offboarding.offboarding.id}}"#}
+{#                    name="task_status"#}
+{#                    id="task_status{{assinged_tasks.id}}"#}
+{#                    class="oh-select-custom w-100"#}
+{#                    onclick="event.stopPropagation()"#}
+{#                >#}
+{#                    {% for assinged_task in assinged_tasks.statuses %}#}
+{#                    {% if assinged_tasks.status == assinged_task.0 %}#}
+{#                    <option value="{{ assinged_task.0 }}" selected>#}
+{#                        {{ assinged_task.1 }}#}
+{#                    </option>#}
+{#                    {% else %}#}
+{#                    <option value="{{ assinged_task.0 }}">{{ assinged_task.1 }}</option>#}
+{#                    {% endif %} {% endfor %}#}
+{#                </select>#}
+{#                {% endfor %}#}
+{#                </div>#}
+{#                {% else %}#}
+{#                {% if perms.offboarding.add_offboardingtask or request.user.employee_get|any_manager %}#}
+{#                    <div class="oh-sticky-table__td">#}
+{#                    <button#}
+{#                        hx-get="{% url "offboarding-assign-task" %}?employee_ids={{employee.id}}&task_id={{task.id}}"#}
+{#                        hx-target="#offboardingBody{{offboarding.offboarding.id}}"#}
+{#                        class="oh-checkpoint-badge text-info"#}
+{#                        data-toggle="oh-modal-toggle"#}
+{#                        onclick="event.stopPropagation()"#}
+{#                    >#}
+{#                        {% trans 'Assign' %}#}
+{#                    </button>#}
+{#                    </div>#}
+{#                    {% endif %}#}
+{#                {% endif %}#}
+{#            {% endfor %}#}
             {% if perms.offboarding.add_offboardingtask or request.user.employee_get|is_stage_manager:stage.grouper.title or request.user.employee_get|is_offboarding_manager %}
                 <div class="oh-sticky-table__td"></div>
             {% endif %}

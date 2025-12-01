@@ -1,0 +1,27 @@
+<div class="d-flex justify-content-center mt-3">
+
+    {% if tasks.has_previous %}
+        <button
+            hx-get="?page={{ tasks.previous_page_number }}"
+            hx-target="#commonTasksContainer"
+            hx-swap="innerHTML"
+            class="oh-btn oh-btn--secondary mx-1">
+            « Prev
+        </button>
+    {% endif %}
+
+    <span class="mx-2 align-self-center">
+        Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}
+    </span>
+
+    {% if tasks.has_next %}
+        <button
+            hx-get="?page={{ tasks.next_page_number }}"
+            hx-target="#commonTasksContainer"
+            hx-swap="innerHTML"
+            class="oh-btn oh-btn--secondary mx-1">
+            Next »
+        </button>
+    {% endif %}
+
+</div>

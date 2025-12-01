@@ -1,0 +1,30 @@
+{% load i18n %}
+
+<h3 class="oh-modal__dialog-title">
+    {% if form.instance.pk %}
+        {% trans "Edit Task" %}
+    {% else %}
+        {% trans "Create Task" %}
+    {% endif %}
+</h3>
+
+<form method="POST"
+      hx-post="{% if form.instance.pk %}{% url 'edit-common-task' form.instance.id %}{% else %}{% url 'create-common-task' %}{% endif %}"
+      hx-target="#commonTasksContainer"
+      hx-swap="innerHTML">
+
+    {% csrf_token %}
+
+    {% for field in form %}
+        <div class="mb-3">
+            {{ field.label_tag }}
+            {{ field }}
+            <div class="text-danger small">{{ field.errors }}</div>
+        </div>
+    {% endfor %}
+
+    <div class="text-right mt-4">
+        <button class="oh-btn oh-btn--primary">{% trans "Save" %}</button>
+    </div>
+
+</form>

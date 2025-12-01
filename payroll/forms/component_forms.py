@@ -356,7 +356,9 @@ class PayslipForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        active_contracts = Contract.objects.filter(contract_status="active")
+        active_contracts = Contract.objects.filter(
+            contract_status__in=["active", "termination_in_progress"]
+        )
         self.fields["employee_id"].choices = [
             (contract.employee_id.id, contract.employee_id)
             for contract in active_contracts

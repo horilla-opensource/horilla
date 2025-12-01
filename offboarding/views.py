@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -49,8 +49,10 @@ from offboarding.forms import (
     ResignationLetterForm,
     StageSelectForm,
     TaskForm,
+    EmployeeTaskForm,
     ResignationReasonForm,
 )
+from offboarding.methods import compute_resignation_balance
 from offboarding.models import (
     EmployeeTask,
     Offboarding,
@@ -66,6 +68,9 @@ from offboarding.models import (
 )
 
 from payroll.models.models import Contract
+from payroll.methods.methods import compute_salary_on_period
+from django.shortcuts import get_object_or_404, render, redirect
+
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -144,9 +149,8 @@ def pipeline_grouper(filters={}, offboardings=[]):
 
 
 def paginator_qry_offboarding_limited(qryset, page_number):
-    """
-    This method is used to generate common paginator limit.
-    """
+    qryset = qryset.order_by("id")
+
     paginator = Paginator(qryset, 3)
     qryset = paginator.get_page(page_number)
     return qryset
@@ -420,22 +424,23 @@ def delete_stage(request):
 @any_manager_can_enter("offboarding.change_offboarding")
 def change_stage(request):
     """
-    This method is used to update the stages of the employee
+    Update employee stages and auto-assign tasks based on the new stage.
     """
     employee_ids = request.GET.getlist("employee_ids")
     stage_id = request.GET["stage_id"]
     employees = OffboardingEmployee.objects.filter(id__in=employee_ids)
     stage = OffboardingStage.objects.get(id=stage_id)
-    # This wont trigger the save method inside the offboarding employee
-    # employees.update(stage_id=stage)
+
+    # Update stage for each employee
     for employee in employees:
         employee.stage_id = stage
         employee.save()
 
+    notice_period_end_date = request.GET.get("notice_period_ends")
+    print("Notice period ends:", notice_period_end_date)
+
     if stage.type == "fnf":
-
         real_employee_ids = employees.values_list("employee_id__id", flat=True)
-
         contracts = Contract.objects.filter(
             employee_id__in=real_employee_ids,
             contract_status="active"
@@ -443,26 +448,39 @@ def change_stage(request):
 
         if contracts.exists():
             contracts.update(
-                contract_status='terminated',
-                contract_end_date=datetime.today().date()
+                contract_status='termination_in_progress',
+                contract_end_date=notice_period_end_date
             )
             logger.info("Terminated %d contract(s) for FNF process.", contracts.count())
         else:
             logger.info("No active contracts found for FNF process.")
 
-
-
     target_state = False if stage.type == "archived" else True
     employee_ids = employees.values_list("employee_id__id", flat=True)
     Employee.objects.filter(
         id__in=employee_ids,
-        is_active=not target_state,  # Only update if is_active differs
+        is_active=not target_state,
     ).update(is_active=target_state)
+
+
+    tasks_for_stage = OffboardingTask.objects.filter(stage_id=stage, is_active=True)
+
+    tasks_to_create = [
+        EmployeeTask(employee_id=employee, task_id=task)
+        for employee in employees
+        for task in tasks_for_stage
+    ]
+
+    EmployeeTask.objects.bulk_create(
+        tasks_to_create,
+        ignore_conflicts=True
+    )
 
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
         offboarding=stage.offboarding_id
     )
+
     notify.send(
         request.user.employee_get,
         recipient=User.objects.filter(
@@ -476,16 +494,76 @@ def change_stage(request):
         redirect=reverse("offboarding-pipeline"),
         icon="information",
     )
+
     groups = pipeline_grouper({}, [stage.offboarding_id])
     for item in groups:
         setattr(item["offboarding"], "stages", item["stages"])
+
     return render(
         request,
         "offboarding/stage/offboarding_body.html",
         {
             "offboarding": groups[0],
             "stage_forms": stage_forms,
-            "response_message": _("stage changed successfully."),
+            "response_message": _("Stage changed successfully"),
+            "today": datetime.today().date(),
+        },
+    )
+
+
+@any_manager_can_enter("offboarding.change_offboardingemployee")
+def update_last_working_date(request):
+    """
+    Updates the last working date for an employee during offboarding.
+    """
+    employee_id = request.POST.get("employee_id")
+    last_working_date = request.POST.get("last_working_date")
+    notice_period_ends = request.POST.get("notice_period_ends")
+    contract_end_date = request.POST.get("contract_end_date")
+    stage_id = request.POST.get("stage_id")
+    notice_period_starts = request.POST.get("notice_period_starts")
+
+    try:
+        off_emp = OffboardingEmployee.objects.get(id=employee_id)
+    except OffboardingEmployee.DoesNotExist:
+        return HttpResponseBadRequest("Employee not found")
+
+    try:
+        start_date = datetime.strptime(last_working_date, "%Y-%m-%d").date()
+        end_date = datetime.strptime(notice_period_ends, "%Y-%m-%d").date()
+    except ValueError:
+        return HttpResponseBadRequest("Invalid date format (expected YYYY-MM-DD)")
+
+    fine_amount = compute_resignation_balance(off_emp.employee_id, start_date, end_date)
+
+    try:
+        stage = OffboardingStage.objects.get(id=int(stage_id))
+        print("Stage" , stage)
+    except OffboardingStage.DoesNotExist:
+        return HttpResponseBadRequest("Invalid stage_id")
+
+    try:
+        employee = OffboardingEmployee.objects.get(id=employee_id)
+        employee.last_working_date = last_working_date
+        employee.save(update_fields=["last_working_date"])
+    except OffboardingEmployee.DoesNotExist:
+        return HttpResponseBadRequest("Employee not found")
+
+    stage_forms = {}
+    stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
+        offboarding=stage.offboarding_id
+    )
+    groups = pipeline_grouper({}, [stage.offboarding_id])
+    for item in groups:
+        setattr(item["offboarding"], "stages", item["stages"])
+
+    return render(
+        request,
+        "offboarding/stage/offboarding_body.html",
+        {
+            "offboarding": groups[0],
+            "stage_forms": stage_forms,
+            "response_message": _("Last Working Date Changed Successfully."),
             "today": datetime.today().date(),
         },
     )
@@ -592,7 +670,7 @@ def add_task(request):
     instance = None
     if instance_id:
         instance = OffboardingTask.objects.filter(id=instance_id).first()
-    form = TaskForm(
+    form = EmployeeTaskForm(
         initial={
             "stage_id": stage_id,
             "tasks_to": employees,
@@ -600,7 +678,7 @@ def add_task(request):
         instance=instance,
     )
     if request.method == "POST":
-        form = TaskForm(
+        form = EmployeeTaskForm(
             request.POST,
             instance=instance,
             initial={
@@ -708,17 +786,29 @@ def task_assign(request):
 @login_required
 @offboarding_or_stage_manager_can_enter("offboarding.delete_offboardingtask")
 def delete_task(request):
-    """
-    This method is used to delete the task
-    """
     task_ids = request.GET.getlist("task_ids")
+    employee_id = request.GET.get("employee_id")
+
     tasks = OffboardingTask.objects.filter(id__in=task_ids)
-    if tasks:
+
+    if tasks.exists():
         tasks.delete()
         messages.success(request, _("Task deleted"))
     else:
         messages.error(request, _("Task not found"))
+
+    if request.headers.get("HX-Request"):
+        url = (
+            reverse("offboarding-pipeline")
+        )
+
+        response = HttpResponse(status=204)
+        response["HX-Redirect"] = url
+        return response
+
+    # Normal fallback
     return redirect(filter_pipeline)
+
 
 
 @login_required
@@ -1331,3 +1421,70 @@ def view_resignation_reason(request):
             "reasons": paginator_qry(reasons, request.GET.get("page")),
         },
     )
+
+
+@login_required
+def common_offboarding_tasks_view(request):
+
+    task_list = OffboardingTask.objects.filter(is_active=True , is_fine=False).order_by("-id")
+
+    paginator = Paginator(task_list, 5)
+
+    page_number = request.GET.get("page", 1)
+    tasks = paginator.get_page(page_number)
+
+    if request.headers.get("Hx-Request"):
+        return render(
+            request,
+            "offboarding/task/common_task_list.html",
+            {"tasks": tasks},
+        )
+
+    return render(
+        request,
+        "offboarding/task/common_task.html",
+        {"tasks": tasks},
+    )
+
+def edit_common_task(request, task_id):
+    task = get_object_or_404(OffboardingTask, id=task_id)
+
+    if request.method == "POST":
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+
+            tasks = OffboardingTask.objects.filter(is_active=True, is_fine=False)
+            return render(request, "offboarding/task/common_task_list.html", {"tasks": tasks})
+
+    else:
+        form = TaskForm(instance=task)
+
+    return render(request, "offboarding/task/common_task_form.html", {"form": form})
+
+
+
+@login_required
+def delete_common_task(request, task_id):
+    task = get_object_or_404(OffboardingTask, id=task_id)
+    task.delete()
+
+    tasks = OffboardingTask.objects.filter(is_active=True , is_fine=False)
+    return render(request, "offboarding/task/common_task_list.html", {"tasks": tasks})
+
+
+
+def create_common_task(request):
+    if request.method == "POST":
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+            tasks = OffboardingTask.objects.filter(is_active=True , is_fine=False)
+            return render(request, "offboarding/task/common_task_list.html", {"tasks": tasks})
+
+    else:
+        form = TaskForm()
+
+    return render(request, "offboarding/task/common_task_form.html", {"form": form})
+

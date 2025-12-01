@@ -28,6 +28,9 @@ urlpatterns = [
         "offboarding-change-stage", views.change_stage, name="offboarding-change-stage"
     ),
     path(
+        "offboarding-update-last-working-date",views.update_last_working_date, name="offboarding-update-last-working-date"
+    ),
+    path(
         "view-offboarding-note/<int:employee_id>/",
         views.view_notes,
         name="view-offboarding-note",
@@ -69,6 +72,25 @@ urlpatterns = [
         "create-resignation-reason",
         views.create_exit_reason,
         name="create-resignation-reason",
+    ),
+    path(
+        "common-tasks/",
+        views.common_offboarding_tasks_view,
+        name="common-offboarding-tasks-view",
+    ),
+    path("common-task/create/",
+         views.create_common_task,
+         name="create-common-task"
+     ),
+    path(
+        "common-tasks/<int:task_id>/edit/",
+        views.edit_common_task,
+        name="edit-common-task",
+    ),
+    path(
+        "common-tasks/<int:task_id>/delete/",
+        views.delete_common_task,
+        name="delete-common-task",
     ),
     path(
         "resignation-requests-single-view/<int:id>/",

@@ -690,6 +690,7 @@ def compute_salary_on_period(employee, start_date, end_date, wage=None):
         start_date (obj): start date of the period
         end_date (obj): end date of the period
     """
+
     contract = Contract.objects.filter(
         employee_id=employee, contract_status="active"
     ).first()

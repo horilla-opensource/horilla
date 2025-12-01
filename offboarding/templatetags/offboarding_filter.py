@@ -171,8 +171,7 @@ def completed_tasks(tasks):
     """
     This method is used to to check any stage manager
     """
-    return tasks.filter(status="completed").count()
-
+    return tasks.filter(status__in=["completed", "not_applicable"]).count()
 
 @register.filter("is_employee_tasks")
 def is_employee_tasks(employee_tasks, task):

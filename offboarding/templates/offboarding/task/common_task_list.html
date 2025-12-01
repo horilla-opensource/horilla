@@ -1,0 +1,97 @@
+{% load i18n %}
+
+<div id="commonTasksContainer" class="oh-page__body p-2">
+
+    <!-- Page Header -->
+    <div class="oh-page__header d-flex justify-content-between align-items-center m-4">
+        <h2 class="oh-page__title m-0">{% trans "Offboarding Tasks" %}</h2>
+
+        <a  hx-get="{% url 'create-common-task' %}"
+            hx-target="#taskModalBody"
+            hx-swap="innerHTML"
+            data-open-modal="#taskModal"
+            class="oh-btn oh-btn--secondary d-flex align-items-center gap-2 px-3 py-2">
+            <ion-icon name="add-outline"></ion-icon>
+            <span>{% trans "Add Task" %}</span>
+        </a>
+    </div>
+
+    <!-- Table Card -->
+    <div class="oh-card shadow-sm p-2">
+
+        <div class="oh-table-wrapper">
+            <table class="oh-table oh-table--hover oh-table--striped">
+
+                <thead class="bg-light">
+                    <tr>
+                        <th class="py-3">{% trans "Title" %}</th>
+                        <th class="py-3">{% trans "Stage" %}</th>
+                        <th class="py-3">{% trans "Manager" %}</th>
+                        <th class="text-end">{% trans "Actions" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                {% for task in tasks %}
+                    <tr>
+
+                        <td class="align-middle">
+                            <strong>{{ task.title }}</strong>
+                        </td>
+
+                        <td class="align-middle">
+                            <span class="badge px-2 py-1">
+                                {{ task.stage_id.title }}
+                            </span>
+                        </td>
+
+                        <td class="align-middle">
+                            {% with manager=task.managers.all.0 %}
+                                {% if manager %}
+                                    {{ manager.get_full_name }}
+                                {% else %}
+                                    <span class="text-muted">{% trans "No manager" %}</span>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+
+                        <td class="text-end align-middle">
+
+                            <button
+                                hx-get="{% url 'edit-common-task' task.id %}"
+                                hx-target="#taskModalBody"
+                                hx-swap="innerHTML"
+                                data-open-modal="#taskModal"
+                                class="oh-btn oh-btn--primary oh-btn--sm me-1 d-inline-flex align-items-center gap-1">
+                                <ion-icon name="create-outline"></ion-icon>
+                                {% trans "Edit" %}
+                            </button>
+
+                            <button
+                                hx-delete="{% url 'delete-common-task' task.id %}"
+                                hx-confirm="{% trans 'Are you sure you want to delete this task?' %}"
+                                hx-target="#commonTasksContainer"
+                                hx-swap="innerHTML"
+                                class="oh-btn oh-btn--danger oh-btn--sm d-inline-flex align-items-center gap-1">
+                                <ion-icon name="trash-outline"></ion-icon>
+                                {% trans "Delete" %}
+                            </button>
+
+                        </td>
+                    </tr>
+
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">
+                            {% trans "No tasks found" %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+{% include "offboarding/task/pagination.html" %}
+    </div>
+
+</div>
