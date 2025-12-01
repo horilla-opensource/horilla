@@ -44,7 +44,7 @@ def compute_resignation_balance(employee, last_working_date, notice_end_date):
         if allowance["include_in_lop"]
     )
 
-    per_day_amount = (basic_pay + total_includable_allowances) / 30
+    per_day_amount = ((basic_pay or 0) + (total_includable_allowances or 0)) / 30
 
     amount_for_fine = per_day_amount * payable_days
 
