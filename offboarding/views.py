@@ -465,12 +465,16 @@ def change_stage(request):
 
     tasks_for_stage = OffboardingTask.objects.filter(stage_id=stage, is_active=True)
 
-    for employee in employees:
-        for task in tasks_for_stage:
-            EmployeeTask.objects.get_or_create(
-                employee_id=employee,
-                task_id=task
-            )
+    tasks_to_create = [
+        EmployeeTask(employee_id=employee, task_id=task)
+        for employee in employees
+        for task in tasks_for_stage
+    ]
+
+    EmployeeTask.objects.bulk_create(
+        tasks_to_create,
+        ignore_conflicts=True
+    )
 
     stage_forms = {}
     stage_forms[str(stage.offboarding_id.id)] = StageSelectForm(
