@@ -799,6 +799,21 @@ class NewRequestForm(AttendanceRequestForm):
     NewRequestForm class
     """
 
+    def update_worked_hour_hx_fields(self, field_name):
+        """Update the widget attributes for worked hour fields."""
+        self.fields[field_name].widget.attrs.update(
+            {
+                "id": str(uuid.uuid4()),
+                "hx-include": "#attendanceRequestForm",
+                "hx-target": "#id_attendance_worked_hour_parent_div",
+                "hx-swap": "outerHTML",
+                "hx-select": "#id_attendance_worked_hour_parent_div",
+                "hx-get": "/attendance/update-worked-hour-field",
+                "hx-trigger": "change delay:300ms",  # Delay added here for 300ms
+            }
+        )
+
+
     class Meta:
         model = Attendance
         fields = [
@@ -832,6 +847,18 @@ class NewRequestForm(AttendanceRequestForm):
         # Add the new model choice field to the form at the beginning
         old_dict = self.fields
 
+        for field in [
+            "attendance_clock_in_date",
+            "attendance_clock_in",
+            "attendance_clock_out_date",
+            "attendance_clock_out",
+        ]:
+            self.update_worked_hour_hx_fields(field)
+        self.fields["attendance_date"].widget.attrs.update(
+            {
+                "onchange": "attendanceDateChange($(this))",
+            }
+        )
 
         new_dict = {
             "employee_id": forms.ModelChoiceField(
