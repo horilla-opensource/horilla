@@ -10,7 +10,7 @@ from horilla_views.generic.cbv.views import HorillaDetailedView, HorillaListView
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("asset.view_assetlot"), name="dispatch")
+@method_decorator(permission_required("asset.view_asset"), name="dispatch")
 class AssetListView(HorillaListView):
     """
     list view for batch number

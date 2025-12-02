@@ -87,7 +87,7 @@ class DeductionListView(HorillaListView):
         self.view_id = "deduct-container"
         if self.request.user.has_perm(
             "payroll.change_deduction"
-        ) or self.request.user.has_perm("payroll.change_deduction"):
+        ) or self.request.user.has_perm("payroll.delete_deduction"):
             self.action_method = "deduct_actions"
         else:
             self.action_method = None

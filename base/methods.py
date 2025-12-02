@@ -687,7 +687,7 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
 
     if not selected_fields:
         selected_fields = form.fields["selected_fields"].initial
-        ids = request.GET.get("ids")
+        ids = request.GET.get("ids", "[]")
         id_list = json.loads(ids)
         export_objects = model.objects.filter(id__in=id_list)
 
@@ -723,7 +723,7 @@ def export_data(request, model, form_class, filter_class, file_name, perm=None):
                 data_export[verbose_name].append(value)
 
     data_frame = pd.DataFrame(data=data_export)
-    styled_data_frame = data_frame.style.applymap(
+    styled_data_frame = data_frame.style.map(
         lambda x: "text-align: center", subset=pd.IndexSlice[:, :]
     )
 
