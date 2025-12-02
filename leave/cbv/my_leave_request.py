@@ -184,7 +184,6 @@ class MyLeaveRequestNavView(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("user-request-filter")
-        self.filter_instance = UserLeaveRequestFilter()
 
         self.actions = [
             {
@@ -201,11 +200,11 @@ class MyLeaveRequestNavView(HorillaNavView):
         ]
 
         self.create_attrs = f"""
-             hx-get="{reverse_lazy("leave-request-create")}"
-             hx-target="#genericModalBody"
-             data-target="#genericModal"
-             data-toggle="oh-modal-toggle"
-         """
+            hx-get="{reverse_lazy("leave-request-create")}"
+            hx-target="#genericModalBody"
+            data-target="#genericModal"
+            data-toggle="oh-modal-toggle"
+        """
 
     nav_title = _("My Leave requests")
     filter_body_template = "cbv/my_leave_request/filter.html"
@@ -218,6 +217,12 @@ class MyLeaveRequestNavView(HorillaNavView):
         ("status", "Status"),
         ("requested_days", "Requested Days"),
     ]
+
+    def get_context_data(self, **kwargs):
+        self.filter_instance = UserLeaveRequestFilter()
+        context = super().get_context_data(**kwargs)
+
+        return context
 
 
 @method_decorator(login_required, name="dispatch")
