@@ -756,7 +756,42 @@ class AttendanceRequestForm(BaseModelForm):
         # No need to save the changes to the actual modal instance
         return super().save(False)
 
-    # def clean(self):
+    def clean(self) -> Dict[str, Any]:
+        super().clean()
+        worked_hours = self.cleaned_data.get("attendance_worked_hour")
+        check_in_time = self.cleaned_data.get("attendance_clock_in")
+        check_out_time = self.cleaned_data.get("attendance_clock_out")
+
+        if check_in_time and check_out_time:
+            if check_out_time < check_in_time:
+                self.add_error(
+                    "attendance_clock_out",
+                    _("Clock-out time cannot be earlier than clock-in time")
+                )
+
+        if worked_hours:
+            try:
+                parts = worked_hours.split(":")
+                if len(parts) != 2:
+                    raise ValueError
+                hour = int(parts[0])
+                minute = int(parts[1])
+            except (ValueError, IndexError):
+                self.add_error(
+                    "attendance_worked_hour",
+                    _("Worked hours must be in HH:MM format")
+                )
+            else:
+                if minute != 0 or hour not in [4, 8]:
+                    self.add_error(
+                        "attendance_worked_hour",
+                        _("Worked hours must be exactly 4:00 for half day or 8:00 for full day")
+                    )
+        else:
+            self.add_error(
+                "attendance_worked_hour",
+                _("Worked hours cannot be empty")
+            )
 
 
 class NewRequestForm(AttendanceRequestForm):
