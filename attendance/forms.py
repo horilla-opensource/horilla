@@ -209,7 +209,19 @@ class AttendanceUpdateForm(BaseModelForm):
 
     def clean(self) -> Dict[str, Any]:
         super().clean()
+
+        check_in_time = self.cleaned_data.get("attendance_clock_in")
+        check_out_time = self.cleaned_data.get("attendance_clock_out")
         worked_hours = self.cleaned_data.get("attendance_worked_hour")
+
+        if check_in_time and check_out_time:
+            if check_out_time < check_in_time:
+                self.add_error(
+                    "attendance_clock_out",
+                    _("Clock-out time cannot be earlier than clock-in time")
+                )
+
+
         if worked_hours:
             try:
                 parts = worked_hours.split(":")
@@ -425,6 +437,16 @@ class AttendanceForm(BaseModelForm):
                 }
             )
         worked_hours = self.cleaned_data.get("attendance_worked_hour")
+        check_in_time = self.cleaned_data.get("attendance_clock_in")
+        check_out_time = self.cleaned_data.get("attendance_clock_out")
+
+        if check_in_time and check_out_time:
+            if check_out_time < check_in_time:
+                self.add_error(
+                    "attendance_clock_out",
+                    _("Clock-out time cannot be earlier than clock-in time")
+                )
+
         if worked_hours:
             try:
                 parts = worked_hours.split(":")
@@ -669,15 +691,6 @@ class AttendanceRequestForm(BaseModelForm):
         super().__init__(*args, **kwargs)
         self.fields["attendance_clock_out_date"].required = False
         self.fields["attendance_clock_out"].required = False
-        # self.fields["shift_id"].widget.attrs.update(
-        #     {
-        #         "id": str(uuid.uuid4()),
-        #         "hx-include": "#attendanceRequestForm",
-        #         "hx-target": "#attendanceRequestDiv",
-        #         "hx-swap": "outerHTML",
-        #         "hx-get": "/attendance/update-fields-based-shift",
-        #     }
-        # )
 
 
         for field in [
@@ -742,6 +755,8 @@ class AttendanceRequestForm(BaseModelForm):
     def save(self, commit: bool = ...) -> Any:
         # No need to save the changes to the actual modal instance
         return super().save(False)
+
+    # def clean(self):
 
 
 class NewRequestForm(AttendanceRequestForm):
@@ -842,6 +857,8 @@ class NewRequestForm(AttendanceRequestForm):
         employee = self.cleaned_data["employee_id"]
         attendance_date = self.cleaned_data["attendance_date"]
         worked_hours = self.cleaned_data.get("attendance_worked_hour")
+        check_in_time = self.cleaned_data.get("attendance_clock_in")
+        check_out_time = self.cleaned_data.get("attendance_clock_out")
         attendances = Attendance.objects.filter(
             employee_id=employee, attendance_date=attendance_date
         )
@@ -849,6 +866,13 @@ class NewRequestForm(AttendanceRequestForm):
 
         if employee and not hasattr(employee, "employee_work_info"):
             raise ValidationError(_("Employee work info not found"))
+
+        if check_in_time and check_out_time:
+            if check_out_time < check_in_time:
+                self.add_error(
+                    "attendance_clock_out",
+                    _("Clock-out time cannot be earlier than clock-in time")
+                )
 
         if worked_hours:
             try:
@@ -878,8 +902,8 @@ class NewRequestForm(AttendanceRequestForm):
             "employee_id": employee,
             "attendance_date": attendance_date,
             "attendance_clock_in_date": self.cleaned_data["attendance_clock_in_date"],
-            "attendance_clock_in": self.cleaned_data["attendance_clock_in"],
-            "attendance_clock_out": self.cleaned_data["attendance_clock_out"],
+            "attendance_clock_in": check_in_time,
+            "attendance_clock_out": check_out_time,
             "attendance_clock_out_date": self.cleaned_data["attendance_clock_out_date"],
             "shift_id": self.cleaned_data["shift_id"],
             "work_type_id": self.cleaned_data["work_type_id"],
