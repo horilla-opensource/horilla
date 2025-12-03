@@ -35,6 +35,7 @@ from django.template import loader
 from django.template.defaultfilters import register
 from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.functional import lazy
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -178,12 +179,14 @@ def login_required(view_func):
             return redirect(url)
         try:
             func = view_func(self, request, *args, **kwargs)
+        except MultiValueDictKeyError:
+            raise
         except Exception as e:
             logger.exception(e)
             if not settings.DEBUG:
                 messages.error(request, str(e))
                 return render(request, "went_wrong.html", status=404)
-            return view_func(self, *args, **kwargs)
+            raise e
         return func
 
     return wrapped_view
