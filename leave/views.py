@@ -256,7 +256,7 @@ def leave_type_update(request, id, **kwargs):
         leave_type = LeaveType.objects.get(id=id)
     except (LeaveType.DoesNotExist, OverflowError, ValueError):
         messages.error(request, _("Leave type not found"))
-        return redirect(leave_type_view)
+        return redirect("type-view")
     form = UpdateLeaveTypeForm(instance=leave_type)
     compensatory = request.GET.get("compensatory")
     redirect_url = reverse("type-view")
@@ -1930,6 +1930,7 @@ def assign_leave_type_import(request):
         }
         html = render_to_string("import_popup.html", context)
         return HttpResponse(html)
+    return HttpResponse("")
 
 
 @login_required
@@ -2174,6 +2175,7 @@ def restrict_days_bulk_delete(request):
 @permission_required("leave.add_restrictleave")
 def restrict_day_select(request):
     page_number = request.GET.get("page")
+    restrict_days = RestrictLeave.objects.none()
     if page_number == "all":
         restrict_days = RestrictLeave.objects.all()
     restrict_day_ids = [str(day.id) for day in restrict_days]
@@ -2188,6 +2190,7 @@ def restrict_day_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         restrictday_filter = RestrictLeaveFilter(
@@ -2197,7 +2200,7 @@ def restrict_day_select_filter(request):
         restrictday_ids = [str(restrictday.id) for restrictday in restrictday_filter]
         total_count = restrictday_filter.count()
         context = {"restrict_day_ids": restrictday_ids, "total_count": total_count}
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -2744,7 +2747,7 @@ def user_request_one(request, id):
 
 
 @login_required
-@manager_can_enter("leave.view_leaverequest")
+@manager_can_enter("leave.can_view_on_leave")
 def employee_leave(request):
     """
     function used to view employees are leave today.
@@ -3789,6 +3792,7 @@ def leave_allocation_request_delete(request, req_id):
 @login_required
 def assigned_leave_select(request):
     page_number = request.GET.get("page")
+    employees = AvailableLeave.objects.none()
 
     if page_number == "all":
         if request.user.has_perm("leave.view_availableleave"):
@@ -3811,6 +3815,7 @@ def assigned_leave_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         if request.user.has_perm("leave.view_availableleave"):
@@ -3833,7 +3838,7 @@ def assigned_leave_select_filter(request):
 
         context = {"employee_ids": employee_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -3873,19 +3878,20 @@ def leave_request_bulk_delete(request):
 @login_required
 def leave_request_select(request):
     page_number = request.GET.get("page")
+    leave_req = LeaveRequest.objects.none()
 
     if page_number == "all":
         if request.user.has_perm("leave.view_leaverequest"):
-            employees = LeaveRequest.objects.all()
+            leave_req = LeaveRequest.objects.all()
         else:
-            employees = LeaveRequest.objects.filter(
+            leave_req = LeaveRequest.objects.filter(
                 employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
             )
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    req_ids = [str(lev.id) for lev in leave_req]
+    total_count = leave_req.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+    context = {"employee_ids": req_ids, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
@@ -3895,14 +3901,15 @@ def leave_request_select_filter(request):
     page_number = request.GET.get("page")
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
+    context = {}
 
     if page_number == "all":
         if request.user.has_perm("leave.view_leaverequest"):
-            employee_filter = LeaveRequestFilter(
+            leave_filter = LeaveRequestFilter(
                 filters, queryset=LeaveRequest.objects.all()
             )
         else:
-            employee_filter = LeaveRequestFilter(
+            leave_filter = LeaveRequestFilter(
                 filters,
                 queryset=LeaveRequest.objects.filter(
                     employee_id__employee_work_info__reporting_manager_id__employee_user_id=request.user
@@ -3910,14 +3917,14 @@ def leave_request_select_filter(request):
             )
 
         # Get the filtered queryset
-        filtered_employees = employee_filter.qs
+        filtered_leave = leave_filter.qs
 
-        employee_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
+        req_ids = [str(lev.id) for lev in filtered_leave]
+        total_count = filtered_leave.count()
 
-        context = {"employee_ids": employee_ids, "total_count": total_count}
+        context = {"employee_ids": req_ids, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @require_http_methods(["POST"])
@@ -3952,14 +3959,15 @@ def user_request_bulk_delete(request):
 def user_request_select(request):
     page_number = request.GET.get("page")
     user = request.user.employee_get
+    leaves = LeaveRequest.objects.none()
 
     if page_number == "all":
-        employees = LeaveRequest.objects.filter(employee_id=user)
+        leaves = LeaveRequest.objects.filter(employee_id=user)
 
-    employee_ids = [str(emp.id) for emp in employees]
-    total_count = employees.count()
+    req_id = [str(lev.id) for lev in leaves]
+    total_count = leaves.count()
 
-    context = {"employee_ids": employee_ids, "total_count": total_count}
+    context = {"employee_ids": req_id, "total_count": total_count}
 
     return JsonResponse(context, safe=False)
 
@@ -3970,21 +3978,22 @@ def user_request_select_filter(request):
     filtered = request.GET.get("filter")
     filters = json.loads(filtered) if filtered else {}
     user = request.user.employee_get
+    context = {}
 
     if page_number == "all":
-        employee_filter = UserLeaveRequestFilter(
+        leave_filter = UserLeaveRequestFilter(
             filters, queryset=LeaveRequest.objects.filter(employee_id=user)
         )
 
         # Get the filtered queryset
-        filtered_employees = employee_filter.qs
+        filtered_leave = leave_filter.qs
 
-        employee_ids = [str(emp.id) for emp in filtered_employees]
-        total_count = filtered_employees.count()
+        req_id = [str(emp.id) for emp in filtered_leave]
+        total_count = filtered_leave.count()
 
-        context = {"employee_ids": employee_ids, "total_count": total_count}
+        context = {"employee_ids": req_id, "total_count": total_count}
 
-        return JsonResponse(context)
+    return JsonResponse(context)
 
 
 @login_required
@@ -4654,7 +4663,7 @@ if apps.is_installed("attendance"):
         Returns:
         GET : return attendance dates
         """
-        if request.GET.get("employee_id"):
+        if request.GET["employee_id"]:
             employee = Employee.objects.get(id=request.GET.get("employee_id"))
             holiday_attendance = get_leave_day_attendance(employee)
             # Get a list of tuples containing (id, attendance_date)
@@ -5212,9 +5221,10 @@ if apps.is_installed("attendance"):
 
 if apps.is_installed("recruitment"):
 
+    @login_required
     def check_interview_conflicts(request):
-        start_date = request.GET.get("start_date")
-        end_date = request.GET.get("end_date")
+        start_date = request.GET["start_date"]
+        end_date = request.GET["end_date"]
         employee_id = request.GET.get("employee_id")
 
         try:
