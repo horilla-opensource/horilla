@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.datastructures import MultiValueDictKeyError
 from django.utils.translation import gettext as _
 
 from horilla import settings
@@ -266,6 +267,8 @@ def login_required(view_func):
             return redirect(redirect_url)
         try:
             func = view_func(request, *args, **kwargs)
+        except MultiValueDictKeyError:
+            raise
         except Exception as e:
             logger.error(e)
             if (
@@ -281,7 +284,7 @@ def login_required(view_func):
             if not settings.DEBUG:
                 messages.error(request, str(e))
                 return render(request, "went_wrong.html", status=404)
-            return view_func(request, *args, **kwargs)
+            raise e
         return func
 
     return wrapped_view
