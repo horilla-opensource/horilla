@@ -1,12 +1,12 @@
 {% load i18n static %}
-{% if perms.leave.change_companyleave or perms.leave.delete_companyleave %}
+{% if perms.base.change_companyleaves or perms.base.delete_companyleaves %}
     <div  onclick="event.stopPropagation();" class="oh-btn-group">
-      {% if perms.leave.change_companyleave %}
+      {% if perms.base.change_companyleaves %}
         <button class="oh-btn oh-btn--light-bkg w-100" title="{% trans 'Edit' %}" data-toggle="oh-modal-toggle"
             data-target="#genericModal" hx-get="{% url 'company-leave-update' instance.id %}?instance_ids={{instance.ordered_ids}}"
             hx-target="#genericModalBody"><ion-icon name="create-outline"></ion-icon></button>
       {% endif %}
-      {% if perms.leave.delete_companyleave %}
+      {% if perms.base.delete_companyleaves %}
           <a class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
               hx-confirm="{% trans 'Are you sure you want to delete ?' %}"
               hx-post="{% url 'company-leave-delete' instance.id %}"
