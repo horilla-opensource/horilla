@@ -139,12 +139,12 @@ urlpatterns = [
     path("type-filter/", views.leave_type_filter, name="type-filter"),
     # path("request-creation", views.leave_request_creation, name="request-creation"),
     path(
-        "request-creation",
+        "request-creation/",
         leave_requests.LeaveRequestFormView.as_view(),
         name="request-creation",
     ),
     path(
-        "get-employee-leave-types",
+        "get-employee-leave-types/",
         views.get_employee_leave_types,
         name="get-employee-leave-types",
     ),
@@ -154,7 +154,7 @@ urlpatterns = [
     #     name="leave-request-creation",
     # ),
     path(
-        "leave-request-creation/<int:type_id>/<int:emp_id>",
+        "leave-request-creation/<int:type_id>/<int:emp_id>/",
         leave_requests.LeaveRequestFormView.as_view(),
         name="leave-request-creation",
     ),
@@ -201,11 +201,11 @@ urlpatterns = [
     path("request-delete/<int:id>/", views.leave_request_delete, name="request-delete"),
     # path("user-request/<int:id>", views.user_leave_request, name="user-request"),
     path(
-        "user-request/<int:leave>",
+        "user-request/<int:leave>/",
         my_leave_request.MyLeaveRequestSingleForm.as_view(),
         name="user-request",
     ),
-    # path("request-filter/", views.leave_request_filter, name="request-filter"),
+    # path("request-filter", views.leave_request_filter, name="request-filter"),
     path("assign/", views.leave_assign, name="assign"),
     # path("assign",assigned_leave.AssignedLeaveFormView.as_view(),name="assign"),
     # path("assign-one/<int:id>", views.leave_assign_one, name="assign-one"),
@@ -225,7 +225,7 @@ urlpatterns = [
         views.available_leave_update,
         name="available-leave-update",
     ),
-    # path("available-leave-update/<int:pk>/",assigned_leave.AssignedLeaveFormView.as_view(),name="available-leave-update"),
+    # path("available-leave-update/<int:pk>",assigned_leave.AssignedLeaveFormView.as_view(),name="available-leave-update"),
     path(
         "assign-delete/<int:obj_id>/", views.leave_assign_delete, name="assign-delete"
     ),
@@ -249,13 +249,13 @@ urlpatterns = [
         views.assigned_leaves_export,
         name="assigned-leaves-info-export",
     ),
-    # path("assign-filter/", views.leave_assign_filter, name="assign-filter"),
+    # path("assign-filter", views.leave_assign_filter, name="assign-filter"),
     path("get_job_positions/", views.get_job_positions, name="get_job_positions"),
     # path("restrict-view", views.restrict_view, name="restrict-view"),
     # path("restrict-filter", views.restrict_filter, name="restrict-filter"),
     # path("restrict-creation", views.restrict_creation, name="restrict-creation"),
     path(
-        "restrict-creation",
+        "restrict-creation/",
         restricted_days.RestrictedDaysFormView.as_view(),
         name="restrict-creation",
     ),
@@ -305,7 +305,7 @@ urlpatterns = [
         name="user-request-cancel",
     ),
     path("one-request-view/<int:id>/", views.one_request_view, name="one-request-view"),
-    # path("user-request-filter/", views.user_request_filter, name="user-request-filter"),
+    # path("user-request-filter", views.user_request_filter, name="user-request-filter"),
     path("user-request-one/<int:id>/", views.user_request_one, name="user-request-one"),
     path("employee-leave/", views.employee_leave, name="employee-leave"),
     path("overall-leave/", views.overall_leave, name="overall-leave"),
@@ -335,7 +335,7 @@ urlpatterns = [
     #     "leave-request-create", views.leave_request_create, name="leave-request-create"
     # ),
     path(
-        "leave-request-create",
+        "leave-request-create/",
         my_leave_request.MyLeaveRequestForm.as_view(),
         name="leave-request-create",
     ),
@@ -355,7 +355,7 @@ urlpatterns = [
     #     name="leave-allocation-request-create",
     # ),
     path(
-        "leave-allocation-request-create",
+        "leave-allocation-request-create/",
         leave_allocation_request.LeaveAllocationRequestFormView.as_view(),
         name="leave-allocation-request-create",
     ),
@@ -550,7 +550,7 @@ urlpatterns = [
         name="dashboard-total-leave-request",
     ),
     path(
-        "leave-request-and-approve",
+        "leave-request-and-approve/",
         dashboard.LeaveRequestsToApprove.as_view(),
         name="leave-request-and-approve",
     ),
@@ -560,7 +560,7 @@ urlpatterns = [
     #     name="leave-allocation-approve",
     # ),
     path(
-        "leave-allocation-approve",
+        "leave-allocation-approve/",
         dashboard.LeaveAllocationRequestToApprove.as_view(),
         name="leave-allocation-approve",
     ),
@@ -650,7 +650,7 @@ if apps.is_installed("recruitment"):
     urlpatterns.extend(
         [
             path(
-                "check-interview-conflicts",
+                "check-interview-conflicts/",
                 views.check_interview_conflicts,
                 name="check-interview-conflicts",
             ),
@@ -717,7 +717,7 @@ if apps.is_installed("attendance"):
                 name="filter-compensatory-leave",
             ),
             path(
-                "create-compensatory-leave",
+                "create-compensatory-leave/",
                 compensatory_leave_request.CompensatoryForm.as_view(),
                 name="create-compensatory-leave",
             ),
