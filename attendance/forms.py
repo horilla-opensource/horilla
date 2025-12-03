@@ -841,7 +841,6 @@ class NewRequestForm(AttendanceRequestForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         # Get the initial data passes from views.py file
         view_initial = kwargs.pop("initial", {})
         # Add the new model choice field to the form at the beginning
@@ -888,6 +887,7 @@ class NewRequestForm(AttendanceRequestForm):
         }
         new_dict.update(old_dict)
         self.fields = new_dict
+        self.fields["attendance_worked_hour"].widget.attrs.update({"readonly": "readonly"})
         self.fields["is_get_compensation_leave"].widget.attrs.update({
             "style": "display:none;",
         })
