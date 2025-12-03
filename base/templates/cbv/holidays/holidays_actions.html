@@ -1,6 +1,6 @@
 {% load i18n %}
 <div onclick="event.stopPropagation();" class="oh-btn-group">
-    {% if perms.leave.change_holiday %}
+    {% if perms.base.change_holidays %}
     <button
         class="oh-btn oh-btn--light-bkg w-100"
         title="{% trans 'Edit' %}"
@@ -11,8 +11,6 @@
     >
         <ion-icon name="create-outline"></ion-icon>
     </button>
-    {% endif %}
-    {% if perms.leave.change_holiday %}
     <button
         class="oh-btn oh-btn--light-bkg w-100"
         title="{% trans 'Duplicate' %}"
@@ -24,7 +22,7 @@
         <ion-icon name="copy-outline"></ion-icon>
     </button>
     {% endif %}
-    {% if perms.leave.delete_holiday %}
+    {% if perms.base.delete_holidays %}
     <a
         class="oh-btn oh-btn--danger-outline oh-btn--light-bkg w-100"
         id="delete-link"

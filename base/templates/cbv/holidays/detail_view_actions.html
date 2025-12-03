@@ -1,7 +1,7 @@
 {% load basefilters i18n %}
 
 <div class="oh-btn-group w-100">
-    {% if perms.leave.change_holiday %}
+    {% if perms.base.change_holidays %}
         <a
             hx-get="{% url 'holiday-update' instance.id %}?{{pd}}"
             hx-target="#genericModalBody"
@@ -14,7 +14,7 @@
         </a>
     {% endif %}
 
-    {% if perms.leave.delete_holiday %}
+    {% if perms.base.delete_holidays %}
         <a
             hx-post="{% url 'holiday-delete' instance.id %}"
             hx-target="#holidaydelete"

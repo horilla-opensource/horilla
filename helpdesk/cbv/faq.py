@@ -17,7 +17,6 @@ from horilla_views.generic.cbv.views import HorillaFormView
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("helpdesk.add_faqcategory"), name="dispatch")
 class FaqCategoryCreateFormView(HorillaFormView):
     """
     form view for create and update faq categories

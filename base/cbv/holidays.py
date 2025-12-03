@@ -47,7 +47,9 @@ class HolidayListView(HorillaListView):
         super().__init__(**kwargs)
         self.search_url = reverse("holiday-filter")
         self.view_id = "holidaydelete"
-        if self.request.user.has_perm("base.add_holiday"):
+        if self.request.user.has_perm(
+            "base.change_holidays"
+        ) or self.request.user.has_perm("base.delete_holidays"):
             self.action_method = "holidays_actions"
 
     columns = [
@@ -84,7 +86,7 @@ class HolidayNavView(HorillaNavView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.search_url = reverse("holiday-filter")
-        if self.request.user.has_perm("base.add_holiday"):
+        if self.request.user.has_perm("base.add_holidays"):
             self.create_attrs = f"""
                 hx-get="{reverse_lazy('holiday-creation')}"
                 hx-target="#genericModalBody"
@@ -172,7 +174,6 @@ class HolidayExport(TemplateView):
 
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("leave.add_holidays"), name="dispatch")
 class HolidayFormView(HorillaFormView):
     """
     form view for create button
