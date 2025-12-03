@@ -6,15 +6,13 @@ This module is used to register horilla's middlewares without affecting the hori
 
 import threading
 
+from django.conf import settings
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import (
-    Http404,
-    HttpResponseNotAllowed,
-    HttpResponseRedirect,
-    JsonResponse,
-)
+from django.http import HttpResponseNotAllowed
 from django.shortcuts import render
+from django.utils.datastructures import MultiValueDictKeyError
+
+from horilla.config import logger
 
 _thread_locals = threading.local()
 
@@ -59,3 +57,24 @@ class SVGSecurityMiddleware:
             response["X-Content-Type-Options"] = "nosniff"
 
         return response
+
+
+class MissingParameterMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        return self.get_response(request)
+
+    def process_exception(self, request, exception):
+        if isinstance(exception, MultiValueDictKeyError):
+            missing_key = str(exception).strip("'")
+            message = f"Required parameter '{missing_key}' is missing from the request."
+
+            logger.error(message)
+
+            if not settings.DEBUG:
+                messages.error(request, message)
+                return render(request, "went_wrong.html", status=400)
+
+        return None
