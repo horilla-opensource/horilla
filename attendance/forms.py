@@ -825,7 +825,6 @@ class NewRequestForm(AttendanceRequestForm):
             "attendance_clock_out_date",
             "attendance_clock_out",
             "attendance_worked_hour",
-            "minimum_hour",
             "batch_attendance_id",
             "is_get_compensation_leave"
 
@@ -970,7 +969,6 @@ class NewRequestForm(AttendanceRequestForm):
             "shift_id": self.cleaned_data["shift_id"],
             "work_type_id": self.cleaned_data["work_type_id"],
             "attendance_worked_hour": worked_hours,
-            "minimum_hour": self.data["minimum_hour"],
             "is_get_compensation_leave": self.cleaned_data.get("is_get_compensation_leave"),
         }
         if attendances.exists():
@@ -1328,7 +1326,6 @@ class BulkAttendanceRequestForm(BaseModelForm):
             "work_type_id",
             "attendance_clock_in",
             "attendance_clock_out",
-            "minimum_hour",
             "attendance_worked_hour",
             # "request_description",
         )
@@ -1397,13 +1394,11 @@ class BulkAttendanceRequestForm(BaseModelForm):
         from_date = cleaned_data.get("from_date")
         to_date = cleaned_data.get("to_date")
         attendance_worked_hour = cleaned_data.get("attendance_worked_hour")
-        minimum_hour = cleaned_data.get("minimum_hour")
         attendance_clock_out = cleaned_data.get("attendance_clock_out")
         employee_id = cleaned_data.get("employee_id")
         now = datetime.datetime.now().time()
         today = datetime.datetime.today().date()
         validate_time_format(attendance_worked_hour)
-        validate_time_format(minimum_hour)
         attendance_date_validate(from_date)
         attendance_date_validate(to_date)
         date_list = get_date_list(employee_id, from_date, to_date)
@@ -1461,7 +1456,6 @@ class BulkAttendanceRequestForm(BaseModelForm):
         attendance_clock_out = cleaned_data.get("attendance_clock_out")
         # request_description = cleaned_data.get("request_description")
         attendance_worked_hour = cleaned_data.get("attendance_worked_hour")
-        minimum_hour = cleaned_data.get("minimum_hour")
         work_type_id = employee_id.employee_work_info.work_type_id
         date_list = get_date_list(employee_id, from_date, to_date)
         batch = (
@@ -1478,7 +1472,6 @@ class BulkAttendanceRequestForm(BaseModelForm):
             "attendance_clock_out": attendance_clock_out,
             "attendance_worked_hour": attendance_worked_hour,
             "is_validate_request": True,
-            "minimum_hour": minimum_hour,
             # "request_description": request_description,
         }
         for date in date_list:
