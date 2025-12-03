@@ -950,8 +950,9 @@ class LeaveRequest(HorillaModel):
 
     class Meta:
         ordering = ["-id"]
-        verbose_name = "Leave Request"
-        verbose_name_plural = "Leave Requests"
+        verbose_name = _("Leave Request")
+        verbose_name_plural = _("Leave Requests")
+        permissions = (("can_view_on_leave", "Can View On Leave"),)
 
     def comment_action(self):
         """
