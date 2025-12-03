@@ -763,7 +763,7 @@
                     </div>
                 </div>
                 {% if "leave"|app_installed %}
-                    {% if perms.leave.view_leaverequest or request.user|is_reportingmanager %}
+                    {% if perms.leave.can_view_on_leave or request.user|is_reportingmanager %}
                         <div class="oh-card-dashboard oh-card-dashboard--no-scale oh-card-dashboard--transparent mb-3">
                             <div class="oh-card-dashboard__header oh-card-dashboard__header--divider">
                                 <span class="oh-card-dashboard__title">{% trans "On Leave" %}</span>
