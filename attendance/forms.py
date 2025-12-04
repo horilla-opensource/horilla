@@ -700,6 +700,11 @@ class AttendanceRequestForm(BaseModelForm):
         self.fields["attendance_clock_out_date"].widget.attrs.update({
             "style": "pointer-events:none;",
         })
+        self.fields["is_get_compensation_leave"].widget.attrs.update({
+            "style": "display:none;",
+        })
+        self.fields["is_get_compensation_leave"].label = ""
+        self.fields["is_get_compensation_leave"].help_text = ""
 
 
 
