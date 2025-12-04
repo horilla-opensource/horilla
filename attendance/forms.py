@@ -105,8 +105,13 @@ class AttendanceUpdateForm(BaseModelForm):
             "attendance_overtime",
             "is_active",
             "is_holiday",
-            # "is_poya_holiday",
-            # "is_mercantile_holday"   -- testing #todo add this fields to exclude once the debug and testing completed
+            "is_poya_holiday",
+            "is_mercantile_holday"
+            "minimum_hour",
+            "is_get_compensation_leave",
+            "is_mercantile_holiday",
+            "is_poya_holiday",
+            "work_type_id"
         ]
         model = Attendance
         widgets = {
@@ -122,12 +127,12 @@ class AttendanceUpdateForm(BaseModelForm):
         self.fields[field_name].widget.attrs.update(
             {
                 "id": str(uuid.uuid4()),
-                "hx-include": "#attendanceUpdateForm",
+                "hx-include": "#attendanceCreateForm",
                 "hx-target": "#id_attendance_worked_hour_parent_div",
                 "hx-swap": "outerHTML",
                 "hx-select": "#id_attendance_worked_hour_parent_div",
-                "hx-get": "/attendance/update-worked-hour-field",
-                "hx-trigger": "change delay:300ms",  # Delay added here for 500ms
+                "hx-get": "/attendance/update-worked-hour-admin-portal",
+                "hx-trigger": "change delay:300ms",
             }
         )
 
@@ -158,14 +163,7 @@ class AttendanceUpdateForm(BaseModelForm):
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-        # self.fields["shift_id"].widget.attrs.update(
-        #     {
-        #         "id": str(uuid.uuid4()),
-        #         "hx-include": "#attendanceUpdateForm",
-        #         "hx-target": "#attendanceUpdateForm",
-        #         "hx-get": "/attendance/update-fields-based-shift",
-        #     }
-        # )
+
         for field in [
             "attendance_clock_in_date",
             "attendance_clock_in",
@@ -178,7 +176,7 @@ class AttendanceUpdateForm(BaseModelForm):
                 "onchange": "attendanceDateChange($(this))",
             }
         )
-        self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
+        # self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
 
         if (
             instance is not None
@@ -287,6 +285,8 @@ class AttendanceForm(BaseModelForm):
             "is_poya_holiday",
             "is_mercantile_holiday",
             "attendance_validated",
+            "work_type_id",
+            "minimum_hour",
 
         ]
         widgets = {
@@ -351,14 +351,16 @@ class AttendanceForm(BaseModelForm):
         super().__init__(*args, **kwargs)
         reload_queryset(self.fields)
         self.fields["employee_id"].widget.attrs.update({"id": str(uuid.uuid4())})
-        # self.fields["shift_id"].widget.attrs.update(
-        #     {
-        #         "id": str(uuid.uuid4()),
-        #         "hx-include": "#attendanceCreateForm",
-        #         "hx-target": "#attendanceCreateForm",
-        #         "hx-get": "/attendance/update-fields-based-shift",
-        #     }
-        # )
+        self.fields["attendance_clock_in_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_worked_hour"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_clock_out_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+
         self.fields["attendance_date"].widget.attrs.update({
             "hx-get": reverse("check-compensation"),
             "hx-trigger": "change delay:400ms",
@@ -381,7 +383,7 @@ class AttendanceForm(BaseModelForm):
                 "onchange": "attendanceDateChange($(this))",
             }
         )
-        self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
+        # self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["batch_attendance_id"].choices = list(
             self.fields["batch_attendance_id"].choices
         ) + [("dynamic_create", "Dynamic create")]
@@ -689,8 +691,16 @@ class AttendanceRequestForm(BaseModelForm):
                 )
             kwargs["initial"] = initial
         super().__init__(*args, **kwargs)
-        self.fields["attendance_clock_out_date"].required = False
-        self.fields["attendance_clock_out"].required = False
+        self.fields["attendance_clock_in_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_worked_hour"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_clock_out_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+
 
 
         for field in [
@@ -705,7 +715,7 @@ class AttendanceRequestForm(BaseModelForm):
                 "onchange": "attendanceDateChange($(this))",
             }
         )
-        self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
+        # self.fields["work_type_id"].widget.attrs.update({"id": str(uuid.uuid4())})
         self.fields["batch_attendance_id"].choices = list(
             self.fields["batch_attendance_id"].choices
         ) + [("dynamic_create", "Dynamic create")]
@@ -724,13 +734,11 @@ class AttendanceRequestForm(BaseModelForm):
         fields = [
             "attendance_date",
             "shift_id",
-            "work_type_id",
             "attendance_clock_in_date",
             "attendance_clock_in",
             "attendance_clock_out_date",
             "attendance_clock_out",
             "attendance_worked_hour",
-            "minimum_hour",
             "request_description",
             "batch_attendance_id",
             "is_get_compensation_leave"
@@ -819,7 +827,6 @@ class NewRequestForm(AttendanceRequestForm):
         fields = [
             "attendance_date",
             "shift_id",
-            "work_type_id",
             "attendance_clock_in_date",
             "attendance_clock_in",
             "attendance_clock_out_date",
@@ -886,7 +893,15 @@ class NewRequestForm(AttendanceRequestForm):
         }
         new_dict.update(old_dict)
         self.fields = new_dict
-        self.fields["attendance_worked_hour"].widget.attrs.update({"readonly": "readonly"})
+        self.fields["attendance_clock_in_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_worked_hour"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
+        self.fields["attendance_clock_out_date"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
         self.fields["is_get_compensation_leave"].widget.attrs.update({
             "style": "display:none;",
         })
@@ -900,7 +915,6 @@ class NewRequestForm(AttendanceRequestForm):
             "hx-target": "#compensation-field-container",
             "hx-include": "#attendanceRequestForm",
         })
-
     def as_p(self, *args, **kwargs):
         """
         Render the form fields as HTML table rows with Bootstrap styling.
@@ -967,7 +981,6 @@ class NewRequestForm(AttendanceRequestForm):
             "attendance_clock_out": check_out_time,
             "attendance_clock_out_date": self.cleaned_data["attendance_clock_out_date"],
             "shift_id": self.cleaned_data["shift_id"],
-            "work_type_id": self.cleaned_data["work_type_id"],
             "attendance_worked_hour": worked_hours,
             "is_get_compensation_leave": self.cleaned_data.get("is_get_compensation_leave"),
         }
@@ -986,7 +999,6 @@ class NewRequestForm(AttendanceRequestForm):
                 if data["attendance_clock_out_date"] == "None"
                 else data["attendance_clock_out_date"]
             )
-            data["work_type_id"] = self.data["work_type_id"]
             data["shift_id"] = self.data["shift_id"]
             attendance = attendances.first()
             for key, value in data.items():
@@ -1046,7 +1058,6 @@ class AttendanceExportForm(forms.Form):
         initial=[
             "employee_id",
             "shift_id",
-            "work_type_id",
             "attendance_date",
             "attendance_clock_in",
             "attendance_clock_in_date",
@@ -1295,12 +1306,12 @@ class BulkAttendanceRequestForm(BaseModelForm):
 
 
     from_date = forms.DateField(
-        required=False,
+        required=True,
         label=_("From Date"),
         widget=forms.DateInput(attrs={"type": "date"}),
     )
     to_date = forms.DateField(
-        required=False,
+        required=True,
         label=_("To Date"),
         widget=forms.DateInput(attrs={"type": "date"}),
     )
@@ -1323,7 +1334,6 @@ class BulkAttendanceRequestForm(BaseModelForm):
             "from_date",
             "to_date",
             "shift_id",
-            "work_type_id",
             "attendance_clock_in",
             "attendance_clock_out",
             "attendance_worked_hour",
@@ -1355,6 +1365,10 @@ class BulkAttendanceRequestForm(BaseModelForm):
                 "style": "width: 265px; height: 50px; border: 1px solid #ccc;padding:10px;"
             }
         )
+
+        self.fields["attendance_worked_hour"].widget.attrs.update({
+            "style": "pointer-events:none;",
+        })
 
         self.fields["attendance_clock_out"].widget = forms.DateTimeInput(
             attrs={
@@ -1456,7 +1470,6 @@ class BulkAttendanceRequestForm(BaseModelForm):
         attendance_clock_out = cleaned_data.get("attendance_clock_out")
         # request_description = cleaned_data.get("request_description")
         attendance_worked_hour = cleaned_data.get("attendance_worked_hour")
-        work_type_id = employee_id.employee_work_info.work_type_id
         date_list = get_date_list(employee_id, from_date, to_date)
         batch = (
             cleaned_data.get("batch_attendance_id")
@@ -1467,7 +1480,6 @@ class BulkAttendanceRequestForm(BaseModelForm):
         initial_data = {
             "employee_id": employee_id,
             "shift_id": shift_id,
-            "work_type_id": work_type_id,
             "attendance_clock_in": attendance_clock_in,
             "attendance_clock_out": attendance_clock_out,
             "attendance_worked_hour": attendance_worked_hour,
