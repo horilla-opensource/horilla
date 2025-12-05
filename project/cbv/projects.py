@@ -346,9 +346,12 @@ class ProjectCardView(HorillaCardView):
             queryset = task_filter | project_filter
         return queryset.distinct()
 
-    def __init__(self, **kwargs: Any) -> None:
+    def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.search_url = reverse("project-card-view")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         if (
             self.request.user.has_perm("project.change_project")
             or self.request.user.has_perm("project.delete_project")
@@ -388,6 +391,8 @@ class ProjectCardView(HorillaCardView):
                     """,
                 },
             ]
+        context["actions"] = self.actions
+        return context
 
     details = {
         "image_src": "get_avatar",
