@@ -3,7 +3,7 @@ name: Horilla EC2 Deploy Test
 on:
   push:
     branches:
-      - test           # runs only when 'test' branch changes
+      - test       # deploys whenever test branch is updated
   workflow_dispatch:   # allows manual trigger
 
 jobs:
@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
+      #  Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up SSH access
+      #  Set up SSH access
       - name: Set up SSH access
         run: |
           mkdir -p ~/.ssh
@@ -23,19 +23,19 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.EC2_TEST_HOST }} >> ~/.ssh/known_hosts
 
-      # 3️⃣ Deploy to EC2
+      #  Deploy to EC2
       - name: Deploy Horilla App to TEST EC2
         run: |
           ssh ubuntu@${{ secrets.EC2_TEST_HOST }} << 'EOF'
           set -e
 
-          # Update packages
+          # Update system packages
           sudo apt update && sudo apt upgrade -y
 
           # Go to project folder
           cd /home/ubuntu/horilla-hrm
 
-          # Reset any local changes and pull latest from 'test' branch
+          # Reset local changes and pull latest 'test' branch
           git reset --hard
           git clean -fd
           git pull origin test
@@ -43,25 +43,22 @@ jobs:
           # Kill any process on port 8000
           fuser -k 8000/tcp || echo "No process on 8000"
 
-          # Set up virtual environment
+          # Create virtual environment if missing
           if [ ! -d "venv" ]; then
-            python3 -m venv venv
+              python3 -m venv venv
           fi
+
+          # Activate virtual environment
           source venv/bin/activate
 
-          # Install dependencies
-          pip install --upgrade pip
-          pip install -r requirements.txt
+          # Upgrade pip inside venv
+          python -m pip install --upgrade pip
+
+          # Install project dependencies inside venv
+          python -m pip install -r requirements.txt
 
           # Apply Django migrations
           python manage.py makemigrations --noinput
           python manage.py migrate --noinput
 
           # Compile translations if any
-          python manage.py compilemessages
-
-          # Start server in background
-          nohup python3 manage.py runserver 0.0.0.0:8000 > nohup.out 2>&1 &
-
-          echo "✅ Horilla successfully deployed to TEST!"
-          EOF
