@@ -1,18 +1,22 @@
 import importlib
 import io
 import json
+import os
 import re
 from collections import defaultdict
 
 from bs4 import BeautifulSoup
 from django import forms
 from django.apps import apps
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.admin.utils import NestedObjects
+from django.contrib.staticfiles import finders
 from django.core.cache import cache as CACHE
 from django.db import router
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
@@ -271,7 +275,8 @@ class SearchInIds(View):
         """
         cache_key = f"{self.request.session.session_key}search_in_instance_ids"
         context: dict = CACHE.get(cache_key)
-        context["instances"] = context["filter_class"](self.request.GET).qs
+        if context:
+            context["instances"] = context["filter_class"](self.request.GET).qs
         return render(self.request, "generic/filter_result.html", context)
 
 
@@ -617,6 +622,7 @@ class HorillaDeleteConfirmationView(View):
         return context
 
 
+@func_login_required
 def update_kanban_sequence(request):
     """
     generic method to update the 'sequence' in kanban view.
@@ -629,16 +635,16 @@ def update_kanban_sequence(request):
     """
 
     model_path = request.GET.get("model", "")
-    order = request.GET.get("order")
+    order = request.GET.get("order", "[]")
     group_key = request.GET.get("groupKey")
     group_id = request.GET.get("groupId")
-    order_list = json.loads(order)
     order_by = request.GET.get("orderBy")
+    order_list = json.loads(order)
 
     if not model_path:
-        return JsonResponse({"error": "Missing 'model' or 'order'."}, status=400)
+        return JsonResponse({"error": "Missing 'model'."}, status=400)
     if not order_list:
-        return JsonResponse({})
+        return JsonResponse({"error": "Missing 'order'."}, status=400)
     try:
         app_label, model_name = model_path.split(".")
         model = apps.get_model(app_label, model_name)
@@ -686,6 +692,7 @@ def update_kanban_sequence(request):
     return JsonResponse({"status": "success", "updated": len(updated_objs)})
 
 
+@func_login_required
 def update_kanban_item_group(request):
     """
     Generic method to update sequence and group kanban objects.
@@ -698,7 +705,7 @@ def update_kanban_item_group(request):
     - order: ordered list of IDs to update sequence
     """
 
-    model_path = request.GET.get("model")
+    model_path = request.GET["model"]
     group_key = request.GET.get("groupKey")
     group_id = request.GET.get("groupId")
     object_id = request.GET.get("objectId")
@@ -754,11 +761,12 @@ def update_kanban_item_group(request):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+@func_login_required
 def update_kanban_group_sequence(request):
     """
     Generic method to update the sequence of kanban groups.
     """
-    model_path = request.GET.get("model")
+    model_path = request.GET["model"]
     group_key = request.GET.get("group_key")
     sequence_raw = request.GET.get("sequence", "")
     order_by = request.GET.get("orderBy")
@@ -788,11 +796,12 @@ def update_kanban_group_sequence(request):
     )
 
 
+@func_login_required
 def get_kanban_card_count(request):
     """
     Generic method to get the count of kanban cards in each group.
     """
-    model_path = request.GET.get("model")
+    model_path = request.GET["model"]
     group_id = request.GET.get("group_id")
     group_key = request.GET.get("group_key")
 
@@ -817,13 +826,6 @@ def get_model_class(model_path):
     module = __import__(module_name, fromlist=[class_name])
     model_class = getattr(module, class_name)
     return model_class
-
-
-import os
-
-from django.conf import settings
-from django.contrib.staticfiles import finders
-from django.templatetags.static import static
 
 
 def link_callback(uri, rel):
@@ -1104,14 +1106,17 @@ def export_data(request, *args, **kwargs):
     )
 
 
+@method_decorator(login_required, name="dispatch")
 class DynamicView(View):
     """
     DynamicView
     """
 
-    def get(self, request, field, session_key):
+    def get(self, request, *args, **kwargs):
+
+        field = kwargs.get("field")
+        session_key = kwargs.get("session_key")
         if session_key != request.session.session_key:
             return HttpResponseForbidden("Invalid session key.")
 
-        # Your logic here
         return render(request, "dynamic.html", {"field": field})

@@ -46,6 +46,7 @@ from horilla_views.cbv_methods import (  # update_initial_cache,
     get_short_uuid,
     get_verbose_name_from_field_path,
     hx_request_required,
+    login_required,
     paginator_qry,
     sortby,
     split_by_import_reference,
@@ -1808,6 +1809,7 @@ class HorillaCardView(ListView):
         return view
 
 
+@method_decorator(login_required, name="dispatch")
 @method_decorator(hx_request_required, name="dispatch")
 class ReloadMessages(TemplateView):
     """
