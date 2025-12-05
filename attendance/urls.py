@@ -7,13 +7,6 @@ This page is used to map request or url path with function
 
 from django.urls import path
 
-import attendance.views.clock_in_out
-import attendance.views.dashboard
-import attendance.views.geofaceconfig
-import attendance.views.penalty
-import attendance.views.requests
-import attendance.views.search
-import base
 from attendance.cbv import (
     attendance_activity,
     attendance_request,
@@ -29,16 +22,20 @@ from attendance.cbv import (
     late_come_and_early_out,
     my_attendances,
 )
+from attendance.views import clock_in_out
+from attendance.views import dashboard as attendance_dashboard
+from attendance.views import geofaceconfig, penalty, requests, search
 from base.forms import AttendanceAllowedIPForm
 from base.models import AttendanceAllowedIP
+from base.views import add_remove_dynamic_fields
 
 from .views import views
 
 urlpatterns = [
     path(
-        "individual-panlty-list-view/<int:pk>/",
+        "individual-panalty-list-view/<int:pk>/",
         attendances.PenaltyAccountListView.as_view(),
-        name="individual-panlty-list-view",
+        name="individual-panalty-list-view",
     ),
     path(
         "attendance-activity-view/",
@@ -171,7 +168,7 @@ urlpatterns = [
         views.profile_attendance_tab,
         name="profile-attendance-tab",
     ),
-    path("attendance-tab/<int:emp_id>/", views.attendance_tab, name="attendance-tab"),
+    path("attendance-tab/<int:pk>/", views.attendance_tab, name="attendance-tab"),
     path("attendance-create/", views.attendance_create, name="attendance-create"),
     path("attendance-excel/", views.attendance_excel, name="attendance-excel"),
     path(
@@ -192,7 +189,7 @@ urlpatterns = [
     # path("attendance-view/", views.attendance_view, name="attendance-view"),
     path(
         "attendance-search/",
-        attendance.views.search.attendance_search,
+        search.attendance_search,
         name="attendance-search",
     ),
     path(
@@ -221,7 +218,7 @@ urlpatterns = [
     #     name="attendance-overtime-create",
     # ),
     path(
-        "attendance-overtime-create",
+        "attendance-overtime-create/",
         hour_account.HourAccountFormView.as_view(),
         name="attendance-overtime-create",
     ),
@@ -298,16 +295,16 @@ urlpatterns = [
     # path("view-my-attendance/", views.view_my_attendance, name="view-my-attendance"),
     path(
         "filter-own-attendance/",
-        attendance.views.search.filter_own_attendance,
+        search.filter_own_attendance,
         name="filter-own-attendance",
     ),
     path(
         "own-attendance-filter/",
-        attendance.views.search.own_attendance_sort,
+        search.own_attendance_sort,
         name="own-attendance-filter",
     ),
-    path("clock-in/", attendance.views.clock_in_out.clock_in, name="clock-in"),
-    path("clock-out/", attendance.views.clock_in_out.clock_out, name="clock-out"),
+    path("clock-in/", clock_in_out.clock_in, name="clock-in"),
+    path("clock-out/", clock_in_out.clock_out, name="clock-out"),
     path(
         "on-time-view/",
         views.on_time_view,
@@ -325,7 +322,7 @@ urlpatterns = [
     # ),
     # path(
     #     "late-come-early-out-search",
-    #     attendance.views.search.late_come_early_out_search,
+    #     search.late_come_early_out_search,
     #     name="late-come-early-out-search",
     # ),
     path(
@@ -388,47 +385,45 @@ urlpatterns = [
         views.attendance_add_to_batch,
         name="attendance-add-to-batch",
     ),
-    path(
-        "dashboard/", attendance.views.dashboard.dashboard, name="attendance-dashboard"
-    ),
+    path("dashboard/", attendance_dashboard.dashboard, name="attendance-dashboard"),
     path(
         "on-break-employees/",
-        attendance.views.dashboard.on_break_employees,
+        attendance_dashboard.on_break_employees,
         name="on-break-employees",
     ),
     path(
         "dashboard-approve-overtimes/",
-        attendance.views.dashboard.dashboard_approve_overtimes,
+        attendance_dashboard.dashboard_approve_overtimes,
         name="dashboard-approve-overtimes",
     ),
     path(
         "dashboard-validate-attendances/",
-        attendance.views.dashboard.dashboard_validate_attendances,
+        attendance_dashboard.dashboard_validate_attendances,
         name="dashboard-validate-attendances",
     ),
     path(
         "department-overtime-chart/",
-        attendance.views.dashboard.department_overtime_chart,
+        attendance_dashboard.department_overtime_chart,
         name="department-overtime-chart",
     ),
     path(
         "dashboard-attendance/",
-        attendance.views.dashboard.dashboard_attendance,
+        attendance_dashboard.dashboard_attendance,
         name="dashboard-attendance",
     ),
-    path(
-        "request-attendance/",
-        attendance.views.requests.request_attendance,
-        name="request-attendance",
-    ),
+    # path(
+    #     "request-attendance/",
+    #     requests.request_attendance,
+    #     name="request-attendance",
+    # ),
     # path(
     #     "request-attendance-view/",
-    #     attendance.views.requests.request_attendance_view,
+    #     requests.request_attendance_view,
     #     name="request-attendance-view",
     # ),
     path(
         "request-attendance/<int:attendance_id>/",
-        attendance.views.requests.attendance_request_changes,
+        requests.attendance_request_changes,
         name="attendance-change",
     ),
     path(
@@ -443,56 +438,56 @@ urlpatterns = [
     ),
     path(
         "validate-attendance-request/<int:attendance_id>/",
-        attendance.views.requests.validate_attendance_request,
+        requests.validate_attendance_request,
         name="validate-attendance-request",
     ),
     path(
         "approve-validate-attendance-request/<int:attendance_id>/",
-        attendance.views.requests.approve_validate_attendance_request,
+        requests.approve_validate_attendance_request,
         name="approve-validate-attendance-request",
     ),
     path(
         "edit-validate-attendance/<int:attendance_id>/",
-        attendance.views.requests.edit_validate_attendance,
+        requests.edit_validate_attendance,
         name="edit-validate-attendance",
     ),
     path(
         "search-attendance-requests/",
-        attendance.views.search.search_attendance_requests,
+        search.search_attendance_requests,
         name="search-attendance-requests",
     ),
     path(
         "cancel-validate-attendance-request/<int:attendance_id>/",
-        attendance.views.requests.cancel_attendance_request,
+        requests.cancel_attendance_request,
         name="cancel-validate-attendance-request",
     ),
     path(
         "select-all-filter-attendance-request/",
-        attendance.views.requests.select_all_filter_attendance_request,
+        requests.select_all_filter_attendance_request,
         name="select-all-filter-attendance-request",
     ),
     path(
         "bulk-reject-attendance-request/",
-        attendance.views.requests.bulk_reject_attendance_request,
+        requests.bulk_reject_attendance_request,
         name="bulk-reject-attendance-request",
     ),
     path(
         "bulk-approve-attendance-request/",
-        attendance.views.requests.bulk_approve_attendance_request,
+        requests.bulk_approve_attendance_request,
         name="bulk-approve-attendance-request",
     ),
     # path(
     #     "request-new-attendance",
-    #     attendance.views.requests.request_new,
+    #     requests.request_new,
     #     name="request-new-attendance",
     # ),
     path(
-        "request-new-attendance",
+        "request-new-attendance/",
         attendance_request.NewAttendanceRequestFormView.as_view(),
         name="request-new-attendance",
     ),
     path(
-        "request-bulk-attendance",
+        "request-bulk-attendance/",
         attendance_request.BulkAttendanceRequestFormView.as_view(),
         name="request-bulk-attendance",
     ),
@@ -503,19 +498,19 @@ urlpatterns = [
     ),
     path(
         "create-batch-attendance/",
-        attendance.views.requests.create_batch_attendance,
+        requests.create_batch_attendance,
         name="create-batch-attendance",
     ),
-    path("get-batches/", attendance.views.requests.get_batches, name="get-batches"),
-    path("update-title/", attendance.views.requests.update_title, name="update-title"),
+    path("get-batches/", requests.get_batches, name="get-batches"),
+    path("update-title/", requests.update_title, name="update-title"),
     path(
         "delete-batch/<int:batch_id>/",
-        attendance.views.requests.delete_batch,
+        requests.delete_batch,
         name="delete-batch",
     ),
     path(
         "employee-widget-filter/",
-        attendance.views.search.widget_filter,
+        search.widget_filter,
         name="attendance-widget-filter",
     ),
     path(
@@ -588,9 +583,7 @@ urlpatterns = [
         views.latecome_attendance_select_filter,
         name="latecome-attendance-select-filter",
     ),
-    path(
-        "pending-hours/", attendance.views.dashboard.pending_hours, name="pending-hours"
-    ),
+    path("pending-hours/", attendance_dashboard.pending_hours, name="pending-hours"),
     path("create-garce-time/", views.create_grace_time, name="create-grace-time"),
     path("assign-shift/<int:grace_id>/", views.assign_shift, name="assign-shift"),
     path(
@@ -643,7 +636,7 @@ urlpatterns = [
     path("enable-timerunner/", views.enable_timerunner, name="enable-timerunner"),
     path(
         "get-employee-shift/",
-        attendance.views.requests.get_employee_shift,
+        requests.get_employee_shift,
         name="get-employee-shift",
     ),
     path(
@@ -723,31 +716,31 @@ urlpatterns = [
     ),
     path(
         "cut-penalty/<int:instance_id>/",
-        attendance.views.penalty.cut_available_leave,
+        penalty.cut_available_leave,
         name="cut-penalty",
     ),
     # path(
     #     "dashboard-overtime-approve",
-    #     attendance.views.dashboard.dashboard_overtime_approve,
+    #     dashboard.dashboard_overtime_approve,
     #     name="dashboard-overtime-approve",
     # ),
     path(
-        "dashboard-overtime-approve",
+        "dashboard-overtime-approve/",
         dashboard.DashboardaAttendanceOT.as_view(),
         name="dashboard-overtime-approve",
     ),
     # path(
     #     "dashboard-attendance-validate",
-    #     attendance.views.dashboard.dashboard_attendance_validate,
+    #     dashboard.dashboard_attendance_validate,
     #     name="dashboard-attendance-validate",
     # ),
     path(
-        "dashboard-attendance-validate",
+        "dashboard-attendance-validate/",
         dashboard.DashboardAttendanceToValidate.as_view(),
         name="dashboard-attendance-validate",
     ),
     path(
-        "dashboard-on-break",
+        "dashboard-on-break/",
         dashboard.DashboardOnBreak.as_view(),
         name="dashboard-on-break",
     ),
@@ -828,7 +821,7 @@ urlpatterns = [
     ),
     path(
         "settings/add-remove-ip-fields/",
-        base.views.add_remove_dynamic_fields,
+        add_remove_dynamic_fields,
         name="add-remove-ip-fields",
         kwargs={
             "model": AttendanceAllowedIP,
@@ -924,8 +917,6 @@ urlpatterns = [
         name="check-in-check-out-nav",
     ),
     path(
-        "settings/geo-face-config/",
-        attendance.views.geofaceconfig.geofaceconfig,
-        name="geo-face-config",
+        "settings/geo-face-config/", geofaceconfig.geofaceconfig, name="geo-face-config"
     ),
 ]

@@ -6,6 +6,7 @@ import json
 from typing import Any
 
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 
 from attendance.cbv.attendance_request import AttendanceRequestListTab
@@ -16,9 +17,11 @@ from attendance.models import Attendance
 from base.methods import filtersubordinates
 from base.request_and_approve import paginator_qry
 from employee.models import Employee
+from horilla_views.cbv_methods import login_required
 from horilla_views.generic.cbv.views import HorillaListView, HorillaTabView
 
 
+@method_decorator(login_required, name="dispatch")
 class AttendanceTabView(HorillaTabView):
     """
     generic tab view for attendance
@@ -69,6 +72,7 @@ class AttendanceTabView(HorillaTabView):
         return context
 
 
+@method_decorator(login_required, name="dispatch")
 class RequestedAttendanceIndividualView(AttendanceRequestListTab):
     """
     list view for requested attendance tab view
@@ -92,6 +96,7 @@ class RequestedAttendanceIndividualView(AttendanceRequestListTab):
         return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class HourAccountIndividualTabView(HourAccountList):
     """
     list view for hour account tab
@@ -114,6 +119,7 @@ class HourAccountIndividualTabView(HourAccountList):
         return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class AllAttendancesList(MyAttendancesListView):
 
     def get_context_data(self, **kwargs: Any):

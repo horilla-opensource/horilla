@@ -49,6 +49,7 @@ class AttendancesView(TemplateView):
     template_name = "cbv/attendances/attendance_view_page.html"
 
 
+@method_decorator(login_required, name="dispatch")
 class AttendancesListView(HorillaListView):
     """
     list view
@@ -557,6 +558,7 @@ class AttendanceDetailActivityList(AttendanceActivityListView):
         return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class PenaltyAccountListView(HorillaListView):
     """
     list view for penalty tab
@@ -596,7 +598,7 @@ class PenaltyAccountListView(HorillaListView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         pk = self.request.resolver_match.kwargs.get("pk")
-        self.search_url = reverse("individual-panlty-list-view", kwargs={"pk": pk})
+        self.search_url = reverse("individual-panalty-list-view", kwargs={"pk": pk})
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -605,6 +607,7 @@ class PenaltyAccountListView(HorillaListView):
         return queryset
 
 
+@method_decorator(login_required, name="dispatch")
 class ValidateAttendancesIndividualTabView(AttendancesListView):
     """
     list view for validate attendance tab view
@@ -646,6 +649,7 @@ class ValidateAttendancesIndividualTabView(AttendancesListView):
                 """
 
 
+@method_decorator(login_required, name="dispatch")
 class ValidateAttendancesIndividualDetailView(GenericAttendancesDetailView):
     """
     Validate tab detail view in single view of employee
