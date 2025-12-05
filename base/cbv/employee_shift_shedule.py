@@ -131,6 +131,7 @@ class EmployeeShiftSheduleList(HorillaListView):
     action_method = "actions_col"
 
 
+@method_decorator(login_required, name="dispatch")
 class EmployeeShiftSheduleDetailView(HorillaDetailedView):
     """
     detail view of the page

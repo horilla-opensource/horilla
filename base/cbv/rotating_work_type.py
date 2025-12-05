@@ -285,8 +285,8 @@ class RotatingWorkExport(TemplateView):
         return context
 
 
-@method_decorator(manager_can_enter("base.add_rotatingworktypeassign"), name="dispatch")
 @method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter("base.add_rotatingworktypeassign"), name="dispatch")
 class RotatingWorkTypeFormView(HorillaFormView):
     """
     form view
@@ -355,8 +355,8 @@ class RotatingWorkTypeFormView(HorillaFormView):
         return super().form_valid(form)
 
 
-@method_decorator(manager_can_enter("base.add_rotatingworktypeassign"), name="dispatch")
 @method_decorator(login_required, name="dispatch")
+@method_decorator(manager_can_enter("base.add_rotatingworktypeassign"), name="dispatch")
 class RotatingWorkTypeDuplicateForm(HorillaFormView):
     """
     duplicate from view
