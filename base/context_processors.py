@@ -149,7 +149,7 @@ def update_selected_company(request):
 
 urlpatterns.append(
     path(
-        "update-selected-company",
+        "update-selected-company/",
         update_selected_company,
         name="update-selected-company",
     )
